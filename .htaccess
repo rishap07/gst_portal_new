@@ -1,0 +1,61 @@
+Options -Indexes
+RewriteEngine on
+
+RewriteCond %{REQUEST_FILENAME} !-f
+
+RewriteCond %{REQUEST_FILENAME} !-d
+
+RewriteRule ^(.*)$ index.php?depName=$1
+RewriteRule ^(.*)/inner.php(.*)$ inner.php?depName=$1&module=$2
+
+<ifModule mod_headers.c>
+    Header set Connection keep-alive
+</ifModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|css|xml|gz)$">
+    Header append Vary: Accept-Encoding
+  </FilesMatch>
+</IfModule>
+<IfModule mod_deflate.c>
+    #The following line is enough for .js and .css
+    AddOutputFilter DEFLATE js css
+
+    #The following line also enables compression by file content type, for the following list of Content-Type:s
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml application/xml application/javascript text/css application/x-javascript application/vnd.ms-fontobject application/x-font-ttf image/svg+xml
+
+    <FilesMatch ".(js|css|html|php|txt|woff)$">
+        SetOutputFilter DEFLATE
+        AddOutputFilterByType DEFLATE application/vnd.ms-fontobject application/x-font-ttf image/svg+xml
+    </FilesMatch>
+
+    #The following lines are to avoid bugs with some browsers
+    BrowserMatch ^Mozilla/4 gzip-only-text/html
+    BrowserMatch ^Mozilla/4\.0[678] no-gzip
+    BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+</IfModule>
+<FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf)$">
+    Header set Cache-Control "max-age=604800, public"
+</FilesMatch>
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpg "access 1 year"
+    ExpiresByType image/jpeg "access 1 year"
+    ExpiresByType image/gif "access 1 year"
+    ExpiresByType image/png "access 1 year"
+    ExpiresByType text/css "access 1 month"
+    ExpiresByType text/html "access 1 month"
+    ExpiresByType application/pdf "access 1 month"
+    ExpiresByType text/x-javascript "access 1 month"
+    ExpiresByType application/x-shockwave-flash "access 1 month"
+    ExpiresByType image/x-icon "access 1 year"
+    ExpiresDefault "access 1 month"
+</IfModule>
+<ifModule mod_headers.c>
+    Header set Access-Control-Allow-Origin: *
+</ifModule>
+<FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf)(\.gz)?$">
+    Header unset ETag
+    FileETag None
+</FilesMatch>
+

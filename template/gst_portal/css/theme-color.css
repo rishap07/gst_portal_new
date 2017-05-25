@@ -1,0 +1,23 @@
+.orangebg { background:#e44a16;}
+.redbg { background:#ef0c0c;}
+.txtorange { color:#e44a16;}
+.orangeborder { border:1px solid #e44a16;}
+.greycolorbg { background:#373737;}
+.sidemenu li { background:#373737; border-bottom:1px solid #444444;}
+.greybg { background:#e5e5e5;}
+.perpalcolor { background:#432e55;}
+.sidemenu li.active ul li:hover,.sidemenu li.active:hover,.sidemenu li.active:hover a{background:#e44a16;}
+.sidemenu li.active ul li:hover a,.sidemenu li.active ul li a{background:url(../../../image/bullet.png) #e44a16 no-repeat 16px 14px !important;}
+input:focus, select:focus, textarea:focus { border:1px solid #e44a16 !important; background:#FFF !important;} 
+.sidemenu li:hover{background:#e44a16;}
+.btn:hover { background:#e45829; color:#FFF; text-decoration:none;}
+.registrationnav li a { color:#e44a16;}
+.lightorange { background:#fee7df;}
+.texperpal { color:#432e55;}
+.tablecontent2 tr th { background:#422f80; }
+.tablecontent2 tr:nth-child(odd) {background: #fee7df}
+.greentxt { color:#209700; text-decoration:none;}
+.redtxt { color:#cc0000;}
+.orangetxt { color:#e44a16;}
+.greencolor { background:#090;}
+.bluecolor { background:#1274fa;} 
