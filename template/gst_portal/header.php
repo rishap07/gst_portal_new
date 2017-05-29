@@ -16,17 +16,17 @@
         <script type="text/javascript">
             $(document).ready(function (e) {
                 
-				$(".sidemenu li").click(function (e) {
+                $(".sidemenu li").click(function (e) {
                     
-					if($(this).hasClass("active")) {
-						$(".sidemenu li").removeClass("active");
-						$(".sidemenu li strong").removeClass("fa-minus").addClass("fa-plus");
-					} else {
-						$(".sidemenu li").removeClass("active");
-						$(".sidemenu li strong").removeClass("fa-minus").addClass("fa-plus");
-						$(this).addClass("active");
-						$(this).children().children("strong").removeClass("fa-plus").addClass("fa-minus");
-					}
+                    if($(this).hasClass("active")) {
+                            $(".sidemenu li").removeClass("active");
+                            $(".sidemenu li strong").removeClass("fa-minus").addClass("fa-plus");
+                    } else {
+                            $(".sidemenu li").removeClass("active");
+                            $(".sidemenu li strong").removeClass("fa-minus").addClass("fa-plus");
+                            $(this).addClass("active");
+                            $(this).children().children("strong").removeClass("fa-plus").addClass("fa-minus");
+                    }
                 });
 				
                 $(function () {

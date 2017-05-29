@@ -1,7 +1,15 @@
+#tabs {
+	text-align:center;
+}
+
+#tabs ul.tabinner {
+	display:inline-block;
+}
+
 .columns {
 	float: left;
-	width: 25%;
-	padding: 8px;
+	width: 23%;
+	padding: 1%;
 }
 
 .price {
@@ -37,7 +45,7 @@
 .button {
 	background-color: #4CAF50;
 	border: none;
-	color: white;
+	color: white !important;
 	padding: 10px 25px;
 	text-align: center;
 	text-decoration: none;

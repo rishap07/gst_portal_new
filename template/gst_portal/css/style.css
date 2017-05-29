@@ -55,8 +55,8 @@ p, ul { margin:0px; padding:0px;}
 /*===============================login & Register page css start======================*/
 .loginpage{background:url(../../../image/adminbg.jpg) no-repeat center #e44a16;background-size:cover;width:100%;float:left;height:100%;position:fixed;top:0px;bottom:0px;}
 .loginpage h1{float:left;width:100%;text-align:center;color:#fff;font-size:36px;font-family:opensans_bold;margin:90px 0px;}
-.loginbx{background:#fff;width:440px;height:auto;box-shadow:0px 0px 15px #b93509;position:relative;margin:75px auto 0px;overflow:hidden; padding:20px 15px;}
-.loginbx .adminlogo{display:block;text-align:center;width:100%;padding:10px 0px;}
+.loginbx{background:#fff;width:440px;height:auto;box-shadow:0px 0px 15px #b93509;position:relative;margin:40px auto 0px;overflow:hidden; padding:20px 15px;}
+.loginbx .adminlogo{display:block;text-align:center;width:100%;}
 .loginbx .adminlogo img { width:230px;}
 .logincontainer{padding:25px 25px 20px;background:#fff;}
 .admintab{float:left;width:100%;margin:0px 0px 20px;padding:0px;}
@@ -233,12 +233,13 @@ p, ul { margin:0px; padding:0px;}
 .title { font-size:30px; color:#333; font-family: opensans_light;  margin:0 0 40px 0; padding:0 0 15px 0; background:url(../../../image/swirl_devider.jpg) repeat-x bottom; }
 .title span { color:#643c86; font-family: open_sans; font-weight:normal;}
 .messagecircle { width:19px; height:18px; padding-top:1px; top:0px; z-index:222; font-size:11px; border-radius:50% 50%;  font-family: opensans_bold; display:inline-block; position:absolute; text-align:center; margin:5px 0 0 10px;}
-.topanimation{position:relative;animation:animatetop 0.4s}@keyframes animatetop{from{top:-300px;opacity:0} to{top:0;opacity:1}}
+.topanimation{position:relative;animation:animatetop 0.4s}
+@keyframes animatetop{from{top:-300px;opacity:0} to{top:0;opacity:1}}
 .black_overlay {background-color: black;height: 100%;left: 0;opacity: 0.7;overflow: hidden;position: fixed;top: 0;width: 100%;z-index: 888888888;}
 .popupcontainer { width: 500px; position: absolute;right: 0; left:0px; margin: 0 auto;  z-index: 2147483647;}
 .popupcontainer  .popupform { background: #fff;box-shadow: 0 0 10px #000;left: 0; padding: 10px; padding:30px; position:relative; top:150px; height:200px;}
 .popupcontainer  .popupform .formcol { width:100%; float:none;}
-.popupcontainer  .popupform  .closebtn { position:absolute; right:10px; top:10px; cursor:pointer;}
+.popupcontainer  .popupform  .closebtn, .formpopup  .popupform .closebtn  { position:absolute; right:10px; top:10px; cursor:pointer;}
 .popupcontainer  .popupform h4 { color:#14469e; font-family: roboto-regular; text-align:center; font-size:24px; letter-spacing:-1px; border-bottom:1px solid #ccc; padding:0 0 20px 0; margin:0 0 20px 0; }
 .dashtab li a { height:100px; text-transform:uppercase;}
 .readonly{cursor:not-allowed;background-color:#e6e6e6;}
@@ -246,6 +247,48 @@ p, ul { margin:0px; padding:0px;}
 .errborder{border:1px solid #f00 !important;}
 .addnew{ float: right; border: 1px solid #2caf6c; padding: 3px 10px; background-color: #2caf6c; color: #fff; text-decoration: none;}
 .addnew:hover{ border: 1px solid #35d081;background-color: #35d081; }
+
+/*-------------------------------------INOVICE CSS START HERE---------------------------------*/
+.invoicenav li a span { text-transform:none; font-family: open_sans; font-size:15px; }
+.invoicenav li a {text-transform:none;}
+.inovicedeatil { border:1px solid #e0e0e0; padding:15px; }
+.inovicedeatil .formcol { width:100%; min-height:auto; margin-bottom:12px !important;}
+.invoiceform label { margin-bottom:5px;}
+.inovicedeatil .formcol label { width:150px; margin-bottom:5px;}
+.inovicedeatil .formcol input, .inovicedeatil .formcol textarea { width:60% !important; float:left}
+.inovicedeatil .formcol textarea { height:40px;}
+.inovicedeatil .formcol.last { margin-right:0px;}
+.invoicetable tr th { border-right:1px solid #808080;}
+.invoicetable tr td,.invoicetable tr th { padding:8px 5px;; border-bottom:1px solid #e0e0e0;}
+.invoicetable tr:nth-child(even) {background: #f0f0f0}
+.invoiceform .formcol { min-height:auto; margin-bottom:5px;}
+.invoiceform input[type=text], .invoiceform input[type=password],.invoiceform select,.invoiceform textarea{width:94%;padding:3px 5px !important;color:#505050;font-size:13px;border:1px solid #e0e0e0;}
+.invoicetable { border-left:1px solid #e0e0e0; border-right:1px solid #e0e0e0;}
+.lightyellow { background:#FFC;}
+.lightpink { background:#fee7df;}
+.lightgreen { background:#e9ffdb;}
+.totalamount { font-family: opensans_bold; font-size:15px; color:#000; }
+.totalamount span {font-family: open_sans; font-size:12px;}
+.totalprice{ font-family: opensans_bold;  color:#000; font-size:20px; display:inline-block; margin-left:10px;}
+.textsmall { font-size:14px;}
+.pricinput { border:none !important;}
+.pricinput { display:inline-block; width:75% !important; border:none !important;  }
+.pricinput:focus {border:none !important;}
+.padrgt0 { padding:0px 0px 0px 4px !important;}
+.invoiceform .inptxt { background:#FFF;}
+.inputdisabled { background:#f0f0f0; color:#333;}
+.addicon { color:#1d9b1a;}
+.deleteicon { color:#cc0000;}
+.icon { font-size:19px;}
+.tooltip {position: relative;display: inline-block;}
+.tooltip .tooltiptext { visibility: hidden; width: 90px; background-color: #000;color: #fff;text-align: center;border-radius: 6px; padding: 5px 0;position: absolute;z-index: 1; bottom: 125%;left: 50%;margin-left: -45px;opacity: 0;transition: opacity 1s;font-size:12px;}
+.tooltip .tooltiptext::after { content: ""; position: absolute;top: 100%;left: 50%; margin-left: -5px;border-width: 5px;border-style: solid; border-color: #000 transparent transparent transparent;}
+.tooltip:hover .tooltiptext { visibility: visible;opacity: 1;}
+.formpopup { width: 800px; position: absolute;right: 0; left:0px; margin: 0 auto;  z-index: 2147483647;}
+.formpopup  .popupform { background: #fff;box-shadow: 0 0 10px #000;left: 0; padding: 10px; padding:30px; position:relative; top:150px; height:auto;}
+.formpopup  .popupform .formcol { min-height:auto;}
+.formpopup  .popupform h3 { border-bottom:1px solid #ccc; font-family: opensans_bold; font-weight:normal; padding:0 0 10px 0; font-size:18px; margin:0px 0 15px 0; }
+
 @media only screen and (max-width:1200px)
 {
 .topnav{width:auto;}	
@@ -318,7 +361,9 @@ p, ul { margin:0px; padding:0px;}
 	.logo { margin-left:0px; margin-top:0px; width:100%; text-align:center;}
 .topnav{top:63px; width:100%; right:0px; left:0px; padding-bottom:15px; text-align:center;}
 .topnav ul { margin:0 auto;}
-.topnav ul li { width:auto; border:none; padding:2px 10px; height:25px; float:none; display:inline-block;} 
+.topnav ul li { width:auto; border:none; padding:2px 10px; height:25px; float:none; display:inline-block;}
+.invoiceform .formcol { width:100%; margin-bottom:5px !important;}
+.inovicedeatil .formcol input, .inovicedeatil .formcol textarea { width:100% !important;}  
 	
 	
 }
@@ -331,6 +376,8 @@ p, ul { margin:0px; padding:0px;}
 	.headingborder{display:none;}
 	.admincontainer h2{font-size:16px; }
 	.admincontainer{width:86%;margin:0px 3%;padding:40px 4%;}
+	
+	
 	
 	
 	.sidemenu{top:66px;}

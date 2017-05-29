@@ -20,7 +20,7 @@ if (isset($_POST['login_me']) && $_POST['login_me'] == 'LOGIN') {
     if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])) {
         $obj_login->setError('Invalid access to files');
     } else {
-        if ($obj_login->loginUser()) {
+        if ($obj_login->loginUser()) {            
             $obj_login->redirect(PROJECT_URL . "?page=dashboard");
         }
     }
