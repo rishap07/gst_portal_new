@@ -14,6 +14,7 @@ extract($_POST);
 
 //Columns to fetch from database
 $aColumns = array('id','name','month', 'description', 'status');
+$aSearchColumns = array('name','month', 'description', 'status');
 $sIndexColumn = "id";
 
 /* DB table to use */
@@ -51,10 +52,12 @@ if (isset($_POST['iSortCol_0'])) {
  * on very large tables, and MySQL's regex functionality is very limited
  */
 
-$spcWhere = " where is_deleted='0'";
+$spcWhere = " where is_deleted='0' ";
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
-    for ($i = 0; $i < count($aColumns1); $i++) {
-        $spcWhere .= $aColumns1[$i] . " LIKE '%" . utf8_encode(htmlentities($_POST['sSearch'],ENT_COMPAT,'utf-8')) . "%' OR ";
+    
+    $spWhere .= 'AND (';
+    for ($i = 0; $i < count($aSearchColumns); $i++) {
+        $spcWhere .= $aSearchColumns[$i] . " LIKE '%" . utf8_encode(htmlentities($_POST['sSearch'],ENT_COMPAT,'utf-8')) . "%' OR ";
     }
     $spcWhere = substr_replace($spcWhere, "", -3);
     $spcWhere .= ')';
@@ -62,11 +65,14 @@ if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
 
 /* Individual column filtering */
 for ($i = 0; $i < count($aColumns); $i++) {
-    if (isset($_POST['bSearchable_' . $i]))
+    
+    if (isset($_POST['bSearchable_' . $i])) {
+    
         if ((isset($_POST['bSearchable_' . $i]) && $_POST['bSearchable_' . $i] == "true") && (isset($_POST['sSearch_' . $i]) && $_POST['sSearch_' . $i] != '')) {
             $spcWhere .= " AND ";
             $spcWhere .= $aColumns[$i] . " LIKE '%" . $obj_plan->escape($_POST['sSearch_' . $i]) . "%' ";
         }
+    }
 }
 
 /*
@@ -107,24 +113,24 @@ $output = array(
 $temp_x=1;
 if(isset($rResult) && !empty($rResult))
 {
-foreach($rResult as $aRow) {
-    $row = array();
-    $status = '';
-    if($aRow->status == '0'){
-        $status = '<span class="inactive">InActive<span>';
-    }elseif($aRow->status == '1'){
-        $status = '<span class="active">Active<span>';
+    foreach($rResult as $aRow) {
+        $row = array();
+        $status = '';
+        if($aRow->status == '0') {
+            $status = '<span class="inactive">InActive<span>';
+        } elseif($aRow->status == '1') {
+            $status = '<span class="active">Active<span>';
+        }
+
+        $row[] = $temp_x;
+        $row[] = utf8_decode($aRow->name);
+        $row[] = utf8_decode($aRow->month);
+        $row[] = utf8_decode($aRow->description);
+        $row[] = $status;
+        $row[] = '<a href="'.PROJECT_URL.'/?page=plan_editcategory&action=editPlanCategory&id='.$aRow->id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=plan_categorylist&action=deletePlanCategory&id='.$aRow->id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
+        $output['aaData'][] = $row;
+        $temp_x++;
     }
-    
-    $row[] = $temp_x;
-    $row[] = utf8_decode($aRow->name);
-    $row[] = utf8_decode($aRow->month);
-    $row[] = utf8_decode($aRow->description);
-    $row[] = $status;
-    $row[] = '<a href="'.PROJECT_URL.'/?page=plan_editcategory&action=editPlanCategory&id='.$aRow->id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=plan_categorylist&action=deletePlanCategory&id='.$aRow->id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
-    $output['aaData'][] = $row;
-    $temp_x++;
-}
 }
 
 echo json_encode($output);

@@ -1,11 +1,11 @@
 <?php
 /*
     * 
-    *  Developed By        :   Ishwar Lal Ghiya
+    *  Developed By        :   Rishap Gandhi
     *  Date Created        :   May 26, 2017
-    *  Last Modified       :   May 26, 2017
-    *  Last Modified By    :   Ishwar Lal Ghiya
-    *  Last Modification   :   Admin User Listing
+    *  Last Modified       :   May 27, 2017
+    *  Last Modified By    :   Rishap Gandhi
+    *  Last Modification   :   Role Listing
     * 
  */
 
@@ -13,12 +13,11 @@ $obj_user = new users();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('user_id', 'CONCAT(first_name," ",last_name) as name', 'username', 'email', 'phone_number', 'company_name', 'company_code', 'no_of_client', 'payment_status', 'status');
-$aSearchColumns = array('first_name', 'last_name', 'username', 'email', 'phone_number', 'company_name', 'company_code', 'no_of_client', 'payment_status', 'status');
-$sIndexColumn = "user_id";
+$aColumns = array('id', 'group_name', 'description');
+$sIndexColumn = "id";
 
 /* DB table to use */
-$uTable = $obj_user->getTableName('user');
+$uTable = $obj_user->getTableName('user_group');
 
 /*
  * Paging
@@ -41,7 +40,7 @@ if (isset($_POST['iSortCol_0'])) {
         }
     }
     if ($uOrder == "ORDER BY ") {
-        $uOrder = "ORDER BY user_id DESC";
+        $uOrder = "ORDER BY $sIndexColumn DESC";
     }
 }
 
@@ -52,7 +51,7 @@ if (isset($_POST['iSortCol_0'])) {
  * on very large tables, and MySQL's regex functionality is very limited
  */
 
-$uWhere = " where is_deleted='0' AND user_group = '2' ";
+$uWhere = " where 1=1 ";
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
 
     $uWhere .= 'AND (';
@@ -118,36 +117,11 @@ foreach($rResult as $aRow) {
     $row = array();
     $status = '';
     
-    if($aRow->status == '0'){
-        $status = '<span class="inactive">InActive<span>';
-    }elseif($aRow->status == '1'){
-        $status = '<span class="active">Active<span>';
-    }
-    
-    $payment_status = '';
-    if($aRow->payment_status == '0'){
-        $payment_status = '<span class="pending">Pending<span>';
-    }elseif($aRow->payment_status == '1'){
-        $payment_status = '<span class="success">Success<span>';
-    }elseif($aRow->payment_status == '2'){
-        $payment_status = '<span class="fraud">Mark As Fraud<span>';
-    }elseif($aRow->payment_status == '3'){
-        $payment_status = '<span class="rejected">Rejected<span>';
-    }elseif($aRow->payment_status == '4'){
-        $payment_status = '<span class="refund">Refund<span>';
-    }
     
     $row[] = $temp_x;
-    $row[] = utf8_decode($aRow->name);
-    $row[] = utf8_decode($aRow->username);
-    $row[] = utf8_decode($aRow->email);
-    $row[] = utf8_decode($aRow->phone_number);
-    $row[] = utf8_decode($aRow->company_name);
-    $row[] = utf8_decode($aRow->company_code);
-    $row[] = utf8_decode($aRow->no_of_client);
-    $row[] = $status;
-    $row[] = $payment_status;
-    $row[] = '<a href="'.PROJECT_URL.'/?page=user_adminupdate&action=editAdmin&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=user_adminlist&action=deleteAdmin&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
+    $row[] = utf8_decode($aRow->group_name);
+    $row[] = utf8_decode($aRow->description);
+    $row[] = '<a href="'.PROJECT_URL.'/?page=user_group_update&id='.$aRow->id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=user_adminlist&action=deleteAdmin&id='.$aRow->id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
     $output['aaData'][] = $row;
     $temp_x++;
 }

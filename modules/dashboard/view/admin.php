@@ -10,12 +10,10 @@
                             <div class="clear height20"></div>
                             <div class="col-md-6">
                                 <div class="lightorange dashleftbox orangeborder" style="max-height: 300px">
-                                    <div class="boxheading txtorange fl">Users List</div>
-                                    <div class="fr addmorebtn"><a href="<?php echo PROJECT_URL;?>/?page=user_subadminupdate" class="greencolor smallbtn">+ Add More</a><a href="<?php echo PROJECT_URL;?>/?page=user_subadminlist" class="bluecolor smallbtn">View All</a></div>
+                                    <div class="boxheading txtorange fl">Subscriber List</div>
+                                    <div class="fr addmorebtn"><a href="#" class="bluecolor smallbtn">View All</a></div>
                                     <div class="clear"></div>
-                                    <?php
-                                    $dataArrs = $db_obj->getSubAdmin($is_deleted='0',$orderby='user_id desc',$limit='limit 0,5');
-                                    ?>
+                                    <?php $dataArrs = $db_obj->getSubscriber($is_deleted='0',$orderby='user_id desc',$limit='limit 0,5'); ?>
                                     <ul>
                                         <?php
                                         if(!empty($dataArrs))
@@ -25,23 +23,23 @@
                                                 $color = '';
                                                 switch ($dataArr->payment_status)
                                                 {
-                                                    case 'pending': 
+                                                    case 'pending':
                                                         $color = 'blue';
                                                         break;
-                                                    case 'accepted': 
+                                                    case 'accepted':
                                                         $color = 'green';
                                                         break;
-                                                    case 'rejected': 
+                                                    case 'rejected':
                                                         $color = 'red';
                                                         break;
-                                                    case 'mark as fraud': 
+                                                    case 'mark as fraud':
                                                         $color = 'orange';
                                                         break;
                                                     default:
                                                         $color = 'blue';
                                                 }
                                                 ?>
-                                                <li><?php echo ucwords($dataArr->first_name." ".$dataArr->last_name);?> (<?php echo $dataArr->username;?>) <span><a href="<?php echo PROJECT_URL;?>?page=user_adminupdate&action=editAdmin&id=<?php echo ($dataArr->user_id);?>" class="<?php echo $color;?>txt"><?php echo ucwords($dataArr->payment_status);?></a></span></li>
+                                                <li><?php echo ucwords($dataArr->first_name." ".$dataArr->last_name);?> (<?php echo $dataArr->username;?>) <span><a href="#" class="<?php echo $color;?>txt"><?php echo ucwords($dataArr->payment_status);?></a></span></li>
                                                 <?php
                                             }
                                         }
@@ -63,7 +61,7 @@
                                     <div class="fr addmorebtn"><a href="<?php echo PROJECT_URL;?>/?page=plan_addplan" class="greencolor smallbtn">+ Add More</a><a href="<?php echo PROJECT_URL;?>/?page=plan_list" class="bluecolor smallbtn">View All</a></div>
                                     <div class="clear"></div>
                                     <?php
-                                    $dataArrs = $db_obj->getAllActivePlanSuAdmin("p.id,p.name,(case when p.status='1' Then 'active' when  p.status='0' then 'deactive' end) as status,c.name as cat_name","p.is_deleted='0' and p.added_by='".$_SESSION['user_detail']['user_id']."'",$orderby='p.id desc',$limit='limit 0,5'); 
+                                    $dataArrs = $db_obj->getAllActivePlanSuAdmin("p.id,p.name,(case when p.status='1' Then 'active' when p.status='0' then 'deactive' end) as status,c.name as cat_name","p.is_deleted='0' and p.added_by='".$_SESSION['user_detail']['user_id']."'",$orderby='p.id desc',$limit='limit 0,5');                                    
                                     ?>
                                     <ul>
                                         <?php
@@ -74,10 +72,10 @@
                                                 $color = '';
                                                 switch ($dataArr->status)
                                                 {
-                                                    case 'active': 
+                                                    case 'active':
                                                         $color = 'green';
                                                         break;
-                                                    case 'deactive': 
+                                                    case 'deactive':
                                                         $color = 'red';
                                                         break;
                                                     default:

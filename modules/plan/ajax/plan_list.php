@@ -14,6 +14,7 @@ extract($_POST);
 
 //Columns to fetch from database
 $aColumns = array('id', 'name', 'description', 'no_of_client', 'plan_category', 'plan_price', 'visible', 'status');
+$aSearchColumns = array('name', 'description', 'no_of_client', 'plan_category', 'plan_price', 'visible', 'status');
 $sIndexColumn = "id";
 
 /* DB table to use */
@@ -50,17 +51,17 @@ if (isset($_POST['iSortCol_0'])) {
  * word by word on any field. It's possible to do here, but concerned about efficiency
  * on very large tables, and MySQL's regex functionality is very limited
  */
-if($_SESSION['user_detail']['user_group']=='1')
-{
-    $spWhere = " where is_deleted='0'";
+if($_SESSION['user_detail']['user_group']=='1'){
+    $spWhere = " where is_deleted='0' ";
+} else {
+    $spWhere = " where is_deleted='0' and added_by='".$_SESSION['user_detail']['user_id']."' ";
 }
-else
-{
-    $spWhere = " where is_deleted='0' and added_by='".$_SESSION['user_detail']['user_id']."'";
-}
+
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
-    for ($i = 0; $i < count($aColumns1); $i++) {
-        $spWhere .= $aColumns1[$i] . " LIKE '%" . utf8_encode(htmlentities($_POST['sSearch'],ENT_COMPAT,'utf-8')) . "%' OR ";
+    
+    $spWhere .= 'AND (';
+    for ($i = 0; $i < count($aSearchColumns); $i++) {
+        $spWhere .= $aSearchColumns[$i] . " LIKE '%" . utf8_encode(htmlentities($_POST['sSearch'],ENT_COMPAT,'utf-8')) . "%' OR ";
     }
     $spWhere = substr_replace($spWhere, "", -3);
     $spWhere .= ')';
@@ -68,11 +69,14 @@ if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
 
 /* Individual column filtering */
 for ($i = 0; $i < count($aColumns); $i++) {
-    if (isset($_POST['bSearchable_' . $i]))
+    
+    if (isset($_POST['bSearchable_' . $i])) {
+        
         if ((isset($_POST['bSearchable_' . $i]) && $_POST['bSearchable_' . $i] == "true") && (isset($_POST['sSearch_' . $i]) && $_POST['sSearch_' . $i] != '')) {
             $spWhere .= " AND ";
             $spWhere .= $aColumns[$i] . " LIKE '%" . $obj_plan->escape($_POST['sSearch_' . $i]) . "%' ";
         }
+    }
 }
 
 /*

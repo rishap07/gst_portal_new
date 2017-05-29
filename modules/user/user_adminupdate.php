@@ -129,7 +129,7 @@ if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editAdmin
                             <label>No Of Client<span class="starred">*</span></label>
                             <input type="text" name="no_of_client" id="no_of_client" placeholder="Enter no of client" class="required" data-bind="number" value="<?php if(isset($_POST['no_of_client'])){ echo $_POST['no_of_client']; } else if(isset($dataArr['data']->no_of_client)){ echo $dataArr['data']->no_of_client; } ?>" />
                         </div>
-                        <div class="clear"></div>                        
+                        <div class="clear"></div>
 
                         <div class="formcol">
                             <label>Status<span class="starred">*</span></label>
