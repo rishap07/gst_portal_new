@@ -365,7 +365,7 @@ class db {
                 $sql .= ' WHERE ' . $where;
             }
         }
-//	echo $sql; 	
+	echo $sql; 	
 //        die();
         $query = $this->query($sql);
 

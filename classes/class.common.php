@@ -199,9 +199,7 @@ class common extends db {
         }
 
         $finalstring = $prefix . $randomString;
-
         $sql_arr = $this->findAll($tablename, $column . '="' . $finalstring . '"', $params = '', $group_by = '', $order_by = '', $limit = '', $offset = '');
-
 
         if (count($sql_arr) > 0) {
             $this->generateRandomString($length, $tablename, $column, $prefix = '');
@@ -209,18 +207,40 @@ class common extends db {
             return $finalstring;
         }
     }
+    
+    public function generateSubscriberRandomCode($length, $tablename, $column, $prefix = '') {
+
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+
+        $finalstring = $prefix . $randomString;
+        $sql_arr = $this->findAll($tablename, $column . '="' . $finalstring . '"', $params = '', $group_by = '', $order_by = '', $limit = '', $offset = '');
+
+        if (count($sql_arr) > 0) {
+            $this->generateSubscriberRandomCode($length, $tablename, $column, $prefix = '');
+        } else {
+            return $finalstring;
+        }
+    }
 
     function generateRandomNumber($length, $tablename, $column, $prefix = '') {
+        
         $characters = '0123456789';
         $charactersLength = strlen($characters);
         $randomString = '';
         for ($i = 0; $i < $length; $i++) {
             $randomString .= $characters[rand(0, $charactersLength - 1)];
         }
+        
         $finalstring = $prefix . $randomString;
         $sql_arr = $this->findAll($tablename, $column . '="' . $finalstring . '"', $params = '', $group_by = '', $order_by = '', $limit = '', $offset = '');
+        
         if (count($sql_arr) > 0) {
-            $this->generateRandomString($length, $tablename, $column, $prefix = '');
+            $this->generateRandomNumber($length, $tablename, $column, $prefix = '');
         } else {
             return $finalstring;
         }

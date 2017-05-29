@@ -13,11 +13,14 @@
 class validation extends upload {
     protected $tableNames = array();
     public function __construct() {
+        
         parent::__construct();
+        
         $this->tableNames = array(
             'state' => TAB_PREFIX . 'state',
             'user' => TAB_PREFIX . 'user',
             'user_group' => TAB_PREFIX . 'user_group',
+            'user_subscribed_plan' => TAB_PREFIX . 'user_subscribed_plan',
             'preserve_user' => TAB_PREFIX . 'user_preserve',
             'subscriber_plan_category' => TAB_PREFIX . 'subscriber_plan_category',
             'subscriber_plan' => TAB_PREFIX . 'subscriber_plan',
@@ -25,11 +28,16 @@ class validation extends upload {
             'receiver' => TAB_PREFIX . 'master_receiver',
             'supplier' => TAB_PREFIX . 'master_supplier',
             'item' => TAB_PREFIX . 'master_item',
+            'user_role' => TAB_PREFIX . 'user_role',
+            'user_group' => TAB_PREFIX . 'user_group',
         );
+        
+        $this->checkUserAccess();
     }
-
+    
+    /*[a-zA-Z\d]+[(_{1}\-{1}\.{1})][a-zA-Z\d]*/
     protected $validateType = array(
-        "username" => "[a-zA-Z\d]+[(_{1}\-{1}\.{1})][a-zA-Z\d]",
+        "username" => "[a-zA-Z\d]+[(_{1}\-{1}\.{1})|(a-zA-Z\d)][a-zA-Z\d]",
         "alphanumeric" => "A-Za-z0-9\n\r\&\/\-\(\)\,\.",
         "mobilenumber" => "\d{10}",
         "content" => "^\\\"<>|",
@@ -65,6 +73,7 @@ class validation extends upload {
         'plandelete' => 'Plan deleted successfully.',
         'planexist' => 'Plan exist.',
         'noplanexist' => 'Plan doesn\'t exist.',
+        'plansubscribed' => 'Plan subscribed successfully.',
         'enablecookie' => 'Please enable your cookies.',
         'apiDataBlank' => 'Enter all mandatory fields.',
         'invalidHashCode' => 'Invalid Hash Code generated.',
@@ -77,9 +86,41 @@ class validation extends upload {
         return $this->tableNames[$tablename];
     }
     
+    public function checkUserAccess() {
+        
+        if( isset($_SESSION['user_detail']['user_id']) && $_SESSION['user_detail']['user_id'] != '' ) {
+        
+            $currentUserDetails = $this->getUserDetailsById( $_SESSION['user_detail']['user_id'] );
+            if($currentUserDetails['data']->user_group->id == 3 && $currentUserDetails['data']->user_group->group_name == "subscriber") {
+
+                if( isset($_GET['page']) && $_GET['page'] != "plan_chooseplan") {
+
+                    if($currentUserDetails['data']->plan_id == 0) {
+                        $this->redirect(PROJECT_URL . "?page=plan_chooseplan");
+                    }
+                }
+            }
+        }
+    }
+    
     public function getAdmin($is_deleted='0',$orderby='user_id desc',$limit='')
     {
         $query = "select user_id,first_name, last_name,user_group,username, (case when payment_status='0' Then 'pending' when  payment_status='1' then 'accepted' when  payment_status='2' then 'mark as fraud' when  payment_status='3' then 'rejected' when  payment_status='4' then 'refunded' end) as payment_status from ".$this->tableNames['user']." where  is_deleted='".$is_deleted."' and user_group='2' order by ".$orderby." ".$limit;
+        return $this->get_results($query);
+    }
+    
+    public function getPlanCategory($field = "*",$condition='',$orderby='id asc',$limit='',$group_by='')
+    {
+        $query = "select ".$field."  from ".$this->tableNames['subscriber_plan_category']." where 1=1 ";
+        if($condition !='')
+        {
+            $query .= " and ".$condition;
+        }
+        if($group_by !='')
+        {
+            $query .= " group by ".$group_by;
+        }
+        $query .= " order by ".$orderby." ".$limit;
         return $this->get_results($query);
     }
     
@@ -114,11 +155,9 @@ class validation extends upload {
         return $this->get_results($query);
     }
     
-    
-    public function getSubAdmin($is_deleted='0',$orderby='user_id desc',$limit='')
-    {
-       $query = "select user_id,first_name, last_name,user_group,username, (case when payment_status='0' Then 'pending' when  payment_status='1' then 'accepted' when  payment_status='2' then 'mark as fraud' when  payment_status='3' then 'rejected' when  payment_status='4' then 'refunded' end) as payment_status from ".$this->tableNames['user']." where  is_deleted='".$is_deleted."' and user_group='3' and added_by='".$_SESSION['user_detail']['user_id']."' order by ".$orderby." ".$limit;
+    public function getSubscriber($is_deleted='0',$orderby='user_id desc',$limit='') {
         
+        $query = "select user_id, first_name, last_name, user_group, username, (case when payment_status='0' Then 'pending' when  payment_status='1' then 'accepted' when  payment_status='2' then 'mark as fraud' when  payment_status='3' then 'rejected' when  payment_status='4' then 'refunded' end) as payment_status from ".$this->tableNames['user']." where  is_deleted='".$is_deleted."' and user_group='3' and added_by='".$_SESSION['user_detail']['user_id']."' order by ".$orderby." ".$limit;
         return $this->get_results($query);
     }
 }

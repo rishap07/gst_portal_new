@@ -103,6 +103,7 @@ class login extends validation {
         /* create insert array */
         $dataInsertArray['username'] = $dataArr['username'];
         $dataInsertArray['email'] = $dataArr['emailaddress'];
+        $dataInsertArray['subscriber_code'] = $this->generateSubscriberRandomCode(6, $this->tableNames['user'], "subscriber_code");
         $dataInsertArray['password'] = $this->password_encrypt($dataArr['password']); /* encrypt password */
         $dataInsertArray['added_date'] = date('Y-m-d H:i:s');
 

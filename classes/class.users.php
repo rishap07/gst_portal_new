@@ -10,7 +10,7 @@
  * 
  */
 
-class users extends validation {
+final class users extends validation {
     
     public function __construct() {
         parent::__construct();
@@ -22,6 +22,52 @@ class users extends validation {
         $this->pr( $dataArr );
         die;
     }*/
+    
+    public function addPlanToSubscriber() {
+                
+        $dataArr['plan_id'] = isset($_GET['plan_id']) ? $_GET['plan_id'] : '';
+        $dataArr['plan_start_date'] = date('Y-m-d H:i:s');
+        $dataArr['payment_status'] = "1";
+        $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
+        $dataArr['added_date'] = date('Y-m-d H:i:s');
+        
+        if (empty($dataArr)) {
+            $this->setError($this->validationMessage['mandatory']);
+            return false;
+        }
+
+        $planDetail = $this->getAllActivePlanSuAdmin("p.id,p.name,p.plan_category,p.plan_price,(case when p.status='1' Then 'active' when p.status='0' then 'deactive' end) as status,c.name as cat_name,c.month as month","p.id='".$dataArr['plan_id']."' and p.is_deleted='0'",$orderby='p.id asc');
+        $dataArr['plan_due_date'] = date('Y-m-d H:i:s', strtotime('+'.$planDetail['0']->month.' months'));
+        
+        if ($this->insert($this->tableNames['user_subscribed_plan'], $dataArr)) {
+            
+            $insertid = $this->getInsertID();
+            $this->logMsg("New Plan Subscribed Added. ID : " . $insertid . ".");
+            
+            $dataConditionArray['user_id'] = $_SESSION['user_detail']['user_id'];
+            $dataUpdateArr['payment_status'] = "1";
+            $dataUpdateArr['plan_id'] = $dataArr['plan_id'];
+            $dataUpdateArr['plan_start_date'] = date('Y-m-d H:i:s');
+            $dataUpdateArr['plan_due_date'] = $dataArr['plan_due_date'];
+            
+            if ($this->update($this->tableNames['user'], $dataUpdateArr, $dataConditionArray)) {
+                           
+                $this->setSuccess($this->validationMessage['plansubscribed']);
+                $this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " in User has been updated");
+                return true;
+            } else {
+                $this->setError($this->validationMessage['failed']);
+                return false;
+            }
+            
+        } else {
+            
+            $this->setError($this->validationMessage['failed']);
+            return false;
+        }
+        
+        return true;
+    }
     
     public function addAdminUser() {
         
@@ -167,125 +213,6 @@ class users extends validation {
         return true;
     }
         
-    public function addSubadminUser() {
-        
-        $dataArr['first_name'] = isset($_POST['first_name']) ? $_POST['first_name'] : '';
-        $dataArr['last_name'] = isset($_POST['last_name']) ? $_POST['last_name'] : '';
-        $dataArr['phone_number'] = isset($_POST['phonenumber']) ? $_POST['phonenumber'] : '';
-        $dataArr['username'] = isset($_POST['username']) ? $_POST['username'] : '';
-        $dataArr['password'] = isset($_POST['password']) ? $_POST['password'] : '';
-        $dataArr['email'] = isset($_POST['emailaddress']) ? $_POST['emailaddress'] : '';        
-        $dataArr['status'] = isset($_POST['user_status']) ? $_POST['user_status'] : '';
-        
-        if (empty($dataArr)) {
-            $this->setError($this->validationMessage['mandatory']);
-            return false;
-        }
-
-        if(!$this->validateSubadminUser($dataArr)){
-            return false;
-        }
-        $dataArr['username'] = $_SESSION['user_detail']['username']."_".$dataArr['username'];
-        if($this->checkUsernameExist($dataArr['username'])){
-            $this->setError($this->validationMessage['usernameexist']);
-            return false;
-        }
-        
-//        if($this->checkEmailAddressExist($dataArr['email'])){
-//            $this->setError($this->validationMessage['emailexist']);
-//            return false;
-//        }       
-        
-        $dataArr['password'] = $this->password_encrypt($dataArr['password']); /* encrypt password */
-        $dataArr['user_group'] = 3;
-        $dataArr['user_parent'] = $_SESSION['user_detail']['user_id'];
-        $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
-        $dataArr['added_date'] = date('Y-m-d H:i:s');
-        
-        if ($this->insert($this->tableNames['user'], $dataArr)) {
-            
-            $this->setSuccess($this->validationMessage['useradded']);
-            $insertid = $this->getInsertID();
-            $this->logMsg("New User Added. ID : " . $insertid . ".");
-            return true;
-        } else {
-            
-            $this->setError($this->validationMessage['failed']);
-            return false;
-        }
-        
-        return true;
-    }
-    
-    public function updateSubadminUser() {
-        
-        $dataArr['first_name'] = isset($_POST['first_name']) ? $_POST['first_name'] : '';
-        $dataArr['last_name'] = isset($_POST['last_name']) ? $_POST['last_name'] : '';
-        $dataArr['phone_number'] = isset($_POST['phonenumber']) ? $_POST['phonenumber'] : '';
-        
-        if(isset($_POST['password']) && $_POST['password'] != '') { $dataArr['password'] = isset($_POST['password']) ? $_POST['password'] : ''; }
-        
-        $dataArr['email'] = isset($_POST['emailaddress']) ? $_POST['emailaddress'] : '';
-        $dataArr['status'] = isset($_POST['user_status']) ? $_POST['user_status'] : '';
-        
-        if (empty($dataArr)) {
-            $this->setError($this->validationMessage['mandatory']);
-            return false;
-        }
-
-        if(!$this->validateSubadminUser($dataArr)){
-            return false;
-        }
-        
-        $dataArr['password'] = $this->password_encrypt($dataArr['password']); /* encrypt password */
-        $dataArr['user_group'] = 3;
-        $dataArr['user_parent'] = $_SESSION['user_detail']['user_id'];
-        $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
-        $dataArr['updated_date'] = date('Y-m-d H:i:s');
-
-        $dataConditionArray['user_id'] = $this->sanitize($_GET['id']);
-        if ($this->update($this->tableNames['user'], $dataArr, $dataConditionArray)) {
-            
-            $this->setSuccess($this->validationMessage['useredited']);
-            $this->logMsg("User ID : " . $_GET['id'] . " in User has been updated");
-            return true;            
-        } else {
-            
-            $this->setError($this->validationMessage['failed']);
-            return false;
-        }
-        
-        return true;
-    }
-    
-    public function validateSubadminUser($dataArr) {
-        
-        $rules = array(
-            'first_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:First Name',
-            'last_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Last Name',
-            'phone_number' => 'required||pattern:/^[' . $this->validateType['mobilenumber'] . ']+$/|#|lable_name:Phone Number',
-            'email' => 'required||email|#|lable_name:Email',
-            'status' => 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Status'
-        );
-
-        if( array_key_exists("username",$dataArr) ) {
-            $rules['username'] = 'required||pattern:/^' . $this->validateType['username'] . '+$/|#|lable_name:Username';
-        }
-
-        if( array_key_exists("password",$dataArr) ) {
-            $rules['password'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||min:8||max:20|#|lable_name:Password';
-        }
-
-        $valid = $this->vali_obj->validate($dataArr, $rules);
-        if ($valid->hasErrors()) {
-            $err_arr = $valid->allErrors();
-            $this->setError($err_arr);
-            $valid->clearMessages();
-            return false;
-        }
-        return true;
-    }
-
     public function deleteUser($userid = '') {
         
         $dataConditionArray['user_id'] = $userid;
@@ -352,4 +279,95 @@ class users extends validation {
         return $dataArr;
     }
 
+    
+    /*
+     * 
+     * Start : New Module of User Role
+     * Created by : Rishap (29th May 2017)
+     * 
+     */
+    
+    final public function addUserRole()
+    {
+        $dataArr = $this->getUserRoleData();
+        if (empty($dataArr)) {
+            $this->setError($this->validationMessage['mandatory']);
+            return false;
+        }
+        if(!$this->validateUserRole($dataArr))
+        {
+            return false;
+        }
+        $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
+        $dataArr['added_date'] = date('Y-m-d H:i:s');
+        if (!$this->insert($this->tableNames['user_role'], $dataArr)) {
+            $this->setError($this->validationMessage['failed']);
+            return false;
+        }
+        $this->setSuccess($this->validationMessage['inserted']);
+        $insertid = $this->getInsertID();
+        $this->logMsg("New User Role Added. ID : " . $insertid . ".");
+        return true;
+    }
+    
+    private function getUserRoleData()
+    {
+        $dataArr = array();
+        if(isset($_POST['submit']) && ($_POST['submit']=='submit' || ($_POST['submit']=='update' && isset($_GET['id']))))
+        {
+            $dataArr['role_name'] = isset($_POST['role_name']) ? $_POST['role_name'] : '';
+            $dataArr['role_page'] = isset($_POST['role_page']) ? $_POST['role_page'] : '';
+            $dataArr['role_description'] = isset($_POST['role_description']) ? $_POST['role_description'] : '';
+            $dataArr['status'] = isset($_POST['status']) ? $_POST['status'] : '';
+        }
+        return $dataArr;
+    }
+    
+    private function validateUserRole($dataArr) 
+    {
+        $rules = array(
+            'role_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Role Name',
+            'role_page' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Page Name',
+            'role_description' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Role Description',
+            'status' => 'required||numeric|#|lable_name:Status'
+        );
+        $valid = $this->vali_obj->validate($dataArr, $rules);
+        if ($valid->hasErrors()) {
+            $err_arr = $valid->allErrors();
+            $this->setError($err_arr);
+            $valid->clearMessages();
+            return false;
+        }
+        return true;
+    }
+    
+    final public function updateUserRole()
+    {
+        $dataArr = $this->getUserRoleData();
+        if (empty($dataArr)) {
+            $this->setError($this->validationMessage['mandatory']);
+            return false;
+        }
+        if(!$this->validateUserRole($dataArr))
+        {
+            return false;
+        }
+        $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
+        $dataArr['updated_date'] = date('Y-m-d H:i:s');
+        if (!$this->update($this->tableNames['user_role'], $dataArr, array('user_role_id'=>$this->sanitize($_GET['id'])))) {
+            $this->setError($this->validationMessage['failed']);
+            return false;
+        }
+        $this->logMsg("User Role ID : " . $_GET['id'] . " in User Role Module has been updated");
+        $this->setSuccess($this->validationMessage['update']);
+        return true;
+    }
+    
+    
+    /*
+     * 
+     * End of User Role Module
+     * 
+     */
+    
 }
