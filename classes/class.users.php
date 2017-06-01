@@ -16,26 +16,20 @@ final class users extends validation {
         parent::__construct();
     }
     
-    /*public function checkCurrentUser() {
-        
-        $dataArr = $this->getUserDetailsById( $_SESSION['user_detail']['user_id'] );
-        $this->pr( $dataArr );
-        die;
-    }*/
-    
     public function addPlanToSubscriber() {
                 
         $dataArr['plan_id'] = isset($_GET['plan_id']) ? $_GET['plan_id'] : '';
         $dataArr['plan_start_date'] = date('Y-m-d H:i:s');
         $dataArr['payment_status'] = "1";
         $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
-        $dataArr['added_date'] = date('Y-m-d H:i:s');
+        $dataArr['added_date'] = date('Y-m-d H:i:s');     
         
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
         }
-
+           
+        /* get plan details */
         $planDetail = $this->getAllActivePlanSuAdmin("p.id,p.name,p.plan_category,p.plan_price,(case when p.status='1' Then 'active' when p.status='0' then 'deactive' end) as status,c.name as cat_name,c.month as month","p.id='".$dataArr['plan_id']."' and p.is_deleted='0'",$orderby='p.id asc');
         $dataArr['plan_due_date'] = date('Y-m-d H:i:s', strtotime('+'.$planDetail['0']->month.' months'));
         
@@ -45,6 +39,7 @@ final class users extends validation {
             $this->logMsg("New Plan Subscribed Added. ID : " . $insertid . ".");
             
             $dataConditionArray['user_id'] = $_SESSION['user_detail']['user_id'];
+            $dataUpdateArr['no_of_client'] = $planDetail['0']->no_of_client;
             $dataUpdateArr['payment_status'] = "1";
             $dataUpdateArr['plan_id'] = $dataArr['plan_id'];
             $dataUpdateArr['plan_start_date'] = date('Y-m-d H:i:s');
@@ -66,6 +61,82 @@ final class users extends validation {
             return false;
         }
         
+        return true;
+    }
+    
+    public function saveUserThemeSetting() {
+
+        //$dataArr['theme_logo'] = isset($_FILES['theme_logo']['name']) ? $_FILES['theme_logo']['name'] : '';
+        $dataArr['theme_style'] = isset($_POST['theme_style']) ? $_POST['theme_style'] : 'theme-color.css';
+
+        if (empty($dataArr)) {
+            $this->setError($this->validationMessage['mandatory']);
+            return false;
+        }
+        
+        if(!$this->validateThemeSetting($dataArr)){
+            return false;
+        }
+        
+        if( $_FILES['theme_logo']['name'] != '' ) {
+            
+            $theme_logo = $this->imageUploads($_FILES['theme_logo'], 'theme-logo', 'upload', $this->allowImageExt, 1048576, 'Max file Size 1 MB');
+            if ($theme_logo == FALSE) {
+                return false;
+            } else {
+                $dataArr['theme_logo'] = $theme_logo;
+            }
+        }
+        
+        if($this->checkUserThemeSettingExist($_SESSION['user_detail']['user_id'])) {
+            
+            $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
+            $dataArr['updated_date'] = date('Y-m-d H:i:s');
+
+            $dataConditionArray['added_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);
+            if ($this->update($this->tableNames['user_theme_setting'], $dataArr, $dataConditionArray)) {
+
+                $this->setSuccess($this->validationMessage['themesettingsaved']);
+                $this->logMsg("Theme Setting ID : " . $_SESSION['user_detail']['user_id'] . " in theme setting has been updated.");
+                return true;            
+            } else {
+
+                $this->setError($this->validationMessage['failed']);
+                return false;
+            }
+        } else {
+            
+            $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
+            $dataArr['added_date'] = date('Y-m-d H:i:s');
+
+            if ($this->insert($this->tableNames['user_theme_setting'], $dataArr)) {
+
+                $this->setSuccess($this->validationMessage['themesettingsaved']);
+                $insertid = $this->getInsertID();
+                $this->logMsg("New Theme Setting Added. ID : " . $insertid . ".");
+                return true;
+            } else {
+                $this->setError($this->validationMessage['failed']);
+                return false;
+            }
+        }
+    }
+    
+    public function validateThemeSetting($dataArr) {
+        
+        $rules = array('theme_style' => 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Theme Style');
+        
+        if( array_key_exists("theme_logo",$dataArr) ) {
+            $rules['theme_logo'] = 'image|#|lable_name:Theme Logo';
+        }
+
+        $valid = $this->vali_obj->validate($dataArr, $rules);
+        if ($valid->hasErrors()) {
+            $err_arr = $valid->allErrors();
+            $this->setError($err_arr);
+            $valid->clearMessages();
+            return false;
+        }
         return true;
     }
     
@@ -193,7 +264,7 @@ final class users extends validation {
             return false;
         }
         
-        $dataArr['password'] = $this->password_encrypt($dataArr['password']); /* encrypt password */
+        if(isset($dataArr['password']) && $dataArr['password'] != '') { $dataArr['password'] = $this->password_encrypt($dataArr['password']); } /* encrypt password */
         $dataArr['user_group'] = 2;
         $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['updated_date'] = date('Y-m-d H:i:s');
@@ -212,7 +283,84 @@ final class users extends validation {
         
         return true;
     }
+    
+    public function updateSubscriberUser() {
         
+        $dataArr['first_name'] = isset($_POST['first_name']) ? $_POST['first_name'] : '';
+        $dataArr['last_name'] = isset($_POST['last_name']) ? $_POST['last_name'] : '';
+        
+        if(isset($_POST['password']) && $_POST['password'] != '') { $dataArr['password'] = isset($_POST['password']) ? $_POST['password'] : ''; }
+        
+        $dataArr['email'] = isset($_POST['emailaddress']) ? $_POST['emailaddress'] : '';
+        $dataArr['company_name'] = isset($_POST['company_name']) ? $_POST['company_name'] : '';
+        $dataArr['company_code'] = isset($_POST['company_code']) ? $_POST['company_code'] : '';        
+        $dataArr['phone_number'] = isset($_POST['phonenumber']) ? $_POST['phonenumber'] : '';
+        $dataArr['status'] = isset($_POST['user_status']) ? $_POST['user_status'] : '';
+        
+        if (empty($dataArr)) {
+            $this->setError($this->validationMessage['mandatory']);
+            return false;
+        }
+
+        if(!$this->validateSubscriberUser($dataArr)){
+            return false;
+        }
+        
+        if($this->checkEmailAddressExist($dataArr['email'], $this->sanitize($_SESSION['user_detail']['user_id']))){
+            $this->setError($this->validationMessage['emailexist']);
+            return false;
+        }
+        
+        if($this->checkCompanyCodeExist($dataArr['company_code'], $this->sanitize($_SESSION['user_detail']['user_id']))){
+            $this->setError($this->validationMessage['companycodeexist']);
+            return false;
+        }
+        
+        if(isset($dataArr['password']) && $dataArr['password'] != '') { $dataArr['password'] = $this->password_encrypt($dataArr['password']); } /* encrypt password */
+        $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
+        $dataArr['updated_date'] = date('Y-m-d H:i:s');
+
+        $dataConditionArray['user_id'] = $this->sanitize($_SESSION['user_detail']['user_id']);
+        if ($this->update($this->tableNames['user'], $dataArr, $dataConditionArray)) {
+            
+            $this->setSuccess($this->validationMessage['profileupdated']);
+            $this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " has been updated");
+            return true;
+        } else {
+            
+            $this->setError($this->validationMessage['failed']);
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public function validateSubscriberUser($dataArr) {
+        
+        $rules = array(
+            'first_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:First Name',
+            'last_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Last Name',
+            'email' => 'required||email|#|lable_name:Email',
+            'company_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Company Name',
+            'company_code' => 'required||pattern:/^[' . $this->validateType['alphanumeric'] . ']+$/|#|lable_name:Company Code',
+            'phone_number' => 'required||pattern:/^[' . $this->validateType['mobilenumber'] . ']+$/|#|lable_name:Phone Number',
+            'status' => 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Status'
+        );
+
+        if( array_key_exists("password",$dataArr) ) {
+            $rules['password'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||min:8||max:20|#|lable_name:Password';
+        }
+
+        $valid = $this->vali_obj->validate($dataArr, $rules);
+        if ($valid->hasErrors()) {
+            $err_arr = $valid->allErrors();
+            $this->setError($err_arr);
+            $valid->clearMessages();
+            return false;
+        }
+        return true;
+    }
+    
     public function deleteUser($userid = '') {
         
         $dataConditionArray['user_id'] = $userid;

@@ -119,6 +119,9 @@ class login extends validation {
                     $_SESSION['user_detail']['user_id'] = $userData['data']->user_id;
                     $_SESSION['user_detail']['username'] = $userData['data']->username;
                     $_SESSION['user_detail']['email'] = $userData['data']->email;
+                    $_SESSION['user_detail']['name'] = $userData['data']->first_name .' '. $userData['data']->last_name;
+                    $_SESSION['user_detail']['user_group'] = $userData['data']->user_group;
+                    
                     return true;
                 } else {
                     return false;
@@ -128,6 +131,8 @@ class login extends validation {
             $_SESSION['user_detail']['user_id'] = $userData['data']->user_id;
             $_SESSION['user_detail']['username'] = $userData['data']->username;
             $_SESSION['user_detail']['email'] = $userData['data']->email;
+            $_SESSION['user_detail']['name'] = $userData['data']->first_name .' '. $userData['data']->last_name;
+            $_SESSION['user_detail']['user_group'] = $userData['data']->user_group;
             return true;
         } else {
             $this->setError($this->validationMessage['failed']);

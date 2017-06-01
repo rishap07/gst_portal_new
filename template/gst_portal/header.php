@@ -50,7 +50,7 @@
         <div class="adminpanelbody greycolorbg">
             <div class="headertop orangebg">
                 <div class="logo">
-                    <a href="index.php"><img src="image/logo2.png" title="logo" alt="logo" /></a>
+                    <a href="<?php echo PROJECT_URL . "?page=dashboard"; ?>"><img src="image/logo2.png" title="logo" alt="logo" /></a>
                 </div>
                 <div class="topnav">
                     <ul class="topstripnav">

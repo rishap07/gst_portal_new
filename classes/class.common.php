@@ -488,14 +488,20 @@ class common extends db {
     /* Get user details by user id */
     public function getUserDetailsById($user_id = '') {
 
-        $data = $this->get_row("select * from " . $this->tableNames['user'] . " where user_id = '" . $user_id . "'");
+        $data = $this->get_row("select *, CONCAT(first_name,' ',last_name) as name from " . $this->tableNames['user'] . " where user_id = '" . $user_id . "'");
         $dataArr = array();
         if (!empty($data)) {
             
             $groupDetails = $this->getUserGroupDetailsById( $data->user_group );
             if($groupDetails['status'] == "success") {
                 $data->user_group = $groupDetails['data'];
-            }           
+            }
+            
+            $kycDetails = $this->getClientKYCDetailsById( $data->user_id );
+            $data->kyc = $kycDetails['data'];
+            
+            $gstnDetails = $this->getClientGSTNDetailsById( $data->user_id );
+            $data->gstn = $gstnDetails['data'];
 
             $dataArr['data'] = $data;
             $dataArr['message'] = $this->validationMessage['userexist'];
@@ -503,6 +509,36 @@ class common extends db {
         } else {
             $dataArr['data'] = '';
             $dataArr['message'] = $this->validationMessage['usernotexist'];
+            $dataArr['status'] = 'error';
+        }
+
+        return $dataArr;
+    }
+    
+    public function getClientKYCDetailsById($user_id = '') {
+
+        $data = $this->get_row("select * from " . $this->tableNames['client_kyc'] . " where 1=1 AND added_by = " . $user_id);
+        $dataArr = array();
+        if (!empty($data)) {
+            $dataArr['data'] = $data;
+            $dataArr['status'] = 'success';
+        } else {
+            $dataArr['data'] = '';
+            $dataArr['status'] = 'error';
+        }
+
+        return $dataArr;
+    }
+    
+    public function getClientGSTNDetailsById($user_id = '') {
+
+        $data = $this->get_row("select * from " . $this->tableNames['client_gstn_detail'] . " where 1=1 AND added_by = " . $user_id);
+        $dataArr = array();
+        if (!empty($data)) {
+            $dataArr['data'] = $data;
+            $dataArr['status'] = 'success';
+        } else {
+            $dataArr['data'] = '';
             $dataArr['status'] = 'error';
         }
 
@@ -547,7 +583,7 @@ class common extends db {
     
     public function checkCompanyCodeExist($company_code, $user_id = '') {
         
-         if($user_id && $user_id != '') {
+        if($user_id && $user_id != '') {
             $companyCode = $this->get_row("select * from " . $this->tableNames['user'] ." where 1=1 AND user_id != ".$user_id." AND UPPER(company_code) = '" . strtoupper($company_code) . "'");
         } else {
             $companyCode = $this->get_row("select * from " . $this->tableNames['user'] . " where 1=1 AND UPPER(company_code) = '" . strtoupper($company_code) . "'");
@@ -556,6 +592,42 @@ class common extends db {
         if (count($companyCode) == 1) {
             return true;
         }
+    }
+    
+    public function checkUserThemeSettingExist($user_id = '') {
+
+        $checkSetting = $this->get_row("select * from " . $this->tableNames['user_theme_setting'] . " where 1=1 AND added_by = " . $user_id);
+        if (count($checkSetting) == 1) {
+            return true;
+        }
+    }
+    
+    public function checkGSTNNumberExist($gstnnumber, $user_id = '') {
+
+        if($user_id && $user_id != '') {
+            $numberGSTN = $this->get_row("select * from " . $this->tableNames['client_gstn_detail'] ." where 1=1 AND added_by != ".$user_id." AND UPPER(gstn_number) = '" . strtoupper($gstnnumber) . "'");
+        } else {
+            $numberGSTN = $this->get_row("select * from " . $this->tableNames['client_gstn_detail'] . " where 1=1 AND UPPER(gstn_number) = '" . strtoupper($gstnnumber) . "'");
+        }
+        
+        if (count($numberGSTN) == 1) {
+            return true;
+        }
+    }
+    
+    public function getUserThemeSetting($user_id = '') {
+
+        $data = $this->get_row("select * from " . $this->tableNames['user_theme_setting'] . " where 1=1 AND added_by = " . $user_id);
+        $dataArr = array();
+        if (!empty($data)) {
+            $dataArr['data'] = $data;
+            $dataArr['status'] = 'success';
+        } else {
+            $dataArr['data'] = '';
+            $dataArr['status'] = 'error';
+        }
+
+        return $dataArr;
     }
     
     /* save cookies */

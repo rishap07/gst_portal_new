@@ -50,7 +50,7 @@ if (isset($_POST['iSortCol_0'])) {
  * on very large tables, and MySQL's regex functionality is very limited
  */
 //$sWhere = "WHERE is_deleted = '0' AND language_id = '".$_SESSION['lang_id']."' ";.
-$sWhere=" where r.is_deleted='0'";
+$sWhere=" where r.is_deleted='0' AND added_by = '".$_SESSION['user_detail']['user_id']."'";
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
     for ($i = 0; $i < count($aColumns1); $i++) {
         $sWhere .= $aColumns1[$i] . " LIKE '%" . utf8_encode(htmlentities($_POST['sSearch'],ENT_COMPAT,'utf-8')) . "%' OR ";

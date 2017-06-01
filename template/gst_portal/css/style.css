@@ -173,7 +173,7 @@ p, ul { margin:0px; padding:0px;}
 .report-design table tr td:last-child{width:180px;}
 .admintxt label{display:none;}
 .slimScrollDiv{height:auto !important;}
-.migratecol a { font-size:22px; width:auto; float:left; display:inline-block; width:33.5%; text-transform:uppercase; border:1px solid #f8bda9; padding:30px 40px; margin:0px 40px 0 0; background:#fee7df; color:#e44a16; text-decoration:none; }
+.migratecol a { font-size:22px; width:auto; float:left; display:inline-block; /*width:33.5%;*/ width:16%; text-transform:uppercase; border:1px solid #f8bda9; padding:30px 40px; margin:0px 40px 0 0; background:#fee7df; color:#e44a16; text-decoration:none; }
 
 .migratecol a:hover { background:#e44a16; color:#FFF;}
 .migratecol input[type="radio"] { margin-right:10px; }

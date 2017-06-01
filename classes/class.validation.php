@@ -11,7 +11,10 @@
  */
 
 class validation extends upload {
+    
     protected $tableNames = array();
+    public $allowImageExt = array('image/gif', 'image/jpeg', 'image/jpg', 'image/png');
+
     public function __construct() {
         
         parent::__construct();
@@ -30,6 +33,9 @@ class validation extends upload {
             'item' => TAB_PREFIX . 'master_item',
             'user_role' => TAB_PREFIX . 'user_role',
             'user_group' => TAB_PREFIX . 'user_group',
+            'user_theme_setting' => TAB_PREFIX . 'user_theme_setting',
+            'client_kyc' => TAB_PREFIX . 'client_kyc',
+            'client_gstn_detail' => TAB_PREFIX . 'client_gstn_detail'
         );
         
         $this->checkUserAccess();
@@ -47,6 +53,7 @@ class validation extends upload {
         "alphaspace"=>"a-zA-Z\s",
         "integergreaterzero"=>"[1-9][0-9]",
         "decimalgreaterzero"=>"\s*(?=.*[1-9])\d*(?:\.\d{1,2})?\s",
+        "pancard"=>"(([A-Z]){5}([0-9]){4}([A-Z]){1})",
         "onlyzeroone"=>"01"
     );
 
@@ -62,6 +69,7 @@ class validation extends upload {
         'userexist' => 'User already exist.',
         'useradded' => 'User added successfully.',
         'useredited' => 'User updated successfully.',
+        'profileupdated' => 'Profile updated successfully.',
         'userdeleted' => 'User deleted successfully.',
         'categoryexist' => 'Category exist.',
         'nocategoryexist' => 'Category doesn\'t exist.',
@@ -78,7 +86,11 @@ class validation extends upload {
         'apiDataBlank' => 'Enter all mandatory fields.',
         'invalidHashCode' => 'Invalid Hash Code generated.',
         'api' => 'Invalid API access.',
-        'cookie_err' => 'Kindly enable cookie and session on browser.'
+        'cookie_err' => 'Kindly enable cookie and session on browser.',
+        'kycupdated' => 'KYC updated successfully.',
+        'gstnexist' => 'This GSTN number already associated with another client.',
+        'gstnupdated' => 'GSTN number updated successfully.',
+        'themesettingsaved' => 'Theme setting saved successfully.'
     );
     
     public function getTableName($tablename)
@@ -99,6 +111,14 @@ class validation extends upload {
                         $this->redirect(PROJECT_URL . "?page=plan_chooseplan");
                     }
                 }
+            } else if($currentUserDetails['data']->user_group->id == 4 && $currentUserDetails['data']->user_group->group_name == "client") {
+
+                if( isset($_GET['page']) && $_GET['page'] != "user_clientkycupdate") {
+
+                    if($currentUserDetails['data']->kyc == '') {
+                        $this->redirect(PROJECT_URL . "?page=user_clientkycupdate");
+                    }
+                }
             }
         }
     }
@@ -106,6 +126,21 @@ class validation extends upload {
     public function getAdmin($is_deleted='0',$orderby='user_id desc',$limit='')
     {
         $query = "select user_id,first_name, last_name,user_group,username, (case when payment_status='0' Then 'pending' when  payment_status='1' then 'accepted' when  payment_status='2' then 'mark as fraud' when  payment_status='3' then 'rejected' when  payment_status='4' then 'refunded' end) as payment_status from ".$this->tableNames['user']." where  is_deleted='".$is_deleted."' and user_group='2' order by ".$orderby." ".$limit;
+        return $this->get_results($query);
+    }
+    
+    public function getClient($field = "*",$condition='',$orderby='user_id desc',$limit='',$group_by='')
+    {
+        $query = "select ".$field."  from ".$this->tableNames['user']." where 1=1 ";
+        if($condition !='')
+        {
+            $query .= " and ".$condition;
+        }
+        if($group_by !='')
+        {
+            $query .= " group by ".$group_by;
+        }
+        $query .= " order by ".$orderby." ".$limit;        
         return $this->get_results($query);
     }
     

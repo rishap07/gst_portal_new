@@ -6,7 +6,7 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
 }
 
 if( isset($_GET['plan_id']) && $obj_users->validateId($_GET['plan_id']) ) {
-    
+        
     if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])) {
         $obj_users->setError('Invalid access to files');
     } else {
