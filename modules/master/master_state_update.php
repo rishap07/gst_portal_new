@@ -1,7 +1,25 @@
 <?php
 $obj_master = new master();
+if(!$obj_master->can_create('master_state') && !isset($_GET['id']))
+{
+    $obj_master->setError($obj_master->getValMsg('can_create'));
+    $obj_master->redirect(PROJECT_URL."/?page=master_state");
+    exit();
+}
+if(!$obj_master->can_update('master_state') && isset($_GET['id']))
+{
+    $obj_master->setError($obj_master->getValMsg('can_update'));
+    $obj_master->redirect(PROJECT_URL."/?page=master_state");
+    exit(); 
+}
 if(isset($_POST['submit']) && $_POST['submit']=='submit')
 {
+    if(!$obj_master->can_create('master_state'))
+    {
+        $obj_master->setError($obj_master->getValMsg('can_create'));
+        $obj_master->redirect(PROJECT_URL."/?page=master_state");
+        exit();
+    }
     if($obj_master->addState())
     {
         $obj_master->redirect(PROJECT_URL."/?page=master_state");
@@ -9,9 +27,14 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit')
 }
 if(isset($_POST['submit']) && $_POST['submit']=='update' && isset($_GET['id']))
 {
+    if(!$obj_master->can_update('master_state'))
+    {
+        $obj_master->setError($obj_master->getValMsg('can_update'));
+        $obj_master->redirect(PROJECT_URL."/?page=master_state");
+        exit(); 
+    }
     if($obj_master->updateState())
     {
-        
         $obj_master->redirect(PROJECT_URL."/?page=master_state");
     }
    

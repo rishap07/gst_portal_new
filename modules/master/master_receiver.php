@@ -1,5 +1,11 @@
 <?php
 $obj_master = new master();
+if(!$obj_master->can_read('master_receiver'))
+{
+    $obj_master->setError($obj_master->getValMsg('can_read'));
+    $obj_master->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
 ?>
 <div class="admincontainer greybg">
     <div class="formcontainer">

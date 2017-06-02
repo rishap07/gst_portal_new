@@ -43,8 +43,6 @@ if(isset($_GET['id']))
 {
     $dataArr = $obj_master->findAll($obj_master->getTableName('item'),"is_deleted='0' and item_id='".$obj_master->sanitize($_GET['id'])."'");
 }
-
-
 ?>
 <div class="admincontainer greybg">
     <div class="formcontainer">

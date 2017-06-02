@@ -116,6 +116,9 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
             }
         });
         
+        /* select2 js for item category */
+        $("#item_category").select2();
+        
         $('#submit').click(function () {
             var mesg = {};
             if (vali.validate(mesg,'client-item')) {

@@ -5,27 +5,6 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
     exit();
 }
 ?>
-<script type="text/javascript">
-    
-    $(document).ready(function() {
-        
-        $(".popupbtn").click(function() {
-            $("#popup").css({"display":"block"});
-            $("#fade").css({"display":"block"});
-        });
-        
-        $('#btnclose').click(function(){
-            $("#popup").hide();
-            $("#fade").hide();
-	});
-        
-        $("#btn").click(function() {
-            $("#show").slideToggle(500);
-            $(this).addClass("active");
-        });
-    });
-</script> 
-
 <!--POPUP START HERE-->
 <div style="display: none; position: fixed;" id="popup" class="formpopup topanimation">
     <div class="popupform">
@@ -70,8 +49,8 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
                 <div class="formcol two">
                     <label>Status<span class="starred">*</span></label>
                     <div class="clear"></div>
-                    <input type="radio" name="status" <?php if(isset($_POST['status']) &&  $_POST['status'] === '1'){ echo 'checked="checked"'; } ?> value="1" /><span>Active</span>
-                    <input type="radio" name="status" <?php if(isset($_POST['status']) &&  $_POST['status'] === '0'){ echo 'checked="checked"'; } ?> value="0" /><span>Inactive</span>
+                    <input type="radio" name="status" checked="checked" value="1" /><span>Active</span>
+                    <input type="radio" name="status" value="0" /><span>Inactive</span>
                 </div>
                 <div class="clear"></div>
                 
@@ -258,9 +237,9 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
                                     <th></th>
                                 </tr>
 
-                                <tr>
-                                    <td><input type="text" class="inptxt" value="1" style="width:20px;" /></td>
-                                    <td><input type="text" class="inptxt"  value="Harddisk"  style="width:120px;" /></td>
+                                <tr class="invoice_tr" data-row-id="1" id="invoice_tr_1">
+                                    <td><span style="width:20px;">1</span></td>
+                                    <td><input type="text" class="inptxt" placeholder="Harddisk" style="width:120px;" /></td>
                                     <td><input type="text" class="inptxt" value="HN001" style="width:50px;" /></td>
                                     <td><input type="text" class="inptxt" value="5" style="width:40px;" /></td>
                                     <td><input type="text" class="inptxt" value="15"  style="width:40px;" /></td>
@@ -358,6 +337,21 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
 
 <script>
     $(document).ready(function () {
+        
+        $(".popupbtn").click(function() {
+            $("#popup").css({"display":"block"});
+            $("#fade").css({"display":"block"});
+        });
+        
+        $('#btnclose').click(function(){
+            $("#popup").hide();
+            $("#fade").hide();
+	});
+        
+        $("#btn").click(function() {
+            $("#show").slideToggle(500);
+            $(this).addClass("active");
+        });
         
         /* invoice date */
         $("#invoice_date").datepicker({
