@@ -276,7 +276,7 @@ class db {
                     $query .= '), ';
                 }
                 $query = rtrim($query, ', ');
-                //echo $query; die();
+//                echo $query; die();
                 $this->query($query);
                 if ($this->link->error) {
                     $this->log_db_errors($this->link->error, $query);
@@ -405,7 +405,6 @@ class db {
             $query = '';
             $query .= 'UPDATE ' . $tableName . ' SET ';
             if (is_array($setdata['set'])) {
-                //echo __line__;
                 foreach ($setdata['set'] as $setCol => $setVal) {
                     $query .= $setCol . ' = "' . $this->sanitize($setVal) . '", ';
                 }

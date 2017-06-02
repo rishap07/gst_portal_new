@@ -1,40 +1,45 @@
 <?php
-$obj_master = new master();
- if(!$obj_master->can_read('master_item'))
-{
-    $obj_master->setError($obj_master->getValMsg('can_read'));
-    $obj_master->redirect(PROJECT_URL."/?page=dashboard");
+$obj_client = new client();
+if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '' ) {
+    $obj_client->redirect(PROJECT_URL);
     exit();
+}
+
+if( isset($_GET['action']) && $_GET['action'] == 'deleteItem' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
+        
+    if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
+        
+        $obj_client->setError('Invalid access to files');
+    } else {
+
+        if($obj_client->deleteClientItem($obj_client->sanitize($_GET['id']))){
+            $obj_client->redirect(PROJECT_URL."?page=client_item_list");
+        }
+    }
 }
 ?>
 <div class="admincontainer greybg">
     <div class="formcontainer">
         <div>
-            <a class='addnew' href='<?php echo PROJECT_URL;?>/?page=master_item_update'>Add New</a>
+            <a class='addnew' href='<?php echo PROJECT_URL;?>/?page=client_item_update'>Add New</a>
         </div>
         <h1>Item</h1>
         <hr class="headingborder">
         <h2 class="greyheading">Item Listing</h2>
         <div class="adminformbx">
-            <?php $obj_master->showErrorMessage(); ?>
-            <?php $obj_master->showSuccessMessge(); ?>
-            <?php $obj_master->unsetMessage(); ?>
+            <?php $obj_client->showErrorMessage(); ?>
+            <?php $obj_client->showSuccessMessge(); ?>
+            <?php $obj_client->unsetMessage(); ?>
             <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tablecontent" id="mainTable">
                 <thead>
                     <tr>
-                        <th align='left' width="72">Sr</th>
+                        <th align='left'>#</th>
                         <th align='left'>Item</th>
+                        <th align='left'>Category</th>
                         <th align='left'>HSN Code</th>
-                        
-                        <th align='left'>Unit Rate(Rs)</th>
-                        <th align='left'>IGST Tax Rate</th>
-                        <th align='left'>CSGT Tax Rate</th>
-                        
-                        <th align='left'>SGST Tax Rate</th>
-                        <th align='left'>Cess Tax Rate</th>
+                        <th align='left'>Unit Price(Rs)</th>
                         <th align='left'>Status</th>
-                        
-                        <th width="72">Action</th>
+                        <th align='left'>Action</th>
                     </tr>
                 </thead>
             </table>
@@ -42,16 +47,11 @@ $obj_master = new master();
     </div>
 </div>
 <script>
+    
     $(document).ready(function () {
         TableManaged.init();
-        $('#submit').click(function () {
-            var mesg = {};
-            if (vali.validate(mesg,'form')) {
-                return true;
-            }
-            return false;
-        });
     });
+    
     var TableManaged = function () {
         return {
             init: function () {
@@ -69,9 +69,6 @@ $obj_master = new master();
                         {"bSortable": false},
                         {"bSortable": false},
                         {"bSortable": false},
-                        {"bSortable": false},
-                        {"bSortable": false},
-                        {"bSortable": false},
                         {"bSortable": false}
                     ],
                     "sDom": "lfrtip",
@@ -83,7 +80,7 @@ $obj_master = new master();
                     "bServerSide": true,
                     "bStateSave": false,
                     "bDestroy": true,
-                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=master_item",
+                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=client_item_list",
                     "fnServerParams": function (aoData) {
                     },
                     "iDisplayLength": 50

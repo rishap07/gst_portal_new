@@ -33,18 +33,22 @@ class login extends validation {
         $server_output = json_decode($server_output);
         
         if (count($server_output) > 0) {
-            
             if (isset($server_output->msg) && $server_output->msg == 'success' && $server_output->code == '2') {
-                
-                $_SESSION['user_detail']['user_id'] = $server_output->data[0]->user_id;
-                $_SESSION['user_detail']['name'] = $server_output->data[0]->name;
-                $_SESSION['user_detail']['username'] = $server_output->data[0]->username;
-                $_SESSION['user_detail']['email'] = $server_output->data[0]->email;
-                $_SESSION['user_detail']['user_group'] = $server_output->data[0]->user_group;
-                
+                $_SESSION['user_detail']['user_id'] = $server_output->data->user[0]->user_id;
+                $_SESSION['user_detail']['name'] = $server_output->data->user[0]->name;
+                $_SESSION['user_detail']['username'] = $server_output->data->user[0]->username;
+                $_SESSION['user_detail']['email'] = $server_output->data->user[0]->email;
+                $_SESSION['user_detail']['user_group'] = $server_output->data->user[0]->user_group;
+                for($x=0;$x<count($server_output->data->user_permission);$x++)
+                {
+                    $_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_read']=$server_output->data->user_permission[$x]->can_read;
+                    $_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_create']=$server_output->data->user_permission[$x]->can_create;
+                    $_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_update']=$server_output->data->user_permission[$x]->can_update;
+                    $_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_delete']=$server_output->data->user_permission[$x]->can_delete;
+                }
                 if (isset($_POST['login_rememberme']) && $_POST['login_rememberme'] == 1) {
                     
-                    if ($this->setRememberMeCookie($server_output->data[0]->user_id)) {
+                    if ($this->setRememberMeCookie($server_output->data->user->user_id)) {
                         return true;
                     } else {
                         $this->setError($this->validationMessage['cookie_err']);

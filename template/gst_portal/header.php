@@ -10,6 +10,8 @@
         <link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/font-awesome.min.css" />
         <link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/datatables/media/css/jquery.dataTables.min.css" />
 		<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/jquery_ui/jquery-ui.css" />
+		<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/jquery-ui-timepicker/jquery-ui-timepicker-addon.css" />
+		<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/select2/select2.css" />
 
         <script src="<?php echo THEME_URL; ?>/js/jquery-3-2.js"></script>
         <script src="<?php echo THEME_URL; ?>/js/jquery.slimscroll.js"></script>
@@ -82,10 +84,10 @@
                     </li>
                     <li class="iconsetting"><a href="javascript:void(0)"><span class="iconpic"></span>Master <strong class="fa fa-plus" aria-hidden="true"></strong></a>
                         <ul class="inner-content-list">
-                            <li><a href="<?php echo PROJECT_URL;?>/?page=master_state">State</a></li>
+                            <?php if($db_obj->can_read('master_state')){?><li><a href="<?php echo PROJECT_URL;?>/?page=master_state">State</a></li><?php } ?>
                             <li><a href="<?php echo PROJECT_URL;?>/?page=master_receiver">Receiver</a></li>
                             <li><a href="<?php echo PROJECT_URL;?>/?page=master_supplier">Supplier</a></li>
-                            <li><a href="<?php echo PROJECT_URL;?>/?page=master_item">Item</a></li>
+                            <?php if($db_obj->can_read('master_state')){?><li><a href="<?php echo PROJECT_URL;?>/?page=master_item">Item</a></li><?php } ?>
                         </ul>
                     </li>
                     <li class="three"><a href="javascript:void(0)"><span class="iconpic"></span>Valuation<strong class="fa fa-plus" aria-hidden="true"></strong></a>

@@ -35,7 +35,10 @@ class validation extends upload {
             'user_group' => TAB_PREFIX . 'user_group',
             'user_theme_setting' => TAB_PREFIX . 'user_theme_setting',
             'client_kyc' => TAB_PREFIX . 'client_kyc',
-            'client_gstn_detail' => TAB_PREFIX . 'client_gstn_detail'
+            'client_gstn_detail' => TAB_PREFIX . 'client_gstn_detail',
+            'user_role_permission' => TAB_PREFIX . 'user_role_permission',
+            'client_master_item' => TAB_PREFIX . 'client_master_item',
+            'api' => TAB_PREFIX . 'api'
         );
         
         $this->checkUserAccess();
@@ -90,12 +93,25 @@ class validation extends upload {
         'kycupdated' => 'KYC updated successfully.',
         'gstnexist' => 'This GSTN number already associated with another client.',
         'gstnupdated' => 'GSTN number updated successfully.',
-        'themesettingsaved' => 'Theme setting saved successfully.'
+        'themesettingsaved' => 'Theme setting saved successfully.',
+        'iteminserted' => 'Item Inserted Successfully',
+        'itemupdated' => 'Item Updated Successfully',
+        'itemdeleted' => 'Item Deleted Successfully',
+        'can_read' => 'You are not authorised to access this module',
+        'can_create' => 'You are not authorised to add in this module',
+        'can_update' => 'You are not authorised to update in this module',
+        'can_delete' => 'You are not authorised to delete this module',
+        'update' => 'Updated Successfully',
+        'inserted' => 'Added Successfully',
     );
     
     public function getTableName($tablename)
     {
         return $this->tableNames[$tablename];
+    }
+    public function getValMsg($msg)
+    {
+        return $this->validationMessage[$msg];
     }
     
     public function checkUserAccess() {

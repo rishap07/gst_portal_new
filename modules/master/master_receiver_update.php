@@ -47,7 +47,7 @@ if(isset($_GET['id']))
                         </div>
                         <div class="formcol">
                             <label>State<span class="starred">*</span></label>
-                            <select name='state' id='state' name='state' class='required' placeholder="GSTID">
+                            <select name='state' id='state' class='required'>
                                 <?php
                                 $dataStateArrs = $obj_master->get_results("select * from ".$obj_master->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc");
                                 if(!empty($dataStateArrs))

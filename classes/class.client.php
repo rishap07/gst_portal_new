@@ -209,6 +209,114 @@ final class client extends validation {
         return true;
     }
     
+    public function addClientItem() {
+
+        $dataArr['item_name'] = isset($_POST['item_name']) ? $_POST['item_name'] : '';
+        $dataArr['item_category'] = isset($_POST['item_category']) ? $_POST['item_category'] : '';
+        $dataArr['unit_price'] = isset($_POST['unit_price']) ? $_POST['unit_price'] : '';
+        $dataArr['status'] = isset($_POST['status']) ? $_POST['status'] : '';
+        
+        if (empty($dataArr)) {
+            $this->setError($this->validationMessage['mandatory']);
+            return false;
+        }
+
+        if(!$this->validateClientItem($dataArr)){
+            return false;
+        }
+
+        $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
+        $dataArr['added_date'] = date('Y-m-d H:i:s');
+        
+        if ($this->insert($this->tableNames['client_master_item'], $dataArr)) {
+            
+            $this->setSuccess($this->validationMessage['iteminserted']);
+            $insertid = $this->getInsertID();
+            $this->logMsg("New Item Added. ID : " . $insertid . ".");
+            return true;
+        } else {
+            
+            $this->setError($this->validationMessage['failed']);
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public function updateClientItem() {
+        
+        $dataArr['item_name'] = isset($_POST['item_name']) ? $_POST['item_name'] : '';
+        $dataArr['item_category'] = isset($_POST['item_category']) ? $_POST['item_category'] : '';
+        $dataArr['unit_price'] = isset($_POST['unit_price']) ? $_POST['unit_price'] : '';
+        $dataArr['status'] = isset($_POST['status']) ? $_POST['status'] : '';
+        
+        if (empty($dataArr)) {
+            $this->setError($this->validationMessage['mandatory']);
+            return false;
+        }
+
+        if(!$this->validateClientItem($dataArr)){
+            return false;
+        }
+        
+        $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
+        $dataArr['updated_date'] = date('Y-m-d H:i:s');
+
+        $dataConditionArray['item_id'] = $this->sanitize($_GET['id']);
+        if ($this->update($this->tableNames['client_master_item'], $dataArr, $dataConditionArray)) {
+            
+            $this->setSuccess($this->validationMessage['itemupdated']);
+            $this->logMsg("Item ID : " . $_GET['id'] . " has been updated");
+            return true;
+        } else {
+            
+            $this->setError($this->validationMessage['failed']);
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public function validateClientItem($dataArr) {
+        
+        $rules = array(
+            'item_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Item Name',
+            'item_category' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Item Category',
+            'unit_price' => 'required||decimal|#|lable_name:Price',
+            'status' => 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Status'
+        );
+
+        $valid = $this->vali_obj->validate($dataArr, $rules);
+        if ($valid->hasErrors()) {
+            $err_arr = $valid->allErrors();
+            $this->setError($err_arr);
+            $valid->clearMessages();
+            return false;
+        }
+        return true;
+    }
+    
+    public function deleteClientItem($itemid = '') {
+        
+        $dataConditionArray['item_id'] = $itemid;
+        $dataUpdateArray['is_deleted'] = "1";
+        $dataUpdateArray['deleted_by'] = $_SESSION['user_detail']['user_id'];
+        $dataUpdateArray['deleted_date'] = date('Y-m-d H:i:s');
+        
+        if ($this->update($this->tableNames['client_master_item'], $dataUpdateArray, $dataConditionArray)) {
+            
+            $this->setSuccess($this->validationMessage['itemdeleted']);
+            $this->logMsg("Item ID : " . $itemid . " in Client Master Item has been deleted");
+            return true;
+        } else {
+            
+            $this->setError($this->validationMessage['failed']);
+            return false;
+        }
+        
+        return true;
+    }
+    
     public function addClientUser() {
 
         $dataArr['first_name'] = isset($_POST['first_name']) ? $_POST['first_name'] : '';

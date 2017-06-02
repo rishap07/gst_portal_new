@@ -7,6 +7,10 @@
                     <div class="clear height20"></div>
                     <div class="tc">
                         <div style="width:100%; margin:0 auto; min-height:220px; ">
+                            <?php $db_obj->showErrorMessage(); ?>
+                            <?php $db_obj->showSuccessMessge(); ?>
+                            <?php $db_obj->unsetMessage(); ?>
+                            <div class="clear"></div>
                             <div class="title"> Welcome <span><?php echo ucwords($_SESSION['user_detail']['name']);?></span></div>
                             <div class="sucess" style="padding:10px; font-size:15px;">Your 3 step Migration progress incompleted. Please complete your migration process shortly </div>
                             <div class="clear height20"></div>

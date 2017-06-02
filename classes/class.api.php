@@ -12,6 +12,7 @@
 
 final class api extends validation
 {
+    
     protected $validationMessage = array(
         'failed' => "Some error try again to submit.",
         'loginerror' => 'Username or Password Incorrect.',
@@ -51,16 +52,20 @@ final class api extends validation
         {
             return array('msg'=>$this->validationMessage['invalidHashCode'],'code'=>'1');
         }
-        $data = $this->findAll(TAB_PREFIX."api",array('remote_addr'=>$_SERVER['REMOTE_ADDR'],'api_code'=>$dataArr['api_code'],'api_user'=>$dataArr['api_user'],'status'=>'1','is_deleted'=>'0'));
-        if(empty($data))
+        $data1 = $this->findAll($this->tableNames["api"],array('remote_addr'=>$_SERVER['REMOTE_ADDR'],'api_code'=>$dataArr['api_code'],'api_user'=>$dataArr['api_user'],'status'=>'1','is_deleted'=>'0'));
+        if(empty($data1))
         {
             return array('msg'=>$this->validationMessage['api'],'code'=>'1');
         }
-        $data = $this->findAll(TAB_PREFIX."user",array('password'=>$this->password_encrypt($dataArr['password']),'username'=>$dataArr['username'],'status'=>'1','is_deleted'=>'0'),"user_id,concat(first_name,' ',last_name)as name,username,user_group,email,user_group");
+        $data['user'] = $this->findAll($this->tableNames["user"],array('password'=>$this->password_encrypt($dataArr['password']),'username'=>$dataArr['username'],'status'=>'1','is_deleted'=>'0'),"user_id,concat(first_name,' ',last_name)as name,username,user_group,email,user_group");
+        
         if(empty($data))
         {
             return array('msg'=>$this->validationMessage['loginerror'],'code'=>'1');
         }
+        $query = "select b.role_page,a.can_read,a.can_create,a.can_update,a.can_delete from ".$this->tableNames['user_role_permission']." a left join ".$this->tableNames['user_role']." b on a.role_id=b.user_role_id where a.group_id='".$data['user']['0']->user_group."' and a.is_deleted='0' and a.status='1'";
+        $data['user_permission'] = $this->get_results($query);
+        
         return array('data'=>$data,'msg'=>'success','code'=>'2');
     }
     

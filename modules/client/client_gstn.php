@@ -50,7 +50,7 @@ $dataArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['use
                         
                         <div class="formcol two">
                             <label>GSTN Issue Date<span class="starred">*</span></label>
-                            <input type="text" placeholder="dd/mm/yyyy" name="gstn_issue_date" id="gstn_issue_date" class="required" data-bind="date" value="<?php if(isset($_POST['gstn_issue_date'])){ echo $_POST['gstn_issue_date']; } else if(isset($dataArr['data']->gstn->gstn_issue_date)){ echo $dataArr['data']->gstn->gstn_issue_date; } ?>" />
+                            <input type="text" placeholder="yyyy-mm-dd" name="gstn_issue_date" id="gstn_issue_date" class="required" data-bind="date" value="<?php if(isset($_POST['gstn_issue_date'])){ echo $_POST['gstn_issue_date']; } else if(isset($dataArr['data']->gstn->gstn_issue_date)){ echo $dataArr['data']->gstn->gstn_issue_date; } ?>" />
                         </div>
                         
                         <div class="clear"></div>

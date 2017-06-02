@@ -518,4 +518,136 @@ final class users extends validation {
      * 
      */
     
+    
+    
+    /*
+     * 
+     * Start : New Module of User Group
+     * Created by : Rishap (1st June 2017)
+     * 
+     */
+    
+    private function addUserGroupPermission()
+    {
+        $dataArr = $this->getUserGroupPermissionData('submit');
+        if (empty($dataArr)) {
+            $this->setError($this->validationMessage['mandatory']);
+            return false;
+        }
+//        if(!$this->validateUserGroupPermission($dataArr))
+//        {
+//            return false;
+//        }
+        for($x=0;$x<count($dataArr);$x++)
+        {
+            $dataArr[$x]['group_id'] = $this->sanitize($_GET['id']);
+            
+            $dataArr[$x]['added_by'] = $_SESSION['user_detail']['user_id'];
+            $dataArr[$x]['added_date'] = date('Y-m-d H:i:s');
+        }
+        if (!$this->insertMultiple($this->tableNames['user_role_permission'], $dataArr)) {
+            $this->setError($this->validationMessage['failed']);
+            return false;
+        }
+        $this->setSuccess($this->validationMessage['inserted']);
+        $insertid = $this->getInsertID();
+        $this->logMsg("New User Group Permission Added. ID : " . $insertid . ".");
+        return true;
+    }
+    
+    private function getUserGroupPermissionData($type)
+    {
+        $dataArr = array();
+        if($type=='submit')
+        {
+            for($x=0;$x<count($_POST['user_role_id']);$x++)
+            {
+                $dataArr[$x]['role_id'] = isset($_POST['user_role_id'][$x]) ? $_POST['user_role_id'][$x] : '';
+                $dataArr[$x]['can_read'] = isset($_POST['view'][$_POST['user_role_id'][$x]]) ? $_POST['view'][$_POST['user_role_id'][$x]] : '0';
+                $dataArr[$x]['can_create'] = isset($_POST['create'][$_POST['user_role_id'][$x]]) ? $_POST['create'][$_POST['user_role_id'][$x]] : '0';
+                $dataArr[$x]['can_update'] = isset($_POST['update'][$_POST['user_role_id'][$x]]) ? $_POST['update'][$_POST['user_role_id'][$x]] : '0';
+                $dataArr[$x]['can_delete'] = isset($_POST['delete'][$_POST['user_role_id'][$x]]) ? $_POST['delete'][$_POST['user_role_id'][$x]] : '0';
+            }
+        }
+        else if($type=='update')
+        {
+            for($x=0;$x<count($_POST['user_role_id']);$x++)
+            {
+                $dataArr[$x]['set']['can_read'] = isset($_POST['view'][$_POST['user_role_id'][$x]]) ? $_POST['view'][$_POST['user_role_id'][$x]] : '0';
+                $dataArr[$x]['set']['can_create'] = isset($_POST['create'][$_POST['user_role_id'][$x]]) ? $_POST['create'][$_POST['user_role_id'][$x]] : '0';
+                $dataArr[$x]['set']['can_update'] = isset($_POST['update'][$_POST['user_role_id'][$x]]) ? $_POST['update'][$_POST['user_role_id'][$x]] : '0';
+                $dataArr[$x]['set']['can_delete'] = isset($_POST['delete'][$_POST['user_role_id'][$x]]) ? $_POST['delete'][$_POST['user_role_id'][$x]] : '0';
+            }
+        }
+        return $dataArr;
+    }
+    
+    private function validateUserGroupPermission($dataArr) 
+    {
+        for($x=0;$x<count($dataArr);$x++)
+        {
+            $rules = array(
+                'role_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Role Name',
+                'role_page' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Page Name',
+                'role_description' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Role Description',
+                'status' => 'required||numeric|#|lable_name:Status'
+            );
+            $valid = $this->vali_obj->validate($dataArr[$x], $rules);
+        }
+        if ($valid->hasErrors()) {
+            $err_arr = $valid->allErrors();
+            $this->setError($err_arr);
+            $valid->clearMessages();
+            return false;
+        }
+        return true;
+    }
+    
+    private function updateUserGroupPermission()
+    {
+        $dataArr = $this->getUserGroupPermissionData('update');
+        if (empty($dataArr)) {
+            $this->setError($this->validationMessage['mandatory']);
+            return false;
+        }
+//        if(!$this->validateUserGroupPermission($dataArr))
+//        {
+//            return false;
+//        }
+        for($x=0;$x<count($dataArr);$x++)
+        {
+            $dataArr[$x]['set']['updated_by'] = $_SESSION['user_detail']['user_id'];
+            $dataArr[$x]['set']['updated_date'] = date('Y-m-d H:i:s');
+            $dataArr[$x]['where']['group_id'] = $this->sanitize($_GET['id']);
+            $dataArr[$x]['where']['role_id'] = $this->sanitize($_POST['user_role_id'][$x]);
+        }
+        if (!$this->updateMultiple($this->tableNames['user_role_permission'], $dataArr)) {
+            $this->setError($this->validationMessage['failed']);
+            return false;
+        }
+        $this->logMsg("User Permission ID : " . $_GET['id'] . " in User Group Permission Module has been updated");
+        $this->setSuccess($this->validationMessage['update']);
+        return true;
+    }
+    
+    final public function userGroupPermission()
+    {
+        $data = $this->findAll($this->tableNames['user_role_permission'],'is_deleted="0"');
+        if(empty($data))
+        {
+            return $this->addUserGroupPermission();
+        }
+        else
+        {
+            return $this->updateUserGroupPermission();
+        }
+    }
+    
+    
+    /*
+     * 
+     * End of User Group Module
+     * 
+     */
+    
 }

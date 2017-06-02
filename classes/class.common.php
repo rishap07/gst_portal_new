@@ -630,6 +630,22 @@ class common extends db {
         return $dataArr;
     }
     
+    public function getMasterItems($field = "*", $condition='', $orderby='item_id asc', $limit='', $group_by='') {
+
+        $query = "select ".$field."  from ".$this->tableNames['item']." where 1=1 ";
+        
+        if($condition != '') {
+            $query .= " and ".$condition;
+        }
+        
+        if($group_by != '') {
+            $query .= " group by ".$group_by;
+        }
+        
+        $query .= " order by ".$orderby." ".$limit;        
+        return $this->get_results($query);
+    }
+    
     /* save cookies */
     public function saveCookie($name, $value, $days = 30, $path = '/') {
 
@@ -686,12 +702,49 @@ class common extends db {
     
     protected function hitCurl($url,$parameters)
     {
+        
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_POST, 1);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $parameters);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         $server_output = curl_exec ($curl);
-        curl_close ($curl);        
+        curl_close ($curl);
         return $server_output;
+    }
+    
+    public function can_read($page_name)
+    {
+        if(isset($_SESSION['user_role'][$page_name]['can_read']) && $_SESSION['user_role'][$page_name]['can_read']=='1')
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    public function can_create($page_name)
+    {
+        if(isset($_SESSION['user_role'][$page_name]['can_create']) && $_SESSION['user_role'][$page_name]['can_create']=='1')
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    public function can_update($page_name)
+    {
+        if(isset($_SESSION['user_role'][$page_name]['can_update']) && $_SESSION['user_role'][$page_name]['can_update']=='1')
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    public function can_delete($page_name)
+    {
+        if(isset($_SESSION['user_role'][$page_name]['can_delete']) && $_SESSION['user_role'][$page_name]['can_delete']=='1')
+        {
+            return true;
+        }
+        return false;
     }
 }

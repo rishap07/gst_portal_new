@@ -22,26 +22,6 @@ final class master extends validation {
         "decimalgreaterzero"=>"\s*(?=.*[1-9])\d*(?:\.\d{1,2})?\s",
         "onlyzeroone"=>"01"
     );
-
-    protected $validationMessage = array(
-        'mandatory'=> 'Fill all mandatory fields',
-        'inserted' => 'Added Successfully',
-        'update' => 'Updated Successfully',
-        'failed' => "Some error try again to submit.",
-        'loginerror' => 'Username or Password Incorrect.',
-        'passwordnotmatched' => 'Password not matched.',
-        'usernameexist' => 'Username already exist.',
-        'emailexist' => 'Email already exist.',
-        'usernotexist' => 'User not exist.',
-        'userexist' => 'User already exist.',
-        'categoryexist' => 'Category already exist.',
-        'plancategoryadd' => 'Plan Category added successfully.',
-        'planadd' => 'Plan added successfully.',
-        'enablecookie' => 'Please enable your cookies.',
-        'apiDataBlank' => 'Enter all mandatory fields.',
-        'invalidHashCode' => 'Invalid Hash Code generated.',
-        'api' => 'Invalid API access.'
-    );
     
     public function __construct() {
         parent::__construct();
