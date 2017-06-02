@@ -10,7 +10,7 @@ if(!$obj_master->can_update('master_item') && isset($_GET['id']))
 {
     $obj_master->setError($obj_master->getValMsg('can_update'));
     $obj_master->redirect(PROJECT_URL."/?page=master_item");
-    exit();
+    exit(); 
 }
 if(isset($_POST['submit']) && $_POST['submit']=='submit')
 {
