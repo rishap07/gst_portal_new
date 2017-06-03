@@ -56,7 +56,7 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
                 
                 <div class="formcol">
                     <div class="clear" style="height:40px;"></div>
-                    <input type='submit' class="btn orangebg" name='submit' value='SUBMIT' id='submit'>
+                    <input type='submit' class="btn orangebg" name='submit' value='SUBMIT' id='add-item-submit'>
                 </div>
             </form>
 
@@ -220,7 +220,7 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
                                     <th rowspan="2">Unit</th>
                                     <th rowspan="2">Rate <br/><span style="font-family: open_sans; font-size:11px;">per item</span></th>
                                     <th rowspan="2">Total</th>
-                                    <th rowspan="2">Discount</th>
+                                    <th rowspan="2">Discount(%)</th>
                                     <th rowspan="2">Taxable<br/>value</th>
                                     <th colspan="2" style="border-bottom:1px solid #808080;">CGST</th>
                                     <th colspan="2" style="border-bottom:1px solid #808080;">SGST</th>
@@ -228,35 +228,35 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
                                     <th style="border-bottom:1px solid #808080;"></th>
                                 </tr>
                                 <tr>
-                                    <th>Rate</th>
+                                    <th>Rate(%)</th>
                                     <th>Amount</th>
-                                    <th>Rate</th>
+                                    <th>Rate(%)</th>
                                     <th>Amount</th>
-                                    <th>Rate</th>
+                                    <th>Rate(%)</th>
                                     <th>Amount</th>
                                     <th></th>
                                 </tr>
 
                                 <tr class="invoice_tr" data-row-id="1" id="invoice_tr_1">
-                                    <td><span style="width:20px;">1</span></td>
-                                    <td><input type="text" class="inptxt" placeholder="Harddisk" style="width:120px;" /></td>
-                                    <td><input type="text" class="inptxt" value="HN001" style="width:50px;" /></td>
-                                    <td><input type="text" class="inptxt" value="5" style="width:40px;" /></td>
-                                    <td><input type="text" class="inptxt" value="15"  style="width:40px;" /></td>
-                                    <td><div class="inptxt padrgt0" style="width:70px;"><i class="fa fa-inr"></i><input type="text"value="1000" class="pricinput"  /></div></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" value="5000" class="pricinput"  /></div></td>
-                                    <td><input type="text" class="inptxt"  value="5%" style="width:90%;" /></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" value="5000" class="pricinput"  /></div></td>
-                                    <td><input type="text" class="inptxt" value="5%" style="width:40px;" /></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" value="5000" class="pricinput"  /></div></td>
-                                    <td><input type="text" class="inptxt "  value="18%" style="width:90%;" /></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" value="5000" class="pricinput"  /></div></td>
-                                    <td><input type="text" class="inptxt" value="18%" style="width:90%;" /></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" value="5000" class="pricinput"  /></div></td>
-                                    <td nowrap="nowrap" class="icon"><a href="#"><div class="tooltip"><i class="fa fa-plus-circle addicon"></i><span class="tooltiptext">Add More</span></div></a>  </td>
+                                    <td><span id="invoice_tr_1_serialno" style="width:20px;">1</span></td>
+                                    <td><input type="text" id="invoice_tr_1_itemname" class="inptxt required" placeholder="Enter Item" style="width:120px;" /></td>
+                                    <td><input type="text" id="invoice_tr_1_hsncode" readonly="true" class="inptxt readonly required" placeholder="HSN Code" style="width:50px;" /></td>
+                                    <td><input type="text" id="invoice_tr_1_quantity" class="required inptxt" placeholder="0" style="width:40px;" /></td>
+                                    <td><input type="text" id="invoice_tr_1_unit" class="required inptxt" placeholder="0" style="width:40px;" /></td>
+                                    <td><div class="inptxt padrgt0" style="width:70px;"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_rate" class="required pricinput" placeholder="0.00" /></div></td>
+                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_total" class="required readonly pricinput" placeholder="0.00" /></div></td>
+                                    <td><input type="text" class="inptxt" id="invoice_tr_1_discount" placeholder="0" style="width:90%;" /></td>
+                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_taxablevalue" class="required readonly pricinput" placeholder="0.00" /></div></td>
+                                    <td><input type="text" id="invoice_tr_1_cgstrate" class="required readonly inptxt" placeholder="6" style="width:40px;" /></td>
+                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_cgstamount" class="required readonly pricinput" placeholder="0.00" /></div></td>
+                                    <td><input type="text" id="invoice_tr_1_sgstrate" class="required readonly inptxt" placeholder="12" style="width:90%;" /></td>
+                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_sgstamount" class="required readonly pricinput" placeholder="0.00" /></div></td>
+                                    <td><input type="text" id="invoice_tr_1_igstrate" class="required readonly inptxt" placeholder="18" style="width:90%;" /></td>
+                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_igstamount" class="required readonly pricinput" placeholder="0.00" /></div></td>
+                                    <td nowrap="nowrap" class="icon"><a class="addMoreInvoice" href="javascript:void(0)"><div class="tooltip"><i class="fa fa-plus-circle addicon"></i><span class="tooltiptext">Add More</span></div></a></td>
                                 </tr>
 
-                                <tr>
+                                <!--<tr>
                                     <td><input type="text" class="inptxt" value="1" style="width:20px;" /></td>
                                     <td><input type="text" class="inptxt"  value="Mouse"  style="width:120px;" /></td>
                                     <td><input type="text" class="inptxt" value="HN001" style="width:50px;" /></td>
@@ -273,26 +273,7 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
                                     <td><input type="text" class="inptxt" value="18%" style="width:90%;" /></td>
                                     <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" value="5000" class="pricinput"  /></div></td>
                                     <td nowrap="nowrap" class="icon"> <a href="#"><div class="tooltip"><i class="fa fa-trash deleteicon"></i><span class="tooltiptext">Delete</span></div></a> </td>
-                                </tr>
-
-                                <tr>
-                                    <td><input type="text" class="inptxt" value="1" style="width:20px;" /></td>
-                                    <td><input type="text" class="inptxt"  value="Pendrive"  style="width:120px;" /></td>
-                                    <td><input type="text" class="inptxt" value="HN001" style="width:50px;" /></td>
-                                    <td><input type="text" class="inptxt" value="5" style="width:40px;" /></td>
-                                    <td><input type="text" class="inptxt" value="15"  style="width:40px;" /></td>
-                                    <td><div class="inptxt padrgt0" style="width:70px;"><i class="fa fa-inr"></i><input type="text"value="1000" class="pricinput"  /></div></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" value="5000" class="pricinput"  /></div></td>
-                                    <td><input type="text" class="inptxt"  value="5%" style="width:90%;" /></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" value="5000" class="pricinput"  /></div></td>
-                                    <td><input type="text" class="inptxt" value="5%" style="width:40px;" /></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" value="5000" class="pricinput"  /></div></td>
-                                    <td><input type="text" class="inptxt "  value="18%" style="width:90%;" /></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" value="5000" class="pricinput"  /></div></td>
-                                    <td><input type="text" class="inptxt" value="18%" style="width:90%;" /></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" value="5000" class="pricinput"  /></div></td>
-                                    <td nowrap="nowrap" class="icon"> <a href="#"><div class="tooltip"><i class="fa fa-trash deleteicon"></i><span class="tooltiptext">Delete</span></div></a> </td>
-                                </tr>
+                                </tr>-->
 
                                 <tr>
                                     <td colspan="15" align="right" class="lightyellow totalamount">Total Invoice Value <span>(In Figure)</span><div class="totalprice"><i class="fa fa-inr"></i>10000</div></td>
@@ -337,7 +318,14 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
 
 <script>
     $(document).ready(function () {
-        
+
+        $( "#invoice_tr_1_itemname" ).autocomplete({
+            source: "<?php echo PROJECT_URL; ?>/?ajax=client_get_item",
+            onSelect: function (response) {
+                alert('You selected: ' + response.value + ', ' + response.data);
+            }
+        });
+
         $(".popupbtn").click(function() {
             $("#popup").css({"display":"block"});
             $("#fade").css({"display":"block"});
@@ -351,6 +339,42 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
         $("#btn").click(function() {
             $("#show").slideToggle(500);
             $(this).addClass("active");
+        });
+        
+        /* add more invoice row script code */
+        $(".invoicetable .addMoreInvoice").click(function() {
+            
+            var trlength = $(".invoice_tr").length;
+            var totaltr = trlength + 1;
+            
+            var newtr = '<tr class="invoice_tr" data-row-id="'+totaltr+'" id="invoice_tr_'+totaltr+'">';
+                newtr += '<td><span id="invoice_tr_'+totaltr+'_serialno" style="width:20px;">'+totaltr+'</span></td>';
+                newtr += '<td><input type="text" id="invoice_tr_'+totaltr+'_itemname" class="inptxt required" placeholder="Enter Item" style="width:120px;" /></td>';
+                newtr += '<td><input type="text" id="invoice_tr_'+totaltr+'_hsncode" readonly="true" class="inptxt readonly required" placeholder="HSN Code" style="width:50px;" /></td>';
+                newtr += '<td><input type="text" id="invoice_tr_'+totaltr+'_quantity" class="required inptxt" placeholder="0" style="width:40px;" /></td>';
+                newtr += '<td><input type="text" id="invoice_tr_'+totaltr+'_unit" class="required inptxt" placeholder="0" style="width:40px;" /></td>';
+                newtr += '<td><div class="inptxt padrgt0" style="width:70px;"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+totaltr+'_rate" class="required pricinput" placeholder="0.00" /></div></td>';
+                newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+totaltr+'_total" class="required readonly pricinput" placeholder="0.00" /></div></td>';
+                newtr += '<td><input type="text" class="inptxt" id="invoice_tr_'+totaltr+'_discount" placeholder="0" style="width:90%;" /></td>';
+                newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+totaltr+'_taxablevalue" class="required readonly pricinput" placeholder="0.00" /></div></td>';
+                newtr += '<td><input type="text" id="invoice_tr_'+totaltr+'_cgstrate" class="required readonly inptxt" placeholder="6" style="width:40px;" /></td>';
+                newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+totaltr+'_cgstamount" class="required readonly pricinput" placeholder="0.00" /></div></td>';
+                newtr += '<td><input type="text" id="invoice_tr_'+totaltr+'_sgstrate" class="required readonly inptxt" placeholder="12" style="width:90%;" /></td>';
+                newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+totaltr+'_sgstamount" class="required readonly pricinput" placeholder="0.00" /></div></td>';
+                newtr += '<td><input type="text" id="invoice_tr_'+totaltr+'_igstrate" class="required readonly inptxt" placeholder="18" style="width:90%;" /></td>';
+                newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+totaltr+'_igstamount" class="required readonly pricinput" placeholder="0.00" /></div></td>';
+                newtr += '<td nowrap="nowrap" class="icon"><a class="deleteInvoice" data-invoice-id="'+totaltr+'" href="javascript:void(0)"><div class="tooltip"><i class="fa fa-trash deleteicon"></i><span class="tooltiptext">Delete</span></div></a></td>';
+                newtr += '</tr>';
+
+                /* insert new row */
+                $(".invoice_tr").last().after(newtr);
+        });
+        
+        /* delete invoice row script code */
+        $(".invoicetable").on("click", ".deleteInvoice", function() {
+
+            var invoiceId = $(this).attr("data-invoice-id");
+            $("#invoice_tr_"+invoiceId).remove();
         });
         
         /* invoice date */
@@ -412,8 +436,37 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
             var mesg = {};
             if (vali.validate(mesg,'create-invoice')) {
                 return true;
-            }
+            }           
             return false;
+        });
+        
+        $('#add-item-submit').click(function () {
+            var mesg = {};
+            if (vali.validate(mesg,'add-item-form')) {
+                return true;
+            }           
+            return false;
+        });
+        
+        /* add new item */
+        $("#add-item-form").submit(function(event){
+            
+            event.preventDefault();
+
+            $.ajax({
+                data: {itemData:$("#add-item-form").serialize(),action:"addItem"},
+                dataType: 'json',
+                type: 'post',
+                url: "<?php echo PROJECT_URL; ?>/?ajax=client_add_item",
+                success: function(response){
+
+                    if(response.status == "success") {
+                        alert(response.message);
+                    }
+                    
+                    $('#add-item-form')[0].reset();
+                }
+            });
         });
     });
 </script>

@@ -1,12 +1,9 @@
 <?php
 $obj_users = new users();
-
 if(isset($_POST['submit']) && $_POST['submit']=='update' && isset($_GET['id']))
 {
-    
     if($obj_users->userGroupPermission())
     {
-        
         $obj_users->redirect(PROJECT_URL."/?page=user_group");
     }
 }
@@ -45,7 +42,8 @@ if(isset($_POST['submit']) && $_POST['submit']=='update' && isset($_GET['id']))
                                 </tr>
                             </thead>
                             <?php
-                            $dataRoleArrs = $obj_users->get_results("select * from ".$obj_users->getTableName("user_role")." a left join ".$obj_users->getTableName("user_role_permission")." b on a.user_role_id=b.role_id where b.group_id='".$obj_users->sanitize($_GET['id'])."' and a.status='1' and a.is_deleted='0' and b.is_deleted='0' order by a.role_name ");
+                            $query = "select * from ".$obj_users->getTableName("user_role")." a left join ".$obj_users->getTableName("user_role_permission")." b on a.user_role_id=b.role_id and b.group_id='".$obj_users->sanitize($_GET['id'])."' and b.is_deleted='0' where  a.status='1' and a.is_deleted='0' order by a.role_name ";
+                            $dataRoleArrs = $obj_users->get_results($query);
                             ?>
                             <tbody>
                                 <?php

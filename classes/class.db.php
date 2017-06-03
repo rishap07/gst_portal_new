@@ -234,7 +234,7 @@ class db {
         $values = '(' . implode(', ', $values) . ')';
 
         $sql .= $fields . ' VALUES ' . $values;
-//		echo $sql; die;
+//		echo $sql; 
 		$query = $this->link->query($sql);
         if ($this->link->error) {
             $this->log_db_errors($this->link->error, $query);
@@ -365,7 +365,7 @@ class db {
                 $sql .= ' WHERE ' . $where;
             }
         }
-	echo $sql; 	
+//	echo $sql; 	
 //        die();
         $query = $this->query($sql);
 
