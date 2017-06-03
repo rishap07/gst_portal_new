@@ -570,7 +570,7 @@ class common extends db {
 
     public function checkEmailAddressExist($emailaddress, $user_id = '') {
 
-         if($user_id && $user_id != '') {
+        if($user_id && $user_id != '') {
             $checkEmailAddress = $this->get_row("select * from " . $this->tableNames['user'] ." where 1=1 AND user_id != ".$user_id." AND email = '" . $emailaddress . "'");
         } else {
             $checkEmailAddress = $this->get_row("select * from " . $this->tableNames['user'] . " where 1=1 AND email = '" . $emailaddress . "'");

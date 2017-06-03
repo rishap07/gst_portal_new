@@ -7,9 +7,10 @@
  *  Last Modified By    :   Rishap Gandhi
  *  Last Modification   :   Class for creating all the Masters
  * 
- */
+*/
 
 final class master extends validation {
+
     protected $validateType = array(
         "alphanumeric" => "A-Za-z0-9\n\r\&\/\-\(\)\,\.",
         "mobilenumber" => "\d{10}",
@@ -42,6 +43,12 @@ final class master extends validation {
         {
             return false;
         }
+		
+		if( $this->checkStateCodeExist($dataArr['state_code'])){
+            $this->setError($this->validationMessage['statecodeexist']);
+            return false;
+        }
+		
         $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['added_date'] = date('Y-m-d H:i:s');
         if (!$this->insert($this->tableNames['state'], $dataArr)) {
@@ -90,10 +97,17 @@ final class master extends validation {
             $this->setError($this->validationMessage['mandatory']);
             return false;
         }
-        if(!$this->validateState($dataArr))
+        
+		if(!$this->validateState($dataArr))
         {
             return false;
         }
+		
+		if( $this->checkStateCodeExist($dataArr['state_code'], $this->sanitize($_GET['id']))){
+            $this->setError($this->validationMessage['statecodeexist']);
+            return false;
+        }
+		
         $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['update_date'] = date('Y-m-d H:i:s');
         if (!$this->update($this->tableNames['state'], $dataArr, array('state_id'=>$this->sanitize($_GET['id'])))) {
@@ -104,15 +118,139 @@ final class master extends validation {
         $this->setSuccess($this->validationMessage['update']);
         return true;
     }
+	
+	public function checkStateCodeExist($state_code, $state_id = '') {
+		
+		if($state_id && $state_id != '') {
+			$checkStateCode = $this->get_row("select * from " . $this->tableNames['state'] . " where 1=1 AND state_id != ".$state_id." AND state_code = '" . $state_code . "'");
+		} else {
+			$checkStateCode = $this->get_row("select * from " . $this->tableNames['state'] . " where 1=1 AND state_code = '" . $state_code . "'");
+		}
+		
+		if (count($checkStateCode) == 1) {
+            return true;
+        }
+    }
     
     /*
     * End : State Add/Update/Delete Related All function
     */
     
-    
-    
-    
     /*
+    * Start : Unit Add/Update/Delete Related All function
+    */
+    
+    final public function addUnit() {
+
+        $dataArr = $this->getUnitData();
+        
+		if (empty($dataArr)) {
+            $this->setError($this->validationMessage['mandatory']);
+            return false;
+        }
+		
+        if(!$this->validateUnit($dataArr)) {
+            return false;
+        }
+		
+		if( $this->checkUnitCodeExist($dataArr['unit_code'])){
+            $this->setError($this->validationMessage['unitcodeexist']);
+            return false;
+        }
+		
+        $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
+        $dataArr['added_date'] = date('Y-m-d H:i:s');
+        
+		if (!$this->insert($this->tableNames['unit'], $dataArr)) {
+            $this->setError($this->validationMessage['failed']);
+            return false;
+        }
+		
+        $this->setSuccess($this->validationMessage['inserted']);
+        $insertid = $this->getInsertID();
+        $this->logMsg("New Unit Added. ID : " . $insertid . ".");
+        return true;
+    }
+    
+    private function getUnitData() {
+
+        $dataArr = array();
+        if(isset($_POST['submit']) && ($_POST['submit'] == 'submit' || ($_POST['submit'] == 'update' && isset($_GET['id']))))
+        {
+            $dataArr['unit_name'] = isset($_POST['unit_name']) ? $_POST['unit_name'] : '';
+            $dataArr['unit_code'] = isset($_POST['unit_code']) ? $_POST['unit_code'] : '';
+            $dataArr['status'] = isset($_POST['status']) ? $_POST['status'] : '';
+        }
+        return $dataArr;
+    }
+    
+    private function validateUnit($dataArr) {
+
+        $rules = array(
+            'unit_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Unit Name',
+            'unit_code' => 'required||pattern:/^[' . $this->validateType['alphanumeric'] . ']+$/|#|lable_name:Unit Code',
+            'status' => 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Status'
+        );
+
+        $valid = $this->vali_obj->validate($dataArr, $rules);
+        if ($valid->hasErrors()) {
+            $err_arr = $valid->allErrors();
+            $this->setError($err_arr);
+            $valid->clearMessages();
+            return false;
+        }
+        return true;
+    }
+    
+    final public function updateUnit() {
+
+        $dataArr = $this->getUnitData();
+        
+		if (empty($dataArr)) {
+            $this->setError($this->validationMessage['mandatory']);
+            return false;
+        }
+        
+		if(!$this->validateUnit($dataArr)) {
+            return false;
+        }
+		
+		if( $this->checkUnitCodeExist($dataArr['unit_code'], $this->sanitize($_GET['id']))){
+            $this->setError($this->validationMessage['unitcodeexist']);
+            return false;
+        }
+		
+        $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
+        $dataArr['updated_date'] = date('Y-m-d H:i:s');
+		
+		if (!$this->update($this->tableNames['unit'], $dataArr, array('unit_id' => $this->sanitize($_GET['id'])))) {
+            $this->setError($this->validationMessage['failed']);
+            return false;
+        }
+        
+		$this->logMsg("Unit ID : " . $_GET['id'] . " in unit Master has been updated");
+        $this->setSuccess($this->validationMessage['update']);
+        return true;
+    }
+    
+	public function checkUnitCodeExist($unit_code, $unit_id = '') {
+		
+		if($unit_id && $unit_id != '') {
+			$checkUserCode = $this->get_row("select * from " . $this->tableNames['unit'] . " where 1=1 AND unit_id != ".$unit_id." AND unit_code = '" . $unit_code . "'");
+		} else {
+			$checkUserCode = $this->get_row("select * from " . $this->tableNames['unit'] . " where 1=1 AND unit_code = '" . $unit_code . "'");
+		}
+
+        if (count($checkUserCode) == 1) {
+            return true;
+        }
+    }
+	
+    /*
+    * End : Unit Add/Update/Delete Related All function
+    */
+	
+	/*
     * Start : Receiver Add/Update/Delete Related All function
     */
     

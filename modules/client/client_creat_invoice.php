@@ -320,9 +320,11 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
     $(document).ready(function () {
 
         $( "#invoice_tr_1_itemname" ).autocomplete({
+            minLength: 2,
             source: "<?php echo PROJECT_URL; ?>/?ajax=client_get_item",
-            onSelect: function (response) {
-                alert('You selected: ' + response.value + ', ' + response.data);
+            select: function( event, ui ) {
+                console.log(event);
+                console.log(ui);
             }
         });
 

@@ -85,8 +85,8 @@
                     <li class="iconsetting"><a href="javascript:void(0)"><span class="iconpic"></span>Master <strong class="fa fa-plus" aria-hidden="true"></strong></a>
                         <ul class="inner-content-list">
                             <?php if($db_obj->can_read('master_state')){?><li><a href="<?php echo PROJECT_URL;?>/?page=master_state">State</a></li><?php } ?>
-                            <li><a href="<?php echo PROJECT_URL;?>/?page=master_receiver">Receiver</a></li>
-                            <li><a href="<?php echo PROJECT_URL;?>/?page=master_supplier">Supplier</a></li>
+                            <?php if($db_obj->can_read('master_receiver')){?><li><a href="<?php echo PROJECT_URL;?>/?page=master_receiver">Receiver</a></li><?php } ?>
+                            <?php if($db_obj->can_read('master_supplier')){?><li><a href="<?php echo PROJECT_URL;?>/?page=master_supplier">Supplier</a></li><?php } ?>
                             <?php if($db_obj->can_read('master_state')){?><li><a href="<?php echo PROJECT_URL;?>/?page=master_item">Item</a></li><?php } ?>
                         </ul>
                     </li>

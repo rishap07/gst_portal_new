@@ -9,13 +9,20 @@
 
 $obj_client = new client();
 
-$result = array();
-if(isset($_POST['term'])) {
-	
-	$result['status'] = "success";
-	$obj_client->unsetMessage();
+$items = array();
+if(isset($_GET['ajax']) && $_GET['ajax'] == "client_get_item" && isset($_GET['term'])) {
+		
+	$items[0]['n1'] = "success1";
+	$items[0]['n2'] = "success2";
+	$items[0]['n3'] = "success3";
+	$items[0]['n4'] = "success4";
+	$items[0]['n5'] = "success5";
+	$items[0]['n6'] = "success6";
+	$items[0]['n7'] = "success7";
+	$items[0]['n8'] = "success8";
 }
 
-echo json_encode($result);
+header('Content-type: application/json');
+echo json_encode($items);
 die;
 ?>

@@ -16,7 +16,7 @@ class validation extends upload {
     public $allowImageExt = array('image/gif', 'image/jpeg', 'image/jpg', 'image/png');
 
     public function __construct() {
-        
+
         parent::__construct();
         
         $this->tableNames = array(
@@ -38,6 +38,7 @@ class validation extends upload {
             'client_gstn_detail' => TAB_PREFIX . 'client_gstn_detail',
             'user_role_permission' => TAB_PREFIX . 'user_role_permission',
             'client_master_item' => TAB_PREFIX . 'client_master_item',
+            'unit' => TAB_PREFIX . 'master_unit',
             'api' => TAB_PREFIX . 'api'
         );
         
@@ -103,6 +104,8 @@ class validation extends upload {
         'can_delete' => 'You are not authorised to delete this module',
         'update' => 'Updated Successfully',
         'inserted' => 'Added Successfully',
+        'statecodeexist' => 'State code already exist.',
+        'unitcodeexist' => 'Unit code already exist.'
     );
     
     public function getTableName($tablename)
