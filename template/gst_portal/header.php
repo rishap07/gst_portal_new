@@ -13,11 +13,11 @@
 		<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/jquery-ui-timepicker/jquery-ui-timepicker-addon.css" />
 		<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/select2/select2.css" />
 
-        <script src="<?php echo THEME_URL; ?>/js/jquery-3-2.js"></script>
+        <script src="<?php echo THEME_URL; ?>/js/jquery-1.12.4.js"></script>
         <script src="<?php echo THEME_URL; ?>/js/jquery.slimscroll.js"></script>
         <script type="text/javascript">
             $(document).ready(function (e) {
-                
+
                 $(".sidemenu li").click(function (e) {
                     
                     if($(this).hasClass("active")) {

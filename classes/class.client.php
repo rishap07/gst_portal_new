@@ -214,6 +214,7 @@ final class client extends validation {
         $dataArr['item_name'] = isset($_POST['item_name']) ? $_POST['item_name'] : '';
         $dataArr['item_category'] = isset($_POST['item_category']) ? $_POST['item_category'] : '';
         $dataArr['unit_price'] = isset($_POST['unit_price']) ? $_POST['unit_price'] : '';
+        $dataArr['item_unit'] = isset($_POST['item_unit']) ? $_POST['item_unit'] : '';
         $dataArr['status'] = isset($_POST['status']) ? $_POST['status'] : '';
         
         if (empty($dataArr)) {
@@ -248,6 +249,7 @@ final class client extends validation {
         $dataArr['item_name'] = isset($_POST['item_name']) ? $_POST['item_name'] : '';
         $dataArr['item_category'] = isset($_POST['item_category']) ? $_POST['item_category'] : '';
         $dataArr['unit_price'] = isset($_POST['unit_price']) ? $_POST['unit_price'] : '';
+        $dataArr['item_unit'] = isset($_POST['item_unit']) ? $_POST['item_unit'] : '';
         $dataArr['status'] = isset($_POST['status']) ? $_POST['status'] : '';
         
         if (empty($dataArr)) {
@@ -283,6 +285,7 @@ final class client extends validation {
             'item_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Item Name',
             'item_category' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Item Category',
             'unit_price' => 'required||decimal|#|lable_name:Price',
+            'item_unit' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Item Unit',
             'status' => 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Status'
         );
 

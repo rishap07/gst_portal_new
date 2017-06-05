@@ -33,7 +33,7 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'update' && isset($_GET['id'])
 
 $dataArr = array();
 if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editItem"){
-    $dataArr = $obj_client->get_results("select cm.item_id, cm.item_name, cm.item_category, m.item_name as category_name, m.hsn_code, cm.unit_price, cm.status from ".$obj_client->getTableName('client_master_item')." as cm, ".$obj_client->getTableName('item')." as m WHERE cm.item_category = m.item_id AND cm.is_deleted='0' and cm.item_id = '".$obj_client->sanitize($_GET['id'])."'");
+    $dataArr = $obj_client->get_results("select cm.item_id, cm.item_name, cm.item_category, cm.unit_price, cm.item_unit, cm.status, m.item_name as category_name, m.hsn_code, u.unit_name, u.unit_code from ".$obj_client->getTableName('client_master_item')." as cm, ".$obj_client->getTableName('item')." as m, ".$obj_client->getTableName('unit')." as u WHERE cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.is_deleted='0' and cm.item_id = '".$obj_client->sanitize($_GET['id'])."'");
 }
 ?>
 <div class="admincontainer greybg">
@@ -83,6 +83,19 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
                         </div>
                         
                         <div class="formcol two">
+                            <label>Item Unit<span class="starred">*</span></label>
+                            <select name="item_unit" id="item_unit" class="required" data-bind="numnzero">
+                                <?php $dataUnitArrs = $obj_client->getUnit("unit_id,unit_name,unit_code,(case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "is_deleted='0' AND status='1'"); ?>
+                                <?php if(!empty($dataUnitArrs)) { ?>
+                                    <option value=''>Select Unit</option>
+                                    <?php foreach($dataUnitArrs as $dataUnit) { ?>
+                                        <option value='<?php echo $dataUnit->unit_id; ?>' data-unitcode="<?php echo $dataUnit->unit_code; ?>" <?php if(isset($_POST['item_unit']) && $_POST['item_unit'] === $dataUnit->unit_id){ echo 'selected="selected"'; } else if(isset($dataArr[0]->item_unit) && $dataArr[0]->item_unit === $dataUnit->unit_id) { echo 'selected="selected"'; } ?>><?php echo $dataUnit->unit_name; ?></option>
+                                    <?php } ?>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        
+                        <div class="formcol third">
                             <label>Status<span class="starred">*</span></label>
                             <div class="clear"></div>
                             <input type="radio" name="status" <?php if(isset($_POST['status']) &&  $_POST['status'] === '1'){ echo 'checked="checked"'; } else if(isset($dataArr[0]->status) && $dataArr[0]->status==='1') { echo 'checked="checked"'; } ?> value="1" /><span>Active</span>
@@ -118,6 +131,9 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
         
         /* select2 js for item category */
         $("#item_category").select2();
+        
+        /* select2 js for item unit */
+        $("#item_unit").select2();
         
         $('#submit').click(function () {
             var mesg = {};

@@ -239,7 +239,7 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
 
                                 <tr class="invoice_tr" data-row-id="1" id="invoice_tr_1">
                                     <td><span id="invoice_tr_1_serialno" style="width:20px;">1</span></td>
-                                    <td><input type="text" id="invoice_tr_1_itemname" class="inptxt required" placeholder="Enter Item" style="width:120px;" /></td>
+                                    <td><input type="text" id="invoice_tr_1_itemname" class="inptxt autocompleteinput required" placeholder="Enter Item" style="width:120px;" /></td>
                                     <td><input type="text" id="invoice_tr_1_hsncode" readonly="true" class="inptxt readonly required" placeholder="HSN Code" style="width:50px;" /></td>
                                     <td><input type="text" id="invoice_tr_1_quantity" class="required inptxt" placeholder="0" style="width:40px;" /></td>
                                     <td><input type="text" id="invoice_tr_1_unit" class="required inptxt" placeholder="0" style="width:40px;" /></td>
@@ -255,25 +255,6 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
                                     <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_igstamount" class="required readonly pricinput" placeholder="0.00" /></div></td>
                                     <td nowrap="nowrap" class="icon"><a class="addMoreInvoice" href="javascript:void(0)"><div class="tooltip"><i class="fa fa-plus-circle addicon"></i><span class="tooltiptext">Add More</span></div></a></td>
                                 </tr>
-
-                                <!--<tr>
-                                    <td><input type="text" class="inptxt" value="1" style="width:20px;" /></td>
-                                    <td><input type="text" class="inptxt"  value="Mouse"  style="width:120px;" /></td>
-                                    <td><input type="text" class="inptxt" value="HN001" style="width:50px;" /></td>
-                                    <td><input type="text" class="inptxt" value="5" style="width:40px;" /></td>
-                                    <td><input type="text" class="inptxt" value="15"  style="width:40px;" /></td>
-                                    <td><div class="inptxt padrgt0" style="width:70px;"><i class="fa fa-inr"></i><input type="text"value="1000" class="pricinput"  /></div></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" value="5000" class="pricinput"  /></div></td>
-                                    <td><input type="text" class="inptxt"  value="5%" style="width:90%;" /></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" value="5000" class="pricinput"  /></div></td>
-                                    <td><input type="text" class="inptxt" value="5%" style="width:40px;" /></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" value="5000" class="pricinput"  /></div></td>
-                                    <td><input type="text" class="inptxt "  value="18%" style="width:90%;" /></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" value="5000" class="pricinput"  /></div></td>
-                                    <td><input type="text" class="inptxt" value="18%" style="width:90%;" /></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" value="5000" class="pricinput"  /></div></td>
-                                    <td nowrap="nowrap" class="icon"> <a href="#"><div class="tooltip"><i class="fa fa-trash deleteicon"></i><span class="tooltiptext">Delete</span></div></a> </td>
-                                </tr>-->
 
                                 <tr>
                                     <td colspan="15" align="right" class="lightyellow totalamount">Total Invoice Value <span>(In Figure)</span><div class="totalprice"><i class="fa fa-inr"></i>10000</div></td>
@@ -318,14 +299,17 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
 
 <script>
     $(document).ready(function () {
+        
+        $(".invoicetable").on("change", ".autocompleteinput", function(){
+            
+            $( "#invoice_tr_2_itemname" ).autocomplete({
+                minLength: 1,
+                source: "<?php echo PROJECT_URL; ?>/?ajax=client_get_item",
+                select: function( event, ui ) {
 
-        $( "#invoice_tr_1_itemname" ).autocomplete({
-            minLength: 2,
-            source: "<?php echo PROJECT_URL; ?>/?ajax=client_get_item",
-            select: function( event, ui ) {
-                console.log(event);
-                console.log(ui);
-            }
+                    console.log(ui.item);
+                }
+            });
         });
 
         $(".popupbtn").click(function() {

@@ -80,6 +80,7 @@ final class master extends validation {
             'state_code' => 'required||pattern:/^[' . $this->validateType['alphanumeric'] . ']+$/|#|lable_name:State Code',
             'status' => 'required||numeric|#|lable_name:Status'
         );
+		
         $valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
             $err_arr = $valid->allErrors();

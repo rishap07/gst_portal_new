@@ -560,6 +560,22 @@ class common extends db {
         return $dataArr;
     }
     
+    /* Get all master units */
+    public function getUnit($field = "*", $condition='', $orderby='unit_name asc', $limit='',$group_by='') {
+
+        $query = "select ".$field."  from ".$this->tableNames['unit']." where 1=1 ";
+        
+        if($condition !='') {
+            $query .= " and ".$condition;
+        }
+        
+        if($group_by !='') {
+            $query .= " group by ".$group_by;
+        }
+        $query .= " order by ".$orderby." ".$limit;
+        return $this->get_results($query);
+    }
+    
     public function checkUsernameExist($username) {
 
         $checkUsername = $this->get_row("select * from " . $this->tableNames['user'] . " where 1=1 AND username = '" . $username . "'");
