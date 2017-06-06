@@ -20,36 +20,43 @@ class login extends validation {
         if (!$this->validateLogin($dataArr)) {
             return false;
         }
+		
         $dataArr['api_code'] = 'XYZ';
         $dataArr['api_user'] = 'ABC';
         $val = '';
-        foreach ($dataArr as $key => $value) {
+        
+		foreach ($dataArr as $key => $value) {
             $val.=$value . "|";
         }
+		
         $dataArr['secure_hash'] = strtoupper(md5($val));
         $dataArr['api_method'] = 'login';
         $url = PROJECT_URL."/api.php";
         $server_output = $this->hitCurl($url, $dataArr);
         $server_output = json_decode($server_output);
-        
+		
         if (count($server_output) > 0) {
-            if (isset($server_output->msg) && $server_output->msg == 'success' && $server_output->code == '2') {
-                $_SESSION['user_detail']['user_id'] = $server_output->data->user[0]->user_id;
+            
+			if (isset($server_output->msg) && $server_output->msg == 'success' && $server_output->code == '2') {
+                
+				$_SESSION['user_detail']['user_id'] = $server_output->data->user[0]->user_id;
                 $_SESSION['user_detail']['name'] = $server_output->data->user[0]->name;
                 $_SESSION['user_detail']['username'] = $server_output->data->user[0]->username;
                 $_SESSION['user_detail']['email'] = $server_output->data->user[0]->email;
                 $_SESSION['user_detail']['user_group'] = $server_output->data->user[0]->user_group;
-                for($x=0;$x<count($server_output->data->user_permission);$x++)
-                {
-                    $_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_read']=$server_output->data->user_permission[$x]->can_read;
+
+				for($x=0; $x<count($server_output->data->user_permission); $x++) {
+
+					$_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_read']=$server_output->data->user_permission[$x]->can_read;
                     $_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_create']=$server_output->data->user_permission[$x]->can_create;
                     $_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_update']=$server_output->data->user_permission[$x]->can_update;
                     $_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_delete']=$server_output->data->user_permission[$x]->can_delete;
                 }
+				
                 if (isset($_POST['login_rememberme']) && $_POST['login_rememberme'] == 1) {
                     
-                    if ($this->setRememberMeCookie($server_output->data->user->user_id)) {
-                        return true;
+                    if ($this->setRememberMeCookie($server_output->data->user[0]->user_id)) {
+						return true;
                     } else {
                         $this->setError($this->validationMessage['cookie_err']);
                         return false;
@@ -73,7 +80,8 @@ class login extends validation {
             'user_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:User Name',
             'password' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Password',
         );
-        $valid = $this->vali_obj->validate($dataArr, $rules);
+        
+		$valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
             $err_arr = $valid->allErrors();
             $this->setError($err_arr);
@@ -115,28 +123,22 @@ class login extends validation {
 
             /* get user data by its id */
             $userData = $this->getUserDetailsById($this->getInsertID());
+			
+			$_SESSION['user_detail']['user_id'] = $userData['data']->user_id;
+            $_SESSION['user_detail']['username'] = $userData['data']->username;
+            $_SESSION['user_detail']['email'] = $userData['data']->email;
+            $_SESSION['user_detail']['name'] = $userData['data']->name;
+            $_SESSION['user_detail']['user_group'] = $userData['data']->user_group;
 
             if (isset($_POST['rememberme']) && $_POST['rememberme'] == 1) {
 
                 if ($this->setRememberMeCookie($userData['data']->user_id)) {
-
-                    $_SESSION['user_detail']['user_id'] = $userData['data']->user_id;
-                    $_SESSION['user_detail']['username'] = $userData['data']->username;
-                    $_SESSION['user_detail']['email'] = $userData['data']->email;
-                    $_SESSION['user_detail']['name'] = $userData['data']->first_name .' '. $userData['data']->last_name;
-                    $_SESSION['user_detail']['user_group'] = $userData['data']->user_group;
-                    
                     return true;
                 } else {
                     return false;
                 }
             }
 
-            $_SESSION['user_detail']['user_id'] = $userData['data']->user_id;
-            $_SESSION['user_detail']['username'] = $userData['data']->username;
-            $_SESSION['user_detail']['email'] = $userData['data']->email;
-            $_SESSION['user_detail']['name'] = $userData['data']->first_name .' '. $userData['data']->last_name;
-            $_SESSION['user_detail']['user_group'] = $userData['data']->user_group;
             return true;
         } else {
             $this->setError($this->validationMessage['failed']);

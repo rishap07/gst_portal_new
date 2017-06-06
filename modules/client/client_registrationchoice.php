@@ -59,10 +59,10 @@ $dataArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['use
                     <div class="migratecol" style="margin-right:0px;">
                         <a href="javascript:void(0)"><input type="radio" />Register</a>
                     </div>
-                  
+					
                     <div class="orcircle orangebg">OR</div>
                     <div class="migratecol" style="margin-right:0px;">
-                        <a href="<?php echo PROJECT_URL."?page=client_gstn"; ?>">Enter GSTN</a>
+                        <a href="<?php echo PROJECT_URL."?page=client_gstin"; ?>">Enter GSTN</a>
                     </div>
                   
                 </div>
@@ -76,8 +76,7 @@ $dataArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['use
                   <div class="borderorange"><a href="javascript:void(0)" class="orangeborder popupbtn vat"> <input type="radio" /> VAT </a></div>
 
                   <div class="borderorange" style="margin-right:0px;"><a href="javascript:void(0)"  class="orangeborder popupbtn sat">
-                    <input type="radio" />
-                    SALES TAX</a></div>
+                    <input type="radio" />SALES TAX</a></div>
                 </div>
               </div>
             </div>

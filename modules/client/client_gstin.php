@@ -12,9 +12,9 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
         $obj_client->setError('Invalid access to files');
     } else {
 
-        if($obj_client->saveClientGSTN()){
+        if($obj_client->saveClientGSTIN()){
 
-            $obj_client->redirect(PROJECT_URL."?page=client_gstn");
+            $obj_client->redirect(PROJECT_URL."?page=client_gstin");
         }
     }
 }
@@ -31,11 +31,11 @@ $dataArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['use
         <?php $obj_client->showSuccessMessge(); ?>
         <?php $obj_client->unsetMessage(); ?>
 
-        <h1>Enter GSTN Number</h1>
+        <h1>Enter GSTIN Number</h1>
         <hr class="headingborder">
         <div class="clear"></div>
 
-        <form name="user-gstn" id="user-gstn" method="POST">
+        <form name="user-gstin" id="user-gstin" method="POST">
 
             <div class="adminformbx">
 
@@ -44,13 +44,13 @@ $dataArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['use
                     <div class="kycmainbox">
 
                         <div class="formcol">
-                            <label>GSTN Number<span class="starred">*</span></label>
-                            <input type="text" name="gstn_number" id="gstn_number" placeholder="Enter gstn number" class="required" data-bind="alphanum" value="<?php if(isset($_POST['gstn_number'])){ echo $_POST['gstn_number']; } else if(isset($dataArr['data']->gstn->gstn_number)){ echo $dataArr['data']->gstn->gstn_number; } ?>" />
+                            <label>GSTIN Number<span class="starred">*</span></label>
+                            <input type="text" name="gstin_number" id="gstin_number" placeholder="Enter gstin number" class="required" data-bind="alphanum" value="<?php if(isset($_POST['gstin_number'])){ echo $_POST['gstin_number']; } else if(isset($dataArr['data']->gstin->gstin_number)){ echo $dataArr['data']->gstin->gstin_number; } ?>" />
                         </div>
                         
                         <div class="formcol two">
-                            <label>GSTN Issue Date<span class="starred">*</span></label>
-                            <input type="text" placeholder="yyyy-mm-dd" name="gstn_issue_date" id="gstn_issue_date" class="required" data-bind="date" value="<?php if(isset($_POST['gstn_issue_date'])){ echo $_POST['gstn_issue_date']; } else if(isset($dataArr['data']->gstn->gstn_issue_date)){ echo $dataArr['data']->gstn->gstn_issue_date; } ?>" />
+                            <label>GSTIN Issue Date<span class="starred">*</span></label>
+                            <input type="text" placeholder="yyyy-mm-dd" name="gstin_issue_date" id="gstin_issue_date" class="required" data-bind="date" value="<?php if(isset($_POST['gstin_issue_date'])){ echo $_POST['gstin_issue_date']; } else if(isset($dataArr['data']->gstin->gstin_issue_date)){ echo $dataArr['data']->gstin->gstin_issue_date; } ?>" />
                         </div>
                         
                         <div class="clear"></div>
@@ -76,8 +76,8 @@ $dataArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['use
 
     $(document).ready(function () {
         
-        /* gstn issue date */
-        $("#gstn_issue_date").datepicker({
+        /* gstin issue date */
+        $("#gstin_issue_date").datepicker({
             changeMonth: true,
             changeYear: true,
             dateFormat: 'yy-mm-dd',
@@ -86,7 +86,7 @@ $dataArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['use
 
         $('#submit').click(function () {
             var mesg = {};
-            if (vali.validate(mesg,'user-gstn')) {
+            if (vali.validate(mesg,'user-gstin')) {
                 return true;
             }
             return false;

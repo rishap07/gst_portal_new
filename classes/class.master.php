@@ -463,7 +463,7 @@ final class master extends validation {
         {
             $dataArr['item_name'] = isset($_POST['item_name']) ? $_POST['item_name'] : '';
             $dataArr['hsn_code'] = isset($_POST['hsn_code']) ? $_POST['hsn_code'] : '';
-            $dataArr['unit_price'] = isset($_POST['unit_price']) ? $_POST['unit_price'] : '';
+            $dataArr['item_type'] = isset($_POST['item_type']) ? $_POST['item_type'] : '';
             $dataArr['igst_tax_rate'] = isset($_POST['igst_tax_rate']) ? $_POST['igst_tax_rate'] : '';
             $dataArr['csgt_tax_rate'] = isset($_POST['csgt_tax_rate']) ? $_POST['csgt_tax_rate'] : '';
             $dataArr['sgst_tax_rate'] = isset($_POST['sgst_tax_rate']) ? $_POST['sgst_tax_rate'] : '';
@@ -478,7 +478,7 @@ final class master extends validation {
         $rules = array(
             'item_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Item',
             'hsn_code' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:HSN Code',
-            'unit_price' => 'required||decimal|#|lable_name:Unit Price',
+            'item_type' => 'required||numeric||min:0||max:1|#|lable_name:Item Type',
             'igst_tax_rate' => 'required||decimal||max:100|#|lable_name:IGST Tax Rate',
             'csgt_tax_rate' => 'required||decimal||max:100|#|lable_name:CSGT Tax Rate',
             'sgst_tax_rate' => 'required||decimal||max:100|#|lable_nameSGST Tax Rate',

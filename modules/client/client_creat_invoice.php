@@ -86,7 +86,7 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
                         
                         <div class="formcol">
                             <label>GSTIN Number <span class="starred">*</span></label>
-                            <input type="text" placeholder="BYRAJ14N3KKT" name="company_gstn_number" data-bind="alphanum" class="required" id="company_gstn_number" />
+                            <input type="text" placeholder="BYRAJ14N3KKT" name="company_gstin_number" data-bind="alphanum" class="required" id="company_gstin_number" />
                         </div>
 
                         <div class="formcol third">
@@ -160,7 +160,7 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
 
                                 <div class="formcol">
                                     <label>GSTIN Number <span class="starred">*</span></label>
-                                    <input type="text" placeholder="GSTIN Number" name='billing_gstn_number' data-bind="alphanum" class="required" id='billing_gstn_number' />
+                                    <input type="text" placeholder="GSTIN Number" name='billing_gstin_number' data-bind="alphanum" class="required" id='billing_gstin_number' />
                                 </div>
                                 
                                 <div class="clear"></div>
@@ -201,7 +201,7 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
 
                                 <div class="formcol">
                                     <label>GSTIN Number <span class="starred">*</span></label>
-                                    <input type="text" placeholder="GSTIN Number" name='shipping_gstn_number' data-bind="alphanum" class="required" id='shipping_gstn_number' />
+                                    <input type="text" placeholder="GSTIN Number" name='shipping_gstin_number' data-bind="alphanum" class="required" id='shipping_gstin_number' />
                                 </div>
                                 
                                 <div class="clear"></div>
@@ -238,21 +238,21 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
                                 </tr>
 
                                 <tr class="invoice_tr" data-row-id="1" id="invoice_tr_1">
-                                    <td><span id="invoice_tr_1_serialno" style="width:20px;">1</span></td>
-                                    <td><input type="text" id="invoice_tr_1_itemname" class="inptxt autocompleteinput required" placeholder="Enter Item" style="width:120px;" /></td>
-                                    <td><input type="text" id="invoice_tr_1_hsncode" readonly="true" class="inptxt readonly required" placeholder="HSN Code" style="width:50px;" /></td>
-                                    <td><input type="text" id="invoice_tr_1_quantity" class="required inptxt" placeholder="0" style="width:40px;" /></td>
-                                    <td><input type="text" id="invoice_tr_1_unit" class="required inptxt" placeholder="0" style="width:40px;" /></td>
-                                    <td><div class="inptxt padrgt0" style="width:70px;"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_rate" class="required pricinput" placeholder="0.00" /></div></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_total" class="required readonly pricinput" placeholder="0.00" /></div></td>
-                                    <td><input type="text" class="inptxt" id="invoice_tr_1_discount" placeholder="0" style="width:90%;" /></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_taxablevalue" class="required readonly pricinput" placeholder="0.00" /></div></td>
-                                    <td><input type="text" id="invoice_tr_1_cgstrate" class="required readonly inptxt" placeholder="6" style="width:40px;" /></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_cgstamount" class="required readonly pricinput" placeholder="0.00" /></div></td>
-                                    <td><input type="text" id="invoice_tr_1_sgstrate" class="required readonly inptxt" placeholder="12" style="width:90%;" /></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_sgstamount" class="required readonly pricinput" placeholder="0.00" /></div></td>
-                                    <td><input type="text" id="invoice_tr_1_igstrate" class="required readonly inptxt" placeholder="18" style="width:90%;" /></td>
-                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_igstamount" class="required readonly pricinput" placeholder="0.00" /></div></td>
+                                    <td><span class="serialno" id="invoice_tr_1_serialno" style="width:20px;">1</span><input type="hidden" id="invoice_tr_1_itemid" name="invoice_itemid[]" class="required" /></td>
+                                    <td><input type="text" id="invoice_tr_1_itemname" name="invoice_itemname[]" class="inptxt autocompleteinput required" placeholder="Enter Item" style="width:120px;" /></td>
+                                    <td><input type="text" id="invoice_tr_1_hsncode" name="invoice_hsncode[]" readonly="true" class="inptxt readonly required" placeholder="HSN Code" style="width:50px;" /></td>
+                                    <td><input type="text" id="invoice_tr_1_quantity" name="invoice_quantity[]" class="required inptxt" placeholder="0" style="width:40px;" /></td>
+                                    <td><input type="text" id="invoice_tr_1_unit" name="invoice_unit[]" readonly="true" class="required readonly inptxt" placeholder="Unit" style="width:40px;" /></td>
+                                    <td><div class="inptxt padrgt0" style="width:70px;"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_rate" name="invoice_rate[]" class="required pricinput" placeholder="0.00" /></div></td>
+                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_total" name="invoice_total[]" readonly="true" class="required readonly pricinput" placeholder="0.00" /></div></td>
+                                    <td><input type="text" class="inptxt" id="invoice_tr_1_discount" name="invoice_discount[]" placeholder="0" style="width:90%;" /></td>
+                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="required readonly pricinput" placeholder="0.00" /></div></td>
+                                    <td><input type="text" id="invoice_tr_1_cgstrate" name="invoice_cgstrate[]" readonly="true" class="required readonly inptxt" placeholder="6" style="width:40px;" /></td>
+                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_cgstamount[]" name="invoice_cgstamount" readonly="true" class="required readonly pricinput" placeholder="0.00" /></div></td>
+                                    <td><input type="text" id="invoice_tr_1_sgstrate" name="invoice_sgstrate[]" readonly="true" class="required readonly inptxt" placeholder="12" style="width:90%;" /></td>
+                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_sgstamount" name="invoice_sgstamount[]" readonly="true" class="required readonly pricinput" placeholder="0.00" /></div></td>
+                                    <td><input type="text" id="invoice_tr_1_igstrate" name="invoice_igstrate[]" readonly="true" class="required readonly inptxt" placeholder="18" style="width:90%;" /></td>
+                                    <td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_igstamount" name="invoice_igstamount[]" readonly="true" class="required readonly pricinput" placeholder="0.00" /></div></td>
                                     <td nowrap="nowrap" class="icon"><a class="addMoreInvoice" href="javascript:void(0)"><div class="tooltip"><i class="fa fa-plus-circle addicon"></i><span class="tooltiptext">Add More</span></div></a></td>
                                 </tr>
 
@@ -300,14 +300,23 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
 <script>
     $(document).ready(function () {
         
-        $(".invoicetable").on("change", ".autocompleteinput", function(){
+        $(".invoicetable").on("keypress", ".autocompleteinput", function(){
             
-            $( "#invoice_tr_2_itemname" ).autocomplete({
+            var rowid = $(this).parent().parent().attr("data-row-id");
+            
+            $( "#invoice_tr_"+rowid+"_itemname" ).autocomplete({
                 minLength: 1,
                 source: "<?php echo PROJECT_URL; ?>/?ajax=client_get_item",
                 select: function( event, ui ) {
 
-                    console.log(ui.item);
+                    $("#invoice_tr_"+rowid+"_itemid").val(ui.item.item_id);
+                    $("#invoice_tr_"+rowid+"_hsncode").val(ui.item.hsn_code);
+                    $("#invoice_tr_"+rowid+"_quantity").val(1);
+                    $("#invoice_tr_"+rowid+"_unit").val(ui.item.unit_code);
+                    $("#invoice_tr_"+rowid+"_rate").val(ui.item.unit_price);
+                    $("#invoice_tr_"+rowid+"_cgstrate").val(ui.item.csgt_tax_rate);
+                    $("#invoice_tr_"+rowid+"_sgstrate").val(ui.item.sgst_tax_rate);
+                    $("#invoice_tr_"+rowid+"_igstrate").val(ui.item.igst_tax_rate);
                 }
             });
         });
@@ -329,31 +338,38 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
         
         /* add more invoice row script code */
         $(".invoicetable .addMoreInvoice").click(function() {
-            
+
             var trlength = $(".invoice_tr").length;
-            var totaltr = trlength + 1;
+            var nexttrid = parseInt($("tr.invoice_tr:last").attr("data-row-id")) + 1;
             
-            var newtr = '<tr class="invoice_tr" data-row-id="'+totaltr+'" id="invoice_tr_'+totaltr+'">';
-                newtr += '<td><span id="invoice_tr_'+totaltr+'_serialno" style="width:20px;">'+totaltr+'</span></td>';
-                newtr += '<td><input type="text" id="invoice_tr_'+totaltr+'_itemname" class="inptxt required" placeholder="Enter Item" style="width:120px;" /></td>';
-                newtr += '<td><input type="text" id="invoice_tr_'+totaltr+'_hsncode" readonly="true" class="inptxt readonly required" placeholder="HSN Code" style="width:50px;" /></td>';
-                newtr += '<td><input type="text" id="invoice_tr_'+totaltr+'_quantity" class="required inptxt" placeholder="0" style="width:40px;" /></td>';
-                newtr += '<td><input type="text" id="invoice_tr_'+totaltr+'_unit" class="required inptxt" placeholder="0" style="width:40px;" /></td>';
-                newtr += '<td><div class="inptxt padrgt0" style="width:70px;"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+totaltr+'_rate" class="required pricinput" placeholder="0.00" /></div></td>';
-                newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+totaltr+'_total" class="required readonly pricinput" placeholder="0.00" /></div></td>';
-                newtr += '<td><input type="text" class="inptxt" id="invoice_tr_'+totaltr+'_discount" placeholder="0" style="width:90%;" /></td>';
-                newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+totaltr+'_taxablevalue" class="required readonly pricinput" placeholder="0.00" /></div></td>';
-                newtr += '<td><input type="text" id="invoice_tr_'+totaltr+'_cgstrate" class="required readonly inptxt" placeholder="6" style="width:40px;" /></td>';
-                newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+totaltr+'_cgstamount" class="required readonly pricinput" placeholder="0.00" /></div></td>';
-                newtr += '<td><input type="text" id="invoice_tr_'+totaltr+'_sgstrate" class="required readonly inptxt" placeholder="12" style="width:90%;" /></td>';
-                newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+totaltr+'_sgstamount" class="required readonly pricinput" placeholder="0.00" /></div></td>';
-                newtr += '<td><input type="text" id="invoice_tr_'+totaltr+'_igstrate" class="required readonly inptxt" placeholder="18" style="width:90%;" /></td>';
-                newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+totaltr+'_igstamount" class="required readonly pricinput" placeholder="0.00" /></div></td>';
-                newtr += '<td nowrap="nowrap" class="icon"><a class="deleteInvoice" data-invoice-id="'+totaltr+'" href="javascript:void(0)"><div class="tooltip"><i class="fa fa-trash deleteicon"></i><span class="tooltiptext">Delete</span></div></a></td>';
+            var newtr = '<tr class="invoice_tr" data-row-id="'+nexttrid+'" id="invoice_tr_'+nexttrid+'">';
+                newtr += '<td><span class="serialno" id="invoice_tr_'+nexttrid+'_serialno" style="width:20px;">'+(trlength+1)+'</span><input type="hidden" id="invoice_tr_'+nexttrid+'_itemid" name="invoice_itemid[]" class="required" /></td>';
+                newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_itemname" name="invoice_itemname[]" class="inptxt autocompleteinput required" placeholder="Enter Item" style="width:120px;" /></td>';
+                newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_hsncode" name="invoice_hsncode[]" readonly="true" class="inptxt readonly required" placeholder="HSN Code" style="width:50px;" /></td>';
+                newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_quantity" name="invoice_quantity[]" class="required inptxt" placeholder="0" style="width:40px;" /></td>';
+                newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_unit" name="invoice_unit[]" readonly="true" class="required readonly inptxt" placeholder="Unit" style="width:40px;" /></td>';
+                newtr += '<td><div class="inptxt padrgt0" style="width:70px;"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+nexttrid+'_rate" name="invoice_rate[]" class="required pricinput" placeholder="0.00" /></div></td>';
+                newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+nexttrid+'_total" name="invoice_total[]" readonly="true" class="required readonly pricinput" placeholder="0.00" /></div></td>';
+                newtr += '<td><input type="text" class="inptxt" id="invoice_tr_'+nexttrid+'_discount" name="invoice_discount[]" placeholder="0" style="width:90%;" /></td>';
+                newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+nexttrid+'_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="required readonly pricinput" placeholder="0.00" /></div></td>';
+                newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_cgstrate" name="invoice_cgstrate[]" readonly="true" class="required readonly inptxt" placeholder="6" style="width:40px;" /></td>';
+                newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+nexttrid+'_cgstamount" name="invoice_cgstamount[]" readonly="true" class="required readonly pricinput" placeholder="0.00" /></div></td>';
+                newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_sgstrate" name="invoice_sgstrate[]" readonly="true" class="required readonly inptxt" placeholder="12" style="width:90%;" /></td>';
+                newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+nexttrid+'_sgstamount" name="invoice_sgstamount[]" readonly="true" class="required readonly pricinput" placeholder="0.00" /></div></td>';
+                newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_igstrate" name="invoice_igstrate[]" readonly="true" class="required readonly inptxt" placeholder="18" style="width:90%;" /></td>';
+                newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+nexttrid+'_igstamount" name="invoice_igstamount[]" readonly="true" class="required readonly pricinput" placeholder="0.00" /></div></td>';
+                newtr += '<td nowrap="nowrap" class="icon"><a class="deleteInvoice" data-invoice-id="'+nexttrid+'" href="javascript:void(0)"><div class="tooltip"><i class="fa fa-trash deleteicon"></i><span class="tooltiptext">Delete</span></div></a></td>';
                 newtr += '</tr>';
 
                 /* insert new row */
                 $(".invoice_tr").last().after(newtr);
+                
+                /* update tr serial number */
+                var trCounter = 1;
+                $( "tr.invoice_tr" ).each(function( index ) {
+                    $(this).find("span.serialno").text(trCounter);
+                    trCounter++;
+                });
         });
         
         /* delete invoice row script code */
@@ -361,6 +377,13 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
 
             var invoiceId = $(this).attr("data-invoice-id");
             $("#invoice_tr_"+invoiceId).remove();
+
+            /* update tr serial number */
+            var trCounter = 1;
+            $( "tr.invoice_tr" ).each(function( index ) {
+                $(this).find("span.serialno").text(trCounter);
+                trCounter++;
+            });
         });
         
         /* invoice date */
@@ -427,10 +450,11 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
         });
         
         $('#add-item-submit').click(function () {
+
             var mesg = {};
             if (vali.validate(mesg,'add-item-form')) {
                 return true;
-            }           
+            }
             return false;
         });
         

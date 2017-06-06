@@ -113,15 +113,15 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class=""><a href="javascript:void(0)" class="dashbtn orangebg"><img src="image/icon-add-invoice.png" width="70" alt="#"><br/>Settings</a></div>
-<!--                                <div class=""><a href="#" class="dashbtn orangebg last"><img src="image/icon-add-invoice.png" width="70" alt="#"><br/>Migrate Invoice GSTN Server</a></div>-->
+									<!--<div class=""><a href="#" class="dashbtn orangebg last"><img src="image/icon-add-invoice.png" width="70" alt="#"><br/>Migrate Invoice GSTN Server</a></div>-->
                                 </div>
                                 <div class="col-md-3">
                                 <div class=""><a href="#" class="dashbtn orangebg"><img src="image/icon-report.png" width="70" alt="#"><br/>Report</a></div>
-<!--                                <div class=""><a href="#" class="dashbtn orangebg last"><img src="image/icon-add-invoice.png" width="70" alt="#"><br/>Other</a></div>-->
+								<!--<div class=""><a href="#" class="dashbtn orangebg last"><img src="image/icon-add-invoice.png" width="70" alt="#"><br/>Other</a></div>-->
                                 </div>
                             </div>
                         </div>
-                    </div>   
+                    </div>
                 </div>
             </div>
         </form>

@@ -1,16 +1,10 @@
 <?php
 $obj_master = new master();
-if(!$obj_master->can_create('master_item') && !isset($_GET['id']))
+ if(!$obj_master->can_read('master_item'))
 {
-    $obj_master->setError($obj_master->getValMsg('can_create'));
-    $obj_master->redirect(PROJECT_URL."/?page=master_item");
+    $obj_master->setError($obj_master->getValMsg('can_read'));
+    $obj_master->redirect(PROJECT_URL."/?page=dashboard");
     exit();
-}
-if(!$obj_master->can_update('master_item') && isset($_GET['id']))
-{
-    $obj_master->setError($obj_master->getValMsg('can_update'));
-    $obj_master->redirect(PROJECT_URL."/?page=master_item");
-    exit(); 
 }
 if(isset($_POST['submit']) && $_POST['submit']=='submit')
 {
@@ -62,12 +56,16 @@ if(isset($_GET['id']))
                             <input type="text" placeholder="Item" name='item_name' data-bind="content" class="required" value='<?php if(isset($_POST['item_name'])){ echo $_POST['item_name'];}else if(isset($dataArr[0]->item_name)){ echo $dataArr[0]->item_name;}?>' />
                             <span class="greysmalltxt"></span> </div>
                         <div class="formcol two">
-                            <label>HSN Code<span class="starred">*</span></label>
+                            <label>HSN?SSN Code<span class="starred">*</span></label>
                             <input type="text" placeholder="HSN Code"  name='hsn_code' data-bind="content" class="required" value='<?php if(isset($_POST['hsn_code'])){ echo $_POST['hsn_code'];}else if(isset($dataArr[0]->hsn_code)){ echo $dataArr[0]->hsn_code;}?>'/>
                         </div>
                         <div class="formcol third">
-                            <label>Unit Price(Rs.)<span class="starred">*</span></label>
-                            <input type="text" placeholder="Unit Price" name='unit_price' data-bind="demical" class="required" value='<?php if(isset($_POST['unit_price'])){ echo $_POST['unit_price'];}else if(isset($dataArr[0]->unit_price)){ echo $dataArr[0]->unit_price;}?>'/>
+                            <label>Item Type<span class="starred">*</span></label>
+                            <select name="item_type" class="required">
+                                <option value="">Select Type</option>
+                                <option value="0">Goods</option>
+                                <option value="1">Services</option>
+                            </select>
                         </div>
                         <div class="formcol">
                             <label>IGST Tax Rate(%)<span class="starred">*</span></label>

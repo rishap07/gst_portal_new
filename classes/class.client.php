@@ -16,37 +16,37 @@ final class client extends validation {
         parent::__construct();
     }
     
-    public function saveClientGSTN() {
+    public function saveClientGSTIN() {
         
-        $dataArr['gstn_number'] = isset($_POST['gstn_number']) ? $_POST['gstn_number'] : '';
-        $dataArr['gstn_issue_date'] = isset($_POST['gstn_issue_date']) ? $_POST['gstn_issue_date'] : '';
+        $dataArr['gstin_number'] = isset($_POST['gstin_number']) ? $_POST['gstin_number'] : '';
+        $dataArr['gstin_issue_date'] = isset($_POST['gstin_issue_date']) ? $_POST['gstin_issue_date'] : '';
 
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
         }
         
-        if(!$this->validateGSTNNumber($dataArr)){
+        if(!$this->validateGSTINNumber($dataArr)){
             return false;
         }
         
-        if( $this->checkGSTNNumberExist($dataArr['gstn_number'], $_SESSION['user_detail']['user_id']) ) {
-            $this->setError($this->validationMessage['gstnexist']);
+        if( $this->checkGSTINNumberExist($dataArr['gstin_number'], $_SESSION['user_detail']['user_id']) ) {
+            $this->setError($this->validationMessage['gstinexist']);
             return false;
         }
         
         $dataCurrentArr = $this->getUserDetailsById( $this->sanitize($_SESSION['user_detail']['user_id']) );
-        if($dataCurrentArr['data']->gstn != '') {
+        if($dataCurrentArr['data']->gstin != '') {
             
             $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
             $dataArr['updated_date'] = date('Y-m-d H:i:s');
 
             $dataConditionArray['added_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);
-            if ($this->update($this->tableNames['client_gstn_detail'], $dataArr, $dataConditionArray)) {
+            if ($this->update($this->tableNames['client_gstin_detail'], $dataArr, $dataConditionArray)) {
 
-                $this->setSuccess($this->validationMessage['gstnupdated']);
-                $this->logMsg("User GSTN ID : " . $_SESSION['user_detail']['user_id'] . " has been updated.");
-                return true;            
+                $this->setSuccess($this->validationMessage['gstinupdated']);
+                $this->logMsg("User GSTIN ID : " . $_SESSION['user_detail']['user_id'] . " has been updated.");
+                return true;
             } else {
 
                 $this->setError($this->validationMessage['failed']);
@@ -57,11 +57,11 @@ final class client extends validation {
             $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
             $dataArr['added_date'] = date('Y-m-d H:i:s');
 
-            if ($this->insert($this->tableNames['client_gstn_detail'], $dataArr)) {
+            if ($this->insert($this->tableNames['client_gstin_detail'], $dataArr)) {
 
-                $this->setSuccess($this->validationMessage['gstnupdated']);
+                $this->setSuccess($this->validationMessage['gstinupdated']);
                 $insertid = $this->getInsertID();
-                $this->logMsg("User GSTN Added. ID : " . $insertid . ".");
+                $this->logMsg("User GSTIN Added. ID : " . $insertid . ".");
                 return true;
             } else {
                 $this->setError($this->validationMessage['failed']);
@@ -70,11 +70,11 @@ final class client extends validation {
         }
     }
     
-    public function validateGSTNNumber($dataArr) {
+    public function validateGSTINNumber($dataArr) {
         
         $rules = array(
-            'gstn_number' => 'required||min:16||max:16|#|lable_name:GSTN Number',
-            'gstn_issue_date' => 'required||date|#|lable_name:GSTN Issue Date'
+            'gstin_number' => 'required||min:15||max:15|#|lable_name:GSTIN Number',
+            'gstin_issue_date' => 'required||date|#|lable_name:GSTIN Issue Date'
         );
 
         $valid = $this->vali_obj->validate($dataArr, $rules);
@@ -95,7 +95,7 @@ final class client extends validation {
         $dataArr['martial_status'] = isset($_POST['martial_status']) ? $_POST['martial_status'] : '';
         $dataArr['date_of_birth'] = isset($_POST['date_of_birth']) ? $_POST['date_of_birth'] : '';
         $dataArr['nationality'] = isset($_POST['nationality']) ? $_POST['nationality'] : '';
-        $dataArr['status'] = isset($_POST['status']) ? $_POST['status'] : '';        
+        $dataArr['status'] = isset($_POST['status']) ? $_POST['status'] : '';
         $dataArr['pan_card_number'] = isset($_POST['pan_card_number']) ? $_POST['pan_card_number'] : '';
         $dataArr['identity_proof'] = isset($_POST['identity_proof']) ? $_POST['identity_proof'] : '';
         $dataArr['correspondence_address'] = isset($_POST['correspondence_address']) ? $_POST['correspondence_address'] : '';

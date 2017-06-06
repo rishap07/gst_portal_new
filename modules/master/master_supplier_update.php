@@ -1,16 +1,10 @@
 <?php
 $obj_master = new master();
-if(!$obj_master->can_create('master_supplier') && !isset($_GET['id']))
+ if(!$obj_master->can_read('master_supplier'))
 {
-    $obj_master->setError($obj_master->getValMsg('can_create'));
-    $obj_master->redirect(PROJECT_URL."/?page=master_supplier");
+    $obj_master->setError($obj_master->getValMsg('can_read'));
+    $obj_master->redirect(PROJECT_URL."/?page=dashboard");
     exit();
-}
-if(!$obj_master->can_update('master_supplier') && isset($_GET['id']))
-{
-    $obj_master->setError($obj_master->getValMsg('can_update'));
-    $obj_master->redirect(PROJECT_URL."/?page=master_supplier");
-    exit(); 
 }
 if(isset($_POST['submit']) && $_POST['submit']=='submit')
 {

@@ -1,32 +1,43 @@
 <?php
 $obj_login = new login();
+
 if (isset($_COOKIE['preserveKey']) && $_COOKIE['preserveKey'] != '') {
-    $preserveSet = $obj_login->getPreserveData($_COOKIE['preserveKey']);
+    
+	$preserveSet = $obj_login->getPreserveData($_COOKIE['preserveKey']);
     if (count($preserveSet)) {
         $userData = $obj_login->getUserDetailsById($preserveSet->user_id);
         $_SESSION['user_detail']['user_id'] = $userData['data']->user_id;
         $_SESSION['user_detail']['username'] = $userData['data']->username;
         $_SESSION['user_detail']['email'] = $userData['data']->email;
+		$_SESSION['user_detail']['name'] = $userData['data']->name;
+		$_SESSION['user_detail']['user_group'] = $userData['data']->user_group;
         $obj_login->redirect(PROJECT_URL . "?page=dashboard");
     }
 } else if (isset($_SESSION['user_detail']['user_id']) && intval($_SESSION['user_detail']['user_id']) > 0 && $_SESSION['user_detail']['user_id'] != '') {
-    $userData = $obj_login->getUserDetailsById($_SESSION['user_detail']['user_id']);
+    
+	$userData = $obj_login->getUserDetailsById($_SESSION['user_detail']['user_id']);
     $_SESSION['user_detail']['user_id'] = $userData['data']->user_id;
     $_SESSION['user_detail']['username'] = $userData['data']->username;
     $_SESSION['user_detail']['email'] = $userData['data']->email;
+	$_SESSION['user_detail']['name'] = $userData['data']->name;
+	$_SESSION['user_detail']['user_group'] = $userData['data']->user_group;
     $obj_login->redirect(PROJECT_URL . "?page=dashboard");
 }
+
 if (isset($_POST['login_me']) && $_POST['login_me'] == 'LOGIN') {
+	
     if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])) {
         $obj_login->setError('Invalid access to files');
     } else {
-        if ($obj_login->loginUser()) {            
+        if ($obj_login->loginUser()) {	
             $obj_login->redirect(PROJECT_URL . "?page=dashboard");
         }
     }
 }
+
 if (isset($_POST['register_me']) && $_POST['register_me'] == 'REGISTER') {
-    if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])) {
+    
+	if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])) {
         $obj_login->setError('Invalid access to files');
     } else {
         if ($obj_login->registerUser()) {

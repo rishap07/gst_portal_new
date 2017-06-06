@@ -11,7 +11,7 @@
 $obj_master = new master();
 extract($_POST);
 //Columns to fetch from database
-$aColumns = array('item_id','item_name','hsn_code','unit_price','igst_tax_rate','csgt_tax_rate', 'sgst_tax_rate','cess_tax_rate','status');
+$aColumns = array('item_id','item_name','hsn_code','item_type','igst_tax_rate','csgt_tax_rate', 'sgst_tax_rate','cess_tax_rate','status');
 $sIndexColumn = "item_id";
 
 /* DB table to use */
@@ -114,11 +114,22 @@ foreach($rResult as $aRow) {
     }elseif($aRow->status == '1'){
         $status = '<span class="active">Active<span>';
     }
+    $item_type= "";
+    if($aRow->item_type==0)
+    {
+        $item_type = "Goods";
+    }
+    else if($aRow->item_type==1)
+    {
+        $item_type = "Services";
+    }
+    
     
     $row[] = $temp_x;
     $row[] = utf8_decode($aRow->item_name);
+    $row[] = $item_type;
     $row[] = utf8_decode($aRow->hsn_code);
-    $row[] = utf8_decode($aRow->unit_price);
+    
     $row[] = utf8_decode($aRow->igst_tax_rate);
     $row[] = utf8_decode($aRow->csgt_tax_rate);
     $row[] = utf8_decode($aRow->sgst_tax_rate);

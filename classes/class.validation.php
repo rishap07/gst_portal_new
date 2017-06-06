@@ -35,7 +35,7 @@ class validation extends upload {
             'user_group' => TAB_PREFIX . 'user_group',
             'user_theme_setting' => TAB_PREFIX . 'user_theme_setting',
             'client_kyc' => TAB_PREFIX . 'client_kyc',
-            'client_gstn_detail' => TAB_PREFIX . 'client_gstn_detail',
+            'client_gstin_detail' => TAB_PREFIX . 'client_gstin_detail',
             'user_role_permission' => TAB_PREFIX . 'user_role_permission',
             'client_master_item' => TAB_PREFIX . 'client_master_item',
             'unit' => TAB_PREFIX . 'master_unit',
@@ -54,11 +54,11 @@ class validation extends upload {
         "pincode" => "\d{6}",
         "yearmonth" => "[0-9]{4}-(0[1-9]|1[0-2])",
         "datetime" => "[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]",
-        "alphaspace"=>"a-zA-Z\s",
-        "integergreaterzero"=>"[1-9][0-9]",
-        "decimalgreaterzero"=>"\s*(?=.*[1-9])\d*(?:\.\d{1,2})?\s",
-        "pancard"=>"(([A-Z]){5}([0-9]){4}([A-Z]){1})",
-        "onlyzeroone"=>"01"
+        "alphaspace" => "a-zA-Z\s",
+        "integergreaterzero" => "[1-9][0-9]",
+        "decimalgreaterzero" => "\s*(?=.*[1-9])\d*(?:\.\d{1,2})?\s",
+        "pancard" => "(([A-Z]){5}([0-9]){4}([A-Z]){1})",
+        "onlyzeroone" => "01"
     );
 
     protected $validationMessage = array(
@@ -92,8 +92,8 @@ class validation extends upload {
         'api' => 'Invalid API access.',
         'cookie_err' => 'Kindly enable cookie and session on browser.',
         'kycupdated' => 'KYC updated successfully.',
-        'gstnexist' => 'This GSTN number already associated with another client.',
-        'gstnupdated' => 'GSTN number updated successfully.',
+        'gstinexist' => 'This GSTIN number already associated with another client.',
+        'gstinupdated' => 'GSTIN number updated successfully.',
         'themesettingsaved' => 'Theme setting saved successfully.',
         'iteminserted' => 'Item Inserted Successfully',
         'itemupdated' => 'Item Updated Successfully',
@@ -112,6 +112,7 @@ class validation extends upload {
     {
         return $this->tableNames[$tablename];
     }
+    
     public function getValMsg($msg)
     {
         return $this->validationMessage[$msg];
@@ -122,7 +123,7 @@ class validation extends upload {
         if( isset($_SESSION['user_detail']['user_id']) && $_SESSION['user_detail']['user_id'] != '' ) {
         
             $currentUserDetails = $this->getUserDetailsById( $_SESSION['user_detail']['user_id'] );
-            if($currentUserDetails['data']->user_group->id == 3 && $currentUserDetails['data']->user_group->group_name == "subscriber") {
+            if($currentUserDetails['data']->user_group == 3) {
 
                 if( isset($_GET['page']) && $_GET['page'] != "plan_chooseplan") {
 
@@ -130,7 +131,7 @@ class validation extends upload {
                         $this->redirect(PROJECT_URL . "?page=plan_chooseplan");
                     }
                 }
-            } else if($currentUserDetails['data']->user_group->id == 4 && $currentUserDetails['data']->user_group->group_name == "client") {
+            } else if($currentUserDetails['data']->user_group == 4) {
 
                 if( isset($_GET['page']) && $_GET['page'] != "user_clientkycupdate") {
 

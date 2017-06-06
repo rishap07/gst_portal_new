@@ -60,7 +60,7 @@
                         <li style="font-family: opensans_bold; font-size:14px;"><strong class="fa fa-phone" aria-hidden="true"></strong> Toll Free : 1800-212-2022</li>
                         <li><span class="messagecircle bluecolor">2</span> <strong class="fa fa-bell" aria-hidden="true"></strong> Notification</li>
                         <li><span class="messagecircle greencolor">2</span> <a href="mailto:efilingwebmanager@gstkeeper.gov.in"><strong class="fa fa-envelope" aria-hidden="true"></strong>efilingwebmanager@gstkeeper.gov.in</a></li>
-                         <!--<li><strong class="fa fa-question" aria-hidden="true"></strong> Support : 1800 4250 0025 / +91 80 2650 0025</li>-->
+                        <!--<li><strong class="fa fa-question" aria-hidden="true"></strong> Support : 1800 4250 0025 / +91 80 2650 0025</li>-->
                         <li><strong class="fa fa-sign-out" aria-hidden="true"></strong> <a href="<?php echo PROJECT_URL; ?>/?page=logout">LOGOUT</a></li>
                     </ul>
                 </div>
@@ -82,12 +82,22 @@
                             <li><a href="<?php echo PROJECT_URL;?>/?page=plan_list">Listing</a></li>
                         </ul>
                     </li>
-                    <li class="iconsetting"><a href="javascript:void(0)"><span class="iconpic"></span>Master <strong class="fa fa-plus" aria-hidden="true"></strong></a>
+					
+					<?php if($db_obj->can_read('user_group') || $db_obj->can_read('user_role')){ ?>
+						<li class="iconsetting"><a href="javascript:void(0)"><span class="iconpic"></span>Settings <strong class="fa fa-plus" aria-hidden="true"></strong></a>
+							<ul class="inner-content-list">
+								<?php if($db_obj->can_read('user_group')){ ?><li><a href="<?php echo PROJECT_URL;?>/?page=user_group">User Group</a></li><?php } ?>
+								<?php if($db_obj->can_read('user_role')){ ?><li><a href="<?php echo PROJECT_URL;?>/?page=user_role">User Role</a></li><?php } ?>
+							</ul>
+						</li>
+					<?php } ?>
+					
+					<li class="iconsetting"><a href="javascript:void(0)"><span class="iconpic"></span>Master <strong class="fa fa-plus" aria-hidden="true"></strong></a>
                         <ul class="inner-content-list">
-                            <?php if($db_obj->can_read('master_state')){?><li><a href="<?php echo PROJECT_URL;?>/?page=master_state">State</a></li><?php } ?>
-                            <?php if($db_obj->can_read('master_receiver')){?><li><a href="<?php echo PROJECT_URL;?>/?page=master_receiver">Receiver</a></li><?php } ?>
-                            <?php if($db_obj->can_read('master_supplier')){?><li><a href="<?php echo PROJECT_URL;?>/?page=master_supplier">Supplier</a></li><?php } ?>
-                            <?php if($db_obj->can_read('master_state')){?><li><a href="<?php echo PROJECT_URL;?>/?page=master_item">Item</a></li><?php } ?>
+                            <?php if($db_obj->can_read('master_state')){ ?><li><a href="<?php echo PROJECT_URL;?>/?page=master_state">State</a></li><?php } ?>
+                            <?php if($db_obj->can_read('master_receiver')){ ?><li><a href="<?php echo PROJECT_URL;?>/?page=master_receiver">Receiver</a></li><?php } ?>
+                            <?php if($db_obj->can_read('master_supplier')){ ?><li><a href="<?php echo PROJECT_URL;?>/?page=master_supplier">Supplier</a></li><?php } ?>
+                            <?php if($db_obj->can_read('master_state')){ ?><li><a href="<?php echo PROJECT_URL;?>/?page=master_item">Item</a></li><?php } ?>
                         </ul>
                     </li>
                     <li class="three"><a href="javascript:void(0)"><span class="iconpic"></span>Valuation<strong class="fa fa-plus" aria-hidden="true"></strong></a>

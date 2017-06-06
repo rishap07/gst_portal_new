@@ -24,9 +24,10 @@ $obj_master = new master();
                     <tr>
                         <th align='left' width="72">Sr</th>
                         <th align='left'>Item</th>
+                        <th align='left'>Item Type</th>
                         <th align='left'>HSN Code</th>
                         
-                        <th align='left'>Unit Rate(Rs)</th>
+                        
                         <th align='left'>IGST Tax Rate</th>
                         <th align='left'>CSGT Tax Rate</th>
                         

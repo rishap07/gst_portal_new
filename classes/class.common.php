@@ -492,16 +492,11 @@ class common extends db {
         $dataArr = array();
         if (!empty($data)) {
             
-            $groupDetails = $this->getUserGroupDetailsById( $data->user_group );
-            if($groupDetails['status'] == "success") {
-                $data->user_group = $groupDetails['data'];
-            }
-            
             $kycDetails = $this->getClientKYCDetailsById( $data->user_id );
             $data->kyc = $kycDetails['data'];
             
-            $gstnDetails = $this->getClientGSTNDetailsById( $data->user_id );
-            $data->gstn = $gstnDetails['data'];
+            $gstinDetails = $this->getClientGSTINDetailsById( $data->user_id );
+            $data->gstin = $gstinDetails['data'];
 
             $dataArr['data'] = $data;
             $dataArr['message'] = $this->validationMessage['userexist'];
@@ -530,9 +525,9 @@ class common extends db {
         return $dataArr;
     }
     
-    public function getClientGSTNDetailsById($user_id = '') {
+    public function getClientGSTINDetailsById($user_id = '') {
 
-        $data = $this->get_row("select * from " . $this->tableNames['client_gstn_detail'] . " where 1=1 AND added_by = " . $user_id);
+        $data = $this->get_row("select * from " . $this->tableNames['client_gstin_detail'] . " where 1=1 AND added_by = " . $user_id);
         $dataArr = array();
         if (!empty($data)) {
             $dataArr['data'] = $data;
@@ -618,15 +613,15 @@ class common extends db {
         }
     }
     
-    public function checkGSTNNumberExist($gstnnumber, $user_id = '') {
+    public function checkGSTINNumberExist($gstinnumber, $user_id = '') {
 
         if($user_id && $user_id != '') {
-            $numberGSTN = $this->get_row("select * from " . $this->tableNames['client_gstn_detail'] ." where 1=1 AND added_by != ".$user_id." AND UPPER(gstn_number) = '" . strtoupper($gstnnumber) . "'");
+            $numberGSTIN = $this->get_row("select * from " . $this->tableNames['client_gstin_detail'] ." where 1=1 AND added_by != ".$user_id." AND UPPER(gstin_number) = '" . strtoupper($gstinnumber) . "'");
         } else {
-            $numberGSTN = $this->get_row("select * from " . $this->tableNames['client_gstn_detail'] . " where 1=1 AND UPPER(gstn_number) = '" . strtoupper($gstnnumber) . "'");
+            $numberGSTIN = $this->get_row("select * from " . $this->tableNames['client_gstin_detail'] . " where 1=1 AND UPPER(gstin_number) = '" . strtoupper($gstinnumber) . "'");
         }
         
-        if (count($numberGSTN) == 1) {
+        if (count($numberGSTIN) == 1) {
             return true;
         }
     }
@@ -684,7 +679,7 @@ class common extends db {
             $preserveSet = $this->getPreserveData($_COOKIE['preserveKey']);
             if (count($preserveSet)) {
 
-                $dataPreserveArr['expire_date'] = date('Y-m-d H:i:s', strtotime("+7 day"));
+                $dataPreserveArr['expire_date'] = date('Y-m-d H:i:s', strtotime("+30 day"));
 
                 if ($this->update($this->tableNames['preserve_user'], $dataPreserveArr, array("preserve_key" => $preserveSet->preserve_key))) {
                     return true;
@@ -694,7 +689,7 @@ class common extends db {
                 }
             }
         }
-
+        
         /* Generate Preserve Key */
         $user_preserve_key = $this->generateRandomString(26, $this->tableNames['preserve_user'], "preserve_key", '', true);
 
@@ -716,8 +711,7 @@ class common extends db {
         }
     }
     
-    protected function hitCurl($url,$parameters)
-    {
+    protected function hitCurl($url,$parameters) {
         
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_POST, 1);

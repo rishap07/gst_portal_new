@@ -59,10 +59,10 @@ final class api extends validation
         }
         $data['user'] = $this->findAll($this->tableNames["user"],array('password'=>$this->password_encrypt($dataArr['password']),'username'=>$dataArr['username'],'status'=>'1','is_deleted'=>'0'),"user_id,concat(first_name,' ',last_name)as name,username,user_group,email,user_group");
         
-        if(empty($data))
-        {
+        if(empty($data)) {
             return array('msg'=>$this->validationMessage['loginerror'],'code'=>'1');
         }
+		
         $query = "select b.role_page,a.can_read,a.can_create,a.can_update,a.can_delete from ".$this->tableNames['user_role_permission']." a left join ".$this->tableNames['user_role']." b on a.role_id=b.user_role_id where a.group_id='".$data['user']['0']->user_group."' and a.is_deleted='0' and a.status='1'";
         $data['user_permission'] = $this->get_results($query);
         
