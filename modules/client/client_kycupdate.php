@@ -5,6 +5,9 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
     exit();
 }
 
+$dataArr = array();
+$dataArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
+
 if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
 
     if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
@@ -13,13 +16,15 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
     } else {
 
         if($obj_client->saveClientKYC()){
-
-            $obj_client->redirect(PROJECT_URL."?page=client_registrationchoice");
+            
+            if($dataArr['data']->gstin != '') {
+                $obj_client->redirect(PROJECT_URL."?page=dashboard");
+            } else {
+                $obj_client->redirect(PROJECT_URL."?page=client_registrationchoice");
+            }
         }
     }
 }
-$dataArr = array();
-$dataArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
 ?>
 
 <!--========================sidemenu over=========================-->
@@ -170,11 +175,32 @@ $dataArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['use
                         <?php } ?>
                         
                         <div class="formcol">
-                            <label>Permanent Address<span class="starred">*</span></label>
-                            <input type="text" placeholder="Permanent Address" name="permanent_address" id="permanent_address" class="required" data-bind="address" value="<?php if(isset($_POST['permanent_address'])){ echo $_POST['permanent_address']; } else if(isset($dataArr['data']->kyc->permanent_address)){ echo $dataArr['data']->kyc->permanent_address; } ?>" />
+                            <label>Registered Address<span class="starred">*</span></label>
+                            <input type="text" placeholder="Registered Address" name="registered_address" id="registered_address" class="required" data-bind="address" value="<?php if(isset($_POST['registered_address'])){ echo $_POST['registered_address']; } else if(isset($dataArr['data']->kyc->registered_address)){ echo $dataArr['data']->kyc->registered_address; } ?>" />
                         </div>
                         
                         <div class="formcol two">
+                            <label>State <span class="starred">*</span></label>
+                            <select name='state' id='state' class='required'>
+                                <?php $dataStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+                                <?php if(!empty($dataStateArrs)) { ?>
+                                    <option value=''>Select State</option>
+                                    <?php foreach($dataStateArrs as $dataStateArr) { ?>
+
+                                        <?php if(isset($_POST['state']) && $_POST['state'] == $dataStateArr->state_id){ ?>
+                                            <option value='<?php echo $dataStateArr->state_id; ?>' selected="selected" data-code="<?php echo $dataStateArr->state_code;?>"><?php echo $dataStateArr->state_name; ?></option>
+                                        <?php } else if(isset($dataArr['data']->kyc->state_id) && $dataArr['data']->kyc->state_id == $dataStateArr->state_id){ ?>
+                                            <option value='<?php echo $dataStateArr->state_id; ?>' selected="selected" data-code="<?php echo $dataStateArr->state_code;?>"><?php echo $dataStateArr->state_name; ?></option>
+                                        <?php } else { ?>
+                                            <option value='<?php echo $dataStateArr->state_id; ?>' data-code="<?php echo $dataStateArr->state_code;?>"><?php echo $dataStateArr->state_name; ?></option>
+                                        <?php } ?>
+
+                                    <?php } ?>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        
+                        <div class="formcol third">
                             <label>Occupation<span class="starred">*</span></label>
                             <input type="text" placeholder="Occupation" name="occupation" id="occupation" class="required" data-bind="content" value="<?php if(isset($_POST['occupation'])){ echo $_POST['occupation']; } else if(isset($dataArr['data']->kyc->occupation)){ echo $dataArr['data']->kyc->occupation; } ?>" />
                         </div>

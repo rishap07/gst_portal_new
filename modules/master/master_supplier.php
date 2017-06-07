@@ -39,16 +39,11 @@ $obj_master = new master();
     </div>
 </div>
 <script>
-    $(document).ready(function () {
+    
+	$(document).ready(function () {
         TableManaged.init();
-        $('#submit').click(function () {
-            var mesg = {};
-            if (vali.validate(mesg,'form')) {
-                return true;
-            }
-            return false;
-        });
     });
+	
     var TableManaged = function () {
         return {
             init: function () {

@@ -81,7 +81,8 @@ $dataArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['use
             changeMonth: true,
             changeYear: true,
             dateFormat: 'yy-mm-dd',
-            minDate: '0'
+            minDate: new Date(2017, 0, 1),
+			maxDate: '0'
         });
 
         $('#submit').click(function () {

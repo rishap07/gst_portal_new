@@ -41,13 +41,6 @@ if(!$obj_master->can_read('master_receiver'))
 <script>
     $(document).ready(function () {
         TableManaged.init();
-        $('#submit').click(function () {
-            var mesg = {};
-            if (vali.validate(mesg,'form')) {
-                return true;
-            }
-            return false;
-        });
     });
     var TableManaged = function () {
         return {

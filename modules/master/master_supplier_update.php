@@ -1,11 +1,12 @@
 <?php
 $obj_master = new master();
- if(!$obj_master->can_read('master_supplier'))
-{
+if(!$obj_master->can_read('master_supplier')) {
+
     $obj_master->setError($obj_master->getValMsg('can_read'));
     $obj_master->redirect(PROJECT_URL."/?page=dashboard");
     exit();
 }
+
 if(isset($_POST['submit']) && $_POST['submit']=='submit')
 {
     if(!$obj_master->can_create('master_supplier'))
@@ -14,28 +15,30 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit')
         $obj_master->redirect(PROJECT_URL."/?page=master_supplier");
         exit();
     }
+	
     if($obj_master->addSupplier())
     {
         $obj_master->redirect(PROJECT_URL."/?page=master_supplier");
     }
 }
-if(isset($_POST['submit']) && $_POST['submit']=='update' && isset($_GET['id']))
-{
-    if(!$obj_master->can_update('master_supplier'))
-    {
-        $obj_master->setError($obj_master->getValMsg('can_update'));
+
+if(isset($_POST['submit']) && $_POST['submit']=='update' && isset($_GET['id'])) {
+
+    if(!$obj_master->can_update('master_supplier')) {
+
+		$obj_master->setError($obj_master->getValMsg('can_update'));
         $obj_master->redirect(PROJECT_URL."/?page=master_supplier");
         exit(); 
     }
-    if($obj_master->updateSupplier())
-    {
+	
+    if($obj_master->updateSupplier()) {
         $obj_master->redirect(PROJECT_URL."/?page=master_supplier");
     }
 }
+
 $dataArr = array();
-if(isset($_GET['id']))
-{
-    $dataArr = $obj_master->findAll($obj_master->getTableName('supplier'),"is_deleted='0' and supplier_id='".$obj_master->sanitize($_GET['id'])."'");
+if(isset($_GET['id'])) {
+    $dataArr = $obj_master->findAll($obj_master->getTableName('supplier'), "is_deleted='0' and supplier_id='".$obj_master->sanitize($_GET['id'])."'");
 }
 ?>
 <div class="admincontainer greybg">
@@ -52,9 +55,10 @@ if(isset($_GET['id']))
                     <div class="kycmainbox">
                         <div class="clear"></div>
                         <div class="formcol">
-                            <label>GSTID<span class="starred">*</span></label>
-                            <input type="text" placeholder="GSTID" name='gstid' data-bind="content" class="required" value='<?php if(isset($_POST['gstid'])){ echo $_POST['gstid'];}else if(isset($dataArr[0]->gstid)){ echo $dataArr[0]->gstid;}?>' />
-                            <span class="greysmalltxt"></span> </div>
+                            <label>GSTID</label>
+                            <input type="text" placeholder="GSTID" name='gstid' data-bind="alphanum" value='<?php if(isset($_POST['gstid'])){ echo $_POST['gstid'];}else if(isset($dataArr[0]->gstid)){ echo $dataArr[0]->gstid;}?>' />
+                            <span class="greysmalltxt"></span>
+						</div>
                         <div class="formcol two">
                             <label>Name<span class="starred">*</span></label>
                             <input type="text" placeholder="Name"  name='name' data-bind="content" class="required" value='<?php if(isset($_POST['name'])){ echo $_POST['name'];}else if(isset($dataArr[0]->name)){ echo $dataArr[0]->name;}?>'/>
@@ -65,40 +69,26 @@ if(isset($_GET['id']))
                         </div>
                         <div class="formcol">
                             <label>State<span class="starred">*</span></label>
-                            <select name='state' id='state' name='state' class='required' placeholder="GSTID">
+							<select name='state' id='state' class='required'>
                                 <?php
                                 $dataStateArrs = $obj_master->get_results("select * from ".$obj_master->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc");
-                                if(!empty($dataStateArrs))
-                                {
-                                    ?>
+                                if(!empty($dataStateArrs)) { ?>
                                     <option value=''>Select State</option>
                                     <?php
-                                    foreach($dataStateArrs as $dataStateArr)
-                                    {
-                                        ?>
-                                        <option value='<?php echo $dataStateArr->state_id;?>:<?php echo $dataStateArr->state_code;?>' <?php if(isset($_POST['state']) && $_POST['state']===$dataStateArr->state_id.":".$dataStateArr->state_code){ echo 'selected';}else if(isset($dataArr[0]->state_code) && isset($dataArr[0]->state) && $dataStateArr->state_id.":".$dataStateArr->state_code ==$dataArr[0]->state.":".$dataArr[0]->state_code){ echo 'selected';} ?>><?php echo $dataStateArr->state_name;?></option>
-                                        <?php
-                                    }
-                                }
-                                else
-                                {
-                                    ?>
+                                    foreach($dataStateArrs as $dataStateArr) { ?>
+                                        <option value='<?php echo $dataStateArr->state_id; ?>' <?php if(isset($_POST['state']) && $_POST['state'] === $dataStateArr->state_id){ echo 'selected="selected"'; } else if(isset($dataArr[0]->state) && $dataStateArr->state_id == $dataArr[0]->state){ echo 'selected="selected"'; } ?>><?php echo $dataStateArr->state_name; ?></option>
+                                    <?php }
+                                } else { ?>
                                     <option value=''>No State Found</option>
-                                    <?php
-                                }
-                                ?>
+								<?php } ?>
                             </select>
                             <span class="greysmalltxt"></span> 
-                        </div>
-                        <div class="formcol two">
-                            <label>State Code<span class="starred">*</span></label>
-                            <input type="text" placeholder="State Code" name='state_code' readonly="" class="readonly required" id='state_code' value='<?php if(isset($_POST['state_code'])){ echo $_POST['state_code'];}else if(isset($dataArr[0]->address)){ echo $dataArr[0]->state_code;}?>'/>
                         </div>
                         <div class="formcol third">
                             <label>Status<span class="starred">*</span></label>
                             <select name="status">
-                                <option value="1" <?php if(isset($_POST['status']) &&  $_POST['status']==='1'){ echo 'selected';}else if(isset($dataArr[0]->state_code) && $dataArr[0]->state_code==='1'){ echo 'selected';}?>>Active</option>
-                                <option value="0" <?php if(isset($_POST['status']) &&  $_POST['status']==='0'){ echo 'selected';}else if(isset($dataArr[0]->state_code) && $dataArr[0]->state_code==='0'){ echo 'selected';}?>>In-Active</option>
+                                <option value="1" <?php if(isset($_POST['status']) &&  $_POST['status'] === '1'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->status) && $dataArr[0]->status === '1'){ echo 'selected="selected"'; } ?>>Active</option>
+                                <option value="0" <?php if(isset($_POST['status']) &&  $_POST['status'] === '0'){ echo 'selected"selected"'; } else if(isset($dataArr[0]->status) && $dataArr[0]->status === '0'){ echo 'selected="selected"'; } ?>>In-Active</option>
                             </select>
                         </div>
                         <div class="clear height30"></div>
@@ -116,11 +106,8 @@ if(isset($_GET['id']))
 </div>
 <script>
     $(document).ready(function () {
-        $("#state").change(function () {
-           val1 = $(this).val().split(":");
-           $("#state_code").val(val1[1]);
-        });
-        $('#submit').click(function () {
+
+		$('#submit').click(function () {
             var mesg = {};
             if (vali.validate(mesg,'form')) {
                 return true;

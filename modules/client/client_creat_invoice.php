@@ -4,6 +4,8 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
     $obj_client->redirect(PROJECT_URL);
     exit();
 }
+
+//$dataCurrentArr = $this->getUserDetailsById( $this->sanitize($_SESSION['user_detail']['user_id']) );
 ?>
 <!--POPUP START HERE-->
 <div style="display: none; position: fixed;" id="popup" class="formpopup topanimation">
@@ -37,13 +39,13 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
                 <div class="formcol third">
                     <label>HSN Code</label>
                     <div class="clear"></div>
-                    <div class="readonly-section" id="item_hsn_code"><?php if(isset($dataArr[0]->hsn_code)){ echo $dataArr[0]->hsn_code; } else { echo "HSN Code"; } ?></div>
+                    <div class="readonly-section" id="item_hsn_code"><?php echo "HSN Code"; ?></div>
                 </div>
                 <div class="clear"></div>
 
                 <div class="formcol">
                     <label>Unit Price(Rs.)<span class="starred">*</span></label>
-                    <input type="text" placeholder="Item Unit Price" name='unit_price' id="unit_price" class="required" data-bind="demical" value='<?php if(isset($_POST['unit_price'])) { echo $_POST['unit_price']; } else if(isset($dataArr[0]->unit_price)){ echo $dataArr[0]->unit_price; } ?>'/>
+                    <input type="text" placeholder="Item Unit Price" name='unit_price' id="unit_price" class="required" data-bind="demical" />
                 </div>
 
                 <div class="formcol two">

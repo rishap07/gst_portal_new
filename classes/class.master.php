@@ -255,55 +255,58 @@ final class master extends validation {
     * Start : Receiver Add/Update/Delete Related All function
     */
     
-    final public function addReceiver()
-    {
+    final public function addReceiver() {
+
         $dataArr = $this->getReceiverData();
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
         }
-        if(!$this->validateReceiver($dataArr))
-        {
+        
+        if(!$this->validateReceiver($dataArr)) {
             return false;
         }
+        
+        $dataArr['gstid'] = isset($_POST['gstid']) ? $_POST['gstid'] : '';
         $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['added_date'] = date('Y-m-d H:i:s');
+        
         if (!$this->insert($this->tableNames['receiver'], $dataArr)) {
             $this->setError($this->validationMessage['failed']);
             return false;
         }
+
         $this->setSuccess($this->validationMessage['inserted']);
         $insertid = $this->getInsertID();
         $this->logMsg("New Receiver Added. ID : " . $insertid . ".");
         return true;
     }
     
-    private function getReceiverData()
-    {
+    private function getReceiverData() {
+        
         $dataArr = array();
-        if(isset($_POST['submit']) && ($_POST['submit']=='submit' || ($_POST['submit']=='update' && isset($_GET['id']))))
-        {
-            $dataArr['gstid'] = isset($_POST['gstid']) ? $_POST['gstid'] : '';
+        if(isset($_POST['submit']) && ($_POST['submit']=='submit' || ($_POST['submit']=='update' && isset($_GET['id'])))) {
+
             $dataArr['name'] = isset($_POST['name']) ? $_POST['name'] : '';
             $dataArr['address'] = isset($_POST['address']) ? $_POST['address'] : '';
-            $state = isset($_POST['state']) ? $_POST['state'] : '';
-            $state = explode(":", $state);
-            $dataArr['state'] = isset($state[0]) ? $state[0] : '';
-            $dataArr['state_code'] = isset($_POST['state_code']) ? $_POST['state_code'] : '';
+            $dataArr['state'] = isset($_POST['state']) ? $_POST['state'] : '';
             $dataArr['status'] = isset($_POST['status']) ? $_POST['status'] : '';
         }
         return $dataArr;
     }
     
-    private function validateReceiver($dataArr) 
-    {
+    private function validateReceiver($dataArr) {
+
         $rules = array(
-            'gstid' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||min:10||max:20|#|lable_name:GSTID',
             'name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Name',
             'address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Address',
-            'state' => 'required|#|lable_name:State',
-            'state_code' => 'required|#|lable_name:State Code',
+            'state' => 'required|#|lable_name:State'
         );
+        
+        if( array_key_exists("gstid",$dataArr) ) {
+            $rules['gstid'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/||min:15||max:15|#|lable_name:GSTID';
+        }
+        
         $valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
             $err_arr = $valid->allErrors();
@@ -313,23 +316,29 @@ final class master extends validation {
         }
         return true;
     }
-    final public function updateReceiver()
-    {
+    
+    final public function updateReceiver() {
+
         $dataArr = $this->getReceiverData();
+        
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
         }
-        if(!$this->validateReceiver($dataArr))
-        {
+        
+        if(!$this->validateReceiver($dataArr)) {
             return false;
         }
+        
+        $dataArr['gstid'] = isset($_POST['gstid']) ? $_POST['gstid'] : '';
         $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['update_date'] = date('Y-m-d H:i:s');
+        
         if (!$this->update($this->tableNames['receiver'], $dataArr, array('receiver_id'=>$this->sanitize($_GET['id'])))) {
             $this->setError($this->validationMessage['failed']);
             return false;
         }
+        
         $this->logMsg("Receiver ID : " . $_GET['id'] . " in Receiver Master has been updated");
         $this->setSuccess($this->validationMessage['update']);
         return true;
@@ -337,7 +346,6 @@ final class master extends validation {
     /*
     * End : Receiver Add/Update/Delete Related All function
     */
-    
     
     
     /*
@@ -351,34 +359,34 @@ final class master extends validation {
             $this->setError($this->validationMessage['mandatory']);
             return false;
         }
-        if(!$this->validateSupplier($dataArr))
-        {
+        
+        if(!$this->validateSupplier($dataArr)) {
             return false;
         }
+        
+        $dataArr['gstid'] = isset($_POST['gstid']) ? $_POST['gstid'] : '';
         $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['added_date'] = date('Y-m-d H:i:s');
-        if (!$this->insert($this->tableNames['receiver'], $dataArr)) {
+        
+        if (!$this->insert($this->tableNames['supplier'], $dataArr)) {
             $this->setError($this->validationMessage['failed']);
             return false;
         }
+        
         $this->setSuccess($this->validationMessage['inserted']);
         $insertid = $this->getInsertID();
         $this->logMsg("New Supplier Added. ID : " . $insertid . ".");
         return true;
     }
     
-    private function getSupplierData()
-    {
+    private function getSupplierData() {
+
         $dataArr = array();
-        if(isset($_POST['submit']) && ($_POST['submit']=='submit' || ($_POST['submit']=='update' && isset($_GET['id']))))
-        {
-            $dataArr['gstid'] = isset($_POST['gstid']) ? $_POST['gstid'] : '';
+        if(isset($_POST['submit']) && ($_POST['submit']=='submit' || ($_POST['submit']=='update' && isset($_GET['id'])))) {
+
             $dataArr['name'] = isset($_POST['name']) ? $_POST['name'] : '';
             $dataArr['address'] = isset($_POST['address']) ? $_POST['address'] : '';
-            $state = isset($_POST['state']) ? $_POST['state'] : '';
-            $state = explode(":", $state);
-            $dataArr['state'] = isset($state[0]) ? $state[0] : '';
-            $dataArr['state_code'] = isset($_POST['state_code']) ? $_POST['state_code'] : '';
+            $dataArr['state'] = isset($_POST['state']) ? $_POST['state'] : '';
             $dataArr['status'] = isset($_POST['status']) ? $_POST['status'] : '';
         }
         return $dataArr;
@@ -387,12 +395,15 @@ final class master extends validation {
     private function validateSupplier($dataArr) 
     {
         $rules = array(
-            'gstid' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||min:10||max:20|#|lable_name:GSTID',
             'name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Name',
             'address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Address',
-            'state' => 'required|#|lable_name:State',
-            'state_code' => 'required|#|lable_name:State Code',
+            'state' => 'required|#|lable_name:State'
         );
+        
+        if( array_key_exists("gstid",$dataArr) ) {
+            $rules['gstid'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/||min:15||max:15|#|lable_name:GSTID';
+        }
+        
         $valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
             $err_arr = $valid->allErrors();
@@ -402,23 +413,29 @@ final class master extends validation {
         }
         return true;
     }
-    final public function updateSupplier()
-    {
+    
+    final public function updateSupplier() {
+
         $dataArr = $this->getReceiverData();
+        
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
         }
-        if(!$this->validateReceiver($dataArr))
-        {
+        
+        if(!$this->validateReceiver($dataArr)) {
             return false;
         }
+        
+        $dataArr['gstid'] = isset($_POST['gstid']) ? $_POST['gstid'] : '';
         $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['update_date'] = date('Y-m-d H:i:s');
-        if (!$this->update($this->tableNames['supplier'], $dataArr, array('supplier_id'=>$this->sanitize($_GET['id'])))) {
+        
+        if (!$this->update($this->tableNames['supplier'], $dataArr, array('supplier_id' => $this->sanitize($_GET['id'])))) {
             $this->setError($this->validationMessage['failed']);
             return false;
         }
+        
         $this->logMsg("Supplier ID : " . $_GET['id'] . " in Supplier Master has been updated");
         $this->setSuccess($this->validationMessage['update']);
         return true;
@@ -428,7 +445,6 @@ final class master extends validation {
     */
     
     
-       
     /*
     * Start : Supplier Add/Update/Delete Related All function
     */

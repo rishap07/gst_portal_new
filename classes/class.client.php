@@ -100,12 +100,13 @@ final class client extends validation {
         $dataArr['identity_proof'] = isset($_POST['identity_proof']) ? $_POST['identity_proof'] : '';
         $dataArr['correspondence_address'] = isset($_POST['correspondence_address']) ? $_POST['correspondence_address'] : '';
         $dataArr['correspondence_details'] = isset($_POST['correspondence_details']) ? $_POST['correspondence_details'] : '';
-        $dataArr['permanent_address'] = isset($_POST['permanent_address']) ? $_POST['permanent_address'] : '';
+        $dataArr['registered_address'] = isset($_POST['registered_address']) ? $_POST['registered_address'] : '';
+        $dataArr['state_id'] = isset($_POST['state']) ? $_POST['state'] : '';
         $dataArr['occupation'] = isset($_POST['occupation']) ? $_POST['occupation'] : '';
         
         //$dataArr['proof_photograph'] = isset($_FILES['proof_photograph']['name']) ? $_FILES['proof_photograph']['name'] : '';
         //$dataArr['address_proof'] = isset($_FILES['address_proof']['name']) ? $_FILES['address_proof']['name'] : '';
-        
+
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
@@ -187,7 +188,8 @@ final class client extends validation {
             'identity_proof' => 'required||identityproof|#|lable_name:Identity Proof',
             'correspondence_address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Correspondence Address',
             'correspondence_details' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Correspondence Details',
-            'permanent_address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Permanent Address',
+            'registered_address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Permanent Address',
+            'state_id' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:State',
             'occupation' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Occupation'
         );
         
@@ -280,7 +282,7 @@ final class client extends validation {
     }
     
     public function validateClientItem($dataArr) {
-        
+
         $rules = array(
             'item_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Item Name',
             'item_category' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Item Category',

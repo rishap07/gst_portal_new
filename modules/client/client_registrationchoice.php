@@ -8,8 +8,6 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
 $dataArr = array();
 $dataArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
 ?>
-
-
 <!--POPUP START HERE-->
   <div style="display: none; position: fixed;" id="popup" class="popupcontainer topanimation">
     <div class="popupform">

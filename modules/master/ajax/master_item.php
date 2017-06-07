@@ -12,6 +12,7 @@ $obj_master = new master();
 extract($_POST);
 //Columns to fetch from database
 $aColumns = array('item_id','item_name','hsn_code','item_type','igst_tax_rate','csgt_tax_rate', 'sgst_tax_rate','cess_tax_rate','status');
+$aSearchColumns = array('item_name','hsn_code','item_type','igst_tax_rate','csgt_tax_rate', 'sgst_tax_rate','cess_tax_rate');
 $sIndexColumn = "item_id";
 
 /* DB table to use */
@@ -49,11 +50,12 @@ if (isset($_POST['iSortCol_0'])) {
  * word by word on any field. It's possible to do here, but concerned about efficiency
  * on very large tables, and MySQL's regex functionality is very limited
  */
-//$sWhere = "WHERE is_deleted = '0' AND language_id = '".$_SESSION['lang_id']."' ";.
-$sWhere=" where is_deleted='0' AND added_by = '".$_SESSION['user_detail']['user_id']."'";
+$sWhere=" where is_deleted='0'";
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
-    for ($i = 0; $i < count($aColumns1); $i++) {
-        $sWhere .= $aColumns1[$i] . " LIKE '%" . utf8_encode(htmlentities($_POST['sSearch'],ENT_COMPAT,'utf-8')) . "%' OR ";
+    
+	$sWhere .= 'AND (';
+	for ($i = 0; $i < count($aSearchColumns); $i++) {
+        $sWhere .= $aSearchColumns[$i] . " LIKE '%" . utf8_encode(htmlentities($_POST['sSearch'],ENT_COMPAT,'utf-8')) . "%' OR ";
     }
     $sWhere = substr_replace($sWhere, "", -3);
     $sWhere .= ')';

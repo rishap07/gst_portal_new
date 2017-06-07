@@ -11,11 +11,12 @@
 $obj_master = new master();
 extract($_POST);
 //Columns to fetch from database
-$aColumns = array('r.supplier_id','r.gstid','r.name','r.address','s.state_name','r.state_code', 'r.status');
+$aColumns = array('r.supplier_id', 'r.gstid', 'r.name', 'r.address', 's.state_name', 's.state_code', 'r.status');
+$aSearchColumns = array('r.gstid', 'r.name', 'r.address', 's.state_name', 's.state_code');
 $sIndexColumn = "r.supplier_id";
 
 /* DB table to use */
-$sTable = $obj_master->getTableName('supplier')." r left join ".$obj_master->getTableName('state')." s on r.state=s.state_id";
+$sTable = $obj_master->getTableName('supplier')." r inner join ".$obj_master->getTableName('state')." s on r.state=s.state_id";
 
 /*
  * Paging
@@ -49,11 +50,12 @@ if (isset($_POST['iSortCol_0'])) {
  * word by word on any field. It's possible to do here, but concerned about efficiency
  * on very large tables, and MySQL's regex functionality is very limited
  */
-//$sWhere = "WHERE is_deleted = '0' AND language_id = '".$_SESSION['lang_id']."' ";.
-$sWhere=" where r.is_deleted='0' AND added_by = '".$_SESSION['user_detail']['user_id']."'";
+$sWhere=" where r.is_deleted='0' AND r.added_by = '".$_SESSION['user_detail']['user_id']."'";
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
-    for ($i = 0; $i < count($aColumns1); $i++) {
-        $sWhere .= $aColumns1[$i] . " LIKE '%" . utf8_encode(htmlentities($_POST['sSearch'],ENT_COMPAT,'utf-8')) . "%' OR ";
+    
+	$sWhere .= 'AND (';
+	for ($i = 0; $i < count($aSearchColumns); $i++) {
+        $sWhere .= $aSearchColumns[$i] . " LIKE '%" . utf8_encode(htmlentities($_POST['sSearch'],ENT_COMPAT,'utf-8')) . "%' OR ";
     }
     $sWhere = substr_replace($sWhere, "", -3);
     $sWhere .= ')';
@@ -61,11 +63,14 @@ if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
 
 /* Individual column filtering */
 for ($i = 0; $i < count($aColumns); $i++) {
-    if (isset($_POST['bSearchable_' . $i]))
-        if ((isset($_POST['bSearchable_' . $i]) && $_POST['bSearchable_' . $i] == "true") && (isset($_POST['sSearch_' . $i]) && $_POST['sSearch_' . $i] != '')) {
-            $sWhere .= " AND ";
-            $sWhere .= $aColumns[$i] . " LIKE '%" . $obj_master->escape($_POST['sSearch_' . $i]) . "%' ";
-        }
+    
+	if (isset($_POST['bSearchable_' . $i])) {
+		
+		if ((isset($_POST['bSearchable_' . $i]) && $_POST['bSearchable_' . $i] == "true") && (isset($_POST['sSearch_' . $i]) && $_POST['sSearch_' . $i] != '')) {
+			$sWhere .= " AND ";
+			$sWhere .= $aColumns[$i] . " LIKE '%" . $obj_master->escape($_POST['sSearch_' . $i]) . "%' ";
+		}
+	}
 }
 
 /*
@@ -104,10 +109,11 @@ $output = array(
 );
 
 $temp_x=1;
-if(isset($rResult) && !empty($rResult))
-{
+if(isset($rResult) && !empty($rResult)) {
+
     foreach($rResult as $aRow) {
-        $row = array();
+        
+		$row = array();
         $status = '';
         if($aRow->status == '0'){
             $status = '<span class="inactive">InActive<span>';

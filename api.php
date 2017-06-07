@@ -1,4 +1,4 @@
-<?php
+ <?php
 include_once('conf/config.inc.php');
 $api_obj = new api();
 if (method_exists($api_obj, $_REQUEST['api_method'])) {

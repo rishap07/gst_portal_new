@@ -92,12 +92,21 @@
 						</li>
 					<?php } ?>
 					
+					<li class="iconsetting"><a href="javascript:void(0)"><span class="iconpic"></span>Client Settings <strong class="fa fa-plus" aria-hidden="true"></strong></a>
+						<ul class="inner-content-list">
+							<li><a href="<?php echo PROJECT_URL;?>/?page=client_kycupdate">Update KYC</a></li>
+							<li><a href="<?php echo PROJECT_URL;?>/?page=client_gstin">Update GSTIN</a></li>
+							<li><a href="<?php echo PROJECT_URL;?>/?page=client_creat_invoice">Create Invoice</a></li>
+						</ul>
+					</li>
+					
 					<li class="iconsetting"><a href="javascript:void(0)"><span class="iconpic"></span>Master <strong class="fa fa-plus" aria-hidden="true"></strong></a>
                         <ul class="inner-content-list">
-                            <?php if($db_obj->can_read('master_state')){ ?><li><a href="<?php echo PROJECT_URL;?>/?page=master_state">State</a></li><?php } ?>
-                            <?php if($db_obj->can_read('master_receiver')){ ?><li><a href="<?php echo PROJECT_URL;?>/?page=master_receiver">Receiver</a></li><?php } ?>
-                            <?php if($db_obj->can_read('master_supplier')){ ?><li><a href="<?php echo PROJECT_URL;?>/?page=master_supplier">Supplier</a></li><?php } ?>
-                            <?php if($db_obj->can_read('master_state')){ ?><li><a href="<?php echo PROJECT_URL;?>/?page=master_item">Item</a></li><?php } ?>
+                            <?php if($db_obj->can_read('master_state')){ ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_state">State</a></li><?php } ?>
+                            <?php if($db_obj->can_read('master_receiver')){ ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_receiver">Receiver</a></li><?php } ?>
+                            <?php if($db_obj->can_read('master_supplier')){ ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_supplier">Supplier</a></li><?php } ?>
+                            <?php if($db_obj->can_read('master_item')){ ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_item">Item</a></li><?php } ?>
+							<?php if($db_obj->can_read('client_master_item')){ ?><li><a href="<?php echo PROJECT_URL; ?>/?page=client_item_list">Item</a></li><?php } ?>
                         </ul>
                     </li>
                     <li class="three"><a href="javascript:void(0)"><span class="iconpic"></span>Valuation<strong class="fa fa-plus" aria-hidden="true"></strong></a>
