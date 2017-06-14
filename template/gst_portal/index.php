@@ -2,25 +2,25 @@
 $obj_login = new login();
 
 if (isset($_COOKIE['preserveKey']) && $_COOKIE['preserveKey'] != '') {
-    
-	$preserveSet = $obj_login->getPreserveData($_COOKIE['preserveKey']);
+    $preserveSet = $obj_login->getPreserveData($_COOKIE['preserveKey']);
     if (count($preserveSet)) {
         $userData = $obj_login->getUserDetailsById($preserveSet->user_id);
         $_SESSION['user_detail']['user_id'] = $userData['data']->user_id;
         $_SESSION['user_detail']['username'] = $userData['data']->username;
         $_SESSION['user_detail']['email'] = $userData['data']->email;
-		$_SESSION['user_detail']['name'] = $userData['data']->name;
-		$_SESSION['user_detail']['user_group'] = $userData['data']->user_group;
+        $_SESSION['user_detail']['name'] = $userData['data']->name;
+        $_SESSION['user_detail']['user_group'] = $userData['data']->user_group;
         $obj_login->redirect(PROJECT_URL . "?page=dashboard");
     }
-} else if (isset($_SESSION['user_detail']['user_id']) && intval($_SESSION['user_detail']['user_id']) > 0 && $_SESSION['user_detail']['user_id'] != '') {
-    
-	$userData = $obj_login->getUserDetailsById($_SESSION['user_detail']['user_id']);
+} 
+else if (isset($_SESSION['user_detail']['user_id']) && intval($_SESSION['user_detail']['user_id']) > 0 && $_SESSION['user_detail']['user_id'] != '')
+{
+    $userData = $obj_login->getUserDetailsById($_SESSION['user_detail']['user_id']);
     $_SESSION['user_detail']['user_id'] = $userData['data']->user_id;
     $_SESSION['user_detail']['username'] = $userData['data']->username;
     $_SESSION['user_detail']['email'] = $userData['data']->email;
-	$_SESSION['user_detail']['name'] = $userData['data']->name;
-	$_SESSION['user_detail']['user_group'] = $userData['data']->user_group;
+    $_SESSION['user_detail']['name'] = $userData['data']->name;
+    $_SESSION['user_detail']['user_group'] = $userData['data']->user_group;
     $obj_login->redirect(PROJECT_URL . "?page=dashboard");
 }
 

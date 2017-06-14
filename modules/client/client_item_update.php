@@ -5,7 +5,21 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
     exit();
 }
 
+if(!$obj_client->can_read('client_master_item')) {
+
+    $obj_client->setError($obj_client->getValMsg('can_read'));
+    $obj_client->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
+
 if(isset($_POST['submit']) && $_POST['submit'] == 'submit'){
+	
+	if(!$obj_client->can_create('client_master_item')) {
+
+		$obj_client->setError($obj_client->getValMsg('can_create'));
+		$obj_client->redirect(PROJECT_URL."/?page=client_item_list");
+		exit();
+	}
  
     if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
 
@@ -20,6 +34,13 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'submit'){
 
 if(isset($_POST['submit']) && $_POST['submit'] == 'update' && isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editItem") {
     
+	if(!$obj_client->can_update('client_master_item')) {
+
+		$obj_client->setError($obj_client->getValMsg('can_update'));
+		$obj_client->redirect(PROJECT_URL."/?page=client_item_list");
+		exit();
+	}
+	
     if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
         
         $obj_client->setError('Invalid access to files');

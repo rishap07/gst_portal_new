@@ -324,6 +324,17 @@ class cms_validate {
         }
     }
 	
+	protected static function decimalzeroValidation($input, $name, $lableName) {
+        if (self::isBlankField($input) === false) {
+            if (preg_match("/^\s*(?=.*[0-9])\d*(?:\.\d{1,2})?\s*$/", $input)) {
+                return true;
+            } else {
+                self::setMessage($name, 'decimal', $lableName . " should be valid");
+                return false;
+            }
+        }
+    }
+	
 	protected static function genderValidation($input, $name, $lableName) {
 		if (self::isBlankField($input) === false) {
 			if (preg_match("/^(?:M|F)$/", $input)) {

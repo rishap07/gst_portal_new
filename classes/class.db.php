@@ -234,7 +234,7 @@ class db {
         $values = '(' . implode(', ', $values) . ')';
 
         $sql .= $fields . ' VALUES ' . $values;
-//		echo $sql; 
+		//echo $sql; die;
 		$query = $this->link->query($sql);
         if ($this->link->error) {
             $this->log_db_errors($this->link->error, $query);
@@ -243,7 +243,6 @@ class db {
             $this->id = $this->link->insert_id;
             $x = $this->usersLog($table, "insert", json_encode($variables));
             return $this->id;
-//            return $this->link->insert_id;
         }
     }
 
@@ -517,8 +516,9 @@ class db {
     /* Function to Select Data */
 
     public function findAll($table, $condition = '', $params = '', $group_by = '', $order_by = '', $limit = '', $offset = '') {
-        $query = $this->createSelectQuery($params, $table, $condition, $group_by, $order_by, $limit, $offset);
-//        echo $query;
+        
+		$query = $this->createSelectQuery($params, $table, $condition, $group_by, $order_by, $limit, $offset);
+		//echo $query;
         $results = $this->get_results($query);
 
         if ($this->link->error) {

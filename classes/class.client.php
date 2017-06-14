@@ -73,7 +73,7 @@ final class client extends validation {
     public function validateGSTINNumber($dataArr) {
         
         $rules = array(
-            'gstin_number' => 'required||min:15||max:15|#|lable_name:GSTIN Number',
+            'gstin_number' => 'required||pattern:/^' . $this->validateType['gstinnumber'] . '*$/||min:15||max:15|#|lable_name:GSTIN Number',
             'gstin_issue_date' => 'required||date|#|lable_name:GSTIN Issue Date'
         );
 
@@ -180,7 +180,7 @@ final class client extends validation {
             'companion_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Companion Name',
             'gender' => 'required||gender|#|lable_name:Gender',
             'martial_status' => 'required||martialstatus|#|lable_name:Martial Status',
-            'date_of_birth' => 'required|#|lable_name:Date of birth',
+            'date_of_birth' => 'required||date|#|lable_name:Date of birth',
             'nationality' => 'required||nationality|#|lable_name:Nationality',
             'status' => 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Status',
             'pan_card_number' => 'required||pattern:/^' . $this->validateType['pancard'] . '*$/|#|lable_name:PAN Card',
@@ -210,7 +210,7 @@ final class client extends validation {
         }
         return true;
     }
-    
+
     public function addClientItem() {
 
         $dataArr['item_name'] = isset($_POST['item_name']) ? $_POST['item_name'] : '';
@@ -331,7 +331,6 @@ final class client extends validation {
         $dataArr['password'] = isset($_POST['password']) ? $_POST['password'] : '';
         $dataArr['email'] = isset($_POST['emailaddress']) ? $_POST['emailaddress'] : '';
         $dataArr['phone_number'] = isset($_POST['phonenumber']) ? $_POST['phonenumber'] : '';
-        $dataArr['company_code'] = isset($_POST['company_code']) ? $_POST['company_code'] : '';        
         $dataArr['status'] = isset($_POST['user_status']) ? $_POST['user_status'] : '';
         
         if (empty($dataArr)) {
@@ -351,10 +350,10 @@ final class client extends validation {
             return false;
         }
         
-        if($this->checkEmailAddressExist($dataArr['email'])){
+        /*if($this->checkEmailAddressExist($dataArr['email'])){
             $this->setError($this->validationMessage['emailexist']);
             return false;
-        }
+        }*/
 
         $dataArr['password'] = $this->password_encrypt($dataArr['password']); /* encrypt password */
         $dataArr['user_group'] = 4;
@@ -386,7 +385,6 @@ final class client extends validation {
 
         $dataArr['email'] = isset($_POST['emailaddress']) ? $_POST['emailaddress'] : '';
         $dataArr['phone_number'] = isset($_POST['phonenumber']) ? $_POST['phonenumber'] : '';
-        $dataArr['company_code'] = isset($_POST['company_code']) ? $_POST['company_code'] : '';   
         $dataArr['status'] = isset($_POST['user_status']) ? $_POST['user_status'] : '';
         
         if (empty($dataArr)) {
@@ -423,7 +421,6 @@ final class client extends validation {
             'first_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:First Name',
             'last_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Last Name',
             'company_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Company Name',
-	    'company_code' => 'required||pattern:/^[' . $this->validateType['alphanumeric'] . ']+$/|#|lable_name:Company Code',
             'phone_number' => 'required||pattern:/^[' . $this->validateType['mobilenumber'] . ']+$/|#|lable_name:Phone Number',
             'email' => 'required||email|#|lable_name:Email',
             'status' => 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Status'
@@ -466,5 +463,100 @@ final class client extends validation {
         }
         
         return true;
+    }
+    
+    public function validateClientInvoice($dataArr) {
+        
+        $rules = array(
+            'company_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Company Name',
+            'gstin_number' => 'pattern:/^' . $this->validateType['gstinnumber'] . '*$/||min:15||max:15|#|lable_name:Company GSTIN Number',
+            'is_tax_payable' => 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Tax Reverse Charge',
+            'invoice_date' => 'required||date|#|lable_name:Invoice Date',
+            'transportation_mode' => 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Transportation Mode',
+            'supply_datetime' => 'required||datetime|#|lable_name:Date Time Of Supply',
+            'supply_place' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Place Of Supply',
+            'billing_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Billing Name',
+            'billing_address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Billing Address',
+            'billing_state' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Billing State',
+            'billing_gstin_number' => 'pattern:/^' . $this->validateType['gstinnumber'] . '*$/||min:15||max:15|#|lable_name:Billing GSTIN Number',
+            'shipping_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Shipping Name',
+            'shipping_address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Shipping Address',
+            'shipping_state' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Shipping State',
+            'shipping_gstin_number' => 'pattern:/^' . $this->validateType['gstinnumber'] . '*$/||min:15||max:15|#|lable_name:Shipping GSTIN Number'
+        );
+        
+        $valid = $this->vali_obj->validate($dataArr, $rules);
+        if ($valid->hasErrors()) {
+            $err_arr = $valid->allErrors();
+            $this->setError($err_arr);
+            $valid->clearMessages();
+            return false;
+        }
+        return true;
+    }
+
+    public function validateClientInvoiceItem($dataArr, $serialno) {
+
+        $rules = array(
+            'invoice_itemid' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Invoice Item no. '.$serialno,
+            'invoice_quantity' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Quantity of Item no. '.$serialno,
+            'invoice_discount' => 'numeric|#|lable_name:Discount of Item no. '.$serialno
+        );
+        
+        $valid = $this->vali_obj->validate($dataArr, $rules);
+        if ($valid->hasErrors()) {
+            $err_arr = $valid->allErrors();
+            $this->setError($err_arr);
+            $valid->clearMessages();
+            return false;
+        }
+        return true;
+    }
+    
+    /* upload client invoice */
+    public function uploadClientInvoice() {
+        
+        $flag = true;
+        $invoiceArray = array();
+        $invoiceItemArray = array();
+        if( $_FILES['invoice_csv']['name'] != '' && $_FILES['invoice_csv']['error'] == 0 ) {
+            
+            $invoicefile = fopen($_FILES['invoice_csv']['tmp_name'], "r");
+            
+            while (($invoiceData = fgetcsv($invoicefile, 10000, ";")) !== FALSE) {
+                
+                if($flag) { $flag = false; continue; }
+
+                $arrayKey = $invoiceData[0];
+                $invoiceArray[$arrayKey]['is_tax_payable'] = $invoiceData[1];
+                $invoiceArray[$arrayKey]['invoice_date'] = $invoiceData[2];
+                $invoiceArray[$arrayKey]['transportation_mode'] = $invoiceData[3];
+                $invoiceArray[$arrayKey]['supply_datetime'] = $invoiceData[4];
+                $invoiceArray[$arrayKey]['billing_name'] = $invoiceData[5];
+                $invoiceArray[$arrayKey]['billing_address'] = $invoiceData[6];
+                $invoiceArray[$arrayKey]['billing_state'] = $invoiceData[7];
+                $invoiceArray[$arrayKey]['billing_gstin_number'] = $invoiceData[8];
+                $invoiceArray[$arrayKey]['shipping_name'] = $invoiceData[9];
+                $invoiceArray[$arrayKey]['shipping_address'] = $invoiceData[10];
+                $invoiceArray[$arrayKey]['shipping_state'] = $invoiceData[11];
+                $invoiceArray[$arrayKey]['shipping_gstin_number'] = $invoiceData[12];
+                
+                /* items */
+                $invoiceItemArray['item_name'] = $invoiceData[13];
+                $invoiceItemArray['item_hsncode'] = $invoiceData[14];
+                $invoiceItemArray['item_quantity'] = $invoiceData[15];
+                $invoiceItemArray['item_unit'] = $invoiceData[16];
+                $invoiceItemArray['item_unit_price'] = $invoiceData[17];
+                $invoiceItemArray['discount'] = $invoiceData[18];
+
+                $invoiceArray[$arrayKey]['items'][] = $invoiceItemArray;
+            }
+            
+            fclose($invoicefile);
+            
+            $this->pr($invoiceArray);
+            die;
+            
+        }
     }
 }

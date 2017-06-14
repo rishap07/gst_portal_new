@@ -5,15 +5,22 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
     exit();
 }
 
+if(!$obj_user->can_read('admin_list')) {
+
+    $obj_user->setError($obj_user->getValMsg('can_read'));
+    $obj_user->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
+
 if( isset($_GET['action']) && $_GET['action'] == 'deleteAdmin' && isset($_GET['id']) && $obj_user->validateId($_GET['id'])) {
-    
+
     $userDetail = $obj_user->getUserDetailsById( $obj_user->sanitize($_GET['id']) );
     if( $userDetail['status'] == "success" ) {
 
         if($obj_user->deleteUser($userDetail['data']->user_id)){
             $obj_user->redirect(PROJECT_URL."?page=user_adminlist");
         }
-        
+
     } else {
         $obj_user->setError($obj_plan->validationMessage['usernotexist']);
         $obj_user->redirect(PROJECT_URL."?page=user_adminlist");

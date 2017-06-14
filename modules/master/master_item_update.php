@@ -1,40 +1,38 @@
 <?php
 $obj_master = new master();
- if(!$obj_master->can_read('master_item'))
-{
+if(!$obj_master->can_read('master_item')) {
     $obj_master->setError($obj_master->getValMsg('can_read'));
     $obj_master->redirect(PROJECT_URL."/?page=dashboard");
     exit();
 }
-if(isset($_POST['submit']) && $_POST['submit']=='submit')
-{
-    if(!$obj_master->can_create('master_item'))
-    {
+
+if(isset($_POST['submit']) && $_POST['submit']=='submit') {
+
+    if(!$obj_master->can_create('master_item')) {
         $obj_master->setError($obj_master->getValMsg('can_create'));
         $obj_master->redirect(PROJECT_URL."/?page=master_item");
         exit();
     }
-    if($obj_master->addItem())
-    {
+	
+    if($obj_master->addItem()) {
         $obj_master->redirect(PROJECT_URL."/?page=master_item");
     }
 }
-if(isset($_POST['submit']) && $_POST['submit']=='update' && isset($_GET['id']))
-{
-    if(!$obj_master->can_update('master_item'))
-    {
+
+if(isset($_POST['submit']) && $_POST['submit']=='update' && isset($_GET['id'])) {
+    
+	if(!$obj_master->can_update('master_item')) {
         $obj_master->setError($obj_master->getValMsg('can_update'));
         $obj_master->redirect(PROJECT_URL."/?page=master_item");
         exit();
     }
-    if($obj_master->updateItem())
-    {
+	
+    if($obj_master->updateItem()){
         $obj_master->redirect(PROJECT_URL."/?page=master_item");
     }
 }
 $dataArr = array();
-if(isset($_GET['id']))
-{
+if(isset($_GET['id'])){
     $dataArr = $obj_master->findAll($obj_master->getTableName('item'),"is_deleted='0' and item_id='".$obj_master->sanitize($_GET['id'])."'");
 }
 ?>
@@ -56,15 +54,15 @@ if(isset($_GET['id']))
                             <input type="text" placeholder="Item" name='item_name' data-bind="content" class="required" value='<?php if(isset($_POST['item_name'])){ echo $_POST['item_name'];}else if(isset($dataArr[0]->item_name)){ echo $dataArr[0]->item_name;}?>' />
                             <span class="greysmalltxt"></span> </div>
                         <div class="formcol two">
-                            <label>HSN?SSN Code<span class="starred">*</span></label>
+                            <label>HSN Code<span class="starred">*</span></label>
                             <input type="text" placeholder="HSN Code"  name='hsn_code' data-bind="content" class="required" value='<?php if(isset($_POST['hsn_code'])){ echo $_POST['hsn_code'];}else if(isset($dataArr[0]->hsn_code)){ echo $dataArr[0]->hsn_code;}?>'/>
                         </div>
                         <div class="formcol third">
                             <label>Item Type<span class="starred">*</span></label>
                             <select name="item_type" class="required">
                                 <option value="">Select Type</option>
-                                <option value="0">Goods</option>
-                                <option value="1">Services</option>
+								<option value="0" <?php if(isset($_POST['item_type']) && $_POST['item_type']==='0'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->item_type) && $dataArr[0]->item_type==='0'){ echo 'selected="selected"'; } ?>>Goods</option>
+                                <option value="1" <?php if(isset($_POST['item_type']) && $_POST['item_type']==='1'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->item_type) && $dataArr[0]->item_type==='1'){ echo 'selected="selected"'; } ?>>Services</option>
                             </select>
                         </div>
                         <div class="formcol">
@@ -86,8 +84,8 @@ if(isset($_GET['id']))
                         <div class="formcol two">
                             <label>Status<span class="starred">*</span></label>
                             <select name="status">
-                                <option value="1" <?php if(isset($_POST['status']) &&  $_POST['status']==='1'){ echo 'selected';}else if(isset($dataArr[0]->state_code) && $dataArr[0]->state_code==='1'){ echo 'selected';}?>>Active</option>
-                                <option value="0" <?php if(isset($_POST['status']) &&  $_POST['status']==='0'){ echo 'selected';}else if(isset($dataArr[0]->state_code) && $dataArr[0]->state_code==='0'){ echo 'selected';}?>>In-Active</option>
+                                <option value="1" <?php if(isset($_POST['status']) && $_POST['status'] === '1'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->status) && $dataArr[0]->status==='1'){ echo 'selected="selected"'; } ?>>Active</option>
+                                <option value="0" <?php if(isset($_POST['status']) && $_POST['status'] === '0'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->status) && $dataArr[0]->status==='0'){ echo 'selected="selected"'; } ?>>In-Active</option>
                             </select>
                         </div>
                         <div class="clear height30"></div>
@@ -105,11 +103,13 @@ if(isset($_GET['id']))
 </div>
 <script>
     $(document).ready(function () {
-        $("#state").change(function () {
+        
+		$("#state").change(function () {
            val1 = $(this).val().split(":");
            $("#state_code").val(val1[1]);
         });
-        $('#submit').click(function () {
+        
+		$('#submit').click(function () {
             var mesg = {};
             if (vali.validate(mesg,'form')) {
                 return true;
@@ -117,5 +117,4 @@ if(isset($_GET['id']))
             return false;
         });
     });
-</script>
-    
+</script>   

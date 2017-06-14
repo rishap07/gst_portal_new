@@ -40,7 +40,7 @@ if (isset($_POST['iSortCol_0'])) {
         }
     }
     if ($uOrder == "ORDER BY ") {
-        $uOrder = "ORDER BY user_role_id DESC";
+        $uOrder = "ORDER BY role_name asc";
     }
 }
 

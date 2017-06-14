@@ -269,7 +269,8 @@ p, ul { margin:0px; padding:0px;}
 .lightgreen { background:#e9ffdb;}
 .totalamount { font-family: opensans_bold; font-size:15px; color:#000; }
 .totalamount span {font-family: open_sans; font-size:12px;}
-.totalprice{ font-family: opensans_bold;  color:#000; font-size:20px; display:inline-block; margin-left:10px;}
+.totalprice{ font-family:opensans_bold;color:#000;font-size:20px;display:inline-block;margin-left:10px;}
+.totalprice .invoicetotalprice{ font-family:opensans_bold;color:#000;font-size:20px;display:inline-block;}
 .textsmall { font-size:14px;}
 .pricinput { border:none !important;}
 .pricinput { display:inline-block; width:75% !important; border:none !important;  }

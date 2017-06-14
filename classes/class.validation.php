@@ -20,7 +20,6 @@ class validation extends upload {
         parent::__construct();
         
         $this->tableNames = array(
-            'state' => TAB_PREFIX . 'state',
             'user' => TAB_PREFIX . 'user',
             'user_group' => TAB_PREFIX . 'user_group',
             'user_subscribed_plan' => TAB_PREFIX . 'user_subscribed_plan',
@@ -39,9 +38,11 @@ class validation extends upload {
             'user_role_permission' => TAB_PREFIX . 'user_role_permission',
             'client_master_item' => TAB_PREFIX . 'client_master_item',
             'unit' => TAB_PREFIX . 'master_unit',
+            'client_invoice' => TAB_PREFIX . 'client_invoice',
+            'client_invoice_item' => TAB_PREFIX . 'client_invoice_item',
             'api' => TAB_PREFIX . 'api'
         );
-        
+
         $this->checkUserAccess();
     }
     
@@ -56,8 +57,8 @@ class validation extends upload {
         "datetime" => "[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]",
         "alphaspace" => "a-zA-Z\s",
         "integergreaterzero" => "[1-9][0-9]",
-        "decimalgreaterzero" => "\s*(?=.*[1-9])\d*(?:\.\d{1,2})?\s",
         "pancard" => "(([A-Z]){5}([0-9]){4}([A-Z]){1})",
+        "gstinnumber" => "(([0-9]){2}([A-Z]){5}([0-9]){4}([A-Z]){1}([A-Z0-9]){1}([Z]){1}([0-9]){1})",
         "onlyzeroone" => "01"
     );
 
@@ -105,7 +106,11 @@ class validation extends upload {
         'update' => 'Updated Successfully',
         'inserted' => 'Added Successfully',
         'statecodeexist' => 'State code already exist.',
-        'unitcodeexist' => 'Unit code already exist.'
+        'unitcodeexist' => 'Unit code already exist.',
+        'invoiceadded' => 'Invoice added successfully.',
+        'invoiceupdated' => 'Invoice updated successfully.',
+        'invoicedeleted' => 'Invoice deleted successfully.',
+        'noiteminvoice' => 'There is no item in invoice.'
     );
     
     public function getTableName($tablename)
@@ -132,11 +137,18 @@ class validation extends upload {
                     }
                 }
             } else if($currentUserDetails['data']->user_group == 4) {
-
-                if( isset($_GET['page']) && $_GET['page'] != "user_clientkycupdate") {
+                
+                if( isset($_GET['page']) && $_GET['page'] != "client_kycupdate") {
 
                     if($currentUserDetails['data']->kyc == '') {
-                        $this->redirect(PROJECT_URL . "?page=user_clientkycupdate");
+                        $this->redirect(PROJECT_URL . "?page=client_kycupdate");
+                    }
+                    
+                    if( $_GET['page'] != "client_registrationchoice" && $_GET['page'] != "client_gstin") {
+                        
+                        if($currentUserDetails['data']->gstin == '') {
+                            $this->redirect(PROJECT_URL . "?page=client_registrationchoice");
+                        }
                     }
                 }
             }

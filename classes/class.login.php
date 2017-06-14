@@ -116,15 +116,16 @@ class login extends validation {
         $dataInsertArray['username'] = $dataArr['username'];
         $dataInsertArray['email'] = $dataArr['emailaddress'];
         $dataInsertArray['subscriber_code'] = $this->generateSubscriberRandomCode(6, $this->tableNames['user'], "subscriber_code");
+        
         $dataInsertArray['password'] = $this->password_encrypt($dataArr['password']); /* encrypt password */
+        $dataInsertArray['added_by'] = '22';
         $dataInsertArray['added_date'] = date('Y-m-d H:i:s');
 
         if ($this->insert($this->tableNames['user'], $dataInsertArray)) {
 
             /* get user data by its id */
-            $userData = $this->getUserDetailsById($this->getInsertID());
-			
-			$_SESSION['user_detail']['user_id'] = $userData['data']->user_id;
+            $userData = $this->getUserDetailsById($this->getInsertID());	
+            $_SESSION['user_detail']['user_id'] = $userData['data']->user_id;
             $_SESSION['user_detail']['username'] = $userData['data']->username;
             $_SESSION['user_detail']['email'] = $userData['data']->email;
             $_SESSION['user_detail']['name'] = $userData['data']->name;

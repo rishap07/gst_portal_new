@@ -17,5 +17,7 @@ if(isset($_SESSION['user_detail']['user_group']) && $_SESSION['user_detail']['us
     {
         include(PROJECT_ROOT."/modules/dashboard/view/client.php");
     }
+} else {
+	$db_obj->redirect(PROJECT_URL);
 }
 ?>

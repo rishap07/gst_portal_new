@@ -5,7 +5,20 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
     exit();
 }
 
+if(!$obj_client->can_read('client_list')) {
+
+    $obj_client->setError($obj_client->getValMsg('can_read'));
+    $obj_client->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
+
 if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
+	
+	if(!$obj_client->can_create('client_list')) {
+        $obj_client->setError($obj_client->getValMsg('can_create'));
+        $obj_client->redirect(PROJECT_URL."/?page=user_adminlist");
+        exit();
+    }
 
     if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
         
@@ -20,6 +33,12 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
 }
 
 if( isset($_POST['submit']) && $_POST['submit'] == 'update' && isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClient") {
+	
+	if(!$obj_client->can_update('client_list')) {
+        $obj_client->setError($obj_client->getValMsg('can_update'));
+        $obj_client->redirect(PROJECT_URL."/?page=user_adminlist");
+        exit();
+    }
 
     if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
         
@@ -123,11 +142,6 @@ if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClien
                         <div class="formcol">
                             <label>Phone Number<span class="starred">*</span></label>
                             <input type="text" name="phonenumber" id="phonenumber" placeholder="Enter phone number" class="required" data-bind="mobilenumber" value="<?php if(isset($_POST['phonenumber'])){ echo $_POST['phonenumber']; } else if(isset($dataArr['data']->phone_number)){ echo $dataArr['data']->phone_number; } ?>" />
-                        </div>
-                        
-                        <div class="formcol two">
-                            <label>Company Code<span class="starred">*</span></label>
-                            <input type="text" name="company_code" id="company_code" placeholder="Enter company code" class="required" data-bind="alphanum" value="<?php if(isset($_POST['company_code'])){ echo $_POST['company_code']; } else if(isset($dataArr['data']->company_code)){ echo $dataArr['data']->company_code; } ?>" />
                         </div>
                         
                         <div class="formcol third">

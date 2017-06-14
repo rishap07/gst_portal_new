@@ -52,6 +52,27 @@
 	font-size: 18px;
 }
 
+.name_selection_choice {
+    background-color: #e4e4e4;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    cursor: default;
+    float: left;
+    width: auto;
+    padding: 2px 5px;
+	width:120px;
+}
+.name_selection_choice_remove {
+    color: #999;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: bold;
+    margin-right: 2px;
+}
+.errorValidationContainer {
+	display:none;
+}
+
 @media only screen and (max-width: 600px) {
 	.columns {
 		width: 100%;

@@ -20,7 +20,6 @@ final class master extends validation {
         "datetime" => "[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]",
         "alphaspace"=>"a-zA-Z\s",
         "integergreaterzero"=>"[1-9][0-9]",
-        "decimalgreaterzero"=>"\s*(?=.*[1-9])\d*(?:\.\d{1,2})?\s",
         "onlyzeroone"=>"01"
     );
     
@@ -44,7 +43,7 @@ final class master extends validation {
             return false;
         }
 		
-		if( $this->checkStateCodeExist($dataArr['state_code'])){
+	    if( $this->checkStateCodeExist($dataArr['state_code'])){
             $this->setError($this->validationMessage['statecodeexist']);
             return false;
         }
@@ -77,7 +76,7 @@ final class master extends validation {
     {
         $rules = array(
             'state_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:State Name',
-            'state_code' => 'required||pattern:/^[' . $this->validateType['alphanumeric'] . ']+$/|#|lable_name:State Code',
+            'state_code' => 'required||alphabet||min:2||max:2|#|lable_name:State Code',
             'status' => 'required||numeric|#|lable_name:Status'
         );
 		
@@ -456,10 +455,11 @@ final class master extends validation {
             $this->setError($this->validationMessage['mandatory']);
             return false;
         }
-        if(!$this->validateItem($dataArr))
-        {
+        
+        if(!$this->validateItem($dataArr)) {
             return false;
         }
+        
         $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['added_date'] = date('Y-m-d H:i:s');
         if (!$this->insert($this->tableNames['item'], $dataArr)) {
@@ -495,10 +495,10 @@ final class master extends validation {
             'item_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Item',
             'hsn_code' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:HSN Code',
             'item_type' => 'required||numeric||min:0||max:1|#|lable_name:Item Type',
-            'igst_tax_rate' => 'required||decimal||max:100|#|lable_name:IGST Tax Rate',
-            'csgt_tax_rate' => 'required||decimal||max:100|#|lable_name:CSGT Tax Rate',
-            'sgst_tax_rate' => 'required||decimal||max:100|#|lable_nameSGST Tax Rate',
-            'cess_tax_rate' => 'required||decimal||max:100|#|lable_name:Cess Tax Rate',
+            'igst_tax_rate' => 'required||decimalzero||max:100|#|lable_name:IGST Tax Rate',
+            'csgt_tax_rate' => 'required||decimalzero||max:100|#|lable_name:CSGT Tax Rate',
+            'sgst_tax_rate' => 'required||decimalzero||max:100|#|lable_nameSGST Tax Rate',
+            'cess_tax_rate' => 'required||decimalzero||max:100|#|lable_name:Cess Tax Rate',
             'status' => 'required|#|lable_name:State'
         );
         $valid = $this->vali_obj->validate($dataArr, $rules);

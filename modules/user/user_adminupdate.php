@@ -5,7 +5,20 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
     exit();
 }
 
+if(!$obj_user->can_read('admin_list')) {
+
+    $obj_user->setError($obj_user->getValMsg('can_read'));
+    $obj_user->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
+
 if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
+	
+	if(!$obj_user->can_create('admin_list')) {
+        $obj_user->setError($obj_user->getValMsg('can_create'));
+        $obj_user->redirect(PROJECT_URL."/?page=user_adminlist");
+        exit();
+    }
 
     if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
         
@@ -20,6 +33,12 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
 }
 
 if( isset($_POST['submit']) && $_POST['submit'] == 'update' && isset($_GET['id']) && $obj_user->validateId($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editAdmin") {
+	
+	if(!$obj_user->can_update('admin_list')) {
+        $obj_user->setError($obj_user->getValMsg('can_update'));
+        $obj_user->redirect(PROJECT_URL."/?page=user_adminlist");
+        exit();
+    }
 
     if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
         

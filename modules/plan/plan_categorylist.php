@@ -5,8 +5,22 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
     exit();
 }
 
+if(!$obj_plan->can_read('plan_category_list')) {
+
+    $obj_plan->setError($obj_plan->getValMsg('can_read'));
+    $obj_plan->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
+
 if( isset($_GET['action']) && $_GET['action'] == 'deletePlanCategory' && isset($_GET['id'])) {
     
+	if(!$obj_plan->can_delete('plan_category_list')) {
+
+		$obj_plan->setError($obj_plan->getValMsg('can_delete'));
+		$obj_plan->redirect(PROJECT_URL."/?page=plan_list");
+		exit();
+	}
+	
     $categoryid = $_GET['id'];
     $planCategoryDetail = $obj_plan->getPlanCategoryDetails($categoryid);
        

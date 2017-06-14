@@ -1,3 +1,6 @@
+<?php
+//$db_obj->pr($_SESSION);
+?>
 <!DOCTYPE html>
 <html lang="En">
     <head>
@@ -6,12 +9,12 @@
         <title>Form Design</title>
         <link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/style.css" />
         <link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/theme-color.css" />
-		<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/custom.css" />
+        <link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/custom.css" />
         <link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/font-awesome.min.css" />
         <link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/datatables/media/css/jquery.dataTables.min.css" />
-		<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/jquery_ui/jquery-ui.css" />
-		<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/jquery-ui-timepicker/jquery-ui-timepicker-addon.css" />
-		<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/select2/select2.css" />
+        <link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/jquery_ui/jquery-ui.css" />
+        <link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/jquery-ui-timepicker/jquery-ui-timepicker-addon.css" />
+        <link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/select2/select2.css" />
 
         <script src="<?php echo THEME_URL; ?>/js/jquery-1.12.4.js"></script>
         <script src="<?php echo THEME_URL; ?>/js/jquery.slimscroll.js"></script>
@@ -19,24 +22,24 @@
             $(document).ready(function (e) {
 
                 $(".sidemenu li").click(function (e) {
-                    
-                    if($(this).hasClass("active")) {
-                            $(".sidemenu li").removeClass("active");
-                            $(".sidemenu li strong").removeClass("fa-minus").addClass("fa-plus");
+
+                    if ($(this).hasClass("active")) {
+                        $(".sidemenu li").removeClass("active");
+                        $(".sidemenu li strong").removeClass("fa-minus").addClass("fa-plus");
                     } else {
-                            $(".sidemenu li").removeClass("active");
-                            $(".sidemenu li strong").removeClass("fa-minus").addClass("fa-plus");
-                            $(this).addClass("active");
-                            $(this).children().children("strong").removeClass("fa-plus").addClass("fa-minus");
+                        $(".sidemenu li").removeClass("active");
+                        $(".sidemenu li strong").removeClass("fa-minus").addClass("fa-plus");
+                        $(this).addClass("active");
+                        $(this).children().children("strong").removeClass("fa-plus").addClass("fa-minus");
                     }
                 });
-				
+
                 $(function () {
                     $('.inner-content-list').slimScroll({
                         height: 'auto'
                     });
                 });
-				
+
                 var w = $(window).width();
                 if (w >= 0 && w <= 992)
                 {
@@ -69,56 +72,79 @@
             <!--========================header top over sidemenu start=========================-->
             <div class="sidemenu">
                 <ul class="mainmenu">
-                    <li class="one"><a href="<?php echo PROJECT_URL;?>/?page=dashboard"><span class="iconpic"></span>Dashboard <strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
-                    <li class="iconadmin"><a href="javascript:void(0)"><span class="iconpic"></span>Admin <strong class="fa fa-users" aria-hidden="true"></strong></a>
-                        <ul class="inner-content-list">
-                            <li><a href="<?php echo PROJECT_URL;?>/?page=user_adminupdate">Add New Admin</a></li>
-                            <li><a href="<?php echo PROJECT_URL;?>/?page=user_adminlist">All Admin</a></li>
-                        </ul>
-                    </li>
-                    <li class="seven"><a href="javascript:void(0)"><span class="iconpic"></span>Plan <strong class="fa fa-plus" aria-hidden="true"></strong></a>
-                        <ul class="inner-content-list">
-                            <li><a href="<?php echo PROJECT_URL;?>/?page=plan_addplan">Add Plan</a></li>
-                            <li><a href="<?php echo PROJECT_URL;?>/?page=plan_list">Listing</a></li>
-                        </ul>
-                    </li>
+                    <li class="one"><a href="<?php echo PROJECT_URL; ?>/?page=dashboard"><span class="iconpic"></span>Dashboard <strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
 					
-					<?php if($db_obj->can_read('user_group') || $db_obj->can_read('user_role')){ ?>
-						<li class="iconsetting"><a href="javascript:void(0)"><span class="iconpic"></span>Settings <strong class="fa fa-plus" aria-hidden="true"></strong></a>
+					<?php if ($db_obj->can_read('client_list')) { ?>
+						<li class="iconadmin"><a href="javascript:void(0)"><span class="iconpic"></span>Admin <strong class="fa fa-users" aria-hidden="true"></strong></a>
 							<ul class="inner-content-list">
-								<?php if($db_obj->can_read('user_group')){ ?><li><a href="<?php echo PROJECT_URL;?>/?page=user_group">User Group</a></li><?php } ?>
-								<?php if($db_obj->can_read('user_role')){ ?><li><a href="<?php echo PROJECT_URL;?>/?page=user_role">User Role</a></li><?php } ?>
+								<?php if ($db_obj->can_read('client_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=client_list">All Client</a></li><?php } ?>
+								<?php if ($db_obj->can_create('client_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=client_update">Add New Client</a></li><?php } ?>
 							</ul>
 						</li>
 					<?php } ?>
+
+                    <?php if ($db_obj->can_read('admin_list')) { ?>
+                        <li class="iconadmin"><a href="javascript:void(0)"><span class="iconpic"></span>Admin <strong class="fa fa-users" aria-hidden="true"></strong></a>
+                            <ul class="inner-content-list">
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=user_adminupdate">Add New Admin</a></li>
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=user_adminlist">All Admin</a></li>
+                            </ul>
+                        </li>
+                    <?php } ?>
 					
-					<li class="iconsetting"><a href="javascript:void(0)"><span class="iconpic"></span>Client Settings <strong class="fa fa-plus" aria-hidden="true"></strong></a>
-						<ul class="inner-content-list">
-							<li><a href="<?php echo PROJECT_URL;?>/?page=client_kycupdate">Update KYC</a></li>
-							<li><a href="<?php echo PROJECT_URL;?>/?page=client_gstin">Update GSTIN</a></li>
-							<li><a href="<?php echo PROJECT_URL;?>/?page=client_creat_invoice">Create Invoice</a></li>
-						</ul>
-					</li>
+					<?php if ($db_obj->can_read('plan_category_list') || $db_obj->can_read('plan_list')) { ?>
+
+						<li class="seven"><a href="javascript:void(0)"><span class="iconpic"></span>Plan <strong class="fa fa-plus" aria-hidden="true"></strong></a>
+							<ul class="inner-content-list">
+								<?php if ($db_obj->can_read('plan_category_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=plan_categorylist">Plan Category Listing</a></li><?php } ?>
+								<?php if ($db_obj->can_create('plan_category_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=plan_addcategory">Add Plan Category</a></li><?php } ?>
+								<?php if ($db_obj->can_read('plan_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=plan_list">Plan Listing</a></li><?php } ?>
+								<?php if ($db_obj->can_create('plan_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=plan_addplan">Add Plan</a></li><?php } ?>
+							</ul>
+						</li>
 					
-					<li class="iconsetting"><a href="javascript:void(0)"><span class="iconpic"></span>Master <strong class="fa fa-plus" aria-hidden="true"></strong></a>
+					<?php } ?>
+
+                    <?php if ($db_obj->can_read('user_group') || $db_obj->can_read('user_role')) { ?>
+                        <li class="iconsetting"><a href="javascript:void(0)"><span class="iconpic"></span>Settings <strong class="fa fa-plus" aria-hidden="true"></strong></a>
+                            <ul class="inner-content-list">
+                                <?php if ($db_obj->can_read('user_group')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=user_group">User Group</a></li><?php } ?>
+                                <?php if ($db_obj->can_read('user_role')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=user_role">User Role</a></li><?php } ?>
+                            </ul>
+                        </li>
+                    <?php } ?>
+					
+					<?php if ($db_obj->can_read('client_kyc')) { ?>
+						<li class="iconsetting"><a href="javascript:void(0)"><span class="iconpic"></span>Client Settings <strong class="fa fa-plus" aria-hidden="true"></strong></a>
+							<ul class="inner-content-list">
+								<li><a href="<?php echo PROJECT_URL; ?>/?page=client_kycupdate">Update KYC</a></li>
+								<li><a href="<?php echo PROJECT_URL; ?>/?page=client_gstin">Update GSTIN</a></li>
+							</ul>
+						</li>
+					<?php } ?>
+
+                    <?php if (($db_obj->can_read('master_state')) || ($db_obj->can_read('master_unit'))  || ($db_obj->can_read('master_receiver')) || ($db_obj->can_read('master_supplier')) || ($db_obj->can_read('master_item')) || ($db_obj->can_read('client_master_item'))) { ?>
+                    <li class="iconsetting"><a href="javascript:void(0)"><span class="iconpic"></span>Master <strong class="fa fa-plus" aria-hidden="true"></strong></a>
                         <ul class="inner-content-list">
-                            <?php if($db_obj->can_read('master_state')){ ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_state">State</a></li><?php } ?>
-                            <?php if($db_obj->can_read('master_receiver')){ ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_receiver">Receiver</a></li><?php } ?>
-                            <?php if($db_obj->can_read('master_supplier')){ ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_supplier">Supplier</a></li><?php } ?>
-                            <?php if($db_obj->can_read('master_item')){ ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_item">Item</a></li><?php } ?>
-							<?php if($db_obj->can_read('client_master_item')){ ?><li><a href="<?php echo PROJECT_URL; ?>/?page=client_item_list">Item</a></li><?php } ?>
+                            <?php if ($db_obj->can_read('master_state')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_state">State</a></li><?php } ?>
+                            <?php if ($db_obj->can_read('master_unit')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_unit">Unit</a></li><?php } ?>
+                            <?php if ($db_obj->can_read('master_receiver')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_receiver">Receiver</a></li><?php } ?>
+                            <?php if ($db_obj->can_read('master_supplier')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_supplier">Supplier</a></li><?php } ?>
+                            <?php if ($db_obj->can_read('master_item')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_item">Item</a></li><?php } ?>
+                            <?php if ($db_obj->can_read('client_master_item')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=client_item_list">Item</a></li><?php } ?>
                         </ul>
                     </li>
+                    <?php } ?>
                     <li class="three"><a href="javascript:void(0)"><span class="iconpic"></span>Valuation<strong class="fa fa-plus" aria-hidden="true"></strong></a>
                     </li>
                     <li class="two"><a href="javascript:void(0)"><span class="iconpic"></span>Invoices<strong class="fa fa-plus" aria-hidden="true"></strong></a>
                         <ul class="inner-content-list">
-                            <li><a href="">Add new Invoice</a></li>
-                            <li><a href="">Upload Invoice</a></li>
-                            <li><a href="">Edit Invoice</a></li>
+                            <?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_invoice_list'; ?>">All Invoices</a></li><?php } ?>
+                            <?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_creat_invoice'; ?>">Add new Invoice</a></li><?php } ?>
+                            <?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_upload_invoice'; ?>">Upload Invoice</a></li><?php } ?>
                         </ul>
-
                     </li>
+					
                     <li class="three"><a href="javascript:void(0)"><span class="iconpic"></span>Time of Supply<strong class="fa fa-plus" aria-hidden="true"></strong></a>
 
                     </li>

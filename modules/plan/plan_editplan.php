@@ -5,6 +5,20 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
     exit();
 }
 
+if(!$obj_plan->can_read('plan_list')) {
+
+    $obj_plan->setError($obj_plan->getValMsg('can_read'));
+    $obj_plan->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
+
+if(!$obj_plan->can_update('plan_list')) {
+
+    $obj_plan->setError($obj_plan->getValMsg('can_update'));
+    $obj_plan->redirect(PROJECT_URL."/?page=plan_list");
+    exit();
+}
+
 if( isset($_GET['action']) && $_GET['action'] == 'editPlan' && isset($_GET['id']) && intval($_GET['id']) > 0) {
     
     $planid = $_GET['id'];

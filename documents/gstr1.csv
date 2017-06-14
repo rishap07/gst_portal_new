@@ -1,0 +1,8 @@
+GSTR1 - B2B,,,,,,,,,,,,,,,,,,,,,,,,Other Details,,,,,,,,
+GSTIN,UIN,Invoice Number,Invoice date,Total Invoice Value,Supply Type,POS,Reverse Charge,Prv.Amnt,Category,HSN/SAC of Supply,Total Taxable Value,IGST Rate,IGST Amount,CGST Rate,CGST Amount,SGST Rate,SGST Amount,CESS Rate,CESS Amount,Qty,Unit,Discount,,Supplier Name,Receiver Name,Consignee Name, Serial No. of Invoice,Electronic Reference Number,Name of the Signatory:,Designation/ Status:, Date:,Invoice type
+14ADBEE1234E1Z8,,1001,08-03-2017,840000,,,,,Car,3465,600000,3,18000,3,18000,3,18000,3,18000,2,,,,Siddesh And Co,Sanjay & Co,Sanjay & Co,1001,1001,,,08-03-2017,B2B
+14ADBEE1234E1Z8,,1001,08-03-2017,840000,,,,,Cycle,3465,150000,3,4500,3,4500,3,4500,3,4500,5,,,,Sagar & Co,Sanjay & Co,Sanjay & Co,1003,1004,,,20-03-2017,B2B
+27ABCDE1234E1Z4,,1003,20-03-2017,374400,,,,,Bike,1287,200000,5,10000,5,10000,5,10000,5,10000,4,,,,Sagar & Co,Sanjay & Co,Sanjay & Co,1004,1005,,,23-03-2017,B2B
+27ABCDE1234E1Z4,,1003,20-03-2017,374400,,,,,Cycle,3465,120000,3,3600,3,3600,3,3600,3,3600,4,,,,,,,,,,,,
+27ABCDE1234E1Z4,,1004,23-03-2017,300000,,,,,Bike,1287,250000,5,12500,5,12500,5,12500,5,12500,5,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

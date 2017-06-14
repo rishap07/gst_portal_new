@@ -5,6 +5,27 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
     exit();
 }
 
+if(!$obj_client->can_read('client_kyc')) {
+
+    $obj_client->setError($obj_client->getValMsg('can_read'));
+    $obj_client->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
+
+if(!$obj_client->can_create('client_kyc')) {
+
+    $obj_client->setError($obj_client->getValMsg('can_create'));
+    $obj_client->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
+
+if(!$obj_client->can_update('client_kyc')) {
+
+    $obj_client->setError($obj_client->getValMsg('can_update'));
+    $obj_client->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
+
 $dataArr = array();
 $dataArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
 
@@ -26,7 +47,6 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
     }
 }
 ?>
-
 <!--========================sidemenu over=========================-->
 <div class="admincontainer greybg">
     <div class="formcontainer">
@@ -227,7 +247,8 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
             changeMonth: true,
             changeYear: true,
             dateFormat: 'yy-mm-dd',
-            maxDate: '-1d'
+			yearRange: '1900:<?php echo date("Y"); ?>',
+            maxDate: '0'
         });
         
         $('#submit').click(function () {
