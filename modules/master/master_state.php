@@ -25,6 +25,7 @@ if(!$obj_master->can_read('master_state'))
                         <th align='left' width="72">Sr</th>
                         <th align='left'>State</th>
                         <th align='left'>State Code</th>
+						<th align='left'>State Tin</th>
                         <th align='left'>Status</th>
                         <th width="72">Action</th>
                     </tr>
@@ -59,6 +60,7 @@ if(!$obj_master->can_read('master_state'))
                         {"bSortable": false},
                         {"bSortable": false},
                         {"bSortable": false},
+						{"bSortable": false},
                         {"bSortable": false}
                     ],
                     "sDom": "lfrtip",

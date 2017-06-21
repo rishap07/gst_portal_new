@@ -37,12 +37,7 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
     } else {
 
         if($obj_client->saveClientKYC()){
-            
-            if($dataArr['data']->gstin != '') {
-                $obj_client->redirect(PROJECT_URL."?page=dashboard");
-            } else {
-                $obj_client->redirect(PROJECT_URL."?page=client_registrationchoice");
-            }
+            $obj_client->redirect(PROJECT_URL."?page=client_kycupdate");
         }
     }
 }
@@ -65,11 +60,11 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
                     <div class="kycmainbox">
                         
                         <div class="clear"></div>
-                        
+
                         <?php if($dataArr['data']->kyc != '' && isset($dataArr['data']->kyc->name)) { ?>
-                            
+
                             <div class="formcol">
-                                <label>Name of Applicant<span class="starred">*</span></label>
+                                <label>Name of Applicant / Company Name<span class="starred">*</span></label>
                                 <input type="text" placeholder="Name of Applicant" name="name" id="name" class="required" data-bind="content" value="<?php if(isset($_POST['name'])){ echo $_POST['name']; } else if(isset($dataArr['data']->kyc->name)){ echo $dataArr['data']->kyc->name; } ?>" />
                                 <span class="greysmalltxt">(As appearing in supporting / identification document)</span>
                             </div>
@@ -77,64 +72,70 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
                         <?php } else { ?>
                             
                             <div class="formcol">
-                                <label>Name of Applicant<span class="starred">*</span></label>
+                                <label>Name of Applicant / Company Name<span class="starred">*</span></label>
                                 <input type="text" placeholder="Name of Applicant" name="name" id="name" class="required" data-bind="content" value="<?php if(isset($_POST['name'])){ echo $_POST['name']; } else if(isset($dataArr['data']->name)){ echo $dataArr['data']->name; } ?>" />
                                 <span class="greysmalltxt">(As appearing in supporting / identification document)</span>
                             </div>
                         
                         <?php } ?>
-                        
-                        <div class="formcol two">
-                            <label>Father's / Spouse Name<span class="starred">*</span></label>
-                            <input type="text" placeholder="Father's / Spouse Name" name="companion_name" id="companion_name" class="required" data-bind="content" value="<?php if(isset($_POST['companion_name'])){ echo $_POST['companion_name']; } else if(isset($dataArr['data']->kyc->companion_name)){ echo $dataArr['data']->kyc->companion_name; } ?>" />
-                        </div>
+						
+						<?php if($dataArr['data']->kyc != '' && isset($dataArr['data']->kyc->email)) { ?>
 
-                        <div class="formcol third">
-                            <label>Gender<span class="starred">*</span></label>
-                            <div class="clear"></div>
-                            <input type="radio" name="gender" <?php if(isset($_POST['gender']) && $_POST['gender'] === 'M'){ echo 'checked="checked"'; } else if(isset($dataArr['data']->kyc->gender) && $dataArr['data']->kyc->gender === 'M') { echo 'checked="checked"'; } ?> value="M" /><span>Male</span>
-                            <input type="radio" name="gender" <?php if(isset($_POST['gender']) && $_POST['gender'] === 'F'){ echo 'checked="checked"'; } else if(isset($dataArr['data']->kyc->gender) && $dataArr['data']->kyc->gender === 'F') { echo 'checked="checked"'; } ?> value="F" /><span>Female</span>
-                        </div>
-                        
+							<div class="formcol two">
+								<label>Email Address<span class="starred">*</span></label>
+								<input type="text" placeholder="Enter Email Address" name="email" id="email" class="required" data-bind="email" value="<?php if(isset($_POST['email'])){ echo $_POST['email']; } else if(isset($dataArr['data']->kyc->email)){ echo $dataArr['data']->kyc->email; } ?>" />
+							</div>
+
+						<?php } else { ?>
+						
+							<div class="formcol two">
+								<label>Email Address<span class="starred">*</span></label>
+								<input type="text" placeholder="Enter Email Address" name="email" id="email" class="required" data-bind="email" value="<?php if(isset($_POST['email'])){ echo $_POST['email']; } else if(isset($dataArr['data']->email)){ echo $dataArr['data']->email; } ?>" />
+							</div>
+
+						<?php } ?>
+						
+						<?php if($dataArr['data']->kyc != '' && isset($dataArr['data']->kyc->phone_number)) { ?>
+
+							<div class="formcol third">
+								<label>Contact Number<span class="starred">*</span></label>
+								<input type="text" placeholder="Enter Contact Number" name="phone_number" id="phone_number" class="required" data-bind="mobilenumber" value="<?php if(isset($_POST['phone_number'])){ echo $_POST['phone_number']; } else if(isset($dataArr['data']->kyc->phone_number)){ echo $dataArr['data']->kyc->phone_number; } ?>" />
+							</div>
+
+						<?php } else { ?>
+							
+							<div class="formcol third">
+								<label>Contact Number<span class="starred">*</span></label>
+								<input type="text" placeholder="Enter Contact Number" name="phone_number" id="phone_number" class="required" data-bind="mobilenumber" value="<?php if(isset($_POST['phone_number'])){ echo $_POST['phone_number']; } else if(isset($dataArr['data']->phone_number)){ echo $dataArr['data']->phone_number; } ?>" />
+							</div>
+
+						<?php } ?>
+
                         <div class="clear"></div>
-                        
-                        <div class="formcol">
-                            <label>Martial Status<span class="starred">*</span></label>
-                            <div class="clear"></div>
-                            <input type="radio" name="martial_status" <?php if(isset($_POST['martial_status']) && $_POST['martial_status'] === 'S'){ echo 'checked="checked"'; } else if(isset($dataArr['data']->kyc->martial_status) && $dataArr['data']->kyc->martial_status === 'S') { echo 'checked="checked"'; } ?> value="S" /><span>Single</span>
-                            <input type="radio" name="martial_status" <?php if(isset($_POST['martial_status']) && $_POST['martial_status'] === 'M'){ echo 'checked="checked"'; } else if(isset($dataArr['data']->kyc->martial_status) && $dataArr['data']->kyc->martial_status === 'M') { echo 'checked="checked"'; } ?> value="M" /><span>Married</span>
-                        </div>
-                        
-                        <div class="formcol ">
-                            <label>Date of Birth <span class="starred">*</span></label>
+						
+						<div class="formcol">
+                            <label>Date of Birth / Company Registered Date<span class="starred">*</span></label>
                             <input type="text" placeholder="yyyy-mm-dd" name="date_of_birth" id="date_of_birth" class="required" data-bind="date" value="<?php if(isset($_POST['date_of_birth'])){ echo $_POST['date_of_birth']; } else if(isset($dataArr['data']->kyc->date_of_birth)){ echo $dataArr['data']->kyc->date_of_birth; } ?>" />
                         </div>
-                        
-                        <div class="formcol third">
-                            <label>Nationality<span class="starred">*</span></label>
-                            <div class="clear"></div>
-                            <input type="radio" name="nationality" <?php if(isset($_POST['nationality']) && $_POST['nationality'] === 'I'){ echo 'checked="checked"'; } else if(isset($dataArr['data']->kyc->nationality) && $dataArr['data']->kyc->nationality === 'I') { echo 'checked="checked"'; } ?> value="I" /><span>Indian</span>
-                            <input type="radio" name="nationality" <?php if(isset($_POST['nationality']) && $_POST['nationality'] === 'O'){ echo 'checked="checked"'; } else if(isset($dataArr['data']->kyc->nationality) && $dataArr['data']->kyc->nationality === 'O') { echo 'checked="checked"'; } ?> value="O" /><span>Other</span>
+
+						<div class="formcol two">
+                            <label>GSTIN Number<span class="starred">*</span></label>
+                            <input type="text" name="gstin_number" id="gstin_number" placeholder="Enter gstin number" class="required" data-bind="alphanum" value="<?php if(isset($_POST['gstin_number'])){ echo $_POST['gstin_number']; } else if(isset($dataArr['data']->kyc->gstin_number)){ echo $dataArr['data']->kyc->gstin_number; } ?>" />
                         </div>
-                        
-                        <div class="formcol">
-                            <label>Status<span class="starred">*</span></label>
-                            <div class="clear"></div>      
-                            <input type="radio" name="status" <?php if(isset($_POST['status']) && $_POST['status'] === '1'){ echo 'checked="checked"'; } else if(isset($dataArr['data']->kyc->status) && $dataArr['data']->kyc->status === '1') { echo 'checked="checked"'; } ?> value="1" /><span>Yes</span>
-                            <input type="radio" name="status" <?php if(isset($_POST['status']) && $_POST['status'] === '0'){ echo 'checked="checked"'; } else if(isset($dataArr['data']->kyc->status) && $dataArr['data']->kyc->status === '0') { echo 'checked="checked"'; } ?> value="0" /><span>No</span>
-                        </div>
-                        
-                        <div class="formcol two">
+
+						<div class="formcol third">
                             <label>Pan Card No<span class="starred">*</span></label>
                             <input type="text" name="pan_card_number" id="pan_card_number" placeholder="Enter pan card number" class="required" data-bind="pancard" value="<?php if(isset($_POST['pan_card_number'])){ echo $_POST['pan_card_number']; } else if(isset($dataArr['data']->kyc->pan_card_number)){ echo $dataArr['data']->kyc->pan_card_number; } ?>" />
                         </div>
-                        
-                        <div class="formcol third">
-                            <label>UID if Any</label>
+						
+						<div class="clear"></div>
+
+                        <div class="formcol">
+                            <label>UID / Aadhar if Any</label>
                             <input type="text" name="uid_number" id="uid_number" placeholder="Enter uid number" data-bind="alphanum" value="<?php if(isset($_POST['uid_number'])){ echo $_POST['uid_number']; } else if(isset($dataArr['data']->kyc->uid_number)){ echo $dataArr['data']->kyc->uid_number; } ?>" />
                         </div>
 
-                        <div class="formcol">
+                        <div class="formcol two">
                             <label>Proof of identity submitted for PAN exempt cases<span class="starred">*</span></label>
                             <div class="clear"></div>
                             <input type="radio" name="identity_proof" <?php if(isset($_POST['identity_proof']) && $_POST['identity_proof'] === 'UID'){ echo 'checked="checked"'; } else if(isset($dataArr['data']->kyc->identity_proof) && $dataArr['data']->kyc->identity_proof === 'UID') { echo 'checked="checked"'; } ?> value="UID" /><span>UID(Aadhar)</span>
@@ -143,58 +144,54 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
                             <input type="radio" name="identity_proof" <?php if(isset($_POST['identity_proof']) && $_POST['identity_proof'] === 'DL'){ echo 'checked="checked"'; } else if(isset($dataArr['data']->kyc->identity_proof) && $dataArr['data']->kyc->identity_proof === 'DL') { echo 'checked="checked"'; } ?> value="DL" /><span>Driving License</span>
                             <input type="radio" name="identity_proof" <?php if(isset($_POST['identity_proof']) && $_POST['identity_proof'] === 'O'){ echo 'checked="checked"'; } else if(isset($dataArr['data']->kyc->identity_proof) && $dataArr['data']->kyc->identity_proof === 'O') { echo 'checked="checked"'; } ?> value="O" /><span>Others</span>
                         </div>
-                        
-                        <?php if($dataArr['data']->kyc != '' && isset($dataArr['data']->kyc->proof_photograph)) { ?>
-                        
-                            <div class="formcol two">
-                                <label>Photograph</label>
+						
+						<?php if($dataArr['data']->kyc != '' && isset($dataArr['data']->kyc->proof_photograph)) { ?>
+
+                            <div class="formcol third">
+                                <label>Proof of identity</label>
                                 <div class="clear"></div>
                                 <input type="file" name="proof_photograph" id="proof_photograph" />
                                 <a class="pull-right" href="<?php echo PROJECT_URL . '/upload/kyc-docs/' . $dataArr['data']->kyc->proof_photograph; ?>" target="_blank">View</a>
                             </div>
-                        
+
                         <?php } else { ?>
-                            
-                            <div class="formcol two">
+
+                            <div class="formcol third">
                                 <label>Photograph <span class="starred">*</span></label>
                                 <div class="clear"></div>
                                 <input type="file" name="proof_photograph" class="required" id="proof_photograph" />
                             </div>
-                        
+
                         <?php } ?>
                         
+						<div class="clear"></div>
+
+						<div class="formcol">
+							<label>Business Type<span class="starred">*</span></label>
+                            <select name='business_type' id='business_type' class='required'>
+								<?php $dataBusinessArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('business_type')." where status='1' and is_deleted='0' order by business_name asc"); ?>
+                                <?php if(!empty($dataBusinessArrs)) { ?>
+                                    <option value=''>Select Business Type</option>
+                                    <?php foreach($dataBusinessArrs as $dataBusinessArr) { ?>
+
+                                        <?php if(isset($_POST['business_type']) && $_POST['business_type'] == $dataBusinessArr->business_id){ ?>
+                                            <option value='<?php echo $dataBusinessArr->business_id; ?>' selected="selected"><?php echo $dataBusinessArr->business_name; ?></option>
+                                        <?php } else if(isset($dataArr['data']->kyc->business_type) && $dataArr['data']->kyc->business_type == $dataBusinessArr->business_id){ ?>
+                                            <option value='<?php echo $dataBusinessArr->business_id; ?>' selected="selected"><?php echo $dataBusinessArr->business_name; ?></option>
+                                        <?php } else { ?>
+                                            <option value='<?php echo $dataBusinessArr->business_id; ?>'><?php echo $dataBusinessArr->business_name; ?></option>
+                                        <?php } ?>
+
+                                    <?php } ?>
+                                <?php } ?>
+                            </select>
+						</div>
+
                         <div class="clear"></div>
-                        <h2>B. Address Details</h2>
-                        <div class="formcol">
-                            <label>Address for Correspondence<span class="starred">*</span></label>
-                            <input type="text" placeholder="Address for Correspondence" name="correspondence_address" id="correspondence_address" class="required" data-bind="address" value="<?php if(isset($_POST['correspondence_address'])){ echo $_POST['correspondence_address']; } else if(isset($dataArr['data']->kyc->correspondence_address)){ echo $dataArr['data']->kyc->correspondence_address; } ?>" />
-                        </div>
+
+                        <h2>Business Address Details</h2>
                         
-                        <div class="formcol two">
-                            <label>Contact Details<span class="starred">*</span></label>
-                            <textarea placeholder="Contact Details" name="correspondence_details" id="correspondence_details" class="required" data-bind="content"><?php if(isset($_POST['correspondence_details'])){ echo $_POST['correspondence_details']; } else if(isset($dataArr['data']->kyc->correspondence_details)){ echo $dataArr['data']->kyc->correspondence_details; } ?></textarea>
-                        </div>
-                        
-                        <?php if($dataArr['data']->kyc != '' && isset($dataArr['data']->kyc->address_proof)) { ?>
-                        
-                            <div class="formcol third">
-                                <label>Proof of address</label>
-                                <div class="clear"></div>
-                                <input type="file" name="address_proof" id="address_proof" />
-                                <a class="pull-right" href="<?php echo PROJECT_URL . '/upload/kyc-docs/' . $dataArr['data']->kyc->address_proof; ?>" target="_blank">View</a>
-                            </div>
-                        
-                        <?php } else { ?>
-                            
-                            <div class="formcol third">
-                                <label>Proof of address<span class="starred">*</span></label>
-                                <div class="clear"></div>
-                                <input type="file" name="address_proof" class="required" id="address_proof" />
-                            </div>
-                        
-                        <?php } ?>
-                        
-                        <div class="formcol">
+						<div class="formcol">
                             <label>Registered Address<span class="starred">*</span></label>
                             <input type="text" placeholder="Registered Address" name="registered_address" id="registered_address" class="required" data-bind="address" value="<?php if(isset($_POST['registered_address'])){ echo $_POST['registered_address']; } else if(isset($dataArr['data']->kyc->registered_address)){ echo $dataArr['data']->kyc->registered_address; } ?>" />
                         </div>
@@ -219,12 +216,28 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
                                 <?php } ?>
                             </select>
                         </div>
+						
+                        <?php if($dataArr['data']->kyc != '' && isset($dataArr['data']->kyc->address_proof)) { ?>
                         
-                        <div class="formcol third">
-                            <label>Occupation<span class="starred">*</span></label>
-                            <input type="text" placeholder="Occupation" name="occupation" id="occupation" class="required" data-bind="content" value="<?php if(isset($_POST['occupation'])){ echo $_POST['occupation']; } else if(isset($dataArr['data']->kyc->occupation)){ echo $dataArr['data']->kyc->occupation; } ?>" />
-                        </div>
+                            <div class="formcol third">
+                                <label>Proof of address</label>
+                                <div class="clear"></div>
+                                <input type="file" name="address_proof" id="address_proof" />
+                                <a class="pull-right" href="<?php echo PROJECT_URL . '/upload/kyc-docs/' . $dataArr['data']->kyc->address_proof; ?>" target="_blank">View</a>
+                            </div>
                         
+                        <?php } else { ?>
+                            
+                            <div class="formcol third">
+                                <label>Proof of address<span class="starred">*</span></label>
+                                <div class="clear"></div>
+                                <input type="file" name="address_proof" class="required" id="address_proof" />
+                            </div>
+                        
+                        <?php } ?>
+                        
+                        <div class="clear"></div>
+
                         <div class="clear height10"></div>
                         <div class="adminformbxsubmit" style="width:100%;">
                             <div class="tc">

@@ -30,9 +30,9 @@ final class users extends validation {
         }
            
         /* get plan details */
-        $planDetail = $this->getAllActivePlanSuAdmin("p.id,p.name,p.plan_category,p.plan_price,(case when p.status='1' Then 'active' when p.status='0' then 'deactive' end) as status,c.name as cat_name,c.month as month","p.id='".$dataArr['plan_id']."' and p.is_deleted='0'",$orderby='p.id asc');
+        $planDetail = $this->getAllActivePlanSuAdmin("p.id,p.name,p.plan_category,p.no_of_client,p.plan_price,(case when p.status='1' Then 'active' when p.status='0' then 'deactive' end) as status,c.name as cat_name,c.month as month","p.id='".$dataArr['plan_id']."' and p.is_deleted='0'",$orderby='p.id asc');
         $dataArr['plan_due_date'] = date('Y-m-d H:i:s', strtotime('+'.$planDetail['0']->month.' months'));
-        
+		
         if ($this->insert($this->tableNames['user_subscribed_plan'], $dataArr)) {
             
             $insertid = $this->getInsertID();

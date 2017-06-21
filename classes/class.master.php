@@ -48,6 +48,11 @@ final class master extends validation {
             return false;
         }
 		
+		if( $this->checkStateTinExist($dataArr['state_tin'])){
+            $this->setError($this->validationMessage['statetinexist']);
+            return false;
+        }
+		
         $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['added_date'] = date('Y-m-d H:i:s');
         if (!$this->insert($this->tableNames['state'], $dataArr)) {
@@ -67,19 +72,21 @@ final class master extends validation {
         {
             $dataArr['state_name'] = isset($_POST['state_name']) ? $_POST['state_name'] : '';
             $dataArr['state_code'] = isset($_POST['state_code']) ? $_POST['state_code'] : '';
+			$dataArr['state_tin'] = isset($_POST['state_tin']) ? $_POST['state_tin'] : '';
             $dataArr['status'] = isset($_POST['status']) ? $_POST['status'] : '';
         }
         return $dataArr;
     }
-    
-    private function validateState($dataArr) 
-    {
+
+    private function validateState($dataArr) {
+
         $rules = array(
             'state_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:State Name',
             'state_code' => 'required||alphabet||min:2||max:2|#|lable_name:State Code',
+			'state_tin' => 'required||numeric||min:2||max:2|#|lable_name:State Tin',
             'status' => 'required||numeric|#|lable_name:Status'
         );
-		
+
         $valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
             $err_arr = $valid->allErrors();
@@ -108,6 +115,11 @@ final class master extends validation {
             return false;
         }
 		
+		if( $this->checkStateTinExist($dataArr['state_tin'], $this->sanitize($_GET['id']))){
+            $this->setError($this->validationMessage['statetinexist']);
+            return false;
+        }
+		
         $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['update_date'] = date('Y-m-d H:i:s');
         if (!$this->update($this->tableNames['state'], $dataArr, array('state_id'=>$this->sanitize($_GET['id'])))) {
@@ -131,7 +143,20 @@ final class master extends validation {
             return true;
         }
     }
-    
+	
+	public function checkStateTinExist($state_tin, $state_id = '') {
+
+		if($state_id && $state_id != '') {
+			$checkStateTin = $this->get_row("select * from " . $this->tableNames['state'] . " where 1=1 AND state_id != ".$state_id." AND state_tin = '" . $state_tin . "'");
+		} else {
+			$checkStateTin = $this->get_row("select * from " . $this->tableNames['state'] . " where 1=1 AND state_tin = '" . $state_tin . "'");
+		}
+		
+		if (count($checkStateTin) == 1) {
+            return true;
+        }
+    }
+	
     /*
     * End : State Add/Update/Delete Related All function
     */

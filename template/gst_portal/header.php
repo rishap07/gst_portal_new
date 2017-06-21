@@ -75,21 +75,25 @@
                     <li class="one"><a href="<?php echo PROJECT_URL; ?>/?page=dashboard"><span class="iconpic"></span>Dashboard <strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
 					
 					<?php if ($db_obj->can_read('client_list')) { ?>
+
 						<li class="iconadmin"><a href="javascript:void(0)"><span class="iconpic"></span>Admin <strong class="fa fa-users" aria-hidden="true"></strong></a>
 							<ul class="inner-content-list">
 								<?php if ($db_obj->can_read('client_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=client_list">All Client</a></li><?php } ?>
 								<?php if ($db_obj->can_create('client_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=client_update">Add New Client</a></li><?php } ?>
 							</ul>
 						</li>
+
 					<?php } ?>
 
                     <?php if ($db_obj->can_read('admin_list')) { ?>
-                        <li class="iconadmin"><a href="javascript:void(0)"><span class="iconpic"></span>Admin <strong class="fa fa-users" aria-hidden="true"></strong></a>
+
+						<li class="iconadmin"><a href="javascript:void(0)"><span class="iconpic"></span>Admin <strong class="fa fa-users" aria-hidden="true"></strong></a>
                             <ul class="inner-content-list">
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=user_adminupdate">Add New Admin</a></li>
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=user_adminlist">All Admin</a></li>
                             </ul>
                         </li>
+
                     <?php } ?>
 					
 					<?php if ($db_obj->can_read('plan_category_list') || $db_obj->can_read('plan_list')) { ?>
@@ -102,60 +106,75 @@
 								<?php if ($db_obj->can_create('plan_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=plan_addplan">Add Plan</a></li><?php } ?>
 							</ul>
 						</li>
-					
+
 					<?php } ?>
 
                     <?php if ($db_obj->can_read('user_group') || $db_obj->can_read('user_role')) { ?>
-                        <li class="iconsetting"><a href="javascript:void(0)"><span class="iconpic"></span>Settings <strong class="fa fa-plus" aria-hidden="true"></strong></a>
+
+						<li class="iconsetting"><a href="javascript:void(0)"><span class="iconpic"></span>Settings <strong class="fa fa-plus" aria-hidden="true"></strong></a>
                             <ul class="inner-content-list">
                                 <?php if ($db_obj->can_read('user_group')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=user_group">User Group</a></li><?php } ?>
                                 <?php if ($db_obj->can_read('user_role')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=user_role">User Role</a></li><?php } ?>
                             </ul>
                         </li>
+
                     <?php } ?>
 					
 					<?php if ($db_obj->can_read('client_kyc')) { ?>
+
 						<li class="iconsetting"><a href="javascript:void(0)"><span class="iconpic"></span>Client Settings <strong class="fa fa-plus" aria-hidden="true"></strong></a>
 							<ul class="inner-content-list">
 								<li><a href="<?php echo PROJECT_URL; ?>/?page=client_kycupdate">Update KYC</a></li>
-								<li><a href="<?php echo PROJECT_URL; ?>/?page=client_gstin">Update GSTIN</a></li>
 							</ul>
 						</li>
+
 					<?php } ?>
 
                     <?php if (($db_obj->can_read('master_state')) || ($db_obj->can_read('master_unit'))  || ($db_obj->can_read('master_receiver')) || ($db_obj->can_read('master_supplier')) || ($db_obj->can_read('master_item')) || ($db_obj->can_read('client_master_item'))) { ?>
-                    <li class="iconsetting"><a href="javascript:void(0)"><span class="iconpic"></span>Master <strong class="fa fa-plus" aria-hidden="true"></strong></a>
-                        <ul class="inner-content-list">
-                            <?php if ($db_obj->can_read('master_state')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_state">State</a></li><?php } ?>
-                            <?php if ($db_obj->can_read('master_unit')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_unit">Unit</a></li><?php } ?>
-                            <?php if ($db_obj->can_read('master_receiver')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_receiver">Receiver</a></li><?php } ?>
-                            <?php if ($db_obj->can_read('master_supplier')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_supplier">Supplier</a></li><?php } ?>
-                            <?php if ($db_obj->can_read('master_item')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_item">Item</a></li><?php } ?>
-                            <?php if ($db_obj->can_read('client_master_item')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=client_item_list">Item</a></li><?php } ?>
-                        </ul>
-                    </li>
-                    <?php } ?>
-                    <li class="three"><a href="javascript:void(0)"><span class="iconpic"></span>Valuation<strong class="fa fa-plus" aria-hidden="true"></strong></a>
-                    </li>
-                    <li class="two"><a href="javascript:void(0)"><span class="iconpic"></span>Invoices<strong class="fa fa-plus" aria-hidden="true"></strong></a>
-                        <ul class="inner-content-list">
-                            <?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_invoice_list'; ?>">All Invoices</a></li><?php } ?>
-                            <?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_creat_invoice'; ?>">Add new Invoice</a></li><?php } ?>
-                            <?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_upload_invoice'; ?>">Upload Invoice</a></li><?php } ?>
-                        </ul>
-                    </li>
-					
-                    <li class="three"><a href="javascript:void(0)"><span class="iconpic"></span>Time of Supply<strong class="fa fa-plus" aria-hidden="true"></strong></a>
 
+						<li class="iconsetting"><a href="javascript:void(0)"><span class="iconpic"></span>Master <strong class="fa fa-plus" aria-hidden="true"></strong></a>
+							<ul class="inner-content-list">
+								<?php if ($db_obj->can_read('master_state')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_state">State</a></li><?php } ?>
+								<?php if ($db_obj->can_read('master_unit')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_unit">Unit</a></li><?php } ?>
+								<?php if ($db_obj->can_read('master_receiver')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_receiver">Receiver</a></li><?php } ?>
+								<?php if ($db_obj->can_read('master_supplier')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_supplier">Supplier</a></li><?php } ?>
+								<?php if ($db_obj->can_read('master_item')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_item">Item</a></li><?php } ?>
+								<?php if ($db_obj->can_read('client_master_item')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=client_item_list">Item</a></li><?php } ?>
+							</ul>
+						</li>
+
+					<?php } ?>
+
+					<!--<li class="three"><a href="javascript:void(0)"><span class="iconpic"></span>Valuation<strong class="fa fa-plus" aria-hidden="true"></strong></a></li>-->
+                    
+					<li class="two"><a href="javascript:void(0)"><span class="iconpic"></span>Invoices<strong class="fa fa-plus" aria-hidden="true"></strong></a>
+                        <ul class="inner-content-list">
+                            <?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_invoice_list'; ?>">All Tax Invoices</a></li><?php } ?>
+                            <?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_invoice'; ?>">Add New Tax Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_upload_invoice'; ?>">Upload Tax Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_bill_of_supply_invoice_list'; ?>">All Bill Of Supply Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_bill_of_supply_invoice'; ?>">Add New Bill Of Supply Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_receipt_voucher_invoice_list'; ?>">All Receipt Voucher Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_receipt_voucher_invoice'; ?>">Add New Receipt Voucher Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_refund_voucher_invoice'; ?>">Add New Refund Voucher Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_payment_voucher_invoice'; ?>">Add New Payment Voucher Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_revised_tax_invoice'; ?>">Add New Revised Tax Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_special_tax_invoice'; ?>">Add New Special Cases Tax Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_transportation_of_goods_invoice'; ?>">Add New Transportation of Goods Invoice</a></li><?php } ?>
+                        </ul>
                     </li>
-                    <li class="four"><a href="javascript:void(0)"><span class="iconpic"></span>Payment <strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
-                    <li class="five"><a href="javascript:void(0)"><span class="iconpic"></span>TDS<strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
-                    <li class="six"><a href="javascript:void(0)"><span class="iconpic"></span>TCS<strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
-                    <li class="seven"><a href="javascript:void(0)"><span class="iconpic"></span>Return <strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
-                    <li class="seven"><a href="javascript:void(0)"><span class="iconpic"></span>Invoice Matching <strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
-                    <li class="seven"><a href="javascript:void(0)"><span class="iconpic"></span>Input Tax Credit <strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
-                    <li class="seven"><a href="javascript:void(0)"><span class="iconpic"></span>Refund <strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
-                    <li class="eight"><a href="javascript:void(0)"><span class="iconpic"></span>Ticketing Tools <strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
-                    <li class="nine"><a href="javascript:void(0)"><span class="iconpic"></span>Reports <strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
+
+                    <!-- /* comment menus */
+						<li class="three"><a href="javascript:void(0)"><span class="iconpic"></span>Time of Supply<strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
+						<li class="four"><a href="javascript:void(0)"><span class="iconpic"></span>Payment <strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
+						<li class="five"><a href="javascript:void(0)"><span class="iconpic"></span>TDS<strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
+						<li class="six"><a href="javascript:void(0)"><span class="iconpic"></span>TCS<strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
+						<li class="seven"><a href="javascript:void(0)"><span class="iconpic"></span>Return <strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
+						<li class="seven"><a href="javascript:void(0)"><span class="iconpic"></span>Invoice Matching <strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
+						<li class="seven"><a href="javascript:void(0)"><span class="iconpic"></span>Input Tax Credit <strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
+						<li class="seven"><a href="javascript:void(0)"><span class="iconpic"></span>Refund <strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
+						<li class="eight"><a href="javascript:void(0)"><span class="iconpic"></span>Ticketing Tools <strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
+						<li class="nine"><a href="javascript:void(0)"><span class="iconpic"></span>Reports <strong class="fa fa-plus" aria-hidden="true"></strong></a></li>
+					-->
                 </ul>
             </div>

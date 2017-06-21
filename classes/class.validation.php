@@ -14,7 +14,8 @@ class validation extends upload {
     
     protected $tableNames = array();
     public $allowImageExt = array('image/gif', 'image/jpeg', 'image/jpg', 'image/png');
-
+    public $allowExcelExt = array('application/vnd.ms-excel', 'application/octet-stream', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    
     public function __construct() {
 
         parent::__construct();
@@ -40,15 +41,21 @@ class validation extends upload {
             'unit' => TAB_PREFIX . 'master_unit',
             'client_invoice' => TAB_PREFIX . 'client_invoice',
             'client_invoice_item' => TAB_PREFIX . 'client_invoice_item',
+            'client_bos_invoice' => TAB_PREFIX . 'client_bos_invoice',
+            'client_bos_invoice_item' => TAB_PREFIX . 'client_bos_invoice_item',
+            'client_rv_invoice' => TAB_PREFIX . 'client_rv_invoice',
+            'client_rv_invoice_item' => TAB_PREFIX . 'client_rv_invoice_item',            
+            'business_type' => TAB_PREFIX . 'business_type',
             'api' => TAB_PREFIX . 'api'
         );
 
         $this->checkUserAccess();
     }
     
-    /*[a-zA-Z\d]+[(_{1}\-{1}\.{1})][a-zA-Z\d]*/
+    //onedash   /^[a-zA-Z\d]+[(-{1})|(a-zA-Z\d)][a-zA-Z\d]+$/
     protected $validateType = array(
         "username" => "[a-zA-Z\d]+[(_{1}\-{1}\.{1})|(a-zA-Z\d)][a-zA-Z\d]",
+        "invoicenumber" => "[a-zA-Z\d]+[(-{1})|(a-zA-Z\d)][a-zA-Z\d]",
         "alphanumeric" => "A-Za-z0-9\n\r\&\/\-\(\)\,\.",
         "mobilenumber" => "\d{10}",
         "content" => "^\\\"<>|",
@@ -106,18 +113,20 @@ class validation extends upload {
         'update' => 'Updated Successfully',
         'inserted' => 'Added Successfully',
         'statecodeexist' => 'State code already exist.',
+        'statetinexist' => 'State tin already exist.',
         'unitcodeexist' => 'Unit code already exist.',
         'invoiceadded' => 'Invoice added successfully.',
         'invoiceupdated' => 'Invoice updated successfully.',
         'invoicedeleted' => 'Invoice deleted successfully.',
-        'noiteminvoice' => 'There is no item in invoice.'
+        'noiteminvoice' => 'There is no item in invoice.',
+        'excelerror' => 'There is an error in uploaded excel. Download and check in error information column.'
     );
-    
+
     public function getTableName($tablename)
     {
         return $this->tableNames[$tablename];
     }
-    
+
     public function getValMsg($msg)
     {
         return $this->validationMessage[$msg];
@@ -137,18 +146,11 @@ class validation extends upload {
                     }
                 }
             } else if($currentUserDetails['data']->user_group == 4) {
-                
+
                 if( isset($_GET['page']) && $_GET['page'] != "client_kycupdate") {
 
                     if($currentUserDetails['data']->kyc == '') {
                         $this->redirect(PROJECT_URL . "?page=client_kycupdate");
-                    }
-                    
-                    if( $_GET['page'] != "client_registrationchoice" && $_GET['page'] != "client_gstin") {
-                        
-                        if($currentUserDetails['data']->gstin == '') {
-                            $this->redirect(PROJECT_URL . "?page=client_registrationchoice");
-                        }
                     }
                 }
             }

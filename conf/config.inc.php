@@ -80,6 +80,7 @@ define('ADMIN_MODULE_DIR', "/modules");
 define('CLASSES_DIR', "/classes");
 define('CONFIG_DIR', "/conf");
 define('INCLUDE_DIR', "/includes");
+define('UPLOAD_DIR', "/upload");
 
 
 
@@ -153,6 +154,8 @@ function __autoload($class) {
         die($class . ' Class Not exists');
     }
 }
+
+include(CLASSES_ROOT . "/PHPExcel.php");
 
 extract($_GET);
 extract($_POST);

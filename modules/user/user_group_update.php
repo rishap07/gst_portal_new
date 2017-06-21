@@ -27,6 +27,9 @@ if(isset($_POST['submit']) && $_POST['submit']=='update' && isset($_GET['id']))
                                     <td valign="top">
                                         Role Name  : ( Description )
                                     </td>
+									<td valign="top">
+                                        Role Slug
+                                    </td>
                                     <td align="center" valign="top">
                                         View
                                     </td>
@@ -53,14 +56,15 @@ if(isset($_POST['submit']) && $_POST['submit']=='update' && isset($_GET['id']))
                                     {
                                         ?>
                                         <tr>
-                                            
                                             <td valign="top">
                                                 <?php echo $dataRoleArr->role_name;?>  : ( <?php echo $dataRoleArr->role_description;?> )
                                                 <input type="hidden" name="user_role_id[]" value="<?php echo $dataRoleArr->user_role_id;?>">
                                             </td>
+											<td valign="top">
+                                                <?php echo $dataRoleArr->role_page;?>
+                                            </td>
                                             <td align="center" valign="top">
                                                 <input type="checkbox" name="view[<?php echo $dataRoleArr->user_role_id;?>]" <?php echo ($dataRoleArr->can_read=='1')? 'checked':'';?> value="1" class="checkall">
-                                                
                                             </td>
                                             <td align="center" valign="top">
                                                 <input type="checkbox" name="create[<?php echo $dataRoleArr->user_role_id;?>]" <?php echo ($dataRoleArr->can_create=='1')? 'checked':'';?> value="1" class="checkall">

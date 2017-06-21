@@ -8,7 +8,7 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
 if( isset($_POST['submit']) && $_POST['submit'] == 'update' && $obj_user->validateId($_SESSION['user_detail']['user_id']) ) {
 
     if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
-        
+
         $obj_user->setError('Invalid access to files');
     } else {
 

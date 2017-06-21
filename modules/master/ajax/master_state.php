@@ -7,11 +7,14 @@
  *  Last Modified By    :   Love Kumawat
  *  Last Modification   :   Ternder Listing
  * 
- */
+*/
+
 $obj_master = new master();
 extract($_POST);
+
 //Columns to fetch from database
-$aColumns = array('state_id','state_name','state_code', 'status');
+$aColumns = array('state_id', 'state_name', 'state_code', 'state_tin', 'status');
+$aSearchColumns = array('state_name', 'state_code', 'state_tin');
 $sIndexColumn = "state_id";
 
 /* DB table to use */
@@ -19,16 +22,15 @@ $sTable = $obj_master->getTableName('state');
 
 /*
  * Paging
- */
+*/
 $sLimit = "";
 if (isset($_POST['iDisplayStart']) && $_POST['iDisplayLength'] != '-1') {
-    $sLimit = "LIMIT " . $obj_master->escape($_POST['iDisplayStart']) . ", " .
-            $obj_master->escape($_POST['iDisplayLength']);
+    $sLimit = "LIMIT " . $obj_master->escape($_POST['iDisplayStart']) . ", " . $obj_master->escape($_POST['iDisplayLength']);
 }
 
 /*
  * Ordering
- */
+*/
 $sOrder = "";
 if (isset($_POST['iSortCol_0'])) {
     $sOrder = "ORDER BY ";
@@ -39,7 +41,7 @@ if (isset($_POST['iSortCol_0'])) {
         }
     }
     if ($sOrder == "ORDER BY ") {
-        $sOrder = "ORDER BY state_id DESC";
+        $sOrder = "ORDER BY state_tin ASC";
     }
 }
 
@@ -49,11 +51,12 @@ if (isset($_POST['iSortCol_0'])) {
  * word by word on any field. It's possible to do here, but concerned about efficiency
  * on very large tables, and MySQL's regex functionality is very limited
  */
-//$sWhere = "WHERE is_deleted = '0' AND language_id = '".$_SESSION['lang_id']."' ";.
-$sWhere=" where is_deleted='0'";
+$sWhere=" where is_deleted = '0'";
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
-    for ($i = 0; $i < count($aColumns1); $i++) {
-        $sWhere .= $aColumns1[$i] . " LIKE '%" . utf8_encode(htmlentities($_POST['sSearch'],ENT_COMPAT,'utf-8')) . "%' OR ";
+
+	$sWhere .= 'AND (';
+	for ($i = 0; $i < count($aSearchColumns); $i++) {
+        $sWhere .= $aSearchColumns[$i] . " LIKE '%" . utf8_encode(htmlentities($_POST['sSearch'],ENT_COMPAT,'utf-8')) . "%' OR ";
     }
     $sWhere = substr_replace($sWhere, "", -3);
     $sWhere .= ')';
@@ -71,7 +74,7 @@ for ($i = 0; $i < count($aColumns); $i++) {
 /*
  * SQL queries
  * Get data to display
- */
+*/
 $sWhere = trim(trim($sWhere), 'AND');
 $sQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ", $aColumns)) . "
             FROM $sTable
@@ -118,6 +121,7 @@ foreach($rResult as $aRow) {
     $row[] = $temp_x;
     $row[] = utf8_decode($aRow->state_name);
     $row[] = utf8_decode($aRow->state_code);
+	$row[] = utf8_decode($aRow->state_tin);	
     $row[] = $status;
     $row[] = '<a href="'.PROJECT_URL.'/?page=master_state_update&id='.$aRow->state_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>';
     $output['aaData'][] = $row;

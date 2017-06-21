@@ -19,11 +19,11 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteInvoice' && isset($_GET[
 <div class="admincontainer greybg">
     <div class="formcontainer">
         <div>
-            <a class='addnew' href='<?php echo PROJECT_URL;?>/?page=client_creat_invoice'>Add New Invoice</a>
+            <a class='addnew' href='<?php echo PROJECT_URL;?>/?page=client_create_invoice'>Add New Invoice</a>
         </div>
-        <h1>Invoice</h1>
+        <h1>Tax Invoice</h1>
         <hr class="headingborder">
-        <h2 class="greyheading">Invoice Listing</h2>
+        <h2 class="greyheading">Tax Invoice Listing</h2>
         <div class="adminformbx">
             <?php $obj_client->showErrorMessage(); ?>
             <?php $obj_client->showSuccessMessge(); ?>
@@ -33,16 +33,18 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteInvoice' && isset($_GET[
                     <tr>
                         <th align='left'>#</th>
                         <th align='left'>Invoice Number</th>
+						<th align='left'>Invoice Type</th>
+						<th align='left'>Invoice Nature</th>
                         <th align='left'>Invoice Date</th>
-                        <th align='left'>Supply Datetime</th>
-                        <th align='left'>Tax Payable</th>
-                        <th align='left'>Transportation Mode</th>
+                        <th align='left'>Supply Place</th>
+                        <th align='left'>Reverse Charge Tax</th>
 						<th align='left'>Billing To</th>
 						<th align='left'>Billing State</th>
 						<th align='left'>Shipping To</th>
 						<th align='left'>Shipping State</th>
-						<th align='left'>Total</th>
-                        <th align='left'>Action</th>
+						<th align='left'>Total<br><i class="fa fa-inr"></i></th>
+						<th align='left'>Canceled</th>
+                        <!--<th align='left'>Action</th>-->
                     </tr>
                 </thead>
             </table>
@@ -68,15 +70,17 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteInvoice' && isset($_GET[
                     "aoColumns": [
                         {"bSortable": false},
                         {"bSortable": false},
-                        {"bSortable": false},
-                        {"bSortable": false},
-                        {"bSortable": false},
-						{"bSortable": false},
-						{"bSortable": false},
-						{"bSortable": false},
-						{"bSortable": false},
 						{"bSortable": false},
                         {"bSortable": false},
+                        {"bSortable": false},
+                        {"bSortable": false},
+						{"bSortable": false},
+						{"bSortable": false},
+						{"bSortable": false},
+						{"bSortable": false},
+						{"bSortable": false},
+						{"bSortable": false},
+                        /*{"bSortable": false},*/
                         {"bSortable": false}
                     ],
                     "sDom": "lfrtip",

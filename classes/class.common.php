@@ -501,13 +501,10 @@ class common extends db {
         $data = $this->get_row("select *, CONCAT(first_name,' ',last_name) as name from " . $this->tableNames['user'] . " where user_id = '" . $user_id . "'");
         $dataArr = array();
         if (!empty($data)) {
-            
+
             $kycDetails = $this->getClientKYCDetailsById( $data->user_id );
             $data->kyc = $kycDetails['data'];
             
-            $gstinDetails = $this->getClientGSTINDetailsById( $data->user_id );
-            $data->gstin = $gstinDetails['data'];
-
             $dataArr['data'] = $data;
             $dataArr['message'] = $this->validationMessage['userexist'];
             $dataArr['status'] = 'success';
@@ -522,22 +519,7 @@ class common extends db {
     
     public function getClientKYCDetailsById($user_id = '') {
 
-        $data = $this->get_row("select ck.name, ck.companion_name, ck.gender, ck.martial_status, ck.date_of_birth, ck.nationality, ck.status, ck.pan_card_number, ck.uid_number, ck.identity_proof, ck.proof_photograph, ck.correspondence_address, ck.correspondence_details, ck.address_proof, ck.registered_address, ck.occupation, ck.state_id, s.state_name, s.state_code from " . $this->tableNames['client_kyc'] . " as ck inner join " . $this->tableNames['state'] . " as s on ck.state_id=s.state_id where 1=1 AND ck.added_by = " . $user_id);
-        $dataArr = array();
-        if (!empty($data)) {
-            $dataArr['data'] = $data;
-            $dataArr['status'] = 'success';
-        } else {
-            $dataArr['data'] = '';
-            $dataArr['status'] = 'error';
-        }
-
-        return $dataArr;
-    }
-    
-    public function getClientGSTINDetailsById($user_id = '') {
-
-        $data = $this->get_row("select * from " . $this->tableNames['client_gstin_detail'] . " where 1=1 AND added_by = " . $user_id);
+        $data = $this->get_row("select ck.name, ck.email, ck.phone_number, ck.date_of_birth, ck.gstin_number, ck.pan_card_number, ck.uid_number, ck.identity_proof, ck.proof_photograph, ck.business_type, ck.address_proof, ck.registered_address, ck.registration_type, ck.state_id, s.state_name, s.state_code, s.state_tin, ck.added_by, ck.updated_by from " . $this->tableNames['client_kyc'] . " as ck inner join " . $this->tableNames['state'] . " as s on ck.state_id=s.state_id where 1=1 AND ck.added_by = " . $user_id);
         $dataArr = array();
         if (!empty($data)) {
             $dataArr['data'] = $data;
@@ -654,6 +636,22 @@ class common extends db {
     public function getMasterItems($field = "*", $condition='', $orderby='item_id asc', $limit='', $group_by='') {
 
         $query = "select ".$field."  from ".$this->tableNames['item']." where 1=1 ";
+        
+        if($condition != '') {
+            $query .= " and ".$condition;
+        }
+        
+        if($group_by != '') {
+            $query .= " group by ".$group_by;
+        }
+        
+        $query .= " order by ".$orderby." ".$limit;        
+        return $this->get_results($query);
+    }
+    
+    public function getMasterUnits($field = "*", $condition='', $orderby='unit_id asc', $limit='', $group_by='') {
+
+        $query = "select ".$field."  from ".$this->tableNames['unit']." where 1=1 ";
         
         if($condition != '') {
             $query .= " and ".$condition;
@@ -784,6 +782,38 @@ class common extends db {
         return $dataArr;
     }
     
+    /* state details by state code */
+    public function getStateDetailByStateId($state_id) {
+
+        $data = $this->get_row("select * from " . $this->tableNames['state'] . " where state_id = " . $state_id);
+        $dataArr = array();
+        if (!empty($data)) {
+            $dataArr['data'] = $data;
+            $dataArr['status'] = 'success';
+        } else {
+            $dataArr['data'] = '';
+            $dataArr['status'] = 'error';
+        }
+
+        return $dataArr;
+    }
+    
+    /* state details by state code */
+    public function getStateDetailByStateTin($state_tin) {
+
+        $data = $this->get_row("select * from " . $this->tableNames['state'] . " where state_id = '" . $state_tin ."'");
+        $dataArr = array();
+        if (!empty($data)) {
+            $dataArr['data'] = $data;
+            $dataArr['status'] = 'success';
+        } else {
+            $dataArr['data'] = '';
+            $dataArr['status'] = 'error';
+        }
+
+        return $dataArr;
+    }
+    
     /* generate invoice number for client */
     public function generateInvoiceNumber($clientId) {
         
@@ -796,6 +826,36 @@ class common extends db {
             return "INV-" . str_pad($nextInvoice, 12, "0", STR_PAD_LEFT);
         } else {
             return "INV-000000000001";
+        }
+    }
+    
+    /* generate bill invoice number for client */
+    public function generateBillInvoiceNumber($clientId) {
+        
+        $query = "select invoice_id  from ".$this->tableNames['client_bos_invoice']." where 1=1 AND added_by=" . $clientId;
+        $invoices = $this->get_results($query);
+        
+        if( !empty($invoices) ) {
+
+            $nextInvoice = count($invoices) + 1;
+            return "IBS-" . str_pad($nextInvoice, 12, "0", STR_PAD_LEFT);
+        } else {
+            return "IBS-000000000001";
+        }
+    }
+    
+    /* generate receipt voucher invoice number for client */
+    public function generateRVInvoiceNumber($clientId) {
+        
+        $query = "select invoice_id  from ".$this->tableNames['client_rv_invoice']." where 1=1 AND added_by=" . $clientId;
+        $invoices = $this->get_results($query);
+        
+        if( !empty($invoices) ) {
+
+            $nextInvoice = count($invoices) + 1;
+            return "IRV-" . str_pad($nextInvoice, 12, "0", STR_PAD_LEFT);
+        } else {
+            return "IRV-000000000001";
         }
     }
     

@@ -138,8 +138,8 @@ p, ul { margin:0px; padding:0px;}
 
 .admincontainer h5{float:left;width:100%;font-size:15px;margin:15px 0 15px 0; background:#f0f0f0; padding:7px 10px; color:#333; font-family: opensans_bold; font-weight:normal;}
 
-.admincontainer h4{float:left;width:100%;font-size:17px;margin:0px 0 10px 0;  padding:0px 0 10px 0px; color:#422f80; font-family: opensans_bold; font-weight:normal;}
-.headingborder{width:70px;height:5px;float:left;background:#452f5e;position:relative;top:-12px;border:none;}
+.admincontainer h4{float:left;width:100%;font-size:15px;margin:0px 0 10px 0;  padding:0px 0 10px 0px; color:#422f80; font-family: opensans_bold; font-weight:normal;}
+.headingborder{width:70px;height:5px;float:left;background:#452f5e;position:relative;top:-12px;border:none;} 
 .clear{clear:both;}
 .height10{height:10px;}.height20{height:20px;}.height30{height:30px;}.height40{height:40px;}.height50{height:50px;}
 
@@ -148,7 +148,7 @@ p, ul { margin:0px; padding:0px;}
 .adminformbx .adminformlist, .formcol {float:left;width:31%;margin-right:3%;height:auto; margin-bottom:10px; min-height:70px;}
 .adminformbx .adminformlist.third, .formcol.third {margin-right:0px;clear:right;}
 .adminformbx .adminformlist label, .formcol label {float:left;color:#666;font-size:13px;clear:right;margin-bottom:10px; font-family: opensans_bold; font-weight:normal;}
-.adminformbx .adminformlist input[type=text],.adminformbx .adminformlist select,.adminformbx .adminformlist textarea{width:94%;padding:7px 3%;color:#505050;font-size:13px;border:1px solid #e0e0e0;}
+.adminformbx .adminformlist input[type=text],.adminformbx .adminformlist select,.adminformbx .adminformlist textarea, .inputfield{width:94%;padding:7px 3%;color:#505050;font-size:13px;border:1px solid #e0e0e0;}
 
 .adminformbx .formcol input[type=text], .adminformbx .formcol input[type=password],.adminformbx .formcol select,.adminformbx .formcol textarea{width:94%;padding:7px 3%;color:#505050;font-size:13px;border:1px solid #e0e0e0;}
 .adminformbx .formcol input[type=text].smallinput { width:110px; margin-left:10px;}
@@ -289,6 +289,12 @@ p, ul { margin:0px; padding:0px;}
 .formpopup  .popupform { background: #fff;box-shadow: 0 0 10px #000;left: 0; padding: 10px; padding:30px; position:relative; top:150px; height:auto;}
 .formpopup  .popupform .formcol { min-height:auto;}
 .formpopup  .popupform h3 { border-bottom:1px solid #ccc; font-family: opensans_bold; font-weight:normal; padding:0 0 10px 0; font-size:18px; margin:0px 0 15px 0; }
+.tableresponsive { overflow-x:scroll;}
+.fieldtable tr td, .fieldtable tr th { padding:10px 5px; }
+.fieldtable tr th { border-right:1px solid #7c7c7c; border-bottom:1px solid #7c7c7c; }
+.fieldtable tr td  .inputfield { box-sizing:border-box; width:100%; padding:3px 5px;}
+.txtheading { background:#f0f0f0; font-family: opensans_bold; font-size:13px; padding:10px !important;}
+.fieldtable tr td.fontbold { padding-top:5px; font-size:14px;}
 
 @media only screen and (max-width:1200px)
 {
@@ -377,10 +383,7 @@ p, ul { margin:0px; padding:0px;}
 	.headingborder{display:none;}
 	.admincontainer h2{font-size:16px; }
 	.admincontainer{width:86%;margin:0px 3%;padding:40px 4%;}
-	
-	
-	
-	
+
 	.sidemenu{top:66px;}
 	
 	.loginpage h1{font-size:24px;margin:30px 0px;}

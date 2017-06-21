@@ -60,7 +60,7 @@ $dataArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['use
 					
                     <div class="orcircle orangebg">OR</div>
                     <div class="migratecol" style="margin-right:0px;">
-                        <a href="<?php echo PROJECT_URL."?page=client_gstin"; ?>">Enter GSTN</a>
+                        <a href="#">Enter GSTN</a>
                     </div>
                   
                 </div>

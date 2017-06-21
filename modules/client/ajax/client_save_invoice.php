@@ -26,21 +26,41 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 		echo json_encode($result);
 		die;
 	}
-	
-	$dataArr['company_name'] = $dataCurrentUserArr['data']->company_name;
-	$dataArr['gstin_number'] = $dataCurrentUserArr['data']->gstin->gstin_number;
-	$dataArr['is_tax_payable'] = isset($params['tax_reverse_charge']) ? $params['tax_reverse_charge'] : '';
+
+	$dataArr['invoice_type'] = isset($params['invoice_type']) ? $params['invoice_type'] : '';
+	$dataArr['invoice_nature'] = isset($params['invoice_nature']) ? $params['invoice_nature'] : '';	
 	$dataArr['invoice_date'] = isset($params['invoice_date']) ? $params['invoice_date'] : '';
-	$dataArr['transportation_mode'] = isset($params['transportation_mode']) ? $params['transportation_mode'] : '';
-	$dataArr['supply_datetime'] = isset($params['date_time_of_supply']) ? $params['date_time_of_supply'] : '';
-	$dataArr['supply_place'] = $dataCurrentUserArr['data']->kyc->state_id;
+	$dataArr['company_name'] = $dataCurrentUserArr['data']->kyc->name;
+	$dataArr['company_address'] = $dataCurrentUserArr['data']->kyc->registered_address;
+	$dataArr['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
+	$dataArr['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
+	$dataArr['is_tax_payable'] = isset($params['tax_reverse_charge']) ? $params['tax_reverse_charge'] : '';
+	$dataArr['is_canceled'] = isset($params['is_canceled']) ? $params['is_canceled'] : '';
+
+	$supply_place = isset($params['place_of_supply']) ? $params['place_of_supply'] : '';
+	$supply_state_data = $obj_client->getStateDetailByStateId($supply_place);
+
+	if($supply_state_data['status'] === "success") {
+		$dataArr['supply_place'] = $supply_state_data['data']->state_id;
+	} else {
+		$dataArr['supply_place'] = '';
+	}
 	
 	$dataArr['billing_name'] = isset($params['billing_name']) ? $params['billing_name'] : '';
 	$dataArr['billing_address'] = isset($params['billing_address']) ? $params['billing_address'] : '';
-	$dataArr['billing_state'] = isset($params['billing_state']) ? $params['billing_state'] : '';
 	$dataArr['billing_gstin_number'] = isset($params['billing_gstin_number']) ? $params['billing_gstin_number'] : '';
+
+	$billing_state_code = isset($params['billing_state_code']) ? $params['billing_state_code'] : '';
+	$billing_state_data = $obj_client->getStateDetailByStateCode($billing_state_code);
+
+	if($billing_state_data['status'] === "success") {
+		$dataArr['billing_state'] = $billing_state_data['data']->state_id;
+	} else {
+		$dataArr['billing_state'] = '';
+	}
 	
 	if(isset($params['same_as_billing']) && $params['same_as_billing'] == 1) {
+
 		$dataArr['shipping_name'] = $dataArr['billing_name'];
 		$dataArr['shipping_address'] = $dataArr['billing_address'];
 		$dataArr['shipping_state'] = $dataArr['billing_state'];
@@ -60,10 +80,10 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 			$dataArr['shipping_state'] = '';
 		}
 	}
-	
+
 	/* validate invoice data */
 	$obj_client->validateClientInvoice($dataArr);
-
+	
 	$invoiceItemArray = array();
 	$invoiceTotalAmount = 0.00;
 	if(isset($params['invoice_itemid']) && count($params['invoice_itemid']) > 0) {
@@ -78,40 +98,63 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 			
 			/* validate invoice data item */
 			$obj_client->validateClientInvoiceItem($dataInvoiceArr, ($i+1));
-			
+
 			$clientMasterItem = $obj_client->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit, u.unit_id, u.unit_name, u.unit_code from " . $obj_client->getTableName('client_master_item') . " as cm, " . $obj_client->getTableName('item') . " as m, " . $obj_client->getTableName('unit') . " as u where 1=1 AND cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.item_id = ".$dataInvoiceArr['invoice_itemid']." AND cm.is_deleted='0' AND cm.status = '1' AND cm.added_by = '".$_SESSION['user_detail']['user_id']."'");
 			if (!empty($clientMasterItem)) {
 
 				$itemUnitPrice = (float)$clientMasterItem->unit_price;
-				
 				$invoiceItemQuantity = (int)$dataInvoiceArr['invoice_quantity'];
 				$invoiceItemDiscount = (float)$dataInvoiceArr['invoice_discount'];
 				
 				$invoiceItemTotal = round(($invoiceItemQuantity * $itemUnitPrice), 2);
 				$invoiceItemDiscountAmount = ($invoiceItemDiscount/100) * $invoiceItemTotal;
 				$invoiceItemTaxableAmount = round(($invoiceItemTotal - $invoiceItemDiscountAmount), 2);
-				
-				if($dataArr['supply_place'] === $dataArr['shipping_state']) {
 
-					$itemCSGTTax = (float)$clientMasterItem->csgt_tax_rate;
-					$itemSGSTTax = (float)$clientMasterItem->sgst_tax_rate;
-					$itemIGSTTax = 0.00;
-					
-					$invoiceItemCSGTTaxAmount = round((($itemCSGTTax/100) * $invoiceItemTaxableAmount), 2);
-					$invoiceItemSGSTTaxAmount = round((($itemSGSTTax/100) * $invoiceItemTaxableAmount), 2);
-					$invoiceItemIGSTTaxAmount = 0.00;
-				} else {
-					
+				if(
+					$dataArr['invoice_type'] === "exportinvoice" || 
+					$dataArr['invoice_type'] === "sezunitinvoice" || 
+					$dataArr['invoice_type'] === "deemedexportinvoice"
+				) {
+
 					$itemCSGTTax = 0.00;
-					$itemSGSTTax = 0.00;
-					$itemIGSTTax = (float)$clientMasterItem->igst_tax_rate;
-
 					$invoiceItemCSGTTaxAmount = 0.00;
+
+					$itemSGSTTax = 0.00;
 					$invoiceItemSGSTTaxAmount = 0.00;
-					$invoiceItemIGSTTaxAmount = round((($itemIGSTTax/100) * $invoiceItemTaxableAmount), 2);
+
+					$itemIGSTTax = 0.00;
+					$invoiceItemIGSTTaxAmount = 0.00;
+
+					$itemCESSTax = 0.00;
+					$invoiceItemCESSTaxAmount = 0.00;
+				} else {
+
+					if($dataArr['company_state'] === $dataArr['supply_place']) {
+
+						$itemCSGTTax = (float)$clientMasterItem->csgt_tax_rate;
+						$itemSGSTTax = (float)$clientMasterItem->sgst_tax_rate;
+						$itemIGSTTax = 0.00;
+						$itemCESSTax = (float)$clientMasterItem->cess_tax_rate;
+						
+						$invoiceItemCSGTTaxAmount = round((($itemCSGTTax/100) * $invoiceItemTaxableAmount), 2);
+						$invoiceItemSGSTTaxAmount = round((($itemSGSTTax/100) * $invoiceItemTaxableAmount), 2);
+						$invoiceItemIGSTTaxAmount = 0.00;
+						$invoiceItemCESSTaxAmount = round((($itemCESSTax/100) * $invoiceItemTaxableAmount), 2);
+					} else {
+
+						$itemCSGTTax = 0.00;
+						$itemSGSTTax = 0.00;
+						$itemIGSTTax = (float)$clientMasterItem->igst_tax_rate;
+						$itemCESSTax = (float)$clientMasterItem->cess_tax_rate;
+
+						$invoiceItemCSGTTaxAmount = 0.00;
+						$invoiceItemSGSTTaxAmount = 0.00;
+						$invoiceItemIGSTTaxAmount = round((($itemIGSTTax/100) * $invoiceItemTaxableAmount), 2);
+						$invoiceItemCESSTaxAmount = round((($itemCESSTax/100) * $invoiceItemTaxableAmount), 2);
+					}
 				}
 
-				$invoiceItemTotalAmount = round(($invoiceItemTaxableAmount + $invoiceItemCSGTTaxAmount + $invoiceItemSGSTTaxAmount + $invoiceItemIGSTTaxAmount), 2);
+				$invoiceItemTotalAmount = round(($invoiceItemTaxableAmount + $invoiceItemCSGTTaxAmount + $invoiceItemSGSTTaxAmount + $invoiceItemIGSTTaxAmount + $invoiceItemCESSTaxAmount), 2);
 				$invoiceTotalAmount += $invoiceItemTotalAmount;
 
 				$ItemArray = array(
@@ -130,12 +173,14 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 								"sgst_amount" => $invoiceItemSGSTTaxAmount,
 								"igst_rate" => $itemIGSTTax,
 								"igst_amount" => $invoiceItemIGSTTaxAmount,
+								"cess_rate" => $itemCESSTax,
+								"cess_amount" => $invoiceItemCESSTaxAmount,
 								"total" => $invoiceItemTotalAmount,
 								"status" => 1,
 								"added_by" => $_SESSION['user_detail']['user_id'],
 								"added_date" => date('Y-m-d H:i:s')
 							);
-				
+
 				array_push($invoiceItemArray,$ItemArray);
 			}
 		}
@@ -168,7 +213,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 				foreach($invoiceItemArray as $itemArr) {
 
 					$itemArr['invoice_id'] = $insertid;
-					array_push($processedInvoiceItemArray,$itemArr);
+					array_push($processedInvoiceItemArray, $itemArr);
 				}
 				
 				if ($obj_client->insertMultiple($obj_client->getTableName('client_invoice_item'), $processedInvoiceItemArray)) {

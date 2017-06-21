@@ -12,6 +12,10 @@ if(!$obj_client->can_read('client_list')) {
     exit();
 }
 
+/* get current user data */
+$dataCurrentArr = array();
+$dataCurrentArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
+
 if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
 	
 	if(!$obj_client->can_create('client_list')) {
@@ -19,6 +23,13 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
         $obj_client->redirect(PROJECT_URL."/?page=user_adminlist");
         exit();
     }
+
+	$totalClientCreated = $obj_client->getClient("count(user_id) as totalClientCreated", "added_by=".$_SESSION['user_detail']['user_id']);
+	if($totalClientCreated[0]->totalClientCreated >= intval($dataCurrentArr['data']->no_of_client)) {
+
+		$obj_client->setError('You have reach maximum client creation limit.');
+		$obj_client->redirect(PROJECT_URL."?page=client_list");
+	}
 
     if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
         
@@ -51,9 +62,6 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'update' && isset($_GET['id']
         }
     }
 }
-
-$dataCurrentArr = array();
-$dataCurrentArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
 
 $dataArr = array();
 if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClient") {

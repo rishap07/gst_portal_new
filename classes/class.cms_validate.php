@@ -12,7 +12,8 @@
 
 class cms_validate {
 
-    protected static $errors = array();
+    //protected static $errors = array();
+    public static $errors = array();
     protected static $inputs = array();
     protected static $messages = array();
     protected static $_instance = null;
@@ -335,49 +336,71 @@ class cms_validate {
         }
     }
 	
-	protected static function genderValidation($input, $name, $lableName) {
-		if (self::isBlankField($input) === false) {
-			if (preg_match("/^(?:M|F)$/", $input)) {
-				return true;
-			} else {
-				self::setMessage($name, 'gender', $lableName . " should be valid");
-				return false;
-			}
-		}
-	}
+    protected static function genderValidation($input, $name, $lableName) {
+            if (self::isBlankField($input) === false) {
+                    if (preg_match("/^(?:M|F)$/", $input)) {
+                            return true;
+                    } else {
+                            self::setMessage($name, 'gender', $lableName . " should be valid");
+                            return false;
+                    }
+            }
+    }
 
-	protected static function martialstatusValidation($input, $name, $lableName) {
-		if (self::isBlankField($input) === false) {
-			if (preg_match("/^(?:S|M)$/", $input)) {
-				return true;
-			} else {
-				self::setMessage($name, 'martialstatus', $lableName . " should be valid");
-				return false;
-			}
-		}
-	}
+    protected static function martialstatusValidation($input, $name, $lableName) {
+            if (self::isBlankField($input) === false) {
+                    if (preg_match("/^(?:S|M)$/", $input)) {
+                            return true;
+                    } else {
+                            self::setMessage($name, 'martialstatus', $lableName . " should be valid");
+                            return false;
+                    }
+            }
+    }
 
-	protected static function nationalityValidation($input, $name, $lableName) {
-		if (self::isBlankField($input) === false) {
-			if (preg_match("/^(?:I|O)$/", $input)) {
-				return true;
-			} else {
-				self::setMessage($name, 'nationality', $lableName . " should be valid");
-				return false;
-			}
-		}
-	}
+    protected static function nationalityValidation($input, $name, $lableName) {
+            if (self::isBlankField($input) === false) {
+                    if (preg_match("/^(?:I|O)$/", $input)) {
+                            return true;
+                    } else {
+                            self::setMessage($name, 'nationality', $lableName . " should be valid");
+                            return false;
+                    }
+            }
+    }
 
-	protected static function identityproofValidation($input, $name, $lableName) {
-		if (self::isBlankField($input) === false) {
-			if (preg_match("/^(?:UID|P|VI|DL|O)$/", $input)) {
-				return true;
-			} else {
-				self::setMessage($name, 'identityproof', $lableName . " should be valid");
-				return false;
-			}
-		}
-	}
+    protected static function identityproofValidation($input, $name, $lableName) {
+            if (self::isBlankField($input) === false) {
+                    if (preg_match("/^(?:UID|P|VI|DL|O)$/", $input)) {
+                            return true;
+                    } else {
+                            self::setMessage($name, 'identityproof', $lableName . " should be valid");
+                            return false;
+                    }
+            }
+    }
+
+    protected static function invoicetypeValidation($input, $name, $lableName) {
+        if (self::isBlankField($input) === false) {
+            if (preg_match("/^(?:taxinvoice|exportinvoice|sezunitinvoice|deemedexportinvoice)$/", $input)) {
+                return true;
+            } else {
+                self::setMessage($name, 'invoicetype', $lableName . " should be valid");
+                return false;
+            }
+        }
+    }
+    
+    protected static function invoicenatureValidation($input, $name, $lableName) {
+        if (self::isBlankField($input) === false) {
+            if (preg_match("/^(?:salesinvoice|purchaseinvoice)$/", $input)) {
+                return true;
+            } else {
+                self::setMessage($name, 'invoicenature', $lableName . " should be valid");
+                return false;
+            }
+        }
+    }
 
     protected static function integerValidation($input, $name, $lableName) {
         if (self::isBlankField($input) === false) {

@@ -1,5 +1,8 @@
 <?php
 $obj_client = new client();
+$excelError = false;
+$returnMessage = '';
+
 if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '' ) {
     $obj_client->redirect(PROJECT_URL);
     exit();
@@ -25,10 +28,15 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
         $obj_client->setError('Invalid access to files');
     } else {
 
-        if($obj_client->uploadClientInvoice()){
+		$uploadInvoice = $obj_client->uploadClientInvoice();
+        if($uploadInvoice === true){
 
             $obj_client->redirect(PROJECT_URL."?page=client_invoice_list");
-        }
+        } else {
+
+			$excelError = true;
+			$returnMessage = json_decode($uploadInvoice);
+		}
     }
 }
 
@@ -43,6 +51,15 @@ $dataCurrentArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSI
         <?php $obj_client->showErrorMessage(); ?>
         <?php $obj_client->showSuccessMessge(); ?>
         <?php $obj_client->unsetMessage(); ?>
+		
+		<?php
+			if($excelError === true) {
+
+				if(isset($returnMessage->status) && $returnMessage->status === "error") {
+					echo '<p style="background-color:#eddbe3;border-radius:4px;padding:8px 35px 8px 14px;text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom: 18px;border-color:#e8d1df;"><a style="color:#bd4247;font-weight:bold;" target="_blank" class="error-excel-file" href="'.$returnMessage->excelurl.'">Download Excel File With Errors.</a></p>';
+				}
+			}
+		?>
 
         <h1>Upload Invoice</h1>
         <hr class="headingborder">
@@ -57,9 +74,9 @@ $dataCurrentArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSI
                     <div class="kycmainbox">
                         
                         <div class="formcol">
-                            <label>Upload CSV<span class="starred">*</span></label>
+                            <label>Upload Excel File<span class="starred">*</span></label>
 							<div class="clear"></div>
-                            <input type="file" name="invoice_csv" id="invoice_csv" class="required" />
+                            <input type="file" name="invoice_xlsx" id="invoice_xlsx" class="required" />
                         </div>
                         
                         <div class="clear"></div>

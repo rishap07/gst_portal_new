@@ -1,27 +1,27 @@
 <?php
 $obj_master = new master();
-/*if(!$obj_master->can_create('master_unit') && !isset($_GET['id'])){
+if(!$obj_master->can_create('master_unit') && !isset($_GET['id'])){
 	
     $obj_master->setError($obj_master->getValMsg('can_create'));
     $obj_master->redirect(PROJECT_URL."/?page=master_unit");
     exit();
-}*/
+}
 
-/*if(!$obj_master->can_update('master_unit') && isset($_GET['id']))
+if(!$obj_master->can_update('master_unit') && isset($_GET['id']))
 {
     $obj_master->setError($obj_master->getValMsg('can_update'));
     $obj_master->redirect(PROJECT_URL."/?page=master_unit");
     exit(); 
-}*/
+}
 
 if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 
-    /*if(!$obj_master->can_create('master_unit')) {
+    if(!$obj_master->can_create('master_unit')) {
 
 		$obj_master->setError($obj_master->getValMsg('can_create'));
         $obj_master->redirect(PROJECT_URL."/?page=master_unit");
         exit();
-    }*/
+    }
 	
     if($obj_master->addUnit()) {
 		$obj_master->redirect(PROJECT_URL."/?page=master_unit");
@@ -30,12 +30,12 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 
 if(isset($_POST['submit']) && $_POST['submit']=='update' && isset($_GET['id']) && $obj_master->validateId($_GET['id']))
 {
-    /*if(!$obj_master->can_update('master_unit')) {
+    if(!$obj_master->can_update('master_unit')) {
 
 		$obj_master->setError($obj_master->getValMsg('can_update'));
         $obj_master->redirect(PROJECT_URL."/?page=master_unit");
         exit(); 
-    }*/
+    }
 	
     if($obj_master->updateUnit()) {
         $obj_master->redirect(PROJECT_URL."/?page=master_unit");

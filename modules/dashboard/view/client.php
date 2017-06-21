@@ -17,7 +17,7 @@
 
                             <div class="col-md-12">
                                 <div class="col-md-6">
-                                    <div class=""><a href="<?php echo PROJECT_URL."/?page=client_creat_invoice";?>" class="dashbtn orangebg"><img src="image/icon-add-invoice.png" width="70" alt="#"><br/>Add Invoice</a></div>
+                                    <div class=""><a href="<?php echo PROJECT_URL."/?page=client_create_invoice";?>" class="dashbtn orangebg"><img src="image/icon-add-invoice.png" width="70" alt="#"><br/>Add Invoice</a></div>
                                 </div>
 
                                 <div class="col-md-6">

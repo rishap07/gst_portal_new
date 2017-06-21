@@ -26,35 +26,36 @@ class login extends validation {
         $val = '';
         
 		foreach ($dataArr as $key => $value) {
-            $val.=$value . "|";
+            $val .= $value . "|";
         }
-		
+
         $dataArr['secure_hash'] = strtoupper(md5($val));
         $dataArr['api_method'] = 'login';
         $url = PROJECT_URL."/api.php";
+
         $server_output = $this->hitCurl($url, $dataArr);
         $server_output = json_decode($server_output);
-		
+
         if (count($server_output) > 0) {
-            
+
 			if (isset($server_output->msg) && $server_output->msg == 'success' && $server_output->code == '2') {
-                
+
 				$_SESSION['user_detail']['user_id'] = $server_output->data->user[0]->user_id;
                 $_SESSION['user_detail']['name'] = $server_output->data->user[0]->name;
                 $_SESSION['user_detail']['username'] = $server_output->data->user[0]->username;
                 $_SESSION['user_detail']['email'] = $server_output->data->user[0]->email;
                 $_SESSION['user_detail']['user_group'] = $server_output->data->user[0]->user_group;
 
-				for($x=0; $x<count($server_output->data->user_permission); $x++) {
+				for($x=0; $x < count($server_output->data->user_permission); $x++) {
 
-					$_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_read']=$server_output->data->user_permission[$x]->can_read;
-                    $_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_create']=$server_output->data->user_permission[$x]->can_create;
-                    $_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_update']=$server_output->data->user_permission[$x]->can_update;
-                    $_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_delete']=$server_output->data->user_permission[$x]->can_delete;
+					$_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_read'] = $server_output->data->user_permission[$x]->can_read;
+                    $_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_create'] = $server_output->data->user_permission[$x]->can_create;
+                    $_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_update'] = $server_output->data->user_permission[$x]->can_update;
+                    $_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_delete'] = $server_output->data->user_permission[$x]->can_delete;
                 }
-				
+
                 if (isset($_POST['login_rememberme']) && $_POST['login_rememberme'] == 1) {
-                    
+
                     if ($this->setRememberMeCookie($server_output->data->user[0]->user_id)) {
 						return true;
                     } else {
@@ -124,7 +125,7 @@ class login extends validation {
         if ($this->insert($this->tableNames['user'], $dataInsertArray)) {
 
             /* get user data by its id */
-            $userData = $this->getUserDetailsById($this->getInsertID());	
+            $userData = $this->getUserDetailsById($this->getInsertID());
             $_SESSION['user_detail']['user_id'] = $userData['data']->user_id;
             $_SESSION['user_detail']['username'] = $userData['data']->username;
             $_SESSION['user_detail']['email'] = $userData['data']->email;

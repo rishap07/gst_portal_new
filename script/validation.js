@@ -206,3 +206,20 @@ function validateInvoiceDiscount(evt, element) {
 	
 	return true;
 }
+
+function validateInvoiceAmount(evt, element) {
+	
+	var charCode = evt.which;
+	if ( (charCode != 46 || $(element).val().indexOf('.') != -1) && (charCode < 48 || charCode > 57) && charCode != 8 && charCode != 0 ) {
+		return false;
+	}
+	
+	if($(element).val().indexOf('.') != -1) {
+
+		if( $(element).val().substring($(element).val().indexOf('.')).length > 2 ) {
+			return false;
+		}
+	}
+	
+	return true;
+}

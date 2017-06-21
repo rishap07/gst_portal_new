@@ -12,8 +12,8 @@ $obj_client = new client();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('ci.invoice_id', 'ci.serial_number', 'ci.company_name', 'ci.gstin_number', 'ci.is_tax_payable', 'ci.invoice_date', 'ci.transportation_mode', 'ci.supply_datetime', 'ci.invoice_total_value', 'ci.billing_name', 'ci.billing_state', 'ms.state_name as billing_state_name', 'ms.state_code as billing_state_code', 'ci.shipping_name', 'ci.shipping_state', 'ms1.state_name as shipping_state_name', 'ms1.state_code as shipping_state_code');
-$aSearchColumns = array('ci.serial_number', 'ci.invoice_date', 'ci.supply_datetime', 'ci.billing_name', 'ci.shipping_name', 'ms.state_name', 'ms.state_code', 'ms1.state_name', 'ms1.state_code');
+$aColumns = array('ci.invoice_id', 'ci.invoice_type', 'ci.invoice_nature', 'ci.serial_number', 'ci.company_name', 'ci.company_address', 'ci.gstin_number', 'ci.is_tax_payable', 'ci.invoice_date', 'ci.is_canceled', 'ci.supply_place', 'ms2.state_name as supply_state_name', 'ms2.state_code as supply_state_code', 'ms2.state_tin as supply_state_tin', 'ci.invoice_total_value', 'ci.billing_name', 'ci.billing_state', 'ms.state_name as billing_state_name', 'ms.state_code as billing_state_code', 'ms.state_tin as billing_state_tin', 'ci.shipping_name', 'ci.shipping_state', 'ms1.state_name as shipping_state_name', 'ms1.state_code as shipping_state_code', 'ms1.state_tin as shipping_state_tin');
+$aSearchColumns = array('ci.invoice_type', 'ci.invoice_nature', 'ci.serial_number', 'ci.invoice_date', 'ci.billing_name', 'ci.shipping_name', 'ms.state_name', 'ms.state_code', 'ms.state_tin', 'ms1.state_name', 'ms1.state_code', 'ms1.state_tin', 'ms2.state_name', 'ms2.state_code', 'ms2.state_tin');
 $sIndexColumn = "invoice_id";
 
 /* DB table to use */
@@ -81,7 +81,7 @@ for ($i = 0; $i < count($aColumns); $i++) {
  */
 $uWhere = trim(trim($uWhere), 'AND');
 $uQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ", $aColumns)) . "
-            FROM $ciTable as ci INNER JOIN $msTable as ms ON ci.billing_state = ms.state_id INNER JOIN $msTable as ms1 ON ci.shipping_state = ms1.state_id
+            FROM $ciTable as ci INNER JOIN $msTable as ms ON ci.billing_state = ms.state_id INNER JOIN $msTable as ms1 ON ci.shipping_state = ms1.state_id INNER JOIN $msTable as ms2 ON ci.supply_place = ms2.state_id
             $uWhere
             $uOrder
             $uLimit
@@ -116,8 +116,26 @@ if(isset($rResult) && !empty($rResult)) {
     foreach($rResult as $aRow) {
 
         $row = array();
-        $transportation_mode = '';
+        $invoice_type = '';
+		$invoice_nature = '';
 		$is_tax_payable = '';
+		$is_canceled = '';
+		
+		if($aRow->invoice_type == 'taxinvoice') {
+            $invoice_type = 'Tax Invoice';
+        } elseif($aRow->invoice_type == 'exportinvoice'){
+            $invoice_type = 'Export Invoice';
+        } elseif($aRow->invoice_type == 'sezunitinvoice'){
+            $invoice_type = 'SEZ Unit Invoice';
+        } elseif($aRow->invoice_type == 'deemedexportinvoice'){
+            $invoice_type = 'Deemed Export Invoice';
+        }
+		
+		if($aRow->invoice_nature == 'salesinvoice') {
+            $invoice_nature = 'Sales Invoice';
+        } elseif($aRow->invoice_nature == 'purchaseinvoice'){
+            $invoice_nature = 'Purchase Invoice';
+        }
 
         if($aRow->is_tax_payable == '0') {
             $is_tax_payable = '<span class="no">No<span>';
@@ -125,24 +143,26 @@ if(isset($rResult) && !empty($rResult)) {
             $is_tax_payable = '<span class="yes">Yes<span>';
         }
 		
-		if($aRow->transportation_mode == '0') {
-            $transportation_mode = '<span class="no">No<span>';
-        } elseif($aRow->transportation_mode == '1'){
-            $transportation_mode = '<span class="yes">Yes<span>';
+		if($aRow->is_canceled == '0') {
+            $is_canceled = '<span class="no">No<span>';
+        } elseif($aRow->is_canceled == '1'){
+            $is_canceled = '<span class="yes">Yes<span>';
         }
 
         $row[] = $temp_x;
-        $row[] = utf8_decode($aRow->serial_number);
+		$row[] = utf8_decode($aRow->serial_number);
+		$row[] = utf8_decode($invoice_type);
+		$row[] = utf8_decode($invoice_nature);
         $row[] = utf8_decode($aRow->invoice_date);
-		$row[] = utf8_decode($aRow->supply_datetime);
+		$row[] = utf8_decode($aRow->supply_state_name) . " (" . utf8_decode($aRow->supply_state_tin) . ")";
 		$row[] = $is_tax_payable;
-        $row[] = $transportation_mode;
 		$row[] = utf8_decode($aRow->billing_name);
-        $row[] = utf8_decode($aRow->billing_state_name) . " (" . utf8_decode($aRow->billing_state_code) . ")";
+        $row[] = utf8_decode($aRow->billing_state_name) . " (" . utf8_decode($aRow->billing_state_tin) . ")";
         $row[] = utf8_decode($aRow->shipping_name);
-        $row[] = utf8_decode($aRow->shipping_state_name) . " (" . utf8_decode($aRow->shipping_state_code) . ")";
+        $row[] = utf8_decode($aRow->shipping_state_name) . " (" . utf8_decode($aRow->shipping_state_tin) . ")";
 		$row[] = utf8_decode($aRow->invoice_total_value);
-        $row[] = '<a href="'.PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$aRow->invoice_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_invoice_list&action=deleteInvoice&id='.$aRow->invoice_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
+		$row[] = $is_canceled;
+        //$row[] = '<a href="'.PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$aRow->invoice_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_invoice_list&action=deleteInvoice&id='.$aRow->invoice_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
         $output['aaData'][] = $row;
         $temp_x++;
     }

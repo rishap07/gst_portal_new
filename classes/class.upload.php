@@ -89,7 +89,7 @@ class upload extends common {
     /* FUNCTION TO SET ALLOWED EXTENSIONS FOR ALL IMAGE TYPES */
 
     public function allowImageFiles() {
-        $allowedExtensions = array('image/jpg', 'image/jpeg', 'image/gif', 'image/png', 'image/png', 'application/pdf');
+        $allowedExtensions = array('image/jpg', 'image/jpeg', 'image/gif', 'image/png', 'image/png', 'application/pdf', 'application/vnd.ms-excel', 'application/octet-stream', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         $this->setAllowedExtensions($allowedExtensions);
     }
 
@@ -195,8 +195,7 @@ class upload extends common {
 
         /* VALIDATION FOR FILETYPE */
         if (!empty($this->allowedExtensions)) {
-            $ext = $this->getExtension($file);
-            
+            $ext = $this->getExtension($file);			
             if (is_array($ext)) {
                 foreach ($ext as $key => $extnsn) {
 //                    echo $extnsn;

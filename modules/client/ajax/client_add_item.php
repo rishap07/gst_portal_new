@@ -17,6 +17,7 @@ if(isset($_POST['itemData']) && isset($_POST['action']) && $_POST['action'] == "
 	
 	$_POST['item_name'] = $params['item_name'];
 	$_POST['item_category'] = $params['item_category'];
+	$_POST['item_unit'] = $params['item_unit'];
 	$_POST['unit_price'] = $params['unit_price'];
 	$_POST['status'] = $params['status'];
 	
