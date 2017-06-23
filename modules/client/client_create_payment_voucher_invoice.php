@@ -20,19 +20,19 @@
 	}
 
     $dataCurrentUserArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
-    $rvInvoiceNumber = $obj_client->generateRVInvoiceNumber( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
+    $pvInvoiceNumber = $obj_client->generatePVInvoiceNumber( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
 ?>
 <!--POPUP START HERE-->
 <div style="display:none;position:fixed;" id="popup" class="formpopup topanimation">
     <div class="popupform">
-        
+
         <p style="text-align:center;"> <a class="closebtn" id="btnclose" ><img src="image/icon-close.png" alt="#"></a> </p>
         <h3 class="txtorange">ADD ITEM</h3>
-        
+
         <div class="adminformbx">
-            
+
             <form name="add-item-form" id="add-item-form" method="POST">
-                
+
                 <div class="formcol">
                     <label>Item<span class="starred">*</span></label>
                     <input type="text" placeholder="Item name" name='item_name' id="item_name" data-bind="content" class="required" value='<?php if(isset($_POST['item_name'])){ echo $_POST['item_name']; } ?>' />
@@ -121,7 +121,7 @@
 
 						<div class="formcol">
                             <label>Invoice Serial Number <span class="starred">*</span></label>
-                            <input type="text" placeholder="Invoice Serial Number" readonly="true" class="readonly required" value="<?php echo $rvInvoiceNumber; ?>" name="invoice_serial_number" id="invoice_serial_number" />
+                            <input type="text" placeholder="Invoice Serial Number" readonly="true" class="readonly required" value="<?php echo $pvInvoiceNumber; ?>" name="invoice_serial_number" id="invoice_serial_number" />
                         </div>
 
                         <div class="formcol two">
@@ -145,7 +145,7 @@
                             <label>Company State <span class="starred">*</span></label>
                             <input type="text" placeholder="Compant State" data-bind="content" readonly="true" class="readonly required" name="company_state" id="company_state" value="<?php if(isset($dataCurrentUserArr['data']->kyc->state_name)) { echo $dataCurrentUserArr['data']->kyc->state_name; } ?>" />
                         </div>
-						
+
 						<div class="clear height10"></div>
 
                         <div class="formcol">
@@ -673,10 +673,10 @@
 			if(flag === 1) {
 
 				$.ajax({
-					data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewRVInvoice"},
+					data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewPVInvoice"},
 					dataType: 'json',
 					type: 'post',
-					url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_receipt_voucher_invoice",
+					url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_payment_voucher_invoice",
 					success: function(response){
 
 						if(response.status == "error") {
@@ -687,7 +687,7 @@
 							
 							$(".errorValidationContainer").html("");
 							$(".errorValidationContainer").hide();
-							window.location.href = '<?php echo PROJECT_URL; ?>/?page=client_create_receipt_voucher_invoice';
+							window.location.href = '<?php echo PROJECT_URL; ?>/?page=client_create_payment_voucher_invoice';
 						}
 					}
 				});
@@ -701,10 +701,10 @@
             event.preventDefault();
 
 			$.ajax({
-                data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewRVInvoice"},
+                data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewPVInvoice"},
                 dataType: 'json',
                 type: 'post',
-                url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_receipt_voucher_invoice",
+                url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_payment_voucher_invoice",
                 success: function(response){
 
                     if(response.status == "error") {
@@ -715,7 +715,7 @@
 
                         $(".errorValidationContainer").html("");
                         $(".errorValidationContainer").hide();
-                        window.location.href = '<?php echo PROJECT_URL; ?>/?page=client_receipt_voucher_invoice_list';
+                        window.location.href = '<?php echo PROJECT_URL; ?>/?page=client_payment_voucher_invoice_list';
                     }
                 }
             });

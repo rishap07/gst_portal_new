@@ -1,15 +1,30 @@
-<!--========================sidemenu over=========================--> 
-<!--========================admincontainer start=========================-->
+<?php
+$obj_client = new client();
+if(!isset($_GET['finanical']) || !is_numeric($_GET['finanical']))
+{
+    $obj_client->redirect(PROJECT_URL."/?page=client_return");
+    exit();
+}
+$dataResults = $obj_client->getClientReturn($obj_client->sanitize($_GET['finanical']));
+$dataKyc = $obj_client->getClientKyc();
+?>
 <div class="admincontainer greybg">
 <div class="formcontainer">
 <style>
-			.acknowledgetbl{margin:50px auto;width:500px;}
-			.acknowledgetbl td{padding:10px;}
-			.acknowledgetbl .orange td{background:#fee7df;}
-			.acknowledgebx p{line-height:27px;}
-			.acknowledgetbl td:nth-child(1){font-weight:700;}
-
-			</style>
+    .acknowledgetbl{margin:50px auto;width:500px;}
+    .acknowledgetbl td{padding:10px;}
+    .acknowledgetbl .orange td{background:#fee7df;}
+    .acknowledgebx p{line-height:27px;}
+    .acknowledgetbl td:nth-child(1){font-weight:700;}
+    .con-box{
+        clear:both;
+        width: 94%;
+        padding: 7px 3%;
+        color: #505050;
+        font-size: 13px;
+        border: 1px solid #e0e0e0;
+    }
+</style>
 <form>
   <div class="adminformbx">
     <div class="kycmainbox">
@@ -17,49 +32,33 @@
       <h2>Details of outward supplies of goods or services</h2>
       <div class="clear"></div>
       <div class="formcol">
-        <label>Year<span class="starred">*</span></label>
-        <input type="text" placeholder="PAN Number" />
+        <label>Year</label>
+        <div class="con-box"><?php echo isset($dataResults[0]->financial_year) ? $dataResults[0]->financial_year : '';?></div>
       </div>
       <div class="formcol">
-        <label>Month<span class="starred">*</span></label>
-        <select>
-          <option value=''>--Select Month--</option>
-          <option selected value='1'>Janaury</option>
-          <option value='2'>February</option>
-          <option value='3'>March</option>
-          <option value='4'>April</option>
-          <option value='5'>May</option>
-          <option value='6'>June</option>
-          <option value='7'>July</option>
-          <option value='8'>August</option>
-          <option value='9'>September</option>
-          <option value='10'>October</option>
-          <option value='11'>November</option>
-          <option value='12'>December</option>
-        </select>
+        <label>Month</label>
+        <div class="con-box"><?php echo isset($dataResults[0]->return_month) ? $dataResults[0]->return_month : '';?></div>
       </div>
       <div class="clear"></div>
       <div class="formcol">
-        <label>GSTIN<span class="starred">*</span></label>
-        <input type="text" placeholder="" />
+        <label>GSTIN</label>
+        <div class="con-box"><?php echo isset($dataKyc[0]->gstin_number) ? $dataKyc[0]->gstin_number: '';?></div>
       </div>
       <div class="formcol">
-        <label>Legal name of the registered person<span class="starred">*</span></label>
-        <input type="text" placeholder="" />
+        <label>Legal name of the registered person</label>
+        <div class="con-box"><?php echo isset($dataKyc[0]->name) ? $dataKyc[0]->name: '';?></div>
       </div>
       <div class="formcol third">
         <label>Trade name, if any<span class="starred">*</span></label>
-        <select>
-          <option value="SELECT STATE">Center Jurisdiction</option>
-        </select>
+        <input type="text" placeholder="Trade name" name="Trade name" data-bind="content" />
       </div>
       <div class="formcol">
         <label>Aggregate Turnover in the preceding Financial Year<span class="starred">*</span></label>
-        <input type="text" placeholder="" />
+        <input type="text" placeholder="Aggregate Turnover in the preceding Financial Year" />
       </div>
       <div class="formcol">
         <label>Aggregate Turnover - April to June, 2017<span class="starred">*</span></label>
-        <input type="text" placeholder="" />
+        <input type="text" placeholder="Aggregate Turnover - April to June, 2017" />
       </div>
       
       <!---SECTION 4 START HERE-->
@@ -89,91 +88,198 @@
                 Tax</th>
               <th>Cess</th>
             </tr>
+            <?php
+            $month = $dataResults[0]->return_month;
+            $query = "select * from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id  where invoice_date like'".$month."%' and invoice_type='taxinvoice' and gstin_number!=''";
+            $data1 = $obj_client->get_results($query);
+            
+            
+            ?>
+            <?php
+            if(!empty($data1))
+            {
+                foreach($data1 as $datas)
+                {
+                    ?>
+                    
+                    <tr>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->gstin_number;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->serial_number;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->invoice_date;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->invoice_total_value;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->item_unit_price;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->taxable_subtotal;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->igst_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->cgst_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->sgst_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->cess_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->state_name;?></td>
+                    </tr>
+                    <?php
+                }
+            }
+            else
+            {
+            ?>
             <tr>
-              <td rowspan="2" valign="middle"><input type="text" class="inputfield" style="margin-top:8px;" /></td>
-              <td colspan="3" valign="middle" style="padding-top:0px; padding-bottom:0px;"></td>
-              <td rowspan="2" valign="middle"><input type="text" class="inputfield" value="100 Per Item" style="margin-top:8px;" /></td>
-              <td rowspan="2" valign="middle"><input type="text" class="inputfield" value="50000" style="margin-top:8px;" /></td>
-              <td colspan="4"  valign="middle"></td>
-              <td rowspan="2" valign="middle"><input type="text" class="inputfield" value="Rajasthan" style="margin-top:8px;" /></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
             </tr>
-            <tr>
-              <td valign="top" style="padding-top:0px;"><input type="text" class="inputfield" value="1" />
-                </th>
-              <td valign="top" style="padding-top:0px;"><input type="text" class="inputfield" value="21 june 2017" />
-                </th>
-              <td valign="top" style="padding-top:0px;"><input type="text" class="inputfield" value="100000" />
-                </th>
-              <td valign="top" style="padding-top:0px;"><input type="text" class="inputfield" value="15%" />
-                </th>
-              <td valign="top" style="padding-top:0px;"><input type="text" class="inputfield" value="15%"  />
-                </th>
-              <td valign="top" style="padding-top:0px;"><input type="text" class="inputfield" value="15%"  /></td>
-              <td valign="top" style="padding-top:0px;"><input type="text" class="inputfield" value="15%"  /></td>
-            </tr>
+            <?php
+            }
+            ?>
+            
             <tr>
               <td colspan="11" class="txtheading"> 4A. Supplies other than those (i) attracting reverse charge and (ii) supplies made through e-commerce operator</td>
             </tr>
+            <?php
+            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where a.invoice_date like'".$month."%' and a.invoice_type='taxinvoice' and a.gstin_number!='' and (a.is_tax_payable='1' and bt.business_name='Ecommerence' )";
+            $data2 = $obj_client->get_results($query);
+            
+            if(!empty($data2))
+            {
+                foreach($data2 as $datas)
+                {
+                    ?>
+                    
+                    <tr>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->gstin_number;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->serial_number;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->invoice_date;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->invoice_total_value;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->item_unit_price;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->taxable_subtotal;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->igst_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->cgst_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->sgst_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->cess_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->state_name;?></td>
+                    </tr>
+                    <?php
+                }
+            }
+            else
+            {
+            ?>
             <tr>
-              <td valign="top"><input type="text" class="inputfield"  />
-                </th>
-              <td valign="top"><input type="text" class="inputfield"/>
-                </th>
-              <td valign="top"><input type="text" class="inputfield"  />
-                </th>
-              <td valign="top"><input type="text" class="inputfield" />
-                </th>
-              <td valign="top"><input type="text" class="inputfield" />
-                </th>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
             </tr>
+            <?php
+            }
+            ?>
+            
             <tr>
               <td colspan="11" class="txtheading"> 4B. Supplies attracting tax on reverse charge basis</td>
             </tr>
+                <?php
+            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where a.invoice_date like'".$month."%' and a.invoice_type='taxinvoice' and a.gstin_number!='' and (a.is_tax_payable='1')";
+            $data2 = $obj_client->get_results($query);
+            
+            if(!empty($data2))
+            {
+                foreach($data2 as $datas)
+                {
+                    ?>
+                    
+                    <tr>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->gstin_number;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->serial_number;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->invoice_date;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->invoice_total_value;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->item_unit_price;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->taxable_subtotal;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->igst_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->cgst_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->sgst_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->cess_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->state_name;?></td>
+                    </tr>
+                    <?php
+                }
+            }
+            else
+            {
+            ?>
             <tr>
-              <td valign="top"><input type="text" class="inputfield"  />
-                </th>
-              <td valign="top"><input type="text" class="inputfield"/>
-                </th>
-              <td valign="top"><input type="text" class="inputfield"  />
-                </th>
-              <td valign="top"><input type="text" class="inputfield" />
-                </th>
-              <td valign="top"><input type="text" class="inputfield" />
-                </th>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
+                <td valign="top" style="padding-top:0px;">1</td>
+                <td valign="top" style="padding-top:0px;">2</td>
+                <td valign="top" style="padding-top:0px;">3</td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
             </tr>
+            <?php
+            }
+            ?>
+              
             <tr>
               <td colspan="11" class="txtheading"> 4C. Supplies made through e-commerce operator attracting TCS (operator wise, rate wise)</td>
             </tr>
+            <?php
+            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.gstin_number!='' and (bt.business_name='Ecommerence' )";
+            $data2 = $obj_client->get_results($query);
+            
+            if(!empty($data2))
+            {
+                foreach($data2 as $datas)
+                {
+                    ?>
+                    
+                    <tr>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->gstin_number;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->serial_number;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->invoice_date;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->invoice_total_value;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->item_unit_price;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->taxable_subtotal;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->igst_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->cgst_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->sgst_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->cess_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->state_name;?></td>
+                    </tr>
+                    <?php
+                }
+            }
+            else
+            {
+            ?>
             <tr>
-              <td valign="top"><input type="text" class="inputfield"  />
-                </th>
-              <td valign="top"><input type="text" class="inputfield"/>
-                </th>
-              <td valign="top"><input type="text" class="inputfield"  />
-                </th>
-              <td valign="top"><input type="text" class="inputfield" />
-                </th>
-              <td valign="top"><input type="text" class="inputfield" />
-                </th>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
+                <td valign="top" style="padding-top:0px;"></td>
             </tr>
+            <?php
+            }
+            ?>
             <tr>
               <td colspan="11" class="txtheading"> GSTIN of e-commerce operator</td>
             </tr>
@@ -227,73 +333,97 @@
                 Tax</th>
               <th>Cess</th>
             </tr>
+            <?php
+            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.billing_gstin_number='' and a.invoice_total_value>250000";
+            $data2 = $obj_client->get_results($query);
+            if(!empty($data2))
+            {
+                foreach($data2 as $datas)
+                {
+                    ?>
+                    
+                    <tr>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->gstin_number;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->serial_number;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->invoice_date;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->invoice_total_value;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->item_unit_price;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->taxable_subtotal;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->igst_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->cgst_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->sgst_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->cess_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->state_name;?></td>
+                    </tr>
+                    <?php
+                }
+            }
+            else
+            {
+            ?>
             <tr>
-              <td valign="middle" align="center" style="border-bottom:1px solid #e0e0e0; border-right:1px solid #e0e0e0; border-left:1px solid #e0e0e0;">1
-                </th>
-              <td valign="middle" align="center" style="border-bottom:1px solid #e0e0e0; border-right:1px solid #e0e0e0;">2
-                </th>
-              <td valign="middle" align="center" style="border-bottom:1px solid #e0e0e0; border-right:1px solid #e0e0e0;">3
-                </th>
-              <td valign="middle" align="center" style="border-bottom:1px solid #e0e0e0; border-right:1px solid #e0e0e0;">4
-                </th>
-              <td valign="middle" align="center" style="border-bottom:1px solid #e0e0e0; border-right:1px solid #e0e0e0;">5
-                </th>
-              <td valign="middle" align="center" style="border-bottom:1px solid #e0e0e0; border-right:1px solid #e0e0e0;">6
-                </th>
-              <td valign="middle" align="center" style="border-bottom:1px solid #e0e0e0; border-right:1px solid #e0e0e0;">7
-                </th>
-              <td valign="middle" align="center" style="border-bottom:1px solid #e0e0e0; border-right:1px solid #e0e0e0;">8
-                </th>
-              <td valign="middle" align="center" style="border-bottom:1px solid #e0e0e0; border-right:1px solid #e0e0e0;">9
-                </th>
-              <td valign="middle" align="center" style="border-bottom:1px solid #e0e0e0; border-right:1px solid #e0e0e0;">10
-                </th>
-              <td valign="middle" align="center" style="border-bottom:1px solid #e0e0e0; border-right:1px solid #e0e0e0;">11
-                </th>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
             </tr>
-            <tr>
-              <td rowspan="2" valign="middle"><input type="text" class="inputfield" style="margin-top:8px;" /></td>
-              <td colspan="3" valign="middle" style="padding-top:0px; padding-bottom:0px;"></td>
-              <td rowspan="2" valign="middle"><input type="text" class="inputfield" value="100 Per Item" style="margin-top:8px;" /></td>
-              <td rowspan="2" valign="middle"><input type="text" class="inputfield" value="50000" style="margin-top:8px;" /></td>
-              <td colspan="4"  valign="middle"></td>
-              <td rowspan="2" valign="middle"><input type="text" class="inputfield" value="Rajasthan" style="margin-top:8px;" /></td>
-            </tr>
-            <tr>
-              <td valign="top" style="padding-top:0px;"><input type="text" class="inputfield" value="1" />
-                </th>
-              <td valign="top" style="padding-top:0px;"><input type="text" class="inputfield" value="21 june 2017" />
-                </th>
-              <td valign="top" style="padding-top:0px;"><input type="text" class="inputfield" value="100000" />
-                </th>
-              <td valign="top" style="padding-top:0px;"><input type="text" class="inputfield" value="15%" />
-                </th>
-              <td valign="top" style="padding-top:0px;"><input type="text" class="inputfield" value="15%"  />
-                </th>
-              <td valign="top" style="padding-top:0px;"><input type="text" class="inputfield" value="15%"  /></td>
-              <td valign="top" style="padding-top:0px;"><input type="text" class="inputfield" value="15%"  /></td>
-            </tr>
+            <?php
+            }
+            ?>
+            
             <tr>
               <td colspan="11" class="txtheading"> 5A. Outward supplies (other than supplies made through e-commerce operator, rate wise)</td>
             </tr>
+            <?php
+            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.billing_gstin_number='' and a.invoice_total_value>250000";
+            $data2 = $obj_client->get_results($query);
+            if(!empty($data2))
+            {
+                foreach($data2 as $datas)
+                {
+                    ?>
+                    <tr>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->gstin_number;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->serial_number;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->invoice_date;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->invoice_total_value;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->item_unit_price;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->taxable_subtotal;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->igst_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->cgst_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->sgst_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->cess_amount;?></td>
+                        <td valign="top" style="padding-top:0px;"><?php echo $datas->state_name;?></td>
+                    </tr>
+                    <?php
+                }
+            }
+            else
+            {
+            ?>
             <tr>
-              <td valign="top"><input type="text" class="inputfield"  />
-                </th>
-              <td valign="top"><input type="text" class="inputfield"/>
-                </th>
-              <td valign="top"><input type="text" class="inputfield"  />
-                </th>
-              <td valign="top"><input type="text" class="inputfield" />
-                </th>
-              <td valign="top"><input type="text" class="inputfield" />
-                </th>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
-              <td valign="top"><input type="text" class="inputfield" /></td>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
+                <td valign="top" style="padding-top:0px;"> </td>
             </tr>
+            <?php
+            }
+            ?>
             <tr>
               <td colspan="11" class="txtheading"> 5B. Supplies made through e-commerce operator attracting TCS (operator wise, rate wise)</td>
             </tr>

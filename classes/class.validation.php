@@ -44,9 +44,16 @@ class validation extends upload {
             'client_bos_invoice' => TAB_PREFIX . 'client_bos_invoice',
             'client_bos_invoice_item' => TAB_PREFIX . 'client_bos_invoice_item',
             'client_rv_invoice' => TAB_PREFIX . 'client_rv_invoice',
-            'client_rv_invoice_item' => TAB_PREFIX . 'client_rv_invoice_item',            
+            'client_rv_invoice_item' => TAB_PREFIX . 'client_rv_invoice_item',
+	    'client_rf_invoice' => TAB_PREFIX . 'client_rf_invoice',
+            'client_rf_invoice_item' => TAB_PREFIX . 'client_rf_invoice_item',
+	    'client_pv_invoice' => TAB_PREFIX . 'client_pv_invoice',
+            'client_pv_invoice_item' => TAB_PREFIX . 'client_pv_invoice_item',
+            'client_rt_invoice' => TAB_PREFIX . 'client_rt_invoice',
+            'client_rt_invoice_item' => TAB_PREFIX . 'client_rt_invoice_item',
             'business_type' => TAB_PREFIX . 'business_type',
-            'api' => TAB_PREFIX . 'api'
+            'api' => TAB_PREFIX . 'api',
+            'return' => TAB_PREFIX . 'return'
         );
 
         $this->checkUserAccess();
@@ -135,7 +142,6 @@ class validation extends upload {
     public function checkUserAccess() {
         
         if( isset($_SESSION['user_detail']['user_id']) && $_SESSION['user_detail']['user_id'] != '' ) {
-        
             $currentUserDetails = $this->getUserDetailsById( $_SESSION['user_detail']['user_id'] );
             if($currentUserDetails['data']->user_group == 3) {
 

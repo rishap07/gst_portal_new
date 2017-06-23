@@ -388,24 +388,8 @@ final class client extends validation {
 	/* validate client invoice */
 	public function validateClientInvoice($dataArr) {
 
-        $rules = array(
-            'company_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Company Name',
-            'invoice_date' => 'required||date|#|lable_name:Invoice Date',
-            'company_address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Company Address',
-			'company_state' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Company State',
-            'gstin_number' => 'pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:Company GSTIN Number',
-            'supply_place' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Place Of Supply',
-            'billing_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Billing Name',
-            'billing_address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Billing Address',
-            'billing_state' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Billing State',
-            'billing_gstin_number' => 'pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:Billing GSTIN Number',
-            'shipping_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Shipping Name',
-            'shipping_address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Shipping Address',
-            'shipping_state' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Shipping State',
-            'shipping_gstin_number' => 'pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:Shipping GSTIN Number',
-			'is_canceled' => 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Canceled Value'
-        );
-
+        $rules = array('is_canceled' => 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Canceled Value');
+		
 		if( array_key_exists("invoice_type", $dataArr) ) {
             $rules['invoice_type'] = 'required||invoicetype|#|lable_name:Invoice Type';
         }
@@ -413,9 +397,81 @@ final class client extends validation {
 		if( array_key_exists("invoice_nature", $dataArr) ) {
             $rules['invoice_nature'] = 'required||invoicenature|#|lable_name:Invoice Nature';
         }
+		
+		if( array_key_exists("invoice_document_nature", $dataArr) ) {
+            $rules['invoice_document_nature'] = 'required||invoicedocumentnature|#|lable_name:Invoice Document Nature';
+        }
+
+		if( array_key_exists("invoice_corresponding_type", $dataArr) ) {
+            $rules['invoice_corresponding_type'] = 'required||invoiecorresponding|#|lable_name:Invoice Corresponding Type';
+        }
+
+		if( array_key_exists("corresponding_invoice_number", $dataArr) ) {
+            $rules['corresponding_invoice_number'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Corresponding Invoice Number';
+        }
+
+		if( array_key_exists("corresponding_invoice_date", $dataArr) ) {
+            $rules['corresponding_invoice_date'] = 'required||date|#|lable_name:Corresponding Invoice Date';
+        }
 
 		if( array_key_exists("is_tax_payable", $dataArr) ) {
             $rules['is_tax_payable'] = 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Tax Reverse Charge';
+        }
+
+		if( array_key_exists("company_name", $dataArr) ) {
+            $rules['company_name'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Company Name';
+        }
+
+		if( array_key_exists("invoice_date", $dataArr) ) {
+            $rules['invoice_date'] = 'required||date|#|lable_name:Invoice Date';
+        }
+
+		if( array_key_exists("company_address", $dataArr) ) {
+            $rules['company_address'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Company Address';
+        }
+
+		if( array_key_exists("company_state", $dataArr) ) {
+            $rules['company_state'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Company State';
+        }
+
+		if( array_key_exists("gstin_number", $dataArr) ) {
+            $rules['gstin_number'] = 'pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:Company GSTIN Number';
+        }
+
+		if( array_key_exists("supply_place", $dataArr) ) {
+            $rules['supply_place'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Place Of Supply';
+        }
+
+		if( array_key_exists("billing_name", $dataArr) ) {
+            $rules['billing_name'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Billing Name';
+        }
+
+		if( array_key_exists("billing_address", $dataArr) ) {
+            $rules['billing_address'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Billing Address';
+        }
+
+		if( array_key_exists("billing_state", $dataArr) ) {
+            $rules['billing_state'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Billing State';
+        }
+
+		if( array_key_exists("billing_gstin_number", $dataArr) ) {
+			$rules['billing_gstin_number'] = 'pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:Billing GSTIN Number';
+        }
+
+		if( array_key_exists("shipping_name", $dataArr) ) {
+			$rules['shipping_name'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Shipping Name';
+        }
+
+		if( array_key_exists("shipping_address", $dataArr) ) {
+			$rules['shipping_address'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Shipping Address';
+        }
+
+		if( array_key_exists("shipping_state", $dataArr) ) {
+			$rules['shipping_state'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Shipping State';
+        }
+
+		if( array_key_exists("shipping_gstin_number", $dataArr) ) {
+			$rules['shipping_gstin_number'] = 'pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:Shipping GSTIN Number';
         }
 
         $valid = $this->vali_obj->validate($dataArr, $rules);

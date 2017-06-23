@@ -859,6 +859,51 @@ class common extends db {
         }
     }
     
+    /* generate refund voucher invoice number for client */
+    public function generateRFInvoiceNumber($clientId) {
+        
+        $query = "select invoice_id  from ".$this->tableNames['client_rf_invoice']." where 1=1 AND added_by=" . $clientId;
+        $invoices = $this->get_results($query);
+        
+        if( !empty($invoices) ) {
+
+            $nextInvoice = count($invoices) + 1;
+            return "IRF-" . str_pad($nextInvoice, 12, "0", STR_PAD_LEFT);
+        } else {
+            return "IRF-000000000001";
+        }
+    }
+    
+    /* generate payment voucher invoice number for client */
+    public function generatePVInvoiceNumber($clientId) {
+        
+        $query = "select invoice_id  from ".$this->tableNames['client_pv_invoice']." where 1=1 AND added_by=" . $clientId;
+        $invoices = $this->get_results($query);
+        
+        if( !empty($invoices) ) {
+
+            $nextInvoice = count($invoices) + 1;
+            return "IPV-" . str_pad($nextInvoice, 12, "0", STR_PAD_LEFT);
+        } else {
+            return "IPV-000000000001";
+        }
+    }
+    
+    /* generate revised tax invoice number for client */
+    public function generateRTInvoiceNumber($clientId) {
+        
+        $query = "select invoice_id  from ".$this->tableNames['client_rt_invoice']." where 1=1 AND added_by=" . $clientId;
+        $invoices = $this->get_results($query);
+        
+        if( !empty($invoices) ) {
+
+            $nextInvoice = count($invoices) + 1;
+            return "IRT-" . str_pad($nextInvoice, 12, "0", STR_PAD_LEFT);
+        } else {
+            return "IRT-000000000001";
+        }
+    }
+
     function convert_number_to_words($number) {
 
         //$hyphen      = '-';
@@ -1014,5 +1059,17 @@ class common extends db {
         }
 
         return $string;
+    }
+    
+    final public function getClientReturn($id)
+    {
+        $return_id = $this->sanitize($id);
+        echo $query = "select * from ".TAB_PREFIX."return where client_id='".$_SESSION['user_detail']['user_id']."' and return_id='".$id."'";
+        return $this->get_results($query);
+    }
+    final public function getClientKyc()
+    {
+        $query = "select * from ".TAB_PREFIX."client_kyc where added_by='".$_SESSION['user_detail']['user_id']."'";
+        return $this->get_results($query);
     }
 }

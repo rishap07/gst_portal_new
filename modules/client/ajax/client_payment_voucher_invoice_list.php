@@ -17,8 +17,8 @@ $aSearchColumns = array('ci.serial_number', 'ci.invoice_date', 'ci.invoice_total
 $sIndexColumn = "invoice_id";
 
 /* DB table to use */
-$ciTable = $obj_client->getTableName('client_rv_invoice');
-$cirTable = $obj_client->getTableName('client_rv_invoice_item');
+$ciTable = $obj_client->getTableName('client_pv_invoice');
+$cirTable = $obj_client->getTableName('client_pv_invoice_item');
 $msTable = $obj_client->getTableName('state');
 
 /*
@@ -125,7 +125,7 @@ if(isset($rResult) && !empty($rResult)) {
             $is_canceled = '<span class="yes">Yes<span>';
         }
 		
-		$sumQuery = $obj_client->get_row("SELECT sum(taxable_subtotal) as advance_amount FROM $cirTable where invoice_id =" . $aRow->invoice_id);
+		$sumQuery = $obj_client->get_row("SELECT sum(taxable_subtotal) as payment_amount FROM $cirTable where invoice_id =" . $aRow->invoice_id);
 
         $row[] = $temp_x;
 		$row[] = utf8_decode($aRow->serial_number);
@@ -135,7 +135,7 @@ if(isset($rResult) && !empty($rResult)) {
         $row[] = utf8_decode($aRow->billing_state_name) . " (" . utf8_decode($aRow->billing_state_tin) . ")";
         $row[] = utf8_decode($aRow->shipping_name);
         $row[] = utf8_decode($aRow->shipping_state_name) . " (" . utf8_decode($aRow->shipping_state_tin) . ")";
-		$row[] = utf8_decode($sumQuery->advance_amount);
+		$row[] = utf8_decode($sumQuery->payment_amount);
 		$row[] = utf8_decode($aRow->invoice_total_value);
         $row[] = $is_canceled;
 		//$row[] = '<a href="'.PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$aRow->invoice_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_invoice_list&action=deleteInvoice&id='.$aRow->invoice_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';

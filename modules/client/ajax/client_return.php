@@ -4,21 +4,39 @@
     *  Developed By        :   Rishap Gandhi
     *  Date Created        :   Sep 12, 2016
     *  Last Modified       :   Sep 16, 2016
-    *  Last Modified By    :   Ishwar Lal Ghiya
+    *  Last Modified By    :   Rishap Gandhi
     *  Last Modification   :   Admin User Listing
     * 
  */
 
 $obj_client = new client();
 extract($_POST);
-
+if(date('Y-m-d')>=date('Y-m')."-01" && date('Y-m-d')<=date('Y-m-t'))
+{
+    $f_year =date('Y')."-".(date('Y')+1);
+    if(date('Y-m')<=4)
+    {
+       $f_year =  (date('Y')-1)."-".(date('Y'));
+    }
+    $data = $obj_client->get_results("select * from ".$obj_client->getTableName('return')." where type='gstr1' and return_month='".date("Y-m", strtotime("-1 months"))."' and financial_year='".$f_year."'"
+            . " and client_id='".$_SESSION['user_detail']['user_id']."'");
+    if(empty($data))
+    {
+        $dataArr = array();
+        $dataArr['financial_year'] = $f_year;
+        $dataArr['return_month'] =date("Y-m", strtotime("-1 months"));
+        $dataArr['type'] = 'gstr1';
+        $dataArr['client_id'] = $_SESSION['user_detail']['user_id'];
+        $obj_client->insert($obj_client->getTableName('return'),$dataArr);
+        
+    }
+}
 //Columns to fetch from database
-$aColumns = array('user_id', 'CONCAT(first_name," ",last_name) as name', 'username', 'email', 'company_name', 'phone_number', 'status');
-$aSearchColumns = array('first_name', 'last_name', 'username', 'email', 'company_name', 'phone_number', 'status');
-$sIndexColumn = "user_id";
+$aColumns = array('return_id', 'financial_year', 'return_month', 'type','status');
+$sIndexColumn = "return_id";
 
 /* DB table to use */
-$uTable = $obj_client->getTableName('user');
+$uTable = $obj_client->getTableName('return');
 
 /*
  * Paging
@@ -41,7 +59,7 @@ if (isset($_POST['iSortCol_0'])) {
         }
     }
     if ($uOrder == "ORDER BY ") {
-        $uOrder = "ORDER BY user_id DESC";
+        $uOrder = "ORDER BY return_id DESC";
     }
 }
 
@@ -52,7 +70,7 @@ if (isset($_POST['iSortCol_0'])) {
  * on very large tables, and MySQL's regex functionality is very limited
  */
 
-$uWhere = " where is_deleted='0' AND user_group = '4' AND added_by='".$_SESSION['user_detail']['user_id']."' ";
+$uWhere = " where  client_id='".$_SESSION['user_detail']['user_id']."' ";
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
     
     $uWhere .= 'AND (';
@@ -95,7 +113,7 @@ $iFilteredTotal = $obj_client->get_row($uQuery);
 $iFilteredTotal = $iFilteredTotal->rows;
 
 /* Total data set length */
-$uQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $uTable";
+$uQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $uTable where  client_id='".$_SESSION['user_detail']['user_id']."' ";
 //echo $sQuery;
 $iTotal = $obj_client->get_row($uQuery);
 $iTotal = $iTotal->count;
@@ -116,22 +134,33 @@ if(isset($rResult) && !empty($rResult))
 foreach($rResult as $aRow) {
     
     $row = array();
-    $status = '';
-    
-    if($aRow->status == '0'){
-        $status = '<span class="inactive">InActive<span>';
-    }elseif($aRow->status == '1'){
-        $status = '<span class="active">Active<span>';
+    $status='';
+    if($aRow->status==0)
+    {
+        $status = 'Pending';
+    }
+    else if($aRow->status==1)
+    {
+        $status = 'Initiated';
+    }
+    else if($aRow->status==2)
+    {
+        $status = 'Completed';
     }
 
     $row[] = $temp_x;
-    $row[] = utf8_decode($aRow->name);
-    $row[] = utf8_decode($aRow->username);
-    $row[] = utf8_decode($aRow->email);
-    $row[] = utf8_decode($aRow->company_name);
-    $row[] = utf8_decode($aRow->phone_number);
+    $row[] = utf8_decode($aRow->financial_year);
+    $row[] = utf8_decode($aRow->return_month);
+    $row[] = utf8_decode($aRow->type);
     $row[] = $status;
-    $row[] = '<a href="'.PROJECT_URL.'/?page=client_update&action=editClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_list&action=deleteClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
+    if($aRow->type=='gstr1')
+    {
+        $row[] = '<a href="'.PROJECT_URL.'/?page=client_complied_gstr1&finanical='.$aRow->return_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-eye"></i></a>';
+    }
+    else
+    {
+        $row[] = '';
+    }
     $output['aaData'][] = $row;
     $temp_x++;
 }

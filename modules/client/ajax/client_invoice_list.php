@@ -13,7 +13,7 @@ extract($_POST);
 
 //Columns to fetch from database
 $aColumns = array('ci.invoice_id', 'ci.invoice_type', 'ci.invoice_nature', 'ci.serial_number', 'ci.company_name', 'ci.company_address', 'ci.gstin_number', 'ci.is_tax_payable', 'ci.invoice_date', 'ci.is_canceled', 'ci.supply_place', 'ms2.state_name as supply_state_name', 'ms2.state_code as supply_state_code', 'ms2.state_tin as supply_state_tin', 'ci.invoice_total_value', 'ci.billing_name', 'ci.billing_state', 'ms.state_name as billing_state_name', 'ms.state_code as billing_state_code', 'ms.state_tin as billing_state_tin', 'ci.shipping_name', 'ci.shipping_state', 'ms1.state_name as shipping_state_name', 'ms1.state_code as shipping_state_code', 'ms1.state_tin as shipping_state_tin');
-$aSearchColumns = array('ci.invoice_type', 'ci.invoice_nature', 'ci.serial_number', 'ci.invoice_date', 'ci.billing_name', 'ci.shipping_name', 'ms.state_name', 'ms.state_code', 'ms.state_tin', 'ms1.state_name', 'ms1.state_code', 'ms1.state_tin', 'ms2.state_name', 'ms2.state_code', 'ms2.state_tin');
+$aSearchColumns = array('ci.invoice_type', 'ci.invoice_nature', 'ci.serial_number', 'ci.invoice_date', 'ci.invoice_total_value', 'ci.billing_name', 'ci.shipping_name', 'ms.state_name', 'ms.state_code', 'ms.state_tin', 'ms1.state_name', 'ms1.state_code', 'ms1.state_tin', 'ms2.state_name', 'ms2.state_code', 'ms2.state_tin');
 $sIndexColumn = "invoice_id";
 
 /* DB table to use */

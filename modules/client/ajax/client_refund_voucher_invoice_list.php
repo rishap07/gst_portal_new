@@ -1,28 +1,29 @@
 <?php
 /*
     * 
-    *  Developed By        :   Rishap Gandhi
-    *  Date Created        :   Sep 12, 2016
-    *  Last Modified       :   Sep 16, 2016
+    *  Developed By        :   Ishwar Lal Ghiya
+    *  Date Created        :   June 6, 2017
     *  Last Modified By    :   Ishwar Lal Ghiya
-    *  Last Modification   :   Admin User Listing
+    *  Last Modification   :   Client Item Listing
     * 
- */
+*/
 
 $obj_client = new client();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('user_id', 'CONCAT(first_name," ",last_name) as name', 'username', 'email', 'company_name', 'phone_number', 'status');
-$aSearchColumns = array('first_name', 'last_name', 'username', 'email', 'company_name', 'phone_number', 'status');
-$sIndexColumn = "user_id";
+$aColumns = array('ci.invoice_id', 'ci.serial_number', 'ci.is_tax_payable', 'ci.invoice_date', 'ci.receipt_voucher_number', 'ci.receipt_voucher_date', 'ci.is_canceled', 'ci.invoice_total_value');
+$aSearchColumns = array('ci.serial_number', 'ci.invoice_date', 'ci.receipt_voucher_number', 'ci.receipt_voucher_date', 'ci.invoice_total_value');
+$sIndexColumn = "invoice_id";
 
 /* DB table to use */
-$uTable = $obj_client->getTableName('user');
+$ciTable = $obj_client->getTableName('client_rf_invoice');
+$cirTable = $obj_client->getTableName('client_rf_invoice_item');
+$msTable = $obj_client->getTableName('state');
 
 /*
  * Paging
- */
+*/
 $uLimit = "";
 if (isset($_POST['iDisplayStart']) && $_POST['iDisplayLength'] != '-1') {
     $uLimit = "LIMIT " . $obj_client->escape($_POST['iDisplayStart']) . ", " . $obj_client->escape($_POST['iDisplayLength']);
@@ -30,7 +31,7 @@ if (isset($_POST['iDisplayStart']) && $_POST['iDisplayLength'] != '-1') {
 
 /*
  * Ordering
- */
+*/
 $uOrder = "";
 if (isset($_POST['iSortCol_0'])) {
 
@@ -41,7 +42,7 @@ if (isset($_POST['iSortCol_0'])) {
         }
     }
     if ($uOrder == "ORDER BY ") {
-        $uOrder = "ORDER BY user_id DESC";
+        $uOrder = "ORDER BY ci.invoice_id DESC";
     }
 }
 
@@ -50,9 +51,9 @@ if (isset($_POST['iSortCol_0'])) {
  * NOTE this does not match the built-in DataTables filtering which does it
  * word by word on any field. It's possible to do here, but concerned about efficiency
  * on very large tables, and MySQL's regex functionality is very limited
- */
+*/
 
-$uWhere = " where is_deleted='0' AND user_group = '4' AND added_by='".$_SESSION['user_detail']['user_id']."' ";
+$uWhere = " where ci.is_deleted='0' AND ci.added_by='".$_SESSION['user_detail']['user_id']."' ";
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
     
     $uWhere .= 'AND (';
@@ -78,10 +79,10 @@ for ($i = 0; $i < count($aColumns); $i++) {
 /*
  * SQL queries
  * Get data to display
- */
+*/
 $uWhere = trim(trim($uWhere), 'AND');
 $uQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ", $aColumns)) . "
-            FROM $uTable
+            FROM $ciTable as ci 
             $uWhere
             $uOrder
             $uLimit
@@ -95,7 +96,7 @@ $iFilteredTotal = $obj_client->get_row($uQuery);
 $iFilteredTotal = $iFilteredTotal->rows;
 
 /* Total data set length */
-$uQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $uTable";
+$uQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $ciTable";
 //echo $sQuery;
 $iTotal = $obj_client->get_row($uQuery);
 $iTotal = $iTotal->count;
@@ -111,30 +112,41 @@ $output = array(
 );
 
 $temp_x=1;
-if(isset($rResult) && !empty($rResult))
-{
-foreach($rResult as $aRow) {
-    
-    $row = array();
-    $status = '';
-    
-    if($aRow->status == '0'){
-        $status = '<span class="inactive">InActive<span>';
-    }elseif($aRow->status == '1'){
-        $status = '<span class="active">Active<span>';
-    }
+if(isset($rResult) && !empty($rResult)) {
+	
+    foreach($rResult as $aRow) {
 
-    $row[] = $temp_x;
-    $row[] = utf8_decode($aRow->name);
-    $row[] = utf8_decode($aRow->username);
-    $row[] = utf8_decode($aRow->email);
-    $row[] = utf8_decode($aRow->company_name);
-    $row[] = utf8_decode($aRow->phone_number);
-    $row[] = $status;
-    $row[] = '<a href="'.PROJECT_URL.'/?page=client_update&action=editClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_list&action=deleteClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
-    $output['aaData'][] = $row;
-    $temp_x++;
-}
+        $row = array();
+		$is_canceled = '';
+		$is_tax_payable = '';
+
+		if($aRow->is_tax_payable == '0') {
+            $is_tax_payable = '<span class="no">No<span>';
+        } elseif($aRow->is_tax_payable == '1'){
+            $is_tax_payable = '<span class="yes">Yes<span>';
+        }
+
+		if($aRow->is_canceled == '0') {
+            $is_canceled = '<span class="no">No<span>';
+        } elseif($aRow->is_canceled == '1'){
+            $is_canceled = '<span class="yes">Yes<span>';
+        }
+		
+		$sumQuery = $obj_client->get_row("SELECT sum(taxable_subtotal) as refund_amount FROM $cirTable where invoice_id =" . $aRow->invoice_id);
+
+        $row[] = $temp_x;
+		$row[] = utf8_decode($aRow->serial_number);
+        $row[] = utf8_decode($aRow->invoice_date);
+		$row[] = utf8_decode($aRow->receipt_voucher_number);
+		$row[] = utf8_decode($aRow->receipt_voucher_date);
+		$row[] = utf8_decode($sumQuery->refund_amount);
+		$row[] = utf8_decode($aRow->invoice_total_value);
+		$row[] = $is_tax_payable;
+		$row[] = $is_canceled;
+		//$row[] = '<a href="'.PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$aRow->invoice_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_invoice_list&action=deleteInvoice&id='.$aRow->invoice_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
+        $output['aaData'][] = $row;
+        $temp_x++;
+    }
 }
 
 echo json_encode($output);

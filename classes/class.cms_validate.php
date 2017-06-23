@@ -402,6 +402,28 @@ class cms_validate {
         }
     }
 
+    protected static function invoicedocumentnatureValidation($input, $name, $lableName) {
+        if (self::isBlankField($input) === false) {
+            if (preg_match("/^(?:creditnote|debitnote)$/", $input)) {
+                return true;
+            } else {
+                self::setMessage($name, 'invoicedocumentnature', $lableName . " should be valid");
+                return false;
+            }
+        }
+    }
+
+    protected static function invoiecorrespondingValidation($input, $name, $lableName) {
+        if (self::isBlankField($input) === false) {
+            if (preg_match("/^(?:taxinvoice|bosinvoice)$/", $input)) {
+                return true;
+            } else {
+                self::setMessage($name, 'invoiecorresponding', $lableName . " should be valid");
+                return false;
+            }
+        }
+    }
+
     protected static function integerValidation($input, $name, $lableName) {
         if (self::isBlankField($input) === false) {
             if (is_numeric($input) AND strpos($input, '.') === false) {
