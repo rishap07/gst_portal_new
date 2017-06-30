@@ -40,7 +40,7 @@ if (isset($_POST['iSortCol_0'])) {
         }
     }
     if ($sOrder == "ORDER BY ") {
-        $sOrder = "ORDER BY item_id DESC";
+        $sOrder = "ORDER BY item_id ASC";
     }
 }
 

@@ -12,7 +12,7 @@ $obj_client = new client();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('ci.invoice_id', 'ci.serial_number', 'ci.company_name', 'ci.company_address', 'ci.gstin_number', 'ci.invoice_date', 'ci.is_canceled', 'ci.supply_place', 'ms2.state_name as supply_state_name', 'ms2.state_code as supply_state_code', 'ms2.state_tin as supply_state_tin', 'ci.invoice_total_value', 'ci.billing_name', 'ci.billing_state', 'ms.state_name as billing_state_name', 'ms.state_code as billing_state_code', 'ms.state_tin as billing_state_tin', 'ci.shipping_name', 'ci.shipping_state', 'ms1.state_name as shipping_state_name', 'ms1.state_code as shipping_state_code', 'ms1.state_tin as shipping_state_tin');
+$aColumns = array('ci.invoice_id', 'ci.serial_number', 'ci.reference_number', 'ci.company_name', 'ci.company_address', 'ci.gstin_number', 'ci.invoice_date', 'ci.is_canceled', 'ci.supply_place', 'ms2.state_name as supply_state_name', 'ms2.state_code as supply_state_code', 'ms2.state_tin as supply_state_tin', 'ci.invoice_total_value', 'ci.billing_name', 'ci.billing_state', 'ms.state_name as billing_state_name', 'ms.state_code as billing_state_code', 'ms.state_tin as billing_state_tin', 'ci.shipping_name', 'ci.shipping_state', 'ms1.state_name as shipping_state_name', 'ms1.state_code as shipping_state_code', 'ms1.state_tin as shipping_state_tin');
 $aSearchColumns = array('ci.serial_number', 'ci.invoice_date', 'ci.invoice_total_value', 'ci.billing_name', 'ci.shipping_name', 'ms.state_name', 'ms.state_code', 'ms.state_tin', 'ms1.state_name', 'ms1.state_code', 'ms1.state_tin', 'ms2.state_name', 'ms2.state_code', 'ms2.state_tin');
 $sIndexColumn = "invoice_id";
 
@@ -113,23 +113,24 @@ $output = array(
 
 $temp_x=1;
 if(isset($rResult) && !empty($rResult)) {
-	
+
     foreach($rResult as $aRow) {
 
         $row = array();
 		$is_canceled = '';
-		
+
 		if($aRow->is_canceled == '0') {
             $is_canceled = '<span class="no">No<span>';
         } elseif($aRow->is_canceled == '1'){
             $is_canceled = '<span class="yes">Yes<span>';
         }
-		
+
 		$sumQuery = $obj_client->get_row("SELECT sum(taxable_subtotal) as payment_amount FROM $cirTable where invoice_id =" . $aRow->invoice_id);
 
         $row[] = $temp_x;
 		$row[] = utf8_decode($aRow->serial_number);
         $row[] = utf8_decode($aRow->invoice_date);
+		$row[] = utf8_decode($aRow->reference_number);
 		$row[] = utf8_decode($aRow->supply_state_name) . " (" . utf8_decode($aRow->supply_state_tin) . ")";
 		$row[] = utf8_decode($aRow->billing_name);
         $row[] = utf8_decode($aRow->billing_state_name) . " (" . utf8_decode($aRow->billing_state_tin) . ")";

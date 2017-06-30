@@ -401,6 +401,17 @@ class cms_validate {
             }
         }
     }
+    
+    protected static function supplytypeValidation($input, $name, $lableName) {
+        if (self::isBlankField($input) === false) {
+            if (preg_match("/^(?:normal|reversecharge|tds|tcs)$/", $input)) {
+                return true;
+            } else {
+                self::setMessage($name, 'supplytype', $lableName . " should be valid");
+                return false;
+            }
+        }
+    }
 
     protected static function invoicedocumentnatureValidation($input, $name, $lableName) {
         if (self::isBlankField($input) === false) {

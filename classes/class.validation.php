@@ -28,6 +28,7 @@ class validation extends upload {
             'subscriber_plan_category' => TAB_PREFIX . 'subscriber_plan_category',
             'subscriber_plan' => TAB_PREFIX . 'subscriber_plan',
             'state' => TAB_PREFIX . 'master_state',
+            'country' => TAB_PREFIX . 'master_country',
             'receiver' => TAB_PREFIX . 'master_receiver',
             'supplier' => TAB_PREFIX . 'master_supplier',
             'item' => TAB_PREFIX . 'master_item',
@@ -51,12 +52,23 @@ class validation extends upload {
             'client_pv_invoice_item' => TAB_PREFIX . 'client_pv_invoice_item',
             'client_rt_invoice' => TAB_PREFIX . 'client_rt_invoice',
             'client_rt_invoice_item' => TAB_PREFIX . 'client_rt_invoice_item',
+            'client_st_invoice' => TAB_PREFIX . 'client_st_invoice',
+            'client_st_invoice_item' => TAB_PREFIX . 'client_st_invoice_item',
             'business_type' => TAB_PREFIX . 'business_type',
             'api' => TAB_PREFIX . 'api',
             'return' => TAB_PREFIX . 'return'
         );
 
+        $this->checkUserPortalAccess();
         $this->checkUserAccess();
+    }
+    
+    public function checkUserPortalAccess() {
+        
+        if( (isset($_REQUEST['page']) || isset($_REQUEST['ajax'])) && (!isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '') ) {
+            $this->redirect(PROJECT_URL);
+            exit();
+        }
     }
     
     //onedash   /^[a-zA-Z\d]+[(-{1})|(a-zA-Z\d)][a-zA-Z\d]+$/
@@ -142,10 +154,11 @@ class validation extends upload {
     public function checkUserAccess() {
         
         if( isset($_SESSION['user_detail']['user_id']) && $_SESSION['user_detail']['user_id'] != '' ) {
+            
             $currentUserDetails = $this->getUserDetailsById( $_SESSION['user_detail']['user_id'] );
             if($currentUserDetails['data']->user_group == 3) {
 
-                if( isset($_GET['page']) && $_GET['page'] != "plan_chooseplan") {
+                if( isset($_GET['page']) && $_GET['page'] != "plan_chooseplan" && $_GET['page'] != "logout") {
 
                     if($currentUserDetails['data']->plan_id == 0) {
                         $this->redirect(PROJECT_URL . "?page=plan_chooseplan");

@@ -5,13 +5,13 @@
     *  Date Created        :   June 02, 2017
     *  Last Modification   :   save new invoice
     * 
- */
+*/
 header('Content-type: application/json');
 $obj_client = new client();
-
 $result = array();
 $invoiceErrorMessage = '';
 $counter = 0;
+
 if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] == "saveNewBillInvoice" && isset($_GET['ajax']) && $_GET['ajax'] == "client_save_bill_of_supply_invoice") {
 	
 	/* get current user data */
@@ -26,61 +26,60 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 		echo json_encode($result);
 		die;
 	}
-	
+
+	$dataArr['reference_number'] = isset($params['invoice_reference_number']) ? $params['invoice_reference_number'] : '';
 	$dataArr['invoice_date'] = isset($params['invoice_date']) ? $params['invoice_date'] : '';
 	$dataArr['company_name'] = $dataCurrentUserArr['data']->kyc->name;
 	$dataArr['company_address'] = $dataCurrentUserArr['data']->kyc->registered_address;
 	$dataArr['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
 	$dataArr['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
-	$dataArr['is_canceled'] = isset($params['is_canceled']) ? $params['is_canceled'] : '';
+	$dataArr['description'] = isset($params['description']) ? trim($params['description']) : '';
 
-	$supply_place = isset($params['place_of_supply']) ? $params['place_of_supply'] : '';
-	$supply_state_data = $obj_client->getStateDetailByStateId($supply_place);
-
-	if($supply_state_data['status'] === "success") {
-		$dataArr['supply_place'] = $supply_state_data['data']->state_id;
-	} else {
-		$dataArr['supply_place'] = '';
-	}
-	
 	$dataArr['billing_name'] = isset($params['billing_name']) ? $params['billing_name'] : '';
 	$dataArr['billing_address'] = isset($params['billing_address']) ? $params['billing_address'] : '';
-	$dataArr['billing_gstin_number'] = isset($params['billing_gstin_number']) ? $params['billing_gstin_number'] : '';
 
 	$billing_state_code = isset($params['billing_state_code']) ? $params['billing_state_code'] : '';
 	$billing_state_data = $obj_client->getStateDetailByStateCode($billing_state_code);
 
 	if($billing_state_data['status'] === "success") {
 		$dataArr['billing_state'] = $billing_state_data['data']->state_id;
+		$dataArr['billing_state_name'] = $billing_state_data['data']->state_name;
 	} else {
 		$dataArr['billing_state'] = '';
+		$dataArr['billing_state_name'] = '';
 	}
-	
+
+	$dataArr['billing_gstin_number'] = isset($params['billing_gstin_number']) ? $params['billing_gstin_number'] : '';
+
 	if(isset($params['same_as_billing']) && $params['same_as_billing'] == 1) {
 
 		$dataArr['shipping_name'] = $dataArr['billing_name'];
 		$dataArr['shipping_address'] = $dataArr['billing_address'];
 		$dataArr['shipping_state'] = $dataArr['billing_state'];
+		$dataArr['shipping_state_name'] = $dataArr['billing_state_name'];
 		$dataArr['shipping_gstin_number'] = $dataArr['billing_gstin_number'];
 	} else {
-		
+
 		$dataArr['shipping_name'] = isset($params['shipping_name']) ? $params['shipping_name'] : '';
 		$dataArr['shipping_address'] = isset($params['shipping_address']) ? $params['shipping_address'] : '';
-		$dataArr['shipping_gstin_number'] = isset($params['shipping_gstin_number']) ? $params['shipping_gstin_number'] : '';
 
 		$shipping_state_code = isset($params['shipping_state_code']) ? $params['shipping_state_code'] : '';
 		$state_data = $obj_client->getStateDetailByStateCode($shipping_state_code);
 		
 		if($state_data['status'] === "success") {
 			$dataArr['shipping_state'] = $state_data['data']->state_id;
+			$dataArr['shipping_state_name'] = $state_data['data']->state_name;
 		} else {
 			$dataArr['shipping_state'] = '';
+			$dataArr['shipping_state_name'] = '';
 		}
+		
+		$dataArr['shipping_gstin_number'] = isset($params['shipping_gstin_number']) ? $params['shipping_gstin_number'] : '';
 	}
 
 	/* validate invoice data */
 	$obj_client->validateClientInvoice($dataArr);
-	
+
 	$invoiceItemArray = array();
 	$invoiceTotalAmount = 0.00;
 	if(isset($params['invoice_itemid']) && count($params['invoice_itemid']) > 0) {
@@ -107,31 +106,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 				$invoiceItemDiscountAmount = ($invoiceItemDiscount/100) * $invoiceItemTotal;
 				$invoiceItemTaxableAmount = round(($invoiceItemTotal - $invoiceItemDiscountAmount), 2);
 
-				if($dataArr['company_state'] === $dataArr['supply_place']) {
-
-					$itemCSGTTax = (float)$clientMasterItem->csgt_tax_rate;
-					$itemSGSTTax = (float)$clientMasterItem->sgst_tax_rate;
-					$itemIGSTTax = 0.00;
-					$itemCESSTax = (float)$clientMasterItem->cess_tax_rate;
-
-					$invoiceItemCSGTTaxAmount = round((($itemCSGTTax/100) * $invoiceItemTaxableAmount), 2);
-					$invoiceItemSGSTTaxAmount = round((($itemSGSTTax/100) * $invoiceItemTaxableAmount), 2);
-					$invoiceItemIGSTTaxAmount = 0.00;
-					$invoiceItemCESSTaxAmount = round((($itemCESSTax/100) * $invoiceItemTaxableAmount), 2);
-				} else {
-
-					$itemCSGTTax = 0.00;
-					$itemSGSTTax = 0.00;
-					$itemIGSTTax = (float)$clientMasterItem->igst_tax_rate;
-					$itemCESSTax = (float)$clientMasterItem->cess_tax_rate;
-
-					$invoiceItemCSGTTaxAmount = 0.00;
-					$invoiceItemSGSTTaxAmount = 0.00;
-					$invoiceItemIGSTTaxAmount = round((($itemIGSTTax/100) * $invoiceItemTaxableAmount), 2);
-					$invoiceItemCESSTaxAmount = round((($itemCESSTax/100) * $invoiceItemTaxableAmount), 2);
-				}
-
-				$invoiceItemTotalAmount = round(($invoiceItemTaxableAmount + $invoiceItemCSGTTaxAmount + $invoiceItemSGSTTaxAmount + $invoiceItemIGSTTaxAmount + $invoiceItemCESSTaxAmount), 2);
+				$invoiceItemTotalAmount = $invoiceItemTaxableAmount;
 				$invoiceTotalAmount += $invoiceItemTotalAmount;
 
 				$ItemArray = array(
@@ -144,14 +119,6 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 								"subtotal" => $invoiceItemTotal,
 								"discount" => $invoiceItemDiscount,
 								"taxable_subtotal" => $invoiceItemTaxableAmount,
-								"cgst_rate" => $itemCSGTTax,
-								"cgst_amount" => $invoiceItemCSGTTaxAmount,
-								"sgst_rate" => $itemSGSTTax,
-								"sgst_amount" => $invoiceItemSGSTTaxAmount,
-								"igst_rate" => $itemIGSTTax,
-								"igst_amount" => $invoiceItemIGSTTaxAmount,
-								"cess_rate" => $itemCESSTax,
-								"cess_amount" => $invoiceItemCESSTaxAmount,
 								"total" => $invoiceItemTotalAmount,
 								"status" => 1,
 								"added_by" => $_SESSION['user_detail']['user_id'],
@@ -164,12 +131,13 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	}
 	
 	$dataArr['invoice_total_value'] = $invoiceTotalAmount;
+	$dataArr['financial_year'] = $obj_client->generateFinancialYear();
 	$dataArr['status'] = 1;
 	$dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
 	$dataArr['added_date'] = date('Y-m-d H:i:s');
-	
+
 	if($obj_client->getErrorMessage() != '') {
-		
+
 		$result['status'] = "error";
 		$result['message'] = $obj_client->getErrorMessage();
 		$obj_client->unsetMessage();
@@ -221,7 +189,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 				echo json_encode($result);
 				die;
 			}
-		
+
 		} else {
 
 			$obj_client->setError($obj_client->getValMsg('noiteminvoice'));

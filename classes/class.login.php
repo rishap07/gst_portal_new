@@ -18,13 +18,13 @@ class login extends validation {
         $dataArr['password'] = isset($_POST['login_password']) ? $_POST['login_password'] : '';
 
         if (!$this->validateLogin($dataArr)) {
-            return false;
+			return false;
         }
-		
+
         $dataArr['api_code'] = 'XYZ';
         $dataArr['api_user'] = 'ABC';
         $val = '';
-        
+
 		foreach ($dataArr as $key => $value) {
             $val .= $value . "|";
         }
@@ -112,6 +112,11 @@ class login extends validation {
             $this->setError($this->validationMessage['usernameexist']);
             return false;
         }
+		
+		if($this->checkEmailAddressExist($dataArr['emailaddress'])){
+            $this->setError($this->validationMessage['emailexist']);
+            return false;
+        }
 
         /* create insert array */
         $dataInsertArray['username'] = $dataArr['username'];
@@ -131,6 +136,18 @@ class login extends validation {
             $_SESSION['user_detail']['email'] = $userData['data']->email;
             $_SESSION['user_detail']['name'] = $userData['data']->name;
             $_SESSION['user_detail']['user_group'] = $userData['data']->user_group;
+
+			/* assign user permissions */
+			$rolequery = "select b.role_page,a.can_read,a.can_create,a.can_update,a.can_delete from ".$this->tableNames['user_role_permission']." a left join ".$this->tableNames['user_role']." b on a.role_id=b.user_role_id where a.group_id='" . $userData['data']->user_group . "' and a.is_deleted='0' and a.status='1'";
+			$userPermission = $this->get_results($rolequery);
+
+			for($x=0; $x < count($userPermission); $x++) {
+
+				$_SESSION['user_role'][$userPermission[$x]->role_page]['can_read'] = $userPermission[$x]->can_read;
+				$_SESSION['user_role'][$userPermission[$x]->role_page]['can_create'] = $userPermission[$x]->can_create;
+				$_SESSION['user_role'][$userPermission[$x]->role_page]['can_update'] = $userPermission[$x]->can_update;
+				$_SESSION['user_role'][$userPermission[$x]->role_page]['can_delete'] = $userPermission[$x]->can_delete;
+			}
 
             if (isset($_POST['rememberme']) && $_POST['rememberme'] == 1) {
 

@@ -27,13 +27,14 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 		die;
 	}
 
+	$dataArr['reference_number'] = isset($params['invoice_reference_number']) ? $params['invoice_reference_number'] : '';
 	$dataArr['invoice_date'] = isset($params['invoice_date']) ? $params['invoice_date'] : '';
 	$dataArr['company_name'] = $dataCurrentUserArr['data']->kyc->name;
 	$dataArr['company_address'] = $dataCurrentUserArr['data']->kyc->registered_address;
 	$dataArr['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
 	$dataArr['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
+	$dataArr['description'] = isset($params['description']) ? trim($params['description']) : '';
 	$dataArr['is_tax_payable'] = isset($params['tax_reverse_charge']) ? $params['tax_reverse_charge'] : '';
-	$dataArr['is_canceled'] = isset($params['is_canceled']) ? $params['is_canceled'] : '';
 
 	$supply_place = isset($params['place_of_supply']) ? $params['place_of_supply'] : '';
 	$supply_state_data = $obj_client->getStateDetailByStateId($supply_place);
@@ -46,42 +47,49 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 
 	$dataArr['billing_name'] = isset($params['billing_name']) ? $params['billing_name'] : '';
 	$dataArr['billing_address'] = isset($params['billing_address']) ? $params['billing_address'] : '';
-	$dataArr['billing_gstin_number'] = isset($params['billing_gstin_number']) ? $params['billing_gstin_number'] : '';
 
 	$billing_state_code = isset($params['billing_state_code']) ? $params['billing_state_code'] : '';
 	$billing_state_data = $obj_client->getStateDetailByStateCode($billing_state_code);
 
 	if($billing_state_data['status'] === "success") {
 		$dataArr['billing_state'] = $billing_state_data['data']->state_id;
+		$dataArr['billing_state_name'] = $billing_state_data['data']->state_name;
 	} else {
 		$dataArr['billing_state'] = '';
+		$dataArr['billing_state_name'] = '';
 	}
+
+	$dataArr['billing_gstin_number'] = isset($params['billing_gstin_number']) ? $params['billing_gstin_number'] : '';
 
 	if(isset($params['same_as_billing']) && $params['same_as_billing'] == 1) {
 
 		$dataArr['shipping_name'] = $dataArr['billing_name'];
 		$dataArr['shipping_address'] = $dataArr['billing_address'];
 		$dataArr['shipping_state'] = $dataArr['billing_state'];
+		$dataArr['shipping_state_name'] = $dataArr['billing_state_name'];
 		$dataArr['shipping_gstin_number'] = $dataArr['billing_gstin_number'];
 	} else {
 
 		$dataArr['shipping_name'] = isset($params['shipping_name']) ? $params['shipping_name'] : '';
 		$dataArr['shipping_address'] = isset($params['shipping_address']) ? $params['shipping_address'] : '';
-		$dataArr['shipping_gstin_number'] = isset($params['shipping_gstin_number']) ? $params['shipping_gstin_number'] : '';
 
 		$shipping_state_code = isset($params['shipping_state_code']) ? $params['shipping_state_code'] : '';
 		$state_data = $obj_client->getStateDetailByStateCode($shipping_state_code);
 		
 		if($state_data['status'] === "success") {
 			$dataArr['shipping_state'] = $state_data['data']->state_id;
+			$dataArr['shipping_state_name'] = $state_data['data']->state_name;
 		} else {
 			$dataArr['shipping_state'] = '';
+			$dataArr['shipping_state_name'] = '';
 		}
+		
+		$dataArr['shipping_gstin_number'] = isset($params['shipping_gstin_number']) ? $params['shipping_gstin_number'] : '';
 	}
 
 	/* validate invoice data */
 	$obj_client->validateClientInvoice($dataArr);
-	
+
 	$invoiceItemArray = array();
 	$invoiceTotalAmount = 0.00;
 	if(isset($params['invoice_itemid']) && count($params['invoice_itemid']) > 0) {
@@ -152,12 +160,13 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 			}
 		}
 	}
-	
+
 	$dataArr['invoice_total_value'] = $invoiceTotalAmount;
+	$dataArr['financial_year'] = $obj_client->generateFinancialYear();
 	$dataArr['status'] = 1;
 	$dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
 	$dataArr['added_date'] = date('Y-m-d H:i:s');
-	
+
 	if($obj_client->getErrorMessage() != '') {
 		
 		$result['status'] = "error";

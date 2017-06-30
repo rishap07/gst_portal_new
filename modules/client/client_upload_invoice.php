@@ -27,11 +27,26 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
         
         $obj_client->setError('Invalid access to files');
     } else {
+		
+		if($_POST['invoice_type'] == "taxinvoice") {
+			
+			$uploadInvoice = $obj_client->uploadClientInvoice();
+			$redirectPath = "client_invoice_list";
+		} else if($_POST['invoice_type'] == "bosinvoice") {
+			
+			$uploadInvoice = $obj_client->uploadClientBOSInvoice();
+			$redirectPath = "client_bill_of_supply_invoice_list";
+		} else if($_POST['invoice_type'] == "rvinvoice") {
+			
+			$uploadInvoice = $obj_client->uploadClientRVInvoice();
+			$redirectPath = "client_receipt_voucher_invoice_list";
+		} else {
+			$obj_client->redirect(PROJECT_URL."?page=client_upload_invoice");
+		}
 
-		$uploadInvoice = $obj_client->uploadClientInvoice();
         if($uploadInvoice === true){
 
-            $obj_client->redirect(PROJECT_URL."?page=client_invoice_list");
+            $obj_client->redirect(PROJECT_URL."?page=".$redirectPath);
         } else {
 
 			$excelError = true;
@@ -72,8 +87,18 @@ $dataCurrentArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSI
                 <div class="kycform">
 
                     <div class="kycmainbox">
+					
+						<div class="formcol two">
+							<label>Select Invoice Type<span class="starred">*</span></label>
+							<select name="invoice_type" id="invoice_type" class="required">
+								<option value=''>Select Category</option>
+								<option value='taxinvoice'>Tax Invoice</option>
+								<option value='bosinvoice'>Bill of Supply Invoice</option>
+								<option value='rvinvoice'>Receipt Voucher Invoice</option>
+							</select>
+						</div>
                         
-                        <div class="formcol">
+                        <div class="formcol two">
                             <label>Upload Excel File<span class="starred">*</span></label>
 							<div class="clear"></div>
                             <input type="file" name="invoice_xlsx" id="invoice_xlsx" class="required" />

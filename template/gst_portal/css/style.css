@@ -145,7 +145,7 @@ p, ul { margin:0px; padding:0px;}
 
 .adminformlist, .formcol .smallinput { width:120px;}
 .adminformbx{float:left;width:100%;margin:0px;padding:0px;}
-.adminformbx .adminformlist, .formcol {float:left;width:31%;margin-right:3%;height:auto; margin-bottom:10px; min-height:70px;}
+.adminformbx .adminformlist, .formcol {float:left;width:31%;margin-right:3%;height:auto; margin-bottom:10px; min-height:70px;position:relative;}
 .adminformbx .adminformlist.third, .formcol.third {margin-right:0px;clear:right;}
 .adminformbx .adminformlist label, .formcol label {float:left;color:#666;font-size:13px;clear:right;margin-bottom:10px; font-family: opensans_bold; font-weight:normal;}
 .adminformbx .adminformlist input[type=text],.adminformbx .adminformlist select,.adminformbx .adminformlist textarea, .inputfield{width:94%;padding:7px 3%;color:#505050;font-size:13px;border:1px solid #e0e0e0;}
@@ -243,7 +243,7 @@ p, ul { margin:0px; padding:0px;}
 .popupcontainer  .popupform h4 { color:#14469e; font-family: roboto-regular; text-align:center; font-size:24px; letter-spacing:-1px; border-bottom:1px solid #ccc; padding:0 0 20px 0; margin:0 0 20px 0; }
 .dashtab li a { height:100px; text-transform:uppercase;}
 .readonly{cursor:not-allowed;background-color:#e6e6e6;}
-.err{font-size: 11px;color: #f00;position:absolute;}
+.err{font-size: 11px;color: #f00;position:absolute;right:0px;}
 .errborder{border:1px solid #f00 !important;}
 .addnew{ float: right; border: 1px solid #2caf6c; padding: 3px 10px; background-color: #2caf6c; color: #fff; text-decoration: none;}
 .addnew:hover{ border: 1px solid #35d081;background-color: #35d081; }
@@ -261,7 +261,7 @@ p, ul { margin:0px; padding:0px;}
 .invoicetable tr th { border-right:1px solid #808080;}
 .invoicetable tr td,.invoicetable tr th { padding:8px 5px;; border-bottom:1px solid #e0e0e0;}
 .invoicetable tr:nth-child(even) {background: #f0f0f0}
-.invoiceform .formcol { min-height:auto; margin-bottom:5px;}
+.invoiceform .formcol { min-height:auto; margin-bottom:5px;position:relative;}
 .invoiceform input[type=text], .invoiceform input[type=password],.invoiceform select,.invoiceform textarea{width:94%;padding:3px 5px !important;color:#505050;font-size:13px;border:1px solid #e0e0e0;}
 .invoicetable { border-left:1px solid #e0e0e0; border-right:1px solid #e0e0e0;}
 .lightyellow { background:#FFC;}

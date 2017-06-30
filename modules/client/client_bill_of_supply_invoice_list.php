@@ -19,7 +19,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteBillInvoice' && isset($_
 <div class="admincontainer greybg">
     <div class="formcontainer">
         <div>
-            <a class='addnew' href='<?php echo PROJECT_URL;?>/?page=client_create_bill_of_supply_invoice'>Add New Bill Invoice</a>
+            <a class='addnew' href='<?php echo PROJECT_URL;?>/?page=client_create_bill_of_supply_invoice'>Add Bill of Supply Invoice Invoice</a>
         </div>
         <h1>Bill of Supply Invoice</h1>
         <hr class="headingborder">
@@ -34,7 +34,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteBillInvoice' && isset($_
                         <th align='left'>#</th>
                         <th align='left'>Invoice Number</th>
                         <th align='left'>Invoice Date</th>
-                        <th align='left'>Supply Place</th>
+                        <th align='left'>Reference Number</th>
 						<th align='left'>Billing To</th>
 						<th align='left'>Billing State</th>
 						<th align='left'>Shipping To</th>

@@ -1,9 +1,5 @@
 <?php
     $obj_client = new client();
-    if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '' ) {
-        $obj_client->redirect(PROJECT_URL);
-        exit();
-    }
 
 	if(!$obj_client->can_read('client_invoice')) {
 
@@ -21,6 +17,7 @@
 
     $dataCurrentUserArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
     $rfInvoiceNumber = $obj_client->generateRFInvoiceNumber( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
+	$currentFinancialYear = $obj_client->generateFinancialYear();
 ?>
 <!--POPUP START HERE-->
 <div style="display:none;position:fixed;" id="popup" class="formpopup topanimation">
@@ -120,46 +117,51 @@
                         <div class="clear"></div>
 
 						<div class="formcol">
-                            <label>Invoice Serial Number <span class="starred">*</span></label>
-                            <input type="text" placeholder="Invoice Serial Number" readonly="true" class="readonly required" value="<?php echo $rfInvoiceNumber; ?>" name="invoice_serial_number" id="invoice_serial_number" />
+                            <label>Refund Voucher <span class="starred">*</span></label>
+                            <input type="text" placeholder="Refund Voucher" readonly="true" class="readonly required" data-bind="content" value="<?php echo $rfInvoiceNumber; ?>" name="invoice_serial_number" id="invoice_serial_number" />
                         </div>
 
                         <div class="formcol two">
                             <label>Invoice Date <span class="starred">*</span></label>
                             <input type="text" placeholder="YYYY-MM-DD" class="required" data-bind="date" name="invoice_date" id="invoice_date" value="<?php echo date("Y-m-d"); ?>" />
-                        </div>     
+                        </div>
+
+						<div class="formcol third">
+                            <label>Reference Number <span class="starred">*</span></label>
+                            <input type="text" placeholder="Invoice Reference Number" class="required" data-bind="content" name="invoice_reference_number" id="invoice_reference_number" />
+                        </div>
 
 						<div class="clear height10"></div>
 						
 						<div class="formcol">
-                            <label>Company Name <span class="starred">*</span></label>
-                            <input type="text" placeholder="Cyfuture India Pvt. Ltd" data-bind="content" readonly="true" class="readonly required" name="company_name" id="company_name" value="<?php if(isset($dataCurrentUserArr['data']->kyc->name)) { echo $dataCurrentUserArr['data']->kyc->name; } ?>" />
+                            <label>Supplier Name <span class="starred">*</span></label>
+                            <input type="text" placeholder="Cyfuture India Pvt. Ltd" readonly="true" class="readonly required" data-bind="content" name="company_name" id="company_name" value="<?php if(isset($dataCurrentUserArr['data']->kyc->name)) { echo $dataCurrentUserArr['data']->kyc->name; } ?>" />
                         </div>
-						
+
 						<div class="formcol two">
-                            <label>Company Address <span class="starred">*</span></label>
-                            <input type="text" placeholder="Cyfuture India Pvt. Ltd" data-bind="address" readonly="true" class="readonly required" name="company_address" id="company_address" value="<?php if(isset($dataCurrentUserArr['data']->kyc->registered_address)) { echo $dataCurrentUserArr['data']->kyc->registered_address; } ?>" />
+                            <label>Supplier Address <span class="starred">*</span></label>
+                            <input type="text" placeholder="Cyfuture India Pvt. Ltd" readonly="true" class="readonly required" data-bind="address" name="company_address" id="company_address" value="<?php if(isset($dataCurrentUserArr['data']->kyc->registered_address)) { echo $dataCurrentUserArr['data']->kyc->registered_address; } ?>" />
                         </div>
 
 						<div class="formcol third">
-                            <label>Company State <span class="starred">*</span></label>
-                            <input type="text" placeholder="Compant State" data-bind="content" readonly="true" class="readonly required" name="company_state" id="company_state" value="<?php if(isset($dataCurrentUserArr['data']->kyc->state_name)) { echo $dataCurrentUserArr['data']->kyc->state_name; } ?>" />
+                            <label>Supplier State <span class="starred">*</span></label>
+                            <input type="text" placeholder="Rajasthan" readonly="true" class="readonly required" data-bind="content" name="company_state" id="company_state" value="<?php if(isset($dataCurrentUserArr['data']->kyc->state_name)) { echo $dataCurrentUserArr['data']->kyc->state_name; } ?>" />
                         </div>
 						
 						<div class="clear height10"></div>
 
                         <div class="formcol">
-                            <label>Company GSTIN <span class="starred">*</span></label>
+                            <label>Supplier GSTIN <span class="starred">*</span></label>
                             <input type="text" placeholder="BYRAJ14N3KKT" name="company_gstin_number" data-bind="alphanum" readonly="true" class="readonly required" id="company_gstin_number" value="<?php if(isset($dataCurrentUserArr['data']->kyc->gstin_number)) { echo $dataCurrentUserArr['data']->kyc->gstin_number; } ?>" />
                         </div>
 
 						<div class="clear height10"></div>
-						
+
 						<div class="formcol">
                             <label>Tax Is Payable On Reverse Charge <span class="starred">*</span></label>
                             <div class="clear"></div>
-                            <input type="radio" name="tax_reverse_charge" value="1" checked="checked" /><span class="inputtxt">Yes</span>
-                            <input type="radio" name="tax_reverse_charge" value="0" /><span class="inputtxt">No</span>
+                            <input type="radio" name="tax_reverse_charge" value="1" /><span class="inputtxt">Yes</span>
+							<input type="radio" name="tax_reverse_charge" value="0" checked="checked" /><span class="inputtxt">No</span>
                         </div>
 						
 						<div class="formcol two">
@@ -168,19 +170,12 @@
 							<input type="hidden" name="place_of_supply" readonly="true" class="readonly required" id="place_of_supply" />
                         </div>
 
-						<div class="formcol third">
-                            <label>Canceled Invoice <span class="starred">*</span></label>
-                            <div class="clear"></div>
-                            <input type="radio" name="is_canceled" value="1" /><span class="inputtxt">Yes</span>
-                            <input type="radio" name="is_canceled" value="0" checked="checked" /><span class="inputtxt">No</span>
-                        </div>
-
 						<div class="clear height10"></div>
-						
+
 						<div class="formcol two">
                             <label>Receipt Voucher Number <span class="starred">*</span></label>
 							<select name='receipt_voucher_number' id='receipt_voucher_number' class="required" data-bind="content">
-								<?php $dataReceiptVoucherArrs = $obj_client->get_results("select serial_number, invoice_date, supply_place, is_canceled from ".$obj_client->getTableName('client_rv_invoice')." where status='1' and is_deleted='0' order by serial_number asc"); ?>
+								<?php $dataReceiptVoucherArrs = $obj_client->get_results("select serial_number, invoice_date, supply_place, is_canceled from ".$obj_client->getTableName('client_rv_invoice')." where status='1' and is_deleted='0' AND financial_year = '".$currentFinancialYear."' AND added_by = ".$obj_client->sanitize($_SESSION['user_detail']['user_id'])." order by serial_number asc"); ?>
 								<?php if(!empty($dataReceiptVoucherArrs)) { ?>
 									<option value=''>Select Receipt Voucher</option>
 									<?php foreach($dataReceiptVoucherArrs as $dataReceiptVoucherArr) { ?>
@@ -189,7 +184,7 @@
 								<?php } ?>
 							</select>
 						</div>
-						
+
 						<div class="formcol two">
                             <label>Receipt Voucher Date <span class="starred">*</span></label>
                             <input type="text" placeholder="YYYY-MM-DD" readonly="true" class="readonly required" data-bind="date" name="receipt_voucher_date" id="receipt_voucher_date" />
@@ -203,8 +198,8 @@
                                 <h4>Recipient Detail</h4>
                                 <div class="formcol">
                                     <label>Name <span class="starred">*</span></label>
-                                    <input type="text" placeholder="Name" data-bind="content" readonly="true" class="readonly required" name="billing_name" id="billing_name" />
-                                </div>
+                                    <input type="text" placeholder="Name" readonly="true" class="readonly required" data-bind="content" name="billing_name" id="billing_name" />
+								</div>
 
                                 <div class="formcol">
                                     <label>Address <span class="starred">*</span></label>
@@ -218,7 +213,7 @@
 
                                 <div class="formcol">
                                     <label>State Code <span class="starred">*</span></label>
-                                    <input type="text" placeholder="State Code" name='billing_state_code' readonly="true" class="readonly required" id='billing_state_code' />
+                                    <input type="text" placeholder="State Code" name='billing_state_code' readonly="true" class="readonly required" data-bind="content" id='billing_state_code' />
                                 </div>
 
                                 <div class="formcol">
@@ -251,7 +246,7 @@
 
                                 <div class="formcol">
                                     <label>State Code <span class="starred">*</span></label>
-                                    <input type="text" placeholder="State Code" name='shipping_state_code' readonly="true" class="readonly required" id='shipping_state_code' />
+                                    <input type="text" placeholder="State Code" name='shipping_state_code' readonly="true" data-bind="content" class="readonly required" id='shipping_state_code' />
                                 </div>
 
                                 <div class="formcol">
@@ -269,6 +264,7 @@
 								<th rowspan="2">S.No</th>
 								<th rowspan="2">Description<br/> of Goods/Services</th>
 								<th rowspan="2">HSN/SAC <br/>Code<br/>(GST)</th>
+								<th rowspan="2">Original Value</th>
 								<th rowspan="2">Refund Value</th>
 								<th colspan="2" style="border-bottom:1px solid #808080;">CGST</th>
 								<th colspan="2" style="border-bottom:1px solid #808080;">SGST</th>
@@ -289,19 +285,27 @@
 							</tr>
 
 							<tr>
-								<td colspan="12" align="right" class="lightyellow totalamount">Total Invoice Value <span>(In Figure)</span><div class="totalprice"><i class="fa fa-inr"></i><span class="invoicetotalprice">0.00</span></div></td>
+								<td colspan="13" align="right" class="lightyellow totalamount">Total Invoice Value <span>(In Figure)</span><div class="totalprice"><i class="fa fa-inr"></i><span class="invoicetotalprice">0.00</span></div></td>
 								<td class="lightyellow" align="left"></td>
 							</tr>
 
 							<tr>
-								<td colspan="12" align="right" class="lightpink fontbold totalamountwords" style="font-size:13px;">Total Invoice Value <small>(In Words):</small> <span class="totalpricewords">Nill</span></td>
+								<td colspan="13" align="right" class="lightpink fontbold totalamountwords" style="font-size:13px;">Total Invoice Value <small>(In Words):</small> <span class="totalpricewords">Nill</span></td>
 								<td class="lightpink" align="left"></td>
 							</tr>
 						</table>
 
                         <div class="clear height40"></div>
-                        <div class="adminformbxsubmit invoicebtn" style="width:100%;"> 
-                            <div class="tc">
+						
+						<div class="invoicebtn" style="width:30%;float:left;margin-right:10%;">
+							<div class="tc">
+								<textarea placeholder="Enter Description" name="description" id="description" data-bind="content"></textarea>
+							</div>
+							<div class="clear height20"></div>
+						</div>
+						
+                        <div class="invoicebtn" style="width:60%;float:left;">
+							<div class="tc">
                                 <a href="javascript:void(0)" class="btn txtorange orangeborder popupbtn">Add Item</a>
 								<a href="javascript:void(0)" class="btn txtorange orangeborder" id="save_add_new_invoice">Save & Add New Invoice</a>
                                 <input type='submit' name="save_invoice" id="save_invoice" class="btn txtorange orangeborder" value="Save Invoice">
@@ -396,7 +400,24 @@
            
             var receiptvoucherdate = $(this).find(':selected').attr("data-date");
             if(typeof(receiptvoucherdate) === "undefined") {
-                $("#receipt_voucher_date").val("");
+                
+				$("#receipt_voucher_date").val("");
+
+				$("#place_of_supply").val("");
+				$("#place_of_supply_state").val("");
+
+				$("#billing_name").val("");
+				$("#billing_address").val("");
+				$("#billing_state").val("");
+				$("#billing_state_code").val("");
+				$("#billing_gstin_number").val("");
+
+				$("#shipping_name").val("");
+				$("#shipping_address").val("");
+				$("#shipping_state").val("");
+				$("#shipping_state_code").val("");
+				$("#shipping_gstin_number").val("");
+				$(".invoice_tr").remove();
 				return false;
             } else {
                 $("#receipt_voucher_date").val(receiptvoucherdate);
@@ -427,7 +448,7 @@
 						$("#shipping_state").val(response.shipping_state_name);
 						$("#shipping_state_code").val(response.shipping_state_code);
 						$("#shipping_gstin_number").val(response.shipping_gstin_number);
-						
+
 						$(".gst-refund-vouchers").after(response.rv_items);
                     } else {
 						alert(response.status);
@@ -598,12 +619,12 @@
         
         /* calculate total invoice value function */
         function totalInvoiceValueCalculation() {
-            
+
             var totalInvoiceValue = 0.00;
             $( "tr.invoice_tr" ).each(function( index ) {
-            
+
                 var rowid = $(this).attr("data-row-id");
-                
+
                 if(
                     $("#invoice_tr_"+rowid+"_itemid").val() != '' && 
 					$("#invoice_tr_"+rowid+"_taxablevalue").val() != '' && 
@@ -619,17 +640,17 @@
                     totalInvoiceValue += taxablevalue + cgstamount + sgstamount + igstamount + cessamount;
                 }
             });
-            
+
             totalFinalInvoiceValue = totalInvoiceValue.toFixed(2);
             $( ".totalprice .invoicetotalprice" ).text(totalFinalInvoiceValue);
-            
+
             $.ajax({
                 data: {totalInvoiceValue:totalFinalInvoiceValue, action:"numberToWords"},
                 dataType: 'json',
                 type: 'post',
                 url: "<?php echo PROJECT_URL; ?>/?ajax=client_convert_number_to_words",
                 success: function(response){
-                    
+
                     if(response.status == "success") {
                         $( ".totalamountwords .totalpricewords" ).text(response.invoicevalue);
                     } else {

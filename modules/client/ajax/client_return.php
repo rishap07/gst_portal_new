@@ -14,7 +14,7 @@ extract($_POST);
 if(date('Y-m-d')>=date('Y-m')."-01" && date('Y-m-d')<=date('Y-m-t'))
 {
     $f_year =date('Y')."-".(date('Y')+1);
-    if(date('Y-m')<=4)
+    if(date('m')<4)
     {
        $f_year =  (date('Y')-1)."-".(date('Y'));
     }

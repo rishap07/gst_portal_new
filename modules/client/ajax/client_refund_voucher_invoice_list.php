@@ -12,8 +12,8 @@ $obj_client = new client();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('ci.invoice_id', 'ci.serial_number', 'ci.is_tax_payable', 'ci.invoice_date', 'ci.receipt_voucher_number', 'ci.receipt_voucher_date', 'ci.is_canceled', 'ci.invoice_total_value');
-$aSearchColumns = array('ci.serial_number', 'ci.invoice_date', 'ci.receipt_voucher_number', 'ci.receipt_voucher_date', 'ci.invoice_total_value');
+$aColumns = array('ci.invoice_id', 'ci.serial_number', 'ci.reference_number', 'ci.is_tax_payable', 'ci.invoice_date', 'ci.receipt_voucher_number', 'ci.receipt_voucher_date', 'ci.is_canceled', 'ci.invoice_total_value');
+$aSearchColumns = array('ci.serial_number', 'ci.reference_number', 'ci.invoice_date', 'ci.receipt_voucher_number', 'ci.receipt_voucher_date', 'ci.invoice_total_value');
 $sIndexColumn = "invoice_id";
 
 /* DB table to use */
@@ -137,6 +137,7 @@ if(isset($rResult) && !empty($rResult)) {
         $row[] = $temp_x;
 		$row[] = utf8_decode($aRow->serial_number);
         $row[] = utf8_decode($aRow->invoice_date);
+		$row[] = utf8_decode($aRow->reference_number);
 		$row[] = utf8_decode($aRow->receipt_voucher_number);
 		$row[] = utf8_decode($aRow->receipt_voucher_date);
 		$row[] = utf8_decode($sumQuery->refund_amount);

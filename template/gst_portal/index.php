@@ -12,9 +12,7 @@ if (isset($_COOKIE['preserveKey']) && $_COOKIE['preserveKey'] != '') {
         $_SESSION['user_detail']['user_group'] = $userData['data']->user_group;
         $obj_login->redirect(PROJECT_URL . "?page=dashboard");
     }
-} 
-else if (isset($_SESSION['user_detail']['user_id']) && intval($_SESSION['user_detail']['user_id']) > 0 && $_SESSION['user_detail']['user_id'] != '')
-{
+} else if (isset($_SESSION['user_detail']['user_id']) && intval($_SESSION['user_detail']['user_id']) > 0 && $_SESSION['user_detail']['user_id'] != '') {
     $userData = $obj_login->getUserDetailsById($_SESSION['user_detail']['user_id']);
     $_SESSION['user_detail']['user_id'] = $userData['data']->user_id;
     $_SESSION['user_detail']['username'] = $userData['data']->username;

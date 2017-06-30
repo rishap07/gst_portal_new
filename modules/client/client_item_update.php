@@ -1,9 +1,5 @@
 <?php
 $obj_client = new client();
-if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '' ) {
-    $obj_client->redirect(PROJECT_URL);
-    exit();
-}
 
 if(!$obj_client->can_read('client_master_item')) {
 
@@ -40,7 +36,7 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'update' && isset($_GET['id'])
 		$obj_client->redirect(PROJECT_URL."/?page=client_item_list");
 		exit();
 	}
-	
+
     if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
         
         $obj_client->setError('Invalid access to files');

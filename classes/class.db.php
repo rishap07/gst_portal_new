@@ -337,8 +337,8 @@ class db {
     /* Function to Update Data in a Table */
 
     public function update($table, $dataArr = array(), $where = array(), $in = '') {
-//        $this->pr($dataArr);
-        if (empty($dataArr)) {
+		//$this->pr($dataArr); $this->pr($where); die;		
+		if (empty($dataArr)) {
             return false;
         }
         $sql = "UPDATE " . $table . " SET ";

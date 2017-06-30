@@ -18,12 +18,12 @@ if(isset($_GET['ajax']) && $_GET['ajax'] == "client_get_receiver" && isset($_GET
 	if(count($clientGetReceivers) > 0) {
 
 		foreach($clientGetReceivers as $clientGetReceiver) {
-			
+
 			$item[$counter]['receiver_id'] = $clientGetReceiver->receiver_id;
 			$item[$counter]['label'] = $clientGetReceiver->name;
 			$item[$counter]['value'] = $clientGetReceiver->name;
 			$item[$counter]['gstid'] = $clientGetReceiver->gstid;
-			$item[$counter]['address'] = $clientGetReceiver->address;
+			$item[$counter]['address'] = html_entity_decode($clientGetReceiver->address);
 			$item[$counter]['state_id'] = $clientGetReceiver->state_id;
 			$item[$counter]['state_name'] = $clientGetReceiver->state_name;
 			$item[$counter]['state_code'] = $clientGetReceiver->state_code;

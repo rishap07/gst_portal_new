@@ -814,6 +814,17 @@ class common extends db {
         return $dataArr;
     }
     
+    /* generate financial year for client */
+    public function generateFinancialYear() {
+
+        $financial_year = date('Y') . "-" . date('Y', strtotime('+1 years'));
+        if(date('n') < 4) {
+           $financial_year = date('Y', strtotime('-1 years')) . "-" . date('Y');
+        }
+
+        return $financial_year;
+    }
+    
     /* generate invoice number for client */
     public function generateInvoiceNumber($clientId) {
         
@@ -832,9 +843,10 @@ class common extends db {
     /* generate bill invoice number for client */
     public function generateBillInvoiceNumber($clientId) {
         
-        $query = "select invoice_id  from ".$this->tableNames['client_bos_invoice']." where 1=1 AND added_by=" . $clientId;
+        $currentFinancialYear = $this->generateFinancialYear();
+        $query = "select invoice_id  from ".$this->tableNames['client_bos_invoice']." where 1=1 AND financial_year = '".$currentFinancialYear."' AND added_by=" . $clientId;
         $invoices = $this->get_results($query);
-        
+
         if( !empty($invoices) ) {
 
             $nextInvoice = count($invoices) + 1;
@@ -847,7 +859,8 @@ class common extends db {
     /* generate receipt voucher invoice number for client */
     public function generateRVInvoiceNumber($clientId) {
         
-        $query = "select invoice_id  from ".$this->tableNames['client_rv_invoice']." where 1=1 AND added_by=" . $clientId;
+        $currentFinancialYear = $this->generateFinancialYear();
+        $query = "select invoice_id  from ".$this->tableNames['client_rv_invoice']." where 1=1 AND financial_year = '".$currentFinancialYear."' AND added_by=" . $clientId;
         $invoices = $this->get_results($query);
         
         if( !empty($invoices) ) {
@@ -862,7 +875,8 @@ class common extends db {
     /* generate refund voucher invoice number for client */
     public function generateRFInvoiceNumber($clientId) {
         
-        $query = "select invoice_id  from ".$this->tableNames['client_rf_invoice']." where 1=1 AND added_by=" . $clientId;
+        $currentFinancialYear = $this->generateFinancialYear();
+        $query = "select invoice_id  from ".$this->tableNames['client_rf_invoice']." where 1=1 AND financial_year = '".$currentFinancialYear."' AND added_by=" . $clientId;
         $invoices = $this->get_results($query);
         
         if( !empty($invoices) ) {
@@ -877,7 +891,8 @@ class common extends db {
     /* generate payment voucher invoice number for client */
     public function generatePVInvoiceNumber($clientId) {
         
-        $query = "select invoice_id  from ".$this->tableNames['client_pv_invoice']." where 1=1 AND added_by=" . $clientId;
+        $currentFinancialYear = $this->generateFinancialYear();
+        $query = "select invoice_id  from ".$this->tableNames['client_pv_invoice']." where 1=1 AND financial_year = '".$currentFinancialYear."' AND added_by=" . $clientId;
         $invoices = $this->get_results($query);
         
         if( !empty($invoices) ) {
@@ -901,6 +916,22 @@ class common extends db {
             return "IRT-" . str_pad($nextInvoice, 12, "0", STR_PAD_LEFT);
         } else {
             return "IRT-000000000001";
+        }
+    }
+    
+    /* generate special tax invoice number for client */
+    public function generateSTInvoiceNumber($clientId) {
+        
+        $currentFinancialYear = $this->generateFinancialYear();
+        $query = "select invoice_id  from ".$this->tableNames['client_st_invoice']." where 1=1 AND financial_year = '".$currentFinancialYear."' AND added_by=" . $clientId;
+        $invoices = $this->get_results($query);
+
+        if( !empty($invoices) ) {
+
+            $nextInvoice = count($invoices) + 1;
+            return "IST-" . str_pad($nextInvoice, 12, "0", STR_PAD_LEFT);
+        } else {
+            return "IST-000000000001";
         }
     }
 

@@ -157,7 +157,7 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
                         <?php } else { ?>
 
                             <div class="formcol third">
-                                <label>Photograph <span class="starred">*</span></label>
+                                <label>Proof of identity <span class="starred">*</span></label>
                                 <div class="clear"></div>
                                 <input type="file" name="proof_photograph" class="required" id="proof_photograph" />
                             </div>

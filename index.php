@@ -67,7 +67,7 @@ if ($pagename == '' && !isset($_REQUEST['ajax'])) {
             
             include_once PROJECT_ROOT . "/modules/" . $name[0] . "/ajax/" . $pagename . ".php";
         } else {
-            
+
 			if (method_exists($db_obj, $_REQUEST['ajax'])) {
                 echo json_encode($db_obj->$_REQUEST['ajax']());
             } else {

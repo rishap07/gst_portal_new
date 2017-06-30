@@ -67,7 +67,7 @@ if(isset($_GET['id']))
                         </div>
                         <div class="formcol third">
                             <label>Address<span class="starred">*</span></label>
-                            <input type="text" placeholder="Address" name='address'  data-bind="content" class="required" value='<?php if(isset($_POST['address'])){ echo $_POST['address'];}else if(isset($dataArr[0]->address)){ echo $dataArr[0]->address; } ?>'/>
+                            <input type="text" placeholder="Address" name='address' data-bind="content" class="required" value='<?php if(isset($_POST['address'])){ echo $_POST['address'];}else if(isset($dataArr[0]->address)){ echo $dataArr[0]->address; } ?>'/>
                         </div>
                         <div class="formcol">
                             <label>State<span class="starred">*</span></label>

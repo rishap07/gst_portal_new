@@ -1,5 +1,11 @@
 <?php
 $obj_client = new client();
+
+//$obj_mpdf = new mPDF();
+//$obj_mpdf->SetHeader('Document Title');
+//$obj_mpdf->WriteHTML('Hello World');
+//$obj_mpdf->Output('D.pdf');
+
 if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '' ) {
     $obj_client->redirect(PROJECT_URL);
     exit();
@@ -19,7 +25,8 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteInvoice' && isset($_GET[
 <div class="admincontainer greybg">
     <div class="formcontainer">
         <div>
-            <a class='addnew' href='<?php echo PROJECT_URL;?>/?page=client_create_invoice'>Add New Invoice</a>
+            <a class='addnew' href='<?php echo PROJECT_URL;?>/?page=client_create_invoice'>Add Invoice</a>
+			<a style="margin-right:10px;" class='addnew' href='<?php echo PROJECT_URL;?>/?page=client_create_export_invoice'>Add Export Invoice</a>
         </div>
         <h1>Tax Invoice</h1>
         <hr class="headingborder">
@@ -36,12 +43,9 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteInvoice' && isset($_GET[
 						<th align='left'>Invoice Type</th>
 						<th align='left'>Invoice Nature</th>
                         <th align='left'>Invoice Date</th>
-                        <th align='left'>Supply Place</th>
-                        <th align='left'>Reverse Charge Tax</th>
+                        <th align='left'>Supply Type</th>
 						<th align='left'>Billing To</th>
-						<th align='left'>Billing State</th>
 						<th align='left'>Shipping To</th>
-						<th align='left'>Shipping State</th>
 						<th align='left'>Total<br><i class="fa fa-inr"></i></th>
 						<th align='left'>Canceled</th>
                         <!--<th align='left'>Action</th>-->
@@ -73,9 +77,6 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteInvoice' && isset($_GET[
 						{"bSortable": false},
                         {"bSortable": false},
                         {"bSortable": false},
-                        {"bSortable": false},
-						{"bSortable": false},
-						{"bSortable": false},
 						{"bSortable": false},
 						{"bSortable": false},
 						{"bSortable": false},

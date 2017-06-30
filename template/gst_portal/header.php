@@ -1,6 +1,3 @@
-<?php
-//$db_obj->pr($_SESSION);
-?>
 <!DOCTYPE html>
 <html lang="En">
     <head>
@@ -149,19 +146,31 @@
                     
 					<li class="two"><a href="javascript:void(0)"><span class="iconpic"></span>Invoices<strong class="fa fa-plus" aria-hidden="true"></strong></a>
                         <ul class="inner-content-list">
-                            <?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_invoice_list'; ?>">All Tax Invoices</a></li><?php } ?>
-                            <?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_invoice'; ?>">Add New Tax Invoice</a></li><?php } ?>
+                            
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_upload_invoice'; ?>">Upload Tax Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_invoice_list'; ?>">All Tax Invoices</a></li><?php } ?>
+                            <?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_invoice'; ?>">Add Tax Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_export_invoice'; ?>">Add Tax Export Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_bill_of_supply_invoice_list'; ?>">All Bill Of Supply Invoice</a></li><?php } ?>
-							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_bill_of_supply_invoice'; ?>">Add New Bill Of Supply Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_bill_of_supply_invoice'; ?>">Add Bill Of Supply Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_receipt_voucher_invoice_list'; ?>">All Receipt Voucher Invoice</a></li><?php } ?>
-							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_receipt_voucher_invoice'; ?>">Add New Receipt Voucher Invoice</a></li><?php } ?>
-							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_refund_voucher_invoice'; ?>">Add New Refund Voucher Invoice</a></li><?php } ?>
-							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_payment_voucher_invoice'; ?>">Add New Payment Voucher Invoice</a></li><?php } ?>
-							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_revised_tax_invoice'; ?>">Add New Revised Tax Invoice</a></li><?php } ?>
-							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_special_tax_invoice'; ?>">Add New Special Cases Tax Invoice</a></li><?php } ?>
-							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_transportation_of_goods_invoice'; ?>">Add New Transportation of Goods Invoice</a></li><?php } ?>
-                        </ul>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_receipt_voucher_invoice'; ?>">Add Receipt Voucher Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_refund_voucher_invoice_list'; ?>">All Refund Voucher Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_refund_voucher_invoice'; ?>">Add Refund Voucher Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_payment_voucher_invoice_list'; ?>">All Payment Voucher Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_payment_voucher_invoice'; ?>">Add Payment Voucher Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_revised_tax_invoice_list'; ?>">All Revised Tax Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_revised_tax_invoice'; ?>">Add Revised Tax Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_special_tax_invoice_list'; ?>">All Special Cases Tax Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_special_tax_invoice'; ?>">Add Special Cases Tax Invoice</a></li><?php } ?>
+							
+						</ul>
+                    </li>
+					
+					<li class="two"><a href="javascript:void(0)"><span class="iconpic"></span>Return<strong class="fa fa-plus" aria-hidden="true"></strong></a>
+                        <ul class="inner-content-list">
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_return'; ?>">Compile Returns</a></li><?php } ?>
+						</ul>
                     </li>
 
                     <!-- /* comment menus */

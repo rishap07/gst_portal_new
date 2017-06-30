@@ -172,9 +172,6 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	$dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
 	$dataArr['added_date'] = date('Y-m-d H:i:s');
 	
-	print_r($dataArr);
-	die;
-	
 	if($obj_client->getErrorMessage() != '') {
 		
 		$result['status'] = "error";

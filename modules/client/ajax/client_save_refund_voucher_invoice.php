@@ -16,6 +16,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 
 	/* get current user data */
 	$dataCurrentUserArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
+	$currentFinancialYear = $obj_client->generateFinancialYear();
 
 	$params = array();
 	parse_str($_POST['invoiceData'], $params);
@@ -27,17 +28,18 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 		die;
 	}	
 
+	$dataArr['reference_number'] = isset($params['invoice_reference_number']) ? $params['invoice_reference_number'] : '';
 	$dataArr['invoice_date'] = isset($params['invoice_date']) ? $params['invoice_date'] : '';
 	$dataArr['receipt_voucher_number'] = isset($params['receipt_voucher_number']) ? $params['receipt_voucher_number'] : '';
 	$dataArr['receipt_voucher_date'] = isset($params['receipt_voucher_date']) ? $params['receipt_voucher_date'] : '';
 	$dataArr['is_tax_payable'] = isset($params['tax_reverse_charge']) ? $params['tax_reverse_charge'] : '';
-	$dataArr['is_canceled'] = isset($params['is_canceled']) ? $params['is_canceled'] : '';
+	$dataArr['description'] = isset($params['description']) ? trim($params['description']) : '';
 
 	/* validate invoice data */
 	$obj_client->validateClientInvoice($dataArr);
-	
+
 	$company_state = $dataCurrentUserArr['data']->kyc->state_id;
-	$rvrow =  $obj_client->get_row("select supply_place from " . $obj_client->getTableName('client_rv_invoice') . " where serial_number = '" . $dataArr['receipt_voucher_number'] . "' AND added_by = ". $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	$rvrow =  $obj_client->get_row("select supply_place from " . $obj_client->getTableName('client_rv_invoice') . " where serial_number = '" . $dataArr['receipt_voucher_number'] . "' AND financial_year = '".$currentFinancialYear."' AND added_by = ". $obj_client->sanitize($_SESSION['user_detail']['user_id']));
 	$supply_place = $rvrow->supply_place;
 
 	$invoiceItemArray = array();
@@ -112,10 +114,11 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	}
 	
 	$dataArr['invoice_total_value'] = $invoiceTotalAmount;
+	$dataArr['financial_year'] = $obj_client->generateFinancialYear();
 	$dataArr['status'] = 1;
 	$dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
 	$dataArr['added_date'] = date('Y-m-d H:i:s');
-	
+
 	if($obj_client->getErrorMessage() != '') {
 		
 		$result['status'] = "error";

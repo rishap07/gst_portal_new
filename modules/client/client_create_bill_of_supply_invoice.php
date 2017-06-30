@@ -1,9 +1,5 @@
 <?php
     $obj_client = new client();
-    if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '' ) {
-        $obj_client->redirect(PROJECT_URL);
-        exit();
-    }
 
 	if(!$obj_client->can_read('client_invoice')) {
 
@@ -11,7 +7,7 @@
 		$obj_client->redirect(PROJECT_URL."/?page=dashboard");
 		exit();
 	}
-	
+
 	if(!$obj_client->can_create('client_invoice')) {
 		
 		$obj_client->setError($obj_client->getValMsg('can_create'));
@@ -25,12 +21,12 @@
 <!--POPUP START HERE-->
 <div style="display:none;position:fixed;" id="popup" class="formpopup topanimation">
     <div class="popupform">
-        
+
         <p style="text-align:center;"> <a class="closebtn" id="btnclose" ><img src="image/icon-close.png" alt="#"></a> </p>
         <h3 class="txtorange">ADD ITEM</h3>
-        
+
         <div class="adminformbx">
-            
+
             <form name="add-item-form" id="add-item-form" method="POST">
                 
                 <div class="formcol">
@@ -101,12 +97,12 @@
 <!--========================admincontainer start=========================-->
 <div class="admincontainer greybg">
     <div class="formcontainer" style="padding:20px;">
-        
+
         <div class="errorValidationContainer"></div>
 
         <h1>Generate Bill of Supply Invoice</h1>
         <hr class="headingborder">
-        
+
         <form name="create-invoice" id="create-invoice" method="POST">
             <div class="adminformbx">
 
@@ -121,58 +117,41 @@
 
 						<div class="formcol">
                             <label>Invoice Serial Number <span class="starred">*</span></label>
-                            <input type="text" placeholder="Invoice Serial Number" readonly="true" class="readonly required" value="<?php echo $billInvoiceNumber; ?>" name="invoice_serial_number" id="invoice_serial_number" />
+                            <input type="text" placeholder="Invoice Serial Number" readonly="true" class="readonly required" data-bind="content" value="<?php echo $billInvoiceNumber; ?>" name="invoice_serial_number" id="invoice_serial_number" />
                         </div>
 
                         <div class="formcol two">
                             <label>Invoice Date <span class="starred">*</span></label>
                             <input type="text" placeholder="YYYY-MM-DD" class="required" data-bind="date" name="invoice_date" id="invoice_date" value="<?php echo date("Y-m-d"); ?>" />
                         </div>
+						
+						<div class="formcol third">
+                            <label>Reference Number <span class="starred">*</span></label>
+                            <input type="text" placeholder="Invoice Reference Number" class="required" data-bind="content" name="invoice_reference_number" id="invoice_reference_number" />
+                        </div>
 
 						<div class="clear height10"></div>
 						
 						<div class="formcol">
-                            <label>Company Name <span class="starred">*</span></label>
-                            <input type="text" placeholder="Cyfuture India Pvt. Ltd" data-bind="content" readonly="true" class="readonly required" name="company_name" id="company_name" value="<?php if(isset($dataCurrentUserArr['data']->kyc->name)) { echo $dataCurrentUserArr['data']->kyc->name; } ?>" />
+                            <label>Supplier Name <span class="starred">*</span></label>
+                            <input type="text" placeholder="Cyfuture India Pvt. Ltd" readonly="true" class="readonly required" data-bind="content" name="company_name" id="company_name" value="<?php if(isset($dataCurrentUserArr['data']->kyc->name)) { echo $dataCurrentUserArr['data']->kyc->name; } ?>" />
                         </div>
-						
+
 						<div class="formcol two">
-                            <label>Company Address <span class="starred">*</span></label>
-                            <input type="text" placeholder="Cyfuture India Pvt. Ltd" data-bind="address" readonly="true" class="readonly required" name="company_address" id="company_address" value="<?php if(isset($dataCurrentUserArr['data']->kyc->registered_address)) { echo $dataCurrentUserArr['data']->kyc->registered_address; } ?>" />
+                            <label>Supplier Address <span class="starred">*</span></label>
+                            <input type="text" placeholder="Cyfuture India Pvt. Ltd" readonly="true" class="readonly required" data-bind="address" name="company_address" id="company_address" value="<?php if(isset($dataCurrentUserArr['data']->kyc->registered_address)) { echo $dataCurrentUserArr['data']->kyc->registered_address; } ?>" />
                         </div>
 
 						<div class="formcol third">
-                            <label>Company State <span class="starred">*</span></label>
-                            <input type="text" placeholder="Compant State" data-bind="content" readonly="true" class="readonly required" name="company_state" id="company_state" value="<?php if(isset($dataCurrentUserArr['data']->kyc->state_name)) { echo $dataCurrentUserArr['data']->kyc->state_name; } ?>" />
+                            <label>Supplier State <span class="starred">*</span></label>
+                            <input type="text" placeholder="Rajasthan" readonly="true" class="readonly required" data-bind="content" name="company_state" id="company_state" value="<?php if(isset($dataCurrentUserArr['data']->kyc->state_name)) { echo $dataCurrentUserArr['data']->kyc->state_name; } ?>" />
                         </div>
 						
 						<div class="clear height10"></div>
 
                         <div class="formcol">
-                            <label>Company GSTIN <span class="starred">*</span></label>
+                            <label>Supplier GSTIN <span class="starred">*</span></label>
                             <input type="text" placeholder="BYRAJ14N3KKT" name="company_gstin_number" data-bind="alphanum" readonly="true" class="readonly required" id="company_gstin_number" value="<?php if(isset($dataCurrentUserArr['data']->kyc->gstin_number)) { echo $dataCurrentUserArr['data']->kyc->gstin_number; } ?>" />
-                        </div>
-
-						<div class="clear height10"></div>
-
-						<div class="formcol">
-                            <label>Place Of Supply <span class="starred">*</span></label>
-							<select name='place_of_supply' id='place_of_supply' class='required'>
-								<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
-								<?php if(!empty($dataSupplyStateArrs)) { ?>
-									<option value=''>Select Place Of Supply</option>
-									<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
-									<option value='<?php echo $dataSupplyStateArr->state_id; ?>' data-code="<?php echo $dataSupplyStateArr->state_code;?>"><?php echo $dataSupplyStateArr->state_name . " (" . $dataSupplyStateArr->state_tin . ")"; ?></option>
-									<?php } ?>
-								<?php } ?>
-							</select>
-						</div>
-
-						<div class="formcol two">
-                            <label>Canceled Invoice <span class="starred">*</span></label>
-                            <div class="clear"></div>
-                            <input type="radio" name="is_canceled" value="1" /><span class="inputtxt">Yes</span>
-                            <input type="radio" name="is_canceled" value="0" checked="checked" /><span class="inputtxt">No</span>
                         </div>
 
                         <div class="clear height20"></div>
@@ -183,12 +162,12 @@
                                 <h4>Recipient Detail</h4>
                                 <div class="formcol">
                                     <label>Name <span class="starred">*</span></label>
-                                    <input type="text" placeholder="Name" data-bind="content" class="required" name="billing_name" id="billing_name" />
+                                    <input type="text" placeholder="Name" class="required" data-bind="content" name="billing_name" id="billing_name" />
                                 </div>
 
                                 <div class="formcol">
                                     <label>Address <span class="starred">*</span></label>
-                                    <textarea placeholder="Address" data-bind="address" class="required" name="billing_address" id="billing_address"></textarea>
+                                    <textarea placeholder="Address" class="required" data-bind="address" name="billing_address" id="billing_address"></textarea>
                                 </div>
 
                                 <div class="formcol">
@@ -206,12 +185,12 @@
 
                                 <div class="formcol">
                                     <label>State Code <span class="starred">*</span></label>
-                                    <input type="text" placeholder="State Code" name='billing_state_code' readonly="true" class="readonly required" id='billing_state_code' />
+                                    <input type="text" placeholder="State Code" readonly="true" class="readonly required" data-bind="content" name='billing_state_code' id='billing_state_code' />
                                 </div>
 
                                 <div class="formcol">
-                                    <label>GSTIN</label>
-                                    <input type="text" placeholder="GSTIN" name='billing_gstin_number' data-bind="alphanum" id='billing_gstin_number' />
+                                    <label>GSTIN/UIN</label>
+                                    <input type="text" placeholder="GSTIN/UIN" data-bind="alphanum" name='billing_gstin_number' id='billing_gstin_number' />
                                 </div>
                                 
                                 <div class="clear"></div>
@@ -224,12 +203,12 @@
 
                                 <div class="formcol">
                                     <label>Name <span class="starred">*</span></label>
-                                    <input type="text" placeholder="Name" data-bind="content" class="required" name="shipping_name" id="shipping_name" />
+                                    <input type="text" placeholder="Name" class="required" data-bind="content" name="shipping_name" id="shipping_name" />
                                 </div>
 
                                 <div class="formcol">
                                     <label>Address <span class="starred">*</span></label>
-                                    <textarea placeholder="Address" data-bind="address" class="required" name="shipping_address" id="shipping_address"></textarea>
+                                    <textarea placeholder="Address" class="required" data-bind="address" name="shipping_address" id="shipping_address"></textarea>
                                 </div>
 
                                 <div class="formcol">
@@ -247,12 +226,12 @@
 
                                 <div class="formcol">
                                     <label>State Code <span class="starred">*</span></label>
-                                    <input type="text" placeholder="State Code" name='shipping_state_code' readonly="true" class="readonly required" id='shipping_state_code' />
+                                    <input type="text" placeholder="State Code" readonly="true" class="readonly required" data-bind="content" name='shipping_state_code' id='shipping_state_code' />
                                 </div>
 
                                 <div class="formcol">
                                     <label>GSTIN</label>
-                                    <input type="text" placeholder="GSTIN" name='shipping_gstin_number' data-bind="alphanum" id='shipping_gstin_number' />
+                                    <input type="text" placeholder="GSTIN" data-bind="alphanum" name='shipping_gstin_number' id='shipping_gstin_number' />
                                 </div>
 
                                 <div class="clear"></div>
@@ -260,72 +239,56 @@
                         </div>
 
                         <div class="clear height20"></div>
-                        <div class="tableresponsive">
-							<table width="100%" border="0" cellspacing="0" cellpadding="4" class="tablecontent invoicetable">
-								<tr>
-									<th rowspan="2">S.No</th>
-									<th rowspan="2">Description<br/> of Goods/Services</th>
-									<th rowspan="2">HSN/SAC <br/>Code<br/>(GST)</th>
-									<th rowspan="2">Qty</th>
-									<th rowspan="2">Unit</th>
-									<th rowspan="2">Rate <br/><span style="font-family: open_sans; font-size:11px;">per item</span></th>
-									<th rowspan="2">Total</th>
-									<th rowspan="2">Discount(%)</th>
-									<th rowspan="2">Taxable<br/>value</th>
-									<th colspan="2" style="border-bottom:1px solid #808080;">CGST</th>
-									<th colspan="2" style="border-bottom:1px solid #808080;">SGST</th>
-									<th colspan="2" style="border-bottom:1px solid #808080;">IGST</th>
-									<th colspan="2" style="border-bottom:1px solid #808080;">CESS</th>
-									<th style="border-bottom:1px solid #808080;"></th>
-								</tr>
-								<tr>
-									<th>Rate(%)</th>
-									<th>Amount</th>
-									<th>Rate(%)</th>
-									<th>Amount</th>
-									<th>Rate(%)</th>
-									<th>Amount</th>
-									<th>Rate(%)</th>
-									<th>Amount</th>
-									<th></th>
-								</tr>
+						
+						<table width="100%" border="0" cellspacing="0" cellpadding="4" class="tablecontent invoicetable">
+							<tr>
+								<th>S.No</th>
+								<th>Description<br/> of Goods/Services</th>
+								<th>HSN/SAC <br/>Code<br/>(GST)</th>
+								<th>Qty</th>
+								<th>Unit</th>
+								<th>Rate <br/><span style="font-family: open_sans; font-size:11px;">per item</span></th>
+								<th>Total</th>
+								<th>Discount(%)</th>
+								<th>Net Total<br/>value</th>
+								<th style="border-bottom:1px solid #808080;"></th>
+							</tr>
 
-								<tr class="invoice_tr" data-row-id="1" id="invoice_tr_1">
-									<td><span class="serialno" id="invoice_tr_1_serialno" style="width:20px;">1</span><input type="hidden" id="invoice_tr_1_itemid" name="invoice_itemid[]" /></td>
-									<td id="invoice_td_1_itemname"><input type="text" id="invoice_tr_1_itemname" name="invoice_itemname[]" class="inptxt autocompleteitemname required" placeholder="Enter Item" style="width:120px;" /></td>
-									<td><input type="text" id="invoice_tr_1_hsncode" name="invoice_hsncode[]" readonly="true" class="readonly" placeholder="HSN Code" style="width:100px;" /></td>
-									<td><input type="number" min="1" id="invoice_tr_1_quantity" name="invoice_quantity[]" class="required invoiceQuantity inptxt" value="0" placeholder="0" style="width:40px;" /></td>
-									<td><input type="text" id="invoice_tr_1_unit" name="invoice_unit[]" readonly="true" class="readonly pricinput" placeholder="Unit" style="width:40px;" /></td>
-									<td><div class="inptxt padrgt0" style="width:70px;"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_rate" name="invoice_rate[]" readonly="true" class="readonly pricinput" placeholder="0.00" /></div></td>
-									<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_total" name="invoice_total[]" readonly="true" class="readonly pricinput" placeholder="0.00" /></div></td>
-									<td><input type="text" class="inptxt invoiceDiscount" id="invoice_tr_1_discount" name="invoice_discount[]" data-bind="decimal" value="0" placeholder="0" style="width:90%;" /></td>
-									<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="readonly pricinput" placeholder="0.00" /></div></td>
-									<td><input type="text" id="invoice_tr_1_cgstrate" name="invoice_cgstrate[]" readonly="true" class="readonly pricinput" placeholder="0.00" style="width:40px;" /></td>
-									<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_cgstamount" name="invoice_cgstamount[]" readonly="true" class="readonly pricinput" placeholder="0.00" /></div></td>
-									<td><input type="text" id="invoice_tr_1_sgstrate" name="invoice_sgstrate[]" readonly="true" class="readonly pricinput" placeholder="0.00" style="width:90%;" /></td>
-									<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_sgstamount" name="invoice_sgstamount[]" readonly="true" class="readonly pricinput" placeholder="0.00" /></div></td>
-									<td><input type="text" id="invoice_tr_1_igstrate" name="invoice_igstrate[]" readonly="true" class="readonly pricinput" placeholder="0.00" style="width:90%;" /></td>
-									<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_igstamount" name="invoice_igstamount[]" readonly="true" class="readonly pricinput" placeholder="0.00" /></div></td>
-									<td><input type="text" id="invoice_tr_1_cessrate" name="invoice_cessrate[]" readonly="true" class="readonly pricinput" placeholder="0.00" style="width:90%;" /></td>
-									<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_cessamount" name="invoice_cessamount[]" readonly="true" class="readonly pricinput" placeholder="0.00" /></div></td>	
-									<td nowrap="nowrap" class="icon"><a class="addMoreInvoice" href="javascript:void(0)"><div class="tooltip"><i class="fa fa-plus-circle addicon"></i><span class="tooltiptext">Add More</span></div></a></td>
-								</tr>
+							<tr class="invoice_tr" data-row-id="1" id="invoice_tr_1">
+								<td><span class="serialno" id="invoice_tr_1_serialno" style="width:20px;">1</span><input type="hidden" id="invoice_tr_1_itemid" name="invoice_itemid[]" /></td>
+								<td id="invoice_td_1_itemname"><input type="text" id="invoice_tr_1_itemname" name="invoice_itemname[]" class="inptxt autocompleteitemname required" placeholder="Enter Item" style="width:120px;" /></td>
+								<td><input type="text" id="invoice_tr_1_hsncode" name="invoice_hsncode[]" readonly="true" class="readonly" placeholder="HSN Code" style="width:100px;" /></td>
+								<td><input type="number" min="1" id="invoice_tr_1_quantity" name="invoice_quantity[]" class="required invoiceQuantity inptxt" value="0" placeholder="0" style="width:40px;" /></td>
+								<td><input type="text" id="invoice_tr_1_unit" name="invoice_unit[]" readonly="true" class="readonly pricinput" placeholder="Unit" style="width:40px;" /></td>
+								<td><div class="inptxt padrgt0" style="width:70px;"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_rate" name="invoice_rate[]" readonly="true" class="readonly pricinput" placeholder="0.00" /></div></td>
+								<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_total" name="invoice_total[]" readonly="true" class="readonly pricinput" placeholder="0.00" /></div></td>
+								<td><input type="text" class="inptxt invoiceDiscount" id="invoice_tr_1_discount" name="invoice_discount[]" data-bind="decimal" value="0" placeholder="0" style="width:90%;" /></td>
+								<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="readonly pricinput" placeholder="0.00" /></div></td>									
+								<td nowrap="nowrap" class="icon"><a class="addMoreInvoice" href="javascript:void(0)"><div class="tooltip"><i class="fa fa-plus-circle addicon"></i><span class="tooltiptext">Add More</span></div></a></td>
+							</tr>
 
-								<tr>
-									<td colspan="17" align="right" class="lightyellow totalamount">Total Invoice Value <span>(In Figure)</span><div class="totalprice"><i class="fa fa-inr"></i><span class="invoicetotalprice">0.00</span></div></td>
-									<td class="lightyellow" align="left"></td>
-								</tr>
+							<tr>
+								<td colspan="9" align="right" class="lightyellow totalamount">Total Invoice Value <span>(In Figure)</span><div class="totalprice"><i class="fa fa-inr"></i><span class="invoicetotalprice">0.00</span></div></td>
+								<td class="lightyellow" align="left"></td>
+							</tr>
 
-								<tr>
-									<td colspan="17" align="right" class="lightpink fontbold totalamountwords" style="font-size:13px;">Total Invoice Value <small>(In Words):</small> <span class="totalpricewords">Nill</span></td>
-									<td class="lightpink" align="left"></td>
-								</tr>
-							</table>
-                        </div>
+							<tr>
+								<td colspan="9" align="right" class="lightpink fontbold totalamountwords" style="font-size:13px;">Total Invoice Value <small>(In Words):</small> <span class="totalpricewords">Nill</span></td>
+								<td class="lightpink" align="left"></td>
+							</tr>
+						</table>
 
                         <div class="clear height40"></div>
-                        <div class="adminformbxsubmit invoicebtn" style="width:100%;"> 
-                            <div class="tc">
+						
+						<div class="invoicebtn" style="width:30%;float:left;margin-right:10%;">
+							<div class="tc">
+								<textarea placeholder="Enter Description" name="description" id="description" data-bind="content"></textarea>
+							</div>
+							<div class="clear height20"></div>
+						</div>
+						
+                        <div class="invoicebtn" style="width:60%;float:left;">
+							<div class="tc">
                                 <a href="javascript:void(0)" class="btn txtorange orangeborder popupbtn">Add Item</a>
 								<a href="javascript:void(0)" class="btn txtorange orangeborder" id="save_add_new_invoice">Save & Add New Invoice</a>
                                 <input type='submit' name="save_invoice" id="save_invoice" class="btn txtorange orangeborder" value="Save Invoice">
@@ -402,19 +365,12 @@
         });
 		/* end of submit add new item form */
 
-
-		/* Supplier State OR Company State */
-        var supplierStateId = '<?php echo $dataCurrentUserArr['data']->kyc->state_id; ?>';
-
 		/* invoice date */
         $("#invoice_date").datepicker({
             changeMonth: true,
             changeYear: true,
             dateFormat: 'yy-mm-dd'
         });
-
-		/* select2 js for place of supply OR receiver state */
-        $("#place_of_supply").select2();
 
 		/* select2 js for billing state */
         $("#billing_state").select2();
@@ -433,12 +389,7 @@
                 $("#billing_state_code").val(ui.item.state_code);
                 $("#billing_gstin_number").val(ui.item.gstid);
                 $("#billing_state").select2();
-				
-				if($("#place_of_supply").val() == '') {
-					$("#place_of_supply").val(ui.item.state_id);
-					$("#place_of_supply").select2();
-				}
-				
+
 				/* calculate row invoice and invoice total on state change */
                 rowInvoiceCalculationOnStateChnage();
             }
@@ -456,12 +407,7 @@
                 $("#shipping_state_code").val(ui.item.state_code);
                 $("#shipping_gstin_number").val(ui.item.gstid);
                 $("#shipping_state").select2();
-				
-				if($("#place_of_supply").val() == '') {
-					$("#place_of_supply").val(ui.item.state_id);
-					$("#place_of_supply").select2();
-				}
-				
+
                 /* calculate row invoice and invoice total on state change */
                 rowInvoiceCalculationOnStateChnage();
             }
@@ -484,11 +430,6 @@
                 $('#shipping_state').attr('disabled', true);
                 $("#shipping_gstin_number").prop("readonly", true);
                 $("#shipping_state").select2();
-
-				if($("#place_of_supply").val() == '') {
-					$("#place_of_supply").val($("#billing_state").val());
-					$("#place_of_supply").select2();
-				}
             } else {
                 
                 $("#shipping_name").prop("readonly", false);
@@ -497,7 +438,7 @@
                 $("#shipping_gstin_number").prop("readonly", false);
                 $("#shipping_state").select2();
             }
-            
+
             /* calculate row invoice and invoice total on state change */
             rowInvoiceCalculationOnStateChnage();
         });
@@ -505,7 +446,7 @@
 
 		/* Billing state code */
         $("#billing_state").change(function () {
-           
+
             var statecode = $(this).find(':selected').attr("data-code");
             if(typeof(statecode) === "undefined") {
                 $("#billing_state_code").val("");
@@ -519,32 +460,17 @@
             
             /* update state code */
             var statecode = $(this).find(':selected').attr("data-code");
-			var stateid = $(this).find(':selected').val();
             if(typeof(statecode) === "undefined") {
 				$("#shipping_state_code").val("");
             } else {
-                
 				$("#shipping_state_code").val(statecode);
-				
-				if($("#place_of_supply").val() == '') {
-					$("#place_of_supply").val(stateid);
-					$("#place_of_supply").select2();
-				}
             }
             /* end of update state code */
-            
+
             /* calculate row invoice and invoice total on state change */
             rowInvoiceCalculationOnStateChnage();
         });
         /* end of on chnage shipping state */
-
-		/* on chnage place of receiver state */
-        $("#create-invoice").on("change", "#place_of_supply", function(){
-            
-			/* calculate row invoice and invoice total on receiver state change */
-            rowInvoiceCalculationOnStateChnage();
-        });
-        /* end of on chnage place of receiver state */
 
         /* on quantity chnage of item */
         $(".invoicetable").on("input", ".invoiceQuantity", function(){
@@ -554,7 +480,7 @@
             rowInvoiceCalculation(currentTrItemId, rowid);
         });
         /* end of on quantity chnage of item */
-		
+
 		/* on discount chnage of item */
         $(".invoicetable").on("input", ".invoiceDiscount", function(){
             
@@ -574,7 +500,7 @@
         $(".invoicetable").on("keypress", ".autocompleteitemname", function(){
 
             var rowid = $(this).parent().parent().attr("data-row-id");
-            
+
             $( "#invoice_tr_"+rowid+"_itemname" ).autocomplete({
                 minLength: 1,
                 source: "<?php echo PROJECT_URL; ?>/?ajax=client_get_item",
@@ -616,15 +542,7 @@
             $("#invoice_tr_"+parentTrId+"_total").val("");
             $("#invoice_tr_"+parentTrId+"_discount").val(0);
             $("#invoice_tr_"+parentTrId+"_taxablevalue").val("");
-            $("#invoice_tr_"+parentTrId+"_cgstrate").val("");
-            $("#invoice_tr_"+parentTrId+"_cgstamount").val("");
-            $("#invoice_tr_"+parentTrId+"_sgstrate").val("");
-            $("#invoice_tr_"+parentTrId+"_sgstamount").val("");
-            $("#invoice_tr_"+parentTrId+"_igstrate").val("");
-            $("#invoice_tr_"+parentTrId+"_igstamount").val("");
-			$("#invoice_tr_"+parentTrId+"_cessrate").val("");
-            $("#invoice_tr_"+parentTrId+"_cessamount").val("");
-			
+
             /* call function of total invoice */
             totalInvoiceValueCalculation();
         });
@@ -646,15 +564,7 @@
                 newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+nexttrid+'_total" name="invoice_total[]" readonly="true" class="readonly pricinput" placeholder="0.00" /></div></td>';
                 newtr += '<td><input type="text" class="inptxt invoiceDiscount" id="invoice_tr_'+nexttrid+'_discount" name="invoice_discount[]" data-bind="decimal" value="0" placeholder="0" style="width:90%;" /></td>';
                 newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+nexttrid+'_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="readonly pricinput" placeholder="0.00" /></div></td>';
-                newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_cgstrate" name="invoice_cgstrate[]" readonly="true" class="readonly pricinput" placeholder="0.00" style="width:40px;" /></td>';
-                newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+nexttrid+'_cgstamount" name="invoice_cgstamount[]" readonly="true" class="readonly pricinput" placeholder="0.00" /></div></td>';
-                newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_sgstrate" name="invoice_sgstrate[]" readonly="true" class="readonly pricinput" placeholder="0.00" style="width:90%;" /></td>';
-                newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+nexttrid+'_sgstamount" name="invoice_sgstamount[]" readonly="true" class="readonly pricinput" placeholder="0.00" /></div></td>';
-                newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_igstrate" name="invoice_igstrate[]" readonly="true" class="readonly pricinput" placeholder="0.00" style="width:90%;" /></td>';
-                newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+nexttrid+'_igstamount" name="invoice_igstamount[]" readonly="true" class="readonly pricinput" placeholder="0.00" /></div></td>';
-				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_cessrate" name="invoice_cessrate[]" readonly="true" class="readonly pricinput" placeholder="0.00" style="width:90%;" /></td>';
-                newtr += '<td><div style="width:70px;" class="inptxt padrgt0"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+nexttrid+'_cessamount" name="invoice_cessamount[]" readonly="true" class="readonly pricinput" placeholder="0.00" /></div></td>';
-                newtr += '<td nowrap="nowrap" class="icon"><a class="deleteInvoice" data-invoice-id="'+nexttrid+'" href="javascript:void(0)"><div class="tooltip"><i class="fa fa-trash deleteicon"></i><span class="tooltiptext">Delete</span></div></a></td>';
+				newtr += '<td nowrap="nowrap" class="icon"><a class="deleteInvoice" data-invoice-id="'+nexttrid+'" href="javascript:void(0)"><div class="tooltip"><i class="fa fa-trash deleteicon"></i><span class="tooltiptext">Delete</span></div></a></td>';
                 newtr += '</tr>';
 
 			/* insert new row */
@@ -701,7 +611,7 @@
 		
 		/* save and add new invoice */
 		$("#save_add_new_invoice").click(function(){
-			
+
 			var flag = 0;
 			var mesg = {};
             if (vali.validate(mesg, 'create-invoice')) {
@@ -783,9 +693,7 @@
         /* calculate row invoice function */
         function rowInvoiceCalculation(itemid, rowid) {
 
-			var receiverStateId = $("#place_of_supply").val();
-
-            /* fetch item details by its id */
+			/* fetch item details by its id */
             $.ajax({
                 data: {itemId:itemid, action:"getItemDetail"},
                 dataType: 'json',
@@ -808,45 +716,7 @@
 
                     var currentTrDiscountAmount = (currentTrDiscount/100) * currentTotal;
                     var currentTrTaxableValue = (currentTotal - currentTrDiscountAmount).toFixed(2);
-
-                    $("#invoice_tr_"+rowid+"_taxablevalue").val(currentTrTaxableValue);
-
-					if(supplierStateId === receiverStateId) {
-
-						$("#invoice_tr_"+rowid+"_cgstrate").val(response.csgt_tax_rate);
-						$("#invoice_tr_"+rowid+"_sgstrate").val(response.sgst_tax_rate);
-						$("#invoice_tr_"+rowid+"_cessrate").val(response.cess_tax_rate);
-						$("#invoice_tr_"+rowid+"_igstrate").val(0.00);
-						$("#invoice_tr_"+rowid+"_igstamount").val(0.00);
-						
-						var cgstTax = parseFloat(response.csgt_tax_rate);
-						var cgstTaxAmount = (cgstTax/100) * currentTrTaxableValue;
-						$("#invoice_tr_"+rowid+"_cgstamount").val(cgstTaxAmount.toFixed(2));
-
-						var sgstTax = parseFloat(response.sgst_tax_rate);
-						var sgstTaxAmount = (sgstTax/100) * currentTrTaxableValue;
-						$("#invoice_tr_"+rowid+"_sgstamount").val(sgstTaxAmount.toFixed(2));
-						
-						var cessTax = parseFloat(response.cess_tax_rate);
-						var cessTaxAmount = (cessTax/100) * currentTrTaxableValue;
-						$("#invoice_tr_"+rowid+"_cessamount").val(cessTaxAmount.toFixed(2));
-					} else {
-
-						$("#invoice_tr_"+rowid+"_cgstrate").val(0.00);
-						$("#invoice_tr_"+rowid+"_sgstrate").val(0.00);
-						$("#invoice_tr_"+rowid+"_cgstamount").val(0.00);
-						$("#invoice_tr_"+rowid+"_sgstamount").val(0.00);
-						$("#invoice_tr_"+rowid+"_igstrate").val(response.igst_tax_rate);
-						$("#invoice_tr_"+rowid+"_cessrate").val(response.cess_tax_rate);
-
-						var igstTax = parseFloat(response.igst_tax_rate);
-						var igstTaxAmount = (igstTax/100) * currentTrTaxableValue;
-						$("#invoice_tr_"+rowid+"_igstamount").val(igstTaxAmount.toFixed(2));
-						
-						var cessTax = parseFloat(response.cess_tax_rate);
-						var cessTaxAmount = (cessTax/100) * currentTrTaxableValue;
-						$("#invoice_tr_"+rowid+"_cessamount").val(cessTaxAmount.toFixed(2));
-					}
+                    $("#invoice_tr_"+rowid+"_taxablevalue").val(currentTrTaxableValue);				
                     /* end of calculation */
 
                     /* call function of total invoice */
@@ -859,9 +729,9 @@
         
         /* calculate total invoice value function */
         function totalInvoiceValueCalculation() {
-            
-            var totalInvoiceValue = 0.00;    
-            $( "tr.invoice_tr" ).each(function( index ) {
+
+            var totalInvoiceValue = 0.00;
+			$( "tr.invoice_tr" ).each(function( index ) {
             
                 var rowid = $(this).attr("data-row-id");
                 
@@ -873,12 +743,7 @@
                 ) {
                     
                     var taxablevalue = parseFloat($("#invoice_tr_"+rowid+"_taxablevalue").val());
-                    var cgstamount = parseFloat($("#invoice_tr_"+rowid+"_cgstamount").val());
-                    var sgstamount = parseFloat($("#invoice_tr_"+rowid+"_sgstamount").val());
-                    var igstamount = parseFloat($("#invoice_tr_"+rowid+"_igstamount").val());
-					var cessamount = parseFloat($("#invoice_tr_"+rowid+"_cessamount").val());
-
-                    totalInvoiceValue += taxablevalue + cgstamount + sgstamount + igstamount + cessamount;
+                    totalInvoiceValue += taxablevalue;
                 }
             });
             

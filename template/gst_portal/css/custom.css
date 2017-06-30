@@ -75,6 +75,29 @@
 .inovicedeatil .select2-container {
 	max-width:335px !important;
 }
+.formcol.formcolfull {
+	float: left;
+    width: 100%;
+    margin-right: 0%;
+}
+.receiptvouchernumber {
+	display:none;
+}
+.advancecol {
+	display:none;
+}
+.ecommerceinformation {
+	display:none;
+}
+.rvcamount {
+	display:none;
+}
+.tdsamount {
+	display:none;
+}
+.tcsamount {
+	display:none;
+}
 
 @media only screen and (max-width: 600px) {
 	.columns {

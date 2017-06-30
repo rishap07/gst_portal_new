@@ -19,7 +19,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteRVInvoice' && isset($_GE
 <div class="admincontainer greybg">
     <div class="formcontainer">
         <div>
-            <a class='addnew' href='<?php echo PROJECT_URL;?>/?page=client_create_receipt_voucher_invoice'>Add New Receipt Voucher Invoice</a>
+            <a class='addnew' href='<?php echo PROJECT_URL;?>/?page=client_create_receipt_voucher_invoice'>Add Receipt Voucher Invoice</a>
         </div>
         <h1>Receipt Voucher Invoice</h1>
         <hr class="headingborder">
@@ -34,6 +34,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteRVInvoice' && isset($_GE
                         <th align='left'>#</th>
                         <th align='left'>Invoice Number</th>
                         <th align='left'>Invoice Date</th>
+						<th align='left'>Reference Number</th>
                         <th align='left'>Supply Place</th>
 						<th align='left'>Billing To</th>
 						<th align='left'>Billing State</th>
@@ -69,6 +70,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteRVInvoice' && isset($_GE
                         {"bSortable": false},
                         {"bSortable": false},
                         {"bSortable": false},
+						{"bSortable": false},
 						{"bSortable": false},
 						{"bSortable": false},
 						{"bSortable": false},

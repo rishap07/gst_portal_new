@@ -326,11 +326,11 @@ final class master extends validation {
             'address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Address',
             'state' => 'required|#|lable_name:State'
         );
-        
+
         if( array_key_exists("gstid",$dataArr) ) {
             $rules['gstid'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/||min:15||max:15|#|lable_name:GSTID';
         }
-        
+
         $valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
             $err_arr = $valid->allErrors();
@@ -340,7 +340,7 @@ final class master extends validation {
         }
         return true;
     }
-    
+
     final public function updateReceiver() {
 
         $dataArr = $this->getReceiverData();
