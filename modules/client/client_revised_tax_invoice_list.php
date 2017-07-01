@@ -34,6 +34,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteRTInvoice' && isset($_GE
                         <th align='left'>#</th>
                         <th align='left'>Invoice Number</th>
                         <th align='left'>Invoice Date</th>
+						<th align='left'>Reference Number</th>
 						<th align='left'>Document Nature</th>
 						<th align='left'>Corresp. Type</th>
 						<th align='left'>Corresp. Invoice Number</th>
@@ -70,6 +71,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteRTInvoice' && isset($_GE
                         {"bSortable": false},
                         {"bSortable": false},
                         {"bSortable": false},
+						{"bSortable": false},
 						{"bSortable": false},
 						{"bSortable": false},
 						{"bSortable": false},

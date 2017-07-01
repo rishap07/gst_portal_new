@@ -415,7 +415,7 @@ class cms_validate {
 
     protected static function invoicedocumentnatureValidation($input, $name, $lableName) {
         if (self::isBlankField($input) === false) {
-            if (preg_match("/^(?:creditnote|debitnote)$/", $input)) {
+            if (preg_match("/^(?:revisedtaxinvoice|creditnote|debitnote)$/", $input)) {
                 return true;
             } else {
                 self::setMessage($name, 'invoicedocumentnature', $lableName . " should be valid");
@@ -452,9 +452,9 @@ class cms_validate {
     }
 
     protected static function rangeValidation($input, $param, $name, $lableName) {
+        
         if (self::isBlankField($input) === false) {
             $range = explode(",", $param);
-            //$length=strlen($input);
             if (($input >= $range[0]) && ($input <= $range[1])) {
                 return true;
             } else {
@@ -465,7 +465,9 @@ class cms_validate {
     }
 
     protected static function patternValidation($input, $param, $name, $lableName) {
-        if (self::isBlankField($input) === false) {        
+
+        if (self::isBlankField($input) === false) {
+
             if (preg_match($param, $input)) {
                 return true;
             } else {

@@ -84,6 +84,7 @@ vali = {
         reg_match['emailnew'] = /^[a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/;
         reg_match['pubname'] = /^[ A-Za-z0-9\'\"&().-]*$/
         reg_match['pancard'] = /^(([A-Z]){5}([0-9]){4}([A-Z]){1})*$/
+		reg_match['gstin'] = /^(([0-9]){2}([A-Z]){5}([0-9]){4}([A-Z]){1}([A-Z0-9]){1}([Z]){1}([A-Z0-9]){1})+$/
         reg_match['address'] = /^[ a-zA-Z0-9/\n/\r\'.,/()-:]*$/
         reg_match['comname'] = /^[ a-zA-Z0-9!\'\"#$%&()*,-./:;=?@\\_]*$/
         reg_match['cardno'] = /^[ a-zA-Z0-9\/\-\(\)]*$/
@@ -117,6 +118,7 @@ vali = {
         err_msg['itemDesc'] = "Can contain alphanumeric and ()-.,/ & + @ _%";
         err_msg['address'] = "Can contain alphanumeric and ' . , / () -: ";
         err_msg['pancard'] = "Plese Enter Correct Pan Card Format";
+		err_msg['gstin'] = "Plese Enter Correct GSTIN Format";
         err_msg['vemodel'] = "Can contain alphanumeric and / - .";
         err_msg['comname'] = "Can contain alphanumeric and ! \' \" # $ % & ( ) * , - . / : ; = ? @ \\ _";
         err_msg['cardno'] = "Can contain alphanumeric and \/ \- \(\)";
@@ -191,19 +193,23 @@ vali = {
 
 // THE SCRIPT THAT CHECKS IF THE KEY PRESSED IS A NUMERIC OR DECIMAL VALUE.
 function validateInvoiceDiscount(evt, element) {
-	
+
 	var charCode = evt.which;
 	if ( (charCode != 46 || $(element).val().indexOf('.') != -1) && (charCode < 48 || charCode > 57) && charCode != 8 && charCode != 0 ) {
 		return false;
 	}
-	
+
 	if($(element).val().indexOf('.') != -1) {
 
 		if( $(element).val().substring($(element).val().indexOf('.')).length > 2 ) {
 			return false;
 		}
 	}
-	
+
+	if(parseFloat($(element).val()) > 100) {
+		$(element).val(100);
+	}
+
 	return true;
 }
 

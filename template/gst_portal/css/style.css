@@ -236,7 +236,7 @@ p, ul { margin:0px; padding:0px;}
 .topanimation{position:relative;animation:animatetop 0.4s}
 @keyframes animatetop{from{top:-300px;opacity:0} to{top:0;opacity:1}}
 .black_overlay {background-color: black;height: 100%;left: 0;opacity: 0.7;overflow: hidden;position: fixed;top: 0;width: 100%;z-index: 888888888;}
-.popupcontainer { width: 500px; position: absolute;right: 0; left:0px; margin: 0 auto;  z-index: 2147483647;}
+.popupcontainer { width: 500px; position: absolute;right: 0; left:0px; margin: 0 auto;  z-index: 2147483646;}
 .popupcontainer  .popupform { background: #fff;box-shadow: 0 0 10px #000;left: 0; padding: 10px; padding:30px; position:relative; top:150px; height:200px;}
 .popupcontainer  .popupform .formcol { width:100%; float:none;}
 .popupcontainer  .popupform  .closebtn, .formpopup  .popupform .closebtn  { position:absolute; right:10px; top:10px; cursor:pointer;}
@@ -285,7 +285,7 @@ p, ul { margin:0px; padding:0px;}
 .tooltip .tooltiptext { visibility: hidden; width: 90px; background-color: #000;color: #fff;text-align: center;border-radius: 6px; padding: 5px 0;position: absolute;z-index: 1; bottom: 125%;left: 50%;margin-left: -45px;opacity: 0;transition: opacity 1s;font-size:12px;}
 .tooltip .tooltiptext::after { content: ""; position: absolute;top: 100%;left: 50%; margin-left: -5px;border-width: 5px;border-style: solid; border-color: #000 transparent transparent transparent;}
 .tooltip:hover .tooltiptext { visibility: visible;opacity: 1;}
-.formpopup { width: 800px; position: absolute;right: 0; left:0px; margin: 0 auto;  z-index: 2147483647;}
+.formpopup { width: 800px; position: absolute;right: 0; left:0px; margin: 0 auto;  z-index: 2147483646;}
 .formpopup  .popupform { background: #fff;box-shadow: 0 0 10px #000;left: 0; padding: 10px; padding:30px; position:relative; top:150px; height:auto;}
 .formpopup  .popupform .formcol { min-height:auto;}
 .formpopup  .popupform h3 { border-bottom:1px solid #ccc; font-family: opensans_bold; font-weight:normal; padding:0 0 10px 0; font-size:18px; margin:0px 0 15px 0; }

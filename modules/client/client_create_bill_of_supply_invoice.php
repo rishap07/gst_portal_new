@@ -100,7 +100,7 @@
 
         <div class="errorValidationContainer"></div>
 
-        <h1>Generate Bill of Supply Invoice</h1>
+        <h1>Bill of Supply</h1>
         <hr class="headingborder">
 
         <form name="create-invoice" id="create-invoice" method="POST">

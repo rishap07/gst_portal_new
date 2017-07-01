@@ -20,7 +20,7 @@ if(isset($_POST['itemData']) && isset($_POST['action']) && $_POST['action'] == "
 	$_POST['item_unit'] = $params['item_unit'];
 	$_POST['unit_price'] = $params['unit_price'];
 	$_POST['status'] = $params['status'];
-	
+
 	if($obj_client->addClientItem()) {
 		$result['status'] = "success";
 		$result['message'] = $obj_client->getValMsg('iteminserted');
@@ -28,7 +28,7 @@ if(isset($_POST['itemData']) && isset($_POST['action']) && $_POST['action'] == "
 		$result['status'] = "error";
 		$result['message'] = $obj_client->getValMsg('failed');
 	}
-	
+
 	$obj_client->unsetMessage();
 }
 

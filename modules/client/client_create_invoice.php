@@ -1,9 +1,5 @@
 <?php
     $obj_client = new client();
-    if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '' ) {
-        $obj_client->redirect(PROJECT_URL);
-        exit();
-    }
 
 	if(!$obj_client->can_read('client_invoice')) {
 
@@ -25,7 +21,7 @@
 <!--POPUP START HERE-->
 <div style="display:none;position:fixed;" id="popup" class="formpopup topanimation">
     <div class="popupform">
-        
+
         <p style="text-align:center;"> <a class="closebtn" id="btnclose" ><img src="image/icon-close.png" alt="#"></a> </p>
         <h3 class="txtorange">ADD ITEM</h3>
         
@@ -34,33 +30,26 @@
             <form name="add-item-form" id="add-item-form" method="POST">
                 
                 <div class="formcol">
-                    <label>Item<span class="starred">*</span></label>
+                    <label>Item <span class="starred">*</span></label>
                     <input type="text" placeholder="Item name" name='item_name' id="item_name" data-bind="content" class="required" value='<?php if(isset($_POST['item_name'])){ echo $_POST['item_name']; } ?>' />
                 </div>
-                
-                <div class="formcol two">
-                    <label>Category<span class="starred">*</span></label>
-                    <select name="item_category" id="item_category" class="required" data-bind="numnzero">
-                        <?php $dataItemArrs = $obj_client->getMasterItems("item_id,item_name,hsn_code,(case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "is_deleted='0' AND status='1'"); ?>
-                        <?php if(!empty($dataItemArrs)) { ?>
-                            <option value=''>Select Category</option>
-                            <?php foreach($dataItemArrs as $dataItem) { ?>
-                                <option value='<?php echo $dataItem->item_id; ?>' data-hsncode="<?php echo $dataItem->hsn_code; ?>" <?php if(isset($_POST['item_category']) && $_POST['item_category'] === $dataItem->item_id){ echo 'selected="selected"'; } ?>><?php echo $dataItem->item_name; ?></option>
-                            <?php } ?>
-                        <?php } ?>
-                    </select>
-                </div>
+				
+				<div class="formcol two">
+					<label>Category <span class="starred">*</span></label>
+					<input type="text" placeholder="Item Category" name='item_category_name' id="item_category_name" data-bind="content" class="required" />
+					<input type="hidden" name='item_category' id="item_category" class="required" />
+				</div>                
 				
 				<div class="formcol third">
-                    <label>HSN Code</label>
+                    <label>HSN/SAC Code </label>
                     <div class="clear"></div>
-                    <div class="readonly-section" id="item_hsn_code"><?php echo "HSN Code"; ?></div>
+                    <div class="readonly-section" id="item_hsn_code"><?php echo "HSN/SAC Code"; ?></div>
                 </div>
 
 				<div class="clear"></div>
                 
                 <div class="formcol">
-                    <label>Unit<span class="starred">*</span></label>
+                    <label>Unit <span class="starred">*</span></label>
                     <select name="item_unit" id="item_unit" class="required" data-bind="numnzero">
                         <?php $dataUnitArrs = $obj_client->getMasterUnits("unit_id,unit_name,unit_code,(case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "is_deleted='0' AND status='1'"); ?>
                         <?php if(!empty($dataUnitArrs)) { ?>
@@ -74,7 +63,7 @@
                 
                 <div class="formcol two">
                     <label>Unit Price(Rs.)<span class="starred">*</span></label>
-                    <input type="text" placeholder="Item Unit Price" name='unit_price' id="unit_price" class="required" data-bind="demical" />
+                    <input type="text" placeholder="Item Unit Price" name='unit_price' id="unit_price" class="required itemUnitPrice" data-bind="demical" />
                 </div>
 
                 <div class="formcol third">
@@ -136,7 +125,7 @@
 						
 						<div class="formcol two">
                             <label>Reference Number <span class="starred">*</span></label>
-                            <input type="text" placeholder="Invoice Reference Number" class="required" data-bind="content" name="invoice_reference_number" id="invoice_reference_number" />
+                            <input type="text" placeholder="Invoice Reference Number" class="required" data-bind="content" value="<?php echo $invoiceNumber; ?>" name="invoice_reference_number" id="invoice_reference_number" />
                         </div>
 
 						<div class="clear height10"></div>
@@ -149,18 +138,18 @@
                         <div class="formcol two">
                             <label>Invoice Date <span class="starred">*</span></label>
                             <input type="text" placeholder="YYYY-MM-DD" class="required" data-bind="date" name="invoice_date" id="invoice_date" value="<?php echo date("Y-m-d"); ?>" />
-                        </div>     
+                        </div>
 
 						<div class="clear height10"></div>
-						
+
 						<div class="formcol">
                             <label>Supplier Name <span class="starred">*</span></label>
                             <input type="text" placeholder="Cyfuture India Pvt. Ltd" data-bind="content" readonly="true" class="readonly required" name="company_name" id="company_name" value="<?php if(isset($dataCurrentUserArr['data']->kyc->name)) { echo $dataCurrentUserArr['data']->kyc->name; } ?>" />
                         </div>
-						
+
 						<div class="formcol two">
                             <label>Supplier Address <span class="starred">*</span></label>
-                            <input type="text" placeholder="Cyfuture India Pvt. Ltd" data-bind="address" readonly="true" class="readonly required" name="company_address" id="company_address" value="<?php if(isset($dataCurrentUserArr['data']->kyc->registered_address)) { echo $dataCurrentUserArr['data']->kyc->registered_address; } ?>" />
+                            <input type="text" placeholder="Cyfuture India Pvt. Ltd" data-bind="content" readonly="true" class="readonly required" name="company_address" id="company_address" value="<?php if(isset($dataCurrentUserArr['data']->kyc->registered_address)) { echo $dataCurrentUserArr['data']->kyc->registered_address; } ?>" />
                         </div>
 
 						<div class="formcol third">
@@ -172,7 +161,7 @@
 
                         <div class="formcol">
                             <label>Supplier GSTIN <span class="starred">*</span></label>
-                            <input type="text" placeholder="BYRAJ14N3KKT" name="company_gstin_number" data-bind="alphanum" readonly="true" class="readonly required" id="company_gstin_number" value="<?php if(isset($dataCurrentUserArr['data']->kyc->gstin_number)) { echo $dataCurrentUserArr['data']->kyc->gstin_number; } ?>" />
+                            <input type="text" placeholder="BYRAJ14N3KKT" name="company_gstin_number" data-bind="gstin" readonly="true" class="readonly required" id="company_gstin_number" value="<?php if(isset($dataCurrentUserArr['data']->kyc->gstin_number)) { echo $dataCurrentUserArr['data']->kyc->gstin_number; } ?>" />
                         </div>
 
 						<div class="clear height10"></div>
@@ -203,7 +192,7 @@
 
                         <div class="formcol ecommerceinformation">
                             <label>Ecommerce GSTIN <span class="starred">*</span></label>
-                            <input type="text" placeholder="22ABCDE1234A1Z9" name="ecommerce_gstin_number" id="ecommerce_gstin_number" data-bind="alphanum" />
+                            <input type="text" placeholder="22ABCDE1234A1Z9" name="ecommerce_gstin_number" id="ecommerce_gstin_number" data-bind="gstin" />
                         </div>
 						
 						<div class="formcol two ecommerceinformation">
@@ -246,7 +235,7 @@
 
                                 <div class="formcol">
                                     <label>Address <span class="starred">*</span></label>
-                                    <textarea placeholder="Address" data-bind="address" class="required" name="billing_address" id="billing_address"></textarea>
+                                    <textarea placeholder="Address" data-bind="content" class="required" name="billing_address" id="billing_address"></textarea>
                                 </div>
 
                                 <div class="formcol">
@@ -269,7 +258,7 @@
 
                                 <div class="formcol">
                                     <label>GSTIN</label>
-                                    <input type="text" placeholder="GSTIN" name='billing_gstin_number' data-bind="alphanum" id='billing_gstin_number' />
+                                    <input type="text" placeholder="GSTIN" name='billing_gstin_number' data-bind="gstin" id='billing_gstin_number' />
                                 </div>
 
                                 <div class="clear"></div>
@@ -287,7 +276,7 @@
 
                                 <div class="formcol">
                                     <label>Address <span class="starred">*</span></label>
-                                    <textarea placeholder="Address" data-bind="address" class="required" name="shipping_address" id="shipping_address"></textarea>
+                                    <textarea placeholder="Address" data-bind="content" class="required" name="shipping_address" id="shipping_address"></textarea>
                                 </div>
 
                                 <div class="formcol">
@@ -310,7 +299,7 @@
 
                                 <div class="formcol">
                                     <label>GSTIN</label>
-                                    <input type="text" placeholder="GSTIN" name='shipping_gstin_number' data-bind="alphanum" id='shipping_gstin_number' />
+                                    <input type="text" placeholder="GSTIN" name='shipping_gstin_number' data-bind="gstin" id='shipping_gstin_number' />
                                 </div>
 
                                 <div class="clear"></div>
@@ -352,7 +341,7 @@
 								<tr class="invoice_tr" data-row-id="1" id="invoice_tr_1">
 									<td><span class="serialno" id="invoice_tr_1_serialno" style="width:20px;">1</span><input type="hidden" id="invoice_tr_1_itemid" name="invoice_itemid[]" /></td>
 									<td id="invoice_td_1_itemname"><input type="text" id="invoice_tr_1_itemname" name="invoice_itemname[]" class="inptxt autocompleteitemname required" placeholder="Enter Item" style="width:120px;" /></td>
-									<td><input type="text" id="invoice_tr_1_hsncode" name="invoice_hsncode[]" readonly="true" class="readonly" placeholder="HSN Code" style="width:100px;" /></td>
+									<td><input type="text" id="invoice_tr_1_hsncode" name="invoice_hsncode[]" readonly="true" class="readonly" placeholder="HSN/SAC Code" style="width:100px;" /></td>
 									<td><input type="number" min="1" id="invoice_tr_1_quantity" name="invoice_quantity[]" class="required invoiceQuantity inptxt" value="0" placeholder="0" style="width:40px;" /></td>
 									<td><input type="text" id="invoice_tr_1_unit" name="invoice_unit[]" readonly="true" class="readonly pricinput" placeholder="Unit" style="width:40px;" /></td>
 									<td><div class="inptxt padrgt0" style="width:70px;"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_1_rate" name="invoice_rate[]" readonly="true" class="readonly pricinput" placeholder="0.00" /></div></td>
@@ -464,19 +453,24 @@
             $("#fade").hide();
 		});
 		/* end of close add new item popup */
-		
-		/* change of item category */
-		$("#item_category").change(function () {
 
-            var hsncode = $(this).find(':selected').attr("data-hsncode");
-            if(typeof(hsncode) === "undefined") {
-                $("#item_hsn_code").text("HSN Code");
-            } else {
-                $("#item_hsn_code").text(hsncode);
+		/* Get HSN/SAC Code */
+        $( "#item_category_name" ).autocomplete({
+            minLength: 3,
+            source: "<?php echo PROJECT_URL; ?>/?ajax=client_hsnsac_code",
+            select: function( event, ui ) {
+				$("#item_category").val(ui.item.item_id);
+				$("#item_hsn_code").text(ui.item.hsn_code);
             }
         });
-		/* end of change of item category */
-        
+        /* End of Get HSN/SAC Code */
+
+		/* validate item unit price allow only numbers or decimals */
+        $(".popupform").on("keypress input paste", ".itemUnitPrice", function (event) {
+            return validateInvoiceAmount(event, this);
+        });
+        /* end of validate item unit price allow only numbers or decimals */
+
 		/* validate add item form */
         $('#add-item-submit').click(function () {
 
@@ -502,8 +496,10 @@
 
                     if(response.status == "success") {
                         alert(response.message);
-                    }
-                    
+                    } else {
+						alert(response.message);
+					}
+
                     $('#add-item-form')[0].reset();
                 }
             });
@@ -858,11 +854,11 @@
 
             var trlength = $(".invoice_tr").length;
             var nexttrid = parseInt($("tr.invoice_tr:last").attr("data-row-id")) + 1;
-            
+
             var newtr = '<tr class="invoice_tr" data-row-id="'+nexttrid+'" id="invoice_tr_'+nexttrid+'">';
                 newtr += '<td><span class="serialno" id="invoice_tr_'+nexttrid+'_serialno" style="width:20px;">'+(trlength+1)+'</span><input type="hidden" id="invoice_tr_'+nexttrid+'_itemid" name="invoice_itemid[]" /></td>';
                 newtr += '<td id="invoice_td_'+nexttrid+'_itemname"><input type="text" id="invoice_tr_'+nexttrid+'_itemname" name="invoice_itemname[]" class="inptxt autocompleteitemname required" placeholder="Enter Item" style="width:120px;" /></td>';
-                newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_hsncode" name="invoice_hsncode[]" readonly="true" class="readonly" placeholder="HSN Code" style="width:100px;" /></td>';
+                newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_hsncode" name="invoice_hsncode[]" readonly="true" class="readonly" placeholder="HSN/SAC Code" style="width:100px;" /></td>';
                 newtr += '<td><input type="number" min="1" id="invoice_tr_'+nexttrid+'_quantity" name="invoice_quantity[]" class="required invoiceQuantity inptxt" value="0" placeholder="0" style="width:40px;" /></td>';
                 newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_unit" name="invoice_unit[]" readonly="true" class="readonly pricinput" placeholder="Unit" style="width:40px;" /></td>';
                 newtr += '<td><div class="inptxt padrgt0" style="width:70px;"><i class="fa fa-inr"></i><input type="text" id="invoice_tr_'+nexttrid+'_rate" name="invoice_rate[]" readonly="true" class="readonly pricinput" placeholder="0.00" /></div></td>';

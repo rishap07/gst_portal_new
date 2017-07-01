@@ -76,27 +76,20 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
                         
                         <div class="formcol two">
                             <label>Category<span class="starred">*</span></label>
-                            <select name="item_category" id="item_category" class="required" data-bind="numnzero">
-                                <?php $dataItemArrs = $obj_client->getMasterItems("item_id,item_name,hsn_code,(case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "is_deleted='0' AND status='1'"); ?>
-                                <?php if(!empty($dataItemArrs)) { ?>
-                                    <option value=''>Select Category</option>
-                                    <?php foreach($dataItemArrs as $dataItem) { ?>
-                                        <option value='<?php echo $dataItem->item_id; ?>' data-hsncode="<?php echo $dataItem->hsn_code; ?>" <?php if(isset($_POST['item_category']) && $_POST['item_category'] === $dataItem->item_id){ echo 'selected="selected"'; } else if(isset($dataArr[0]->item_category) && $dataArr[0]->item_category === $dataItem->item_id) { echo 'selected="selected"'; } ?>><?php echo $dataItem->item_name; ?></option>
-                                    <?php } ?>
-                                <?php } ?>
-                            </select>
+							<input type="text" placeholder="Item Category" name='item_category_name' id="item_category_name" data-bind="content" class="required" />
+							<input type="hidden" name='item_category' id="item_category" class="required" />
                         </div>
                         
                         <div class="formcol third">
-                            <label>HSN Code</label>
+                            <label>HSN/SAC Code</label>
                             <div class="clear"></div>
-                            <div class="readonly-section" id="item_hsn_code"><?php if(isset($dataArr[0]->hsn_code)){ echo $dataArr[0]->hsn_code; } else { echo "HSN Code"; } ?></div>
-                        </div>
+                            <div class="readonly-section" id="item_hsn_code"><?php if(isset($dataArr[0]->hsn_code)){ echo $dataArr[0]->hsn_code; } else { echo "HSN/SAC Code"; } ?></div>						
+						</div>
                         <div class="clear"></div>
 
                         <div class="formcol">
                             <label>Unit Price(Rs.)<span class="starred">*</span></label>
-                            <input type="text" placeholder="Item Unit Price" name='unit_price' id="unit_price" class="required" data-bind="demical" value='<?php if(isset($_POST['unit_price'])) { echo $_POST['unit_price']; } else if(isset($dataArr[0]->unit_price)){ echo $dataArr[0]->unit_price; } ?>'/>
+                            <input type="text" placeholder="Item Unit Price" name='unit_price' id="unit_price" class="required itemUnitPrice" data-bind="decimal" value='<?php if(isset($_POST['unit_price'])) { echo $_POST['unit_price']; } else if(isset($dataArr[0]->unit_price)){ echo $dataArr[0]->unit_price; } ?>'/>
                         </div>
                         
                         <div class="formcol two">
@@ -135,19 +128,23 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
 </div>
 <script>
     $(document).ready(function () {
-        
-        $("#item_category").change(function () {
-           
-            var hsncode = $(this).find(':selected').attr("data-hsncode");
-            if(typeof(hsncode) === "undefined") {
-                $("#item_hsn_code").text("HSN Code");
-            } else {
-                $("#item_hsn_code").text(hsncode);
+
+		/* Get HSN/SAC Code */
+        $( "#item_category_name" ).autocomplete({
+            minLength: 3,
+            source: "<?php echo PROJECT_URL; ?>/?ajax=client_hsnsac_code",
+            select: function( event, ui ) {
+				$("#item_category").val(ui.item.item_id);
+				$("#item_hsn_code").text(ui.item.hsn_code);
             }
         });
-        
-        /* select2 js for item category */
-        $("#item_category").select2();
+        /* End of Get HSN/SAC Code */
+		
+		/* validate item unit price allow only numbers or decimals */
+        $(".kycmainbox").on("keypress input paste", ".itemUnitPrice", function (event) {
+            return validateInvoiceAmount(event, this);
+        });
+        /* end of validate item unit price allow only numbers or decimals */
         
         /* select2 js for item unit */
         $("#item_unit").select2();

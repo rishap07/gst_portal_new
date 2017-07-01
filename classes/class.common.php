@@ -71,10 +71,8 @@ class common extends db {
     /* FUNCTION TO REDIRECT TO A SPECIFIC URL */
 
     public function redirect($url) {
-        if (!header('location : ' . $url)) {
-            echo "<script type='text/javascript'>window.location.href = '" . $url . "'</script>";
-            die;
-        }
+        echo "<script type='text/javascript'>window.location.href = '" . $url . "'</script>";
+        die;
     }
 
     /* FUNCTION TO GET UNIQUE VALUE FROM AN ARRAY */
@@ -781,7 +779,23 @@ class common extends db {
 
         return $dataArr;
     }
-    
+
+	/* country details by country code */
+    public function getCountryDetailByCountryCode($country_code) {
+
+        $data = $this->get_row("select * from " . $this->tableNames['country'] . " where UPPER(country_code) = '" . strtoupper($country_code) . "'");
+        $dataArr = array();
+        if (!empty($data)) {
+            $dataArr['data'] = $data;
+            $dataArr['status'] = 'success';
+        } else {
+            $dataArr['data'] = '';
+            $dataArr['status'] = 'error';
+        }
+
+        return $dataArr;
+    }
+
     /* state details by state code */
     public function getStateDetailByStateId($state_id) {
 
@@ -907,9 +921,10 @@ class common extends db {
     /* generate revised tax invoice number for client */
     public function generateRTInvoiceNumber($clientId) {
         
-        $query = "select invoice_id  from ".$this->tableNames['client_rt_invoice']." where 1=1 AND added_by=" . $clientId;
+        $currentFinancialYear = $this->generateFinancialYear();
+        $query = "select invoice_id  from ".$this->tableNames['client_rt_invoice']." where 1=1 AND financial_year = '".$currentFinancialYear."' AND added_by=" . $clientId;
         $invoices = $this->get_results($query);
-        
+
         if( !empty($invoices) ) {
 
             $nextInvoice = count($invoices) + 1;

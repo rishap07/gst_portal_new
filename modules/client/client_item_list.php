@@ -36,7 +36,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteItem' && isset($_GET['id
                         <th align='left'>#</th>
                         <th align='left'>Item</th>
                         <th align='left'>Category</th>
-                        <th align='left'>HSN Code</th>
+                        <th align='left'>HSN/SAC Code</th>
                         <th align='left'>Unit Price(Rs)</th>
                         <th align='left'>Status</th>
                         <th align='left'>Action</th>

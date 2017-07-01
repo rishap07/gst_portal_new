@@ -475,12 +475,14 @@ final class master extends validation {
     
     final public function addItem()
     {
+
+       
         $dataArr = $this->getItemData();
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
         }
-        
+         //print_r($dataArr);exit;
         if(!$this->validateItem($dataArr)) {
             return false;
         }
@@ -502,9 +504,11 @@ final class master extends validation {
         $dataArr = array();
         if(isset($_POST['submit']) && ($_POST['submit']=='submit' || ($_POST['submit']=='update' && isset($_GET['id']))))
         {
+            //print_r(($_POST['applicable']));exit;
             $dataArr['item_name'] = isset($_POST['item_name']) ? $_POST['item_name'] : '';
             $dataArr['hsn_code'] = isset($_POST['hsn_code']) ? $_POST['hsn_code'] : '';
             $dataArr['item_type'] = isset($_POST['item_type']) ? $_POST['item_type'] : '';
+            $dataArr['applicable'] = isset($_POST['applicable']) ? $_POST['applicable'] : '';
             $dataArr['igst_tax_rate'] = isset($_POST['igst_tax_rate']) ? $_POST['igst_tax_rate'] : '';
             $dataArr['csgt_tax_rate'] = isset($_POST['csgt_tax_rate']) ? $_POST['csgt_tax_rate'] : '';
             $dataArr['sgst_tax_rate'] = isset($_POST['sgst_tax_rate']) ? $_POST['sgst_tax_rate'] : '';
@@ -520,6 +524,7 @@ final class master extends validation {
             'item_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Item',
             'hsn_code' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:HSN Code',
             'item_type' => 'required||numeric||min:0||max:1|#|lable_name:Item Type',
+            'applicable' => 'required||numeric||min:0||max:1|#|lable_name:applicable',
             'igst_tax_rate' => 'required||decimalzero||max:100|#|lable_name:IGST Tax Rate',
             'csgt_tax_rate' => 'required||decimalzero||max:100|#|lable_name:CSGT Tax Rate',
             'sgst_tax_rate' => 'required||decimalzero||max:100|#|lable_nameSGST Tax Rate',

@@ -98,6 +98,13 @@
 .tcsamount {
 	display:none;
 }
+.ui-autocomplete {
+    z-index: 2147483647 !important;
+    max-width: 350px !important;
+	max-height: 350px !important;
+	overflow-y: scroll !important;
+	overflow-x: hidden !important;
+}
 
 @media only screen and (max-width: 600px) {
 	.columns {

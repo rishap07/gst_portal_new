@@ -1,9 +1,5 @@
 <?php
     $obj_client = new client();
-    if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '' ) {
-        $obj_client->redirect(PROJECT_URL);
-        exit();
-    }
 
 	if(!$obj_client->can_read('client_invoice')) {
 
@@ -104,7 +100,7 @@
         
         <div class="errorValidationContainer"></div>
 
-        <h1>Generate Revised Tax Invoice</h1>
+        <h1>Revised Tax / Debit Note / Credit Note</h1>
         <hr class="headingborder">
         
         <form name="create-invoice" id="create-invoice" method="POST">
@@ -119,37 +115,42 @@
 
                         <div class="clear"></div>
 
-						<div class="formcol">
+                        <div class="formcol">
                             <label>Invoice Serial Number <span class="starred">*</span></label>
-                            <input type="text" placeholder="Invoice Serial Number" readonly="true" class="readonly required" value="<?php echo $rtInvoiceNumber; ?>" name="invoice_serial_number" id="invoice_serial_number" />
+                            <input type="text" placeholder="Invoice Serial Number" readonly="true" class="readonly required" data-bind="content" value="<?php echo $rtInvoiceNumber; ?>" name="invoice_serial_number" id="invoice_serial_number" />
                         </div>
 
                         <div class="formcol two">
                             <label>Invoice Date <span class="starred">*</span></label>
                             <input type="text" placeholder="YYYY-MM-DD" class="required" data-bind="date" name="invoice_date" id="invoice_date" value="<?php echo date("Y-m-d"); ?>" />
                         </div>
+						
+						<div class="formcol third">
+                            <label>Reference Number <span class="starred">*</span></label>
+                            <input type="text" placeholder="Invoice Reference Number" class="required" data-bind="content" name="invoice_reference_number" id="invoice_reference_number" />
+                        </div>
 
 						<div class="clear height10"></div>
 
 						<div class="formcol">
-                            <label>Company Name <span class="starred">*</span></label>
-                            <input type="text" placeholder="Cyfuture India Pvt. Ltd" data-bind="content" readonly="true" class="readonly required" name="company_name" id="company_name" value="<?php if(isset($dataCurrentUserArr['data']->kyc->name)) { echo $dataCurrentUserArr['data']->kyc->name; } ?>" />
+                            <label>Supplier Name <span class="starred">*</span></label>
+                            <input type="text" placeholder="Cyfuture India Pvt. Ltd" readonly="true" class="readonly required" data-bind="content" name="company_name" id="company_name" value="<?php if(isset($dataCurrentUserArr['data']->kyc->name)) { echo $dataCurrentUserArr['data']->kyc->name; } ?>" />
                         </div>
 
 						<div class="formcol two">
-                            <label>Company Address <span class="starred">*</span></label>
-                            <input type="text" placeholder="Cyfuture India Pvt. Ltd" data-bind="address" readonly="true" class="readonly required" name="company_address" id="company_address" value="<?php if(isset($dataCurrentUserArr['data']->kyc->registered_address)) { echo $dataCurrentUserArr['data']->kyc->registered_address; } ?>" />
+                            <label>Supplier Address <span class="starred">*</span></label>
+                            <input type="text" placeholder="Cyfuture India Pvt. Ltd" readonly="true" class="readonly required" data-bind="address" name="company_address" id="company_address" value="<?php if(isset($dataCurrentUserArr['data']->kyc->registered_address)) { echo $dataCurrentUserArr['data']->kyc->registered_address; } ?>" />
                         </div>
 
 						<div class="formcol third">
-                            <label>Company State <span class="starred">*</span></label>
-                            <input type="text" placeholder="Compant State" data-bind="content" readonly="true" class="readonly required" name="company_state" id="company_state" value="<?php if(isset($dataCurrentUserArr['data']->kyc->state_name)) { echo $dataCurrentUserArr['data']->kyc->state_name; } ?>" />
+                            <label>Supplier State <span class="starred">*</span></label>
+                            <input type="text" placeholder="Rajasthan" readonly="true" class="readonly required" data-bind="content" name="company_state" id="company_state" value="<?php if(isset($dataCurrentUserArr['data']->kyc->state_name)) { echo $dataCurrentUserArr['data']->kyc->state_name; } ?>" />
                         </div>
 						
 						<div class="clear height10"></div>
 
                         <div class="formcol">
-                            <label>Company GSTIN <span class="starred">*</span></label>
+                            <label>Supplier GSTIN <span class="starred">*</span></label>
                             <input type="text" placeholder="BYRAJ14N3KKT" name="company_gstin_number" data-bind="alphanum" readonly="true" class="readonly required" id="company_gstin_number" value="<?php if(isset($dataCurrentUserArr['data']->kyc->gstin_number)) { echo $dataCurrentUserArr['data']->kyc->gstin_number; } ?>" />
                         </div>
 						
@@ -158,27 +159,27 @@
 						<div class="formcol">
                             <label>Nature of Document <span class="starred">*</span></label>
                             <div class="clear"></div>
-                            <input type="radio" name="invoice_document_nature" value="creditnote" checked="checked" /><span class="inputtxt">Credit Note</span>
+							<input type="radio" name="invoice_document_nature" value="revisedtaxinvoice" checked="checked" /><span class="inputtxt">Revised Tax Invoice</span>
+                            <input type="radio" name="invoice_document_nature" value="creditnote" /><span class="inputtxt">Credit Note</span>
                             <input type="radio" name="invoice_document_nature" value="debitnote" /><span class="inputtxt">Debit Note</span>
                         </div>
 
 						<div class="clear height10"></div>
-						
-						
+
 						<div class="formcol">
                             <label>Type of Corresponding <span class="starred">*</span></label>
                             <div class="clear"></div>
-                            <input type="radio" name="invoice_corresponding_type" value="taxinvoice" checked="checked" /><span class="inputtxt">General Tax</span>
+                            <input type="radio" name="invoice_corresponding_type" value="taxinvoice" checked="checked" /><span class="inputtxt">Tax Invoice</span>
 							<input type="radio" name="invoice_corresponding_type" value="bosinvoice" /><span class="inputtxt">Bill of Supply</span>
                         </div>
 
 						<div class="formcol two">
-                            <label>Corresponding Invoice Number <span class="starred">*</span></label>
-                            <input type="text" placeholder="Corresponding Invoice Number" name="corresponding_invoice_number" data-bind="content" class="required" id="corresponding_invoice_number" />
+                            <label>Corresponding Document Number <span class="starred">*</span></label>
+                            <input type="text" placeholder="Corresponding Document Number" name="corresponding_invoice_number" data-bind="content" class="required" id="corresponding_invoice_number" />
                         </div>
 
 						<div class="formcol third">
-                            <label>Corresponding Invoice Date <span class="starred">*</span></label>
+                            <label>Corresponding Document Date <span class="starred">*</span></label>
                             <input type="text" placeholder="YYYY-MM-DD" name="corresponding_invoice_date" data-bind="date" class="required" id="corresponding_invoice_date" />
                         </div>
 
@@ -196,13 +197,6 @@
 								<?php } ?>
 							</select>
 						</div>
-
-						<div class="formcol two">
-                            <label>Canceled Invoice <span class="starred">*</span></label>
-                            <div class="clear"></div>
-                            <input type="radio" name="is_canceled" value="1" /><span class="inputtxt">Yes</span>
-                            <input type="radio" name="is_canceled" value="0" checked="checked" /><span class="inputtxt">No</span>
-                        </div>
 
                         <div class="clear height20"></div>
 
@@ -353,8 +347,16 @@
                         </div>
 
                         <div class="clear height40"></div>
-                        <div class="adminformbxsubmit invoicebtn" style="width:100%;"> 
-                            <div class="tc">
+
+						<div class="invoicebtn" style="width:30%;float:left;margin-right:10%;">
+							<div class="tc">
+								<textarea placeholder="Enter Description" name="description" id="description" data-bind="content"></textarea>
+							</div>
+							<div class="clear height20"></div>
+						</div>
+						
+                        <div class="invoicebtn" style="width:60%;float:left;">
+							<div class="tc">
                                 <a href="javascript:void(0)" class="btn txtorange orangeborder popupbtn">Add Item</a>
 								<a href="javascript:void(0)" class="btn txtorange orangeborder" id="save_add_new_invoice">Save & Add New Invoice</a>
                                 <input type='submit' name="save_invoice" id="save_invoice" class="btn txtorange orangeborder" value="Save Invoice">

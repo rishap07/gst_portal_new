@@ -100,7 +100,7 @@
         
         <div class="errorValidationContainer"></div>
 
-        <h1>Generate Payment Voucher Invoice</h1>
+        <h1>Payment Voucher</h1>
         <hr class="headingborder">
         
         <form name="create-invoice" id="create-invoice" method="POST">

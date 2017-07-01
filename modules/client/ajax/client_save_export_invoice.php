@@ -28,7 +28,6 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	}
 
 	$dataArr['invoice_type'] = 'exportinvoice';
-	$dataArr['invoice_nature'] = isset($params['invoice_nature']) ? $params['invoice_nature'] : '';
 	$dataArr['reference_number'] = isset($params['invoice_reference_number']) ? $params['invoice_reference_number'] : '';
 	$dataArr['export_supply_meant'] = isset($params['export_supply_meant']) ? $params['export_supply_meant'] : '';
 	$dataArr['invoice_date'] = isset($params['invoice_date']) ? $params['invoice_date'] : '';

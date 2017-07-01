@@ -1,9 +1,5 @@
 <?php
 $obj_client = new client();
-if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '' ) {
-    $obj_client->redirect(PROJECT_URL);
-    exit();
-}
 
 if(!$obj_client->can_read('client_kyc')) {
 
@@ -52,7 +48,7 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
         
         <h1>Know your Client (KYC)</h1>
         <hr class="headingborder">
-        <h2 class="greyheading">Idenity Details</h2>
+        <h2 class="greyheading">Identity Details</h2>
         <form name="client-kyc" id="client-kyc" method="POST" enctype="multipart/form-data">
             <div class="adminformbx">
                 <div class="kycform">
@@ -120,7 +116,7 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
 
 						<div class="formcol two">
                             <label>GSTIN Number<span class="starred">*</span></label>
-                            <input type="text" name="gstin_number" id="gstin_number" placeholder="Enter gstin number" class="required" data-bind="alphanum" value="<?php if(isset($_POST['gstin_number'])){ echo $_POST['gstin_number']; } else if(isset($dataArr['data']->kyc->gstin_number)){ echo $dataArr['data']->kyc->gstin_number; } ?>" />
+                            <input type="text" name="gstin_number" id="gstin_number" placeholder="Enter gstin number" class="required" data-bind="gstin" value="<?php if(isset($_POST['gstin_number'])){ echo $_POST['gstin_number']; } else if(isset($dataArr['data']->kyc->gstin_number)){ echo $dataArr['data']->kyc->gstin_number; } ?>" />
                         </div>
 
 						<div class="formcol third">
@@ -263,7 +259,13 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
 			yearRange: '1900:<?php echo date("Y"); ?>',
             maxDate: '0'
         });
-        
+		
+		/* select2 js for business type */
+        $("#business_type").select2();
+		
+		/* select2 js for state */
+        $("#state").select2();
+
         $('#submit').click(function () {
             var mesg = {};
             if (vali.validate(mesg,'client-kyc')) {

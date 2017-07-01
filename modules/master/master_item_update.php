@@ -63,8 +63,23 @@ if(isset($_GET['id'])){
                                 <option value="">Select Type</option>
 								<option value="0" <?php if(isset($_POST['item_type']) && $_POST['item_type']==='0'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->item_type) && $dataArr[0]->item_type==='0'){ echo 'selected="selected"'; } ?>>Goods</option>
                                 <option value="1" <?php if(isset($_POST['item_type']) && $_POST['item_type']==='1'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->item_type) && $dataArr[0]->item_type==='1'){ echo 'selected="selected"'; } ?>>Services</option>
+                                
                             </select>
                         </div>
+
+                        <!-- added new options exempted and non gst-->
+                                                <div class="formcol third">
+                            <label>Applicable Taxes<span class="starred">*</span></label>
+                            <select name="applicable" class="required">
+                               
+                                <option value="0" <?php if(isset($_POST['item_type']) && $_POST['item_type']==='0'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->item_type) && $dataArr[0]->item_type==='0'){ echo 'selected="selected"'; } ?>>Applicable</option>
+                                <option value="1" <?php if(isset($_POST['item_type']) && $_POST['item_type']==='1'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->item_type) && $dataArr[0]->item_type==='1'){ echo 'selected="selected"'; } ?>>Non-GST</option>
+                                <option value="2" <?php if(isset($_POST['item_type']) && $_POST['item_type']==='2'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->item_type) && $dataArr[0]->item_type==='2'){ echo 'selected="selected"'; } ?>>Exempted</option>
+
+                            </select>
+                        </div>
+
+                        <!-- added new options exempted and non gst-->
                         <div class="formcol">
                             <label>IGST Tax Rate(%)<span class="starred">*</span></label>
                             <input type="text" placeholder="IGST Tax Rate" name='igst_tax_rate' data-bind="demical" class="required" id='igst_tax_rate' value='<?php if(isset($_POST['igst_tax_rate'])){ echo $_POST['igst_tax_rate'];}else if(isset($dataArr[0]->igst_tax_rate)){ echo $dataArr[0]->igst_tax_rate;}?>'/>

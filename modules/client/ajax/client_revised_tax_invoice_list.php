@@ -12,7 +12,7 @@ $obj_client = new client();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('ci.invoice_id', 'ci.serial_number', 'ci.company_name', 'ci.company_address', 'ci.gstin_number', 'ci.invoice_document_nature', 'ci.invoice_corresponding_type', 'ci.corresponding_invoice_number', 'ci.corresponding_invoice_date', 'ci.invoice_date', 'ci.is_canceled', 'ci.supply_place', 'ms2.state_name as supply_state_name', 'ms2.state_code as supply_state_code', 'ms2.state_tin as supply_state_tin', 'ci.invoice_total_value', 'ci.billing_name', 'ci.billing_state', 'ms.state_name as billing_state_name', 'ms.state_code as billing_state_code', 'ms.state_tin as billing_state_tin', 'ci.shipping_name', 'ci.shipping_state', 'ms1.state_name as shipping_state_name', 'ms1.state_code as shipping_state_code', 'ms1.state_tin as shipping_state_tin');
+$aColumns = array('ci.invoice_id', 'ci.serial_number', 'ci.reference_number', 'ci.company_name', 'ci.company_address', 'ci.gstin_number', 'ci.invoice_document_nature', 'ci.invoice_corresponding_type', 'ci.corresponding_invoice_number', 'ci.corresponding_invoice_date', 'ci.invoice_date', 'ci.is_canceled', 'ci.supply_place', 'ms2.state_name as supply_state_name', 'ms2.state_code as supply_state_code', 'ms2.state_tin as supply_state_tin', 'ci.invoice_total_value', 'ci.billing_name', 'ci.billing_state', 'ms.state_name as billing_state_name', 'ms.state_code as billing_state_code', 'ms.state_tin as billing_state_tin', 'ci.shipping_name', 'ci.shipping_state', 'ms1.state_name as shipping_state_name', 'ms1.state_code as shipping_state_code', 'ms1.state_tin as shipping_state_tin');
 $aSearchColumns = array('ci.serial_number', 'ci.invoice_document_nature', 'ci.invoice_corresponding_type', 'ci.corresponding_invoice_number', 'ci.corresponding_invoice_date', 'ci.invoice_date', 'ci.invoice_total_value', 'ci.billing_name', 'ci.shipping_name', 'ms.state_name', 'ms.state_code', 'ms.state_tin', 'ms1.state_name', 'ms1.state_code', 'ms1.state_tin', 'ms2.state_name', 'ms2.state_code', 'ms2.state_tin');
 $sIndexColumn = "invoice_id";
 
@@ -119,28 +119,31 @@ if(isset($rResult) && !empty($rResult)) {
 		$is_canceled = '';
 		$invoice_document_nature = '';
 		$invoice_corresponding_type = '';
-		
-		if($aRow->invoice_document_nature == 'creditnote') {
+
+		if($aRow->invoice_document_nature == 'revisedtaxinvoice') {
+            $invoice_document_nature = 'Revised Tax Invoice';
+        } else if($aRow->invoice_document_nature == 'creditnote') {
             $invoice_document_nature = 'Credit Note';
-        } elseif($aRow->invoice_document_nature == 'debitnote'){
+        } else if($aRow->invoice_document_nature == 'debitnote'){
             $invoice_document_nature = 'Debit Note';
         }
 
 		if($aRow->invoice_corresponding_type == 'taxinvoice') {
             $invoice_corresponding_type = 'Tax Invoice';
-        } elseif($aRow->invoice_corresponding_type == 'bosinvoice'){
+        } else if($aRow->invoice_corresponding_type == 'bosinvoice'){
             $invoice_corresponding_type = 'Bill of Supply Invoice';
         }
 
 		if($aRow->is_canceled == '0') {
             $is_canceled = '<span class="no">No<span>';
-        } elseif($aRow->is_canceled == '1'){
+        } else if($aRow->is_canceled == '1'){
             $is_canceled = '<span class="yes">Yes<span>';
         }
 
         $row[] = $temp_x;
 		$row[] = utf8_decode($aRow->serial_number);
         $row[] = utf8_decode($aRow->invoice_date);
+		$row[] = utf8_decode($aRow->reference_number);		
 		$row[] = $invoice_document_nature;
 		$row[] = $invoice_corresponding_type;
 		$row[] = utf8_decode($aRow->corresponding_invoice_number);

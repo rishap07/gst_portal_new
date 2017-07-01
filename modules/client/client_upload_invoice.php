@@ -32,8 +32,12 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
 			
 			$uploadInvoice = $obj_client->uploadClientInvoice();
 			$redirectPath = "client_invoice_list";
-		} else if($_POST['invoice_type'] == "bosinvoice") {
+		} else if($_POST['invoice_type'] == "taxexportinvoice") {
 			
+			$uploadInvoice = $obj_client->uploadClientExportInvoice();
+			$redirectPath = "client_invoice_list";
+		} else if($_POST['invoice_type'] == "bosinvoice") {
+
 			$uploadInvoice = $obj_client->uploadClientBOSInvoice();
 			$redirectPath = "client_bill_of_supply_invoice_list";
 		} else if($_POST['invoice_type'] == "rvinvoice") {
@@ -66,7 +70,7 @@ $dataCurrentArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSI
         <?php $obj_client->showErrorMessage(); ?>
         <?php $obj_client->showSuccessMessge(); ?>
         <?php $obj_client->unsetMessage(); ?>
-		
+
 		<?php
 			if($excelError === true) {
 
@@ -93,6 +97,7 @@ $dataCurrentArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSI
 							<select name="invoice_type" id="invoice_type" class="required">
 								<option value=''>Select Category</option>
 								<option value='taxinvoice'>Tax Invoice</option>
+								<option value='taxexportinvoice'>Tax Export Invoice</option>
 								<option value='bosinvoice'>Bill of Supply Invoice</option>
 								<option value='rvinvoice'>Receipt Voucher Invoice</option>
 							</select>

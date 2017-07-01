@@ -171,7 +171,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 					echo json_encode($result);
 					die;
 				} else {
-				
+
 					$obj_client->setError($obj_client->getValMsg('failed'));
 					$result['status'] = "error";
 					$result['message'] = $obj_client->getErrorMessage();

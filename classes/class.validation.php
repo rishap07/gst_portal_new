@@ -84,7 +84,7 @@ class validation extends upload {
         "alphaspace" => "a-zA-Z\s",
         "integergreaterzero" => "[1-9][0-9]",
         "pancard" => "(([A-Z]){5}([0-9]){4}([A-Z]){1})",
-        "gstinnumber" => "(([0-9]){2}([A-Z]){5}([0-9]){4}([A-Z]){1}([A-Z0-9]){1}([Z]){1}([0-9]){1})",
+        "gstinnumber" => "(([0-9]){2}([A-Z]){5}([0-9]){4}([A-Z]){1}([A-Z0-9]){1}([Z]){1}([A-Z0-9]){1})",
         "onlyzeroone" => "01"
     );
 
@@ -166,7 +166,7 @@ class validation extends upload {
                 }
             } else if($currentUserDetails['data']->user_group == 4) {
 
-                if( isset($_GET['page']) && $_GET['page'] != "client_kycupdate") {
+                if( isset($_GET['page']) && $_GET['page'] != "client_kycupdate" && $_GET['page'] != "logout") {
 
                     if($currentUserDetails['data']->kyc == '') {
                         $this->redirect(PROJECT_URL . "?page=client_kycupdate");
