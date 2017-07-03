@@ -50,7 +50,16 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'update' && isset($_GET['id'])
 
 $dataArr = array();
 if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editItem"){
-    $dataArr = $obj_client->get_results("select cm.item_id, cm.item_name, cm.item_category, cm.unit_price, cm.item_unit, cm.status, m.item_name as category_name, m.hsn_code, u.unit_name, u.unit_code from ".$obj_client->getTableName('client_master_item')." as cm, ".$obj_client->getTableName('item')." as m, ".$obj_client->getTableName('unit')." as u WHERE cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.is_deleted='0' and cm.item_id = '".$obj_client->sanitize($_GET['id'])."'");
+
+	$eitemid = $obj_client->sanitize($_GET['id']);
+	$itemdata = $obj_client->get_row("select * from " . $obj_client->getTableName('client_master_item') ." where item_id = '".$eitemid."' AND added_by = '".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."' AND is_deleted='0'");
+
+	if (empty($itemdata)) {
+		$obj_client->setError("No item found.");
+        $obj_client->redirect(PROJECT_URL."?page=client_item_list");
+	}
+
+	$dataArr = $obj_client->get_results("select cm.item_id, cm.item_name, cm.item_category, cm.unit_price, cm.item_unit, cm.status, m.item_name as category_name, m.hsn_code, u.unit_name, u.unit_code from ".$obj_client->getTableName('client_master_item')." as cm, ".$obj_client->getTableName('item')." as m, ".$obj_client->getTableName('unit')." as u WHERE cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.is_deleted='0' and cm.item_id = '".$obj_client->sanitize($_GET['id'])."'");
 }
 ?>
 <div class="admincontainer greybg">
@@ -75,11 +84,11 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
                         </div>
                         
                         <div class="formcol two">
-                            <label>Category<span class="starred">*</span></label>
-							<input type="text" placeholder="Item Category" name='item_category_name' id="item_category_name" data-bind="content" class="required" />
-							<input type="hidden" name='item_category' id="item_category" class="required" />
+                            <label>HSN/SAC Category<span class="starred">*</span></label>
+							<input type="text" placeholder="Enter 3 charter to search" name='item_category_name' id="item_category_name" value="<?php if(isset($dataArr[0]->category_name)){ echo $dataArr[0]->category_name; } ?>" data-bind="content" class="required" />
+							<input type="hidden" name='item_category' id="item_category" value="<?php if(isset($dataArr[0]->item_category)){ echo $dataArr[0]->item_category; } ?>" class="required" />
                         </div>
-                        
+
                         <div class="formcol third">
                             <label>HSN/SAC Code</label>
                             <div class="clear"></div>
@@ -107,10 +116,11 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
                         
                         <div class="formcol third">
                             <label>Status<span class="starred">*</span></label>
-                            <div class="clear"></div>
-                            <input type="radio" name="status" <?php if(isset($_POST['status']) &&  $_POST['status'] === '1'){ echo 'checked="checked"'; } else if(isset($dataArr[0]->status) && $dataArr[0]->status==='1') { echo 'checked="checked"'; } ?> value="1" /><span>Active</span>
-                            <input type="radio" name="status" <?php if(isset($_POST['status']) &&  $_POST['status'] === '0'){ echo 'checked="checked"'; } else if(isset($dataArr[0]->status) && $dataArr[0]->status==='0') { echo 'checked="checked"'; } ?> value="0" /><span>Inactive</span>
-                        </div>
+							<select name="status" id="status" class="required">
+                                <option value="1" <?php if(isset($_POST['status']) && $_POST['status'] === '1'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->status) && $dataArr[0]->status === '1') { echo 'selected="selected"'; } ?>>Active</option>
+                                <option value="0" <?php if(isset($_POST['status']) && $_POST['status'] === '0'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->status) && $dataArr[0]->status === '0') { echo 'selected="selected"'; } ?>>Inactive</option>
+                            </select>
+						</div>
                         <div class="clear"></div>
                         
                         <div class="clear height30"></div>

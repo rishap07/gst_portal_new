@@ -1,7 +1,9 @@
 <?php
 $obj_client = new client();
-if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '' ) {
-    $obj_client->redirect(PROJECT_URL);
+if(!$obj_client->can_read('client_master_item')) {
+
+    $obj_client->setError($obj_client->getValMsg('can_read'));
+    $obj_client->redirect(PROJECT_URL."/?page=dashboard");
     exit();
 }
 
@@ -35,7 +37,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteItem' && isset($_GET['id
                     <tr>
                         <th align='left'>#</th>
                         <th align='left'>Item</th>
-                        <th align='left'>Category</th>
+                        <th align='left'>HSN/SAC Category</th>
                         <th align='left'>HSN/SAC Code</th>
                         <th align='left'>Unit Price(Rs)</th>
                         <th align='left'>Status</th>

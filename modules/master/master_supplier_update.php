@@ -30,7 +30,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='update' && isset($_GET['id'])) 
         $obj_master->redirect(PROJECT_URL."/?page=master_supplier");
         exit(); 
     }
-	
+
     if($obj_master->updateSupplier()) {
         $obj_master->redirect(PROJECT_URL."/?page=master_supplier");
     }
@@ -38,7 +38,16 @@ if(isset($_POST['submit']) && $_POST['submit']=='update' && isset($_GET['id'])) 
 
 $dataArr = array();
 if(isset($_GET['id'])) {
-    $dataArr = $obj_master->findAll($obj_master->getTableName('supplier'), "is_deleted='0' and supplier_id='".$obj_master->sanitize($_GET['id'])."'");
+	
+	$esupid = $obj_master->sanitize($_GET['id']);
+	$supdata = $obj_master->get_row("select * from " . $obj_master->getTableName('supplier') ." where supplier_id = '".$esupid."' AND added_by = '".$obj_master->sanitize($_SESSION['user_detail']['user_id'])."' AND is_deleted='0'");
+
+	if (empty($supdata)) {
+		$obj_master->setError("No supplier found.");
+        $obj_master->redirect(PROJECT_URL."?page=master_supplier");
+	}
+
+	$dataArr = $obj_master->findAll($obj_master->getTableName('supplier'), "is_deleted='0' and supplier_id='".$obj_master->sanitize($_GET['id'])."'");
 }
 ?>
 <div class="admincontainer greybg">
@@ -55,8 +64,8 @@ if(isset($_GET['id'])) {
                     <div class="kycmainbox">
                         <div class="clear"></div>
                         <div class="formcol">
-                            <label>GSTID</label>
-                            <input type="text" placeholder="GSTID" name='gstid' data-bind="alphanum" value='<?php if(isset($_POST['gstid'])){ echo $_POST['gstid'];}else if(isset($dataArr[0]->gstid)){ echo $dataArr[0]->gstid;}?>' />
+                            <label>GSTIN</label>
+                            <input type="text" placeholder="GSTIN" name='gstid' data-bind="gstin" value='<?php if(isset($_POST['gstid'])){ echo $_POST['gstid'];}else if(isset($dataArr[0]->gstid)){ echo $dataArr[0]->gstid;}?>' />
                             <span class="greysmalltxt"></span>
 						</div>
                         <div class="formcol two">
@@ -106,6 +115,9 @@ if(isset($_GET['id'])) {
 </div>
 <script>
     $(document).ready(function () {
+		
+		/* select2 js for state */
+        $("#state").select2();
 
 		$('#submit').click(function () {
             var mesg = {};

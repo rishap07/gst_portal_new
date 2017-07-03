@@ -90,7 +90,7 @@ $iFilteredTotal = $obj_master->get_row($sQuery);
 $iFilteredTotal = $iFilteredTotal->rows;
 
 /* Total data set length */
-$sQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $sTable";
+$sQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $sTable $sWhere";
 //echo $sQuery;
 $iTotal = $obj_master->get_row($sQuery);
 $iTotal = $iTotal->count;
@@ -105,7 +105,7 @@ $output = array(
     "aaData" => array()
 );
 
-$temp_x=1;
+$temp_x=isset($_POST['iDisplayStart']) ? $_POST['iDisplayStart']+ 1 : 1;
 if(isset($rResult) && !empty($rResult)){
 	
 	foreach($rResult as $aRow) {

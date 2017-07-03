@@ -10,18 +10,6 @@
 */
 
 final class master extends validation {
-
-    protected $validateType = array(
-        "alphanumeric" => "A-Za-z0-9\n\r\&\/\-\(\)\,\.",
-        "mobilenumber" => "\d{10}",
-        "content" => "^\\\"<>|",
-        "pincode" => "\d{6}",
-        "yearmonth" => "[0-9]{4}-(0[1-9]|1[0-2])",
-        "datetime" => "[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]",
-        "alphaspace"=>"a-zA-Z\s",
-        "integergreaterzero"=>"[1-9][0-9]",
-        "onlyzeroone"=>"01"
-    );
     
     public function __construct() {
         parent::__construct();
@@ -287,11 +275,11 @@ final class master extends validation {
             return false;
         }
         
+		$dataArr['gstid'] = isset($_POST['gstid']) ? $_POST['gstid'] : '';
         if(!$this->validateReceiver($dataArr)) {
             return false;
         }
-        
-        $dataArr['gstid'] = isset($_POST['gstid']) ? $_POST['gstid'] : '';
+		
         $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['added_date'] = date('Y-m-d H:i:s');
         
@@ -327,10 +315,10 @@ final class master extends validation {
             'state' => 'required|#|lable_name:State'
         );
 
-        if( array_key_exists("gstid",$dataArr) ) {
-            $rules['gstid'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/||min:15||max:15|#|lable_name:GSTID';
-        }
-
+		if( array_key_exists("gstid",$dataArr) ) {
+            $rules['gstid'] = 'pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:GSTIN';
+		}
+		
         $valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
             $err_arr = $valid->allErrors();
@@ -344,17 +332,14 @@ final class master extends validation {
     final public function updateReceiver() {
 
         $dataArr = $this->getReceiverData();
-        
+        $dataArr['gstid'] = isset($_POST['gstid']) ? $_POST['gstid'] : '';
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
         }
-        
         if(!$this->validateReceiver($dataArr)) {
             return false;
         }
-        
-        $dataArr['gstid'] = isset($_POST['gstid']) ? $_POST['gstid'] : '';
         $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['update_date'] = date('Y-m-d H:i:s');
         
@@ -425,7 +410,7 @@ final class master extends validation {
         );
         
         if( array_key_exists("gstid",$dataArr) ) {
-            $rules['gstid'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/||min:15||max:15|#|lable_name:GSTID';
+            $rules['gstid'] = 'required||pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:GSTIN';
         }
         
         $valid = $this->vali_obj->validate($dataArr, $rules);
@@ -476,13 +461,11 @@ final class master extends validation {
     final public function addItem()
     {
 
-       
         $dataArr = $this->getItemData();
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
         }
-         //print_r($dataArr);exit;
         if(!$this->validateItem($dataArr)) {
             return false;
         }
@@ -504,7 +487,6 @@ final class master extends validation {
         $dataArr = array();
         if(isset($_POST['submit']) && ($_POST['submit']=='submit' || ($_POST['submit']=='update' && isset($_GET['id']))))
         {
-            //print_r(($_POST['applicable']));exit;
             $dataArr['item_name'] = isset($_POST['item_name']) ? $_POST['item_name'] : '';
             $dataArr['hsn_code'] = isset($_POST['hsn_code']) ? $_POST['hsn_code'] : '';
             $dataArr['item_type'] = isset($_POST['item_type']) ? $_POST['item_type'] : '';
@@ -524,7 +506,7 @@ final class master extends validation {
             'item_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Item',
             'hsn_code' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:HSN Code',
             'item_type' => 'required||numeric||min:0||max:1|#|lable_name:Item Type',
-            'applicable' => 'required||numeric||min:0||max:1|#|lable_name:applicable',
+            'applicable' => 'required||numeric||min:0||max:2|#|lable_name:applicable',
             'igst_tax_rate' => 'required||decimalzero||max:100|#|lable_name:IGST Tax Rate',
             'csgt_tax_rate' => 'required||decimalzero||max:100|#|lable_name:CSGT Tax Rate',
             'sgst_tax_rate' => 'required||decimalzero||max:100|#|lable_nameSGST Tax Rate',

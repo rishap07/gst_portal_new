@@ -127,7 +127,7 @@
 						
 						<div class="formcol third">
                             <label>Reference Number <span class="starred">*</span></label>
-                            <input type="text" placeholder="Invoice Reference Number" class="required" data-bind="content" name="invoice_reference_number" id="invoice_reference_number" />
+                            <input type="text" placeholder="Invoice Reference Number" class="required" data-bind="content" value="<?php echo $rtInvoiceNumber; ?>" name="invoice_reference_number" id="invoice_reference_number" />
                         </div>
 
 						<div class="clear height10"></div>

@@ -1,47 +1,59 @@
 <?php
 $obj_master = new master();
-if(!$obj_master->can_create('master_receiver') && !isset($_GET['id']))
-{
-    $obj_master->setError($obj_master->getValMsg('can_create'));
+if(!$obj_master->can_create('master_receiver') && !isset($_GET['id'])) {
+    
+	$obj_master->setError($obj_master->getValMsg('can_create'));
     $obj_master->redirect(PROJECT_URL."/?page=dashboard");
     exit();
 }
-if(!$obj_master->can_update('master_receiver') && isset($_GET['id']))
-{
+
+if(!$obj_master->can_update('master_receiver') && isset($_GET['id'])) {
+
 	$obj_master->setError($obj_master->getValMsg('can_update'));
 	$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
 	exit(); 
 }
-if(isset($_POST['submit']) && $_POST['submit']=='submit')
-{
-    if(!$obj_master->can_create('master_receiver'))
-    {
+
+if(isset($_POST['submit']) && $_POST['submit']=='submit') {
+
+    if(!$obj_master->can_create('master_receiver')) {
+
         $obj_master->setError($obj_master->getValMsg('can_create'));
         $obj_master->redirect(PROJECT_URL."/?page=master_receiver");
         exit();
     }
-    if($obj_master->addReceiver())
-    {
+
+    if($obj_master->addReceiver()){
         $obj_master->redirect(PROJECT_URL."/?page=master_receiver");
     }
 }
-if(isset($_POST['submit']) && $_POST['submit']=='update' && isset($_GET['id']))
-{
-    if(!$obj_master->can_update('master_receiver'))
-    {
+
+if(isset($_POST['submit']) && $_POST['submit']=='update' && isset($_GET['id'])) {
+
+    if(!$obj_master->can_update('master_receiver')) {
+
         $obj_master->setError($obj_master->getValMsg('can_update'));
         $obj_master->redirect(PROJECT_URL."/?page=master_receiver");
-        exit(); 
-    }
-    if($obj_master->updateReceiver())
-    {
+        exit();
+	}
+	
+    if($obj_master->updateReceiver()) {
         $obj_master->redirect(PROJECT_URL."/?page=master_receiver");
     }
 }
+
 $dataArr = array();
-if(isset($_GET['id']))
-{
-    $dataArr = $obj_master->findAll($obj_master->getTableName('receiver'),"is_deleted='0' and receiver_id='".$obj_master->sanitize($_GET['id'])."'");
+if(isset($_GET['id'])) {
+    
+	$erecid = $obj_master->sanitize($_GET['id']);
+	$recdata = $obj_master->get_row("select * from " . $obj_master->getTableName('receiver') ." where receiver_id = '".$erecid."' AND added_by = '".$obj_master->sanitize($_SESSION['user_detail']['user_id'])."' AND is_deleted='0'");
+
+	if (empty($recdata)) {
+		$obj_master->setError("No receiver found.");
+        $obj_master->redirect(PROJECT_URL."?page=master_receiver");
+	}
+
+	$dataArr = $obj_master->findAll($obj_master->getTableName('receiver'),"is_deleted='0' and receiver_id='".$obj_master->sanitize($_GET['id'])."'");
 }
 ?>
 <div class="admincontainer greybg">
@@ -57,11 +69,14 @@ if(isset($_GET['id']))
                 <div class="kycform">
                     <div class="kycmainbox">
                         <div class="clear"></div>
-                        <div class="formcol">
-                            <label>GSTID</label>
-                            <input type="text" placeholder="GSTID" name='gstid' data-bind="alphanum" value='<?php if(isset($_POST['gstid'])){ echo $_POST['gstid'];}else if(isset($dataArr[0]->gstid)){ echo $dataArr[0]->gstid; } ?>' />
-                            <span class="greysmalltxt"></span> </div>
-                        <div class="formcol two">
+                        
+						<div class="formcol">
+                            <label>GSTIN</label>
+                            <input type="text" placeholder="GSTIN" name='gstid' data-bind="gstin" value='<?php if(isset($_POST['gstid'])){ echo $_POST['gstid']; } else if(isset($dataArr[0]->gstid)){ echo $dataArr[0]->gstid; } ?>' />
+                            <span class="greysmalltxt"></span>
+						</div>
+                        
+						<div class="formcol two">
                             <label>Name<span class="starred">*</span></label>
                             <input type="text" placeholder="Name"  name='name' data-bind="content" class="required" value='<?php if(isset($_POST['name'])){ echo $_POST['name'];}else if(isset($dataArr[0]->name)){ echo $dataArr[0]->name; } ?>'/>
                         </div>
@@ -109,6 +124,9 @@ if(isset($_GET['id']))
 </div>
 <script>
     $(document).ready(function () {
+		
+		/* select2 js for state */
+        $("#state").select2();
 		
         $('#submit').click(function () {
             var mesg = {};

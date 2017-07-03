@@ -105,7 +105,7 @@ $dataKyc = $obj_client->getClientKyc();
               <td colspan="11" class="txtheading"> 4A. Supplies other than those (i) attracting reverse charge and (ii) supplies made through e-commerce operator</td>
             </tr>
             <?php
-            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where a.invoice_date like'".$month."%' and a.invoice_type='taxinvoice' and a.gstin_number!='' and (a.is_tax_payable='1' and bt.business_name='Ecommerence' ) and a.added_by='".$_SESSION['user_detail']['user_id']."'";
+            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id where a.invoice_date like'".$month."%' and a.invoice_type='taxinvoice' and a.billing_gstin_number!='' and (a.supply_type!='tcs' and a.supply_type!='reversecharge') and a.added_by='".$_SESSION['user_detail']['user_id']."'";
             $data2 = $obj_client->get_results($query);
             
             if(!empty($data2))
@@ -203,7 +203,7 @@ $dataKyc = $obj_client->getClientKyc();
               <td colspan="11" class="txtheading"> 4C. Supplies made through e-commerce operator attracting TCS (operator wise, rate wise)</td>
             </tr>
             <?php
-            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.gstin_number!='' and (bt.business_name='Ecommerence' ) and a.added_by='".$_SESSION['user_detail']['user_id']."' and a.supply_type='tcs' and a.invoice_nature='salesinvoice'";
+            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by  where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.gstin_number!='' and (a.supply_type='tcs' ) and a.added_by='".$_SESSION['user_detail']['user_id']."' and a.supply_type='tcs' and a.invoice_nature='salesinvoice'";
             $data2 = $obj_client->get_results($query);
             
             if(!empty($data2))
@@ -292,17 +292,12 @@ $dataKyc = $obj_client->getClientKyc();
               
               <th>Cess</th>
             </tr>
-            <?php
-            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.billing_gstin_number='' and a.invoice_total_value>250000 and a.added_by='".$_SESSION['user_detail']['user_id']."'";
-            $data2 = $obj_client->get_results($query);
-            
-            ?>
-            
+           
             <tr>
               <td colspan="11" class="txtheading"> 5A. Outward supplies (other than supplies made through e-commerce operator, rate wise)</td>
             </tr>
             <?php
-            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.billing_gstin_number='' and a.invoice_total_value>250000  and (bt.business_name!='Ecommerence' ) and a.added_by='".$_SESSION['user_detail']['user_id']."'";
+            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.billing_gstin_number='' and a.invoice_total_value>250000 and a.supply_type!='tcs'  and a.added_by='".$_SESSION['user_detail']['user_id']."'";
             $data2 = $obj_client->get_results($query);
             if(!empty($data2))
             {
@@ -344,7 +339,7 @@ $dataKyc = $obj_client->getClientKyc();
               <td colspan="11" class="txtheading"> 5B. Supplies made through e-commerce operator attracting TCS (operator wise, rate wise)</td>
             </tr>
             <?php
-            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.billing_gstin_number='' and a.invoice_total_value>250000  and (bt.business_name='Ecommerence' ) and a.added_by='".$_SESSION['user_detail']['user_id']."'";
+            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.billing_gstin_number='' and a.invoice_total_value>250000 and a.supply_type='tcs'  and a.added_by='".$_SESSION['user_detail']['user_id']."'";
             $data2 = $obj_client->get_results($query);
             if(!empty($data2))
             {
@@ -585,7 +580,7 @@ $dataKyc = $obj_client->getClientKyc();
               <td colspan="6" class="txtheading">7A (1). Consolidated rate wise outward supplies [including supplies made through e-commerce operator attracting TCS]</td>
             </tr>
             <?php
-            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.billing_gstin_number=''   and (bt.business_name='Ecommerence' ) and a.added_by='".$_SESSION['user_detail']['user_id']."' && b.igst_rate!='0.00'  and a.supply_type!='tcs' ";
+            $query = "select a.*,b.* from ".TAB_PREFIX."client_rt_invoice a inner join ".TAB_PREFIX."client_rt_invoice_item b on a.invoice_id=b.invoice_id   where invoice_date like'".$month."%' and a.billing_gstin_number='' and a.added_by='".$_SESSION['user_detail']['user_id']."' and a.shipping_state=a.company_state";
             $data2 = $obj_client->get_results($query);
             if(!empty($data2))
             {
@@ -626,7 +621,7 @@ $dataKyc = $obj_client->getClientKyc();
               <td colspan="6" class="fontbold">GSTIN of e-commerce operator</td>
             </tr>
             <?php
-            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.billing_gstin_number=''   and (bt.business_name='Ecommerence' ) and a.added_by='".$_SESSION['user_detail']['user_id']."' && b.igst_rate!='0.00'  and a.supply_type='tcs' ";
+            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.billing_gstin_number=''   and (a.supply_type='tcs') and a.added_by='".$_SESSION['user_detail']['user_id']."' && b.igst_rate!='0.00'  and a.supply_type='tcs' ";
             $data2 = $obj_client->get_results($query);
             if(!empty($data2))
             {
@@ -665,7 +660,7 @@ $dataKyc = $obj_client->getClientKyc();
               <td colspan="6" class="fontbold" style="font-size:14px;">7B (1). Place of Supply (Name of State)</td>
             </tr>
             <?php
-            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.invoice_nature='salesinvoice' and a. and a.billing_gstin_number='' and a.invoice_total_value<=250000 and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state=a.supply_place and a.supply_type!='tcs'";
+            $query = "select a.*,b.* from ".TAB_PREFIX."client_rt_invoice a inner join ".TAB_PREFIX."client_rt_invoice_item b on a.invoice_id=b.invoice_id   where invoice_date like'".$month."%' and  a.billing_gstin_number='' and a.added_by='".$_SESSION['user_detail']['user_id']."' and a.shipping_state!=a.company_state and a.invoice_total_value<=250000";
             $data2 = $obj_client->get_results($query);
             if(!empty($data2))
             {
@@ -758,13 +753,19 @@ $dataKyc = $obj_client->getClientKyc();
             <tr>
               <td>8A. Inter-State supplies to registered persons</td>
               <td style="text-align:center"><?php
-                    $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type!='taxinvoice' and a.billing_gstin_number!='' and a.invoice_total_value<=250000 and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state=a.supply_place";
+                    $query = "select a.*,b.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id  where invoice_date like'".$month."%' and a.billing_gstin_number!='' and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state!=a.supply_place and b.cgst_rate='0.00'  and b.sgst_rate='0.00'  and b.igst_rate='0.00' group by a.invoice_id";
                     $data2 = $obj_client->get_results($query);
                     echo count($data2);
                  ?></td>
-              <td style="text-align:center">-</td>
+              <td style="text-align:center">
+                  <?php
+                    $query = "select a.*,b.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_item c on b.item_hsncode=c.hsn_code and c.applicable='2'  where invoice_date like'".$month."%' and a.billing_gstin_number!='' and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state!=a.supply_place";
+                    $data2 = $obj_client->get_results($query);
+                    echo count($data2);
+                    ?>
+              </td>
               <td style="text-align:center"><?php
-                    $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='taxinvoice and a.billing_gstin_number!='' and a.invoice_total_value<=250000 and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state=a.supply_place and b.cgst_rate='0.00' and  b.sgst_rate='0.00' and  b.igst_rate='0.00' group by a.invoice_id";
+                    $query = "select a.*,b.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_item c on b.item_hsncode=c.hsn_code and c.applicable='1'  where invoice_date like'".$month."%' and a.billing_gstin_number!='' and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state!=a.supply_place";
                     $data2 = $obj_client->get_results($query);
                     echo count($data2);
                  ?></td>
@@ -772,13 +773,19 @@ $dataKyc = $obj_client->getClientKyc();
             <tr>
               <td>8B. Intra- State supplies to registered persons</td>
               <td style="text-align:center"><?php
-                    $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type!='taxinvoice' and a.billing_gstin_number!='' and a.invoice_total_value<=250000 and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state!=a.supply_place";
+                    $query = "select a.*,b.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id  where invoice_date like'".$month."%' and a.billing_gstin_number!='' and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state=a.supply_place and b.cgst_rate='0.00'  and b.sgst_rate='0.00'  and b.igst_rate='0.00' group by a.invoice_id";
                     $data2 = $obj_client->get_results($query);
                     echo count($data2);
                  ?></td>
-              <td style="text-align:center">-</td>
+              <td style="text-align:center">
+                  <?php
+                    $query = "select a.*,b.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_item c on b.item_hsncode=c.hsn_code and c.applicable='2'  where invoice_date like'".$month."%' and a.billing_gstin_number!='' and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state=a.supply_place";
+                    $data2 = $obj_client->get_results($query);
+                    echo count($data2);
+                    ?>
+              </td>
               <td style="text-align:center"><?php
-                    $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='taxinvoice and a.billing_gstin_number!='' and a.invoice_total_value<=250000 and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state!=a.supply_place and b.cgst_rate='0.00' and  b.sgst_rate='0.00' and  b.igst_rate='0.00' group by a.invoice_id";
+                    $query = "select a.*,b.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_item c on b.item_hsncode=c.hsn_code and c.applicable='1'  where invoice_date like'".$month."%' and a.billing_gstin_number!='' and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state=a.supply_place";
                     $data2 = $obj_client->get_results($query);
                     echo count($data2);
                  ?></td>
@@ -786,13 +793,19 @@ $dataKyc = $obj_client->getClientKyc();
             <tr>
               <td>8C. Inter-State supplies to unregistered persons</td>
               <td style="text-align:center"><?php
-                    $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type!='taxinvoice' and a.billing_gstin_number='' and a.invoice_total_value<=250000 and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state=a.supply_place";
+                    $query = "select a.*,b.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id  where invoice_date like'".$month."%' and a.billing_gstin_number='' and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state!=a.supply_place and b.cgst_rate='0.00'  and b.sgst_rate='0.00'  and b.igst_rate='0.00' group by a.invoice_id";
                     $data2 = $obj_client->get_results($query);
                     echo count($data2);
                  ?></td>
-              <td style="text-align:center">-</td>
+              <td style="text-align:center">
+                  <?php
+                    $query = "select a.*,b.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_item c on b.item_hsncode=c.hsn_code and c.applicable='2'  where invoice_date like'".$month."%' and a.billing_gstin_number='' and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state!=a.supply_place";
+                    $data2 = $obj_client->get_results($query);
+                    echo count($data2);
+                    ?>
+              </td>
               <td style="text-align:center"><?php
-                    $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='taxinvoice and a.billing_gstin_number='' and a.invoice_total_value<=250000 and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state=a.supply_place and b.cgst_rate='0.00' and  b.sgst_rate='0.00' and  b.igst_rate='0.00' group by a.invoice_id";
+                    $query = "select a.*,b.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_item c on b.item_hsncode=c.hsn_code and c.applicable='1'  where invoice_date like'".$month."%' and a.billing_gstin_number='' and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state!=a.supply_place";
                     $data2 = $obj_client->get_results($query);
                     echo count($data2);
                  ?></td>
@@ -800,13 +813,19 @@ $dataKyc = $obj_client->getClientKyc();
             <tr>
               <td>8D. Intra-State supplies to unregistered persons</td>
               <td style="text-align:center"><?php
-                    $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type!='taxinvoice' and a.billing_gstin_number='' and a.invoice_total_value<=250000 and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state!=a.supply_place";
+                    $query = "select a.*,b.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id  where invoice_date like'".$month."%' and a.billing_gstin_number='' and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state=a.supply_place and b.cgst_rate='0.00'  and b.sgst_rate='0.00'  and b.igst_rate='0.00' group by a.invoice_id";
                     $data2 = $obj_client->get_results($query);
                     echo count($data2);
                  ?></td>
-              <td style="text-align:center">-</td>
+              <td style="text-align:center">
+                  <?php
+                    $query = "select a.*,b.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_item c on b.item_hsncode=c.hsn_code and c.applicable='2'  where invoice_date like'".$month."%' and a.billing_gstin_number='' and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state=a.supply_place";
+                    $data2 = $obj_client->get_results($query);
+                    echo count($data2);
+                    ?>
+              </td>
               <td style="text-align:center"><?php
-                    $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='taxinvoice and a.billing_gstin_number='' and a.invoice_total_value<=250000 and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state!=a.supply_place and b.cgst_rate='0.00' and  b.sgst_rate='0.00' and  b.igst_rate='0.00' group by a.invoice_id";
+                    $query = "select a.*,b.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_item c on b.item_hsncode=c.hsn_code and c.applicable='1'  where invoice_date like'".$month."%' and a.billing_gstin_number='' and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state=a.supply_place";
                     $data2 = $obj_client->get_results($query);
                     echo count($data2);
                  ?></td>

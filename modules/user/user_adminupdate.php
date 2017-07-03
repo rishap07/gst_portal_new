@@ -1,9 +1,5 @@
 <?php
 $obj_user = new users();
-if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '' ) {
-    $obj_user->redirect(PROJECT_URL);
-    exit();
-}
 
 if(!$obj_user->can_read('admin_list')) {
 
@@ -152,18 +148,20 @@ if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editAdmin
 
                         <div class="formcol">
                             <label>Status<span class="starred">*</span></label>
-                            <div class="clear"></div>
-                            <input type="radio" name="user_status" <?php if(isset($_POST['user_status']) &&  $_POST['user_status'] === '1'){ echo 'checked="checked"'; } else if(isset($dataArr['data']->status) && $dataArr['data']->status === '1') { echo 'checked="checked"'; } ?> value="1" /><span>Active</span> <input type="radio" name="user_status" <?php if(isset($_POST['user_status']) &&  $_POST['user_status'] === '0'){ echo 'checked="checked"'; } else if(isset($dataArr['data']->status) && $dataArr['data']->status === '0') { echo 'checked="checked"'; } ?> value="0" /><span>Inactive</span>
-                        </div>
-                        
+							<select name="user_status" id="user_status" class="required">
+                                <option value="1" <?php if(isset($_POST['user_status']) && $_POST['user_status'] === '1'){ echo 'selected="selected"'; } else if(isset($dataArr['data']->status) && $dataArr['data']->status === '1') { echo 'selected="selected"'; } ?>>Active</option>
+                                <option value="0" <?php if(isset($_POST['user_status']) && $_POST['user_status'] === '0'){ echo 'selected="selected"'; } else if(isset($dataArr['data']->status) && $dataArr['data']->status === '0') { echo 'selected="selected"'; } ?>>Inactive</option>
+                            </select>
+						</div>
+
                         <div class="formcol">
                             <label>Payment Status<span class="starred">*</span></label>
                             <select name="payment_status" id="payment_status">
-                                <option value="0" <?php if(isset($_POST['payment_status']) &&  $_POST['payment_status']==='0'){ echo 'selected="selected"'; } else if(isset($dataArr['data']->payment_status) && $dataArr['data']->payment_status === '0'){ echo 'selected';}?>>Pending</option>
-                                <option value="1" <?php if(isset($_POST['payment_status']) &&  $_POST['payment_status']==='1'){ echo 'selected="selected"'; } else if(isset($dataArr['data']->payment_status) && $dataArr['data']->payment_status === '1'){ echo 'selected';}?>>Success</option>
-                                <option value="2" <?php if(isset($_POST['payment_status']) &&  $_POST['payment_status']==='2'){ echo 'selected="selected"'; } else if(isset($dataArr['data']->payment_status) && $dataArr['data']->payment_status === '2'){ echo 'selected';}?>>Mark As Fraud</option>
-                                <option value="3" <?php if(isset($_POST['payment_status']) &&  $_POST['payment_status']==='3'){ echo 'selected="selected"'; } else if(isset($dataArr['data']->payment_status) && $dataArr['data']->payment_status === '3'){ echo 'selected';}?>>Rejected</option>
-                                <option value="4" <?php if(isset($_POST['payment_status']) &&  $_POST['payment_status']==='4'){ echo 'selected="selected"'; } else if(isset($dataArr['data']->payment_status) && $dataArr['data']->payment_status === '4'){ echo 'selected';}?>>Refund</option>
+                                <option value="0" <?php if(isset($_POST['payment_status']) &&  $_POST['payment_status']==='0'){ echo 'selected="selected"'; } else if(isset($dataArr['data']->payment_status) && $dataArr['data']->payment_status === '0'){ echo 'selected="selected"';} ?>>Pending</option>
+                                <option value="1" <?php if(isset($_POST['payment_status']) &&  $_POST['payment_status']==='1'){ echo 'selected="selected"'; } else if(isset($dataArr['data']->payment_status) && $dataArr['data']->payment_status === '1'){ echo 'selected="selected"';} ?>>Success</option>
+                                <option value="2" <?php if(isset($_POST['payment_status']) &&  $_POST['payment_status']==='2'){ echo 'selected="selected"'; } else if(isset($dataArr['data']->payment_status) && $dataArr['data']->payment_status === '2'){ echo 'selected="selected"';} ?>>Mark As Fraud</option>
+                                <option value="3" <?php if(isset($_POST['payment_status']) &&  $_POST['payment_status']==='3'){ echo 'selected="selected"'; } else if(isset($dataArr['data']->payment_status) && $dataArr['data']->payment_status === '3'){ echo 'selected="selected"';} ?>>Rejected</option>
+                                <option value="4" <?php if(isset($_POST['payment_status']) &&  $_POST['payment_status']==='4'){ echo 'selected="selected"'; } else if(isset($dataArr['data']->payment_status) && $dataArr['data']->payment_status === '4'){ echo 'selected="selected"';} ?>>Refund</option>
                             </select>
                         </div>
                         <div class="clear"></div>

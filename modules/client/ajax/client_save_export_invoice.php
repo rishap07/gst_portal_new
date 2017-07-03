@@ -151,6 +151,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	}
 
 	$dataArr['invoice_total_value'] = $invoiceTotalAmount;
+	$dataArr['financial_year'] = $obj_client->generateFinancialYear();
 	$dataArr['status'] = 1;
 	$dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
 	$dataArr['added_date'] = date('Y-m-d H:i:s');

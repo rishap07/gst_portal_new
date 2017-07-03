@@ -15,6 +15,7 @@ extract($_POST);
 $aColumns = array('cm.item_id', 'cm.item_name', 'cm.item_category', 'm.item_name as category_name', 'm.hsn_code', 'cm.unit_price', 'cm.status');
 $aSearchColumns = array('cm.item_name', 'm.item_name', 'm.hsn_code', 'cm.unit_price', 'cm.status');
 $sIndexColumn = "item_id";
+$sIndexColumn1 = "cm.item_id";
 
 /* DB table to use */
 $cmTable = $obj_client->getTableName('client_master_item');
@@ -95,8 +96,7 @@ $iFilteredTotal = $obj_client->get_row($uQuery);
 $iFilteredTotal = $iFilteredTotal->rows;
 
 /* Total data set length */
-$uQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $cmTable";
-//echo $sQuery;
+$uQuery = "SELECT COUNT(" . $sIndexColumn1 . ") as count FROM $cmTable as cm, $mTable as m $uWhere";
 $iTotal = $obj_client->get_row($uQuery);
 $iTotal = $iTotal->count;
 
@@ -110,7 +110,7 @@ $output = array(
     "aaData" => array()
 );
 
-$temp_x=1;
+$temp_x=isset($_POST['iDisplayStart']) ? $_POST['iDisplayStart']+ 1 : 1;
 if(isset($rResult) && !empty($rResult))
 {
     foreach($rResult as $aRow) {

@@ -22,7 +22,7 @@
 <!--POPUP START HERE-->
 <div style="display:none;position:fixed;" id="popup" class="formpopup topanimation">
     <div class="popupform">
-        
+
         <p style="text-align:center;"> <a class="closebtn" id="btnclose" ><img src="image/icon-close.png" alt="#"></a> </p>
         <h3 class="txtorange">ADD ITEM</h3>
         
@@ -31,33 +31,26 @@
             <form name="add-item-form" id="add-item-form" method="POST">
                 
                 <div class="formcol">
-                    <label>Item<span class="starred">*</span></label>
+                    <label>Item <span class="starred">*</span></label>
                     <input type="text" placeholder="Item name" name='item_name' id="item_name" data-bind="content" class="required" value='<?php if(isset($_POST['item_name'])){ echo $_POST['item_name']; } ?>' />
                 </div>
-                
-                <div class="formcol two">
-                    <label>Category<span class="starred">*</span></label>
-                    <select name="item_category" id="item_category" class="required" data-bind="numnzero">
-                        <?php $dataItemArrs = $obj_client->getMasterItems("item_id,item_name,hsn_code,(case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "is_deleted='0' AND status='1'"); ?>
-                        <?php if(!empty($dataItemArrs)) { ?>
-                            <option value=''>Select Category</option>
-                            <?php foreach($dataItemArrs as $dataItem) { ?>
-                                <option value='<?php echo $dataItem->item_id; ?>' data-hsncode="<?php echo $dataItem->hsn_code; ?>" <?php if(isset($_POST['item_category']) && $_POST['item_category'] === $dataItem->item_id){ echo 'selected="selected"'; } ?>><?php echo $dataItem->item_name; ?></option>
-                            <?php } ?>
-                        <?php } ?>
-                    </select>
-                </div>
+				
+				<div class="formcol two">
+					<label>Category <span class="starred">*</span></label>
+					<input type="text" placeholder="Item Category" name='item_category_name' id="item_category_name" data-bind="content" class="required" />
+					<input type="hidden" name='item_category' id="item_category" class="required" />
+				</div>                
 				
 				<div class="formcol third">
-                    <label>HSN Code</label>
+                    <label>HSN/SAC Code </label>
                     <div class="clear"></div>
-                    <div class="readonly-section" id="item_hsn_code"><?php echo "HSN Code"; ?></div>
+                    <div class="readonly-section" id="item_hsn_code"><?php echo "HSN/SAC Code"; ?></div>
                 </div>
 
 				<div class="clear"></div>
                 
                 <div class="formcol">
-                    <label>Unit<span class="starred">*</span></label>
+                    <label>Unit <span class="starred">*</span></label>
                     <select name="item_unit" id="item_unit" class="required" data-bind="numnzero">
                         <?php $dataUnitArrs = $obj_client->getMasterUnits("unit_id,unit_name,unit_code,(case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "is_deleted='0' AND status='1'"); ?>
                         <?php if(!empty($dataUnitArrs)) { ?>
@@ -71,7 +64,7 @@
                 
                 <div class="formcol two">
                     <label>Unit Price(Rs.)<span class="starred">*</span></label>
-                    <input type="text" placeholder="Item Unit Price" name='unit_price' id="unit_price" class="required" data-bind="demical" />
+                    <input type="text" placeholder="Item Unit Price" name='unit_price' id="unit_price" class="required itemUnitPrice" data-bind="demical" />
                 </div>
 
                 <div class="formcol third">
@@ -128,7 +121,7 @@
 
 						<div class="formcol third">
                             <label>Reference Number <span class="starred">*</span></label>
-                            <input type="text" placeholder="Invoice Reference Number" class="required" data-bind="content" name="invoice_reference_number" id="invoice_reference_number" />
+                            <input type="text" placeholder="Invoice Reference Number" class="required" data-bind="content" value="<?php echo $rfInvoiceNumber; ?>" name="invoice_reference_number" id="invoice_reference_number" />
                         </div>
 
 						<div class="clear height10"></div>
@@ -140,7 +133,7 @@
 
 						<div class="formcol two">
                             <label>Supplier Address <span class="starred">*</span></label>
-                            <input type="text" placeholder="Cyfuture India Pvt. Ltd" readonly="true" class="readonly required" data-bind="address" name="company_address" id="company_address" value="<?php if(isset($dataCurrentUserArr['data']->kyc->registered_address)) { echo $dataCurrentUserArr['data']->kyc->registered_address; } ?>" />
+                            <input type="text" placeholder="Cyfuture India Pvt. Ltd" readonly="true" class="readonly required" data-bind="content" name="company_address" id="company_address" value="<?php if(isset($dataCurrentUserArr['data']->kyc->registered_address)) { echo $dataCurrentUserArr['data']->kyc->registered_address; } ?>" />
                         </div>
 
 						<div class="formcol third">
@@ -203,7 +196,7 @@
 
                                 <div class="formcol">
                                     <label>Address <span class="starred">*</span></label>
-                                    <textarea placeholder="Address" data-bind="address" readonly="true" class="readonly required" name="billing_address" id="billing_address"></textarea>
+                                    <textarea placeholder="Address" data-bind="content" readonly="true" class="readonly required" name="billing_address" id="billing_address"></textarea>
                                 </div>
 
                                 <div class="formcol">
@@ -236,7 +229,7 @@
 
                                 <div class="formcol">
                                     <label>Address <span class="starred">*</span></label>
-                                    <textarea placeholder="Address" data-bind="address" readonly="true" class="readonly required" name="shipping_address" id="shipping_address"></textarea>
+                                    <textarea placeholder="Address" data-bind="content" readonly="true" class="readonly required" name="shipping_address" id="shipping_address"></textarea>
                                 </div>
 
                                 <div class="formcol">
@@ -337,18 +330,23 @@
 		});
 		/* end of close add new item popup */
 		
-		/* change of item category */
-		$("#item_category").change(function () {
-
-            var hsncode = $(this).find(':selected').attr("data-hsncode");
-            if(typeof(hsncode) === "undefined") {
-                $("#item_hsn_code").text("HSN Code");
-            } else {
-                $("#item_hsn_code").text(hsncode);
+		/* Get HSN/SAC Code */
+        $( "#item_category_name" ).autocomplete({
+            minLength: 3,
+            source: "<?php echo PROJECT_URL; ?>/?ajax=client_hsnsac_code",
+            select: function( event, ui ) {
+				$("#item_category").val(ui.item.item_id);
+				$("#item_hsn_code").text(ui.item.hsn_code);
             }
         });
-		/* end of change of item category */
-        
+        /* End of Get HSN/SAC Code */
+
+		/* validate item unit price allow only numbers or decimals */
+        $(".popupform").on("keypress input paste", ".itemUnitPrice", function (event) {
+            return validateInvoiceAmount(event, this);
+        });
+        /* end of validate item unit price allow only numbers or decimals */
+
 		/* validate add item form */
         $('#add-item-submit').click(function () {
 

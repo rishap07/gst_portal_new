@@ -44,12 +44,23 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
 			
 			$uploadInvoice = $obj_client->uploadClientRVInvoice();
 			$redirectPath = "client_receipt_voucher_invoice_list";
+		} else if($_POST['invoice_type'] == "rfinvoice") {
+			
+			$uploadInvoice = $obj_client->uploadClientRFInvoice();
+			$redirectPath = "client_refund_voucher_invoice_list";
+		} else if($_POST['invoice_type'] == "pvinvoice") {
+			
+			$uploadInvoice = $obj_client->uploadClientPVInvoice();
+			$redirectPath = "client_payment_voucher_invoice_list";
+		} else if($_POST['invoice_type'] == "stinvoice") {
+			
+			$uploadInvoice = $obj_client->uploadClientSTInvoice();
+			$redirectPath = "client_special_tax_invoice_list";
 		} else {
 			$obj_client->redirect(PROJECT_URL."?page=client_upload_invoice");
 		}
 
         if($uploadInvoice === true){
-
             $obj_client->redirect(PROJECT_URL."?page=".$redirectPath);
         } else {
 
@@ -93,26 +104,35 @@ $dataCurrentArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSI
                     <div class="kycmainbox">
 					
 						<div class="formcol two">
-							<label>Select Invoice Type<span class="starred">*</span></label>
+							<label>Invoice Type<span class="starred">*</span></label>
 							<select name="invoice_type" id="invoice_type" class="required">
-								<option value=''>Select Category</option>
+								<option value=''>Select Invoice Type</option>
 								<option value='taxinvoice'>Tax Invoice</option>
 								<option value='taxexportinvoice'>Tax Export Invoice</option>
 								<option value='bosinvoice'>Bill of Supply Invoice</option>
 								<option value='rvinvoice'>Receipt Voucher Invoice</option>
+								<option value='rfinvoice'>Refund Voucher Invoice</option>
+								<option value='pvinvoice'>Payment Voucher Invoice</option>
+								<option value='stinvoice'>Special Tax Invoice</option>
 							</select>
 						</div>
-                        
+
                         <div class="formcol two">
                             <label>Upload Excel File<span class="starred">*</span></label>
 							<div class="clear"></div>
                             <input type="file" name="invoice_xlsx" id="invoice_xlsx" class="required" />
                         </div>
-                        
+
+						<div class="formcol third">
+							<label>Download Sample Excel File</label>
+							<div class="clear"></div>
+							<a href="<?php echo PROJECT_URL."/upload/excel.zip"; ?>">Download Sample</a>
+                        </div>
+
                         <div class="clear"></div>
 
                         <div class="clear height10"></div>
-                        
+
                         <div class="tc">
                             <input type='submit' class="btn orangebg" name='submit' value='submit' id='submit'>
                             <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=client_invoice_list"; ?>';" class="btn redbg" class="redbtn marlef10"/>

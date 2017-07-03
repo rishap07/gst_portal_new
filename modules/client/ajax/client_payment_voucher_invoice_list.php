@@ -111,7 +111,7 @@ $output = array(
     "aaData" => array()
 );
 
-$temp_x=1;
+$temp_x=isset($_POST['iDisplayStart']) ? $_POST['iDisplayStart']+ 1 : 1;
 if(isset($rResult) && !empty($rResult)) {
 
     foreach($rResult as $aRow) {

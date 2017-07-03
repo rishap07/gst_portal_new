@@ -1,7 +1,7 @@
 <?php
 $obj_master = new master();
- if(!$obj_master->can_read('master_supplier'))
-{
+if(!$obj_master->can_read('master_supplier')) {
+
     $obj_master->setError($obj_master->getValMsg('can_read'));
     $obj_master->redirect(PROJECT_URL."/?page=dashboard");
     exit();
@@ -22,8 +22,8 @@ $obj_master = new master();
             <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tablecontent" id="mainTable">
                 <thead>
                     <tr>
-                        <th align='left' width="72">Sr</th>
-                        <th align='left'>GSTID</th>
+                        <th align='left' width="72">#</th>
+                        <th align='left'>GSTIN</th>
                         <th align='left'>Name</th>
                         
                         <th align='left'>Address</th>

@@ -257,8 +257,8 @@
                                 </div>
 
                                 <div class="formcol">
-                                    <label>GSTIN</label>
-                                    <input type="text" placeholder="GSTIN" name='billing_gstin_number' data-bind="gstin" id='billing_gstin_number' />
+                                    <label>GSTIN/UIN</label>
+                                    <input type="text" placeholder="GSTIN/UIN" name='billing_gstin_number' data-bind="gstin" id='billing_gstin_number' />
                                 </div>
 
                                 <div class="clear"></div>

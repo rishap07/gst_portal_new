@@ -1,11 +1,11 @@
 <?php
-$obj_master = new master();
-if(!$obj_master->can_read('master_receiver'))
-{
-    $obj_master->setError($obj_master->getValMsg('can_read'));
-    $obj_master->redirect(PROJECT_URL."/?page=dashboard");
-    exit();
-}
+	$obj_master = new master();
+	
+	if(!$obj_master->can_read('master_receiver')) {
+		$obj_master->setError($obj_master->getValMsg('can_read'));
+		$obj_master->redirect(PROJECT_URL."/?page=dashboard");
+		exit();
+	}
 ?>
 <div class="admincontainer greybg">
     <div class="formcontainer">
@@ -22,14 +22,14 @@ if(!$obj_master->can_read('master_receiver'))
             <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tablecontent" id="mainTable">
                 <thead>
                     <tr>
-                        <th align='left' width="72">Sr</th>
-                        <th align='left'>GSTID</th>
+                        <th align='left' width="72">#</th>
+                        <th align='left'>GSTIN</th>
                         <th align='left'>Name</th>
-                        
+
                         <th align='left'>Address</th>
                         <th align='left'>State</th>
                         <th align='left'>State Code</th>
-                        
+
                         <th align='left'>Status</th>
                         <th width="72">Action</th>
                     </tr>

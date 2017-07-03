@@ -64,11 +64,12 @@
                                     <div class="boxheading txtorange fl">
                                         Plans List 
                                     </div>
-                                    <div class="fr addmorebtn"><a href="<?php echo PROJECT_URL;?>/?page=plan_addplan" class="greencolor smallbtn">+ Add More</a><a href="<?php echo PROJECT_URL;?>/?page=plan_list" class="bluecolor smallbtn">View All</a></div>
+                                    <div class="fr addmorebtn">
+										<!--<a href="<?php echo PROJECT_URL;?>/?page=plan_addplan" class="greencolor smallbtn">+ Add More</a>-->
+										<a href="<?php echo PROJECT_URL;?>/?page=plan_list" class="bluecolor smallbtn">View All</a>
+									</div>
                                     <div class="clear"></div>
-                                    <?php
-                                    $dataArrs = $db_obj->getAllActivePlanSuAdmin("p.id,p.name,(case when p.status='1' Then 'active' when  p.status='0' then 'deactive' end) as status,c.name as cat_name","p.is_deleted='0' and u.user_group='1'",$orderby='p.id desc',$limit='limit 0,5'); 
-                                    ?>
+                                    <?php $dataArrs = $db_obj->getAllActivePlanSuAdmin("p.id,p.name,(case when p.status='1' Then 'active' when  p.status='0' then 'deactive' end) as status,c.name as cat_name","p.is_deleted='0' and u.user_group='2'", $orderby='p.id desc', $limit='limit 0,5'); ?>
                                     <ul>
                                         <?php
                                         if(!empty($dataArrs))
@@ -88,7 +89,7 @@
                                                         $color = 'blue';
                                                 }
                                                 ?>
-                                                <li><?php echo ucwords($dataArr->name);?> (<?php echo ucwords($dataArr->cat_name);?>) <span><a href="<?php echo PROJECT_URL;?>/?page=plan_editplan&action=editPlan&id=<?php echo $dataArr->id;?>" class="<?php echo $color;?>txt"><?php echo ucwords($dataArr->status);?></a></span></li>
+                                                <li><?php echo ucwords($dataArr->name);?> (<?php echo ucwords($dataArr->cat_name);?>) <span><a href="javascript:void(0)" class="<?php echo $color;?>txt"><?php echo ucwords($dataArr->status);?></a></span></li>
                                                 <?php
                                             }
                                         }
@@ -108,16 +109,13 @@
                                     <div class=""><a href="javascript:void(0)" class="dashbtn orangebg"><img src="image/icon-add-invoice.png" width="70" alt="#"><br/>Add Plan</a></div>
                                 </div>
                                 <div class="col-md-3">
-                                
                                     <div class=""><a href="javascript:void(0)" class="dashbtn orangebg"><img src="image/icon-add-invoice.png" width="70" alt="#"><br/>Payments Module</a></div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class=""><a href="javascript:void(0)" class="dashbtn orangebg"><img src="image/icon-add-invoice.png" width="70" alt="#"><br/>Settings</a></div>
-									<!--<div class=""><a href="#" class="dashbtn orangebg last"><img src="image/icon-add-invoice.png" width="70" alt="#"><br/>Migrate Invoice GSTN Server</a></div>-->
                                 </div>
                                 <div class="col-md-3">
-                                <div class=""><a href="#" class="dashbtn orangebg"><img src="image/icon-report.png" width="70" alt="#"><br/>Report</a></div>
-								<!--<div class=""><a href="#" class="dashbtn orangebg last"><img src="image/icon-add-invoice.png" width="70" alt="#"><br/>Other</a></div>-->
+									<div class=""><a href="#" class="dashbtn orangebg"><img src="image/icon-report.png" width="70" alt="#"><br/>Report</a></div>
                                 </div>
                             </div>
                         </div>
