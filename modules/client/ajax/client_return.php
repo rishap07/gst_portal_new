@@ -153,12 +153,16 @@ foreach($rResult as $aRow) {
     $row[] = utf8_decode($aRow->return_month);
     $row[] = utf8_decode($aRow->type);
     $row[] = $status;
+    $row[] = '<a href="javascript:void(0)"  onclick="invoiceDetails('.$aRow->return_id.')" data-bind="'.$aRow->return_id.'" class="btnsmall" data-toggle="modal" data-target="#myModal">Summary</button>';
     if($aRow->type=='gstr1')
     {
-        $row[] = '<a href="'.PROJECT_URL.'/?page=client_complied_gstr1&finanical='.$aRow->return_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-eye"></i></a>';
+        $row[] = '<a href="'.PROJECT_URL.'/?page=client_complied_gstr&finanical='.$aRow->return_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-eye"></i>';
+        $row[] = '</a><a href="'.PROJECT_URL.'/?page=client_complied_gstr1&finanical='.$aRow->return_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-eye"></i></a>';
     }
+
     else
     {
+        $row[] = '';
         $row[] = '';
     }
     $output['aaData'][] = $row;

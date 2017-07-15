@@ -20,19 +20,21 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteItem' && isset($_GET['id
     }
 }
 ?>
-<div class="admincontainer greybg">
-    <div class="formcontainer">
+<div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
+    <div class="col-md-12 col-sm-12 col-xs-12">   
+  <h1>Item</h1>	
+        <div class="whitebg formboxcontainer">
         <div>
-            <a class='addnew' href='<?php echo PROJECT_URL;?>/?page=client_item_update'>Add New</a>
+            <a class='btn btn-default btn-success btnwidth addnew' href='<?php echo PROJECT_URL;?>/?page=client_item_update'>Add New</a>
         </div>
-        <h1>Item</h1>
-        <hr class="headingborder">
-        <h2 class="greyheading">Item Listing</h2>
-        <div class="adminformbx">
-            <?php $obj_client->showErrorMessage(); ?>
+         <div class="clear height10"></div>
+         <?php $obj_client->showErrorMessage(); ?>
             <?php $obj_client->showSuccessMessge(); ?>
             <?php $obj_client->unsetMessage(); ?>
-            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tablecontent" id="mainTable">
+        <h2 class="greyheading">Item Listing</h2>
+        <div class="adminformbx">
+          
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable">
                 <thead>
                     <tr>
                         <th align='left'>#</th>
@@ -47,6 +49,9 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteItem' && isset($_GET['id
             </table>
         </div>
     </div>
+</div>
+</div>
+<div class="clear height80">
 </div>
 <script>
     

@@ -13,7 +13,7 @@ if(isset($_POST['totalInvoiceValue']) && isset($_POST['action']) && $_POST['acti
 	$mantissaValue = '';
 	$seperator = '';
 	$fractionalValue = '';
-	$totalInvoiceValue = (float)$_POST['totalInvoiceValue'];
+	$totalInvoiceValue = (string)$_POST['totalInvoiceValue'];
 	$invoicevalue = explode(".", $totalInvoiceValue);
 
 	if($obj_client->convert_number_to_words($invoicevalue[0])) {

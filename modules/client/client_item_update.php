@@ -62,48 +62,43 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
 	$dataArr = $obj_client->get_results("select cm.item_id, cm.item_name, cm.item_category, cm.unit_price, cm.item_unit, cm.status, m.item_name as category_name, m.hsn_code, u.unit_name, u.unit_code from ".$obj_client->getTableName('client_master_item')." as cm, ".$obj_client->getTableName('item')." as m, ".$obj_client->getTableName('unit')." as u WHERE cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.is_deleted='0' and cm.item_id = '".$obj_client->sanitize($_GET['id'])."'");
 }
 ?>
-<div class="admincontainer greybg">
-    <div class="formcontainer">
-        
-        <?php $obj_client->showErrorMessage(); ?>
+<div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+
+        <div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Item</h1></div>
+         <hr class="headingborder">
+ <?php $obj_client->showErrorMessage(); ?>
         <?php $obj_client->showSuccessMessge(); ?>
         <?php $obj_client->unsetMessage(); ?>
-        
-        <h1>Item</h1>
-        <hr class="headingborder">
+        <div class="whitebg formboxcontainer">
+      
         <h2 class="greyheading"><?php if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editItem") { echo 'Edit Item'; } else { echo 'Add New Item'; } ?></h2>
+		  
         <form method="post" enctype="multipart/form-data" name="client-item" id='client-item'>
-            <div class="adminformbx">
-                <div class="kycform">
-                    <div class="kycmainbox">
-                        <div class="clear"></div>
-                        
-                        <div class="formcol">
-                            <label>Item<span class="starred">*</span></label>
-                            <input type="text" placeholder="Item name" name='item_name' id="item_name" data-bind="content" class="required" value='<?php if(isset($_POST['item_name'])){ echo $_POST['item_name']; } else if(isset($dataArr[0]->item_name)){ echo $dataArr[0]->item_name; } ?>' />
+                <div class="row">
+                      <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                        <label for="exampleInputITEM">Item<span class="starred">*</span></label>
+                            <input type="text" placeholder="Item name" name='item_name' id="item_name" data-bind="content" class="required form-control" value='<?php if(isset($_POST['item_name'])){ echo $_POST['item_name']; } else if(isset($dataArr[0]->item_name)){ echo $dataArr[0]->item_name; } ?>' />
                         </div>
-                        
-                        <div class="formcol two">
-                            <label>HSN/SAC Category<span class="starred">*</span></label>
-							<input type="text" placeholder="Enter 3 charter to search" name='item_category_name' id="item_category_name" value="<?php if(isset($dataArr[0]->category_name)){ echo $dataArr[0]->category_name; } ?>" data-bind="content" class="required" />
+                      <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                        <label for="exampleInputHSN/SAC Category">HSN/SAC Category<span class="starred">*</span></label>
+							<input type="text" placeholder="Enter 3 character to search" name='item_category_name' id="item_category_name" value="<?php if(isset($dataArr[0]->category_name)){ echo $dataArr[0]->category_name; } ?>" data-bind="content" class="required form-control" />
 							<input type="hidden" name='item_category' id="item_category" value="<?php if(isset($dataArr[0]->item_category)){ echo $dataArr[0]->item_category; } ?>" class="required" />
                         </div>
-
-                        <div class="formcol third">
+   <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                             <label>HSN/SAC Code</label>
                             <div class="clear"></div>
                             <div class="readonly-section" id="item_hsn_code"><?php if(isset($dataArr[0]->hsn_code)){ echo $dataArr[0]->hsn_code; } else { echo "HSN/SAC Code"; } ?></div>						
 						</div>
                         <div class="clear"></div>
 
-                        <div class="formcol">
-                            <label>Unit Price(Rs.)<span class="starred">*</span></label>
-                            <input type="text" placeholder="Item Unit Price" name='unit_price' id="unit_price" class="required itemUnitPrice" data-bind="decimal" value='<?php if(isset($_POST['unit_price'])) { echo $_POST['unit_price']; } else if(isset($dataArr[0]->unit_price)){ echo $dataArr[0]->unit_price; } ?>'/>
+                  <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                            <label>Unit Price(Rs.)</label>
+                            <input type="text" placeholder="Item Unit Price" name='unit_price' id="unit_price" class="requred itemUnitPrice form-control" data-bind="decimal" value='<?php if(isset($_POST['unit_price'])) { echo $_POST['unit_price']; } else if(isset($dataArr[0]->unit_price)){ echo $dataArr[0]->unit_price; } ?>'/>
                         </div>
-                        
-                        <div class="formcol two">
+						 <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                             <label>Item Unit<span class="starred">*</span></label>
-                            <select name="item_unit" id="item_unit" class="required" data-bind="numnzero">
+                            <select name="item_unit" id="item_unit" class="required form-control" data-bind="numnzero">
                                 <?php $dataUnitArrs = $obj_client->getUnit("unit_id,unit_name,unit_code,(case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "is_deleted='0' AND status='1'"); ?>
                                 <?php if(!empty($dataUnitArrs)) { ?>
                                     <option value=''>Select Unit</option>
@@ -113,34 +108,45 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
                                 <?php } ?>
                             </select>
                         </div>
-                        
-                        <div class="formcol third">
+    <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                             <label>Status<span class="starred">*</span></label>
-							<select name="status" id="status" class="required">
+							<select name="status" id="status" class="required form-control">
                                 <option value="1" <?php if(isset($_POST['status']) && $_POST['status'] === '1'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->status) && $dataArr[0]->status === '1') { echo 'selected="selected"'; } ?>>Active</option>
                                 <option value="0" <?php if(isset($_POST['status']) && $_POST['status'] === '0'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->status) && $dataArr[0]->status === '0') { echo 'selected="selected"'; } ?>>Inactive</option>
                             </select>
 						</div>
-                        <div class="clear"></div>
-                        
-                        <div class="clear height30"></div>
-                        <div class="adminformbxsubmit" style="width:100%;">
+                     <div class="clear height30"></div>
+                                
+								  <div class="adminformbxsubmit" style="width:100%;">
                             <div class="tc">
-                                <input type='submit' class="btn orangebg" name='submit' value='<?php if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editItem") { echo 'update'; } else { echo 'submit'; } ?>' id='submit'>
-                                <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=client_item_list"; ?>';" class="btn redbg" class="redbtn marlef10"/>
+                                <input type='submit' class="btn btn-danger" name='submit' value='<?php if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editItem") { echo 'update'; } else { echo 'submit'; } ?>' id='submit'>
+                                <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=client_item_list"; ?>';" class="btn btn-danger" />
                             </div>
                         </div>
-                    </div>
                 </div>
-            </div>
-        </form>
-    </div>
-</div>
+                   
+                </div>
+   
+
+
+                 
+                    
+                </div>
+
+              
+
+              
+
+            </form>
+        </div>
+
+
+
 <script>
     $(document).ready(function () {
 
 		/* Get HSN/SAC Code */
-        $( "#item_category_name" ).autocomplete({
+        $("#item_category_name").autocomplete({
             minLength: 3,
             source: "<?php echo PROJECT_URL; ?>/?ajax=client_hsnsac_code",
             select: function( event, ui ) {
@@ -149,7 +155,14 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
             }
         });
         /* End of Get HSN/SAC Code */
-		
+
+		/* Get on chnage of item category */
+		$("#item_category_name").on("input", function() {
+			$("#item_category").val("");
+			$("#item_hsn_code").text("HSN/SAC Code");
+		});
+		/* End of on chnage of item category */
+
 		/* validate item unit price allow only numbers or decimals */
         $(".kycmainbox").on("keypress input paste", ".itemUnitPrice", function (event) {
             return validateInvoiceAmount(event, this);

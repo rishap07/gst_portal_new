@@ -128,4 +128,26 @@ final class api extends validation
         }
         return true;
     }
+	
+	
+	/*
+	*  Get Item by HSN or Name
+	*/
+	public function getAPIItem()
+	{
+		$dataArr = array();
+		if(isset($_REQUEST['item_id']) && $_REQUEST['item_id']!='')
+		{
+			$sql = "select item_name,hsn_code,item_type,igst_tax_rate,csgt_tax_rate,sgst_tax_rate,cess_tax_rate from ".TAB_PREFIX."master_item where item_name like '%".$this->sanitize($_REQUEST['item_id'])."%' or hsn_code like '%".$this->sanitize($_REQUEST['item_id'])."%'";
+			$dataArr['msg'] = '200';
+			$dataArr['status'] = '200';
+			$dataArr['data'] = $this->get_results($sql);
+		}
+		else
+		{
+			$dataArr['msg'] = '401';
+			$dataArr['status'] = 'Item ID not passed';
+		}
+		return $dataArr;
+	}
 }

@@ -7,21 +7,25 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
 ?>
 
 <!--========================sidemenu over=========================-->
-<div class="admincontainer greybg">
-    <div class="formcontainer">
+<div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+
+         <h1>User Group</h1>
+        <div class="whitebg formboxcontainer">
 <!--        <div>
-            <a class='addnew' href='<?php echo PROJECT_URL;?>/?page=user_role_update'>Add New Role</a>
+            <a class='btn btn-default btn-success btnwidth addnew' href='<?php echo PROJECT_URL;?>/?page=user_role_update'>Add New Role</a>
         </div>-->
-        <h1>User Group</h1>
-        <hr class="headingborder">
+     
+        
+         <?php $obj_user->showErrorMessage(); ?>
+            <?php $obj_user->showSuccessMessge(); ?>
+            <?php $obj_user->unsetMessage(); ?>
         <h2 class="greyheading">Group Listing</h2>
         
         <div class="adminformbx">
-            <?php $obj_user->showErrorMessage(); ?>
-            <?php $obj_user->showSuccessMessge(); ?>
-            <?php $obj_user->unsetMessage(); ?>
+           
         
-            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tablecontent" id="mainTable">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable">
                 
                 <thead>
                     <tr>
@@ -37,6 +41,9 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
 <!--========================adminformbox over=========================-->    
     </div>
 <!--========================admincontainer over=========================-->
+</div>
+</div>
+<div class="clear height80">
 </div>
 <script>
     $(document).ready(function () {

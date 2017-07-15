@@ -13,8 +13,10 @@
 class common extends db {
     /* FUNCTION TO PRINT AN ARRAY AND DIE */
 
+	public $otp = '';
     public function __construct() {
         parent::__construct();
+		$this->checkEmailMobileVerify();
     }
 
     public function pr($arr, $die = '') {
@@ -25,7 +27,205 @@ class common extends db {
             die;
         }
     }
-
+	public function checkEmailMobileVerify()
+	{
+		if(isset($_SESSION['user_detail']['user_id']) && $_SESSION['user_detail']['user_id']!='')
+		{
+			$data = $this->get_results("select * from ".TAB_PREFIX."user where user_id='".$_SESSION['user_detail']['user_id']."'" );
+			if($data[0]->plan_id>0 && !isset($_SESSION['verify']))
+			{
+				$_SESSION['verify']=1;
+				$link_address=PROJECT_URL.'/?page=client_email_verification';
+				$link_address1=PROJECT_URL.'/?page=client_sms_verification';
+				
+				if($data[0]->email_verify=='0' && $_REQUEST['page']!='client_email_verification')
+				{
+					$this->setError("To Verify your email <a href='".$link_address."'>click here</a>");
+				}
+				if($data[0]->mobileno_verify=='0' && $_REQUEST['page']!='client_sms_verification')
+				{
+					$this->setError("To Verify your contact number <a href='".$link_address1."'>click here</a>");
+				}
+			}
+		}
+	}
+	
+	
+	
+	public function sendVerifcationEmail()
+	{
+		$data = $this->get_results("select * from ".TAB_PREFIX."user where user_id='".$_SESSION['user_detail']['user_id']."'" );
+		if($data[0]->email_verify=='0')
+		{
+			if($this->sendMail('Email Verify','User ID : '.$_SESSION['user_detail']['user_id'].' email verfication',$data[0]->email,'noreply@gstkeeper.com','','rishap07@gmail.com,sheetalprasad95@gmail.com','','GST Keeper Portal Email Verify',$this->getEmailVerifyMailBody()))
+			{
+				$this->setSuccess('A confirmation mail has been sent to you (Kindly check your inbox & spam folder). <strong>Confirm your e-mail</strong> by clicking on the link in the mail. ');
+			}
+			else
+			{
+				$this->setError('Try again, there is some issue in sending an email.');
+			}
+		}
+		else
+		{
+			$this->setError('It looks like you`ve already verified your email address with us. Thanks!');
+		}
+	}
+	private function getEmailVerifyMailBody()
+	{
+		$token =  md5(uniqid(rand(),1));
+		$data = '<a href="'.PROJECT_URL.'/?page=dashboard&verifyemail=' . $token . '&passkey='.md5($_SESSION['user_detail']['user_id']).'">Click here</a>  or copy the below url and paste on browser to verify your email';
+		$this->update(TAB_PREFIX."user",array('email_code'=>$token), array('user_id'=>$_SESSION['user_detail']['user_id']));
+		return $data;
+	}
+	
+	protected function sendMail($module='',$module_message='',$to_send,$from_send,$cc='',$bcc='',$attachment='',$subject,$body)
+	{
+		$dataInsertArray['module'] = $module;
+		$dataInsertArray['module_message'] = $module_message;
+		$dataInsertArray['to_send'] = $to_send;
+		$dataInsertArray['from_send'] = $from_send;
+		$dataInsertArray['cc'] = $cc;
+        $dataInsertArray['bcc'] = $bcc;
+		$dataInsertArray['attachment'] = $attachment;
+        $dataInsertArray['subject'] = $subject;
+		$dataInsertArray['body'] = $body;
+		 
+        if ($this->insert($this->tableNames['email'], $dataInsertArray)) {
+		  return true;
+		}
+		else
+		{
+		  return false;
+		}
+	}
+	
+	public function sendVerifcationSms()
+	{
+		$data = $this->get_results("select * from ".TAB_PREFIX."user where user_id='".$_SESSION['user_detail']['user_id']."'" );
+		if($data[0]->mobileno_verify=='0')
+		{
+			if($this->sendSMS($data[0]->phone_number,$this->getSMSVerifyBody()))
+			{
+				$this->setSuccess('An OTP has been sent on your registered mobile number, kindly check.');
+			}
+			else
+			{
+				$this->setError('Try again, there is some issue in sending an OTP.');
+			}
+		}
+		else
+		{
+			$this->setError('Your mobile number is already verified.');
+		}
+	}
+	
+	protected function sendSMS($phone_number,$body)
+	{
+		$url = "http://49.50.67.32/smsapi/httpapi.jsp?username=GSTkeeptr&password=GSTk33p&from=GSTKPR&to=".$phone_number."&text=".urlencode($body)."&coding=0";
+		$parameters = '';
+		return $this->hitCurl($url, $parameters='');
+	}
+	
+	
+	protected function getSMSVerifyBody()
+	{
+		$this->generateRandomString1('6');
+		$data = 'Your OTP is '.$this->otp;
+		$this->update(TAB_PREFIX."user",array('mobile_code'=>$this->otp), array('user_id'=>$_SESSION['user_detail']['user_id']));
+		return $data;
+	}
+	
+	protected function generateRandomString1($length = 6) {
+		
+		
+		$str = substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length);
+		
+		$result = $this->get_results("select * from ".TAB_PREFIX."user where mobile_code='".$str."'");
+		if(count($result)>0)
+		{
+			$this->generateRandomString1($length=6);
+		}
+		else
+		{
+			$this->otp = $str;
+		}
+	}
+	
+	public function emailVerify()
+	{
+		$data['verifyemail'] = isset($_GET['verifyemail']) ? $_GET['verifyemail'] : '';
+		$data['passkey'] = isset($_GET['passkey']) ? $_GET['passkey'] : '';
+		
+		$dataRe = $this->get_results('select * from '.TAB_PREFIX."user where user_id='".$_SESSION['user_detail']['user_id']."'");
+		if(count($dataRe)>0)
+		{
+			if($dataRe[0]->email_code==$data['verifyemail'] && md5($dataRe[0]->user_id)==$data['passkey'])
+			{
+				$this->setSuccess('Email verified');
+				$this->update(TAB_PREFIX."user",array('email_verify'=>'1','email_verify_date'=>date('Y-m-d H:i:s')),array('user_id'=>$_SESSION['user_detail']['user_id']));
+				return true;
+			}
+			else
+			{
+				$this->setError('Email not verified');
+				return false;
+			}
+		}
+		
+	}
+	public function forgotEmailVerify()
+	{
+		
+		//$data['verifyForgot'] = isset($_GET['verifyForgot']) ? $_GET['verifyForgot'] : '';
+		//$data['passkey'] = isset($_GET['passkey']) ? $_GET['passkey'] : '';
+		$data['verifyForgot'] = isset($_SESSION['user_detail']['token']) ? $_SESSION['user_detail']['token'] : '';
+		$data['passkey'] = isset($_SESSION['user_detail']['passkey']) ? $_SESSION['user_detail']['passkey'] : '';
+		$id = base64_decode($_SESSION['user_detail']['passkey']);
+		$sql='select * from '.TAB_PREFIX."user where forgotemail_code='".$_SESSION['user_detail']['token']."' and user_id='".$id."'";
+		
+		$dataRe = $this->get_results($sql);
+		if(count($dataRe)>0)
+		{
+			
+				$this->setError('Your email is verified please update your new password');
+				$this->update(TAB_PREFIX."user",array('forgotemail_verify'=>'1','forgotemail_verify_date'=>date('Y-m-d H:i:s')),array('user_id'=>$dataRe[0]->user_id));
+				return true;
+			
+			
+		}
+		else
+		{
+				$this->setError('Email not verified');
+				return false;
+		}
+		
+	}
+	
+	public function checkSmsOTP()
+	{
+		$data['mobile_code'] = isset($_POST['otp']) ? $_POST['otp'] : '';
+		if($data['mobile_code']=='')
+		{
+			$this->setError('Kindly enter OTP');
+			return false;
+		}
+		
+		$dataRe = $this->get_results("select * from ".TAB_PREFIX."user where user_id='".$_SESSION['user_detail']['user_id']."'");
+		
+		if($data['mobile_code']!=$dataRe[0]->mobile_code)
+		{
+			$this->setError('Invalid OTP');
+			return false;
+		}
+		else
+		{
+			$this->update(TAB_PREFIX."user",array('mobileno_verify'=>'1','mobile_verify_date'=>date('Y-m-d H:i:s')),array('user_id'=>$_SESSION['user_detail']['user_id']));
+			$this->setSuccess('Your mobile number is verified');
+			return true;
+		}
+	}
+	
     /* FUNCTION TO GET PAGE NAME */
 
     public function getPageName() {
@@ -322,6 +522,15 @@ class common extends db {
             } else
                 $_SESSION['error'][] = $msg;
         }
+		else{
+			if (is_array($msg)) {
+                foreach ($msg as $key => $value) {
+                    $_SESSION['error'][] = $value;
+                }
+            } else
+                $_SESSION['error'][] = $msg;
+		}
+		
     }
 
     protected function getError() {
@@ -342,7 +551,9 @@ class common extends db {
                 $msg .= "<i class='fa fa-exclamation-triangle'></i>&nbsp;" . ($x + 1) . ".&nbsp;" . $_SESSION['error'][$x] . "<br>";
             }
             $msg .= "</div>";
+			
             echo $msg;
+			
         }
     }
     
@@ -388,6 +599,9 @@ class common extends db {
             $_SESSION['success'] = '';
             unset($_SESSION['success']);
         }
+		if (isset($_SESSION['verify']) && !empty($_SESSION['verify']) && $_SESSION['verify'] != '') {
+			unset($_SESSION['verify']);
+		}
     }
 
     public function imageUploads($image, $uploadPath, $foldername, $allowdExt, $maxSize = '', $error = '') {
@@ -517,7 +731,7 @@ class common extends db {
     
     public function getClientKYCDetailsById($user_id = '') {
 
-        $data = $this->get_row("select ck.name, ck.email, ck.phone_number, ck.date_of_birth, ck.gstin_number, ck.pan_card_number, ck.uid_number, ck.identity_proof, ck.proof_photograph, ck.business_type, ck.address_proof, ck.registered_address, ck.registration_type, ck.state_id, s.state_name, s.state_code, s.state_tin, ck.added_by, ck.updated_by from " . $this->tableNames['client_kyc'] . " as ck inner join " . $this->tableNames['state'] . " as s on ck.state_id=s.state_id where 1=1 AND ck.added_by = " . $user_id);
+        $data = $this->get_row("select ck.business_area,ck.vendor_type,ck.name, ck.email, ck.phone_number, ck.date_of_birth, ck.gstin_number, ck.pan_card_number, ck.uid_number, ck.identity_proof, ck.proof_photograph, ck.business_type, ck.address_proof, ck.registered_address, ck.registration_type, ck.state_id, s.state_name, s.state_code, s.state_tin, ck.added_by, ck.updated_by from " . $this->tableNames['client_kyc'] . " as ck inner join " . $this->tableNames['state'] . " as s on ck.state_id=s.state_id where 1=1 AND ck.added_by = " . $user_id);
         $dataArr = array();
         if (!empty($data)) {
             $dataArr['data'] = $data;
@@ -728,6 +942,20 @@ class common extends db {
         return $server_output;
     }
     
+    protected function hitCurlwithHeader($url,$parameters,$header) {
+        
+        $curl = curl_init($url);
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $parameters);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        $server_output = curl_exec ($curl);
+        curl_close ($curl);
+        return $server_output;
+    }
+    
+    
+    
     public function can_read($page_name)
     {
         if(isset($_SESSION['user_role'][$page_name]['can_read']) && $_SESSION['user_role'][$page_name]['can_read']=='1')
@@ -780,10 +1008,26 @@ class common extends db {
         return $dataArr;
     }
 
-	/* country details by country code */
+    /* country details by country code */
     public function getCountryDetailByCountryCode($country_code) {
 
         $data = $this->get_row("select * from " . $this->tableNames['country'] . " where UPPER(country_code) = '" . strtoupper($country_code) . "'");
+        $dataArr = array();
+        if (!empty($data)) {
+            $dataArr['data'] = $data;
+            $dataArr['status'] = 'success';
+        } else {
+            $dataArr['data'] = '';
+            $dataArr['status'] = 'error';
+        }
+
+        return $dataArr;
+    }
+    
+    /* country details by country id */
+    public function getCountryDetailByCountryId($country_id) {
+
+        $data = $this->get_row("select * from " . $this->tableNames['country'] . " where id = " . $country_id);
         $dataArr = array();
         if (!empty($data)) {
             $dataArr['data'] = $data;
@@ -950,167 +1194,169 @@ class common extends db {
         }
     }
 
-    function convert_number_to_words($number) {
+	/* generate purchase invoice number for client */
+    public function generatePurchaseInvoiceNumber($clientId) {
 
-        //$hyphen      = '-';
-        //$conjunction = ' and ';
-        $hyphen      = ' ';
-        $conjunction = ' ';
-        $separator   = ', ';
-        $negative    = 'negative ';
-        $decimal     = ' point ';
-        
-        $dictionary  = array(
-            0          => 'zero',
-            1          => 'one',
-            2          => 'two',
-            3          => 'three',
-            4          => 'four',
-            5          => 'five',
-            6          => 'six',
-            7          => 'seven',
-            8          => 'eight',
-            9          => 'nine',
-            10         => 'ten',
-            11         => 'eleven',
-            12         => 'twelve',
-            13         => 'thirteen',
-            14         => 'fourteen',
-            15         => 'fifteen',
-            16         => 'sixteen',
-            17         => 'seventeen',
-            18         => 'eighteen',
-            19         => 'nineteen',
-            20         => 'twenty',
-            30         => 'thirty',
-            40         => 'fourty',
-            50         => 'fifty',
-            60         => 'sixty',
-            70         => 'seventy',
-            80         => 'eighty',
-            90         => 'ninety',
-            100        => 'hundred',
-            1000       => 'thousand',
-            100000     => 'lakh',
-            10000000   => 'crore',
-            1000000000 => 'arab'
-        );
+		$currentFinancialYear = $this->generateFinancialYear();
+        $query = "select purchase_invoice_id  from ".$this->tableNames['client_purchase_invoice']." where 1=1 AND financial_year = '".$currentFinancialYear."' AND added_by=" . $clientId;
+        $invoices = $this->get_results($query);
 
-        if (!is_numeric($number)) {
-            return false;
+        if( !empty($invoices) ) {
+
+            $nextInvoice = count($invoices) + 1;
+			return "PIN-" . str_pad($nextInvoice, 12, "0", STR_PAD_LEFT);
+        } else {
+            return "PIN-000000000001";
         }
-
-        if (($number >= 0 && (int) $number < 0) || (int) $number < 0 - PHP_INT_MAX) {
-            // overflow
-            /*trigger_error(
-                'convert_number_to_words only accepts numbers between -' . PHP_INT_MAX . ' and ' . PHP_INT_MAX,
-                E_USER_WARNING
-            );*/
-            return false;
-        }
-
-        if ($number < 0) {
-            return $negative . $this->convert_number_to_words(abs($number));
-        }
-
-        $string = $fraction = null;
-
-        if (strpos($number, '.') !== false) {
-            list($number, $fraction) = explode('.', $number);
-        }
-
-        switch (true) {
-            case $number < 21:
-                $string = $dictionary[$number];
-                break;
-            case $number < 100:
-                $tens   = ((int) ($number / 10)) * 10;
-                $units  = $number % 10;
-                $string = $dictionary[$tens];
-                if ($units) {
-                    $string .= $hyphen . $dictionary[$units];
-                }
-                break;
-            case $number < 1000:
-                $hundreds  = $number / 100;
-                $remainder = $number % 100;
-                $string = $dictionary[$hundreds] . ' ' . $dictionary[100];
-                if ($remainder) {
-                    $string .= $conjunction . $this->convert_number_to_words($remainder);
-                }
-                break;
-            case $number < 100000:
-                $thousands   = ((int) ($number / 1000));
-                $remainder = $number % 1000;
-
-                $thousands = $this->convert_number_to_words($thousands);
-
-                $string .= $thousands . ' ' . $dictionary[1000];
-                if ($remainder) {
-                    $string .= $separator . $this->convert_number_to_words($remainder);
-                }
-                break;
-            case $number < 10000000:
-                $lakhs   = ((int) ($number / 100000));
-                $remainder = $number % 100000;
-
-                $lakhs = $this->convert_number_to_words($lakhs);
-
-                $string = $lakhs . ' ' . $dictionary[100000];
-                if ($remainder) {
-                    $string .= $separator . $this->convert_number_to_words($remainder);
-                }
-                break;
-            case $number < 1000000000:
-                $crores   = ((int) ($number / 10000000));
-                $remainder = $number % 10000000;
-
-                $crores = $this->convert_number_to_words($crores);
-
-                $string = $crores . ' ' . $dictionary[10000000];
-                if ($remainder) {
-                    $string .= $separator . $this->convert_number_to_words($remainder);
-                }
-                break;
-            case $number < 100000000000:
-                $arabs   = ((int) ($number / 1000000000));
-                $remainder = $number % 1000000000;
-
-                $arabs = $this->convert_number_to_words($arabs);
-
-                $string = $arabs . ' ' . $dictionary[1000000000];
-                if ($remainder) {
-                    $string .= $separator . $this->convert_number_to_words($remainder);
-                }
-                break;
-            default:
-                $baseUnit = pow(1000, floor(log($number, 1000)));
-                $numBaseUnits = (int) ($number / $baseUnit);
-                $remainder = $number % $baseUnit;
-                $string = $this->convert_number_to_words($numBaseUnits) . ' ' . $dictionary[$baseUnit];
-                if ($remainder) {
-                    $string .= $remainder < 100 ? $conjunction : $separator;
-                    $string .= $this->convert_number_to_words($remainder);
-                }
-                break;
-        }
-
-        if (null !== $fraction && is_numeric($fraction)) {
-            $string .= $decimal;
-            $words = array();
-            foreach (str_split((string) $fraction) as $number) {
-                $words[] = $dictionary[$number];
-            }
-            $string .= implode(' ', $words);
-        }
-
-        return $string;
     }
+
+	function convert_number_to_words($number) {
+
+		//$hyphen      = '-';
+		//$conjunction = ' and ';
+		$hyphen      = ' ';
+		$conjunction = ' ';
+		$separator   = ' ';
+		$negative    = 'negative ';
+		$decimal     = ' and ';
+
+		$dictionary  = array(
+			0          => 'zero',
+			1          => 'one',
+			2          => 'two',
+			3          => 'three',
+			4          => 'four',
+			5          => 'five',
+			6          => 'six',
+			7          => 'seven',
+			8          => 'eight',
+			9          => 'nine',
+			10         => 'ten',
+			11         => 'eleven',
+			12         => 'twelve',
+			13         => 'thirteen',
+			14         => 'fourteen',
+			15         => 'fifteen',
+			16         => 'sixteen',
+			17         => 'seventeen',
+			18         => 'eighteen',
+			19         => 'nineteen',
+			20         => 'twenty',
+			30         => 'thirty',
+			40         => 'fourty',
+			50         => 'fifty',
+			60         => 'sixty',
+			70         => 'seventy',
+			80         => 'eighty',
+			90         => 'ninety',
+			100        => 'hundred',
+			1000       => 'thousand',
+			100000     => 'lakh',
+			10000000   => 'crore'
+		);
+	
+		if (!is_numeric($number)) {
+			return false;
+		}
+	
+		if (($number >= 0 && (int) $number < 0) || (int) $number < 0 - PHP_INT_MAX) {
+
+			// overflow
+			/*trigger_error(
+				'convert_number_to_words only accepts numbers between -' . PHP_INT_MAX . ' and ' . PHP_INT_MAX,
+				E_USER_WARNING
+			);*/
+			return false;
+		}
+
+		if (strlen($number) > 13) {
+			return false;
+		}
+	
+		if ($number < 0) {
+			return $negative . $this->convert_number_to_words(abs($number));
+		}
+	
+		$string = $fraction = null;
+	
+		if (strpos($number, '.') !== false) {
+			list($number, $fraction) = explode('.', $number);
+		}
+	
+		switch (true) {
+			case $number < 21:
+				$string = $dictionary[$number];
+				break;
+			case $number < 100:
+				$tens   = ((int) ($number / 10)) * 10;
+				$units  = $number % 10;
+				$string = $dictionary[$tens];
+				if ($units) {
+					$string .= $hyphen . $dictionary[$units];
+				}
+				break;
+			case $number < 1000:
+				$hundreds  = $number / 100;
+				$remainder = $number % 100;
+				$string = $dictionary[$hundreds] . ' ' . $dictionary[100];
+				if ($remainder) {
+					$string .= $conjunction . $this->convert_number_to_words($remainder);
+				}
+				break;
+			case $number < 100000:
+				$thousands   = ((int) ($number / 1000));
+				$remainder = $number % 1000;
+	
+				$thousands = $this->convert_number_to_words($thousands);
+	
+				$string .= $thousands . ' ' . $dictionary[1000];
+				if ($remainder) {
+					$string .= $separator . $this->convert_number_to_words($remainder);
+				}
+				break;
+			case $number < 10000000:
+				$lakhs   = ((int) ($number / 100000));
+				$remainder = $number % 100000;
+	
+				$lakhs = $this->convert_number_to_words($lakhs);
+	
+				$string = $lakhs . ' ' . $dictionary[100000];
+				if ($remainder) {
+					$string .= $separator . $this->convert_number_to_words($remainder);
+				}
+				break;
+			default:
+				$crores = ((int) ($number / 10000000));
+				//$remainder = $number % 10000000;
+				$remainder = bcmod($number, 10000000);
+
+				$crores = $this->convert_number_to_words($crores);
+				$string = $crores . ' ' . $dictionary[10000000];
+				if ($remainder) {
+					$string .= $separator . $this->convert_number_to_words($remainder);
+				}
+				break;
+		}
+	
+		if (null !== $fraction && is_numeric($fraction) && $fraction!=0) {
+			$string .= $decimal;
+			
+			if($fraction < 10 && substr($fraction,0,1)!=0)
+				$fraction*=10;
+			
+			$fraction= (int) $fraction;
+			
+			$string .= $this->convert_number_to_words($fraction);
+			$string .= ' paise';
+		}
+	
+		return $string;
+	}
     
     final public function getClientReturn($id)
     {
         $return_id = $this->sanitize($id);
-        echo $query = "select * from ".TAB_PREFIX."return where client_id='".$_SESSION['user_detail']['user_id']."' and return_id='".$id."'";
+        $query = "select * from ".TAB_PREFIX."return where client_id='".$_SESSION['user_detail']['user_id']."' and return_id='".$id."'";
         return $this->get_results($query);
     }
     final public function getClientKyc()

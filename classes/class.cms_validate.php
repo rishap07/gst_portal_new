@@ -466,6 +466,12 @@ class cms_validate {
 
     protected static function patternValidation($input, $param, $name, $lableName) {
 
+        /*if($param == "/^(([0-9]){2}([A-Z]){5}([0-9]){4}([A-Z]){1}([A-Z0-9]){1}([Z]){1}([A-Z0-9]){1})+$/") {
+            echo $param;
+            echo "<br>";
+            die;
+        }*/
+
         if (self::isBlankField($input) === false) {
 
             if (preg_match($param, $input)) {

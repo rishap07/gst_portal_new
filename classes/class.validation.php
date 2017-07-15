@@ -46,17 +46,23 @@ class validation extends upload {
             'client_bos_invoice_item' => TAB_PREFIX . 'client_bos_invoice_item',
             'client_rv_invoice' => TAB_PREFIX . 'client_rv_invoice',
             'client_rv_invoice_item' => TAB_PREFIX . 'client_rv_invoice_item',
-	    'client_rf_invoice' => TAB_PREFIX . 'client_rf_invoice',
+			'client_rf_invoice' => TAB_PREFIX . 'client_rf_invoice',
             'client_rf_invoice_item' => TAB_PREFIX . 'client_rf_invoice_item',
-	    'client_pv_invoice' => TAB_PREFIX . 'client_pv_invoice',
+			'client_pv_invoice' => TAB_PREFIX . 'client_pv_invoice',
             'client_pv_invoice_item' => TAB_PREFIX . 'client_pv_invoice_item',
             'client_rt_invoice' => TAB_PREFIX . 'client_rt_invoice',
             'client_rt_invoice_item' => TAB_PREFIX . 'client_rt_invoice_item',
             'client_st_invoice' => TAB_PREFIX . 'client_st_invoice',
             'client_st_invoice_item' => TAB_PREFIX . 'client_st_invoice_item',
+			'client_purchase_invoice' => TAB_PREFIX . 'client_purchase_invoice',
+            'client_purchase_invoice_item' => TAB_PREFIX . 'client_purchase_invoice_item',
             'business_type' => TAB_PREFIX . 'business_type',
-            'api' => TAB_PREFIX . 'api',
-            'return' => TAB_PREFIX . 'return'
+			'business_area' => TAB_PREFIX . 'business_area',
+			'vendor_type' => TAB_PREFIX . 'vendor_type',
+			'forgot_email' => TAB_PREFIX . 'forgot_email',
+			'api' => TAB_PREFIX . 'api',
+            'return' => TAB_PREFIX . 'return',
+			'email'=>TAB_PREFIX.'email'
         );
 
         $this->checkUserPortalAccess();
@@ -74,6 +80,9 @@ class validation extends upload {
     //onedash   /^[a-zA-Z\d]+[(-{1})|(a-zA-Z\d)][a-zA-Z\d]+$/
     protected $validateType = array(
         "username" => "[a-zA-Z\d]+[(_{1}\-{1}\.{1})|(a-zA-Z\d)][a-zA-Z\d]",
+		 "firstname" => "[a-zA-Z\d]+[(_{1}\-{1}\.{1})|(a-zA-Z\d)][a-zA-Z\d]",
+		 "lastname" => "[a-zA-Z\d]+[(_{1}\-{1}\.{1})|(a-zA-Z\d)][a-zA-Z\d]",
+		"companyname" => "[a-zA-Z\d]+[(_{1}\-{1}\.{1})|(a-zA-Z\d)][a-zA-Z\d]",
         "invoicenumber" => "[a-zA-Z\d]+[(-{1})|(a-zA-Z\d)][a-zA-Z\d]",
         "alphanumeric" => "A-Za-z0-9\n\r\&\/\-\(\)\,\.",
         "mobilenumber" => "\d{10}",
@@ -91,11 +100,11 @@ class validation extends upload {
     protected $validationMessage = array(
         'mandatory'=> 'Fill all mandatory fields',
         'failed' => "Some error try again to submit.",
-        'loginerror' => 'Username or Password Incorrect.',
+        'loginerror' => 'Username or Password you entered is incorrect.',
         'passwordnotmatched' => 'Password not matched.',
-        'usernameexist' => 'Username already exist.',
-        'emailexist' => 'Email already exist.',
-        'companycodeexist' => 'Company Code already exist.',
+        'usernameexist' => 'Username already exists.',
+        'emailexist' => 'Email already exists.',
+        'companycodeexist' => 'Company Code already exists.',
         'usernotexist' => 'User not exist.',
         'userexist' => 'User already exist.',
         'useradded' => 'User added successfully.',
@@ -158,7 +167,7 @@ class validation extends upload {
             $currentUserDetails = $this->getUserDetailsById( $_SESSION['user_detail']['user_id'] );
             if($currentUserDetails['data']->user_group == 3) {
 
-                if( isset($_GET['page']) && $_GET['page'] != "plan_chooseplan" && $_GET['page'] != "logout") {
+                if( isset($_GET['page']) && $_GET['page'] != "plan_chooseplan" && $_GET['page'] != "logout"  && $_GET['page'] != "payment_response") {
 
                     if($currentUserDetails['data']->plan_id == 0) {
                         $this->redirect(PROJECT_URL . "?page=plan_chooseplan");
@@ -247,5 +256,42 @@ class validation extends upload {
         
         $query = "select user_id, first_name, last_name, user_group, username, (case when payment_status='0' Then 'pending' when  payment_status='1' then 'accepted' when  payment_status='2' then 'mark as fraud' when  payment_status='3' then 'rejected' when  payment_status='4' then 'refunded' end) as payment_status from ".$this->tableNames['user']." where  is_deleted='".$is_deleted."' and user_group='3' and added_by='".$_SESSION['user_detail']['user_id']."' order by ".$orderby." ".$limit;
         return $this->get_results($query);
+    }
+
+    public function gstReturnSummary()
+    {
+        $return_id = $_POST['return_id'];    
+        $dataResults = $this->getClientReturn($this->sanitize($return_id));
+        $dataKyc = $this->getClientKyc();
+
+        $month = $dataResults[0]->return_month;
+        $query = "select  SUM(b.cgst_amount) AS totalcgst, SUM(b.igst_amount) AS totaligst, SUM(b.sgst_amount) AS totalsgst, sum(b.taxable_subtotal) as totalsub from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id where a.invoice_date like'".$month."%' and a.added_by='".$_SESSION['user_detail']['user_id']."'";
+        $flag=0;
+        $data2 = $this->get_results($query);
+        $dataArr = array();        
+        if(!empty($data2))
+        {
+            $dataArr['msg']='suc';
+            $dataArr['data']['totalcgst']= $data2[0]->totalcgst;
+            $dataArr['data']['totalsgst']= $data2[0]->totalsgst;
+            $dataArr['data']['totaligst']= $data2[0]->totaligst;
+            $dataArr['data']['totalsub']= $data2[0]->totalsub;
+            $dataArr['data']['retperiod']= $month;
+            $flag=1;
+        }
+        $query = "select  SUM(invoice_total_value) AS total,count(invoice_total_value) as invoicecount from ".TAB_PREFIX."client_invoice where invoice_date like'".$month."%' and added_by='".$_SESSION['user_detail']['user_id']."'";
+        $data2 = $this->get_results($query);
+        if(!empty($data2))
+        {
+            $dataArr['data']['total']= $data2[0]->total;
+            $dataArr['data']['invoice_count']= $data2[0]->invoicecount;
+            $flag=1;
+        }
+
+        if($flag==0)
+        {
+            $dataArr['msg']='err';
+        }
+        return $dataArr;
     }
 }

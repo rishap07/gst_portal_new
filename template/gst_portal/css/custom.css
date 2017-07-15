@@ -1,57 +1,3 @@
-#tabs {
-	text-align:center;
-}
-
-#tabs ul.tabinner {
-	display:inline-block;
-}
-
-.columns {
-	float: left;
-	width: 23%;
-	padding: 1%;
-}
-
-.price {
-	list-style-type: none;
-	border: 1px solid #eee;
-	margin: 0;
-	padding: 0;
-	-webkit-transition: 0.3s;
-	transition: 0.3s;
-}
-
-.price:hover {
-	box-shadow: 0 8px 12px 0 rgba(0,0,0,0.2)
-}
-
-.price .header {
-	background-color: #111;
-	color: white;
-	font-size: 25px;
-}
-
-.price li {
-	border-bottom: 1px solid #eee;
-	padding: 20px;
-	text-align: center;
-}
-
-.price .grey {
-	background-color: #eee;
-	font-size: 20px;
-}
-
-.button {
-	background-color: #4CAF50;
-	border: none;
-	color: white !important;
-	padding: 10px 25px;
-	text-align: center;
-	text-decoration: none;
-	font-size: 18px;
-}
-
 .name_selection_choice {
     background-color: #e4e4e4;
     border: 1px solid #aaa;
@@ -68,9 +14,6 @@
     display: inline-block;
     font-weight: bold;
     margin-right: 2px;
-}
-.errorValidationContainer {
-	display:none;
 }
 .inovicedeatil .select2-container {
 	max-width:335px !important;
@@ -105,9 +48,79 @@
 	overflow-y: scroll !important;
 	overflow-x: hidden !important;
 }
-
-@media only screen and (max-width: 600px) {
-	.columns {
-		width: 100%;
-	}
+.invoice-box{
+	margin:auto;
+	padding:10px;
+	border:1px solid #eee;
+	font-size:16px;
+	line-height:24px;
+	color:#555;
+}
+.invoice-box table{
+	width:100%;
+	line-height:inherit;
+	text-align:left;
+}
+.invoice-box table td{
+	padding:5px;
+	vertical-align:top;
+}
+.invoice-box table tr td:nth-child(2){
+	text-align:right;
+}
+.invoice-box table tr.top table td{
+	padding-bottom:20px;
+}
+.invoice-box table tr.top table td.title{
+	font-size:45px;
+	line-height:45px;
+	color:#333;
+}
+.invoice-box table tr.information table td{
+	padding-bottom:40px;
+}
+.invoice-box table tr.heading td{
+	background:#eee;
+	border-bottom:1px solid #ddd;
+	font-weight:bold;
+}
+.invoice-box table tr.details td{
+	padding-bottom:20px;
+}
+.invoice-box table tr.item td{
+	border-bottom:1px solid #eee;
+}
+.invoice-box table tr.item.last td{
+	border-bottom:none;
+}
+.invoice-box table tr.total td{
+	border-top:2px solid #eee;
+	font-weight:bold;
+	vertical-align:top;
+	text-align:right;
+}
+.view-invoice-table, .view-invoice-table tr, .view-invoice-table tr td {
+	font-size:14px;
+}
+table.dataTable tbody tr.even {
+	background-color: #efefef;
+}
+#add-item-success {
+	display:none;
+}
+#add-item-error {
+	display:none;
+}
+.left-submenu {
+	background: #e5e5e5;
+	width: 100%;
+}
+.left-submenu li {
+	padding: 0px !important;
+}
+#sidebar > .nav > li > ul.left-submenu li a {
+	padding: 10px 10px 10px 25px !important;
+	font-size: 14px;
+	color: #333333;
+	background: #e5e5e5;
 }

@@ -105,7 +105,7 @@ $dataKyc = $obj_client->getClientKyc();
               <td colspan="11" class="txtheading"> 4A. Supplies other than those (i) attracting reverse charge and (ii) supplies made through e-commerce operator</td>
             </tr>
             <?php
-            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id where a.invoice_date like'".$month."%' and a.invoice_type='taxinvoice' and a.billing_gstin_number!='' and (a.supply_type!='tcs' and a.supply_type!='reversecharge') and a.added_by='".$_SESSION['user_detail']['user_id']."'";
+            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id where a.invoice_date like'".$month."%' and a.invoice_type='taxinvoice' and a.invoice_nature='salesinvoice' and a.billing_gstin_number!='' and (a.supply_type!='tcs' and a.supply_type!='reversecharge') and a.added_by='".$_SESSION['user_detail']['user_id']."'";
             $data2 = $obj_client->get_results($query);
             
             if(!empty($data2))
@@ -154,7 +154,7 @@ $dataKyc = $obj_client->getClientKyc();
               <td colspan="11" class="txtheading"> 4B. Supplies attracting tax on reverse charge basis</td>
             </tr>
                 <?php
-            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where a.invoice_date like'".$month."%' and a.invoice_type='taxinvoice' and a.gstin_number!='' and a.added_by='".$_SESSION['user_detail']['user_id']."' and a.supply_type='reversecharge' and a.invoice_nature='salesinvoice'";
+            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id  where a.invoice_date like'".$month."%' and a.invoice_type='taxinvoice' and a.gstin_number!='' and a.added_by='".$_SESSION['user_detail']['user_id']."' and a.supply_type='reversecharge' and a.invoice_nature='salesinvoice'";
             $data2 = $obj_client->get_results($query);
             
             if(!empty($data2))
@@ -203,7 +203,7 @@ $dataKyc = $obj_client->getClientKyc();
               <td colspan="11" class="txtheading"> 4C. Supplies made through e-commerce operator attracting TCS (operator wise, rate wise)</td>
             </tr>
             <?php
-            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by  where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.gstin_number!='' and (a.supply_type='tcs' ) and a.added_by='".$_SESSION['user_detail']['user_id']."' and a.supply_type='tcs' and a.invoice_nature='salesinvoice'";
+            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id  where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.gstin_number!='' and (a.supply_type='tcs' ) and a.added_by='".$_SESSION['user_detail']['user_id']."' and a.supply_type='tcs' and a.invoice_nature='salesinvoice'";
             $data2 = $obj_client->get_results($query);
             
             if(!empty($data2))
@@ -297,7 +297,7 @@ $dataKyc = $obj_client->getClientKyc();
               <td colspan="11" class="txtheading"> 5A. Outward supplies (other than supplies made through e-commerce operator, rate wise)</td>
             </tr>
             <?php
-            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.billing_gstin_number='' and a.invoice_total_value>250000 and a.supply_type!='tcs'  and a.added_by='".$_SESSION['user_detail']['user_id']."'";
+            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id  where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.billing_gstin_number='' and a.invoice_total_value>250000 and a.supply_type!='tcs'  and a.added_by='".$_SESSION['user_detail']['user_id']."'";
             $data2 = $obj_client->get_results($query);
             if(!empty($data2))
             {
@@ -339,7 +339,7 @@ $dataKyc = $obj_client->getClientKyc();
               <td colspan="11" class="txtheading"> 5B. Supplies made through e-commerce operator attracting TCS (operator wise, rate wise)</td>
             </tr>
             <?php
-            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.billing_gstin_number='' and a.invoice_total_value>250000 and a.supply_type='tcs'  and a.added_by='".$_SESSION['user_detail']['user_id']."'";
+            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id  where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.billing_gstin_number='' and a.invoice_total_value>250000 and a.supply_type='tcs'  and a.added_by='".$_SESSION['user_detail']['user_id']."'";
             $data2 = $obj_client->get_results($query);
             if(!empty($data2))
             {
@@ -425,7 +425,7 @@ $dataKyc = $obj_client->getClientKyc();
               <td colspan="11" class="txtheading">6A. Exports</td>
             </tr>
             <?php
-            $query = "select a.*,b.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id  inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where a.invoice_date like'".$month."%' and a.invoice_type='exportinvoice' and a.added_by='".$_SESSION['user_detail']['user_id']."'";
+            $query = "select a.*,b.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id where a.invoice_date like'".$month."%' and a.invoice_type='exportinvoice' and a.added_by='".$_SESSION['user_detail']['user_id']."'";
             $data2 = $obj_client->get_results($query);
             if(!empty($data2))
             {
@@ -467,7 +467,7 @@ $dataKyc = $obj_client->getClientKyc();
               <td colspan="11" class="txtheading">6B. Supplies made to SEZ unit or SEZ Developer</td>
             </tr>
             <?php
-            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='sezunitinvoice' and a.added_by='".$_SESSION['user_detail']['user_id']."'";
+            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id where invoice_date like'".$month."%' and invoice_type='sezunitinvoice' and a.added_by='".$_SESSION['user_detail']['user_id']."'";
             $data2 = $obj_client->get_results($query);
             if(!empty($data2))
             {
@@ -509,7 +509,7 @@ $dataKyc = $obj_client->getClientKyc();
               <td colspan="11" class="txtheading">6C. Deemed exports</td>
             </tr>
             <?php
-            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='deemedexportinvoice' and a.added_by='".$_SESSION['user_detail']['user_id']."'";
+            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id where invoice_date like'".$month."%' and invoice_type='deemedexportinvoice' and a.added_by='".$_SESSION['user_detail']['user_id']."'";
             $data2 = $obj_client->get_results($query);
             if(!empty($data2))
             {
@@ -621,7 +621,7 @@ $dataKyc = $obj_client->getClientKyc();
               <td colspan="6" class="fontbold">GSTIN of e-commerce operator</td>
             </tr>
             <?php
-            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.billing_gstin_number=''   and (a.supply_type='tcs') and a.added_by='".$_SESSION['user_detail']['user_id']."' && b.igst_rate!='0.00'  and a.supply_type='tcs' ";
+            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.billing_gstin_number=''   and (a.supply_type='tcs') and a.added_by='".$_SESSION['user_detail']['user_id']."' && b.igst_rate!='0.00'  and a.supply_type='tcs' ";
             $data2 = $obj_client->get_results($query);
             if(!empty($data2))
             {
@@ -700,7 +700,7 @@ $dataKyc = $obj_client->getClientKyc();
               <td colspan="6" class="fontbold" style="font-size:14px;">GSTIN of e-commerce operator</td>
             </tr>
             <?php
-            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id inner join ".TAB_PREFIX."client_kyc k on a.added_by=k.added_by inner join ".TAB_PREFIX."business_type bt on k.business_type=bt.business_id where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.invoice_nature='salesinvoice' and a. and a.billing_gstin_number='' and a.invoice_total_value<=250000 and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state=a.supply_place and a.supply_type='tcs'";
+            $query = "select a.*,b.*,s.* from ".TAB_PREFIX."client_invoice a inner join ".TAB_PREFIX."client_invoice_item b on a.invoice_id=b.invoice_id inner join ".TAB_PREFIX."master_state s on a.supply_place=s.state_id where invoice_date like'".$month."%' and invoice_type='taxinvoice' and a.invoice_nature='salesinvoice' and a. and a.billing_gstin_number='' and a.invoice_total_value<=250000 and a.added_by='".$_SESSION['user_detail']['user_id']."' && a.company_state=a.supply_place and a.supply_type='tcs'";
             $data2 = $obj_client->get_results($query);
             if(!empty($data2))
             {

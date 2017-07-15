@@ -148,6 +148,7 @@ foreach($rResult as $aRow) {
     $row[] = $status;
     $row[] = $payment_status;
     $row[] = '<a href="'.PROJECT_URL.'/?page=user_adminupdate&action=editAdmin&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=user_adminlist&action=deleteAdmin&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
+    
     $output['aaData'][] = $row;
     $temp_x++;
 }

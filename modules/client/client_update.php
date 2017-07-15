@@ -68,47 +68,46 @@ if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClien
     $dataArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_GET['id']) );
 }
 ?>
+<div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
+    <div class="col-md-12 col-sm-12 col-xs-12">
 
-<!--========================sidemenu over=========================-->
-<div class="admincontainer greybg">
-    <div class="formcontainer">
-        
-        <?php $obj_client->showErrorMessage(); ?>
-        <?php $obj_client->showSuccessMessge(); ?>
-        <?php $obj_client->unsetMessage(); ?>
+        <div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Business User</h1></div>
+			<div class="clear"></div>
+            <?php $obj_client->showErrorMessage(); ?>
+			<?php $obj_client->showSuccessMessge(); ?>
+			<?php $obj_client->unsetMessage(); ?>
 
-        <h1><?php if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClient") { echo 'Update'; } else { echo 'Add'; } ?> Client User</h1>
-        <hr class="headingborder">
+         
         <div class="clear"></div>
-
+			<div class="whitebg formboxcontainer">
         <form name="client-user" id="client-user" method="POST">
+            <h2 class="greyheading"><?php if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "Edit ") { echo 'Update'; } else { echo 'Add '; } ?>Business User</h2>
+       
+                <div class="row">
+                     
+				                
+                   	 <div class="col-md-4 col-sm-4 col-xs-12 form-group">
 
-            <div class="adminformbx">
-
-                <div class="kycform">
-
-                    <div class="kycmainbox">
-                        
-                        <div class="formcol">
                             <label>First Name<span class="starred">*</span></label>
-                            <input type="text" name="first_name" id="first_name" placeholder="Enter first name" class="required" data-bind="content" value="<?php if(isset($_POST['first_name'])){ echo $_POST['first_name']; } else if(isset($dataArr['data']->first_name)){ echo $dataArr['data']->first_name; } ?>" />
+                            <input type="text" name="first_name" id="first_name" placeholder="Enter first name" class="required form-control" data-bind="content" value="<?php if(isset($_POST['first_name'])){ echo $_POST['first_name']; } else if(isset($dataArr['data']->first_name)){ echo $dataArr['data']->first_name; } ?>" />
                         </div>
-                        
-                        <div class="formcol two">
+                      <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                           
                             <label>Last Name<span class="starred">*</span></label>
-                            <input type="text" name="last_name" id="last_name" placeholder="Enter last name" class="required" data-bind="content" value="<?php if(isset($_POST['last_name'])){ echo $_POST['last_name']; } else if(isset($dataArr['data']->last_name)){ echo $dataArr['data']->last_name; } ?>" />
+                            <input type="text" name="last_name" id="last_name" placeholder="Enter last name" class="required form-control" data-bind="content" value="<?php if(isset($_POST['last_name'])){ echo $_POST['last_name']; } else if(isset($dataArr['data']->last_name)){ echo $dataArr['data']->last_name; } ?>" />
                         </div>
-                        
-                        <div class="formcol third">
+
+                             <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                      
+                         
                             <label>Company Name<span class="starred">*</span></label>
-                            <input type="text" name="company_name" id="company_name" placeholder="Enter company name" class="required" data-bind="content" value="<?php if(isset($_POST['company_name'])){ echo $_POST['company_name']; } else if(isset($dataArr['data']->company_name)){ echo $dataArr['data']->company_name; } ?>" />
+                            <input type="text" name="company_name" id="company_name" placeholder="Enter company name" class="required form-control" data-bind="content" value="<?php if(isset($_POST['company_name'])){ echo $_POST['company_name']; } else if(isset($dataArr['data']->company_name)){ echo $dataArr['data']->company_name; } ?>" />
                         </div>
-                        
-                        <div class="clear"></div>
-                        
-                        <?php if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClient") { ?>
+						<div class="clear"></div>
+						
+					   <?php if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClient") { ?>
                             
-                            <div class="formcol">
+                            <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                                 <label>Username</label>
                                 <div class="clear"></div>
                                 <div class="username not-allowed"><?php if(isset($dataArr['data']->username)){ echo $dataArr['data']->username; } ?></div>
@@ -116,67 +115,72 @@ if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClien
                         
                         <?php } else { ?>
                         
-                            <div class="formcol">
+                          <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                                 <label>Username<span class="starred">*</span></label>
                                 <div style="clear: both;">
-                                <?php echo $dataCurrentArr['data']->subscriber_code; ?>_<input type="text" name="username" id="username" placeholder="Enter username" class="required" data-bind="content" value="<?php echo isset($_POST['username']) ? $_POST['username'] : ''; ?>" style="width:auto" />
+                                <?php echo $dataCurrentArr['data']->subscriber_code; ?>_<input type="text" name="username" id="username" placeholder="Enter username" class="required form-control" data-bind="content" value="<?php echo isset($_POST['username']) ? $_POST['username'] : ''; ?>" style="width:auto" />
                                 </div>
                             </div>
                         
                         <?php } ?>
-                        
-                        <?php if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClient") { ?>
+                            <?php if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClient") { ?>
                             
-                            <div class="formcol two">
+                            <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                                 <label>Password</label>
-                                <input type="password" name="password" id="password" placeholder="Enter password" data-bind="content" />
+                                <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" data-bind="content" />
                             </div>
                         
                         <?php } else { ?>
                         
-                            <div class="formcol two">
+                            <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                                 <label>Password<span class="starred">*</span></label>
-                                <input type="password" name="password" id="password" placeholder="Enter password" class="required" data-bind="content" />
+                                <input type="password" name="password" id="password" placeholder="Enter password" class="required form-control" data-bind="content" />
                             </div>
                         
                         <?php } ?>
-
-                        <div class="formcol third">
+                 	  <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                          
                             <label>Email Address<span class="starred">*</span></label>
-                            <input type="text" name="emailaddress" id="emailaddress" placeholder="Enter email address" class="required" data-bind="email" value="<?php if(isset($_POST['emailaddress'])){ echo $_POST['emailaddress']; } else if(isset($dataArr['data']->email)){ echo $dataArr['data']->email; } ?>" />
-                        </div>                        
-                        <div class="clear"></div>
-                        
-                        <div class="formcol">
+                            <input type="text" name="emailaddress" id="emailaddress" placeholder="Enter email address" class="required form-control" data-bind="email" value="<?php if(isset($_POST['emailaddress'])){ echo $_POST['emailaddress']; } else if(isset($dataArr['data']->email)){ echo $dataArr['data']->email; } ?>" />
+                        </div>    
+						<div class="clear"></div>
+
+						      <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                                                        
                             <label>Phone Number<span class="starred">*</span></label>
-                            <input type="text" name="phonenumber" id="phonenumber" placeholder="Enter phone number" class="required" data-bind="mobilenumber" value="<?php if(isset($_POST['phonenumber'])){ echo $_POST['phonenumber']; } else if(isset($dataArr['data']->phone_number)){ echo $dataArr['data']->phone_number; } ?>" />
+                            <input type="text" name="phonenumber" id="phonenumber" placeholder="Enter phone number" class="required form-control" data-bind="mobilenumber" value="<?php if(isset($_POST['phonenumber'])){ echo $_POST['phonenumber']; } else if(isset($dataArr['data']->phone_number)){ echo $dataArr['data']->phone_number; } ?>" />
                         </div>
-                        
-                        <div class="formcol third">
+						 
+                       <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                       
                             <label>Status<span class="starred">*</span></label>
                             <div class="clear"></div>
                             <input type="radio" name="user_status" <?php if(isset($_POST['user_status']) &&  $_POST['user_status'] === '1'){ echo 'checked="checked"'; } else if(isset($dataArr['data']->status) && $dataArr['data']->status === '1') { echo 'checked="checked"'; } ?> value="1" /><span>Active</span> <input type="radio" name="user_status" <?php if(isset($_POST['user_status']) &&  $_POST['user_status'] === '0'){ echo 'checked="checked"'; } else if(isset($dataArr['data']->status) && $dataArr['data']->status === '0') { echo 'checked="checked"'; } ?> value="0" /><span>Inactive</span>
                         </div>
-                        <div class="clear"></div>
-
-                        <div class="clear height10"></div>
-                        
-                        <div class="tc">
-                            <input type='submit' class="btn orangebg" name='submit' value='<?php if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClient") { echo 'update'; } else { echo 'submit'; } ?>' id='submit'>
-                            <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=client_list"; ?>';" class="btn redbg" class="redbtn marlef10"/>
+              <div class="clear"></div>
+						 <div class="adminformbxsubmit" style="width:100%;">
+                             
+						 
+						 
+						   
+						<div class="tc">
+                            <input type='submit' class="btn btn-danger" name='submit' value='<?php if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClient") { echo 'update'; } else { echo 'submit'; } ?>' id='submit'>
+                            <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=client_list"; ?>';" class="btn btn-danger"/>
                         </div>
+						
 
-                    </div>
-
-                </div>
-
-            </div>
-
-        </form>
-<!--========================adminformbox over=========================-->    
+                        </div>
+							
+                        </div>
+                
+ </div>
+</form>
     </div>
-<!--========================admincontainer over=========================-->
-</div>
+                </div>
+      
+                       
+<!--========================sidemenu over=========================-->
+
 <script>
     $(document).ready(function () {
         $('#submit').click(function () {

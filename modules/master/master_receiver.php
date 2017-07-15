@@ -7,19 +7,21 @@
 		exit();
 	}
 ?>
-<div class="admincontainer greybg">
-    <div class="formcontainer">
+<div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
+    <div class="col-md-12 col-sm-12 col-xs-12">   
+		<h1>Receiver/Customer</h1>
+        <div class="whitebg formboxcontainer">
         <div>
-            <a class='addnew' href='<?php echo PROJECT_URL;?>/?page=master_receiver_update'>Add New</a>
+            <a class='btn btn-default btn-success btnwidth addnew' href='<?php echo PROJECT_URL;?>/?page=master_receiver_update'>Add New</a>
         </div>
-        <h1>Receiver</h1>
-        <hr class="headingborder">
-        <h2 class="greyheading">Receiver Listing</h2>
-        <div class="adminformbx">
-            <?php $obj_master->showErrorMessage(); ?>
+        <div class="clear height10"></div>
+         <?php $obj_master->showErrorMessage(); ?>
             <?php $obj_master->showSuccessMessge(); ?>
             <?php $obj_master->unsetMessage(); ?>
-            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tablecontent" id="mainTable">
+        <h2 class="greyheading">Receiver/Customer Listing</h2>
+        <div class="adminformbx">
+        
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable">
                 <thead>
                     <tr>
                         <th align='left' width="72">#</th>
@@ -37,6 +39,9 @@
             </table>
         </div>
     </div>
+</div>
+</div>
+<div class="clear height80">
 </div>
 <script>
     $(document).ready(function () {

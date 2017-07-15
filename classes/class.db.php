@@ -234,7 +234,7 @@ class db {
         $values = '(' . implode(', ', $values) . ')';
 
         $sql .= $fields . ' VALUES ' . $values;
-		//echo $sql; die;
+		//echo $sql; 
 		$query = $this->link->query($sql);
         if ($this->link->error) {
             $this->log_db_errors($this->link->error, $query);
@@ -706,6 +706,7 @@ class db {
             }
             $query .= ' ' . $codition;
         }
+
         return $query;
     }
 
@@ -719,7 +720,7 @@ class db {
                 $this->log_db_errors($this->link->error, $query);
                 return false;
             } else {
-                $this->usersLog($tableName, "delete", $whereCondition);
+                $this->usersLog($tableName, "delete", json_encode($whereCondition));
                 return true;
             }
         }
@@ -1024,9 +1025,8 @@ class db {
     }
 
     public function usersLog($action_table, $action_type, $description) {
-		
-        $qry = "insert into ".TAB_PREFIX."data_log set `action_by` = '". (isset($_SESSION['user_detail']['user_id']) ? $_SESSION['user_detail']['user_id'] : '0') ."', `action_table` = '" . $action_table . "', `action_type` = '" . $action_type . "', `description` = '" . $this->escape($description) . "', `date_time` = now()";
-        $this->query($qry);
-    }
 
+        $qry = "insert into ".TAB_PREFIX."data_log set `action_by` = '". (isset($_SESSION['user_detail']['user_id']) ? $_SESSION['user_detail']['user_id'] : '0') ."', `action_table` = '" . $action_table . "', `action_type` = '" . $action_type . "', `description` = '" . $this->escape($description) . "', `date_time` = now()";
+		$this->query($qry);
+    }
 }

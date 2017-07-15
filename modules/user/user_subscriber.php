@@ -5,7 +5,7 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
     exit();
 }
 
-if(!$obj_user->can_read('admin_list')) {
+if(!$obj_user->can_read('user_subscriber')) {
 
     $obj_user->setError($obj_user->getValMsg('can_read'));
     $obj_user->redirect(PROJECT_URL."/?page=dashboard");

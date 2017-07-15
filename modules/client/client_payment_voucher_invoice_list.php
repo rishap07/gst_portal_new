@@ -16,10 +16,12 @@ if( isset($_GET['action']) && $_GET['action'] == 'deletePVInvoice' && isset($_GE
     }
 }
 ?>
-<div class="admincontainer greybg">
-    <div class="formcontainer">
+<div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+   
+        <div class="whitebg formboxcontainer">
         <div>
-            <a class='addnew' href='<?php echo PROJECT_URL;?>/?page=client_create_payment_voucher_invoice'>Add Payment Voucher Invoice</a>
+            <a class='btn btn-default btn-success btnwidth addnew' href='<?php echo PROJECT_URL;?>/?page=client_create_payment_voucher_invoice'>Add Payment Voucher Invoice</a>
         </div>
         <h1>Payment Voucher Invoice</h1>
         <hr class="headingborder">
@@ -28,7 +30,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'deletePVInvoice' && isset($_GE
             <?php $obj_client->showErrorMessage(); ?>
             <?php $obj_client->showSuccessMessge(); ?>
             <?php $obj_client->unsetMessage(); ?>
-            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tablecontent" id="mainTable">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable">
                 <thead>
                     <tr>
                         <th align='left'>#</th>
@@ -49,6 +51,9 @@ if( isset($_GET['action']) && $_GET['action'] == 'deletePVInvoice' && isset($_GE
             </table>
         </div>
     </div>
+</div>
+</div>
+<div class="clear height80">
 </div>
 <script>
     

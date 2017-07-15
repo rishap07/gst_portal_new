@@ -23,18 +23,19 @@ final class users extends validation {
         $dataArr['payment_status'] = "1";
         $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['added_date'] = date('Y-m-d H:i:s');     
+        //$dataArr['ref_id'] = date('smidYH');     
         
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
         }
-           
+
         /* get plan details */
-        $planDetail = $this->getAllActivePlanSuAdmin("p.id,p.name,p.plan_category,p.no_of_client,p.plan_price,(case when p.status='1' Then 'active' when p.status='0' then 'deactive' end) as status,c.name as cat_name,c.month as month","p.id='".$dataArr['plan_id']."' and p.is_deleted='0'",$orderby='p.id asc');
+        $planDetail = $this->getAllActivePlanSuAdmin("p.id,p.name,p.plan_category,p.no_of_client,p.plan_price,(case when p.status='1' Then 'active' when p.status='0' then 'deactive' end) as status,c.name as cat_name,c.description as cat_description","p.id='".$dataArr['plan_id']."' and p.is_deleted='0'",$orderby='p.id asc');
         $dataArr['plan_due_date'] = date('Y-m-d H:i:s', strtotime('+'.$planDetail['0']->month.' months'));
-		
+
         if ($this->insert($this->tableNames['user_subscribed_plan'], $dataArr)) {
-            
+
             $insertid = $this->getInsertID();
             $this->logMsg("New Plan Subscribed Added. ID : " . $insertid . ".");
             
@@ -46,15 +47,20 @@ final class users extends validation {
             $dataUpdateArr['plan_due_date'] = $dataArr['plan_due_date'];
             
             if ($this->update($this->tableNames['user'], $dataUpdateArr, $dataConditionArray)) {
-                           
-                $this->setSuccess($this->validationMessage['plansubscribed']);
-                $this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " in User has been updated");
-                return true;
+				
+				$_SESSION['plan_id'] = $dataArr['plan_id'];
+				$_SESSION['subs_id'] = $insertid;
+
+				//$this->redirect(PROJECT_URL . '/?page=payment_online');          
+
+				$this->setSuccess($this->validationMessage['plansubscribed']);
+				$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " in User has been updated");
+				return true;
             } else {
                 $this->setError($this->validationMessage['failed']);
                 return false;
             }
-            
+
         } else {
             
             $this->setError($this->validationMessage['failed']);
@@ -66,7 +72,6 @@ final class users extends validation {
     
     public function saveUserThemeSetting() {
 
-        //$dataArr['theme_logo'] = isset($_FILES['theme_logo']['name']) ? $_FILES['theme_logo']['name'] : '';
         $dataArr['theme_style'] = isset($_POST['theme_style']) ? $_POST['theme_style'] : 'theme-color.css';
 
         if (empty($dataArr)) {

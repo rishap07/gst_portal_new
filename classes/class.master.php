@@ -10,11 +10,11 @@
 */
 
 final class master extends validation {
-    
+
     public function __construct() {
         parent::__construct();
     }
-    
+
     /*
     * Start : State Add/Update/Delete Related All function
     */
@@ -240,7 +240,7 @@ final class master extends validation {
             $this->setError($this->validationMessage['failed']);
             return false;
         }
-        
+
 		$this->logMsg("Unit ID : " . $_GET['id'] . " in unit Master has been updated");
         $this->setSuccess($this->validationMessage['update']);
         return true;
@@ -266,20 +266,20 @@ final class master extends validation {
 	/*
     * Start : Receiver Add/Update/Delete Related All function
     */
-    
+
     final public function addReceiver() {
 
         $dataArr = $this->getReceiverData();
-        if (empty($dataArr)) {
+        
+		if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
         }
-        
-		$dataArr['gstid'] = isset($_POST['gstid']) ? $_POST['gstid'] : '';
+
         if(!$this->validateReceiver($dataArr)) {
             return false;
         }
-		
+
         $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['added_date'] = date('Y-m-d H:i:s');
         
@@ -299,9 +299,19 @@ final class master extends validation {
         $dataArr = array();
         if(isset($_POST['submit']) && ($_POST['submit']=='submit' || ($_POST['submit']=='update' && isset($_GET['id'])))) {
 
-            $dataArr['name'] = isset($_POST['name']) ? $_POST['name'] : '';
-            $dataArr['address'] = isset($_POST['address']) ? $_POST['address'] : '';
-            $dataArr['state'] = isset($_POST['state']) ? $_POST['state'] : '';
+			$dataArr['name'] = isset($_POST['name']) ? $_POST['name'] : '';
+            $dataArr['company_name'] = isset($_POST['company_name']) ? $_POST['company_name'] : '';
+			$dataArr['email'] = isset($_POST['email']) ? $_POST['email'] : '';
+			$dataArr['address'] = isset($_POST['address']) ? $_POST['address'] : '';
+			$dataArr['city'] = isset($_POST['city']) ? $_POST['city'] : '';
+			$dataArr['state'] = isset($_POST['state']) ? $_POST['state'] : '';
+			$dataArr['zipcode'] = isset($_POST['zipcode']) ? $_POST['zipcode'] : '';
+            $dataArr['phone'] = isset($_POST['phone']) ? $_POST['phone'] : '';
+			$dataArr['fax'] = isset($_POST['fax']) ? $_POST['fax'] : '';
+			$dataArr['pannumber'] = isset($_POST['pannumber']) ? $_POST['pannumber'] : '';
+			$dataArr['gstid'] = isset($_POST['gstid']) ? $_POST['gstid'] : '';
+			$dataArr['website'] = isset($_POST['website']) ? $_POST['website'] : '';
+			$dataArr['remarks'] = isset($_POST['remarks']) ? trim($_POST['remarks']) : '';
             $dataArr['status'] = isset($_POST['status']) ? $_POST['status'] : '';
         }
         return $dataArr;
@@ -309,16 +319,44 @@ final class master extends validation {
     
     private function validateReceiver($dataArr) {
 
-        $rules = array(
-            'name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Name',
-            'address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Address',
-            'state' => 'required|#|lable_name:State'
-        );
-
-		if( array_key_exists("gstid",$dataArr) ) {
-            $rules['gstid'] = 'pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:GSTIN';
-		}
+		$rules = array(
+            'name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Contact Name',
+            'company_name' => 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Business Name',
+			'email' => 'required||email|#|lable_name:Email Address',
+			'address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Address',
+			'zipcode' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:zipcode',
+			'city' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:City',
+			'state' => 'required|#|lable_name:State'
+		);
 		
+		if( array_key_exists("zipcode",$dataArr) ) {
+            $rules['zipcode'] = 'required||numeric|#|lable_name:Zipcode';
+        }
+
+		if( array_key_exists("phone",$dataArr) ) {
+            $rules['phone'] = 'pattern:/^[' . $this->validateType['mobilenumber'] . ']+$/|#|lable_name:Phone Number';
+        }
+
+		if( array_key_exists("fax",$dataArr) ) {
+            $rules['fax'] = 'numeric|#|lable_name:Fax';
+        }
+
+		if( array_key_exists("pannumber",$dataArr) ) {
+            $rules['pannumber'] = 'pattern:/^' . $this->validateType['pancard'] . '*$/|#|lable_name:PAN Number';
+        }
+
+        if( array_key_exists("gstid",$dataArr) ) {
+            $rules['gstid'] = 'pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:GSTIN';
+        }
+
+		if( array_key_exists("website",$dataArr) ) {
+            $rules['website'] = 'url|#|lable_name:Website';
+        }
+
+		if( array_key_exists("remarks",$dataArr) ) {
+            $rules['remarks'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Remarks';
+        }
+
         $valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
             $err_arr = $valid->allErrors();
@@ -332,14 +370,16 @@ final class master extends validation {
     final public function updateReceiver() {
 
         $dataArr = $this->getReceiverData();
-        $dataArr['gstid'] = isset($_POST['gstid']) ? $_POST['gstid'] : '';
+
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
         }
+
         if(!$this->validateReceiver($dataArr)) {
             return false;
         }
+
         $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['update_date'] = date('Y-m-d H:i:s');
         
@@ -347,7 +387,7 @@ final class master extends validation {
             $this->setError($this->validationMessage['failed']);
             return false;
         }
-        
+
         $this->logMsg("Receiver ID : " . $_GET['id'] . " in Receiver Master has been updated");
         $this->setSuccess($this->validationMessage['update']);
         return true;
@@ -360,20 +400,20 @@ final class master extends validation {
     /*
     * Start : Supplier Add/Update/Delete Related All function
     */
-    
-    final public function addSupplier()
-    {
+
+    final public function addSupplier() {
+
         $dataArr = $this->getSupplierData();
-        if (empty($dataArr)) {
+
+		if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
         }
-        
+
         if(!$this->validateSupplier($dataArr)) {
             return false;
         }
-        
-        $dataArr['gstid'] = isset($_POST['gstid']) ? $_POST['gstid'] : '';
+
         $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['added_date'] = date('Y-m-d H:i:s');
         
@@ -387,32 +427,69 @@ final class master extends validation {
         $this->logMsg("New Supplier Added. ID : " . $insertid . ".");
         return true;
     }
-    
+
     private function getSupplierData() {
 
         $dataArr = array();
         if(isset($_POST['submit']) && ($_POST['submit']=='submit' || ($_POST['submit']=='update' && isset($_GET['id'])))) {
 
             $dataArr['name'] = isset($_POST['name']) ? $_POST['name'] : '';
-            $dataArr['address'] = isset($_POST['address']) ? $_POST['address'] : '';
-            $dataArr['state'] = isset($_POST['state']) ? $_POST['state'] : '';
+            $dataArr['company_name'] = isset($_POST['company_name']) ? $_POST['company_name'] : '';
+			$dataArr['email'] = isset($_POST['email']) ? $_POST['email'] : '';
+			$dataArr['address'] = isset($_POST['address']) ? $_POST['address'] : '';
+			$dataArr['city'] = isset($_POST['city']) ? $_POST['city'] : '';
+			$dataArr['state'] = isset($_POST['state']) ? $_POST['state'] : '';
+			$dataArr['zipcode'] = isset($_POST['zipcode']) ? $_POST['zipcode'] : '';
+            $dataArr['phone'] = isset($_POST['phone']) ? $_POST['phone'] : '';
+			$dataArr['fax'] = isset($_POST['fax']) ? $_POST['fax'] : '';
+			$dataArr['pannumber'] = isset($_POST['pannumber']) ? $_POST['pannumber'] : '';
+			$dataArr['gstid'] = isset($_POST['gstid']) ? $_POST['gstid'] : '';
+			$dataArr['website'] = isset($_POST['website']) ? $_POST['website'] : '';
+			$dataArr['remarks'] = isset($_POST['remarks']) ? trim($_POST['remarks']) : '';
             $dataArr['status'] = isset($_POST['status']) ? $_POST['status'] : '';
         }
         return $dataArr;
     }
-    
-    private function validateSupplier($dataArr) 
-    {
+
+    private function validateSupplier($dataArr) {
+
         $rules = array(
-            'name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Name',
-            'address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Address',
-            'state' => 'required|#|lable_name:State'
-        );
-        
-        if( array_key_exists("gstid",$dataArr) ) {
-            $rules['gstid'] = 'required||pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:GSTIN';
+            'name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Contact Name',
+            'company_name' => 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Business Name',
+			'email' => 'required||email|#|lable_name:Email Address',
+			'address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Address',
+			'city' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:City',
+			'state' => 'required|#|lable_name:State'
+		);
+		
+		if( array_key_exists("zipcode",$dataArr) ) {
+            $rules['zipcode'] = 'required||numeric|#|lable_name:Zipcode';
         }
-        
+
+		if( array_key_exists("phone",$dataArr) ) {
+            $rules['phone'] = 'pattern:/^[' . $this->validateType['mobilenumber'] . ']+$/|#|lable_name:Phone Number';
+        }
+
+		if( array_key_exists("fax",$dataArr) ) {
+            $rules['fax'] = 'numeric|#|lable_name:Fax';
+        }
+
+		if( array_key_exists("pannumber",$dataArr) ) {
+            $rules['pannumber'] = 'pattern:/^' . $this->validateType['pancard'] . '*$/|#|lable_name:PAN Number';
+        }
+
+        if( array_key_exists("gstid",$dataArr) ) {
+            $rules['gstid'] = 'pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:GSTIN';
+        }
+
+		if( array_key_exists("website",$dataArr) ) {
+            $rules['website'] = 'url|#|lable_name:Website';
+        }
+
+		if( array_key_exists("remarks",$dataArr) ) {
+            $rules['remarks'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Remarks';
+        }
+
         $valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
             $err_arr = $valid->allErrors();
@@ -422,21 +499,20 @@ final class master extends validation {
         }
         return true;
     }
-    
+
     final public function updateSupplier() {
 
-        $dataArr = $this->getReceiverData();
-        
+        $dataArr = $this->getSupplierData();
+
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
         }
-        
-        if(!$this->validateReceiver($dataArr)) {
+
+        if(!$this->validateSupplier($dataArr)) {
             return false;
         }
-        
-        $dataArr['gstid'] = isset($_POST['gstid']) ? $_POST['gstid'] : '';
+
         $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['update_date'] = date('Y-m-d H:i:s');
         
@@ -452,7 +528,7 @@ final class master extends validation {
     /*
     * End : Supplier Add/Update/Delete Related All function
     */
-    
+
     
     /*
     * Start : Supplier Add/Update/Delete Related All function

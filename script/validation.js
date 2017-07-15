@@ -192,40 +192,63 @@ vali = {
 }
 
 // THE SCRIPT THAT CHECKS IF THE KEY PRESSED IS A NUMERIC OR DECIMAL VALUE.
-function validateInvoiceDiscount(evt, element) {
+function validateInvoiceDiscount(evt, el) {
+    
+	var charCode = (evt.which) ? evt.which : event.keyCode;
+    var number = el.value.split('.');
+	if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
+        return false;
+    }
+    
+	//just one dot
+    if(number.length > 1 && charCode == 46){
+         return false;
+    }
+    
+	//get the carat position
+    var caratPos = getSelectionStart(el);
+    var dotPos = el.value.indexOf(".");
+    if( caratPos > dotPos && dotPos > -1 && (number[1].length > 1)){
+        return false;
+    }
 
-	var charCode = evt.which;
-	if ( (charCode != 46 || $(element).val().indexOf('.') != -1) && (charCode < 48 || charCode > 57) && charCode != 8 && charCode != 0 ) {
-		return false;
+	if(parseFloat(el.value) > 100) {
+		el.value = 100;
 	}
 
-	if($(element).val().indexOf('.') != -1) {
+    return true;
+}
 
-		if( $(element).val().substring($(element).val().indexOf('.')).length > 2 ) {
-			return false;
-		}
-	}
-
-	if(parseFloat($(element).val()) > 100) {
-		$(element).val(100);
-	}
+// THE SCRIPT THAT CHECKS IF THE KEY PRESSED IS A NUMERIC OR DECIMAL VALUE.
+function validateInvoiceAmount(evt, el) {
+    
+	var charCode = (evt.which) ? evt.which : event.keyCode;
+    var number = el.value.split('.');
+	if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
+        return false;
+    }
+    
+	//just one dot
+    if(number.length > 1 && charCode == 46){
+         return false;
+    }
+    
+	//get the carat position
+    var caratPos = getSelectionStart(el);
+    var dotPos = el.value.indexOf(".");
+    if( caratPos > dotPos && dotPos > -1 && (number[1].length > 1)){
+        return false;
+    }
 
 	return true;
 }
 
-function validateInvoiceAmount(evt, element) {
-	
-	var charCode = evt.which;
-	if ( (charCode != 46 || $(element).val().indexOf('.') != -1) && (charCode < 48 || charCode > 57) && charCode != 8 && charCode != 0 ) {
-		return false;
-	}
-	
-	if($(element).val().indexOf('.') != -1) {
+function getSelectionStart(o) {
 
-		if( $(element).val().substring($(element).val().indexOf('.')).length > 2 ) {
-			return false;
-		}
-	}
-	
-	return true;
+	if (o.createTextRange) {
+		var r = document.selection.createRange().duplicate()
+		r.moveEnd('character', o.value.length)
+		if (r.text == '') return o.value.length
+		return o.value.lastIndexOf(r.text)
+	} else return o.selectionStart
 }

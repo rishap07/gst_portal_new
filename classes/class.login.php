@@ -13,7 +13,7 @@ class login extends validation {
     }
 
     public function loginUser() {
-        
+      
         $dataArr['user_name'] = isset($_POST['login_username']) ? $_POST['login_username'] : '';
         $dataArr['password'] = isset($_POST['login_password']) ? $_POST['login_password'] : '';
 
@@ -91,13 +91,20 @@ class login extends validation {
         }
         return true;
     }
+	
+	
 
     public function registerUser() {
 
+	    $dataArr['mobilenumber'] = isset($_POST['mobilenumber']) ? $_POST['mobilenumber'] : '';
         $dataArr['username'] = isset($_POST['username']) ? $_POST['username'] : '';
         $dataArr['emailaddress'] = isset($_POST['emailaddress']) ? $_POST['emailaddress'] : '';
         $dataArr['password'] = isset($_POST['password']) ? $_POST['password'] : '';
         $dataArr['confirmpassword'] = isset($_POST['confirmpassword']) ? $_POST['confirmpassword'] : '';
+		 $dataArr['companyname'] = isset($_POST['companyname']) ? $_POST['companyname'] : '';
+		 $dataArr['firstname'] = isset($_POST['firstname']) ? $_POST['firstname'] : '';
+		 $dataArr['lastname'] = isset($_POST['lastname']) ? $_POST['lastname'] : '';
+		
 
         if (!$this->validateRegister($dataArr)) {
             return false;
@@ -117,27 +124,33 @@ class login extends validation {
             $this->setError($this->validationMessage['emailexist']);
             return false;
         }
-
+		
         /* create insert array */
         $dataInsertArray['username'] = $dataArr['username'];
         $dataInsertArray['email'] = $dataArr['emailaddress'];
+		$dataInsertArray['first_name'] = $dataArr['firstname'];
+		$dataInsertArray['last_name'] = $dataArr['lastname'];
+		$dataInsertArray['phone_number'] = $dataArr['mobilenumber'];
+		$dataInsertArray['company_name'] = $dataArr['companyname'];
         $dataInsertArray['subscriber_code'] = $this->generateSubscriberRandomCode(6, $this->tableNames['user'], "subscriber_code");
         
         $dataInsertArray['password'] = $this->password_encrypt($dataArr['password']); /* encrypt password */
         $dataInsertArray['added_by'] = '22';
         $dataInsertArray['added_date'] = date('Y-m-d H:i:s');
-
+		$dataInsertArray['email_code'] =  md5(uniqid(rand(),1));
+		
+		
         if ($this->insert($this->tableNames['user'], $dataInsertArray)) {
 
             /* get user data by its id */
             $userData = $this->getUserDetailsById($this->getInsertID());
+			
             $_SESSION['user_detail']['user_id'] = $userData['data']->user_id;
             $_SESSION['user_detail']['username'] = $userData['data']->username;
             $_SESSION['user_detail']['email'] = $userData['data']->email;
             $_SESSION['user_detail']['name'] = $userData['data']->name;
             $_SESSION['user_detail']['user_group'] = $userData['data']->user_group;
-
-			/* assign user permissions */
+	/* assign user permissions */
 			$rolequery = "select b.role_page,a.can_read,a.can_create,a.can_update,a.can_delete from ".$this->tableNames['user_role_permission']." a left join ".$this->tableNames['user_role']." b on a.role_id=b.user_role_id where a.group_id='" . $userData['data']->user_group . "' and a.is_deleted='0' and a.status='1'";
 			$userPermission = $this->get_results($rolequery);
 
@@ -148,7 +161,10 @@ class login extends validation {
 				$_SESSION['user_role'][$userPermission[$x]->role_page]['can_update'] = $userPermission[$x]->can_update;
 				$_SESSION['user_role'][$userPermission[$x]->role_page]['can_delete'] = $userPermission[$x]->can_delete;
 			}
-
+			/* code for send email to user  */
+		
+			$this->sendRegisteremail("registration",'register by '.$userData['data']->name.'',$dataArr['emailaddress'],'noreply@gstkeeper.com',"lokesh.chotiya@cyfuture.com,rishap07@gmail.com","NewSubscriber Registration",$dataInsertArray['email_code']);
+			
             if (isset($_POST['rememberme']) && $_POST['rememberme'] == 1) {
 
                 if ($this->setRememberMeCookie($userData['data']->user_id)) {
@@ -164,12 +180,489 @@ class login extends validation {
             return false;
         }
     }
+	public function forgotPassword()
+	{
+		$userid;
+		$email = isset($_POST['email']) ? $_POST['email'] : '';
+		$dataArr["emailaddress"] = $email;
+		if (!$this->validateEmail($dataArr)) {
+            return false;
+        }
+		$sql="select * from ".TAB_PREFIX."user where email='".$email."'";
+		
+		$data = $this->get_results($sql);
+	    if(count($data) > 0)
+		{
+		   $userid = $data[0]->user_id;
+		   $name = $data[0]->first_name;
+		
+		 
+		$sql_forgot="select * from ".TAB_PREFIX."forgot_email where userid='".$userid."' order by id desc limit 0,1";
+	
+		$emaildata = $this->get_results($sql_forgot);
+	    if(count($emaildata) > 0)
+		{
+		 $to_time = $emaildata[0]->code_senttime;
+		$to_time = strtotime( $to_time);
+		$from_time = strtotime(date('Y-m-d H:i:s'));
+		$time_diff =  round(abs($to_time - $from_time) / 60,2);
+		if($time_diff > 15)
+		{
+		
+		
+			if($this->sendMail('Email Verify','User ID : '.$userid.' email forgotPassword',$data[0]->email,'noreply@gstkeeper.com','','rishap07@gmail.com,sheetalprasad95@gmail.com','','GST Keeper Portal Forgot Email Verify',$this->getEmailVerifyMailBody($userid,$name)))
+			{
+				$this->setSuccess('Kindly check your email for verification.');
+				return true;
+			}
+			else
+			{
+				$this->setError('Try again some issue in sending in email.');
+				return false;
+			}
+		}
+		else
+		{
+			 // $this->setError($this->validationMessage['failed']);
+            //return false;
+			$this->setError('Code is already sent please check your email');
+			return false;
+		}
+		}
+		else
+		{
+			if($this->sendMail('Email Verify','User ID : '.$userid.' email forgotPassword',$data[0]->email,'noreply@gstkeeper.com','','rishap07@gmail.com,sheetalprasad95@gmail.com','','GST Keeper Portal Forgot Email Verify',$this->getEmailVerifyMailBody($userid,$name)))
+			{
+				$this->setSuccess('Kindly check your email for verification.');
+				return true;
+			}
+			else
+			{
+				$this->setError('Try again some issue in sending in email.');
+				return false;
+			}
+		}
+		 }
+		 else
+		 {
+			 $this->setError('Please check your email address it does not exists.');
+				return false;
+		 }
+	}
+	public function updatePassword()
+	{
+		$userid;
+		
+		 $userid = isset($_SESSION['user_detail']['passkey']) ? $_SESSION['user_detail']['passkey'] : '';
+		 $userid = base64_decode($userid);
+		 $password = isset($_POST['password']) ? $_POST['password'] : '';
+		 $dataArr["password"] = $password;
+		 $confirm_password = isset($_POST['confirmpassword']) ? $_POST['confirmpassword'] : '';
+		   if (!$this->validatePassword($dataArr)) {
+            return false;
+        }
+		  if ($dataArr['password'] != $_POST['confirmpassword']) {
+            $this->setError($this->validationMessage['passwordnotmatched']);
+            return false;
+        }
+		
+		if($this->update(TAB_PREFIX."user",array('password'=>md5($password)),array('user_id'=>$userid)))
+		{
+		$this->setSuccess('Kindly check your email for verification.');
+		return true;
+		}
 
+		
+	}
+	protected function sendMail($module='',$module_message='',$to_send,$from_send,$cc='',$bcc='',$attachment='',$subject,$body)
+	{
+		$dataInsertArray['module'] = $module;
+		$dataInsertArray['module_message'] = $module_message;
+		$dataInsertArray['to_send'] = $to_send;
+		$dataInsertArray['from_send'] = $from_send;
+		$dataInsertArray['cc'] = $cc;
+        $dataInsertArray['bcc'] = $bcc;
+		$dataInsertArray['attachment'] = $attachment;
+        $dataInsertArray['subject'] = $subject;
+		$dataInsertArray['body'] = $body;
+		
+		 
+        if ($this->insert($this->tableNames['email'], $dataInsertArray)) {
+		  return true;
+		}
+		else
+		{
+		  return false;
+		}
+	}
+	private function getEmailVerifyMailBody($userid,$name)
+	{
+		$token =  md5(uniqid(rand(),1));
+		//$data = '<a href="'.PROJECT_URL.'/verify_forgot_password.php?verifyForgot=' . $token . '&passkey='.base64_encode($userid).'">Click here</a>  or copy the below url and paste on browser to verify your email';
+		$data = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>gst</title>
+</head>
+
+<body>
+<div style="width:720px; margin:auto; border:solid #CCC 1px;">
+<table cellpadding="0" cellspacing="0" width="100%" >
+  <tbody>
+    <tr>
+      <td height="auto"><table width="720" cellpadding="0" cellspacing="0" bgcolor="#fff" style="font-family:Arial, Helvetica, sans-serif;margin:0px auto;">
+          <tbody>
+            <tr>
+              <td width="30"></td>
+              <td><table width="100%" cellpadding="0" cellspacing="0">
+                  <tbody>
+                    <tr>
+                      <td align="left" valign="middle" height="80"><a target="_blank" href="https://www.gstkeeper.com/"><img src="https://gstkeeper.com/newsletter/4july2017/gst-logo.png" alt="" border="0"></a></td>
+                      <td align="right" valign="middle" style="font-size:18px;color:#cf3502;font-family:Arial, Helvetica, sans-serif;" height="80px"> <span><img src="https://gstkeeper.com/newsletter/6july2017/phone-icon.jpg" alt=""></span>1-800-212-2022<br>
+                        <span><img src="https://gstkeeper.com/newsletter/6july2017/mail-icon.jpg" alt=""></span><a href="mailto:contact@gstkeeper.com" style="font-size:14px;color:#cf3502;text-decoration:none;"> contact@gstkeeper.com</a></td>
+                    </tr>
+                  </tbody>
+                </table></td>
+              <td width="30"></td>
+            </tr>
+            <tr>
+              <td width="30"></td>
+              <td><table width="100%" cellpadding="0" cellspacing="0">
+                  <tbody>
+                    <tr>
+                      <td align="center" valign="middle"><img src="https://www.gstkeeper.com/newsletter/7july/images/banner.jpg" alt="" border="0" width="700"></td>
+                    </tr>
+                  </tbody>
+                </table></td>
+              <td width="30"></td>
+            </tr>
+        
+         
+           
+            <tr>
+              <td width="30"  ></td>
+              <td><table width="100%" cellpadding="0" cellspacing="0">
+                <tbody>
+                  <tr>
+                    <td height="319" align="center" valign="top"><table width="100%" cellpadding="0px" cellspacing="0" >
+                      <tbody>
+                        
+                        <tr>
+                          <td width="13"></td>
+                          <td width="350"  style="font-size:15px;color:#090909;font-family:Arial, Helvetica, sans-serif; padding-top:10px; "><strong>Hi There! 
+</strong></td>
+                          <td width="20"></td>
+                          </tr>
+                        <tr>
+                          <td colspan="3" height="10"></td>
+                          </tr>
+                        <tr>
+						
+
+                          <td width="13"></td>
+                          <td height="140" align="justify"  valign="top" style="font-size:13px;color:#191919;font-family:Arial, Helvetica, sans-serif; line-height:18px; ">
+						  <p>Dear '.$name.',<br>
+						  We have received your request for password change.<br>
+Please click the link below to reset your password:<br>
+<a href="'.PROJECT_URL.'/verify_forgot_password.php?verifyForgot=' . $token . '&passkey='.base64_encode($userid).'">Click here</a>  
+
+Note: For security reasons, it’s advisable to change the password immediately after the first login.<br>
+Thank You for using our services. <br>
+If you have any queries, please mail us at contact@gstkeeper.com for further assistance. <br>
+<br><br>
+Thanks!<br>
+The GST Keeper Team</p>
+
+						 
+</td>
+                          <td width="20"></td>
+                          </tr>
+                        
+                        </tbody>
+                    </table></td>
+                    </tr>
+                </tbody>
+              </table></td>
+              
+            </tr>
+            <!--<tr>
+         
+         <td  align="center" height="29"><img src="http://cdn.go4hosting.in/mailer/12-oct/resources-img.jpg"  alt=""    /></td>
+         
+         </tr>-->
+            
+            <tr>
+              <td colspan="3" height="15"></td>
+            </tr>
+         
+          
+            <tr>
+              <td width="30"></td>
+              <td><table width="98%" align="right" cellpadding="0" cellspacing="0" style="background-color:#f1f1f1; height:80px; padding:10px;">
+                <tbody>
+                  <tr>
+                    <td width="47%"><a href="http://www.cyfuture.com/" target="_blank"><img src="https://gstkeeper.com/newsletter/4july2017/cyfuture-logo.png" alt="" border="0" /></a></td>
+                    <td width="53%" align="right"><table width="100%" cellpadding="0" cellspacing="0">
+                      <tbody>
+                        <tr>
+                          <td width="20" height="50"></td>
+                          <td valign="middle" style="font-size:14px;color:#333;font-family:Arial, Helvetica, sans-serif;"><strong><i>Connect with us</i></strong></td>
+                          <td valign="middle" width="50" align="center"><a target="_blank" href="https://www.facebook.com/GST-Keeper-632910016898628/"><img src="https://gstkeeper.com/newsletter/4july2017/fb-icon.png" alt="" border="0" /></a></td>
+                          <td valign="middle" width="40" align="left"><a target="_blank" href="https://plus.google.com/101841021110541536034"><img src="https://gstkeeper.com/newsletter/4july2017/g+-icon.png" alt="" border="0" /></a></td>
+                          <td valign="middle" width="40" align="left"><a target="_blank" href="https://twitter.com/GstKeeper"><img src="https://gstkeeper.com/newsletter/4july2017/twit-icon.png" alt="" border="0" /></a></td>
+                          <td valign="middle" width="40" align="left"><a target="_blank" href="https://www.youtube.com/channel/UCsDdNFR8kJ3YVWpEvBrFeSA"><img src="https://gstkeeper.com/newsletter/4july2017/utube-icon.png" alt="" border="0" /></a></td>
+                          <td valign="middle" width="40" align="left"><a target="_blank" href="https://www.linkedin.com/company/gst-keeper"><img src="https://gstkeeper.com/newsletter/4july2017/in-icon.jpg" alt="" border="0" /></a></td>
+                        </tr>
+                      </tbody>
+                    </table></td>
+                  </tr>
+                </tbody>
+              </table></td>
+              <td width="30"></td>
+            </tr>
+            <tr>
+              <td width="30"></td>
+              <td height="76" valign="middle"><table width="100%" cellpadding="0" cellspacing="0">
+                  <tbody>
+                    <tr>
+                      <td width="20"></td>
+                      <td align="center"><font style="font-size:14px;color:#444;font-family:Arial, Helvetica, sans-serif;">Cyfuture ( India ) Pvt. Ltd.</font><br>
+                        <font style="font-size:12px;color:#444;font-family:Arial, Helvetica, sans-serif;">Plot No. 197-198 Noida Special Economic Zone (NSEZ) Phase II, Noida 201 305</font><br>
+                      <font style="font-size:12px;color:#444;font-family:Arial, Helvetica, sans-serif;">E-mail: <a style="text-decoration:none;color:#3194d5;" href="mailto:contact@gstkeeper.com">contact@gstkeeper.com</a></font><br></td>
+                      <td width="15" align="left">&nbsp;</td>
+                    </tr>
+                  </tbody>
+              </table></td>
+             
+         
+          </tbody>
+        </table></td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+
+</div>
+</body>
+</html>';
+		$this->update(TAB_PREFIX."user",array('forgotemail_code'=>$token,'forgotemail_verify'=>0), array('user_id'=>$userid));
+		$dataInsertArray['userid'] = $userid;
+		$dataInsertArray['code'] = $token;
+		$dataInsertArray['code_senttime'] = date('Y-m-d H:i:s');
+		
+		
+		if ($this->insert($this->tableNames['forgot_email'], $dataInsertArray)) {
+		$this->setSuccess('Kindly check your email for verification.');
+		return $data;
+		}
+	}
+	public function sendRegisteremail($module,$module_message,$to_send,$from_send,$bcc,$subject,$token)
+	{
+        $dataInsertArray['module'] = $module;
+		$dataInsertArray['module_message'] = $module_message;
+		$dataInsertArray['to_send'] = $to_send;
+		$dataInsertArray['from_send'] = $from_send;
+        $dataInsertArray['bcc'] = $bcc;
+        $dataInsertArray['subject'] = $subject;
+        $dataInsertArray['status'] = '0';
+		$dataInsertArray['body'] = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>gst</title>
+</head>
+
+<body>
+<div style="width:720px; margin:auto; border:solid #CCC 1px;">
+<table cellpadding="0" cellspacing="0" width="100%" >
+  <tbody>
+    <tr>
+      <td height="auto"><table width="720" cellpadding="0" cellspacing="0" bgcolor="#fff" style="font-family:Arial, Helvetica, sans-serif;margin:0px auto;">
+          <tbody>
+            <tr>
+              <td width="30"></td>
+              <td><table width="100%" cellpadding="0" cellspacing="0">
+                  <tbody>
+                    <tr>
+                      <td align="left" valign="middle" height="80"><a target="_blank" href="https://www.gstkeeper.com/"><img src="https://gstkeeper.com/newsletter/4july2017/gst-logo.png" alt="" border="0"></a></td>
+                      <td align="right" valign="middle" style="font-size:18px;color:#cf3502;font-family:Arial, Helvetica, sans-serif;" height="80px"> <span><img src="https://gstkeeper.com/newsletter/6july2017/phone-icon.jpg" alt=""></span>1-800-212-2022<br>
+                        <span><img src="https://gstkeeper.com/newsletter/6july2017/mail-icon.jpg" alt=""></span><a href="mailto:contact@gstkeeper.com" style="font-size:14px;color:#cf3502;text-decoration:none;"> contact@gstkeeper.com</a></td>
+                    </tr>
+                  </tbody>
+                </table></td>
+              <td width="30"></td>
+            </tr>
+            <tr>
+              <td width="30"></td>
+              <td><table width="100%" cellpadding="0" cellspacing="0">
+                  <tbody>
+                    <tr>
+                      <td align="center" valign="middle"><img src="https://www.gstkeeper.com/newsletter/7july/images/banner.jpg" alt="" border="0" width="700"></td>
+                    </tr>
+                  </tbody>
+                </table></td>
+              <td width="30"></td>
+            </tr>
+        
+         
+           
+            <tr>
+              <td width="30"  ></td>
+              <td><table width="100%" cellpadding="0" cellspacing="0">
+                <tbody>
+                  <tr>
+                    <td height="319" align="center" valign="top"><table width="100%" cellpadding="0px" cellspacing="0" >
+                      <tbody>
+                        
+                        <tr>
+                          <td width="13"></td>
+                          <td width="350"  style="font-size:15px;color:#090909;font-family:Arial, Helvetica, sans-serif; padding-top:10px; "><strong>Hi '.$_SESSION['user_detail']['username'].' 
+</strong></td>
+                          <td width="20"></td>
+                          </tr>
+                        <tr>
+                          <td colspan="3" height="10"></td>
+                          </tr>
+                        <tr>
+                          <td width="13"></td>
+                          <td height="140" align="justify"  valign="top" style="font-size:13px;color:#191919;font-family:Arial, Helvetica, sans-serif; line-height:18px; ">
+                            <p>Thanks for getting started with GST Keeper! We just need to verify your email address.</p>
+                            
+                            <p>Please click the link below:</br></br>
+							<a href="'.PROJECT_URL.'/?page=dashboard&verifyemail=' . $token . '&passkey='.md5($_SESSION['user_detail']['user_id']).'" style="padding:2px 5px;background:#cf3502;color:#fff;text-decoration:none;font-size:20px;">Verify</a></p>
+                            <BR /><BR /><BR />
+     <p>Thanks,<BR />
+<strong>The GST Keeper Team </strong></p></td>
+                          </tr>
+                        
+                        </tbody>
+                    </table></td>
+                    </tr>
+                </tbody>
+              </table></td>
+              
+            </tr>
+            <!--<tr>
+         
+         <td  align="center" height="29"><img src="http://cdn.go4hosting.in/mailer/12-oct/resources-img.jpg"  alt=""    /></td>
+         
+         </tr>-->
+            
+            <tr>
+              <td colspan="3" height="15"></td>
+            </tr>
+         
+          
+            <tr>
+              <td width="30"></td>
+              <td><table width="98%" align="right" cellpadding="0" cellspacing="0" style="background-color:#f1f1f1; height:80px; padding:10px;">
+                <tbody>
+                  <tr>
+                    <td width="47%"><a href="http://www.cyfuture.com/" target="_blank"><img src="https://gstkeeper.com/newsletter/4july2017/cyfuture-logo.png" alt="" border="0" /></a></td>
+                    <td width="53%" align="right"><table width="100%" cellpadding="0" cellspacing="0">
+                      <tbody>
+                        <tr>
+                          <td width="20" height="50"></td>
+                          <td valign="middle" style="font-size:14px;color:#333;font-family:Arial, Helvetica, sans-serif;"><strong><i>Connect with us</i></strong></td>
+                          <td valign="middle" width="50" align="center"><a target="_blank" href="https://www.facebook.com/GST-Keeper-632910016898628/"><img src="https://gstkeeper.com/newsletter/4july2017/fb-icon.png" alt="" border="0" /></a></td>
+                          <td valign="middle" width="40" align="left"><a target="_blank" href="https://plus.google.com/101841021110541536034"><img src="https://gstkeeper.com/newsletter/4july2017/g+-icon.png" alt="" border="0" /></a></td>
+                          <td valign="middle" width="40" align="left"><a target="_blank" href="https://twitter.com/GstKeeper"><img src="https://gstkeeper.com/newsletter/4july2017/twit-icon.png" alt="" border="0" /></a></td>
+                          <td valign="middle" width="40" align="left"><a target="_blank" href="https://www.youtube.com/channel/UCsDdNFR8kJ3YVWpEvBrFeSA"><img src="https://gstkeeper.com/newsletter/4july2017/utube-icon.png" alt="" border="0" /></a></td>
+                          <td valign="middle" width="40" align="left"><a target="_blank" href="https://www.linkedin.com/company/gst-keeper"><img src="https://gstkeeper.com/newsletter/4july2017/in-icon.jpg" alt="" border="0" /></a></td>
+                        </tr>
+                      </tbody>
+                    </table></td>
+                  </tr>
+                </tbody>
+              </table></td>
+              <td width="30"></td>
+            </tr>
+            <tr>
+              <td width="30"></td>
+              <td height="76" valign="middle"><table width="100%" cellpadding="0" cellspacing="0">
+                  <tbody>
+                    <tr>
+                      <td width="20"></td>
+                      <td align="center"><font style="font-size:14px;color:#444;font-family:Arial, Helvetica, sans-serif;">Cyfuture ( India ) Pvt. Ltd.</font><br>
+                        <font style="font-size:12px;color:#444;font-family:Arial, Helvetica, sans-serif;">Plot No. 197-198 Noida Special Economic Zone (NSEZ) Phase II, Noida 201 305</font><br>
+                      <font style="font-size:12px;color:#444;font-family:Arial, Helvetica, sans-serif;">E-mail: <a style="text-decoration:none;color:#3194d5;" href="mailto:contact@gstkeeper.com">contact@gstkeeper.com</a></font><br></td>
+                      <td width="15" align="left">&nbsp;</td>
+                    </tr>
+                  </tbody>
+              </table></td>
+             
+         
+          </tbody>
+        </table></td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+
+</div>
+</body>
+</html>';
+
+		
+  
+      
+			  if ($this->insert($this->tableNames['email'], $dataInsertArray)) {
+				  return true;
+			  }
+			  else
+			  {
+				  return false;
+			  }
+
+              
+		
+	}
+public function validatePassword($dataArr) {
+
+        $rules = array(
+            
+            'password' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||min:8||max:20|#|lable_name:Password'
+        );
+
+        $valid = $this->vali_obj->validate($dataArr, $rules);
+        if ($valid->hasErrors()) {
+            $err_arr = $valid->allErrors();
+            $this->setError($err_arr);
+            $valid->clearMessages();
+            return false;
+        }
+        return true;
+    }
+	public function validateEmail($dataArr) {
+
+        $rules = array(
+            
+            'emailaddress' => 'required||email|#|lable_name:Email'
+            );
+
+        $valid = $this->vali_obj->validate($dataArr, $rules);
+        if ($valid->hasErrors()) {
+            $err_arr = $valid->allErrors();
+            $this->setError($err_arr);
+            $valid->clearMessages();
+            return false;
+        }
+        return true;
+    }
     public function validateRegister($dataArr) {
 
         $rules = array(
-            'username' => 'required||pattern:/^' . $this->validateType['username'] . '+$/|#|lable_name:User Name',            
+            'username' => 'required||pattern:/^' . $this->validateType['username'] . '+$/|#|lable_name:User Name',  
+            'firstname' => 'required||pattern:/^' . $this->validateType['firstname'] . '+$/|#|lable_name:First Name',
+            'lastname' => 'required||pattern:/^' . $this->validateType['lastname'] . '+$/|#|lable_name:Last Name', 
+            'companyname' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Company Name',    			
             'emailaddress' => 'required||email|#|lable_name:Email',
+             'mobilenumber'=>'required||pattern:/^' . $this->validateType['mobilenumber'] . '+$/|#|lable_name:Mobile Number',
             'password' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||min:8||max:20|#|lable_name:Password'
         );
 

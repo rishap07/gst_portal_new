@@ -1,9 +1,3 @@
-/*! jQuery UI - v1.11.4 - 2015-10-31
-* http://jqueryui.com
-* Includes: core.css, draggable.css, resizable.css, selectable.css, sortable.css, accordion.css, autocomplete.css, button.css, datepicker.css, dialog.css, menu.css, progressbar.css, selectmenu.css, slider.css, spinner.css, tabs.css, tooltip.css, theme.css
-* To view and modify this theme, visit http://jqueryui.com/themeroller/?ffDefault=Arial%2Csans-serif&fwDefault=bold&fsDefault=1.1em&cornerRadius=6px&bgColorHeader=cc0000&bgTextureHeader=highlight_soft&bgImgOpacityHeader=15&borderColorHeader=e3a1a1&fcHeader=ffffff&iconColorHeader=ffffff&bgColorContent=ffffff&bgTextureContent=flat&bgImgOpacityContent=75&borderColorContent=eeeeee&fcContent=333333&iconColorContent=cc0000&bgColorDefault=eeeeee&bgTextureDefault=highlight_hard&bgImgOpacityDefault=100&borderColorDefault=d8dcdf&fcDefault=004276&iconColorDefault=cc0000&bgColorHover=f6f6f6&bgTextureHover=highlight_hard&bgImgOpacityHover=100&borderColorHover=cdd5da&fcHover=111111&iconColorHover=cc0000&bgColorActive=ffffff&bgTextureActive=flat&bgImgOpacityActive=65&borderColorActive=eeeeee&fcActive=cc0000&iconColorActive=cc0000&bgColorHighlight=fbf8ee&bgTextureHighlight=glass&bgImgOpacityHighlight=55&borderColorHighlight=fcd3a1&fcHighlight=444444&iconColorHighlight=004276&bgColorError=f3d8d8&bgTextureError=diagonals_thick&bgImgOpacityError=75&borderColorError=cc0000&fcError=2e2e2e&iconColorError=cc0000&bgColorOverlay=a6a6a6&bgTextureOverlay=dots_small&bgImgOpacityOverlay=65&opacityOverlay=40&bgColorShadow=333333&bgTextureShadow=flat&bgImgOpacityShadow=0&opacityShadow=10&thicknessShadow=8px&offsetTopShadow=-8px&offsetLeftShadow=-8px&cornerRadiusShadow=8px
-* Copyright jQuery Foundation and other contributors; Licensed MIT */
-
 /* Layout helpers
 ----------------------------------*/
 .ui-helper-hidden {
@@ -221,7 +215,7 @@
 .ui-button:visited,
 .ui-button:hover,
 .ui-button:active {
-	text-decoration: none;
+	text-decoration: none; 
 }
 /* to make room for the icon, a width needs to be set here */
 .ui-button-icon-only {
@@ -362,6 +356,7 @@ button.ui-button::-moz-focus-inner {
 .ui-datepicker select.ui-datepicker-month,
 .ui-datepicker select.ui-datepicker-year {
 	width: 45%;
+        color: #333;
 }
 .ui-datepicker table {
 	width: 100%;
@@ -774,13 +769,10 @@ button.ui-button::-moz-focus-inner {
 	/* need to fix icons sprite */
 	background-position: -65px -16px;
 }
-.ui-tabs {
-	position: relative;/* position: relative prevents IE scroll bug (element with position: relative inside container with overflow: auto appear as "fixed") */
-	padding: .2em;
-}
+.ui-tabs {position: relative;}
 .ui-tabs .ui-tabs-nav {
 	margin: 0;
-	padding: .2em .2em 0;
+	padding:0px;
 }
 .ui-tabs .ui-tabs-nav li {
 	list-style: none;
@@ -794,8 +786,10 @@ button.ui-button::-moz-focus-inner {
 }
 .ui-tabs .ui-tabs-nav .ui-tabs-anchor {
 	float: left;
-	padding: .5em 1em;
+	padding:20px;
 	text-decoration: none;
+	font-family: opensans_light; font-weight:normal;
+	font-size:18px;
 }
 .ui-tabs .ui-tabs-nav li.ui-tabs-active {
 	margin-bottom: -1px;
@@ -814,6 +808,7 @@ button.ui-button::-moz-focus-inner {
 	border-width: 0;
 	padding: 1em 1.4em;
 	background: none;
+	border-left:1px solid #eeeeee; border-bottom:1px solid #eeeeee; border-right:1px solid #eeeeee;
 }
 .ui-tooltip {
 	padding: 8px;
@@ -844,19 +839,14 @@ body .ui-tooltip {
 	font-size: 1em;
 }
 .ui-widget-content {
-	border: 1px solid #eeeeee;
+	
 	background: #ffffff;
 	color: #333333;
 }
 .ui-widget-content a {
 	color: #333333;
 }
-.ui-widget-header {
-	border: 1px solid #e3a1a1;
-	background: #cc0000 url("images/ui-bg_highlight-soft_15_cc0000_1x100.png") 50% 50% repeat-x;
-	color: #ffffff;
-	font-weight: bold;
-}
+.ui-widget-header { background:#f6f6f6; width:100%;}
 .ui-widget-header a {
 	color: #ffffff;
 }
@@ -867,14 +857,13 @@ body .ui-tooltip {
 .ui-widget-content .ui-state-default,
 .ui-widget-header .ui-state-default {
 	border: 1px solid #d8dcdf;
-	background: #eeeeee url("images/ui-bg_highlight-hard_100_eeeeee_1x100.png") 50% 50% repeat-x;
 	font-weight: bold;
 	color: #004276;
 }
 .ui-state-default a,
 .ui-state-default a:link,
 .ui-state-default a:visited {
-	color: #004276;
+	color: #333;
 	text-decoration: none;
 }
 .ui-state-hover,
@@ -910,7 +899,7 @@ body .ui-tooltip {
 .ui-state-active a,
 .ui-state-active a:link,
 .ui-state-active a:visited {
-	color: #cc0000;
+	color: #000; font-family: open_sans !important; 
 	text-decoration: none;
 }
 
@@ -1182,32 +1171,6 @@ body .ui-tooltip {
 
 /* Misc visuals
 ----------------------------------*/
-
-/* Corner radius */
-.ui-corner-all,
-.ui-corner-top,
-.ui-corner-left,
-.ui-corner-tl {
-	border-top-left-radius: 6px;
-}
-.ui-corner-all,
-.ui-corner-top,
-.ui-corner-right,
-.ui-corner-tr {
-	border-top-right-radius: 6px;
-}
-.ui-corner-all,
-.ui-corner-bottom,
-.ui-corner-left,
-.ui-corner-bl {
-	border-bottom-left-radius: 6px;
-}
-.ui-corner-all,
-.ui-corner-bottom,
-.ui-corner-right,
-.ui-corner-br {
-	border-bottom-right-radius: 6px;
-}
 
 /* Overlays */
 .ui-widget-overlay {

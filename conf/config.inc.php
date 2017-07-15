@@ -53,7 +53,7 @@ define('SMTP_PASSWORD', "");
 define('CMS_FRONT_TITLE', "OBC ADMIN PORTAL");
 define('CMS_ADMIN_TITLE', "OBC ADMIN PANEL");
 
-define('ROOT_DIR', "/projects/gst_portal");
+define('ROOT_DIR', "/projects/gst_portal_new");
 #-------------------------------------------------------------------------------
 # PROJECT ROOT
 #-------------------------------------------------------------------------------
@@ -147,7 +147,7 @@ define('SCRIPT_URL', PROJECT_URL . SCRIPT_DIR);
 
 function __autoload($class) {
     $class = strtolower($class);
-    //echo CLASSES_ROOT . "/class." . $class . ".php";
+    //echo CLASSES_ROOT . "/class." . $class . ".php<br>";
     if (file_exists(CLASSES_ROOT . "/class." . $class . ".php")) {
         include(CLASSES_ROOT . "/class." . $class . ".php");
     } else {

@@ -8,20 +8,21 @@ if(isset($_POST['submit']) && $_POST['submit']=='update' && isset($_GET['id']))
     }
 }
 ?>
-<div class="admincontainer greybg">
-    <div class="formcontainer">
+<div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+     
+        <div class="whitebg formboxcontainer">
         <?php $obj_users->showErrorMessage(); ?>
         <?php $obj_users->showSuccessMessge(); ?>
         <?php $obj_users->unsetMessage(); ?>
         <h1>User Group Permission</h1>
-        <hr class="headingborder">
+          <hr class="headingborder">
         <h2 class="greyheading">Add/Update Group Permission</h2>
         <form method="post" enctype="multipart/form-data" id='form'>
             <div class="adminformbx">
-                <div class="kycform">
-                    <div class="kycmainbox">
+         
                         <div class="clear"></div>
-                        <table width="100%" border="1" cellspacing="0" bordercolor="#c6c6c6">
+                        <table width="100%" border="1" class="invoice-itemtable" cellspacing="0">
                             <thead>
                                 <tr style="background-color:#dedcdc;font-weight: bold">
                                     <td valign="top">
@@ -86,15 +87,17 @@ if(isset($_POST['submit']) && $_POST['submit']=='update' && isset($_GET['id']))
                         <div class="clear height30"></div>
                         <div class="adminformbxsubmit" style="width:100%;"> 
                             <div class="tc">
-                                <input type='submit' class="btn orangebg" name='submit' value='<?php echo isset($_GET['id']) ? 'update' : 'submit'; ?>' id='submit'>
-                                <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=user_group"; ?>';" class="btn redbg" class="redbtn marlef10"/>
+                                <input type='submit' class="btn btn-danger" name='submit' value='<?php echo isset($_GET['id']) ? 'update' : 'submit'; ?>' id='submit'>
+                                <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=user_group"; ?>';" class="btn btn-danger" />
                             </div> 
                         </div>
                     </div>
-                </div>
-            </div>
+               
         </form>
     </div>
+</div>
+</div>
+<div class="clear height80">
 </div>
 <script>
     $(document).ready(function () {
