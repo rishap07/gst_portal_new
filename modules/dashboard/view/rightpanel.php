@@ -11,5 +11,5 @@
 <?php if ($db_obj->can_read('client_invoice')) { ?>
     <a href="<?php echo PROJECT_URL . '/?page=client_upload_invoice'; ?>" class="rgtmenu"><img src="<?php echo PROJECT_URL;?>/image/icon-add-plan.png" alt="#"><br/>Upload Tax Invoice</a>
     <a href="<?php echo PROJECT_URL . '/?page=client_invoice_list'; ?>" class="rgtmenu"><img src="<?php echo PROJECT_URL;?>/image/icon-setting.png" alt="#"><br/>All Tax Invoice</a>
-    <a href="<?php echo PROJECT_URL . '/?page=client_return'; ?>" class="rgtmenu"><img src="<?php echo PROJECT_URL;?>/image/icon-report.png" alt="#"><br/>Returns</a>
+    <a href="<?php echo PROJECT_URL . '/?page=return_client'; ?>" class="rgtmenu"><img src="<?php echo PROJECT_URL;?>/image/icon-report.png" alt="#"><br/>Returns</a>
 <?php }?>

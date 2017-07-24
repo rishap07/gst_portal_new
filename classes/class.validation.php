@@ -13,7 +13,7 @@
 class validation extends upload {
     
     protected $tableNames = array();
-    public $allowImageExt = array('image/gif', 'image/jpeg', 'image/jpg', 'image/png');
+    public $allowImageExt = array('image/gif', 'image/jpeg', 'image/jpg', 'image/png', 'application/pdf');
     public $allowExcelExt = array('application/vnd.ms-excel', 'application/octet-stream', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     
     public function __construct() {
@@ -62,7 +62,8 @@ class validation extends upload {
 			'forgot_email' => TAB_PREFIX . 'forgot_email',
 			'api' => TAB_PREFIX . 'api',
             'return' => TAB_PREFIX . 'return',
-			'email'=>TAB_PREFIX.'email'
+			'email'=>TAB_PREFIX.'email',
+			'client_return_gstr3b'=>TAB_PREFIX.'client_return_gstr3b'
         );
 
         $this->checkUserPortalAccess();
@@ -175,10 +176,13 @@ class validation extends upload {
                 }
             } else if($currentUserDetails['data']->user_group == 4) {
 
-                if( isset($_GET['page']) && $_GET['page'] != "client_kycupdate" && $_GET['page'] != "logout") {
+                if( isset($_GET['page']) && $_GET['page'] != "client_loginas")        
+                {
+                    if( isset($_GET['page']) && $_GET['page'] != "client_kycupdate" && $_GET['page'] != "logout") {
 
-                    if($currentUserDetails['data']->kyc == '') {
-                        $this->redirect(PROJECT_URL . "?page=client_kycupdate");
+                        if($currentUserDetails['data']->kyc == '') {
+                            $this->redirect(PROJECT_URL . "?page=client_kycupdate");
+                        }
                     }
                 }
             }

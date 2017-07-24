@@ -99,7 +99,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'deleteClient' && isset($_GET['
                     "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=client_list",
                     "fnServerParams": function (aoData) {
                     },
-                    "iDisplayLength": 5
+                    "iDisplayLength": 20
                 });
             }
         };

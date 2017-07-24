@@ -70,8 +70,6 @@ if(isset($_GET['id']))
                             </select>
                         </div>
                  	<div class="clear"></div>
-                     
-						
                        <div class="adminformbxsubmit" style="width:100%;"> 
                             <div class="tc">
                                 <input type='submit' class="btn btn-danger" name='submit' value='<?php echo isset($_GET['id']) ? 'update' : 'submit'; ?>' id='submit'>

@@ -6,16 +6,17 @@
 	<title>GST Keeper</title>
 	<!--COMMON CSS START HERE-->
 	<!--COMMON CSS START HERE-->
-	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/bootstrap.min.css?6" />
-	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/style.css?6" />
-	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/font-awesome.min.css?6" />
+	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/bootstrap.min.css?7" />
+	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/style.css?7" />
+	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/font-awesome.min.css?7" />
 	<!--COMMON CSS END HERE-->
 
-	<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/datatables/media/css/jquery.dataTables.min.css?6" />
+	<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/datatables/media/css/jquery.dataTables.min.css?7" />
 	<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/jquery_ui/jquery-ui.css" />
-	<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/jquery-ui-timepicker/jquery-ui-timepicker-addon.css?6" />
-	<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/select2/select2.css?6" />
-	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/custom.css?6" />
+	<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/jquery-ui-timepicker/jquery-ui-timepicker-addon.css?7" />
+	<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/select2/select2.css?7" />
+	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/custom.css?7" />
+	<link type="text/css" rel="stylesheet" href="<?php echo PROJECT_URL; ?>/script/jalerts/jquery.alerts.css?7" />
 
 	<script src="<?php echo THEME_URL; ?>/js/jquery-1.12.4.js"></script>
 	<script type="text/javascript" src="<?php echo THEME_URL; ?>/js/bootstrap.min.js"></script>
@@ -212,6 +213,7 @@
 						<ul class="nav nav-stacked collapse left-submenu" id="itemPurchase">
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Tax Invoices</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_invoice_create'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Tax Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_import_invoice_create'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Import Tax Invoice</a></li><?php } ?>
 						</ul>
 					</li>
                  <?php } ?>
@@ -223,6 +225,11 @@
 				
 				<?php if ($db_obj->can_read('client_invoice')) { ?>
 					<li><a href="<?php echo PROJECT_URL . '/?page=return_client'; ?>"><i class="fa fa-refresh"></i> <span class="collapse in hidden-xs">Return</span></a></li>
+                <?php }
+               
+                ?>
+                <?php if (isset($_SESSION['publisher']['user_id'])) { ?>
+                <li><a href="<?php echo PROJECT_URL . '/?page=client_loginas&permission=revert'; ?>"><i class="fa fa-refresh"></i> <span class="collapse in hidden-xs">Revert to Login</span></a></li>
                 <?php } ?>
                 <li class="hidemenu"><a href="#" data-toggle="offcanvas" style="border-bottom:none; margin-top:30px; font-size:13px;"><img src="image/hideicon.png" alt="#" style="margin-right:10px" />Hide menu</a></li>
             </ul>

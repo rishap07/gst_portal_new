@@ -1,5 +1,6 @@
 <?php
 $obj_master = new master();
+$obj_client = new client();
 if (!$obj_master->can_read('master_supplier')) {
 
     $obj_master->setError($obj_master->getValMsg('can_read'));
@@ -132,6 +133,20 @@ if (isset($_GET['id'])) {
                             <label>Remarks</label>
                             <textarea placeholder="Remarks" name='remarks' class="form-control" data-bind="content"><?php if(isset($_POST['remarks'])){ echo $_POST['remarks'];}else if(isset($dataArr[0]->remarks)){ echo $dataArr[0]->remarks; } ?></textarea>
 						</div>
+						<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                        <label>Vendor Type<span class="starred">*</span></label>
+                        <select name='vendor_type' id='vendor_type' class='required form-control'>
+                            <?php $dataVendorArrs = $obj_client->get_results("select * from " . $obj_client->getTableName('vendor_type') . " where status='1' and is_deleted='0' order by vendor_name asc"); ?>
+
+                            <?php if (!empty($dataVendorArrs)) { ?>
+                                <option value=''>Select Vendor Type</option>
+                                <?php foreach ($dataVendorArrs as $dataVendorArr) { ?>
+                                    <option value='<?php echo $dataVendorArr->vendor_id; ?>'
+									<?php if(isset($_POST['vendor_type']) && $_POST['vendor_type'] == $dataVendorArr->vendor_id) { echo 'selected="selected"'; } else if(isset($dataArr[0]->vendor_type) && $dataArr[0]->vendor_type == $dataVendorArr->vendor_id) { echo 'selected="selected"'; } ?>><?php echo $dataVendorArr->vendor_name; ?></option>
+								<?php } ?>
+                            <?php } ?>
+                        </select>
+                    </div>
 
                       	  <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                             <label>Status <span class="starred">*</span></label>
@@ -171,7 +186,8 @@ if (isset($_GET['id'])) {
 
                 /* select2 js for state */
                 $("#state").select2();
-
+                 $("#vendor_type").select2();
+		
                 $('#submit').click(function () {
                     var mesg = {};
                     if (vali.validate(mesg, 'form')) {

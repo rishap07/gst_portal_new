@@ -64,7 +64,7 @@ if (isset($_POST['forgot']) && $_POST['forgot'] == 'SendEmail'){
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-        <title>Login Page</title>
+        <title>Login | GST Online Portal </title>
         <link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/style.css?2" />
         <link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/font-awesome.min.css?1" />
         <script src="<?php echo THEME_URL; ?>/js/jquery-3-2.js?1"></script>
@@ -145,7 +145,7 @@ function forgotSubmit(){
                     <li class="userregister <?php if (isset($_POST['register_me']) && $_POST['register_me'] == 'REGISTER') { echo "active";}?>"><a href="javascript:void(0)"> Register</a></li>
                 </ul>
                 <div class="adminloginbx logincontent" style="<?php if (isset($_POST['login_me']) && $_POST['login_me'] == 'LOGIN') { echo "display:block";}else if (isset($_POST['register_me']) && $_POST['register_me'] == 'REGISTER') { echo "display:none";}?>">
-                    <p>Please enter your Username and Password</p>
+                    <p>Enter your Username and Password</p>
 					<div class="clear" ></div>
                     <?php if (isset($_POST['login_me']) && $_POST['login_me'] == 'LOGIN') { ?>
                         <?php $obj_login->showErrorMessage(); ?>
@@ -155,12 +155,12 @@ function forgotSubmit(){
                     <form id="form-user-login" name="form-user-login" method="POST">
 					
                         <div class="admintxt">	
-                            <input type="text" name="login_username" id="login_username" placeholder="Enter Your Username" />
+                            <input type="text" name="login_username" id="login_username"  placeholder="Username" />
                             <strong class="fa fa-user" aria-hidden="true"></strong>
                         </div>
                         <div class="admintxt">
 
-                            <input type="password" id="login_password" name="login_password" placeholder="Password" />
+                            <input type="password" id="login_password" name="login_password" autocomplete="off" placeholder="Password" />
                             <strong class="fa fa-key" aria-hidden="true"></strong>
                         </div>
                         <div class="rememberbx">

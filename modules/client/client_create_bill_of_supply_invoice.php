@@ -201,7 +201,7 @@
 							<th class="active">Rate <br/><span style="font-family: open_sans; font-size:11px;">per item</span></th>
 							<th class="active">Total</th>
 							<th class="active">Discount</th>
-							<th class="active">Net Tota<br/>value</th>
+							<th class="active">Net Total<br/>value</th>
 							<th class="active" style="border-bottom:1px solid #dddddd;"></th>
 						</tr>
 

@@ -129,8 +129,11 @@ class upload extends common {
         }
     }
 
-    public function validate($file, $validateDimension = false, $msg = '',$err_msg='') {
-        $error = '';
+    public function validate($file, $validateDimension = false, $msg = '', $err_msg = '') {
+		
+		
+
+		$error = '';
         /* VALIDATION FOR DIMENSIONS */
         if ($validateDimension) {
             If ($this->widthStart > 0 && $this->widthEnd > 0 && $this->heightStart > 0 && $this->heightEnd > 0) {
@@ -198,8 +201,8 @@ class upload extends common {
             $ext = $this->getExtension($file);			
             if (is_array($ext)) {
                 foreach ($ext as $key => $extnsn) {
-//                    echo $extnsn;
-                    if (!in_array(strtolower($extnsn), $this->allowedExtensions)) {
+                    
+					if (!in_array(strtolower($extnsn), $this->allowedExtensions)) {
                         //$error .= "Invalid filetype for file ".$key.". ";
                         $error .= $err_msg." Invalid filetype. ";
                     }

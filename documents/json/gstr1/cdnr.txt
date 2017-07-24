@@ -1,0 +1,34 @@
+{
+  "gstin": "27GSPMH3941G1ZK",
+  "fp": "062017",
+  "gt": 3782969.00,
+  "cur_gt": 3782969.00,
+  "CDNR": [
+    {
+      "ctin": "27GSPMH0151G1ZW",
+      "nt": [
+        {
+          "ntty": "C",
+          "nt_num": "533515",
+          "nt_dt": "10-01-2017",
+          "p_gst": "N",
+          "rsn": "Post Sale Discount",
+          "inum": "KirloskarSale12",
+          "idt": "10-01-2017",
+          "val": 123123,
+          "itms": [
+            {
+              "num": 1,
+              "itm_det": {
+                "rt": 10,
+                "txval": 5225.28,
+                "iamt": 845.22,
+                "csamt": 789.52
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

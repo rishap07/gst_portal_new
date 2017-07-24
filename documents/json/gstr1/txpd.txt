@@ -1,0 +1,22 @@
+{
+  "gstin": "27GSPMH3941G1ZK",
+  "fp": "062017",
+  "gt": 3782969.00,
+  "cur_gt": 3782969.00,
+  "nil": {
+    "inv": [
+      {
+        "sply_ty": "INTRB2B",
+        "expt_amt": 123.45,
+        "nil_amt": 1470.85,
+        "ngsup_amt": 1258.5
+      },
+      {
+        "sply_ty": "INTRB2C",
+        "expt_amt": 123.45,
+        "nil_amt": 1470.85,
+        "ngsup_amt": 1258.5
+      }
+    ]
+  }
+} 

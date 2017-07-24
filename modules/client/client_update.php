@@ -127,21 +127,21 @@ if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClien
                             
                             <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                                 <label>Password</label>
-                                <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" data-bind="content" />
+                                <input type="password" name="password" id="password" autocomplete="off" class="form-control" placeholder="Enter password" data-bind="content" />
                             </div>
                         
                         <?php } else { ?>
                         
                             <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                                 <label>Password<span class="starred">*</span></label>
-                                <input type="password" name="password" id="password" placeholder="Enter password" class="required form-control" data-bind="content" />
+                                <input type="password" name="password" id="password" autocomplete="off" placeholder="Enter password" class="required form-control" data-bind="content" />
                             </div>
                         
                         <?php } ?>
                  	  <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                           
-                            <label>Email Address<span class="starred">*</span></label>
-                            <input type="text" name="emailaddress" id="emailaddress" placeholder="Enter email address" class="required form-control" data-bind="email" value="<?php if(isset($_POST['emailaddress'])){ echo $_POST['emailaddress']; } else if(isset($dataArr['data']->email)){ echo $dataArr['data']->email; } ?>" />
+                            <label>Email Address<span class="starred"></span></label>
+                            <input type="text" name="emailaddress" id="emailaddress" placeholder="Enter email address" class="form-control" data-bind="email" value="<?php if(isset($_POST['emailaddress'])){ echo $_POST['emailaddress']; } else if(isset($dataArr['data']->email)){ echo $dataArr['data']->email; } ?>" />
                         </div>    
 						<div class="clear"></div>
 
@@ -155,7 +155,21 @@ if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClien
                        
                             <label>Status<span class="starred">*</span></label>
                             <div class="clear"></div>
-                            <input type="radio" name="user_status" <?php if(isset($_POST['user_status']) &&  $_POST['user_status'] === '1'){ echo 'checked="checked"'; } else if(isset($dataArr['data']->status) && $dataArr['data']->status === '1') { echo 'checked="checked"'; } ?> value="1" /><span>Active</span> <input type="radio" name="user_status" <?php if(isset($_POST['user_status']) &&  $_POST['user_status'] === '0'){ echo 'checked="checked"'; } else if(isset($dataArr['data']->status) && $dataArr['data']->status === '0') { echo 'checked="checked"'; } ?> value="0" /><span>Inactive</span>
+                            
+					   <select name='user_status' id='user_status' class='required form-control'>
+                        
+						   <option value='1' <?php
+                                    if (isset($dataArr['data']->status) && $dataArr['data']->status == 1) {
+                                        echo "selected='selected'";
+                                    }
+                                    ?>>Active</option>
+									 <option value='0' <?php
+                                    if (isset($dataArr['data']->status) && $dataArr['data']->status == 0) {
+                                        echo "selected='selected'";
+                                    }
+                                    ?>>Inactive</option>
+							
+                        </select>
                         </div>
               <div class="clear"></div>
 						 <div class="adminformbxsubmit" style="width:100%;">

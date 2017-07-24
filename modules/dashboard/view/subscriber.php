@@ -1,3 +1,5 @@
+<?php
+?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr">
     <div class="col-md-10 col-sm-9 col-xs-12 mobpadlr">
 		<div class="clear"></div>
@@ -5,7 +7,7 @@
         <?php $db_obj->showSuccessMessge(); ?>
         <?php $db_obj->unsetMessage(); ?>
         <div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Dashboard Overview</h1></div>
-        <div class="col-md-6 col-sm-6 col-xs-12">
+        <div class="col-md-7 col-sm-7 col-xs-12">
             <div class=" whitebg dashleftbox">
                 <div class="boxheading">New Business List</div>
                 <div class="border"></div>
@@ -15,21 +17,7 @@
                     <?php if (!empty($dataClientArr)) { ?>
                         <ul>
                             <?php foreach ($dataClientArr as $dataClient) { ?>
-                                <?php
-                                $color = '';
-                                switch ($dataClient->status) {
-
-                                    case 'active':
-                                        $color = 'green';
-                                        break;
-                                    case 'deactive':
-                                        $color = 'red';
-                                        break;
-                                    default:
-                                        $color = 'blue';
-                                }
-                                ?>
-                                <li><?php echo ucwords($dataClient->name); ?> (<?php echo $dataClient->username; ?>) <span><a href="<?php echo PROJECT_URL; ?>?page=client_update&action=editClient&id=<?php echo ($dataClient->user_id); ?>" class="<?php echo $color; ?>txt"><?php echo $dataClient->status; ?></a></span></li>
+                                <li><?php echo ucwords($dataClient->name); ?> (<?php echo $dataClient->username; ?>) <span class="pull-right"><a href="<?php echo PROJECT_URL; ?>?page=client_loginas&id=<?php echo ($dataClient->user_id); ?>" class="txt">Login As Client</a></span> <span class="pull-right"><a href="<?php echo PROJECT_URL; ?>?page=client_kycupdate_by_subscriber&action=updateClientKYC&id=<?php echo ($dataClient->user_id); ?>" class="txt">Update KYC</a></span></li>
                             <?php } ?>
                         </ul>
                     <?php } ?>

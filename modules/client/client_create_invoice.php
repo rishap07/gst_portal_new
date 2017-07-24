@@ -21,6 +21,7 @@
 ?>
 <!--========================admincontainer start=========================-->
 <form name="create-invoice" id="create-invoice" method="POST">
+	<input type="hidden" id="taxApplied" name="taxApplied" value="IGST">
 	<div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
 		<div class="col-md-12 col-sm-12 col-xs-12">
 
@@ -38,14 +39,14 @@
 
 				<div class="row">
 					
-					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+					<div class="col-md-6 col-sm-6 col-xs-12 form-group">
 						<label>Type of Invoice <span class="starred">*</span></label><br/>
 						<label class="radio-inline"><input type="radio" name="invoice_type" value="taxinvoice" checked="checked">Tax Invoice</label>
 						<label class="radio-inline"><input type="radio" name="invoice_type" value="deemedexportinvoice">Deemed Export</label>
 						<label class="radio-inline"><input type="radio" name="invoice_type" value="sezunitinvoice">SEZ Unit or Developer</label>
 					</div>
 
-					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+					<div class="col-md-6 col-sm-6 col-xs-12 form-group">
 						<label>Reference Number <span class="starred">*</span></label>
 						<input type="text" placeholder="Invoice Reference Number" class="required form-control" data-bind="content" value="<?php echo $invoiceNumber; ?>" name="invoice_reference_number" id="invoice_reference_number" />
 					</div>
@@ -1250,6 +1251,24 @@
 
         /* calculate row invoice on state change function */
         function rowInvoiceCalculationOnStateChnage() {
+			
+			var receiverStateId = $("#place_of_supply").val();
+			var taxOldApplied = $("#taxApplied").val();
+			var taxFlag = false;
+
+			if(supplierStateId === receiverStateId) {
+				var taxNewApplied = "CGSTSGST";
+			} else {
+				var taxNewApplied = "IGST";
+			}
+
+			if(taxOldApplied === taxNewApplied) {
+				taxFlag = false;
+				$("#taxApplied").val(taxOldApplied);
+			} else {
+				taxFlag = true;
+				$("#taxApplied").val(taxNewApplied);
+			}
 
             $( "tr.invoice_tr" ).each(function( index ) {
 
@@ -1259,8 +1278,34 @@
 					$("#invoice_tr_"+rowid+"_itemid").val() != '' && 
 					parseInt($("#invoice_tr_"+rowid+"_quantity").val()) > 0
 				) {
-                    var itemid = $("#invoice_tr_"+rowid+"_itemid").val();
-                    rowInvoiceCalculation(itemid, rowid);
+
+					var itemid = $("#invoice_tr_"+rowid+"_itemid").val();
+					if(taxFlag === true) {
+					
+						/* fetch item details by its id */
+						$.ajax({
+							data: {itemId:itemid, action:"getItemDetail"},
+							dataType: 'json',
+							type: 'post',
+							url: "<?php echo PROJECT_URL; ?>/?ajax=client_get_item_detail",
+							success: function(response){
+
+								/* calculation */
+								if(supplierStateId === receiverStateId) {
+
+									$("#invoice_tr_"+rowid+"_cgstrate").val(response.csgt_tax_rate);
+									$("#invoice_tr_"+rowid+"_sgstrate").val(response.sgst_tax_rate);
+								} else {
+
+									$("#invoice_tr_"+rowid+"_igstrate").val(response.igst_tax_rate);
+								}
+								/* end of calculation */
+								
+								rowInvoiceCalculation(itemid, rowid);
+							}
+						});
+						/* end of fetch item details by its id */
+					}
                 }
             });
         }

@@ -84,7 +84,34 @@ $month = date("M", strtotime("+1 month", $time));
         </div>
 
         <div class="col-md-12 col-sm-12 col-xs-12"> <p class="hr--text"><span class="text--uppercase">GST Returns</span></p></div>
+           <!--GSTR STEP END HERE--->   
+         <div class="col-md-12 col-sm-12 col-xs-12 whitebg gstr-box">
+            <div class="lightyellow roundbtn"><span>GSTR-3B File</span>  | <span>Monthly Return Filing</span></div>
+            <div class="clearfix"></div>
+            <div class="gstr-step-row">
+                <div class="row">
+                    <div class="col-md-8 col-sm-8 modpadlr">
+                        <div class="rowsteps">
+                            <div class="row step-col actionable">
+                                <div class="col-md-5 col-sm-5 col-xs-5"><span class="statusbullet"></span>
+                                    <span class="txtinovice">Review Monthly Summary</span></div>
+                                <div class="col-md-3 col-sm-3 col-xs-3"><span class="txtorange">Pending</span></div>
+                                <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on 20 <?php echo $month;?></div>
+                            </div>
+                        </div>
 
+                      
+                       
+                    </div>
+                    <div class="col-md-4 col-sm-4" style="background:#fde7e0; border-radius:3px; padding:15px">
+                        <div class="gstrrgtbox">File GSTR-3B<br/><span>To work on GST Return 3B File</span></div>
+                        <a href="<?php echo PROJECT_URL;?>/?page=return_gstr3b_file&returnmonth=<?php echo $returnmonth;?>" class="btn btn-orange" style="width:100%;">Start Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+   
         <!--GSTR STEP START HERE--->
         <div class="col-md-12 col-sm-12 col-xs-12 whitebg gstr-box">
             <div class="lightyellow roundbtn"><span>GSTR-1</span>  | <span>Sales Return Filing</span></div>
@@ -172,7 +199,7 @@ $month = date("M", strtotime("+1 month", $time));
                     </div>
                     <div class="col-md-4 col-sm-4" style="background:#fde7e0; border-radius:3px; padding:15px">
                         <div class="gstrrgtbox">File GSTR-2<br/><span>To work on GST Return 2 (Purchases)</span></div>
-                        <a href="#" class="btn btn-orange" style="width:100%;">Start Now</a>
+                        <a href="<?php echo PROJECT_URL.'/?page=return_gstr2'; ?>" class="btn btn-orange" style="width:100%;">Start Now</a>
                     </div>
                 </div>
             </div>
@@ -222,16 +249,13 @@ $month = date("M", strtotime("+1 month", $time));
                     </div>
                     <div class="col-md-4 col-sm-4" style="background:#fde7e0; border-radius:3px; padding:15px">
                         <div class="gstrrgtbox">File GSTR-3<br/><span>To work on GST Return 3</span></div>
-                        <a href="#" class="btn btn-orange" style="width:100%;">Start Now</a>
+                        <a href="<?php echo PROJECT_URL.'/?page=return_gstr3'; ?>" class="btn btn-orange" style="width:100%;">Start Now</a>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!--GSTR STEP END HERE--->   
-
-
-    </div>
+   
+      
 
     <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer" style="display:none;">
         <div class="col-md-12 col-sm-12 col-xs-12">

@@ -124,3 +124,8 @@ table.dataTable tbody tr.even {
 	color: #333333;
 	background: #e5e5e5;
 }
+.checkAll {
+	margin-right:5px;
+}
+#loading {background:#000000;opacity:0.2;width:100%;height:100%;top:0px;left:0px;position:fixed;display:block;z-index:99;display:none;}
+#loading-image {position:absolute;top:25%;left:25%;z-index:100;}

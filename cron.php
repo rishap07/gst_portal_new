@@ -26,23 +26,21 @@ foreach($dataRes as $dataRe)
     $mail->MsgHTML(html_entity_decode($dataRe->body));
     $mail->setFrom($dataRe->from_send);
     $mail->addAddress($dataRe->to_send);
-	$bcc = explode(',',$dataRe->bcc);
-	for($x=0;$x<count($bcc);$x++)
-	{
-		$mail->addAddress($bcc[$x]);
-	}
-	$mailer->AddBCC("foo@gmail.com", "test");
-    if(!$mail->send()) 
+    $bcc = explode(',',$dataRe->bcc);
+    for($x=0;$x<count($bcc);$x++)
     {
-		
+            $mail->addAddress($bcc[$x]);
+    }
+    $mailer->AddBCC("foo@gmail.com", "test");
+    /*if(!$mail->send()) 
+    {
         echo 'Message was not sent.';
         echo 'Mailer error: ' . $mail->ErrorInfo;
-        
     }
     else 
     {
 		$db_obj->update(TAB_PREFIX."email",array('status'=>'1','mail_send_datetime'=>date('Y-m-d H:i:s')),array('id'=>$dataRe->id));
         echo 'Message has been sent.';
-    }
+    }*/
     $mail->clearAllRecipients();
 }

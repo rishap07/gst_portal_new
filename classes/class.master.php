@@ -313,6 +313,7 @@ final class master extends validation {
 			$dataArr['website'] = isset($_POST['website']) ? $_POST['website'] : '';
 			$dataArr['remarks'] = isset($_POST['remarks']) ? trim($_POST['remarks']) : '';
             $dataArr['status'] = isset($_POST['status']) ? $_POST['status'] : '';
+			 $dataArr['vendor_type'] = isset($_POST['vendor_type']) ? $_POST['vendor_type'] : '';
         }
         return $dataArr;
     }
@@ -447,6 +448,7 @@ final class master extends validation {
 			$dataArr['website'] = isset($_POST['website']) ? $_POST['website'] : '';
 			$dataArr['remarks'] = isset($_POST['remarks']) ? trim($_POST['remarks']) : '';
             $dataArr['status'] = isset($_POST['status']) ? $_POST['status'] : '';
+			$dataArr['vendor_type'] = isset($_POST['vendor_type']) ? $_POST['vendor_type'] : '';
         }
         return $dataArr;
     }

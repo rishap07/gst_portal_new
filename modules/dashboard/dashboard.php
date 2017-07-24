@@ -22,11 +22,19 @@ if(isset($_SESSION['user_detail']['user_group']) && $_SESSION['user_detail']['us
     }
     else if($_SESSION['user_detail']['user_group']=='4')
     {
+		if(isset($_REQUEST["gstr2"]) && ($_REQUEST["gstr2"]=="view"))
+		{
+			include(PROJECT_ROOT."/modules/dashboard/view/gstr2client.php");
+		}
+		else
+		{
         include(PROJECT_ROOT."/modules/dashboard/view/client.php");
+		}
     }
 	
 	
 } else {
 	$db_obj->redirect(PROJECT_URL);
 }
+
 ?>

@@ -4,7 +4,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='Send OTP')
 {
 	$obj_client->sendVerifcationSms();
 }
-if(isset($_POST['submit1']) && $_POST['submit1']=='Submit OTP')
+if(isset($_POST['submit1']) && $_POST['submit1']=='Confirm OTP')
 {
 	$obj_client->checkSmsOTP();
 }
@@ -19,7 +19,7 @@ if(isset($_POST['submit1']) && $_POST['submit1']=='Submit OTP')
         <div class="clear"></div>
         <div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Subscriber Mobile Number Verification</h1></div>
 		<div class="whitebg formboxcontainer">
-			<h4>Kindly click on submit button to send OTP on your registered mobile number.</h4>
+			<h4>Click here to receive OTP via SMS</h4>
 			<form method="post">
 				
 				<div class="row">
@@ -36,7 +36,7 @@ if(isset($_POST['submit1']) && $_POST['submit1']=='Submit OTP')
 					</div>
 				</div>
 				<div class="clear"></div>
-				<input type="submit"  class="btn btn-danger" name='submit1'  value="Submit OTP">
+				<input type="submit"  class="btn btn-danger" name='submit1'  value="Confirm OTP">
 			</form>
 		</div>
 	</div>

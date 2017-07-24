@@ -1212,6 +1212,8 @@
 					var exportSupplyMeant = $('input[name=export_supply_meant]:checked', '#create-invoice').val();
 
 					if(exportSupplyMeant == "withpayment") {
+						
+						$("#invoice_tr_"+rowid+"_igstrate").prop("readonly", false);
 
 						var igstTax = parseFloat(currentIGSTRate);
 						var igstTaxAmount = (igstTax/100) * currentTrTaxableValue;

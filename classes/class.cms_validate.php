@@ -8,7 +8,7 @@
  *  Last Modified By    :   Rishap Gandhi
  *  Last Modification   :   file creation started
  * 
- */
+*/
 
 class cms_validate {
 
@@ -382,7 +382,7 @@ class cms_validate {
 
     protected static function invoicetypeValidation($input, $name, $lableName) {
         if (self::isBlankField($input) === false) {
-            if (preg_match("/^(?:taxinvoice|exportinvoice|sezunitinvoice|deemedexportinvoice)$/", $input)) {
+            if (preg_match("/^(?:taxinvoice|exportinvoice|importinvoice|sezunitinvoice|deemedexportinvoice|deemedimportinvoice)$/", $input)) {
                 return true;
             } else {
                 self::setMessage($name, 'invoicetype', $lableName . " should be valid");
@@ -401,13 +401,24 @@ class cms_validate {
             }
         }
     }
-    
+
     protected static function supplytypeValidation($input, $name, $lableName) {
         if (self::isBlankField($input) === false) {
             if (preg_match("/^(?:normal|reversecharge|tds|tcs)$/", $input)) {
                 return true;
             } else {
                 self::setMessage($name, 'supplytype', $lableName . " should be valid");
+                return false;
+            }
+        }
+    }
+
+	protected static function supplymeantValidation($input, $name, $lableName) {
+        if (self::isBlankField($input) === false) {
+            if (preg_match("/^(?:withpayment|withoutpayment)$/", $input)) {
+                return true;
+            } else {
+                self::setMessage($name, 'supplymeant', $lableName . " should be valid");
                 return false;
             }
         }
@@ -490,11 +501,7 @@ class cms_validate {
      */
 
     public static function validate(array $inputs, array $rules, array $messages = null) {
-        /* echo "<pre>";
-          print_r($inputs);
-          echo "<pre>";
-          print_r($rules);
-          die; */
+
         //check the param are exactly array
         if (is_array($inputs) && is_array($rules)) {
             self::$inputs = $inputs;

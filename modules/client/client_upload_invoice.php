@@ -145,11 +145,7 @@ $dataCurrentArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSI
                    
                 </div>
 </div>
-      
-                   
-               
 <!--========================sidemenu over=========================-->
-
 <script>
     $(document).ready(function () {
         $('#submit').click(function () {

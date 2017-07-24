@@ -12,7 +12,7 @@ $obj_client = new client();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('cm.item_id', 'cm.item_name', 'cm.item_category', 'm.item_name as category_name', 'm.hsn_code', 'cm.unit_price', 'cm.status');
+$aColumns = array('cm.item_id','cm.item_name', 'cm.item_category','CONCAT(UCASE(LEFT(m.item_name,1)),LCASE(SUBSTRING(m.item_name,2))) as category_name','m.hsn_code', 'cm.unit_price', 'cm.status');
 $aSearchColumns = array('cm.item_name', 'm.item_name', 'm.hsn_code', 'cm.unit_price', 'cm.status');
 $sIndexColumn = "item_id";
 $sIndexColumn1 = "cm.item_id";

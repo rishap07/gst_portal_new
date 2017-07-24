@@ -808,28 +808,6 @@
             $("#invoice_tr_"+parentTrId+"_igstamount").val("");
 			$("#invoice_tr_"+parentTrId+"_cessrate").val("");
             $("#invoice_tr_"+parentTrId+"_cessamount").val("");
-			
-			
-			
-			var parentPId = $(this).parent().attr("id");
-			var parentTdId = $(this).parent().parent().attr("id");
-            var parentTrId = $(this).attr("data-selectable-id");
-
-            $("#"+parentPId).remove();
-            $("#"+parentTdId).html('<input type="text" id="invoice_tr_'+parentTrId+'_itemname" name="invoice_itemname[]" class="inptxt autocompleteitemname required" placeholder="Enter Item" style="width:120px;" />');
-            $("#invoice_tr_"+parentTrId+"_itemid").val("");
-            $("#invoice_tr_"+parentTrId+"_hsncode").val("");
-            $("#invoice_tr_"+parentTrId+"_quantity").val(0);
-            $("#invoice_tr_"+parentTrId+"_unit").val("");
-            $("#invoice_tr_"+parentTrId+"_rate").val("");
-            $("#invoice_tr_"+parentTrId+"_total").val("");
-            $("#invoice_tr_"+parentTrId+"_discount").val(0);
-			$("#invoice_tr_"+parentTrId+"_advancevalue").val(0);
-            $("#invoice_tr_"+parentTrId+"_taxablevalue").val("");
-			$("#invoice_tr_"+parentTrId+"_igstrate").val("");
-            $("#invoice_tr_"+parentTrId+"_igstamount").val("");
-			$("#invoice_tr_"+parentTrId+"_cessrate").val("");
-            $("#invoice_tr_"+parentTrId+"_cessamount").val("");
 
             /* call function of total invoice */
             totalInvoiceValueCalculation();
@@ -1083,6 +1061,8 @@
 					var exportSupplyMeant = $('input[name=export_supply_meant]:checked', '#create-invoice').val();
 
 					if(exportSupplyMeant == "withpayment") {
+						
+						$("#invoice_tr_"+rowid+"_igstrate").prop("readonly", false);
 
 						var igstTax = parseFloat(currentIGSTRate);
 						var igstTaxAmount = (igstTax/100) * currentTrTaxableValue;

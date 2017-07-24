@@ -86,7 +86,7 @@ $uQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ",
             $uOrder
             $uLimit
 	";
-//echo $uQuery; 
+//echo $uQuery; die;
 $rResult = $obj_client->get_results($uQuery);
 
 /* Data set length after filtering */
@@ -96,7 +96,7 @@ $iFilteredTotal = $iFilteredTotal->rows;
 
 /* Total data set length */
 $uQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $uTable where  is_deleted='0' AND user_group = '4' AND added_by='".$_SESSION['user_detail']['user_id']."' ";
-//echo $uQuery;
+//echo $uQuery;die;
 $iTotal = $obj_client->get_row($uQuery);
 $iTotal = $iTotal->count;
 
@@ -136,6 +136,5 @@ foreach($rResult as $aRow) {
     $temp_x++;
 }
 }
-
 echo json_encode($output);
 ?>

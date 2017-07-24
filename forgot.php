@@ -3,6 +3,7 @@ include_once('conf/config.inc.php');
 $obj_login = new login();
 $db_obj = new common();
 $theme_data = $obj_login->getTheme();
+		
 if(isset($theme_data[0]->theme_name) && $theme_data[0]->theme_name!='') {
     
 	define('THEME_PATH',THEME_DIR .$theme_data[0]->theme_folder);
@@ -19,9 +20,9 @@ if (isset($_POST['forgot']) && $_POST['forgot'] == 'SendEmail'){
     } else {
 		
      if ($obj_login->forgotPassword()) {
-       // $obj_login->setError('Kindly check your email for verification link.');
-	   	$db_obj->setError('Kindly check your email for verification link.');	
-
+		 
+		 $_SESSION['success_forgot']='success';
+         
       }
 	   
 	 
@@ -53,8 +54,16 @@ if (isset($_POST['forgot']) && $_POST['forgot'] == 'SendEmail'){
                     $(".logincontent").hide();
                     $(".registercontent").show();
                 });
+				   
             });
         </script>
+		<script>
+		  $(document).ready(function(){
+        setTimeout(function() {
+          $('#sucmsg').fadeOut('fast');
+        }, 5000); // <-- time in milliseconds
+    });
+		</script>
 		
     </head>
     <body class="loginpage">
@@ -76,11 +85,19 @@ if (isset($_POST['forgot']) && $_POST['forgot'] == 'SendEmail'){
                 <div class="adminloginbx logincontent" style="<?php if (isset($_POST['login_me']) && $_POST['login_me'] == 'LOGIN') { echo "display:block";}else if (isset($_POST['register_me']) && $_POST['register_me'] == 'REGISTER') { echo "display:none";}?>">
                     <p>Please enter your email address here</p>
 					<div class="clear" ></div>
-                    <?php if (isset($_POST['forgot']) && $_POST['forgot'] == 'SendEmail') { ?>
-                        <?php $obj_login->showErrorMessage(); ?>
-                        <?php $obj_login->unsetMessage(); ?>
-						 <?php  $obj_login->showSuccessMessge(); ?>
-                    <?php } ?>
+                 
+                        <?php echo $obj_login->showErrorMessage(); ?>
+                        <?php echo $obj_login->unsetMessage(); ?>
+						 <?php echo  $obj_login->showSuccessMessge(); ?>
+				<?php
+				if (isset($_SESSION["success_forgot"]) && $_SESSION["success_forgot"]=="success")
+				{
+					unset($_SESSION["success_forgot"]);
+				?>
+				
+		
+                     <div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>Kindly check your email we sent you verification link.</b></div>
+				<?php } ?>
                  <form id="form-user-forgot" name="form-user-forgot" method="POST">
 			
                        <div class="admintxt">

@@ -31,7 +31,7 @@ $dataThemeSettingArr = $obj_user->getUserThemeSetting($obj_user->sanitize($_SESS
         <div class="whitebg formboxcontainer">
             <h2 class="greyheading">Business Setting</h2>
             <div class="clear"></div>
-            <form name="add-plan" id="add-plan" method="POST">
+            <form name="add-plan" id="add-plan" method="POST" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                         <label>Upload Logo</label>

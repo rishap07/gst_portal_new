@@ -2,31 +2,30 @@
 /*
     * 
     *  Developed By        :   Ishwar Lal Ghiya
-    *  Date Created        :   June 6, 2017
-    *  Last Modified By    :   Ishwar Lal Ghiya
-    *  Last Modification   :   Client Item Listing
+    *  Date Created        :   July 15, 2017
+    *  Last Modification   :   save new purchase invoice
     * 
- */
+*/
 
-$obj_client = new client();
+$obj_purchase = new purchase();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('ci.invoice_id', 'ci.invoice_type', 'ci.invoice_nature', 'ci.serial_number', 'ci.company_name', 'ci.company_address', 'ci.gstin_number', 'ci.supply_type', 'ci.invoice_date', 'ci.is_canceled', 'ci.invoice_total_value', 'ci.billing_name', 'ci.shipping_name');
+$aColumns = array('ci.purchase_invoice_id', 'ci.invoice_type', 'ci.invoice_nature', 'ci.serial_number', 'ci.reference_number', 'ci.supply_type', 'ci.invoice_date', 'ci.invoice_total_value', 'ci.supplier_billing_name', 'ci.is_canceled');
 
-$aSearchColumns = array('ci.invoice_type', 'ci.invoice_nature', 'ci.serial_number', 'ci.invoice_date', 'ci.invoice_total_value', 'ci.billing_name', 'ci.shipping_name');
-$sIndexColumn = "invoice_id";
+$aSearchColumns = array('ci.invoice_type', 'ci.invoice_nature', 'ci.serial_number', 'ci.reference_number', 'ci.supply_type', 'ci.invoice_date', 'ci.invoice_total_value', 'ci.supplier_billing_name');
+$sIndexColumn = "purchase_invoice_id";
 
 /* DB table to use */
-$ciTable = $obj_client->getTableName('client_invoice');
-$msTable = $obj_client->getTableName('state');
+$ciTable = $obj_purchase->getTableName('client_purchase_invoice');
+$msTable = $obj_purchase->getTableName('state');
 
 /*
  * Paging
 */
 $uLimit = "";
 if (isset($_POST['iDisplayStart']) && $_POST['iDisplayLength'] != '-1') {
-    $uLimit = "LIMIT " . $obj_client->escape($_POST['iDisplayStart']) . ", " . $obj_client->escape($_POST['iDisplayLength']);
+    $uLimit = "LIMIT " . $obj_purchase->escape($_POST['iDisplayStart']) . ", " . $obj_purchase->escape($_POST['iDisplayLength']);
 }
 
 /*
@@ -38,11 +37,11 @@ if (isset($_POST['iSortCol_0'])) {
     $uOrder = "ORDER BY ";
     for ($i = 0; $i < intval($_POST['iSortingCols']); $i++) {
         if ($_POST['bSortable_' . intval($_POST['iSortCol_' . $i])] == "true") {
-            $uOrder .= $aColumns[intval($_POST['iSortCol_' . $i])] . " " .$obj_client->escape($_POST['sSortDir_' . $i]) . ", ";
+            $uOrder .= $aColumns[intval($_POST['iSortCol_' . $i])] . " " .$obj_purchase->escape($_POST['sSortDir_' . $i]) . ", ";
         }
     }
     if ($uOrder == "ORDER BY ") {
-        $uOrder = "ORDER BY ci.invoice_id DESC";
+        $uOrder = "ORDER BY ci.purchase_invoice_id DESC";
     }
 }
 
@@ -55,7 +54,7 @@ if (isset($_POST['iSortCol_0'])) {
 
 $uWhere = " where ci.is_deleted='0' AND ci.added_by='".$_SESSION['user_detail']['user_id']."' ";
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
-    
+
     $uWhere .= 'AND (';
     for ($i = 0; $i < count($aSearchColumns); $i++) {
         $uWhere .= $aSearchColumns[$i] . " LIKE '%" . utf8_encode(htmlentities($_POST['sSearch'],ENT_COMPAT,'utf-8')) . "%' OR ";
@@ -71,7 +70,7 @@ for ($i = 0; $i < count($aColumns); $i++) {
         
         if ((isset($_POST['bSearchable_' . $i]) && $_POST['bSearchable_' . $i] == "true") && (isset($_POST['sSearch_' . $i]) && $_POST['sSearch_' . $i] != '')) {
             $uWhere .= " AND ";
-            $uWhere .= $aColumns[$i] . " LIKE '%" . $obj_client->escape($_POST['sSearch_' . $i]) . "%' ";
+            $uWhere .= $aColumns[$i] . " LIKE '%" . $obj_purchase->escape($_POST['sSearch_' . $i]) . "%' ";
         }
     }
 }
@@ -88,22 +87,22 @@ $uQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ",
             $uLimit
 	";
 //echo $uQuery; die;
-$rResult = $obj_client->get_results($uQuery);
+$rResult = $obj_purchase->get_results($uQuery);
 
 /* Data set length after filtering */
 $uQuery = "SELECT FOUND_ROWS() as rows";
-$iFilteredTotal = $obj_client->get_row($uQuery);
+$iFilteredTotal = $obj_purchase->get_row($uQuery);
 $iFilteredTotal = $iFilteredTotal->rows;
 
 /* Total data set length */
 $uQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $ciTable";
 //echo $sQuery;
-$iTotal = $obj_client->get_row($uQuery);
+$iTotal = $obj_purchase->get_row($uQuery);
 $iTotal = $iTotal->count;
 
 /*
  * Output
- */
+*/
 $output = array(
     "sEcho" => intval($_POST['sEcho']),
     "iTotalRecords" => $iTotal,
@@ -113,23 +112,23 @@ $output = array(
 
 $temp_x=isset($_POST['iDisplayStart']) ? $_POST['iDisplayStart']+ 1 : 1;
 if(isset($rResult) && !empty($rResult)) {
-	
+
     foreach($rResult as $aRow) {
 
         $row = array();
         $invoice_type = '';
 		$invoice_nature = '';
 		$supply_type = '';
-		$is_canceled = '';
+		$cancelLink = '';
 		
 		if($aRow->invoice_type == 'taxinvoice') {
             $invoice_type = 'Tax Invoice';
-        } elseif($aRow->invoice_type == 'exportinvoice'){
-            $invoice_type = 'Export Invoice';
+        } elseif($aRow->invoice_type == 'importinvoice'){
+            $invoice_type = 'Import Invoice';
         } elseif($aRow->invoice_type == 'sezunitinvoice'){
             $invoice_type = 'SEZ Unit Invoice';
-        } elseif($aRow->invoice_type == 'deemedexportinvoice'){
-            $invoice_type = 'Deemed Export Invoice';
+        } elseif($aRow->invoice_type == 'deemedimportinvoice'){
+            $invoice_type = 'Deemed Import Invoice';
         }
 
 		if($aRow->invoice_nature == 'salesinvoice') {
@@ -140,42 +139,29 @@ if(isset($rResult) && !empty($rResult)) {
 
         if($aRow->supply_type == 'reversecharge') {
             $supply_type = 'Reverse Charge';
-        } elseif($aRow->supply_type == 'tds'){
-            $supply_type = 'TDS';
-        } elseif($aRow->supply_type == 'tcs'){
-            $supply_type = 'TCS';
         } else {
 			$supply_type = 'Normal';
 		}
 
 		if($aRow->is_canceled == '0') {
-            $is_canceled = '<span class="no">No<span>';
+            $cancelLink = '<a class="cancelPurchaseInvoice" data-invoice-id="'.$aRow->purchase_invoice_id.'" href="javascript:void(0)">Cancel</a>';
         } elseif($aRow->is_canceled == '1'){
-            $is_canceled = '<span class="yes">Yes<span>';
+            $cancelLink = '<a class="revokePurchaseInvoice" data-invoice-id="'.$aRow->purchase_invoice_id.'" href="javascript:void(0)">Revoke</a>';
         }
-		$row[]= '<tr><td valign="top"><input type="checkbox"></td></td>';
 
-		if($aRow->invoice_type == 'exportinvoice') {
-			$row[] = '<td><div class="list-primary pull-left"><div title="Mr. c c"  class="name"><A href="#">'.$aRow->billing_name.'</A></div><a href="'.PROJECT_URL.'/?page=client_invoice_list&action=viewInvoice&id='.$aRow->invoice_id.'" data-bind="'.$aRow->invoice_id.'">'.$aRow->serial_number.'</a> | ' . $aRow->invoice_date . '</div><span class="pull-right"><div class="amount"><i class="fa fa-inr" aria-hidden="true"></i>'.$aRow->invoice_total_value.'</div><div class="greylinktext"><a href="'.PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$aRow->invoice_id.'">Edit Invoice</a></div></span></td></tr>';
+		$row[]= '<tr><td valign="top"><input name="purchase_invoice[]" value="'.$aRow->purchase_invoice_id.'" class="purchaseInvoice" type="checkbox"></td></td>';
+
+		if($aRow->invoice_type == 'importinvoice') {
+			$row[] = '<td><div class="list-primary pull-left"><div class="name"><a href="'.PROJECT_URL.'/?page=purchase_invoice_list&action=viewPurchaseInvoice&id='.$aRow->purchase_invoice_id.'">'.html_entity_decode($aRow->supplier_billing_name).'</a></div><a href="'.PROJECT_URL.'/?page=purchase_invoice_list&action=viewPurchaseInvoice&id='.$aRow->purchase_invoice_id.'">'.$aRow->serial_number.'</a> | ' . $aRow->invoice_date . '</div><span class="pull-right"><div class="amount pull-right"><i class="fa fa-inr" aria-hidden="true"></i>'.$aRow->invoice_total_value.'</div><div class="greylinktext"><a href="'.PROJECT_URL.'/?page=purchase_import_invoice_update&action=editPurchaseInvoice&id='.$aRow->purchase_invoice_id.'">Edit</a>&nbsp;&nbsp;'.$cancelLink.'</div></span></td></tr>';
 		} else {
-			$row[] = '<td><div class="list-primary pull-left"><div title="Mr. c c"  class="name"><A href="#">'.$aRow->billing_name.'</A></div><a href="'.PROJECT_URL.'/?page=client_invoice_list&action=viewInvoice&id='.$aRow->invoice_id.'" data-bind="'.$aRow->invoice_id.'">'.$aRow->serial_number.'</a> | ' . $aRow->invoice_date . '</div><span class="pull-right"><div class="amount"><i class="fa fa-inr" aria-hidden="true"></i>'.$aRow->invoice_total_value.'</div><div class="greylinktext"><a href="'.PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$aRow->invoice_id.'">Edit Invoice</a></div></span></td></tr>';
+			$row[] = '<td><div class="list-primary pull-left"><div class="name"><a href="'.PROJECT_URL.'/?page=purchase_invoice_list&action=viewPurchaseInvoice&id='.$aRow->purchase_invoice_id.'">'.html_entity_decode($aRow->supplier_billing_name).'</a></div><a href="'.PROJECT_URL.'/?page=purchase_invoice_list&action=viewPurchaseInvoice&id='.$aRow->purchase_invoice_id.'">'.$aRow->serial_number.'</a> | ' . $aRow->invoice_date . '</div><span class="pull-right"><div class="amount pull-right"><i class="fa fa-inr" aria-hidden="true"></i>'.$aRow->invoice_total_value.'</div><div class="greylinktext"><a href="'.PROJECT_URL.'/?page=purchase_invoice_update&action=editPurchaseInvoice&id='.$aRow->purchase_invoice_id.'">Edit</a>&nbsp;&nbsp;'.$cancelLink.'</div></span></td></tr>';
 		}
 
-		/*$row[] = utf8_decode($aRow->serial_number);
-		//$row[] = utf8_decode($invoice_type);
-		//$row[] = utf8_decode($invoice_nature);
-        $row[] = utf8_decode($aRow->invoice_date);
-		//$row[] = $supply_type;
-		$row[] = utf8_decode($aRow->billing_name);
-        //$row[] = utf8_decode($aRow->shipping_name);
-		$row[] = utf8_decode($aRow->invoice_total_value);
-		//$row[] = $is_canceled;
-        $row[] = '<a href="'.PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$aRow->invoice_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_invoice_list&action=deleteInvoice&id='.$aRow->invoice_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
-		*/
         $output['aaData'][] = $row;
         $temp_x++;
 		
     }
 }
 echo json_encode($output);
+die;
 ?>

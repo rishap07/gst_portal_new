@@ -13,7 +13,7 @@ $obj_plan = new plan();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('id', 'name', 'description', 'no_of_client', 'plan_category', 'plan_price', 'visible', 'status');
+$aColumns = array('id', 'name', 'description', 'no_of_client','company_no', 'plan_category', 'plan_price', 'visible', 'status');
 $aSearchColumns = array('name', 'description', 'no_of_client', 'plan_category', 'plan_price', 'visible', 'status');
 $sIndexColumn = "id";
 
@@ -84,15 +84,34 @@ for ($i = 0; $i < count($aColumns); $i++) {
  * Get data to display
  */
 $spWhere = trim(trim($spWhere), 'AND');
-$spQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ", $aColumns)) . "
-            FROM $spTable
-            $spWhere
+//$spjoin = "r inner join".$sp1Table."s on r.plan_category=s.id";
+$spjoin = $obj_plan->getTableName('subscriber_plan')." r inner join ".$obj_plan->getTableName('subscriber_plan_category')
+        ."s on r.plan_category=s.id";
+//$spQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ", $aColumns)) . "
+//            FROM $spTable
+//            $spWhere
+//            $spOrder
+//            $spLimit
+//	"; 
+//$spQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ", $aColumns)) . "
+//            FROM $spTable 
+//            $spjoin
+//            $spWhere
+//            $spOrder
+//            $spLimit
+//	"; 
+$spQuery = $obj_plan->getTableName('subscriber_plan')." r inner join ".$obj_plan->getTableName('subscriber_plan_category')." "
+        . "s on r.plan_category=s.id
+                    $spWhere
             $spOrder
-            $spLimit
-	";
-//echo $spQuery; die;
+            $spLimit"
+	; 
+echo $spQuery; die;
 $rResult = $obj_plan->get_results($spQuery);
-
+// echo "<pre>";
+//        print_r($rResult);
+//        echo "</pre>";
+//        die();
 /* Data set length after filtering */
 $spQuery = "SELECT FOUND_ROWS() as rows";
 $iFilteredTotal = $obj_plan->get_row($spQuery);
@@ -137,6 +156,7 @@ foreach($rResult as $aRow) {
     $row[] = utf8_decode($aRow->name);
     $row[] = utf8_decode($aRow->description);
     $row[] = utf8_decode($aRow->no_of_client);
+    $row[] = utf8_decode($aRow->company_no);
     $row[] = utf8_decode($aRow->plan_category);
     $row[] = utf8_decode($aRow->plan_price);
     $row[] = $visible;

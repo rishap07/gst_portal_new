@@ -40,7 +40,7 @@
 					<div class="col-md-6 col-sm-6 col-xs-12 form-group">
 						<label for="invoice_type">Type of Invoice <span class="starred">*</span></label><br/>
 						<label class="radio-inline"><input type="radio" name="invoice_type" value="taxinvoice" checked="checked">Tax Invoice</label>
-						<label class="radio-inline"><input type="radio" name="invoice_type" value="deemedexportinvoice">Deemed Export</label>
+						<label class="radio-inline"><input type="radio" name="invoice_type" value="deemedimportinvoice">Deemed Import</label>
 						<label class="radio-inline"><input type="radio" name="invoice_type" value="sezunitinvoice">SEZ Unit or Developer</label>
 					</div>
 
@@ -65,7 +65,7 @@
 				 </div>
 
 				 <div class="row">
-					
+
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Recipient Name <span class="starred">*</span></label>
 						<input type="text" placeholder="Cyfuture India Pvt. Ltd" data-bind="content" readonly="true" class="form-control required" name="company_name" id="company_name" value="<?php if(isset($dataCurrentUserArr['data']->kyc->name)) { echo $dataCurrentUserArr['data']->kyc->name; } ?>" />
@@ -117,7 +117,7 @@
 
 				 <div class="row">
 					
-					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group" style="display:none;">
 						<label>Advance Adjustment <span class="starred">*</span></label><br>
 						<label class="radio-inline"><input type="radio" name="advance_adjustment" value="1" />Yes</label>
 						<label class="radio-inline"><input type="radio" name="advance_adjustment" value="0" checked="checked" />No</label>
@@ -1193,7 +1193,7 @@
 
 			if(
 				invoiceType === 'sezunitinvoice' || 
-				invoiceType === 'deemedexportinvoice'
+				invoiceType === 'deemedimportinvoice'
 			) {
 
 				$("#invoice_tr_"+rowid+"_cgstrate").val(0.00);

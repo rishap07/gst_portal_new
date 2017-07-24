@@ -31,9 +31,13 @@ if(isset($_GET['verifyForgot']) && isset($_GET['passkey']))
 		{
 			$_SESSION['user_detail']['passkey']=$_GET['passkey'];
 			$_SESSION['user_detail']['token']=$_GET['verifyForgot'];
-			$db_obj->forgotEmailVerify();
+			if($db_obj->forgotEmailVerify())
+			{
+				//$_SESSION["success_verify"]="success";
 			//$obj_login->setError('Kindly update your new password your email is verified');
+			$_SESSION["success_verify"] ="success";
 			$db_obj->redirect(PROJECT_URL."/verify_forgot_password.php");
+			}
 			
 			
 		}
@@ -44,9 +48,9 @@ if (isset($_POST['resetpass']) && $_POST['resetpass'] == 'ResetPassword'){
 			{
 			unset($_SESSION['user_detail']['passkey']);
 			unset($_SESSION['user_detail']['token']);
-			
-			$obj_login->setError('your password has been updated successfully');	
-			$db_obj->redirect(PROJECT_URL);
+			$_SESSION["success_verify_forgot"]="success";
+			//$obj_login->setError('your password has been updated successfully');	
+			//$db_obj->redirect(PROJECT_URL);
 			}
 }
 
@@ -81,6 +85,15 @@ if (isset($_POST['resetpass']) && $_POST['resetpass'] == 'ResetPassword'){
             });
         </script>
 		
+		<script>
+		  //$(document).ready(function(){
+        //setTimeout(function() {
+         // $('#sucmsg').fadeOut('fast');
+       // }, 10000); // <-- time in milliseconds
+		
+   // });
+		</script> 
+		
     </head>
     <body class="loginpage">
         <div class="loginleftcontent">
@@ -105,7 +118,24 @@ if (isset($_POST['resetpass']) && $_POST['resetpass'] == 'ResetPassword'){
                         <?php $obj_login->showErrorMessage(); ?>
                         <?php $obj_login->unsetMessage(); ?>
 						 <?php $obj_login->showSuccessMessge(); ?>
-                 
+                 <?php
+				if (isset($_SESSION["success_verify_forgot"]) && $_SESSION["success_verify_forgot"]=="success")
+				{
+					unset($_SESSION["success_verify_forgot"]);
+				?>
+				
+		
+                     <div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>your password has been updated successfully <a href="<?php echo PROJECT_URL; ?>">click to login</a></b></div>
+				<?php } ?>
+				 <?php
+				if (isset($_SESSION["success_verify"]) && $_SESSION["success_verify"]=="success")
+				{
+					unset($_SESSION["success_verify"]);
+				?>
+				
+		
+                     <div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>Your email is verified please update your new password.</b></div>
+				<?php } ?>
                  <form id="form-user-forgot" name="form-user-forgot" method="POST">
 			
                         <div class="admintxt">

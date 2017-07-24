@@ -110,14 +110,14 @@
 
 				<div class="row">
 					
-					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+					<div class="col-md-6 col-sm-6 col-xs-12 form-group">
 						<label>Type of Invoice <span class="starred">*</span></label><br/>
 						<label class="radio-inline"><input type="radio" name="invoice_type" value="taxinvoice" <?php if($invoiceData[0]->invoice_type === "taxinvoice") { echo 'checked="checked"'; } ?>>Tax Invoice</label>
 						<label class="radio-inline"><input type="radio" name="invoice_type" value="deemedexportinvoice" <?php if($invoiceData[0]->invoice_type === "deemedexportinvoice") { echo 'checked="checked"'; } ?>>Deemed Export</label>
 						<label class="radio-inline"><input type="radio" name="invoice_type" value="sezunitinvoice" <?php if($invoiceData[0]->invoice_type === "sezunitinvoice") { echo 'checked="checked"'; } ?>>SEZ Unit or Developer</label>
 					</div>
 
-					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+					<div class="col-md-6 col-sm-6 col-xs-12 form-group">
 						<label>Reference Number <span class="starred">*</span></label>
 						<input type="text" placeholder="Invoice Reference Number" class="required form-control" data-bind="content" value="<?php echo $invoiceData[0]->reference_number; ?>" name="invoice_reference_number" id="invoice_reference_number" />
 					</div>

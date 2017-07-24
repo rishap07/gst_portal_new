@@ -13,42 +13,42 @@ class login extends validation {
     }
 
     public function loginUser() {
-      
+
         $dataArr['user_name'] = isset($_POST['login_username']) ? $_POST['login_username'] : '';
         $dataArr['password'] = isset($_POST['login_password']) ? $_POST['login_password'] : '';
 
         if (!$this->validateLogin($dataArr)) {
-			return false;
+            return false;
         }
 
         $dataArr['api_code'] = 'XYZ';
         $dataArr['api_user'] = 'ABC';
         $val = '';
 
-		foreach ($dataArr as $key => $value) {
+        foreach ($dataArr as $key => $value) {
             $val .= $value . "|";
         }
 
         $dataArr['secure_hash'] = strtoupper(md5($val));
         $dataArr['api_method'] = 'login';
-        $url = PROJECT_URL."/api.php";
+        $url = PROJECT_URL . "/api.php";
 
         $server_output = $this->hitCurl($url, $dataArr);
         $server_output = json_decode($server_output);
 
         if (count($server_output) > 0) {
 
-			if (isset($server_output->msg) && $server_output->msg == 'success' && $server_output->code == '2') {
+            if (isset($server_output->msg) && $server_output->msg == 'success' && $server_output->code == '2') {
 
-				$_SESSION['user_detail']['user_id'] = $server_output->data->user[0]->user_id;
+                $_SESSION['user_detail']['user_id'] = $server_output->data->user[0]->user_id;
                 $_SESSION['user_detail']['name'] = $server_output->data->user[0]->name;
                 $_SESSION['user_detail']['username'] = $server_output->data->user[0]->username;
                 $_SESSION['user_detail']['email'] = $server_output->data->user[0]->email;
                 $_SESSION['user_detail']['user_group'] = $server_output->data->user[0]->user_group;
 
-				for($x=0; $x < count($server_output->data->user_permission); $x++) {
+                for ($x = 0; $x < count($server_output->data->user_permission); $x++) {
 
-					$_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_read'] = $server_output->data->user_permission[$x]->can_read;
+                    $_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_read'] = $server_output->data->user_permission[$x]->can_read;
                     $_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_create'] = $server_output->data->user_permission[$x]->can_create;
                     $_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_update'] = $server_output->data->user_permission[$x]->can_update;
                     $_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_delete'] = $server_output->data->user_permission[$x]->can_delete;
@@ -57,7 +57,7 @@ class login extends validation {
                 if (isset($_POST['login_rememberme']) && $_POST['login_rememberme'] == 1) {
 
                     if ($this->setRememberMeCookie($server_output->data->user[0]->user_id)) {
-						return true;
+                        return true;
                     } else {
                         $this->setError($this->validationMessage['cookie_err']);
                         return false;
@@ -65,7 +65,7 @@ class login extends validation {
                 }
                 return true;
             } else {
-                $msg = explode('|',$server_output->msg);
+                $msg = explode('|', $server_output->msg);
                 $this->setError($msg);
                 return false;
             }
@@ -81,8 +81,8 @@ class login extends validation {
             'user_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:User Name',
             'password' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Password',
         );
-        
-		$valid = $this->vali_obj->validate($dataArr, $rules);
+
+        $valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
             $err_arr = $valid->allErrors();
             $this->setError($err_arr);
@@ -91,20 +91,18 @@ class login extends validation {
         }
         return true;
     }
-	
-	
 
     public function registerUser() {
 
-	    $dataArr['mobilenumber'] = isset($_POST['mobilenumber']) ? $_POST['mobilenumber'] : '';
+        $dataArr['mobilenumber'] = isset($_POST['mobilenumber']) ? $_POST['mobilenumber'] : '';
         $dataArr['username'] = isset($_POST['username']) ? $_POST['username'] : '';
         $dataArr['emailaddress'] = isset($_POST['emailaddress']) ? $_POST['emailaddress'] : '';
         $dataArr['password'] = isset($_POST['password']) ? $_POST['password'] : '';
         $dataArr['confirmpassword'] = isset($_POST['confirmpassword']) ? $_POST['confirmpassword'] : '';
-		 $dataArr['companyname'] = isset($_POST['companyname']) ? $_POST['companyname'] : '';
-		 $dataArr['firstname'] = isset($_POST['firstname']) ? $_POST['firstname'] : '';
-		 $dataArr['lastname'] = isset($_POST['lastname']) ? $_POST['lastname'] : '';
-		
+        $dataArr['companyname'] = isset($_POST['companyname']) ? $_POST['companyname'] : '';
+        $dataArr['firstname'] = isset($_POST['firstname']) ? $_POST['firstname'] : '';
+        $dataArr['lastname'] = isset($_POST['lastname']) ? $_POST['lastname'] : '';
+
 
         if (!$this->validateRegister($dataArr)) {
             return false;
@@ -119,52 +117,52 @@ class login extends validation {
             $this->setError($this->validationMessage['usernameexist']);
             return false;
         }
-		
-		if($this->checkEmailAddressExist($dataArr['emailaddress'])){
+
+        if ($this->checkEmailAddressExist($dataArr['emailaddress'])) {
             $this->setError($this->validationMessage['emailexist']);
             return false;
         }
-		
+
         /* create insert array */
         $dataInsertArray['username'] = $dataArr['username'];
         $dataInsertArray['email'] = $dataArr['emailaddress'];
-		$dataInsertArray['first_name'] = $dataArr['firstname'];
-		$dataInsertArray['last_name'] = $dataArr['lastname'];
-		$dataInsertArray['phone_number'] = $dataArr['mobilenumber'];
-		$dataInsertArray['company_name'] = $dataArr['companyname'];
+        $dataInsertArray['first_name'] = $dataArr['firstname'];
+        $dataInsertArray['last_name'] = $dataArr['lastname'];
+        $dataInsertArray['phone_number'] = $dataArr['mobilenumber'];
+        $dataInsertArray['company_name'] = $dataArr['companyname'];
         $dataInsertArray['subscriber_code'] = $this->generateSubscriberRandomCode(6, $this->tableNames['user'], "subscriber_code");
-        
+
         $dataInsertArray['password'] = $this->password_encrypt($dataArr['password']); /* encrypt password */
         $dataInsertArray['added_by'] = '22';
         $dataInsertArray['added_date'] = date('Y-m-d H:i:s');
-		$dataInsertArray['email_code'] =  md5(uniqid(rand(),1));
-		
-		
+        $dataInsertArray['email_code'] = md5(uniqid(rand(), 1));
+
+
         if ($this->insert($this->tableNames['user'], $dataInsertArray)) {
 
             /* get user data by its id */
             $userData = $this->getUserDetailsById($this->getInsertID());
-			
+
             $_SESSION['user_detail']['user_id'] = $userData['data']->user_id;
             $_SESSION['user_detail']['username'] = $userData['data']->username;
             $_SESSION['user_detail']['email'] = $userData['data']->email;
             $_SESSION['user_detail']['name'] = $userData['data']->name;
             $_SESSION['user_detail']['user_group'] = $userData['data']->user_group;
-	/* assign user permissions */
-			$rolequery = "select b.role_page,a.can_read,a.can_create,a.can_update,a.can_delete from ".$this->tableNames['user_role_permission']." a left join ".$this->tableNames['user_role']." b on a.role_id=b.user_role_id where a.group_id='" . $userData['data']->user_group . "' and a.is_deleted='0' and a.status='1'";
-			$userPermission = $this->get_results($rolequery);
+            /* assign user permissions */
+            $rolequery = "select b.role_page,a.can_read,a.can_create,a.can_update,a.can_delete from " . $this->tableNames['user_role_permission'] . " a left join " . $this->tableNames['user_role'] . " b on a.role_id=b.user_role_id where a.group_id='" . $userData['data']->user_group . "' and a.is_deleted='0' and a.status='1'";
+            $userPermission = $this->get_results($rolequery);
 
-			for($x=0; $x < count($userPermission); $x++) {
+            for ($x = 0; $x < count($userPermission); $x++) {
 
-				$_SESSION['user_role'][$userPermission[$x]->role_page]['can_read'] = $userPermission[$x]->can_read;
-				$_SESSION['user_role'][$userPermission[$x]->role_page]['can_create'] = $userPermission[$x]->can_create;
-				$_SESSION['user_role'][$userPermission[$x]->role_page]['can_update'] = $userPermission[$x]->can_update;
-				$_SESSION['user_role'][$userPermission[$x]->role_page]['can_delete'] = $userPermission[$x]->can_delete;
-			}
-			/* code for send email to user  */
-		
-			$this->sendRegisteremail("registration",'register by '.$userData['data']->name.'',$dataArr['emailaddress'],'noreply@gstkeeper.com',"lokesh.chotiya@cyfuture.com,rishap07@gmail.com","NewSubscriber Registration",$dataInsertArray['email_code']);
-			
+                $_SESSION['user_role'][$userPermission[$x]->role_page]['can_read'] = $userPermission[$x]->can_read;
+                $_SESSION['user_role'][$userPermission[$x]->role_page]['can_create'] = $userPermission[$x]->can_create;
+                $_SESSION['user_role'][$userPermission[$x]->role_page]['can_update'] = $userPermission[$x]->can_update;
+                $_SESSION['user_role'][$userPermission[$x]->role_page]['can_delete'] = $userPermission[$x]->can_delete;
+            }
+            /* code for send email to user  */
+
+            $this->sendRegisteremail("registration", 'register by ' . $userData['data']->name . '', $dataArr['emailaddress'], 'noreply@gstkeeper.com', "lokesh.chotiya@cyfuture.com,rishap07@gmail.com", "NewSubscriber Registration", $dataInsertArray['email_code']);
+
             if (isset($_POST['rememberme']) && $_POST['rememberme'] == 1) {
 
                 if ($this->setRememberMeCookie($userData['data']->user_id)) {
@@ -180,126 +178,108 @@ class login extends validation {
             return false;
         }
     }
-	public function forgotPassword()
-	{
-		$userid;
-		$email = isset($_POST['email']) ? $_POST['email'] : '';
-		$dataArr["emailaddress"] = $email;
-		if (!$this->validateEmail($dataArr)) {
+
+    public function forgotPassword() {
+        $userid;
+			//$this->setSuccess('Kindly check your email for verification');
+        $email = isset($_POST['email']) ? $_POST['email'] : '';
+        $dataArr["emailaddress"] = $email;
+        if (!$this->validateEmail($dataArr)) {
             return false;
         }
-		$sql="select * from ".TAB_PREFIX."user where email='".$email."'";
-		
-		$data = $this->get_results($sql);
-	    if(count($data) > 0)
-		{
-		   $userid = $data[0]->user_id;
-		   $name = $data[0]->first_name;
-		
-		 
-		$sql_forgot="select * from ".TAB_PREFIX."forgot_email where userid='".$userid."' order by id desc limit 0,1";
-	
-		$emaildata = $this->get_results($sql_forgot);
-	    if(count($emaildata) > 0)
-		{
-		 $to_time = $emaildata[0]->code_senttime;
-		$to_time = strtotime( $to_time);
-		$from_time = strtotime(date('Y-m-d H:i:s'));
-		$time_diff =  round(abs($to_time - $from_time) / 60,2);
-		if($time_diff > 15)
-		{
-		
-		
-			if($this->sendMail('Email Verify','User ID : '.$userid.' email forgotPassword',$data[0]->email,'noreply@gstkeeper.com','','rishap07@gmail.com,sheetalprasad95@gmail.com','','GST Keeper Portal Forgot Email Verify',$this->getEmailVerifyMailBody($userid,$name)))
-			{
-				$this->setSuccess('Kindly check your email for verification.');
-				return true;
-			}
-			else
-			{
-				$this->setError('Try again some issue in sending in email.');
-				return false;
-			}
-		}
-		else
-		{
-			 // $this->setError($this->validationMessage['failed']);
-            //return false;
-			$this->setError('Code is already sent please check your email');
-			return false;
-		}
-		}
-		else
-		{
-			if($this->sendMail('Email Verify','User ID : '.$userid.' email forgotPassword',$data[0]->email,'noreply@gstkeeper.com','','rishap07@gmail.com,sheetalprasad95@gmail.com','','GST Keeper Portal Forgot Email Verify',$this->getEmailVerifyMailBody($userid,$name)))
-			{
-				$this->setSuccess('Kindly check your email for verification.');
-				return true;
-			}
-			else
-			{
-				$this->setError('Try again some issue in sending in email.');
-				return false;
-			}
-		}
-		 }
-		 else
-		 {
-			 $this->setError('Please check your email address it does not exists.');
-				return false;
-		 }
-	}
-	public function updatePassword()
-	{
-		$userid;
-		
-		 $userid = isset($_SESSION['user_detail']['passkey']) ? $_SESSION['user_detail']['passkey'] : '';
-		 $userid = base64_decode($userid);
-		 $password = isset($_POST['password']) ? $_POST['password'] : '';
-		 $dataArr["password"] = $password;
-		 $confirm_password = isset($_POST['confirmpassword']) ? $_POST['confirmpassword'] : '';
-		   if (!$this->validatePassword($dataArr)) {
+        $sql = "select * from " . TAB_PREFIX . "user where email='" . $email . "'";
+
+        $data = $this->get_results($sql);
+        if (count($data) > 0) {
+            $userid = $data[0]->user_id;
+            $name = $data[0]->first_name;
+
+
+            $sql_forgot = "select * from " . TAB_PREFIX . "forgot_email where userid='" . $userid . "' order by id desc limit 0,1";
+
+            $emaildata = $this->get_results($sql_forgot);
+            if (count($emaildata) > 0) {
+                $to_time = $emaildata[0]->code_senttime;
+                $to_time = strtotime($to_time);
+                $from_time = strtotime(date('Y-m-d H:i:s'));
+                $time_diff = round(abs($to_time - $from_time) / 60, 2);
+                if ($time_diff > 15) {
+
+
+                    if ($this->sendMail('Email Verify', 'User ID : ' . $userid . ' email forgotPassword', $data[0]->email, 'noreply@gstkeeper.com', '', 'rishap07@gmail.com,sheetalprasad95@gmail.com', '', 'GST Keeper Portal Forgot Email Verify', $this->getEmailVerifyMailBody($userid, $name))) {
+                       
+						$this->setSuccess('Kindly check your email for verification');
+                        return true;
+                    } else {
+                        $this->setError('Try again some issue in sending in email.');
+                        return false;
+                    }
+                } else {
+                    // $this->setError($this->validationMessage['failed']);
+                    //return false;
+                    $this->setError('Code is already sent please check your email');
+                    return false;
+                }
+            } else {
+                if ($this->sendMail('Email Verify', 'User ID : ' . $userid . ' email forgotPassword', $data[0]->email, 'noreply@gstkeeper.com', '', 'rishap07@gmail.com,sheetalprasad95@gmail.com', '', 'GST Keeper Portal Forgot Email Verify', $this->getEmailVerifyMailBody($userid, $name))) {
+                  $this->setSuccess('Kindly check your email for verification');
+                    return true;
+                } else {
+                    $this->setError('Try again some issue in sending in email.');
+                    return false;
+                }
+            }
+        } else {
+            $this->setError('Please check your email address it does not exists.');
             return false;
         }
-		  if ($dataArr['password'] != $_POST['confirmpassword']) {
+    }
+
+    public function updatePassword() {
+        $userid;
+
+        $userid = isset($_SESSION['user_detail']['passkey']) ? $_SESSION['user_detail']['passkey'] : '';
+        $userid = base64_decode($userid);
+        $password = isset($_POST['password']) ? $_POST['password'] : '';
+        $dataArr["password"] = $password;
+        $confirm_password = isset($_POST['confirmpassword']) ? $_POST['confirmpassword'] : '';
+        if (!$this->validatePassword($dataArr)) {
+            return false;
+        }
+        if ($dataArr['password'] != $_POST['confirmpassword']) {
             $this->setError($this->validationMessage['passwordnotmatched']);
             return false;
         }
-		
-		if($this->update(TAB_PREFIX."user",array('password'=>md5($password)),array('user_id'=>$userid)))
-		{
-		$this->setSuccess('Kindly check your email for verification.');
-		return true;
-		}
 
-		
-	}
-	protected function sendMail($module='',$module_message='',$to_send,$from_send,$cc='',$bcc='',$attachment='',$subject,$body)
-	{
-		$dataInsertArray['module'] = $module;
-		$dataInsertArray['module_message'] = $module_message;
-		$dataInsertArray['to_send'] = $to_send;
-		$dataInsertArray['from_send'] = $from_send;
-		$dataInsertArray['cc'] = $cc;
+        if ($this->update(TAB_PREFIX . "user", array('password' => md5($password)), array('user_id' => $userid))) {
+            $this->setSuccess('Kindly check your email for verification.');
+            return true;
+        }
+    }
+
+    protected function sendMail($module = '', $module_message = '', $to_send, $from_send, $cc = '', $bcc = '', $attachment = '', $subject, $body) {
+        $dataInsertArray['module'] = $module;
+        $dataInsertArray['module_message'] = $module_message;
+        $dataInsertArray['to_send'] = $to_send;
+        $dataInsertArray['from_send'] = $from_send;
+        $dataInsertArray['cc'] = $cc;
         $dataInsertArray['bcc'] = $bcc;
-		$dataInsertArray['attachment'] = $attachment;
+        $dataInsertArray['attachment'] = $attachment;
         $dataInsertArray['subject'] = $subject;
-		$dataInsertArray['body'] = $body;
-		
-		 
+        $dataInsertArray['body'] = $body;
+
+
         if ($this->insert($this->tableNames['email'], $dataInsertArray)) {
-		  return true;
-		}
-		else
-		{
-		  return false;
-		}
-	}
-	private function getEmailVerifyMailBody($userid,$name)
-	{
-		$token =  md5(uniqid(rand(),1));
-		//$data = '<a href="'.PROJECT_URL.'/verify_forgot_password.php?verifyForgot=' . $token . '&passkey='.base64_encode($userid).'">Click here</a>  or copy the below url and paste on browser to verify your email';
-		$data = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private function getEmailVerifyMailBody($userid, $name) {
+        $token = md5(uniqid(rand(), 1));
+        //$data = '<a href="'.PROJECT_URL.'/verify_forgot_password.php?verifyForgot=' . $token . '&passkey='.base64_encode($userid).'">Click here</a>  or copy the below url and paste on browser to verify your email';
+        $data = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -350,7 +330,7 @@ class login extends validation {
                         
                         <tr>
                           <td width="13"></td>
-                          <td width="350"  style="font-size:15px;color:#090909;font-family:Arial, Helvetica, sans-serif; padding-top:10px; "><strong>Hi There! 
+                          <td width="350"  style="font-size:15px;color:#090909;font-family:Arial, Helvetica, sans-serif; padding-top:10px; "><strong>Password Reset 
 </strong></td>
                           <td width="20"></td>
                           </tr>
@@ -362,11 +342,11 @@ class login extends validation {
 
                           <td width="13"></td>
                           <td height="140" align="justify"  valign="top" style="font-size:13px;color:#191919;font-family:Arial, Helvetica, sans-serif; line-height:18px; ">
-						  <p>Dear '.$name.',<br>
+						  <p>Dear ' . $name . ',<br>
 						  We have received your request for password change.<br>
 Please click the link below to reset your password:<br>
-<a href="'.PROJECT_URL.'/verify_forgot_password.php?verifyForgot=' . $token . '&passkey='.base64_encode($userid).'">Click here</a>  
-
+<a href="' . PROJECT_URL . '/verify_forgot_password.php?verifyForgot=' . $token . '&passkey=' . base64_encode($userid) . '">Click here</a>  
+<br>
 Note: For security reasons, it’s advisable to change the password immediately after the first login.<br>
 Thank You for using our services. <br>
 If you have any queries, please mail us at contact@gstkeeper.com for further assistance. <br>
@@ -448,27 +428,27 @@ The GST Keeper Team</p>
 </div>
 </body>
 </html>';
-		$this->update(TAB_PREFIX."user",array('forgotemail_code'=>$token,'forgotemail_verify'=>0), array('user_id'=>$userid));
-		$dataInsertArray['userid'] = $userid;
-		$dataInsertArray['code'] = $token;
-		$dataInsertArray['code_senttime'] = date('Y-m-d H:i:s');
-		
-		
-		if ($this->insert($this->tableNames['forgot_email'], $dataInsertArray)) {
-		$this->setSuccess('Kindly check your email for verification.');
-		return $data;
-		}
-	}
-	public function sendRegisteremail($module,$module_message,$to_send,$from_send,$bcc,$subject,$token)
-	{
+        $this->update(TAB_PREFIX . "user", array('forgotemail_code' => $token, 'forgotemail_verify' => 0), array('user_id' => $userid));
+        $dataInsertArray['userid'] = $userid;
+        $dataInsertArray['code'] = $token;
+        $dataInsertArray['code_senttime'] = date('Y-m-d H:i:s');
+
+
+        if ($this->insert($this->tableNames['forgot_email'], $dataInsertArray)) {
+            $this->setSuccess('Kindly check your email for verification.');
+            return $data;
+        }
+    }
+
+    public function sendRegisteremail($module, $module_message, $to_send, $from_send, $bcc, $subject, $token) {
         $dataInsertArray['module'] = $module;
-		$dataInsertArray['module_message'] = $module_message;
-		$dataInsertArray['to_send'] = $to_send;
-		$dataInsertArray['from_send'] = $from_send;
+        $dataInsertArray['module_message'] = $module_message;
+        $dataInsertArray['to_send'] = $to_send;
+        $dataInsertArray['from_send'] = $from_send;
         $dataInsertArray['bcc'] = $bcc;
         $dataInsertArray['subject'] = $subject;
         $dataInsertArray['status'] = '0';
-		$dataInsertArray['body'] = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        $dataInsertArray['body'] = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -516,10 +496,10 @@ The GST Keeper Team</p>
                   <tr>
                     <td height="319" align="center" valign="top"><table width="100%" cellpadding="0px" cellspacing="0" >
                       <tbody>
-                        
+                         <tr> <td width="13"></td> <td width="350" style="font-size:15px;color:#090909;font-family:Arial, Helvetica, sans-serif; padding-top:10px; "><strong>Welcome Aboard!! </strong></td> <td width="20"></td> </tr>
                         <tr>
                           <td width="13"></td>
-                          <td width="350"  style="font-size:15px;color:#090909;font-family:Arial, Helvetica, sans-serif; padding-top:10px; "><strong>Hi '.$_SESSION['user_detail']['username'].' 
+                          <td width="350"  style="font-size:15px;color:#090909;font-family:Arial, Helvetica, sans-serif; padding-top:10px; "><strong>Hi ' . $_SESSION['user_detail']['name'] . '
 </strong></td>
                           <td width="20"></td>
                           </tr>
@@ -528,12 +508,21 @@ The GST Keeper Team</p>
                           </tr>
                         <tr>
                           <td width="13"></td>
-                          <td height="140" align="justify"  valign="top" style="font-size:13px;color:#191919;font-family:Arial, Helvetica, sans-serif; line-height:18px; ">
-                            <p>Thanks for getting started with GST Keeper! We just need to verify your email address.</p>
-                            
-                            <p>Please click the link below:</br></br>
-							<a href="'.PROJECT_URL.'/?page=dashboard&verifyemail=' . $token . '&passkey='.md5($_SESSION['user_detail']['user_id']).'" style="padding:2px 5px;background:#cf3502;color:#fff;text-decoration:none;font-size:20px;">Verify</a></p>
+                          <td height="140" align="justify"  valign="top" style="font-size:13px;color:#191919;font-family:Arial, Helvetica, sans-serif; line-height:18px; "><p>
+                            Thanks for subscribing into GST Keeper! We look forward to help you by offering our<br> best-in-class GST compliance software that not only enhances your productivity but also<br> improves the overall business agility. </p>
+                            <p>
+Our main objective is to remove the complications associated with GST tax compliance <br> and provide you an easier platform to deal with GST credits, returns and other related issues.</p>
+<p>
+If you have any suggestions regarding our GST Keeper software, we would love to hear<br> from you. For your valuable suggestions,please <a href="https://www.gstkeeper.com/contact-us.php">click here</a></p>
+<p>
+Here is your Login information details <br>
+User Name: ' . $_SESSION['user_detail']['username'] . '<br>
+Please click the link below to verify your account:<br><br>
+<a href="' . PROJECT_URL . '/?page=dashboard&verifyemail=' . $token . '&passkey=' . md5($_SESSION['user_detail']['user_id']) . '" style="padding:2px 5px;background:#cf3502;color:#fff;text-decoration:none;font-size:20px;" target="_blank">Verify</a></p>
                             <BR /><BR /><BR />
+
+
+                            
      <p>Thanks,<BR />
 <strong>The GST Keeper Team </strong></p></td>
                           </tr>
@@ -608,24 +597,19 @@ The GST Keeper Team</p>
 </body>
 </html>';
 
-		
-  
-      
-			  if ($this->insert($this->tableNames['email'], $dataInsertArray)) {
-				  return true;
-			  }
-			  else
-			  {
-				  return false;
-			  }
 
-              
-		
-	}
-public function validatePassword($dataArr) {
+
+
+        if ($this->insert($this->tableNames['email'], $dataInsertArray)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function validatePassword($dataArr) {
 
         $rules = array(
-            
             'password' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||min:8||max:20|#|lable_name:Password'
         );
 
@@ -638,12 +622,12 @@ public function validatePassword($dataArr) {
         }
         return true;
     }
-	public function validateEmail($dataArr) {
+
+    public function validateEmail($dataArr) {
 
         $rules = array(
-            
             'emailaddress' => 'required||email|#|lable_name:Email'
-            );
+        );
 
         $valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
@@ -654,15 +638,16 @@ public function validatePassword($dataArr) {
         }
         return true;
     }
+
     public function validateRegister($dataArr) {
 
         $rules = array(
-            'username' => 'required||pattern:/^' . $this->validateType['username'] . '+$/|#|lable_name:User Name',  
+            'username' => 'required||pattern:/^' . $this->validateType['username'] . '+$/|#|lable_name:User Name',
             'firstname' => 'required||pattern:/^' . $this->validateType['firstname'] . '+$/|#|lable_name:First Name',
-            'lastname' => 'required||pattern:/^' . $this->validateType['lastname'] . '+$/|#|lable_name:Last Name', 
-            'companyname' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Company Name',    			
+            'lastname' => 'required||pattern:/^' . $this->validateType['lastname'] . '+$/|#|lable_name:Last Name',
+            'companyname' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Company Name',
             'emailaddress' => 'required||email|#|lable_name:Email',
-             'mobilenumber'=>'required||pattern:/^' . $this->validateType['mobilenumber'] . '+$/|#|lable_name:Mobile Number',
+            'mobilenumber' => 'required||pattern:/^' . $this->validateType['mobilenumber'] . '+$/|#|lable_name:Mobile Number',
             'password' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||min:8||max:20|#|lable_name:Password'
         );
 
@@ -675,5 +660,7 @@ public function validatePassword($dataArr) {
         }
         return true;
     }
+
 }
+
 ?>

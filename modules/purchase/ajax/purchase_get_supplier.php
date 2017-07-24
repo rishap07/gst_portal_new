@@ -19,9 +19,9 @@ if(isset($_GET['ajax']) && $_GET['ajax'] == "purchase_get_supplier" && isset($_G
 		foreach($clientGetSuppliers as $clientGetSupplier) {
 
 			$supplier[$counter]['supplier_id'] = $clientGetSupplier->supplier_id;
-			$supplier[$counter]['label'] = $clientGetSupplier->name;
-			$supplier[$counter]['value'] = $clientGetSupplier->name;
-			$supplier[$counter]['company_name'] = $clientGetSupplier->company_name;
+			$supplier[$counter]['label'] = html_entity_decode($clientGetSupplier->name);
+			$supplier[$counter]['value'] = html_entity_decode($clientGetSupplier->name);
+			$supplier[$counter]['company_name'] = html_entity_decode($clientGetSupplier->company_name);
 			$supplier[$counter]['email'] = $clientGetSupplier->email;
 			$supplier[$counter]['address'] = html_entity_decode($clientGetSupplier->address);
 			$supplier[$counter]['city'] = $clientGetSupplier->city;

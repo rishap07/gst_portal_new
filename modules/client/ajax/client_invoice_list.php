@@ -1,12 +1,12 @@
 <?php
 /*
-    * 
-    *  Developed By        :   Ishwar Lal Ghiya
-    *  Date Created        :   June 6, 2017
-    *  Last Modified By    :   Ishwar Lal Ghiya
-    *  Last Modification   :   Client Item Listing
-    * 
- */
+	* 
+	*  Developed By        :   Ishwar Lal Ghiya
+	*  Date Created        :   June 6, 2017
+	*  Last Modified By    :   Ishwar Lal Ghiya
+	*  Last Modification   :   Client Item Listing
+	* 
+*/
 
 $obj_client = new client();
 extract($_POST);
@@ -120,7 +120,7 @@ if(isset($rResult) && !empty($rResult)) {
         $invoice_type = '';
 		$invoice_nature = '';
 		$supply_type = '';
-		$is_canceled = '';
+		$cancelLink = '';
 		
 		if($aRow->invoice_type == 'taxinvoice') {
             $invoice_type = 'Tax Invoice';
@@ -149,33 +149,23 @@ if(isset($rResult) && !empty($rResult)) {
 		}
 
 		if($aRow->is_canceled == '0') {
-            $is_canceled = '<span class="no">No<span>';
+            $cancelLink = '<a class="cancelSalesInvoice" data-invoice-id="'.$aRow->invoice_id.'" href="javascript:void(0)">Cancel</a>';
         } elseif($aRow->is_canceled == '1'){
-            $is_canceled = '<span class="yes">Yes<span>';
+            $cancelLink = '<a class="revokeSalesInvoice" data-invoice-id="'.$aRow->invoice_id.'" href="javascript:void(0)">Revoke</a>';
         }
-		$row[]= '<tr><td valign="top"><input type="checkbox"></td></td>';
+		
+		$row[]= '<tr><td valign="top"><input name="sales_invoice[]" value="'.$aRow->invoice_id.'" class="salesInvoice" type="checkbox"></td></td>';
 
 		if($aRow->invoice_type == 'exportinvoice') {
-			$row[] = '<td><div class="list-primary pull-left"><div title="Mr. c c"  class="name"><A href="#">'.$aRow->billing_name.'</A></div><a href="'.PROJECT_URL.'/?page=client_invoice_list&action=viewInvoice&id='.$aRow->invoice_id.'" data-bind="'.$aRow->invoice_id.'">'.$aRow->serial_number.'</a> | ' . $aRow->invoice_date . '</div><span class="pull-right"><div class="amount"><i class="fa fa-inr" aria-hidden="true"></i>'.$aRow->invoice_total_value.'</div><div class="greylinktext"><a href="'.PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$aRow->invoice_id.'">Edit Invoice</a></div></span></td></tr>';
+			$row[] = '<td><div class="list-primary pull-left"><div class="name"><a href="#">'.$aRow->billing_name.'</a></div><a href="'.PROJECT_URL.'/?page=client_invoice_list&action=viewInvoice&id='.$aRow->invoice_id.'" data-bind="'.$aRow->invoice_id.'">'.$aRow->serial_number.'</a> | ' . $aRow->invoice_date . '</div><span class="pull-right"><div class="amount"><i class="fa fa-inr" aria-hidden="true"></i>'.$aRow->invoice_total_value.'</div><div class="greylinktext"><a href="'.PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$aRow->invoice_id.'">Edit</a>&nbsp;&nbsp;'.$cancelLink.'</div></span></td></tr>';
 		} else {
-			$row[] = '<td><div class="list-primary pull-left"><div title="Mr. c c"  class="name"><A href="#">'.$aRow->billing_name.'</A></div><a href="'.PROJECT_URL.'/?page=client_invoice_list&action=viewInvoice&id='.$aRow->invoice_id.'" data-bind="'.$aRow->invoice_id.'">'.$aRow->serial_number.'</a> | ' . $aRow->invoice_date . '</div><span class="pull-right"><div class="amount"><i class="fa fa-inr" aria-hidden="true"></i>'.$aRow->invoice_total_value.'</div><div class="greylinktext"><a href="'.PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$aRow->invoice_id.'">Edit Invoice</a></div></span></td></tr>';
+			$row[] = '<td><div class="list-primary pull-left"><div class="name"><a href="#">'.$aRow->billing_name.'</a></div><a href="'.PROJECT_URL.'/?page=client_invoice_list&action=viewInvoice&id='.$aRow->invoice_id.'" data-bind="'.$aRow->invoice_id.'">'.$aRow->serial_number.'</a> | ' . $aRow->invoice_date . '</div><span class="pull-right"><div class="amount"><i class="fa fa-inr" aria-hidden="true"></i>'.$aRow->invoice_total_value.'</div><div class="greylinktext"><a href="'.PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$aRow->invoice_id.'">Edit</a>&nbsp;&nbsp;'.$cancelLink.'</div></span></td></tr>';
 		}
 
-		/*$row[] = utf8_decode($aRow->serial_number);
-		//$row[] = utf8_decode($invoice_type);
-		//$row[] = utf8_decode($invoice_nature);
-        $row[] = utf8_decode($aRow->invoice_date);
-		//$row[] = $supply_type;
-		$row[] = utf8_decode($aRow->billing_name);
-        //$row[] = utf8_decode($aRow->shipping_name);
-		$row[] = utf8_decode($aRow->invoice_total_value);
-		//$row[] = $is_canceled;
-        $row[] = '<a href="'.PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$aRow->invoice_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_invoice_list&action=deleteInvoice&id='.$aRow->invoice_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
-		*/
         $output['aaData'][] = $row;
         $temp_x++;
-		
     }
 }
 echo json_encode($output);
+die;
 ?>

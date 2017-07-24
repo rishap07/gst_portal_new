@@ -79,7 +79,6 @@ if ($_REQUEST['returnmonth'] != '') {
                                             <th style="text-align:right">Taxable Amount ( <i class="fa fa-inr"></i> )</th>
                                             <th style="text-align:right">Tax Amt ( <i class="fa fa-inr"></i> )</th>
                                             <th style="text-align:right">TotalAmount ( <i class="fa fa-inr"></i> )</th>
-                                            <th style="text-align:right">View</th>
                                         </tr>
                                         <tr>
                                             <?php
@@ -96,19 +95,17 @@ if ($_REQUEST['returnmonth'] != '') {
                                             ?>
                                             <td>B2B</th>
                                             <td align='right'><?php echo count($b2bData); ?></td>
-                                            <td align='right'><?php echo (!empty($b2bTotData)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
+                                            <td align='right'><?php echo (!empty($b2bTotData) && !is_null($b2bTotData[0]->invoice_total_value)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
                                             <td align='right'><?php echo $total; ?></td>
-                                            <td align='right'><?php echo (!empty($b2bTotData)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
-                                            <td align='right'>View</td>
+                                            <td align='right'><?php echo (!empty($b2bTotData) && !is_null($b2bTotData[0]->invoice_total_value)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
                                         </tr>
-                                        <tr>
+<!--                                        <tr>
                                             <td>B2B Amendments</th>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
-                                            <td align='right'>NA</td>
-                                        </tr>
+                                        </tr>-->
                                         <tr>
                                             <?php
                                             $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_client->getTableName('client_invoice') . " i inner join " . $obj_client->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where i.invoice_nature='salesinvoice' and i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and i.billing_gstin_number='' and i.invoice_total_value>'250000'  and i.invoice_date like '%" . $returnmonth . "%' ";
@@ -124,19 +121,17 @@ if ($_REQUEST['returnmonth'] != '') {
                                             ?>
                                             <td>B2C Large</td>
                                             <td align='right'><?php echo count($b2bData); ?></td>
-                                            <td align='right'><?php echo (!empty($b2bTotData)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
+                                            <td align='right'><?php echo (!empty($b2bTotData) && !is_null($b2bTotData[0]->invoice_total_value)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
                                             <td align='right'><?php echo $total; ?></td>
-                                            <td align='right'><?php echo (!empty($b2bTotData)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
-                                            <td align='right'>View</td>
+                                            <td align='right'><?php echo (!empty($b2bTotData) && !is_null($b2bTotData[0]->invoice_total_value)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
                                         </tr>
-                                        <tr>
+<!--                                        <tr>
                                             <td>B2C Large Amendments</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
-                                            <td align='right'>NA</td>
-                                        </tr>
+                                        </tr>-->
                                         <tr>
                                             <?php
                                             $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_client->getTableName('client_invoice') . " i inner join " . $obj_client->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where i.invoice_nature='salesinvoice' and i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and i.billing_gstin_number='' and i.invoice_total_value<='250000'  and i.invoice_date like '%" . $returnmonth . "%' ";
@@ -152,19 +147,17 @@ if ($_REQUEST['returnmonth'] != '') {
                                             ?>
                                             <td>B2C Small</td>
                                             <td align='right'><?php echo count($b2bData); ?></td>
-                                            <td align='right'><?php echo (!empty($b2bTotData)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
+                                            <td align='right'><?php echo (!empty($b2bTotData) && !is_null($b2bTotData[0]->invoice_total_value)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
                                             <td align='right'><?php echo $total; ?></td>
-                                            <td align='right'><?php echo (!empty($b2bTotData)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
-                                            <td align='right'>View</td>
+                                            <td align='right'><?php echo (!empty($b2bTotData) && !is_null($b2bTotData[0]->invoice_total_value)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
                                         </tr>
-                                        <tr>
+<!--                                        <tr>
                                             <td>B2C Small Amendments</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
-                                            <td align='right'>NA</td>
-                                        </tr>
+                                        </tr>-->
                                         <tr>
                                             <?php
                                             $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_client->getTableName('client_rt_invoice') . " i inner join " . $obj_client->getTableName("client_rt_invoice_item") . " it on i.invoice_id=it.invoice_id  where (i.invoice_document_nature='creditnote' or i.invoice_document_nature='debitnote') and i.billing_gstin_number!='' and  i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0'  and i.invoice_date like '%" . $returnmonth . "%'";
@@ -183,24 +176,21 @@ if ($_REQUEST['returnmonth'] != '') {
                                             <td align='right'><?php echo (!empty($b2bTotData) && !is_null($b2bTotData[0]->invoice_total_value)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
                                             <td align='right'><?php echo $total; ?></td>
                                             <td align='right'><?php echo (!empty($b2bTotData) && !is_null($b2bTotData[0]->invoice_total_value)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
-                                            <td align='right'>View</td>
                                         </tr>
-                                        <tr>
+<!--                                        <tr>
                                             <td>Credit Debit Notes Amendments Registered</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
-                                            <td align='right'>NA</td>
-                                        </tr>
-                                        <tr>
+                                        </tr>-->
+<!--                                        <tr>
                                             <td>NIL</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
-                                            <td align='right'>NA</td>
-                                        </tr>
+                                        </tr>-->
                                         <tr>
                                             <?php
                                             $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_client->getTableName('client_invoice') . " i inner join " . $obj_client->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where i.invoice_nature='salesinvoice' and i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0'  and i.invoice_date like '%" . $returnmonth . "%' and i.invoice_type='exportinvoice' ";
@@ -216,19 +206,17 @@ if ($_REQUEST['returnmonth'] != '') {
                                             ?>
                                             <td>Export</td>
                                             <td align='right'><?php echo count($b2bData); ?></td>
-                                            <td align='right'><?php echo (!empty($b2bTotData)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
+                                            <td align='right'><?php echo (!empty($b2bTotData) && !is_null($b2bTotData[0]->invoice_total_value)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
                                             <td align='right'><?php echo $total; ?></td>
-                                            <td align='right'><?php echo (!empty($b2bTotData)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
-                                            <td align='right'>View</td>
+                                            <td align='right'><?php echo (!empty($b2bTotData) && !is_null($b2bTotData[0]->invoice_total_value)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
                                         </tr>
-                                        <tr>
+<!--                                        <tr>
                                             <td>Export Amendments</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
-                                            <td align='right'>NA</td>
-                                        </tr>
+                                        </tr>-->
                                         <tr>
                                             <?php
                                             $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_client->getTableName('client_rv_invoice') . " i inner join " . $obj_client->getTableName("client_rv_invoice_item") . " it on i.invoice_id=it.invoice_id  where  i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0'  and i.invoice_date like '%" . $returnmonth . "%'";
@@ -247,16 +235,14 @@ if ($_REQUEST['returnmonth'] != '') {
                                             <td align='right'><?php echo (!empty($b2bTotData) && !is_null($b2bTotData[0]->invoice_total_value)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
                                             <td align='right'><?php echo $total; ?></td>
                                             <td align='right'><?php echo (!empty($b2bTotData) && !is_null($b2bTotData[0]->invoice_total_value)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
-                                            <td align='right'>View</td>
                                         </tr>
-                                        <tr>
+<!--                                        <tr>
                                             <td>Advance Tax Amendments</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
-                                            <td align='right'>NA</td>
-                                        </tr>
+                                        </tr>-->
                                         <tr>
                                             <?php
                                             $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_client->getTableName('client_rt_invoice') . " i inner join " . $obj_client->getTableName("client_rt_invoice_item") . " it on i.invoice_id=it.invoice_id  where (i.invoice_document_nature='creditnote' or i.invoice_document_nature='debitnote') and i.billing_gstin_number='' and  i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0'  and i.invoice_date like '%" . $returnmonth . "%'";
@@ -275,16 +261,14 @@ if ($_REQUEST['returnmonth'] != '') {
                                             <td align='right'><?php echo (!empty($b2bTotData) && !is_null($b2bTotData[0]->invoice_total_value)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
                                             <td align='right'><?php echo $total; ?></td>
                                             <td align='right'><?php echo (!empty($b2bTotData) && !is_null($b2bTotData[0]->invoice_total_value)) ? $b2bTotData[0]->invoice_total_value : 0; ?></td>
-                                            <td align='right'>View</td>
                                         </tr>
-                                        <tr>
+<!--                                        <tr>
                                             <td>Credit Debit Notes Amendments Unregistered</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
                                             <td align='right'>NA</td>
-                                            <td align='right'>NA</td>
-                                        </tr>
+                                        </tr>-->
                                     </thead>
                                 </table>
                             </div>  

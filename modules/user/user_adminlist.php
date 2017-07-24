@@ -32,16 +32,16 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteAdmin' && isset($_GET['i
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
-            <h1>Admin User</h1>
+        <h1>Admin User</h1>
         <div class="whitebg formboxcontainer">
         <div>
             <a class='btn btn-default btn-success btnwidth addnew' href='<?php echo PROJECT_URL;?>/?page=user_adminupdate'>Add New</a>
         </div>
     <div class="clear height10"></div>
       
-           <?php $obj_user->showErrorMessage(); ?>
-            <?php $obj_user->showSuccessMessge(); ?>
-            <?php $obj_user->unsetMessage(); ?>
+        <?php $obj_user->showErrorMessage(); ?>
+        <?php $obj_user->showSuccessMessge(); ?>
+        <?php $obj_user->unsetMessage(); ?>
         <h2 class="greyheading">Admin User Listing</h2>
         
         <div class="adminformbx">
