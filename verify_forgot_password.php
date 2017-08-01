@@ -12,45 +12,54 @@ if(isset($theme_data[0]->theme_name) && $theme_data[0]->theme_name!='') {
 	define('THEME_PATH',THEME_DIR .'gst_portal');
     define('THEME_URL',PROJECT_URL."/template/gst_portal");
 }
+ 
 
-if (isset($_POST['forgot']) && $_POST['forgot'] == 'SendEmail'){
-
-    if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])) {
-        $obj_login->setError('Invalid access to files');
-    } else {
-		
-     if ($obj_login->forgotPassword()) {
-        $obj_login->setSuccess('Kindly check your email for verification.');
-
-      }
-	   
-	 
-    }
-}
 if(isset($_GET['verifyForgot']) && isset($_GET['passkey']))
 		{
 			$_SESSION['user_detail']['passkey']=$_GET['passkey'];
 			$_SESSION['user_detail']['token']=$_GET['verifyForgot'];
 			if($db_obj->forgotEmailVerify())
 			{
-				//$_SESSION["success_verify"]="success";
-			//$obj_login->setError('Kindly update your new password your email is verified');
-			$_SESSION["success_verify"] ="success";
+			
+			//$_SESSION["success_verify"] ="success";
 			$db_obj->redirect(PROJECT_URL."/verify_forgot_password.php");
+			}
+			else
+			{
+				unset($_SESSION['user_detail']['passkey']);
+			    unset($_SESSION['user_detail']['token']);
+				$db_obj->redirect(PROJECT_URL."/forgot.php");
 			}
 			
 			
 		}
-if (isset($_POST['resetpass']) && $_POST['resetpass'] == 'ResetPassword'){
-
+		if(isset($_SESSION['user_detail']['passkey']) && (isset($_SESSION['user_detail']['token'])))
+		{
+			
+		}
+		else
+		{
+			$db_obj->redirect(PROJECT_URL);
+		}
 	
+	
+		
+if (isset($_POST['resetpass']) && $_POST['resetpass'] == 'Reset Password'){
+
+	if(isset($_SESSION['user_detail']['passkey']) && ($_SESSION['user_detail']['token']))
+	{
+		
 			if($obj_login->updatePassword())
 			{
 			unset($_SESSION['user_detail']['passkey']);
 			unset($_SESSION['user_detail']['token']);
 			$_SESSION["success_verify_forgot"]="success";
-			//$obj_login->setError('your password has been updated successfully');	
-			//$db_obj->redirect(PROJECT_URL);
+		
+			}
+	}
+	else
+			{
+				$db_obj->redirect(PROJECT_URL);
 			}
 }
 
@@ -110,7 +119,11 @@ if (isset($_POST['resetpass']) && $_POST['resetpass'] == 'ResetPassword'){
         <div class="loginbx">
             <a class="adminlogo" href="<?php echo PROJECT_URL; ?>" target="_blank"><img src="<?php echo PROJECT_URL;?>/image/logo.png" title="GST Keeper" alt="GST Keeper" /></a>
             <div class="logincontainer">
-               
+               <ul class="admintab">
+                    <li class="userlogin"><a href="<?php echo PROJECT_URL; ?>">SIGN IN</a></li>
+					   <li class="userregister"><a href="<?php echo PROJECT_URL; ?>">Register</a></li>
+                   
+                </ul>
                 <div class="adminloginbx logincontent">
                     <p>Please enter your new password details here</p>
 					<div class="clear" ></div>
@@ -125,7 +138,7 @@ if (isset($_POST['resetpass']) && $_POST['resetpass'] == 'ResetPassword'){
 				?>
 				
 		
-                     <div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>your password has been updated successfully <a href="<?php echo PROJECT_URL; ?>">click to login</a></b></div>
+                     <div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>Your password has been successfully changed,<a href="<?php echo PROJECT_URL; ?>">Click here to login.</a></b></div>
 				<?php } ?>
 				 <?php
 				if (isset($_SESSION["success_verify"]) && $_SESSION["success_verify"]=="success")
@@ -151,7 +164,7 @@ if (isset($_POST['resetpass']) && $_POST['resetpass'] == 'ResetPassword'){
 						<input type="hidden" name="userid" id="userid" value="<?php echo $_GET["passkey"]; ?>" />
                        
                      
-                        <input type="submit" name="resetpass" class="btnsubmit" id="resetpass" value="ResetPassword" />
+                        <input type="submit" name="resetpass" class="btnsubmit" id="resetpass" value="Reset Password" />
                     </form>
                 </div>
                  

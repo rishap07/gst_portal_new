@@ -1,6 +1,6 @@
 <?php
 	$obj_master = new master();
-	
+
 	if(!$obj_master->can_read('master_receiver')) {
 		$obj_master->setError($obj_master->getValMsg('can_read'));
 		$obj_master->redirect(PROJECT_URL."/?page=dashboard");
@@ -27,11 +27,10 @@
                         <th align='left' width="72">#</th>
                         <th align='left'>GSTIN</th>
                         <th align='left'>Name</th>
-
                         <th align='left'>Address</th>
+						<th align='left'>City</th>
                         <th align='left'>State</th>
-                        <th align='left'>State Code</th>
-
+                        <th align='left'>Country</th>
                         <th align='left'>Status</th>
                         <th width="72">Action</th>
                     </tr>
@@ -41,12 +40,12 @@
     </div>
 </div>
 </div>
-<div class="clear height80">
-</div>
-<script>
+<div class="clear height80"></div>
+<script type="text/javascript">
     $(document).ready(function () {
         TableManaged.init();
     });
+
     var TableManaged = function () {
         return {
             init: function () {
@@ -65,6 +64,7 @@
                         {"bSortable": false},
                         {"bSortable": false},
                         {"bSortable": false},
+						{"bSortable": false},
                         {"bSortable": false}
                     ],
                     "sDom": "lfrtip",

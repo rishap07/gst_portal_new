@@ -52,7 +52,328 @@ final class master extends validation {
         $this->logMsg("New State Added. ID : " . $insertid . ".");
         return true;
     }
-    
+	private function getvendorData()
+	{
+		 $dataArr = array();
+	   if(!empty($_GET["id"]))
+	   {
+		  $dataArr['vendor_name'] = isset($_POST['vendor_name']) ? $_POST['vendor_name'] : '';
+		 $dataArr['status'] = isset($_POST['vendor_status']) ? $_POST['vendor_status'] : '';
+		  $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
+          $dataArr['updated_date'] = date('Y-m-d H:i:s');
+			     
+	   }
+	   else
+	   {
+		     $dataArr['vendor_name'] = isset($_POST['vendor_name']) ? $_POST['vendor_name'] : '';
+		 $dataArr['status'] = isset($_POST['vendor_status']) ? $_POST['vendor_status'] : '';
+		 	  $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
+          $dataArr['added_date'] = date('Y-m-d H:i:s');
+	   }
+		
+	
+		
+		 return $dataArr;
+		 
+       
+	}
+	private function getbusinessareaData()
+	{
+		 $dataArr = array();
+	   if(!empty($_GET["id"]))
+	   {
+		  $dataArr['business_area_name'] = isset($_POST['business_area_name']) ? $_POST['business_area_name'] : '';
+		 $dataArr['status'] = isset($_POST['business_area_status']) ? $_POST['business_area_status'] : '';
+		  $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
+          $dataArr['updated_date'] = date('Y-m-d H:i:s');
+			     
+	   }
+	   else
+	   {
+		  $dataArr['business_area_name'] = isset($_POST['business_area_name']) ? $_POST['business_area_name'] : '';
+		 $dataArr['status'] = isset($_POST['business_area_status']) ? $_POST['business_area_status'] : '';
+		 	  $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
+          $dataArr['added_date'] = date('Y-m-d H:i:s');
+	   }
+		
+	
+		
+		 return $dataArr;
+		 
+       
+	}
+	private function getbusinesstypeData()
+	{
+		 $dataArr = array();
+	   if(!empty($_GET["id"]))
+	   {
+		  $dataArr['business_name'] = isset($_POST['business_type_name']) ? $_POST['business_type_name'] : '';
+		 $dataArr['status'] = isset($_POST['business_type_status']) ? $_POST['business_type_status'] : '';
+		  $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
+          $dataArr['updated_date'] = date('Y-m-d H:i:s');
+			     
+	   }
+	   else
+	   {
+		  $dataArr['business_name'] = isset($_POST['business_type_name']) ? $_POST['business_type_name'] : '';
+		 $dataArr['status'] = isset($_POST['business_type_status']) ? $_POST['business_type_status'] : '';
+		 	  $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
+          $dataArr['added_date'] = date('Y-m-d H:i:s');
+	   }
+		
+	
+		
+		 return $dataArr;
+		 
+       
+	}
+	
+	
+     public function updateBusinessArea()
+    {
+		$dataArr =array();
+		$dataArr = $this->getbusinessareaData();
+		if(!empty($_GET["id"]))
+		{
+			$sql="select count(business_area_id) as numcount from ".TAB_PREFIX."business_area WHERE business_area_id=".$_GET["id"]."";
+			$dataCurrentArr = $this->get_results($sql);
+			
+			if($dataCurrentArr[0]->numcount > 0)
+			{
+				 $dataConditionArray['business_area_id'] = $_GET["id"];
+				// $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
+                // $dataArr['update_date'] = date('Y-m-d H:i:s');
+			     
+				if ($this->update(TAB_PREFIX.'business_area', $dataArr, $dataConditionArray)) {
+                    
+					$this->setSuccess("Business area information updated successfully");
+					$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update the Business Area info");
+				 
+					return true;
+				} else {
+
+					$this->setError($this->validationMessage['failed']);
+					return false;
+				}
+				
+  			}
+			else
+			{
+				$sql="select count(business_area_id) as numcount from ".TAB_PREFIX."business_area WHERE business_area_name='".$dataArr["business_area_name"]."'";
+				$dataCurrentArr = $this->get_results($sql);
+				
+				if($dataCurrentArr[0]->numcount > 0)
+
+				{
+					$this->setError('Business area Name already exists');
+					   return false; 
+				}	
+				else
+				{
+				
+					if ($this->insert(TAB_PREFIX.'business_area', $dataArr)) {
+						$this->setSuccess('Business Area Saved Successfully');
+						return true;
+					}
+					else
+					{
+						$this->setError('Failed to save Business area data');
+					   return false;    	   
+				   }
+				}
+
+			}
+		}
+		else
+		{
+				$sql="select count(business_area_id) as numcount from ".TAB_PREFIX."business_area WHERE business_area_name='".$dataArr["business_area_name"]."'";
+			$dataCurrentArr = $this->get_results($sql);
+			
+			if($dataCurrentArr[0]->numcount > 0)
+
+			{
+				$this->setError('Business area Name already exists');
+				   return false; 
+			}	
+			else
+			{
+				if ($this->insert(TAB_PREFIX.'business_area', $dataArr)) {
+					$this->setSuccess('Business area Saved Successfully');
+				
+					return true;
+				}
+				else
+				{
+					$this->setError('Failed to save Business area data');
+				   return false;    	   
+			   }
+			}
+		}
+		
+   }
+    public function updateBusinessType()
+    {
+		$dataArr =array();
+		$dataArr = $this->getbusinesstypeData();
+		if(!empty($_GET["id"]))
+		{
+			$sql="select count(business_id) as numcount from ".TAB_PREFIX."business_type WHERE business_id=".$_GET["id"]."";
+			$dataCurrentArr = $this->get_results($sql);
+			
+			if($dataCurrentArr[0]->numcount > 0)
+			{
+				 $dataConditionArray['business_id'] = $_GET["id"];
+				// $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
+                // $dataArr['update_date'] = date('Y-m-d H:i:s');
+			     
+				if ($this->update(TAB_PREFIX.'business_type', $dataArr, $dataConditionArray)) {
+                    
+					$this->setSuccess("Business name information updated successfully");
+					$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update the Business type info");
+				 
+					return true;
+				} else {
+
+					$this->setError($this->validationMessage['failed']);
+					return false;
+				}
+				
+  			}
+			else
+			{
+				$sql="select count(business_id) as numcount from ".TAB_PREFIX."business_type WHERE business_name='".$dataArr["business_name"]."'";
+				$dataCurrentArr = $this->get_results($sql);
+				
+				if($dataCurrentArr[0]->numcount > 0)
+
+				{
+					$this->setError('BusinessType Name already exists');
+					   return false; 
+				}	
+				else
+				{
+				
+					if ($this->insert(TAB_PREFIX.'business_type', $dataArr)) {
+						$this->setSuccess('Business type Saved Successfully');
+						return true;
+					}
+					else
+					{
+						$this->setError('Failed to save Business type data');
+					   return false;    	   
+				   }
+				}
+
+			}
+		}
+		else
+		{
+				$sql="select count(business_id) as numcount from ".TAB_PREFIX."business_type WHERE business_name='".$dataArr["business_name"]."'";
+			$dataCurrentArr = $this->get_results($sql);
+			
+			if($dataCurrentArr[0]->numcount > 0)
+
+			{
+				$this->setError('BusinessType Name already exists');
+				   return false; 
+			}	
+			else
+			{
+				if ($this->insert(TAB_PREFIX.'business_type', $dataArr)) {
+					$this->setSuccess('BusinessType Saved Successfully');
+				
+					return true;
+				}
+				else
+				{
+					$this->setError('Failed to save Business Type data');
+				   return false;    	   
+			   }
+			}
+		}
+		
+   }
+    public function updateVendor()
+    {
+		$dataArr =array();
+		$dataArr = $this->getvendorData();
+		if(!empty($_GET["id"]))
+		{
+			$sql="select count(vendor_id) as numcount from ".TAB_PREFIX."vendor_type WHERE vendor_id=".$_GET["id"]."";
+			$dataCurrentArr = $this->get_results($sql);
+			
+			if($dataCurrentArr[0]->numcount > 0)
+			{
+				 $dataConditionArray['vendor_id'] = $_GET["id"];
+				// $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
+                // $dataArr['update_date'] = date('Y-m-d H:i:s');
+			     
+				if ($this->update(TAB_PREFIX.'vendor_type', $dataArr, $dataConditionArray)) {
+                    
+					$this->setSuccess("Vendor information updated successfully");
+					$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update the vendor info");
+				 
+					return true;
+				} else {
+
+					$this->setError($this->validationMessage['failed']);
+					return false;
+				}
+				
+  			}
+			else
+			{
+				$sql="select count(vendor_id) as numcount from ".TAB_PREFIX."vendor_type WHERE name='".$dataArr["vendor_name"]."'";
+				$dataCurrentArr = $this->get_results($sql);
+				
+				if($dataCurrentArr[0]->numcount > 0)
+
+				{
+					$this->setError('Vendor Name already exists');
+					   return false; 
+				}	
+				else
+				{
+				
+					if ($this->insert(TAB_PREFIX.'vendor_type', $dataArr)) {
+						$this->setSuccess('Vendor Saved Successfully');
+						return true;
+					}
+					else
+					{
+						$this->setError('Failed to save Vendor data');
+					   return false;    	   
+				   }
+				}
+
+			}
+		}
+		else
+		{
+				$sql="select count(vendor_id) as numcount from ".TAB_PREFIX."vendor_type WHERE vendor_name='".$dataArr["vendor_name"]."'";
+			$dataCurrentArr = $this->get_results($sql);
+			
+			if($dataCurrentArr[0]->numcount > 0)
+
+			{
+				$this->setError('vendor Name already exists');
+				   return false; 
+			}	
+			else
+			{
+				if ($this->insert(TAB_PREFIX.'vendor_type', $dataArr)) {
+					$this->setSuccess('vendor Saved Successfully');
+				
+					return true;
+				}
+				else
+				{
+					$this->setError('Failed to save vendor data');
+				   return false;    	   
+			   }
+			}
+		}   
+	 }
     private function getStateData()
     {
         $dataArr = array();
@@ -305,6 +626,7 @@ final class master extends validation {
 			$dataArr['address'] = isset($_POST['address']) ? $_POST['address'] : '';
 			$dataArr['city'] = isset($_POST['city']) ? $_POST['city'] : '';
 			$dataArr['state'] = isset($_POST['state']) ? $_POST['state'] : '';
+			$dataArr['country'] = isset($_POST['country']) ? $_POST['country'] : '';
 			$dataArr['zipcode'] = isset($_POST['zipcode']) ? $_POST['zipcode'] : '';
             $dataArr['phone'] = isset($_POST['phone']) ? $_POST['phone'] : '';
 			$dataArr['fax'] = isset($_POST['fax']) ? $_POST['fax'] : '';
@@ -313,7 +635,7 @@ final class master extends validation {
 			$dataArr['website'] = isset($_POST['website']) ? $_POST['website'] : '';
 			$dataArr['remarks'] = isset($_POST['remarks']) ? trim($_POST['remarks']) : '';
             $dataArr['status'] = isset($_POST['status']) ? $_POST['status'] : '';
-			 $dataArr['vendor_type'] = isset($_POST['vendor_type']) ? $_POST['vendor_type'] : '';
+			$dataArr['vendor_type'] = isset($_POST['vendor_type']) ? $_POST['vendor_type'] : '';
         }
         return $dataArr;
     }
@@ -325,11 +647,11 @@ final class master extends validation {
             'company_name' => 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Business Name',
 			'email' => 'required||email|#|lable_name:Email Address',
 			'address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Address',
-			'zipcode' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:zipcode',
 			'city' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:City',
-			'state' => 'required|#|lable_name:State'
+			'state' => 'required|#|lable_name:State',
+			'country' => 'required|#|lable_name:Country'
 		);
-		
+
 		if( array_key_exists("zipcode",$dataArr) ) {
             $rules['zipcode'] = 'required||numeric|#|lable_name:Zipcode';
         }
@@ -440,6 +762,7 @@ final class master extends validation {
 			$dataArr['address'] = isset($_POST['address']) ? $_POST['address'] : '';
 			$dataArr['city'] = isset($_POST['city']) ? $_POST['city'] : '';
 			$dataArr['state'] = isset($_POST['state']) ? $_POST['state'] : '';
+			$dataArr['country'] = isset($_POST['country']) ? $_POST['country'] : '';
 			$dataArr['zipcode'] = isset($_POST['zipcode']) ? $_POST['zipcode'] : '';
             $dataArr['phone'] = isset($_POST['phone']) ? $_POST['phone'] : '';
 			$dataArr['fax'] = isset($_POST['fax']) ? $_POST['fax'] : '';
@@ -461,9 +784,10 @@ final class master extends validation {
 			'email' => 'required||email|#|lable_name:Email Address',
 			'address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Address',
 			'city' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:City',
-			'state' => 'required|#|lable_name:State'
+			'state' => 'required|#|lable_name:State',
+			'country' => 'required|#|lable_name:Country'
 		);
-		
+
 		if( array_key_exists("zipcode",$dataArr) ) {
             $rules['zipcode'] = 'required||numeric|#|lable_name:Zipcode';
         }

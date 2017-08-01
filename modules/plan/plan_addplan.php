@@ -76,7 +76,7 @@ if( isset($_POST['submit_add_plan']) && $_POST['submit_add_plan'] == 'SUBMIT' ) 
                             <?php $allPlanCategories = $obj_plan->getPlanCategories(); ?>
                           <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                           
-                            <label>Plan Period<span class="starred">*</span></label>
+                            <label>Plan Category<span class="starred">*</span></label>
                             <select name="plan_period" id="plan_period" class="required form-control" data-bind="number">
                                 <option value="">Select Plan</option>
                                 <?php
@@ -108,6 +108,32 @@ if( isset($_POST['submit_add_plan']) && $_POST['submit_add_plan'] == 'SUBMIT' ) 
                             <div class="clear"></div>
                             <input type="radio" name="plan_status" checked="checked" value="1" /><span>Active</span> <input type="radio" name="plan_status" value="0" /><span>Inactive</span>
                         </div>
+                       <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                           
+                            <label>No.of PAN<span class="starred">*</span></label>
+                            <input type="text" name="pan_num" id="pan_num" placeholder="Enter no of Pan" class="required form-control" data-bind="decimal" value="<?php echo isset($_POST['pan_num']) ? $_POST['pan_num'] : ''; ?>" required/>
+                        </div>  
+                        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                           
+                            <label>No.of company<span class="starred">*</span></label>
+                            <input type="text" name="company_no" id="company_no" placeholder="Enter no of company" class="required form-control" data-bind="decimal" value="<?php echo isset($_POST['company_no']) ? $_POST['company_no'] : ''; ?>" required/>
+                        </div> 
+                        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                           
+                            <label>Support<span class="starred">*</span></label>
+                            <input type="text" name="support" id="support" placeholder="support type" class="required form-control" value="<?php echo isset($_POST['support']) ? $_POST['support'] : ''; ?>" required/>
+                        </div> 
+                          <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                           
+                            <label> Cloud Stograge (Gb)<span class="starred">*</span></label>
+                            <input type="text" name="cloud_storage_gb" id="cloud_storage_gb" placeholder=" Cloud Stograge(gb)" class="required form-control"  value="<?php echo isset($_POST['cloud_storage_gb']) ? $_POST['cloud_storage_gb'] : ''; ?>" required/>
+                        </div>
+                          <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                           
+                            <label>  GSt Expert Help <span class="starred">*</span></label>
+                            <input type="text" name="gst_expert_help" id="gst_expert_help" placeholder=" GSt Expert Help" class="required form-control"  value="<?php echo isset($_POST['gst_expert_help']) ? $_POST['gst_expert_help'] : ''; ?>" required/>
+                        </div>                          
+                                                 
               <div class="clear"></div>
 						 <div class="adminformbxsubmit" style="width:100%;">
                              

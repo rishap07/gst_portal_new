@@ -102,7 +102,8 @@ class login extends validation {
         $dataArr['companyname'] = isset($_POST['companyname']) ? $_POST['companyname'] : '';
         $dataArr['firstname'] = isset($_POST['firstname']) ? $_POST['firstname'] : '';
         $dataArr['lastname'] = isset($_POST['lastname']) ? $_POST['lastname'] : '';
-
+		$dataArr['gstin_number'] = isset($_POST['gstin_number']) ? $_POST['gstin_number'] : '';
+		$dataArr['coupon'] = isset($_POST['coupon']) ? $_POST['coupon'] : '';
 
         if (!$this->validateRegister($dataArr)) {
             return false;
@@ -122,6 +123,28 @@ class login extends validation {
             $this->setError($this->validationMessage['emailexist']);
             return false;
         }
+		
+		$coupon_datas = array();
+		if($dataArr['coupon']!='')
+		{
+			$coupon_data = $this->get_results("select * from ".TAB_PREFIX."coupon where hidden='0' and status='1' and name='".$dataArr['coupon']."'");
+			if(!empty($coupon_data))
+			{
+				$client_datas = $this->get_results("select * from ".TAB_PREFIX."user where coupon='".$dataArr['coupon']."'");
+				if(isset($coupon_data[0]->coupon_uses) && count($client_datas)<$coupon_data[0]->coupon_uses)
+				{
+					$coupon_datas = $coupon_data;
+				}
+				else{
+					$this->setError('Coupon Code Expired');
+					return false;
+				}
+			}
+			else{
+				$this->setError('Invalid Coupon Code');
+				return false;
+			}
+		}
 
         /* create insert array */
         $dataInsertArray['username'] = $dataArr['username'];
@@ -130,13 +153,14 @@ class login extends validation {
         $dataInsertArray['last_name'] = $dataArr['lastname'];
         $dataInsertArray['phone_number'] = $dataArr['mobilenumber'];
         $dataInsertArray['company_name'] = $dataArr['companyname'];
+		$dataInsertArray['gstin_number'] = $dataArr['gstin_number'];
         $dataInsertArray['subscriber_code'] = $this->generateSubscriberRandomCode(6, $this->tableNames['user'], "subscriber_code");
+		$dataInsertArray['coupon'] = $dataArr['coupon'];
 
         $dataInsertArray['password'] = $this->password_encrypt($dataArr['password']); /* encrypt password */
         $dataInsertArray['added_by'] = '22';
         $dataInsertArray['added_date'] = date('Y-m-d H:i:s');
         $dataInsertArray['email_code'] = md5(uniqid(rand(), 1));
-
 
         if ($this->insert($this->tableNames['user'], $dataInsertArray)) {
 
@@ -146,7 +170,8 @@ class login extends validation {
             $_SESSION['user_detail']['user_id'] = $userData['data']->user_id;
             $_SESSION['user_detail']['username'] = $userData['data']->username;
             $_SESSION['user_detail']['email'] = $userData['data']->email;
-            $_SESSION['user_detail']['name'] = $userData['data']->name;
+            $_SESSION['user_detail']['phone_number'] = $userData['data']->phone_number;
+			$_SESSION['user_detail']['name'] = $userData['data']->name;
             $_SESSION['user_detail']['user_group'] = $userData['data']->user_group;
             /* assign user permissions */
             $rolequery = "select b.role_page,a.can_read,a.can_create,a.can_update,a.can_delete from " . $this->tableNames['user_role_permission'] . " a left join " . $this->tableNames['user_role'] . " b on a.role_id=b.user_role_id where a.group_id='" . $userData['data']->user_group . "' and a.is_deleted='0' and a.status='1'";
@@ -161,7 +186,7 @@ class login extends validation {
             }
             /* code for send email to user  */
 
-            $this->sendRegisteremail("registration", 'register by ' . $userData['data']->name . '', $dataArr['emailaddress'], 'noreply@gstkeeper.com', "lokesh.chotiya@cyfuture.com,rishap07@gmail.com", "NewSubscriber Registration", $dataInsertArray['email_code']);
+            $this->sendRegisteremail("registration", 'register by ' . $userData['data']->name . '', $dataArr['emailaddress'], 'noreply@gstkeeper.com', "lokesh.chotiya@cyfuture.com,rishap07@gmail.com", "New Subscriber Registration", $dataInsertArray['email_code']);
 
             if (isset($_POST['rememberme']) && $_POST['rememberme'] == 1) {
 
@@ -171,18 +196,124 @@ class login extends validation {
                     return false;
                 }
             }
+			
+			if (!isset($_SESSION['plan_id']) || $_SESSION['plan_id']=='') {
+				return true;
+			}
+			else
+			{
+				$dataGo4host['user_id'] = $userData['data']->user_id;
+				$dataGo4host['username'] = $userData['data']->username;
+				$dataGo4host['email'] = $userData['data']->email;
+				$dataGo4host['phone_number'] = $userData['data']->phone_number;
+				
+				$dataGo4host['name'] = $userData['data']->name;
+				$dataGo4host['user_group'] = $userData['data']->user_group;
+				$dataGo4host['plan_id'] = $_SESSION['plan_id'];
+				unset($_SESSION['plan_id']);
+				$dataPlan = $this->get_results("select * from ".TAB_PREFIX."subscriber_plan where id='".$this->sanitize($dataGo4host['plan_id'])."' and is_deleted='0' and status='1'");
+				$dataGo4host['price'] = isset($dataPlan[0]->plan_price) ? $dataPlan[0]->plan_price : '9990';
+				$price_data = $dataGo4host['price'];
+				
+				if(!empty($coupon_datas))
+				{
+					if(isset($coupon_datas[0]->type) && $coupon_datas[0]->type=='0')
+					{
+						$dataGo4host['price'] = $price_data - $coupon_datas[0]->coupon_value;
+						$dataGo4host['price'] = $dataGo4host['price'] + ($dataGo4host['price']*0.18);
+					}
+					else if(isset($coupon_datas[0]->type) && $coupon_datas[0]->type=='1')
+					{
+						$dataGo4host['price'] = $dataGo4host['price'] - round((($price_data*$coupon_datas[0]->coupon_value)/(100+$coupon_datas[0]->coupon_value)), 2, PHP_ROUND_HALF_DOWN);
+						$dataGo4host['price'] = $dataGo4host['price'] + ($dataGo4host['price']*0.18);
+						$dataGo4host['price'] = round($dataGo4host['price'], 2, PHP_ROUND_HALF_DOWN);
+						
+					}
+				}
+				else{
+					$dataGo4host['price'] = $dataGo4host['price'] + ($price_data*0.18);
+				}
 
-            return true;
-        } else {
+				//Insert data in payment log
+				$ref_id=date('siHmdy');
+				$cur_date= date('Y-m-d H:i:s');
+				$dataGo4host['ref_id']=$ref_id;
+				
+				$dataPlan1['plan_id']=$dataGo4host['plan_id'];
+				$dataPlan1['plan_price']=$dataPlan[0]->plan_price;
+				$dataPlan1['plan_details']=json_encode($dataPlan);
+				$dataPlan1['no_of_client']=$dataPlan[0]->no_of_client;
+				$dataPlan1['company_no']=$dataPlan[0]->company_no;
+				$dataPlan1['pan_num']=$dataPlan[0]->pan_num;
+				
+				$dataPlan1['plan_start_date']=date('Y-m-d');
+				$dataPlan1['plan_due_date']=date('Y').'-03-31';
+				$dataPlan1['status']='1';
+				$dataPlan1['payment_method']='banktransfer';
+				$dataPlan1['payment_status']='0';
+				$dataPlan1['ref_id']=$ref_id;
+				$dataPlan1['added_by']=$dataGo4host['user_id'];
+				$dataPlan1['added_date']=date('Y-m-d H:i:s');
+				
+				
+				$this->insert(TAB_PREFIX."user_subscribed_plan",$dataPlan1);
+				$this->insert(TAB_PREFIX . 'payment_log', array(
+					'ref_id' => $ref_id,
+					'datetime' => $cur_date,
+					'status' => '0'
+				));
+				
+				$this->redirectGohost($dataGo4host);
+				return true;
+			}
+        
+		} else {
             $this->setError($this->validationMessage['failed']);
             return false;
         }
     }
+	
+	public function redirectGohost($data) { ?>
+	
+		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+		<head>
+		    <script type="text/javascript">
+			function submitToPaypal()
+			{
+				document.Form2.action='<?php echo PROJECT_URL; ?>/go4hosting/keeper_payment.php';
+				document.Form2.submit();
+			}
+			</script>
+		</head>
+		<body onload="submitToPaypal();">
+		<form action="<?php echo PROJECT_URL; ?>/go4hosting/keeper_payment.php" name="Form2" method="POST" id="Form2"> 
+                <input type="hidden" value="0" name="channel"/>
+				<input type="hidden" value="25039" name="account_id"/>
+				<input type="hidden" value="<?php echo $data['ref_id']; ?>" name="reference_no"/>
+				<input type="hidden" value="<?php echo $data['price']; ?>" name="amount"/>
+				<input type="hidden" value="INR" name="currency"/>
+				<input type="hidden" value="INR" name="display_currency"/>
+				<input type="hidden" value="1" name="display_currency_rates"/>
+				<input type="hidden" value="Payment information from GST" name="description"/>
+				<input type="hidden" value="<?php echo PROJECT_URL . "/go4hosting/keeper_response.php"; ?>" name="return_url"/>
+				<input type="hidden" value="LIVE" name="mode"/>
+				<input type="hidden" value="<?php echo $data['username']; ?>" name="name"/>
+				<input type="hidden" value="Delhi" name="address"/>
+				<input type="hidden" value="Delhi" name="city"/>
+				<input type="hidden" value="110010" name="postal_code"/>
+				<input type="hidden" value="IND" name="country"/>
+				<input type="hidden" value="<?php echo $data['email']; ?>" name="email"/>
+				<input type="hidden" value="<?php echo $data['phone_number']; ?>" name="phone"/>
+            </form>
+		</body>
+		</html>
+		<?php
+		exit();
+	}
 
     public function forgotPassword() {
-        $userid;
-			//$this->setSuccess('Kindly check your email for verification');
-        $email = isset($_POST['email']) ? $_POST['email'] : '';
+
+		$email = isset($_POST['email']) ? $_POST['email'] : '';
         $dataArr["emailaddress"] = $email;
         if (!$this->validateEmail($dataArr)) {
             return false;
@@ -191,23 +322,21 @@ class login extends validation {
 
         $data = $this->get_results($sql);
         if (count($data) > 0) {
-            $userid = $data[0]->user_id;
+            
+			$userid = $data[0]->user_id;
             $name = $data[0]->first_name;
-
-
             $sql_forgot = "select * from " . TAB_PREFIX . "forgot_email where userid='" . $userid . "' order by id desc limit 0,1";
-
             $emaildata = $this->get_results($sql_forgot);
-            if (count($emaildata) > 0) {
+            
+			if (count($emaildata) > 0) {
                 $to_time = $emaildata[0]->code_senttime;
                 $to_time = strtotime($to_time);
                 $from_time = strtotime(date('Y-m-d H:i:s'));
                 $time_diff = round(abs($to_time - $from_time) / 60, 2);
                 if ($time_diff > 15) {
 
+                    if ($this->sendMail('Email Verify', 'User ID : ' . $userid . ' email forgotPassword', $data[0]->email, 'noreply@gstkeeper.com', '', 'rishap07@gmail.com,sheetalprasad95@gmail.com', '', 'Password Reset', $this->getEmailVerifyMailBody($userid, $name))) {
 
-                    if ($this->sendMail('Email Verify', 'User ID : ' . $userid . ' email forgotPassword', $data[0]->email, 'noreply@gstkeeper.com', '', 'rishap07@gmail.com,sheetalprasad95@gmail.com', '', 'GST Keeper Portal Forgot Email Verify', $this->getEmailVerifyMailBody($userid, $name))) {
-                       
 						$this->setSuccess('Kindly check your email for verification');
                         return true;
                     } else {
@@ -217,11 +346,11 @@ class login extends validation {
                 } else {
                     // $this->setError($this->validationMessage['failed']);
                     //return false;
-                    $this->setError('Code is already sent please check your email');
+                    $this->setError('Email is already sent please check your mailbox');
                     return false;
                 }
             } else {
-                if ($this->sendMail('Email Verify', 'User ID : ' . $userid . ' email forgotPassword', $data[0]->email, 'noreply@gstkeeper.com', '', 'rishap07@gmail.com,sheetalprasad95@gmail.com', '', 'GST Keeper Portal Forgot Email Verify', $this->getEmailVerifyMailBody($userid, $name))) {
+                if ($this->sendMail('Email Verify', 'User ID : ' . $userid . ' email forgotPassword', $data[0]->email, 'noreply@gstkeeper.com', '', 'rishap07@gmail.com,sheetalprasad95@gmail.com', '', 'Password Reset', $this->getEmailVerifyMailBody($userid, $name))) {
                   $this->setSuccess('Kindly check your email for verification');
                     return true;
                 } else {
@@ -239,7 +368,8 @@ class login extends validation {
         $userid;
 
         $userid = isset($_SESSION['user_detail']['passkey']) ? $_SESSION['user_detail']['passkey'] : '';
-        $userid = base64_decode($userid);
+		$token = isset($_SESSION['user_detail']['token']) ? $_SESSION['user_detail']['token'] : '';
+      
         $password = isset($_POST['password']) ? $_POST['password'] : '';
         $dataArr["password"] = $password;
         $confirm_password = isset($_POST['confirmpassword']) ? $_POST['confirmpassword'] : '';
@@ -251,33 +381,25 @@ class login extends validation {
             return false;
         }
 
-        if ($this->update(TAB_PREFIX . "user", array('password' => md5($password)), array('user_id' => $userid))) {
+        if ($this->update(TAB_PREFIX . "user", array('password' => md5($password)), array('forgotemail_code' => $token))) {
             $this->setSuccess('Kindly check your email for verification.');
             return true;
         }
     }
 
-    protected function sendMail($module = '', $module_message = '', $to_send, $from_send, $cc = '', $bcc = '', $attachment = '', $subject, $body) {
-        $dataInsertArray['module'] = $module;
-        $dataInsertArray['module_message'] = $module_message;
-        $dataInsertArray['to_send'] = $to_send;
-        $dataInsertArray['from_send'] = $from_send;
-        $dataInsertArray['cc'] = $cc;
-        $dataInsertArray['bcc'] = $bcc;
-        $dataInsertArray['attachment'] = $attachment;
-        $dataInsertArray['subject'] = $subject;
-        $dataInsertArray['body'] = $body;
-
-
-        if ($this->insert($this->tableNames['email'], $dataInsertArray)) {
-            return true;
+    
+	public function getToken()
+	{
+	   $token = md5(uniqid(rand(), 1));
+      $result = $this->get_results("select * from " . TAB_PREFIX . "user where forgotemail_code='" . $token . "'");
+        if (count($result) > 0) {
+           $token = $this->getToken();
         } else {
-            return false;
+            return $token;
         }
-    }
-
+	}
     private function getEmailVerifyMailBody($userid, $name) {
-        $token = md5(uniqid(rand(), 1));
+        $token = $this->getToken();
         //$data = '<a href="'.PROJECT_URL.'/verify_forgot_password.php?verifyForgot=' . $token . '&passkey='.base64_encode($userid).'">Click here</a>  or copy the below url and paste on browser to verify your email';
         $data = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -330,8 +452,7 @@ class login extends validation {
                         
                         <tr>
                           <td width="13"></td>
-                          <td width="350"  style="font-size:15px;color:#090909;font-family:Arial, Helvetica, sans-serif; padding-top:10px; "><strong>Password Reset 
-</strong></td>
+                          <td width="350"  style="font-size:15px;color:#090909;font-family:Arial, Helvetica, sans-serif; padding-top:10px; "></td>
                           <td width="20"></td>
                           </tr>
                         <tr>
@@ -342,14 +463,14 @@ class login extends validation {
 
                           <td width="13"></td>
                           <td height="140" align="justify"  valign="top" style="font-size:13px;color:#191919;font-family:Arial, Helvetica, sans-serif; line-height:18px; ">
-						  <p>Dear ' . $name . ',<br>
+						  <p><strong>Dear ' . $name . '</strong></p>
+						  <p>
 						  We have received your request for password change.<br>
-Please click the link below to reset your password:<br>
-<a href="' . PROJECT_URL . '/verify_forgot_password.php?verifyForgot=' . $token . '&passkey=' . base64_encode($userid) . '">Click here</a>  
-<br>
-Note: For security reasons, it’s advisable to change the password immediately after the first login.<br>
-Thank You for using our services. <br>
-If you have any queries, please mail us at contact@gstkeeper.com for further assistance. <br>
+Please click the link below to reset your password:</p>
+<p><a target="_blank" style="padding:2px 5px;background:#cf3502;color:#fff;text-decoration:none;font-size:20px;" href="' . PROJECT_URL . '/verify_forgot_password.php?verifyForgot=' . $token . '&passkey=' . md5($userid) . '" >Click here</a> </p> 
+<p>Note: For security reasons, it is advisable to change the password immediately after the first login.</p>
+<p>Thank You for using our services.</p>
+<p>If you have any queries, please mail us at contact@gstkeeper.com for further assistance.</p>
 <br><br>
 Thanks!<br>
 The GST Keeper Team</p>
@@ -645,11 +766,15 @@ Please click the link below to verify your account:<br><br>
             'username' => 'required||pattern:/^' . $this->validateType['username'] . '+$/|#|lable_name:User Name',
             'firstname' => 'required||pattern:/^' . $this->validateType['firstname'] . '+$/|#|lable_name:First Name',
             'lastname' => 'required||pattern:/^' . $this->validateType['lastname'] . '+$/|#|lable_name:Last Name',
-            'companyname' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Company Name',
+            'companyname' => 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Company Name',
             'emailaddress' => 'required||email|#|lable_name:Email',
             'mobilenumber' => 'required||pattern:/^' . $this->validateType['mobilenumber'] . '+$/|#|lable_name:Mobile Number',
             'password' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||min:8||max:20|#|lable_name:Password'
         );
+
+		if (array_key_exists("gstin_number", $dataArr)) {
+            $rules['gstin_number'] = 'pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:GSTIN';
+        }
 
         $valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {

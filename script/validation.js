@@ -57,7 +57,8 @@ vali = {
         var flag1 = 0;
         var reg_match = [];
         reg_match['name'] = /^[a-zA-Z\s]+$/;
-        reg_match['namewos'] = /^[a-zA-Z]+$/;
+		reg_match['namewos'] = /^[a-zA-Z]+$/;
+		reg_match['usernamewos'] = /^[a-zA-Z\d]+[(_{1}\-{1}\.{1})|(a-zA-Z\d)][a-zA-Z\d]+$/;
         reg_match['text'] = /^[a-zA-Z0-9\-\s,.\']+$/;
         reg_match['alphanum'] = /^[a-zA-Z0-9]+$/;
         reg_match['content'] = /^[^\\\"<>|]+$/;
@@ -94,7 +95,8 @@ vali = {
 
         var err_msg = [];
         err_msg['name'] = "Should be Alphabets";
-        err_msg['namewos'] = "Should be Alphabets";
+        err_msg['namewos'] = "Should be Alphabets Without Space";
+		err_msg['usernamewos'] = "Should be Without Space";
         err_msg['text'] = "Can contains alphanumberic";
         err_msg['content'] = "Can\'t contains  \\ / :  < > \" | ";
         err_msg['date'] = "Should be date format (YYYY-MM-DD)";
@@ -233,6 +235,30 @@ function validateInvoiceAmount(evt, el) {
          return false;
     }
     
+	//get the carat position
+    var caratPos = getSelectionStart(el);
+    var dotPos = el.value.indexOf(".");
+    if( caratPos > dotPos && dotPos > -1 && (number[1].length > 1)){
+        return false;
+    }
+
+	return true;
+}
+
+// THE SCRIPT THAT CHECKS IF THE KEY PRESSED IS A NUMERIC OR DECIMAL VALUE.
+function validateDecimalValue(evt, el) {
+    
+	var charCode = (evt.which) ? evt.which : event.keyCode;
+    var number = el.value.split('.');
+	if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
+        return false;
+    }
+
+	//just one dot
+    if(number.length > 1 && charCode == 46){
+         return false;
+    }
+
 	//get the carat position
     var caratPos = getSelectionStart(el);
     var dotPos = el.value.indexOf(".");

@@ -13,7 +13,7 @@ $item = array();
 $counter = 0;
 if(isset($_GET['ajax']) && $_GET['ajax'] == "client_get_receiver_by_business_name" && isset($_GET['term'])) {
 
-	$clientGetReceivers = $obj_client->get_results("select r.receiver_id, r.name, r.company_name, r.email, r.address, r.city, r.zipcode, r.phone, r.fax, r.pannumber, r.gstid, r.website, r.remarks, s.state_id, s.state_name, s.state_code from " . $obj_client->getTableName('receiver') . " as r, " . $obj_client->getTableName('state') . " as s where 1=1 AND r.state = s.state_id AND r.is_deleted='0' AND r.status = '1' AND r.company_name LIKE '%".trim($_GET['term'])."%' AND r.added_by = '".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."'");
+	$clientGetReceivers = $obj_client->get_results("select r.receiver_id, r.name, r.company_name, r.email, r.address, r.city, r.zipcode, r.phone, r.fax, r.pannumber, r.gstid, r.website, r.remarks, r.vendor_type, s.state_id, s.state_name, s.state_code, c.id as country_id, c.country_code, c.country_name from " . $obj_client->getTableName('receiver') . " as r left join " . $obj_client->getTableName('state') . " as s on r.state = s.state_id left join " . $obj_client->getTableName('country') . " as c on r.country = c.id where 1=1 AND r.is_deleted='0' AND r.status = '1' AND r.company_name LIKE '%".trim($_GET['term'])."%' AND r.added_by = '".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."'");
 
 	if(count($clientGetReceivers) > 0) {
 
@@ -36,6 +36,10 @@ if(isset($_GET['ajax']) && $_GET['ajax'] == "client_get_receiver_by_business_nam
 			$item[$counter]['gstid'] = $clientGetReceiver->gstid;
 			$item[$counter]['website'] = $clientGetReceiver->website;
 			$item[$counter]['remarks'] = $clientGetReceiver->remarks;
+			$item[$counter]['vendor_type'] = $clientGetReceiver->vendor_type;
+			$item[$counter]['country_id'] = $clientGetReceiver->country_id;
+			$item[$counter]['country_code'] = $clientGetReceiver->country_code;
+			$item[$counter]['country_name'] = $clientGetReceiver->country_name;
 			$counter++;
 		}
 	}

@@ -66,11 +66,11 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
-        <div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Item</h1></div>
-         <hr class="headingborder">
- <?php $obj_client->showErrorMessage(); ?>
-        <?php $obj_client->showSuccessMessge(); ?>
-        <?php $obj_client->unsetMessage(); ?>
+		<div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Item</h1></div>
+		<hr class="headingborder">
+		<?php $obj_client->showErrorMessage(); ?>
+		<?php $obj_client->showSuccessMessge(); ?>
+		<?php $obj_client->unsetMessage(); ?>
         <div class="whitebg formboxcontainer">
       
         <h2 class="greyheading"><?php if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editItem") { echo 'Edit Item'; } else { echo 'Add New Item'; } ?></h2>

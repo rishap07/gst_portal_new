@@ -34,7 +34,23 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
        $returndata = $obj_return->get_results($sql);
 	   ?>
 	  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
 
+  <script type="text/javascript">
+        $(document).ready(function() {
+            $('#place_of_supply_unregistered_person').multiselect();
+        });
+   </script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#place_of_supply_taxable_person').multiselect();
+        });
+   </script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#place_of_supply_uin_holder').multiselect();
+        });
+   </script>
        <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
        			<div class="col-md-12 col-sm-12 col-xs-12">
                
@@ -101,7 +117,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="total_tax_value_supplya" value="<?php echo $returndata[0]->total_tax_value_supplya; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="total_tax_value_supplya" value="<?php echo $returndata[0]->total_tax_value_supplya; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -114,7 +130,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_value_supplya" value="<?php echo $returndata[0]->integrated_tax_value_supplya; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_value_supplya" value="<?php echo $returndata[0]->integrated_tax_value_supplya; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -127,7 +143,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_value_supplya" value="<?php echo $returndata[0]->central_tax_value_supplya; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_value_supplya" value="<?php echo $returndata[0]->central_tax_value_supplya; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -140,7 +156,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_value_supplya"  value="<?php echo $returndata[0]->state_tax_value_supplya; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_value_supplya"  value="<?php echo $returndata[0]->state_tax_value_supplya; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -153,7 +169,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_tax_value_supplya" value="<?php echo $returndata[0]->cess_tax_value_supplya; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplya" value="<?php echo $returndata[0]->cess_tax_value_supplya; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -174,7 +190,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="total_tax_value_supplyb" value="<?php echo $returndata[0]->total_tax_value_supplyb; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="total_tax_value_supplyb" value="<?php echo $returndata[0]->total_tax_value_supplyb; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -187,7 +203,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_value_supplyb" value="<?php echo $returndata[0]->integrated_tax_value_supplyb; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_value_supplyb" value="<?php echo $returndata[0]->integrated_tax_value_supplyb; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -200,7 +216,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_value_supplyb" value="<?php echo $returndata[0]->central_tax_value_supplyb; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_value_supplyb" value="<?php echo $returndata[0]->central_tax_value_supplyb; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -213,7 +229,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_value_supplyb" value="<?php echo $returndata[0]->state_tax_value_supplyb; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_value_supplyb" value="<?php echo $returndata[0]->state_tax_value_supplyb; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -226,7 +242,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_tax_value_supplyb" value="<?php echo $returndata[0]->cess_tax_value_supplyb; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplyb" value="<?php echo $returndata[0]->cess_tax_value_supplyb; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>                             
@@ -246,7 +262,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="total_tax_value_supplyc" value="<?php echo $returndata[0]->total_tax_value_supplyc; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="total_tax_value_supplyc" value="<?php echo $returndata[0]->total_tax_value_supplyc; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -259,7 +275,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_value_supplyc" value="<?php echo $returndata[0]->integrated_tax_value_supplyc; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_value_supplyc" value="<?php echo $returndata[0]->integrated_tax_value_supplyc; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -272,7 +288,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_value_supplyc" value="<?php echo $returndata[0]->central_tax_value_supplyc; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_value_supplyc" value="<?php echo $returndata[0]->central_tax_value_supplyc; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -285,7 +301,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_value_supplyc" value="<?php echo $returndata[0]->state_tax_value_supplyc; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_value_supplyc" value="<?php echo $returndata[0]->state_tax_value_supplyc; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -298,7 +314,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_tax_value_supplyc" value="<?php echo $returndata[0]->cess_tax_value_supplyc; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplyc" value="<?php echo $returndata[0]->cess_tax_value_supplyc; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>              
@@ -319,7 +335,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="total_tax_value_supplyd" value="<?php echo $returndata[0]->total_tax_value_supplyd; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="total_tax_value_supplyd" value="<?php echo $returndata[0]->total_tax_value_supplyd; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -332,7 +348,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_value_supplyd" value="<?php echo $returndata[0]->integrated_tax_value_supplyd; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_value_supplyd" value="<?php echo $returndata[0]->integrated_tax_value_supplyd; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -345,7 +361,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_value_supplyd" value="<?php echo $returndata[0]->central_tax_value_supplyd; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_value_supplyd" value="<?php echo $returndata[0]->central_tax_value_supplyd; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -358,7 +374,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_value_supplyd" value="<?php echo $returndata[0]->state_tax_value_supplyd; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_value_supplyd" value="<?php echo $returndata[0]->state_tax_value_supplyd; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -371,7 +387,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_tax_value_supplyd" value="<?php echo $returndata[0]->cess_tax_value_supplyd; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplyd" value="<?php echo $returndata[0]->cess_tax_value_supplyd; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 	          
@@ -393,7 +409,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="total_tax_value_supplye" value="<?php echo $returndata[0]->total_tax_value_supplye; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="total_tax_value_supplye" value="<?php echo $returndata[0]->total_tax_value_supplye; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 	   
@@ -406,7 +422,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_value_supplye" value="<?php echo $returndata[0]->integrated_tax_value_supplye; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_value_supplye" value="<?php echo $returndata[0]->integrated_tax_value_supplye; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -419,7 +435,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_value_supplye" value="<?php echo $returndata[0]->central_tax_value_supplye; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_value_supplye" value="<?php echo $returndata[0]->central_tax_value_supplye; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -445,7 +461,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_tax_value_supplye" value="<?php echo $returndata[0]->cess_tax_value_supplye; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplye" value="<?php echo $returndata[0]->cess_tax_value_supplye; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 								 
@@ -478,15 +494,23 @@ composition taxable persons and UIN holders</div>
                                     <td class="lftheading" width="25%">Supplies made to Unregistered Persons</td>
                                      <td>
 									
-						<select name='place_of_supply_unregistered_person' id='place_of_supply_unregistered_person' class="required form-control">
+						<select name='place_of_supply_unregistered_person[]' multiple id='place_of_supply_unregistered_person' class="required form-control">
 						<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 							<?php if(!empty($dataSupplyStateArrs)) { ?>
 								<option value=''>Select Place Of Supply</option>
 								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
 								<option value='<?php echo $dataSupplyStateArr->state_id; ?>' <?php
-                                    if (isset($returndata[0]->place_of_supply_unregistered_person) && $returndata[0]->place_of_supply_unregistered_person == $dataSupplyStateArr->state_id) {
+                                     if (isset($returndata[0]->place_of_supply_unregistered_person)) {
+										$str = (explode(",",$returndata[0]->place_of_supply_unregistered_person));
+
+                                        foreach($str as $s)
+                                    {
+										if($dataSupplyStateArr->state_id==$s)
+										{
                                         echo "selected='selected'";
-                                    }
+                                        }
+									}
+									}
                                     ?>><?php echo $dataSupplyStateArr->state_name . " (" . $dataSupplyStateArr->state_tin . ")"; ?></option>
 								<?php } ?>
 							<?php } ?>
@@ -501,7 +525,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="total_taxable_value_unregistered_person" value="<?php echo $returndata[0]->total_taxable_value_unregistered_person; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="total_taxable_value_unregistered_person" value="<?php echo $returndata[0]->total_taxable_value_unregistered_person; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 	
@@ -514,7 +538,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="amount_of_integrated_tax_unregistered_person" value="<?php echo $returndata[0]->amount_of_integrated_tax_unregistered_person; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="amount_of_integrated_tax_unregistered_person" value="<?php echo $returndata[0]->amount_of_integrated_tax_unregistered_person; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 										                       
@@ -525,15 +549,23 @@ composition taxable persons and UIN holders</div>
                                     <td class="lftheading" width="25%">Supplies made to Composition Taxable Persons</td>
                                      <td>
 									 
-						<select name='place_of_supply_taxable_person' id='place_of_supply_taxable_person' class="required form-control">
+						<select name='place_of_supply_taxable_person[]' multiple id='place_of_supply_taxable_person' class="required form-control">
 							<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 							<?php if(!empty($dataSupplyStateArrs)) { ?>
 								<option value=''>Select Place Of Supply</option>
 								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
 								<option value='<?php echo $dataSupplyStateArr->state_id; ?>' <?php
-                                    if (isset($returndata[0]->place_of_supply_taxable_person) && $returndata[0]->place_of_supply_taxable_person == $dataSupplyStateArr->state_id) {
+                                    if (isset($returndata[0]->place_of_supply_taxable_person)) {
+										$str = (explode(",",$returndata[0]->place_of_supply_taxable_person));
+
+                                        foreach($str as $s)
+                                    {
+										if($dataSupplyStateArr->state_id==$s)
+										{
                                         echo "selected='selected'";
-                                    }
+                                        }
+									}
+									}
                                     ?>><?php echo $dataSupplyStateArr->state_name . " (" . $dataSupplyStateArr->state_tin . ")"; ?></option>
 								<?php } ?>
 							<?php } ?>
@@ -548,7 +580,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="total_taxable_value_taxable_person" value="<?php echo $returndata[0]->total_taxable_value_taxable_person; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="total_taxable_value_taxable_person" value="<?php echo $returndata[0]->total_taxable_value_taxable_person; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 	
@@ -561,7 +593,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="amount_of_integrated_tax_taxable_person" value="<?php echo $returndata[0]->amount_of_integrated_tax_taxable_person; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="amount_of_integrated_tax_taxable_person" value="<?php echo $returndata[0]->amount_of_integrated_tax_taxable_person; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 									 
@@ -573,15 +605,23 @@ composition taxable persons and UIN holders</div>
                                      <td>
 									 
 									
-						<select name='place_of_supply_uin_holder' id='place_of_supply_uin_holder' class="required form-control">
+						<select name='place_of_supply_uin_holder[]' multiple id='place_of_supply_uin_holder' class="required form-control">
 							<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 							<?php if(!empty($dataSupplyStateArrs)) { ?>
 								<option value=''>Select Place Of Supply</option>
 								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
 								<option value='<?php echo $dataSupplyStateArr->state_id; ?>' <?php
-                                    if (isset($returndata[0]->place_of_supply_uin_holder) && $returndata[0]->place_of_supply_uin_holder == $dataSupplyStateArr->state_id) {
+                                   if (isset($returndata[0]->place_of_supply_uin_holder)) {
+										$str = (explode(",",$returndata[0]->place_of_supply_uin_holder));
+
+                                        foreach($str as $s)
+                                    {
+										if($dataSupplyStateArr->state_id==$s)
+										{
                                         echo "selected='selected'";
-                                    }
+                                        }
+									}
+									}
                                     ?>><?php echo $dataSupplyStateArr->state_name . " (" . $dataSupplyStateArr->state_tin . ")"; ?></option>
 								<?php } ?>
 							<?php } ?>
@@ -596,7 +636,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="total_taxable_value_uin_holder" value="<?php echo $returndata[0]->total_taxable_value_uin_holder; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="total_taxable_value_uin_holder" value="<?php echo $returndata[0]->total_taxable_value_uin_holder; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -609,7 +649,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="amount_of_integrated_uin_holder" value="<?php echo $returndata[0]->amount_of_integrated_uin_holder; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="amount_of_integrated_uin_holder" value="<?php echo $returndata[0]->amount_of_integrated_uin_holder; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 										 
@@ -648,7 +688,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_itcavailable_a" value="<?php echo $returndata[0]->integrated_tax_itcavailable_a; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_itcavailable_a" value="<?php echo $returndata[0]->integrated_tax_itcavailable_a; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 		
@@ -661,7 +701,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_itcavailable_a" value="<?php echo $returndata[0]->central_tax_itcavailable_a; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_itcavailable_a" value="<?php echo $returndata[0]->central_tax_itcavailable_a; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -674,7 +714,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_itcavailable_a" value="<?php echo $returndata[0]->state_tax_itcavailable_a; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_itcavailable_a" value="<?php echo $returndata[0]->state_tax_itcavailable_a; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -687,7 +727,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_tax_itcavailable_a" value="<?php echo $returndata[0]->cess_tax_itcavailable_a; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_itcavailable_a" value="<?php echo $returndata[0]->cess_tax_itcavailable_a; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 						 
@@ -706,7 +746,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_import_of_goods" value="<?php echo $returndata[0]->integrated_tax_import_of_goods; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_import_of_goods" value="<?php echo $returndata[0]->integrated_tax_import_of_goods; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -719,7 +759,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_import_of_goods" value="<?php echo $returndata[0]->central_tax_import_of_goods; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_import_of_goods" value="<?php echo $returndata[0]->central_tax_import_of_goods; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -732,7 +772,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_import_of_goods" value="<?php echo $returndata[0]->state_tax_import_of_goods; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_import_of_goods" value="<?php echo $returndata[0]->state_tax_import_of_goods; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 	
@@ -745,7 +785,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_tax_import_of_goods" value="<?php echo $returndata[0]->cess_tax_import_of_goods; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_import_of_goods" value="<?php echo $returndata[0]->cess_tax_import_of_goods; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>							 
@@ -767,7 +807,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_import_of_services" value="<?php echo $returndata[0]->integrated_tax_import_of_services; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_import_of_services" value="<?php echo $returndata[0]->integrated_tax_import_of_services; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>	
@@ -780,7 +820,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_import_of_services" value="<?php echo $returndata[0]->central_tax_import_of_services; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_import_of_services" value="<?php echo $returndata[0]->central_tax_import_of_services; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -793,7 +833,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_import_of_services" value="<?php echo $returndata[0]->state_tax_import_of_services; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_import_of_services" value="<?php echo $returndata[0]->state_tax_import_of_services; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -806,7 +846,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_tax_import_of_services" value="<?php echo $returndata[0]->cess_tax_import_of_services; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_import_of_services" value="<?php echo $returndata[0]->cess_tax_import_of_services; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>                                 
@@ -825,7 +865,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_inward_supplies_reverse_charge" value="<?php echo $returndata[0]->integrated_tax_inward_supplies_reverse_charge; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_inward_supplies_reverse_charge" value="<?php echo $returndata[0]->integrated_tax_inward_supplies_reverse_charge; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -838,7 +878,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_inward_supplies_reverse_charge" value="<?php echo $returndata[0]->central_tax_inward_supplies_reverse_charge; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_inward_supplies_reverse_charge" value="<?php echo $returndata[0]->central_tax_inward_supplies_reverse_charge; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -851,7 +891,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_inward_supplies_reverse_charge" value="<?php echo $returndata[0]->state_tax_inward_supplies_reverse_charge; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_inward_supplies_reverse_charge" value="<?php echo $returndata[0]->state_tax_inward_supplies_reverse_charge; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -864,7 +904,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_tax_inward_supplies_reverse_charge" value="<?php echo $returndata[0]->cess_tax_inward_supplies_reverse_charge; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_inward_supplies_reverse_charge" value="<?php echo $returndata[0]->cess_tax_inward_supplies_reverse_charge; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>	 
@@ -883,7 +923,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_inward_supplies" value="<?php echo $returndata[0]->integrated_tax_inward_supplies; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_inward_supplies" value="<?php echo $returndata[0]->integrated_tax_inward_supplies; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>	
@@ -896,7 +936,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_inward_supplies" value="<?php echo $returndata[0]->central_tax_inward_supplies; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_inward_supplies" value="<?php echo $returndata[0]->central_tax_inward_supplies; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -909,7 +949,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_inward_supplies" value="<?php echo $returndata[0]->state_tax_inward_supplies; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_inward_supplies" value="<?php echo $returndata[0]->state_tax_inward_supplies; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -922,7 +962,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_tax_inward_supplies" value="<?php echo $returndata[0]->cess_tax_inward_supplies; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_inward_supplies" value="<?php echo $returndata[0]->cess_tax_inward_supplies; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>						 
@@ -942,7 +982,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_allother_itc" value="<?php echo $returndata[0]->integrated_tax_allother_itc; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_allother_itc" value="<?php echo $returndata[0]->integrated_tax_allother_itc; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>	
@@ -955,7 +995,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_allother_itc" value="<?php echo $returndata[0]->central_tax_allother_itc; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_allother_itc" value="<?php echo $returndata[0]->central_tax_allother_itc; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>	
@@ -968,7 +1008,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_allother_itc"  value="<?php echo $returndata[0]->state_tax_allother_itc; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_allother_itc"  value="<?php echo $returndata[0]->state_tax_allother_itc; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -981,7 +1021,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_tax_allother_itc" value="<?php echo $returndata[0]->cess_tax_allother_itc; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_allother_itc" value="<?php echo $returndata[0]->cess_tax_allother_itc; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1000,7 +1040,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_itc_reversed_b" value="<?php echo $returndata[0]->integrated_tax_itc_reversed_b; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_itc_reversed_b" value="<?php echo $returndata[0]->integrated_tax_itc_reversed_b; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1013,7 +1053,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_itc_reversed_b" value="<?php echo $returndata[0]->central_tax_itc_reversed_b; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_itc_reversed_b" value="<?php echo $returndata[0]->central_tax_itc_reversed_b; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1026,7 +1066,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_itc_reversed_b" value="<?php echo $returndata[0]->state_tax_itc_reversed_b; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_itc_reversed_b" value="<?php echo $returndata[0]->state_tax_itc_reversed_b; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1039,7 +1079,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_tax_itc_reversed_b" value="<?php echo $returndata[0]->cess_tax_itc_reversed_b; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_itc_reversed_b" value="<?php echo $returndata[0]->cess_tax_itc_reversed_b; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>                            
@@ -1058,7 +1098,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_itc_reversed_cgstrules" value="<?php echo $returndata[0]->integrated_tax_itc_reversed_cgstrules; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_itc_reversed_cgstrules" value="<?php echo $returndata[0]->integrated_tax_itc_reversed_cgstrules; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -1071,7 +1111,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_itc_reversed_cgstrules" value="<?php echo $returndata[0]->central_tax_itc_reversed_cgstrules; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_itc_reversed_cgstrules" value="<?php echo $returndata[0]->central_tax_itc_reversed_cgstrules; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -1084,7 +1124,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_itc_reversed_cgstrules" value="<?php echo $returndata[0]->state_tax_itc_reversed_cgstrules; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_itc_reversed_cgstrules" value="<?php echo $returndata[0]->state_tax_itc_reversed_cgstrules; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -1097,7 +1137,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_tax_itc_reversed_cgstrules" value="<?php echo $returndata[0]->cess_tax_itc_reversed_cgstrules; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_itc_reversed_cgstrules" value="<?php echo $returndata[0]->cess_tax_itc_reversed_cgstrules; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>                        
@@ -1118,7 +1158,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_itc_reversed_other" value="<?php echo $returndata[0]->integrated_tax_itc_reversed_other; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_itc_reversed_other" value="<?php echo $returndata[0]->integrated_tax_itc_reversed_other; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>  
@@ -1131,7 +1171,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_itc_reversed_other" value="<?php echo $returndata[0]->central_tax_itc_reversed_other; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_itc_reversed_other" value="<?php echo $returndata[0]->central_tax_itc_reversed_other; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -1144,7 +1184,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_itc_reversed_other" value="<?php echo $returndata[0]->state_tax_itc_reversed_other; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_itc_reversed_other" value="<?php echo $returndata[0]->state_tax_itc_reversed_other; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1157,7 +1197,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_tax_itc_reversed_other" value="<?php echo $returndata[0]->cess_tax_itc_reversed_other; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_itc_reversed_other" value="<?php echo $returndata[0]->cess_tax_itc_reversed_other; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>    								 
@@ -1177,7 +1217,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_net_itc_a_b" value="<?php echo $returndata[0]->integrated_tax_net_itc_a_b; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_net_itc_a_b" value="<?php echo $returndata[0]->integrated_tax_net_itc_a_b; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1190,7 +1230,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_net_itc_a_b" value="<?php echo $returndata[0]->central_tax_net_itc_a_b; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_net_itc_a_b" value="<?php echo $returndata[0]->central_tax_net_itc_a_b; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1203,7 +1243,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_net_itc_a_b" value="<?php echo $returndata[0]->state_tax_net_itc_a_b; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_net_itc_a_b" value="<?php echo $returndata[0]->state_tax_net_itc_a_b; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1216,7 +1256,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_tax_net_itc_a_b" value="<?php echo $returndata[0]->cess_tax_net_itc_a_b; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_net_itc_a_b" value="<?php echo $returndata[0]->cess_tax_net_itc_a_b; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>                       
@@ -1235,7 +1275,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_inligible_itc" value="<?php echo $returndata[0]->integrated_tax_inligible_itc; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_inligible_itc" value="<?php echo $returndata[0]->integrated_tax_inligible_itc; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>  
@@ -1248,7 +1288,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_inligible_itc" value="<?php echo $returndata[0]->central_tax_inligible_itc; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_inligible_itc" value="<?php echo $returndata[0]->central_tax_inligible_itc; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>   
@@ -1261,7 +1301,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_inligible_itc" value="<?php echo $returndata[0]->state_tax_inligible_itc; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_inligible_itc" value="<?php echo $returndata[0]->state_tax_inligible_itc; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>	
@@ -1274,7 +1314,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_tax_inligible_itc" value="<?php echo $returndata[0]->cess_tax_inligible_itc; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_inligible_itc" value="<?php echo $returndata[0]->cess_tax_inligible_itc; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>									          
@@ -1293,7 +1333,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_inligible_itc_17_5" value="<?php echo $returndata[0]->integrated_tax_inligible_itc_17_5; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_inligible_itc_17_5" value="<?php echo $returndata[0]->integrated_tax_inligible_itc_17_5; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1306,7 +1346,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_inligible_itc_17_5" value="<?php echo $returndata[0]->central_tax_inligible_itc_17_5; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_inligible_itc_17_5" value="<?php echo $returndata[0]->central_tax_inligible_itc_17_5; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1319,7 +1359,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_inligible_itc_17_5" value="<?php echo $returndata[0]->state_tax_inligible_itc_17_5; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_inligible_itc_17_5" value="<?php echo $returndata[0]->state_tax_inligible_itc_17_5; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1332,7 +1372,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_tax_inligible_itc_17_5" value="<?php echo $returndata[0]->cess_tax_inligible_itc_17_5; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_inligible_itc_17_5" value="<?php echo $returndata[0]->cess_tax_inligible_itc_17_5; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>                      
@@ -1348,7 +1388,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_inligible_itc_others" value="<?php echo $returndata[0]->integrated_tax_inligible_itc_others; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_inligible_itc_others" value="<?php echo $returndata[0]->integrated_tax_inligible_itc_others; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>  
@@ -1361,7 +1401,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_inligible_itc_others" value="<?php echo $returndata[0]->central_tax_inligible_itc_others; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_inligible_itc_others" value="<?php echo $returndata[0]->central_tax_inligible_itc_others; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1374,7 +1414,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_inligible_itc_others" value="<?php echo $returndata[0]->state_tax_inligible_itc_others; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_inligible_itc_others" value="<?php echo $returndata[0]->state_tax_inligible_itc_others; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1387,7 +1427,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_tax_inligible_itc_others" value="<?php echo $returndata[0]->cess_tax_inligible_itc_others; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_inligible_itc_others" value="<?php echo $returndata[0]->cess_tax_inligible_itc_others; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 								 
@@ -1426,7 +1466,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="inter_state_supplies_composition_scheme" value="<?php echo $returndata[0]->inter_state_supplies_composition_scheme; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="inter_state_supplies_composition_scheme" value="<?php echo $returndata[0]->inter_state_supplies_composition_scheme; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 	
@@ -1439,7 +1479,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="intra_state_supplies_composition_scheme" value="<?php echo $returndata[0]->intra_state_supplies_composition_scheme; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="intra_state_supplies_composition_scheme" value="<?php echo $returndata[0]->intra_state_supplies_composition_scheme; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 	                                   
@@ -1457,7 +1497,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="inter_state_supplies_nongst_supply" value="<?php echo $returndata[0]->inter_state_supplies_nongst_supply; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="inter_state_supplies_nongst_supply" value="<?php echo $returndata[0]->inter_state_supplies_nongst_supply; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 	
@@ -1470,7 +1510,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="intra_state_supplies_nongst_supply" value="<?php echo $returndata[0]->intra_state_supplies_nongst_supply; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="intra_state_supplies_nongst_supply" value="<?php echo $returndata[0]->intra_state_supplies_nongst_supply; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 									 
@@ -1518,7 +1558,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="tax_payable_integrated_tax" value="<?php echo $returndata[0]->tax_payable_integrated_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="tax_payable_integrated_tax" value="<?php echo $returndata[0]->tax_payable_integrated_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -1531,7 +1571,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_fee_integrated_tax" value="<?php echo $returndata[0]->integrated_fee_integrated_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_fee_integrated_tax" value="<?php echo $returndata[0]->integrated_fee_integrated_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -1544,7 +1584,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_integrated_tax" value="<?php echo $returndata[0]->central_integrated_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_integrated_tax" value="<?php echo $returndata[0]->central_integrated_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1557,7 +1597,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_integrated_tax" value="<?php echo $returndata[0]->state_integrated_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_integrated_tax" value="<?php echo $returndata[0]->state_integrated_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1570,7 +1610,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_integrated_tax" value="<?php echo $returndata[0]->cess_integrated_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_integrated_tax" value="<?php echo $returndata[0]->cess_integrated_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1583,7 +1623,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="taxpaid_tdstcs_integrated_tax" value="<?php echo $returndata[0]->taxpaid_tdstcs_integrated_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="taxpaid_tdstcs_integrated_tax" value="<?php echo $returndata[0]->taxpaid_tdstcs_integrated_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1596,7 +1636,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="taxpaid_cess_integrated_tax" value="<?php echo $returndata[0]->taxpaid_cess_integrated_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="taxpaid_cess_integrated_tax" value="<?php echo $returndata[0]->taxpaid_cess_integrated_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>	
@@ -1609,7 +1649,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="interest_integrated_tax" value="<?php echo $returndata[0]->interest_integrated_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_integrated_tax" value="<?php echo $returndata[0]->interest_integrated_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1622,7 +1662,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="latefee_integrated_tax" value="<?php echo $returndata[0]->latefee_integrated_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="latefee_integrated_tax" value="<?php echo $returndata[0]->latefee_integrated_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>								 
@@ -1641,7 +1681,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="tax_payable_central_tax" value="<?php echo $returndata[0]->tax_payable_central_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="tax_payable_central_tax" value="<?php echo $returndata[0]->tax_payable_central_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>	
@@ -1654,7 +1694,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_fee_central_tax" value="<?php echo $returndata[0]->integrated_fee_central_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_fee_central_tax" value="<?php echo $returndata[0]->integrated_fee_central_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1667,7 +1707,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_central_tax" value="<?php echo $returndata[0]->central_central_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_central_tax" value="<?php echo $returndata[0]->central_central_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1680,8 +1720,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_central_tax" value="<?php echo $returndata[0]->state_central_tax; ?>"
- class="form-control"  placeholder="" /> 
+						 <label><span class="starred"></span></label>
 								 <?php } ?>
                                  </td>
                                 <td> 
@@ -1693,7 +1732,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_central_tax" value="<?php echo $returndata[0]->cess_central_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_central_tax" value="<?php echo $returndata[0]->cess_central_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1706,7 +1745,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="taxpaid_tdstcs_central_tax" value="<?php echo $returndata[0]->taxpaid_tdstcs_central_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="taxpaid_tdstcs_central_tax" value="<?php echo $returndata[0]->taxpaid_tdstcs_central_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>	
@@ -1719,7 +1758,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="taxpaid_cess_central_tax" value="<?php echo $returndata[0]->taxpaid_cess_central_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="taxpaid_cess_central_tax" value="<?php echo $returndata[0]->taxpaid_cess_central_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1732,7 +1771,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="interest_central_tax" value="<?php echo $returndata[0]->interest_central_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_central_tax" value="<?php echo $returndata[0]->interest_central_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>	
@@ -1745,7 +1784,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="latefee_central_tax" value="<?php echo $returndata[0]->latefee_central_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="latefee_central_tax" value="<?php echo $returndata[0]->latefee_central_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>									 
@@ -1763,7 +1802,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="tax_payable_stateut_tax" value="<?php echo $returndata[0]->tax_payable_stateut_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="tax_payable_stateut_tax" value="<?php echo $returndata[0]->tax_payable_stateut_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1776,7 +1815,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_stateut_tax" value="<?php echo $returndata[0]->integrated_stateut_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_stateut_tax" value="<?php echo $returndata[0]->integrated_stateut_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1789,8 +1828,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_stateut_tax" value="<?php echo $returndata[0]->central_stateut_tax; ?>"
- class="form-control"  placeholder="" /> 
+								 <label><span class="starred"></span></label>
 								 <?php } ?>
                                  </td>
 								  <td> 
@@ -1802,7 +1840,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_stateut_tax" value="<?php echo $returndata[0]->state_stateut_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_stateut_tax" value="<?php echo $returndata[0]->state_stateut_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1815,7 +1853,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="cess_stateut_tax" value="<?php echo $returndata[0]->cess_stateut_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_stateut_tax" value="<?php echo $returndata[0]->cess_stateut_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1828,7 +1866,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="taxpaid_tcs_stateut_tax" value="<?php echo $returndata[0]->taxpaid_tcs_stateut_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="taxpaid_tcs_stateut_tax" value="<?php echo $returndata[0]->taxpaid_tcs_stateut_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1841,7 +1879,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="taxpaid_cess_stateut_tax" value="<?php echo $returndata[0]->taxpaid_cess_stateut_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="taxpaid_cess_stateut_tax" value="<?php echo $returndata[0]->taxpaid_cess_stateut_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1854,7 +1892,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="interest_stateut_tax" value="<?php echo $returndata[0]->interest_stateut_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_stateut_tax" value="<?php echo $returndata[0]->interest_stateut_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1867,7 +1905,124 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="latefee_stateut_tax" value="<?php echo $returndata[0]->latefee_stateut_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="latefee_stateut_tax" value="<?php echo $returndata[0]->latefee_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                  </tr>
+								   <tr>
+                                    <td class="lftheading">CESS</td>
+									  <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->tax_payable_cess_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="tax_payable_cess_tax" value="<?php echo $returndata[0]->tax_payable_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->integrated_cess_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+							 <label><span class="starred"></span></label>
+								 <?php } ?>
+                                 </td>
+								  <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->central_cess_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+							 <label><span class="starred"></span></label>
+								 <?php } ?>
+                                 </td>
+								  <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->state_cess_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+							 <label><span class="starred"></span></label>
+								 <?php } ?>
+                                 </td>
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->cess_stateut_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_stateut_tax" value="<?php echo $returndata[0]->cess_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->taxpaid_tcs_cess_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="taxpaid_tcs_cess_tax" value="<?php echo $returndata[0]->taxpaid_tcs_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								  <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->taxpaid_cess_cess_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="taxpaid_cess_cess_tax" value="<?php echo $returndata[0]->taxpaid_cess_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->interest_cess_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_cess_tax" value="<?php echo $returndata[0]->interest_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->latefee_cess_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="latefee_cess_tax" value="<?php echo $returndata[0]->latefee_stateut_tax; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1901,7 +2056,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_tds" value="<?php echo $returndata[0]->integrated_tax_tds; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_tds" value="<?php echo $returndata[0]->integrated_tax_tds; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1914,7 +2069,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_tds" value="<?php echo $returndata[0]->central_tax_tds; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_tds" value="<?php echo $returndata[0]->central_tax_tds; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1927,7 +2082,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_tds" value="<?php echo $returndata[0]->state_tax_tds; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_tds" value="<?php echo $returndata[0]->state_tax_tds; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1944,7 +2099,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="integrated_tax_tcs" value="<?php echo $returndata[0]->integrated_tax_tcs; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_tcs" value="<?php echo $returndata[0]->integrated_tax_tcs; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1957,7 +2112,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="central_tax_tcs" value="<?php echo $returndata[0]->central_tax_tcs; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_tcs" value="<?php echo $returndata[0]->central_tax_tcs; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1970,7 +2125,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_tcs" value="<?php echo $returndata[0]->state_tax_tcs; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_tcs" value="<?php echo $returndata[0]->state_tax_tcs; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -2029,4 +2184,23 @@ $(".collapsed").children(".navrgtarrow");
                     });
                 });
 </script>	
+ <script type="text/javascript">
+        function isNumberKey(evt)
+      {
+         
+        var charCode = (evt.which) ? evt.which : event.keyCode
+                
+        if ((charCode >= 40) && (charCode <= 57) &&(charCode!=47) &&(charCode!=42) && (charCode!=43) && (charCode!=44) && (charCode!=45) || (charCode == 8))
+       {
+       return true;
+           
+       }
+    else
+    {
+     return false;
+
+     }
+	  }
+
+    </script>
         

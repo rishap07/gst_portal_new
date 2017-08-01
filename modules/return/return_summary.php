@@ -31,6 +31,9 @@ if ($_REQUEST['returnmonth'] != '') {
                 <a href="<?php echo PROJECT_URL . '/?page=return_filling_summary&returnmonth=' . $returnmonth ?>">
                     File GSTr-1
                 </a>
+                <a href="<?php echo PROJECT_URL . '/?page=return_get_summary&returnmonth=' . $returnmonth ?>">
+                    GSTR1 SUMMARY
+                </a>
             </div>
             <div id="London" class="tabcontent">
                 <div class="col-md-12 col-sm-12 col-xs-12">

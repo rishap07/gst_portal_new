@@ -41,6 +41,9 @@
 .tcsamount {
 	display:none;
 }
+.exportmation {
+	display:none;
+}
 .ui-autocomplete {
     z-index: 2147483647 !important;
     max-width: 350px !important;

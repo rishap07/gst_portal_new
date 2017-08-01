@@ -31,7 +31,7 @@ class common extends db {
 
     public function checkEmailMobileVerify() {
         if (isset($_SESSION['user_detail']['user_id']) && $_SESSION['user_detail']['user_id'] != '') {
-            $data = $this->get_results("select * from " . TAB_PREFIX . "user where user_id='" . $_SESSION['user_detail']['user_id'] . "'");
+			$data = $this->get_results("select * from " . TAB_PREFIX . "user where user_id='" . $_SESSION['user_detail']['user_id'] . "'");
             if ($data[0]->plan_id > 0 && !isset($_SESSION['verify'])) {
                 $_SESSION['verify'] = 1;
                 $link_address = PROJECT_URL . '/?page=client_email_verification';
@@ -51,7 +51,7 @@ class common extends db {
         $data = $this->get_results("select * from " . TAB_PREFIX . "user where user_id='" . $_SESSION['user_detail']['user_id'] . "'");
         if ($data[0]->email_verify == '0') {
             $name = $data[0]->first_name;
-            if ($this->sendMail('Email Verify', 'User ID : ' . $_SESSION['user_detail']['user_id'] . ' email verfication', $data[0]->email, 'noreply@gstkeeper.com', '', 'rishap07@gmail.com,sheetalprasad95@gmail.com', '', 'GST Keeper Portal Email Verify', $this->getEmailVerifyMailBody($name))) {
+            if ($this->sendMail('Email Verify', 'User ID : ' . $_SESSION['user_detail']['user_id'] . ' email verfication', $data[0]->email, 'noreply@gstkeeper.com', '', 'rishap07@gmail.com,sheetalprasad95@gmail.com', '', 'Verify Your Email Address', $this->getEmailVerifyMailBody($name))) {
                 $this->setSuccess('A confirmation mail has been sent to you (Kindly check your inbox & spam folder). <strong>Confirm your e-mail</strong> by clicking on the link in the mail. ');
             } else {
                 $this->setError('Try again, there is some issue in sending an email.');
@@ -85,7 +85,7 @@ class common extends db {
                     <tr>
                       <td align="left" valign="middle" height="80"><a target="_blank" href="https://www.gstkeeper.com/"><img src="https://gstkeeper.com/newsletter/4july2017/gst-logo.png" alt="" border="0"></a></td>
                       <td align="right" valign="middle" style="font-size:18px;color:#cf3502;font-family:Arial, Helvetica, sans-serif;" height="80px"> <span><img src="https://gstkeeper.com/newsletter/6july2017/phone-icon.jpg" alt=""></span>1-800-212-2022<br>
-                        <span><img src="https://gstkeeper.com/newsletter/6july2017/mail-icon.jpg" alt=""></span><a href="mailto:contact@gstkeeper.com" style="font-size:14px;color:#cf3502;text-decoration:none;"> contact@gstkeeper.com</a></td>
+                        <span><img src="https://gstkeeper.com/newsletter/6july2017/mail-icon.jpg"></span><a href="mailto:contact@gstkeeper.com" style="font-size:14px;color:#cf3502;text-decoration:none;"> contact@gstkeeper.com</a></td>
                     </tr>
                   </tbody>
                 </table></td>
@@ -127,7 +127,8 @@ class common extends db {
                           <td height="140" align="justify"  valign="top" style="font-size:13px;color:#191919;font-family:Arial, Helvetica, sans-serif; line-height:18px; ">
                             <p>Thanks for getting started with GST Keeper! We just need to verify your email address.</p>
                             
-                            <p>Please click the link below:</br></br>
+                            <p>Please click the link below:</p>
+							<p>
 							<a href="' . PROJECT_URL . '/?page=dashboard&verifyemail=' . $token . '&passkey=' . md5($_SESSION['user_detail']['user_id']) . '" style="padding:2px 5px;background:#cf3502;color:#fff;text-decoration:none;font-size:20px;" target="_blank" >Verify</a></p>
                             <BR /><BR /><BR />
      <p>Thanks,<BR />
@@ -207,7 +208,7 @@ class common extends db {
         return $data;
     }
 
-    protected function sendMail($module = '', $module_message = '', $to_send, $from_send, $cc = '', $bcc = '', $attachment = '', $subject, $body) {
+    public function sendMail($module = '', $module_message = '', $to_send, $from_send, $cc = '', $bcc = '', $attachment = '', $subject, $body) {
         $dataInsertArray['module'] = $module;
         $dataInsertArray['module_message'] = $module_message;
         $dataInsertArray['to_send'] = $to_send;
@@ -288,12 +289,12 @@ class common extends db {
         $data['verifyForgot'] = isset($_SESSION['user_detail']['token']) ? $_SESSION['user_detail']['token'] : '';
         $data['passkey'] = isset($_SESSION['user_detail']['passkey']) ? $_SESSION['user_detail']['passkey'] : '';
         $id = base64_decode($_SESSION['user_detail']['passkey']);
-        $sql = 'select * from ' . TAB_PREFIX . "user where forgotemail_code='" . $_SESSION['user_detail']['token'] . "' and user_id='" . $id . "'";
-
+        $sql = 'select * from ' . TAB_PREFIX . "user where forgotemail_code='" . $_SESSION['user_detail']['token'] . "'";
+      
         $dataRe = $this->get_results($sql);
         if (count($dataRe) > 0) {
             if ($dataRe[0]->forgotemail_verify == 1) {
-                $this->setError('Your email is already verified');
+                $this->setError('Your email verification link is expired to You are not able to access this link any more, enter your registered mail address below to get a new Reset Password link.');
                 //$this->update(TAB_PREFIX."user",array('forgotemail_verify'=>'1','forgotemail_verify_date'=>date('Y-m-d H:i:s')),array('user_id'=>$dataRe[0]->user_id));
                 return false;
             } else {
@@ -835,7 +836,7 @@ class common extends db {
 
     public function getClientKYCDetailsById($user_id = '') {
         
-		$query = "select ck.name, ck.email, ck.phone_number, ck.date_of_birth, ck.gstin_number, ck.pan_card_number, ck.uid_number, ck.identity_proof, ck.proof_photograph, ck.business_type, ck.business_area, ck.vendor_type, ck.address_proof, ck.registered_address, ck.registration_type, ck.digital_certificate_status, ck.digital_certificate, ck.state_id, s.state_name, s.state_code, s.state_tin, ck.added_by as kyc_added_by, ck.updated_by as kyc_updated_by from " . $this->tableNames['client_kyc'] . " as ck inner join " . $this->tableNames['state'] . " as s on ck.state_id=s.state_id where 1=1 AND ck.added_by = " . $user_id;
+		$query = "select ck.name, ck.email, ck.phone_number, ck.date_of_birth, ck.gstin_number, ck.pan_card_number, ck.uid_number, ck.identity_proof, ck.proof_photograph, ck.business_type, ck.business_area, ck.vendor_type, ck.address_proof, ck.registered_address, ck.city, ck.zipcode, ck.registration_type, ck.digital_certificate_status, ck.digital_certificate, ck.state_id, s.state_name, s.state_code, s.state_tin, ck.country_id, ck.added_by as kyc_added_by, ck.updated_by as kyc_updated_by from " . $this->tableNames['client_kyc'] . " as ck inner join " . $this->tableNames['state'] . " as s on ck.state_id=s.state_id where 1=1 AND ck.added_by = " . $user_id;
         $data = $this->get_row($query);
         $dataArr = array();
         if (!empty($data)) {
@@ -1052,13 +1053,21 @@ class common extends db {
     protected function hitCurlwithHeader($url, $parameters, $header) {
 
         $curl = curl_init($url);
-        curl_setopt($curl, CURLOPT_POST, 1);
+        /*curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
         curl_setopt($curl, CURLOPT_POSTFIELDS, $parameters);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        $server_output = curl_exec($curl);
+        $server_output = curl_exec($curl);*/
+
+         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $parameters);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HTTPHEADER,$header);
+        $result = curl_exec($curl);
+
+
         curl_close($curl);
-        return $server_output;
+        return $result;
     }
 
     public function can_read($page_name) {
@@ -1087,23 +1096,6 @@ class common extends db {
             return true;
         }
         return false;
-    }
-
-    /* state details by state code */
-
-    public function getStateDetailByStateCode($state_code) {
-
-        $data = $this->get_row("select * from " . $this->tableNames['state'] . " where UPPER(state_code) = '" . strtoupper($state_code) . "'");
-        $dataArr = array();
-        if (!empty($data)) {
-            $dataArr['data'] = $data;
-            $dataArr['status'] = 'success';
-        } else {
-            $dataArr['data'] = '';
-            $dataArr['status'] = 'error';
-        }
-
-        return $dataArr;
     }
 
     /* country details by country code */
@@ -1140,7 +1132,7 @@ class common extends db {
         return $dataArr;
     }
 
-    /* state details by state code */
+    /* state details by state id */
 
     public function getStateDetailByStateId($state_id) {
 
@@ -1156,12 +1148,46 @@ class common extends db {
 
         return $dataArr;
     }
+	
+	/* state details by state code */
 
-    /* state details by state code */
+    public function getStateDetailByStateCode($state_code) {
+
+        $data = $this->get_row("select * from " . $this->tableNames['state'] . " where UPPER(state_code) = '" . strtoupper($state_code) . "'");
+        $dataArr = array();
+        if (!empty($data)) {
+            $dataArr['data'] = $data;
+            $dataArr['status'] = 'success';
+        } else {
+            $dataArr['data'] = '';
+            $dataArr['status'] = 'error';
+        }
+
+        return $dataArr;
+    }
+
+    /* state details by state tin */
 
     public function getStateDetailByStateTin($state_tin) {
 
         $data = $this->get_row("select * from " . $this->tableNames['state'] . " where state_id = '" . $state_tin . "'");
+        $dataArr = array();
+        if (!empty($data)) {
+            $dataArr['data'] = $data;
+            $dataArr['status'] = 'success';
+        } else {
+            $dataArr['data'] = '';
+            $dataArr['status'] = 'error';
+        }
+
+        return $dataArr;
+    }
+
+	/* vendor details by vendor id */
+
+    public function getVendorDetailByVendorId($vendor_id) {
+
+        $data = $this->get_row("select * from " . $this->tableNames['vendor_type'] . " where vendor_id = " . $vendor_id);
         $dataArr = array();
         if (!empty($data)) {
             $dataArr['data'] = $data;
@@ -1207,7 +1233,7 @@ class common extends db {
     public function generateBillInvoiceNumber($clientId) {
 
         $currentFinancialYear = $this->generateFinancialYear();
-        $query = "select invoice_id  from " . $this->tableNames['client_bos_invoice'] . " where 1=1 AND financial_year = '" . $currentFinancialYear . "' AND added_by=" . $clientId;
+        $query = "select invoice_id  from " . $this->tableNames['client_invoice'] . " where 1=1 AND invoice_type = 'billofsupplyinvoice' AND financial_year = '" . $currentFinancialYear . "' AND added_by=" . $clientId;
         $invoices = $this->get_results($query);
 
         if (!empty($invoices)) {
@@ -1224,7 +1250,7 @@ class common extends db {
     public function generateRVInvoiceNumber($clientId) {
 
         $currentFinancialYear = $this->generateFinancialYear();
-        $query = "select invoice_id  from " . $this->tableNames['client_rv_invoice'] . " where 1=1 AND financial_year = '" . $currentFinancialYear . "' AND added_by=" . $clientId;
+        $query = "select invoice_id  from " . $this->tableNames['client_invoice'] . " where 1=1 AND invoice_type = 'receiptvoucherinvoice' AND financial_year = '" . $currentFinancialYear . "' AND added_by=" . $clientId;
         $invoices = $this->get_results($query);
 
         if (!empty($invoices)) {
@@ -1241,7 +1267,7 @@ class common extends db {
     public function generateRFInvoiceNumber($clientId) {
 
         $currentFinancialYear = $this->generateFinancialYear();
-        $query = "select invoice_id  from " . $this->tableNames['client_rf_invoice'] . " where 1=1 AND financial_year = '" . $currentFinancialYear . "' AND added_by=" . $clientId;
+        $query = "select invoice_id  from " . $this->tableNames['client_invoice'] . " where 1=1 AND invoice_type = 'refundvoucherinvoice' AND financial_year = '" . $currentFinancialYear . "' AND added_by=" . $clientId;
         $invoices = $this->get_results($query);
 
         if (!empty($invoices)) {

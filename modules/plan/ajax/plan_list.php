@@ -13,12 +13,13 @@ $obj_plan = new plan();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('id', 'name', 'description', 'no_of_client','company_no', 'plan_category', 'plan_price', 'visible', 'status');
-$aSearchColumns = array('name', 'description', 'no_of_client', 'plan_category', 'plan_price', 'visible', 'status');
-$sIndexColumn = "id";
+$aColumns = array('r.id', 'r.name', 'r.description', 'r.no_of_client','r.company_no', 'r.pan_num','s.name catname', 'r.plan_price', 'r.visible', 'r.status');
+$aSearchColumns = array('r.name', 'r.description', 'r.no_of_client', 'r.plan_category', 'r.plan_price', 'r.visible', 'r.status');
+$sIndexColumn = "r.id";
 
 /* DB table to use */
-$spTable = $obj_plan->getTableName('subscriber_plan');
+$spTable = $obj_plan->getTableName('subscriber_plan')." r inner join " . TAB_PREFIX."subscriber_plan_category s"
+        ." on r.plan_category =s.id";
 
 /*
  * Paging
@@ -41,7 +42,7 @@ if (isset($_POST['iSortCol_0'])) {
         }
     }
     if ($spOrder == "ORDER BY ") {
-        $spOrder = "ORDER BY id ASC";
+        $spOrder = "ORDER BY r.id ASC";
     }
 }
 
@@ -52,9 +53,11 @@ if (isset($_POST['iSortCol_0'])) {
  * on very large tables, and MySQL's regex functionality is very limited
  */
 if($_SESSION['user_detail']['user_group']=='1'){
-    $spWhere = " where is_deleted='0' ";
+    $spWhere = " where r.is_deleted='0' ";
+    $spWhere1 = " where r.is_deleted='0' ";
 } else {
-    $spWhere = " where is_deleted='0' and added_by='".$_SESSION['user_detail']['user_id']."' ";
+    $spWhere = " where r.is_deleted='0' and r.added_by='".$_SESSION['user_detail']['user_id']."' ";
+    $spWhere1 = " where r.is_deleted='0' and r.added_by='".$_SESSION['user_detail']['user_id']."' ";
 }
 
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
@@ -85,28 +88,16 @@ for ($i = 0; $i < count($aColumns); $i++) {
  */
 $spWhere = trim(trim($spWhere), 'AND');
 //$spjoin = "r inner join".$sp1Table."s on r.plan_category=s.id";
-$spjoin = $obj_plan->getTableName('subscriber_plan')." r inner join ".$obj_plan->getTableName('subscriber_plan_category')
-        ."s on r.plan_category=s.id";
-//$spQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ", $aColumns)) . "
-//            FROM $spTable
-//            $spWhere
-//            $spOrder
-//            $spLimit
-//	"; 
-//$spQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ", $aColumns)) . "
-//            FROM $spTable 
-//            $spjoin
-//            $spWhere
-//            $spOrder
-//            $spLimit
-//	"; 
-$spQuery = $obj_plan->getTableName('subscriber_plan')." r inner join ".$obj_plan->getTableName('subscriber_plan_category')." "
-        . "s on r.plan_category=s.id
-                    $spWhere
+$spjoin = $obj_plan->getTableName('subscriber_plan')." r inner join " . TAB_PREFIX."subscriber_plan_category s"
+        ." on r.plan_category =s.id";
+$spQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ", $aColumns)) . "
+            FROM $spjoin
+            $spWhere
             $spOrder
-            $spLimit"
-	; 
-echo $spQuery; die;
+            $spLimit
+	"; 
+
+//echo $spQuery; die;
 $rResult = $obj_plan->get_results($spQuery);
 // echo "<pre>";
 //        print_r($rResult);
@@ -118,8 +109,8 @@ $iFilteredTotal = $obj_plan->get_row($spQuery);
 $iFilteredTotal = $iFilteredTotal->rows;
 
 /* Total data set length */
-$spQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $spTable";
-//echo $sQuery;
+$spQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $spTable $spWhere1";
+//echo $spQuery;
 $iTotal = $obj_plan->get_row($spQuery);
 $iTotal = $iTotal->count;
 
@@ -153,11 +144,12 @@ foreach($rResult as $aRow) {
     }
     
     $row[] = $temp_x;
+    $row[] = utf8_decode($aRow->catname);
     $row[] = utf8_decode($aRow->name);
     $row[] = utf8_decode($aRow->description);
     $row[] = utf8_decode($aRow->no_of_client);
     $row[] = utf8_decode($aRow->company_no);
-    $row[] = utf8_decode($aRow->plan_category);
+    $row[] = utf8_decode($aRow->pan_num);
     $row[] = utf8_decode($aRow->plan_price);
     $row[] = $visible;
     $row[] = $status;

@@ -18,18 +18,55 @@ final class client extends validation {
 	public function saveClientKYCBySubscriber() {
 
 		include(CLASSES_ROOT . "/digitalsignlib/X509.php");
+		$dataCurrentArr = $this->getUserDetailsById($this->sanitize(base64_decode($_POST['clientID'])));
+
         $dataArr['name'] = isset($_POST['name']) ? $_POST['name'] : '';
         $dataArr['email'] = isset($_POST['email']) ? $_POST['email'] : '';
         $dataArr['phone_number'] = isset($_POST['phone_number']) ? $_POST['phone_number'] : '';
         $dataArr['date_of_birth'] = isset($_POST['date_of_birth']) ? $_POST['date_of_birth'] : '';
-        $dataArr['gstin_number'] = isset($_POST['gstin_number']) ? $_POST['gstin_number'] : '';
-        $dataArr['pan_card_number'] = isset($_POST['pan_card_number']) ? $_POST['pan_card_number'] : '';
-        $dataArr['identity_proof'] = isset($_POST['identity_proof']) ? $_POST['identity_proof'] : '';
+
+		if (empty($dataCurrentArr['data']->kyc) && $dataCurrentArr['data']->kyc == '') {
+
+			$dataArr['gstin_number'] = isset($_POST['gstin_number']) ? $_POST['gstin_number'] : '';
+			$dataArr['pan_card_number'] = isset($_POST['pan_card_number']) ? $_POST['pan_card_number'] : '';
+
+			$obj_plan = new plan();
+			$dataCurrentSubsArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
+
+			$clientIds = $this->getClient("GROUP_CONCAT(user_id) as clientIds", "added_by=".$this->sanitize($_SESSION['user_detail']['user_id']));
+			$totalPANs = $this->get_results("select count(DISTINCT pan_card_number) as total_pan_card_number from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by IN(".$clientIds[0]->clientIds.")");
+
+			$subscribePlanDetail = $obj_plan->getPlanDetails($dataCurrentSubsArr['data']->plan_id);
+			$panPermission = isset($subscribePlanDetail['data']->pan_num) ? $subscribePlanDetail['data']->pan_num : 0;
+
+			if($totalPANs[0]->total_pan_card_number >= $panPermission) {
+
+				$panResult = $this->get_results("select pan_card_number from " . $this->tableNames['client_kyc'] ." where 1=1 AND pan_card_number IN('".$dataArr['pan_card_number']."') AND added_by IN(".$clientIds[0]->clientIds.")");
+				if(count($panResult) == 0) {
+					$this->setError('You have reach maximum company creation limit.');
+					return false;
+				}
+			}
+		} else {
+
+			$state_tin = isset($_POST['state_tin']) ? $_POST['state_tin'] : '';
+			$state_gstin_number = isset($dataCurrentArr['data']->kyc->gstin_number) ? $dataCurrentArr['data']->kyc->gstin_number : '';
+			$state_gstin_tin = substr($state_gstin_number, 0, 2);
+			
+			if($state_gstin_tin != $state_tin) {
+				$this->setError('State should be valid according to GSTIN.');
+				return false;
+			}
+		}
+
+		$dataArr['identity_proof'] = isset($_POST['identity_proof']) ? $_POST['identity_proof'] : '';
 		$dataArr['business_area'] = isset($_POST['business_area']) ? $_POST['business_area'] : '';
 		$dataArr['business_type'] = isset($_POST['business_type']) ? $_POST['business_type'] : '';
         $dataArr['vendor_type'] = isset($_POST['vendor_type']) ? $_POST['vendor_type'] : '';
         $dataArr['registered_address'] = isset($_POST['registered_address']) ? $_POST['registered_address'] : '';
         $dataArr['state_id'] = isset($_POST['state']) ? $_POST['state'] : '';
+		$dataArr['city'] = isset($_POST['city']) ? $_POST['city'] : '';
+		$dataArr['zipcode'] = isset($_POST['zipcode']) ? $_POST['zipcode'] : '';
 
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
@@ -42,7 +79,7 @@ final class client extends validation {
         if (!$this->validateClientKYC($dataArr)) {
             return false;
         }
-
+		
         if ($dataArr['date_of_birth'] > date("Y-m-d")) {
             $this->setError("Date should be less than or equals to today's date.");
             return false;
@@ -118,7 +155,6 @@ final class client extends validation {
             }
         }
 
-        $dataCurrentArr = $this->getUserDetailsById($this->sanitize(base64_decode($_POST['clientID'])));
         if ($dataCurrentArr['data']->kyc != '') {
 
             $dataArr['updated_by'] = $this->sanitize(base64_decode($_POST['clientID']));
@@ -153,18 +189,56 @@ final class client extends validation {
     public function saveClientKYC() {
 
 		include(CLASSES_ROOT . "/digitalsignlib/X509.php");
+		$dataCurrentArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
+
         $dataArr['name'] = isset($_POST['name']) ? $_POST['name'] : '';
         $dataArr['email'] = isset($_POST['email']) ? $_POST['email'] : '';
         $dataArr['phone_number'] = isset($_POST['phone_number']) ? $_POST['phone_number'] : '';
         $dataArr['date_of_birth'] = isset($_POST['date_of_birth']) ? $_POST['date_of_birth'] : '';
-        $dataArr['gstin_number'] = isset($_POST['gstin_number']) ? $_POST['gstin_number'] : '';
-        $dataArr['pan_card_number'] = isset($_POST['pan_card_number']) ? $_POST['pan_card_number'] : '';
-        $dataArr['identity_proof'] = isset($_POST['identity_proof']) ? $_POST['identity_proof'] : '';
+
+		if ($dataCurrentArr['data']->kyc == '') {
+
+			$dataArr['gstin_number'] = isset($_POST['gstin_number']) ? $_POST['gstin_number'] : '';
+			$dataArr['pan_card_number'] = isset($_POST['pan_card_number']) ? $_POST['pan_card_number'] : '';
+
+			$obj_plan = new plan();
+			$dataCurrentSubsArr = $this->getUserDetailsById($this->sanitize($dataCurrentArr['data']->added_by));
+
+			$clientIds = $this->getClient("GROUP_CONCAT(user_id) as clientIds", "added_by=".$this->sanitize($dataCurrentArr['data']->added_by));
+			$totalPANs = $this->get_results("select count(DISTINCT pan_card_number) as total_pan_card_number from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by IN(".$clientIds[0]->clientIds.")");
+
+			$subscribePlanDetail = $obj_plan->getPlanDetails($dataCurrentSubsArr['data']->plan_id);
+			$panPermission = isset($subscribePlanDetail['data']->pan_num) ? $subscribePlanDetail['data']->pan_num : 0;
+
+			if($totalPANs[0]->total_pan_card_number >= $panPermission) {
+
+				$panResult = $this->get_results("select pan_card_number from " . $this->tableNames['client_kyc'] ." where 1=1 AND pan_card_number IN('".$dataArr['pan_card_number']."') AND added_by IN(".$clientIds[0]->clientIds.")");
+				if(count($panResult) == 0) {
+					$this->setError('You have reach maximum company creation limit.');
+					return false;
+				}
+			}
+
+		} else {
+
+			$state_tin = isset($_POST['state_tin']) ? $_POST['state_tin'] : '';
+			$state_gstin_number = isset($dataCurrentArr['data']->kyc->gstin_number) ? $dataCurrentArr['data']->kyc->gstin_number : '';
+			$state_gstin_tin = substr($state_gstin_number, 0, 2);
+			
+			if($state_gstin_tin != $state_tin) {
+				$this->setError('State should be valid according to GSTIN.');
+				return false;
+			}
+		}
+
+		$dataArr['identity_proof'] = isset($_POST['identity_proof']) ? $_POST['identity_proof'] : '';
 		$dataArr['business_area'] = isset($_POST['business_area']) ? $_POST['business_area'] : '';
 		$dataArr['business_type'] = isset($_POST['business_type']) ? $_POST['business_type'] : '';
         $dataArr['vendor_type'] = isset($_POST['vendor_type']) ? $_POST['vendor_type'] : '';
         $dataArr['registered_address'] = isset($_POST['registered_address']) ? $_POST['registered_address'] : '';
         $dataArr['state_id'] = isset($_POST['state']) ? $_POST['state'] : '';
+		$dataArr['city'] = isset($_POST['city']) ? $_POST['city'] : '';
+		$dataArr['zipcode'] = isset($_POST['zipcode']) ? $_POST['zipcode'] : '';
 
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
@@ -247,33 +321,12 @@ final class client extends validation {
 					$this->setError('Empty File.');
                     return false;
 				}
-				
-				/*
-					$path = $_FILES['certificate']['tmp_name'];
-					$cert_content = file_get_contents($path);
-					if(!empty($cert_content)){
-						
-						$res = openssl_x509_read( $cert_content );
-						$data = openssl_x509_parse( $res );
-						if (array_key_exists("name",$data) && array_key_exists("hash",$data) && array_key_exists("issuer",$data) && array_key_exists("purposes",$data)){
-							$dataArr['digital_certificate'] = $cert_content;
-							$dataArr['digital_certificate_status']='1';
-						} else{
-							$this->setError('Invalid File.');
-							return false;
-						}
-					} else{
-						$this->setError('Invalid File.');
-						return false;
-					}
-				*/
 			} else {
                 $this->setError('Invalid File Extension');
                 return false;
             }
         }
 
-        $dataCurrentArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
         if ($dataCurrentArr['data']->kyc != '') {
 
             $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
@@ -290,7 +343,7 @@ final class client extends validation {
             }
 		} else {
 
-			$dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
+			$dataArr['added_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);
             $dataArr['added_date'] = date('Y-m-d H:i:s');
 
 			if ($this->insert($this->tableNames['client_kyc'], $dataArr)) {
@@ -333,9 +386,7 @@ final class client extends validation {
             'email' => 'required||email|#|lable_name:Email',
             'phone_number' => 'required||pattern:/^[' . $this->validateType['mobilenumber'] . ']+$/|#|lable_name:Phone Number',
             'date_of_birth' => 'required||date|#|lable_name:Date of birth',
-            'gstin_number' => 'required||pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:GSTIN',
-            'pan_card_number' => 'required||pattern:/^' . $this->validateType['pancard'] . '*$/|#|lable_name:PAN Card',
-            'uid_number' => 'pattern:/^[' . $this->validateType['alphanumeric'] . ']+$/|#|lable_name:UID',
+			'uid_number' => 'pattern:/^[' . $this->validateType['alphanumeric'] . ']+$/|#|lable_name:UID',
             'identity_proof' => 'required||identityproof|#|lable_name:Identity Proof',
             'business_area' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Business Area',
             'business_type' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Business Type',
@@ -343,6 +394,22 @@ final class client extends validation {
 			'registered_address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Permanent Address',
             'state_id' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:State'
         );
+
+		if (array_key_exists("gstin_number", $dataArr)) {
+            $rules['gstin_number'] = 'required||pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:GSTIN';
+        }
+
+		if (array_key_exists("pan_card_number", $dataArr)) {
+            $rules['pan_card_number'] = 'required||pattern:/^' . $this->validateType['pancard'] . '*$/|#|lable_name:PAN Card';
+        }
+
+		if (array_key_exists("city", $dataArr)) {
+            $rules['city'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:City';
+        }
+
+		if( array_key_exists("zipcode",$dataArr) ) {
+            $rules['zipcode'] = 'required||numeric|#|lable_name:Zipcode';
+        }
 
         if (array_key_exists("proof_photograph", $dataArr)) {
             $rules['proof_photograph'] = 'image|#|lable_name:Proof Photograph';
@@ -501,10 +568,12 @@ final class client extends validation {
             return false;
         }
 
-        /* if($this->checkEmailAddressExist($dataArr['email'])){
-          $this->setError($this->validationMessage['emailexist']);
-          return false;
-          } */
+        /*
+		if($this->checkEmailAddressExist($dataArr['email'])){
+			$this->setError($this->validationMessage['emailexist']);
+			return false;
+		}
+		*/
 
         $dataArr['password'] = $this->password_encrypt($dataArr['password']); /* encrypt password */
         $dataArr['user_group'] = 4;
@@ -746,8 +815,8 @@ final class client extends validation {
 
         $rules = array('invoice_itemid' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Invoice Item no. ' . $serialno);
 
-        if (array_key_exists("invoice_quantity", $dataArr)) {
-            $rules['invoice_quantity'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Quantity of Item no. ' . $serialno;
+		if (array_key_exists("invoice_quantity", $dataArr)) {
+            $rules['invoice_quantity'] = 'required||numeric|#|lable_name:Quantity of Item no. ' . $serialno;
         }
 
         if (array_key_exists("invoice_discount", $dataArr)) {
@@ -1041,7 +1110,8 @@ final class client extends validation {
                         $dataArray['shipping_state'] = $shipping_state_data['data']->state_id;
                         $dataArray['shipping_state_name'] = $shipping_state_data['data']->state_name;
                     } else {
-
+                    
+				         
                         $errorflag = true;
                         array_push($currentItemError, "Invalid shipping state code.");
                         $dataArray['shipping_state'] = 'Invalid State';
@@ -1059,7 +1129,11 @@ final class client extends validation {
 
                 $dataArray['item_quantity'] = isset($data['R']) ? $data['R'] : '';
                 $dataArray['item_unit'] = isset($data['S']) ? $data['S'] : '';
+				
                 $dataArray['item_rate'] = isset($data['T']) ? $data['T'] : '';
+				$item_unit =  $dataArray['item_unit'];
+				$item_rate =  $dataArray['item_rate'];
+				
                 $dataArray['item_discount'] = isset($data['U']) ? $data['U'] : '';
                 $advance_adjustment = isset($data['V']) ? $data['V'] : '';
                 $dataArray['advance_amount'] = isset($data['W']) ? $data['W'] : 0;
@@ -1081,11 +1155,52 @@ final class client extends validation {
                         $dataArray['item_name'] = $item_name;
                         $dataArray['item_hsn_code'] = $item_hsn_code;
                     } else {
+				
+					  
+					   $sql="select count(cm.item_id) as itemcount,cm.item_id from " . $this->tableNames['item'] . " as cm  where cm.hsn_code='".$item_hsn_code."' and cm.is_deleted='0' AND cm.status = '1'";
+				   
+				   $dataHsncode = $this->get_results($sql);
+					if($dataHsncode[0]->itemcount > 0)
+					{
+						$unit_id;
+				    $sql="select count(unit_id) as unit_id_count,unit_id from " . $this->tableNames['unit'] . " as u where u.unit_name='".$item_unit."' and u.is_deleted='0' AND u.status = '1'";
+						 	 
+					$dataUnit = $this->get_results($sql);
+						if($dataUnit[0]->unit_id_count > 0)
+						{
+							$unit_id = $dataUnit[0]->unit_id;
+						}
+						$dataInsertArray['item_name'] = $item_name;
+						$dataInsertArray['item_category'] = $dataHsncode[0]->item_id;
+						$dataInsertArray['unit_price'] = $item_rate;
+						$dataInsertArray['item_unit'] = $unit_id;
+						$dataInsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
+						$dataInsertArray['added_date'] = date('Y-m-d H:i:s');
+						$dataInsertArray['status'] =1;
+						$dataInsertArray['is_deleted'] =0;
+						
+						 $sql="select count(item_id) as itemcount from " . $this->tableNames['client_master_item'] . " as i where i.is_deleted='0' AND i.status = '1' AND i.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "' and item_category='".$dataHsncode[0]->item_id."'";
+							 
+					    $dataItem = $this->get_results($sql);
+						if($dataItem[0]->itemcount == 0)
+						{
+						 if ($this->insert($this->tableNames['client_master_item'], $dataInsertArray)) {
+							// return true
+							  $dataArray['item_name'] = $item_name;
+                             $dataArray['item_hsn_code'] = $item_hsn_code;
+						 }
+						}
+						$dataArray['item_name'] = $item_name;
+                        $dataArray['item_hsn_code'] = $item_hsn_code;
+					}
+					else
+					{
 
                         $errorflag = true;
                         array_push($currentItemError, "Item not exist with this hsn code.");
                         $dataArray['item_name'] = "#####Item not exist#####";
                         $dataArray['item_hsn_code'] = "#####HSN code not exist#####";
+					}
                     }
                 } else {
                     $dataArray['item_name'] = $item_name;

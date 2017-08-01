@@ -123,7 +123,7 @@ class db {
         }
         return $data;
     }
-
+    
     /* Normalize sanitized data for display */
 
     public function clean($data) {
@@ -197,9 +197,7 @@ class db {
     /* Perform query to retrieve object of result */
 
     public function get_results($query, $object = true) {
-        //Overwrite the $row var to null
-//        echo $query;
-//        die; 
+		//Overwrite the $row var to null
         $row = null;
         $results = $this->link->query($query);
 
@@ -234,7 +232,7 @@ class db {
         $values = '(' . implode(', ', $values) . ')';
 
         $sql .= $fields . ' VALUES ' . $values;
-		//echo $sql; 
+		//echo $sql; die;
 		$query = $this->link->query($sql);
         if ($this->link->error) {
             $this->log_db_errors($this->link->error, $query);

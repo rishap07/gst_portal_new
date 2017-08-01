@@ -1,6 +1,13 @@
 <?php
 $obj_client = new client();
 
+if(!$obj_client->can_read('client_invoice')) {
+
+	$obj_client->setError($obj_client->getValMsg('can_read'));
+	$obj_client->redirect(PROJECT_URL."/?page=dashboard");
+	exit();
+}
+
 if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
 
     $htmlResponse = $obj_client->generateInvoiceHtml($_GET['id']);
@@ -82,16 +89,6 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
     $obj_mpdf->Output($taxInvoicePdf, 'I');
 }
 
-if (isset($_GET['action']) && $_GET['action'] == 'deleteInvoice' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
-
-    if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])) {
-
-        $obj_client->setError('Invalid access to files');
-    } else {
-
-        $obj_client->redirect(PROJECT_URL . "?page=client_invoice_list");
-    }
-}
 $currentFinancialYear = $obj_client->generateFinancialYear();
 $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
 
@@ -798,18 +795,6 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                 }
             });
         });
-
-
-
-
-
-
-
-
-
-
-
-
         TableManaged.init();
     });
 

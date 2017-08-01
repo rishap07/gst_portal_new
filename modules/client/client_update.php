@@ -1,5 +1,6 @@
 <?php
 $obj_client = new client();
+$obj_plan = new plan();
 if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '' ) {
     $obj_client->redirect(PROJECT_URL);
     exit();
@@ -14,7 +15,7 @@ if(!$obj_client->can_read('client_list')) {
 
 /* get current user data */
 $dataCurrentArr = array();
-$dataCurrentArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
+$dataCurrentArr = $obj_client->getUserDetailsById($obj_client->sanitize($_SESSION['user_detail']['user_id']));
 
 if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
 	
@@ -24,15 +25,16 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
         exit();
     }
 
-	$totalClientCreated = $obj_client->getClient("count(user_id) as totalClientCreated", "added_by=".$_SESSION['user_detail']['user_id']);
-	if($totalClientCreated[0]->totalClientCreated >= intval($dataCurrentArr['data']->no_of_client)) {
+	$subscribePlanDetail = $obj_plan->getPlanDetails($dataCurrentArr['data']->plan_id);
+	$totalClientCreated = $obj_client->getClient("count(user_id) as totalClientCreated", "added_by=".$obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	if($totalClientCreated[0]->totalClientCreated >= intval($subscribePlanDetail['data']->no_of_client)) {
 
 		$obj_client->setError('You have reach maximum client creation limit.');
 		$obj_client->redirect(PROJECT_URL."?page=client_list");
 	}
 
-    if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
-        
+	if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
+
         $obj_client->setError('Invalid access to files');
     } else {
 
@@ -140,7 +142,7 @@ if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClien
                         <?php } ?>
                  	  <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                           
-                            <label>Email Address<span class="starred"></span></label>
+                            <label>Email Address<span class="starred">*</span></label>
                             <input type="text" name="emailaddress" id="emailaddress" placeholder="Enter email address" class="form-control" data-bind="email" value="<?php if(isset($_POST['emailaddress'])){ echo $_POST['emailaddress']; } else if(isset($dataArr['data']->email)){ echo $dataArr['data']->email; } ?>" />
                         </div>    
 						<div class="clear"></div>

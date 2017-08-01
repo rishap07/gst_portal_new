@@ -151,7 +151,9 @@ $data_month_sale = json_encode($data_month_sale);
                 <a href="<?php echo PROJECT_URL . '/?page=dashboard&gstr2=view' ?>" class="active" >
                     GSTR2
                 </a>
-              
+                <a href="<?php echo PROJECT_URL . '/?page=dashboard&gstr3=view' ?>">
+                    GSTR3
+                </a>
             </div></div><div class="clear height10"> </div>
                 <div class="listcontent">
 
@@ -260,7 +262,7 @@ if (count($dataTotalinvoices) > 0) {
 
                                 var options = {
                                     title: 'Monthly Invoices created',
-                                    vAxis: {title: 'Cups'},
+                                    vAxis: {title: 'Number of Invoice'},
                                     hAxis: {title: 'Month'},
                                     seriesType: 'bars',
                                     series: {5: {type: 'line'}}
@@ -292,7 +294,7 @@ if (count($dataTotalMonthSales) > 0) {
 
                                 var options = {
                                     title: 'Monthly Purchase',
-                                    vAxis: {title: 'Cups'},
+                                    vAxis: {title: 'Monthly Purchase'},
                                     hAxis: {title: 'Month'},
                                     seriesType: 'bars',
                                     series: {5: {type: 'line'}}

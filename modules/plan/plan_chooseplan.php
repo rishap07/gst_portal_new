@@ -22,7 +22,7 @@ if( isset($_GET['plan_id']) && $obj_users->validateId($_GET['plan_id']) ) {
         <div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Choose Plan</h1></div>
         <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="adminformbx">
- <!--<div class="" style="color:#333;">Available Plan Listing</div>-->
+			<!--<div class="" style="color:#333;">Available Plan Listing</div>-->
             <div id="tabs">
                 <?php $planCategory = $obj_users->getPlanCategory("id,name,description,(case when status='1' Then 'active' when status='0' then 'deactive' end) as status","is_deleted='0' AND status='1'"); 
                 if(count($planCategory) > 0) { ?>
@@ -40,30 +40,9 @@ if( isset($_GET['plan_id']) && $obj_users->validateId($_GET['plan_id']) ) {
                         ?>
 
                         <div id="tabs-<?php echo $category->id; ?>">
-                            <!--<div class="col-md-3">
-                                <ul class="price">
-                                    <li class="header">Features/Plan</li>
-                                    <li class="grey">Price</li>
-                                    <li>GSTIN's</li>
-                                    <li>No of Companies</li>
-                                    <li>No of PAN's</li>
-                                    <li>No of Invoices</li>
-                                    <li>Reconciliation</li>
-                                    <li>Returns</li>
-                                    <li>24/7 Support</li>
-                                    <li>Period of Service</li>
-                                    <li>Web/Mobile App</li>
-                                    <li>e-Filing</li>
-                                    <li>Excel Tool</li>
-                                    <li>Cloud Storage/GB</li>
-                                    <li>GST Expert Help</li>
-                                    
-                                    <li>Purchase</li>
-                                </ul>
-                            </div>-->
                             <?php
                             
-                            $categoryPlans = $obj_users->getAllActivePlanSuAdmin("p.id,p.name,p.description,p.no_of_client,p.plan_category,p.plan_price,p.company_no,p.pan_num,p.invoice_num,p.reconciliation,p.returns,p.support,p.period_of_service,p.web_mobile_app,p.e_filing,p.excel_tool,p.cloud_storage_gb,p.gst_expert_help","c.id='".$category->id."' and p.is_deleted='0' and p.added_by='22'",$orderby='p.id asc'); ?>
+                            $categoryPlans = $obj_users->getAllActivePlanSuAdmin("p.id,p.name,p.description,p.no_of_client,p.plan_category,p.plan_price,p.company_no,p.pan_num,p.invoice_num,p.reconciliation,p.returns,p.support,p.period_of_service,p.web_mobile_app,p.e_filing,p.excel_tool,p.cloud_storage_gb,p.gst_expert_help","c.id='".$category->id."' and p.is_deleted='0' and p.added_by='22' and p.status='1' and p.visible='1'",$orderby='p.id asc'); ?>
                             
                             <?php $counter = 1; ?>
                             

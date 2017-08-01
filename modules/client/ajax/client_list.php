@@ -102,7 +102,7 @@ $iTotal = $iTotal->count;
 
 /*
  * Output
- */
+*/
 $output = array(
     "sEcho" => intval($_POST['sEcho']),
     "iTotalRecords" => $iTotal,
@@ -117,7 +117,8 @@ foreach($rResult as $aRow) {
     
     $row = array();
     $status = '';
-    
+	$dataCurrentArr = $obj_client->getUserDetailsById($aRow->user_id);
+
     if($aRow->status == '0'){
         $status = '<span class="inactive">InActive<span>';
     }elseif($aRow->status == '1'){
@@ -131,8 +132,14 @@ foreach($rResult as $aRow) {
     $row[] = utf8_decode($aRow->company_name);
     $row[] = utf8_decode($aRow->phone_number);
     $row[] = $status;
-    $row[] = '<a href="'.PROJECT_URL.'/?page=client_update&action=editClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_list&action=deleteClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
-    $output['aaData'][] = $row;
+
+	if ($dataCurrentArr['data']->kyc == '') {
+		$row[] = '<a href="'.PROJECT_URL.'/?page=client_update&action=editClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_kycupdate_by_subscriber&action=updateClientKYC&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Update KYC" >Update KYC</a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_list&action=deleteClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
+    } else {
+		$row[] = '<a href="'.PROJECT_URL.'/?page=client_update&action=editClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_loginas&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Login" >Login As Client</a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_kycupdate_by_subscriber&action=updateClientKYC&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Update KYC" >Update KYC</a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_list&action=deleteClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
+	}
+
+	$output['aaData'][] = $row;
     $temp_x++;
 }
 }

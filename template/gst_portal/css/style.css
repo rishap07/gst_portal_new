@@ -364,6 +364,32 @@ width: 23.9%;
 .dasboardbox.last { margin-right:0px;}
 .martop20 { margin-top:25px;}
 .filtercol { margin-top:20px; margin-bottom:0px}
+
+/*----------------------RECANCELLATION CSS START HERE--------------------------*/
+.boldfont {font-family: opensans_bold;}
+.table-date-txt {font-family: opensans_light; font-size:12px; font-style:italic}
+.col-text { min-height:110px; border-radius:5px; text-align:center; padding:10px; margin:0px 0 20px 0;}
+.col-text .boxpricetxt {font-family: opensans_bold; font-size:15px;}
+.boxtextheading {  font-family: opensans_bold; text-align:center;  font-size:14px;  color:#333; }
+.txtnumber span {  font-size:12px; text-transform:capitalize; font-family: opensans_light; color:#000;}
+.txtnumber { font-size:22px; font-family: opensans_bold; line-height:24px; }
+.bordergreen { border:1px solid #3c763d;}
+.bordergreen:hover { background:#3c763d; color:#FFF;}
+.borderblue { border:1px solid #31708f;}
+.borderblue:hover { background:#31708f; color:#FFF;}
+.borderbrown { border:1px solid #8a6d5b;}
+.borderbrown:hover { background:#8a6d5b; color:#FFF;}
+.borderred { border:1px solid #a94442;}
+.borderred:hover { background:#a94442; color:#FFF;}
+.col-text .btn { float:left; margin-top:0px; font-size:11px; font-family: opensans_bold; text-transform:none; padding:5px 10px;}
+.reconciliation .col-md-3 { padding-left:7px; padding-right:7px;}
+.redtxt {color:#a94442;}
+.redtxt span { color:#a94442;}
+.btnaccepted { border-radius:20px;  color:#FFF; font-size:13px; margin:0px; font-family: opensans_bold; padding:5px 20px !important; height:auto; min-width:auto; background:#39b969; border:1px solid #39b969; margin-top:7px;}
+.btnaccepted:hover {border:1px solid #39b969; background:#FFF; color:#39b969; text-decoration:none;}
+.tablecontent { border-right:1px solid #ddd; border-left:1px solid #ddd; border-bottom:1px solid #ddd;} 
+.selectbox { border-radius:5px; border:1px solid #ddd; padding:5px; font-size:13px; }
+
 @media only screen and (max-width:1200px)
 {
 .rgtmenu { width:100%; text-align:center}
@@ -428,6 +454,7 @@ width: 23.9%;
 .modpadlr { padding-left:0px; padding-right:0px}
 .registercontent .admintxt { width:100%; }
 .dasboardbox { width:100%; margin:0 0px 10px 0;}
+.formboxcontainer { padding:15px;}
 	
 }
 @media only screen and (max-width:480px)

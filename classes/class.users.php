@@ -1,5 +1,4 @@
 <?php
-
 /*
  * 
  *  Developed By        :   Rishap Gandhi
@@ -8,7 +7,7 @@
  *  Last Modified By    :   Rishap Gandhi
  *  Last Modification   :   class for Gallery 
  * 
- */
+*/
 
 final class users extends validation {
 
@@ -23,7 +22,6 @@ final class users extends validation {
         $dataArr['payment_status'] = "1";
         $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['added_date'] = date('Y-m-d H:i:s');
-        //$dataArr['ref_id'] = date('smidYH');     
 
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
@@ -32,12 +30,7 @@ final class users extends validation {
 
         /* get plan details */
         $planDetail = $this->getAllActivePlanSuAdmin("p.id,p.name,p.plan_category,p.no_of_client,p.company_no,p.pan_num,p.invoice_num,p.support,p.period_of_service,p.web_mobile_app,p.cloud_storage_gb,p.gst_expert_help,p.plan_price,(case when p.status='1' Then 'active' when p.status='0' then 'deactive' end) as status,c.name as cat_name,c.description as cat_description", "p.id='" . $dataArr['plan_id'] . "' and p.is_deleted='0'", $orderby = 'p.id asc');
-//        echo "<pre>";
-//        print_r($planDetail);
-//       
-//        echo "</pre>";
-//        die();
-        $dataArr['plan_due_date'] = date('Y-m-d H:i:s', strtotime('+' . $planDetail['0']->month . ' months'));
+        $dataArr['plan_due_date'] = '2017-03-31 12:00:00';
 
         if ($this->insert($this->tableNames['user_subscribed_plan'], $dataArr)) {
 
@@ -45,61 +38,18 @@ final class users extends validation {
             $this->logMsg("New Plan Subscribed Added. ID : " . $insertid . ".");
 
             $dataConditionArray['user_id'] = $_SESSION['user_detail']['user_id'];
-            $dataUpdateArr['no_of_client'] = $planDetail['0']->no_of_client;
-            $dataUpdateArr['payment_status'] = "1";
-            $dataUpdateArr['plan_id'] = $dataArr['plan_id'];
-            $dataUpdateArr['plan_start_date'] = date('Y-m-d H:i:s');
-            $dataUpdateArr['plan_due_date'] = $dataArr['plan_due_date'];
+            $dataUpdateArr['payment_status'] = "0";
 
             if ($this->update($this->tableNames['user'], $dataUpdateArr, $dataConditionArray)) {
 
                 $_SESSION['plan_id'] = $dataArr['plan_id'];
                 $_SESSION['subs_id'] = $insertid;
 
-                //$this->redirect(PROJECT_URL . '/?page=payment_online');          
-
-                $this->setSuccess($this->validationMessage['plansubscribed']);
-                /* code for send email to for plan subscribation  */
-                $companyaddress=array(
-                    'name'=>'CYFUTURE INDIA PRIVATE LIMITED',
-                    'address'=>'Plot No. 197-198, Noida Special Economic Zone (NSEZ) Noida Phase II,',
-                    'address1'=>'Noida Dadri Road, Noida -201 305',
-                    'gstin'=>'08AABCC7015R1ZB',
-                    'sac'=>'998314',
-                );
-                $useraddress=array(
-                    'name'=>'Nav Bharat Tubes Limited',
-                    'address'=>'94-D Jothwara Industrial Area, Pink City,',
-                    'address1'=>'Jaipur, Rajasthan 302012',
-                    'gstin'=>'1125C7015R1ZB',
-                );
-                $htmlResponse = $this->generatePlanPdf($_SESSION['user_detail']['id'], $planDetail, $dataArr['plan_due_date'],$companyaddress,$useraddress);
-                if ($htmlResponse === false) {
-
-                    $obj_client->setError("No Plan Pdf found.");
-                    return false;
-                }
-
-                $obj_mpdf = new mPDF();
-                $obj_mpdf->SetHeader('Plan Invoice');
-                $obj_mpdf->WriteHTML($htmlResponse);
-                $datetime=date('YmdHis');
-                //$datetime=date('Y-m-d H:i');
-                //rand(1, 100)
-                $taxInvoicePdf = 'plan-invoice-' . $_SESSION['user_detail']['username'] . '_' .$datetime. '.pdf';
-                ob_clean();
-                 //$proof_photograph = $this->imageUploads($taxInvoicePdf, 'plan-invoice', 'upload','.pdf');
-              $pic = $taxInvoicePdf;
-    
-    $path = "/upload/plan-invoice/".$taxInvoicePdf; 
-   
-              $content = $obj_mpdf->Output("upload/plan-invoice/".$taxInvoicePdf);
-
-                $this->sendsubscribemail("subscribe", 'subscribe by ' . $_SESSION['user_detail']['name'] . '', $_SESSION['user_detail']['email'], 'noreply@gstkeeper.com', "avinesh.mathur@cyfuture.com,rishap07@gmail.com", "NewSubscriber",$path);
-
-                $this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " in User has been updated");
-                return true;
-            } else {
+                $this->redirect(PROJECT_URL . '/?page=payment_online');
+				exit();
+				//$this->setSuccess($this->validationMessage['plansubscribed']);
+				//return true;
+			} else {
                 $this->setError($this->validationMessage['failed']);
                 return false;
             }

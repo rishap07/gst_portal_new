@@ -59,11 +59,16 @@
 				$missing = 0;
 				$additional = 0;
 				$mismatched = 0;
+				$matchId=array();
+				$mismatchId=array();
+				$additionalId=array();
+				$missingId=array();
 				$gstr2DownlodedInvoices = $obj_gstr2->get_results("select
 					i.invoice_id, 
 					i.reference_number, 
 					i.serial_number, 
 					i.invoice_type, 
+					i.invoice_nature,
 					i.gstin_number as company_gstin_number, 
 					i.supply_type, 
 					i.export_supply_meant, 
@@ -90,14 +95,16 @@
 					AND i.invoice_date like '%" . $returnmonth . "%'
 					group by i.invoice_id 
 					order by i.invoice_date ASC");
+				//echo "<pre>";
+                //   print_r($gstr2DownlodedInvoices);
+                 // echo "<br><br>";
 
-					foreach($gstr2DownlodedInvoices as $gstr2DownlodedInvoice) {
-
-						$purchaseInvoices = $obj_gstr2->get_results("select 
+				$query="select 
 							ci.purchase_invoice_id, 
 							ci.reference_number, 
 							ci.serial_number, 
 							ci.invoice_type, 
+							ci.invoice_nature,
 							ci.company_gstin_number, 
 							ci.supply_type, 
 							ci.import_supply_meant, 
@@ -115,30 +122,173 @@
 							from " . $obj_gstr2->getTableName('client_purchase_invoice') . " as ci INNER JOIN " . $obj_gstr2->getTableName("client_purchase_invoice_item") . " as cii ON ci.purchase_invoice_id = cii.purchase_invoice_id
 							where 
 							ci.invoice_nature='purchaseinvoice' 
-							AND ci.recipient_shipping_gstin_number='".$gstr2DownlodedInvoice->billing_gstin_number."'
-							AND ci.reference_number='".$gstr2DownlodedInvoice->reference_number."'
+							AND ci.recipient_shipping_gstin_number='".$dataCurrentUserArr['data']->kyc->gstin_number."'
 							AND ci.is_deleted='0' 
-							group by ci.purchase_invoice_id");
-							
-						if($gstr2DownlodedInvoice->reference_number == $purchaseInvoices[0]->reference_number) {
+							group by ci.purchase_invoice_id";
+							//echo "<br><pre>";
+							$purchaseInvoices = $obj_gstr2->get_results($query);
+							//print_r($purchaseInvoices);
 
-							$matched = 1;
-							$missing = 0;
-						}
 
-						//print_r($gstr2DownlodedInvoice);
-						//print_r($purchaseInvoices);
-						//die;
-					}
-					//die;
-				?>
-		</div>
-	</div> 
 
-	</div>
-	<div class="clear height40"></div>      
-</div>
-<div class="clear"></div>
+foreach ($gstr2DownlodedInvoices as $gstr2DownlodedInvoice) {
+	$flag=0;
+	foreach($purchaseInvoices as $purchaseInvoice)	
+	{
+		if ($gstr2DownlodedInvoice->reference_number===$purchaseInvoice->reference_number)
+		{
+			$flag=1;
+			//echo 'missmatched ';
+		if(($gstr2DownlodedInvoice->invoice_total_value == $purchaseInvoice->invoice_total_value)&&
+		   ($gstr2DownlodedInvoice->total_taxable_subtotal == $purchaseInvoice->total_taxable_subtotal)&&
+		   ($gstr2DownlodedInvoice->total_cgst_amount == $purchaseInvoice->total_cgst_amount)&&
+		   ($gstr2DownlodedInvoice->total_igst_amount == $purchaseInvoice->total_igst_amount)&&
+		   ($gstr2DownlodedInvoice->total_cess_amount == $purchaseInvoice->total_cess_amount)&&
+		   ($gstr2DownlodedInvoice->total_sgst_amount == $purchaseInvoice->total_sgst_amount))
+
+		 {
+		 $matched++;
+		array_push($matchId,$purchaseInvoice->purchase_invoice_id);
+}
+else
+{
+	$mismatched++;
+	array_push($mismatchId,$purchaseInvoice->purchase_invoice_id);
+} 
+
+		} 
+	}
+	if($flag==0)
+	{
+		$missing++ ;
+		array_push($missingId,$gstr2DownlodedInvoice->invoice_id);
+		//echo "id".$gstr2DownlodedInvoice->invoice_id."<br>";
+	}
+}
+
+
+
+
+	
+	foreach($purchaseInvoices as $purchaseInvoice)	
+	{
+		$addFlag=0;
+		foreach ($gstr2DownlodedInvoices as $gstr2DownlodedInvoice) {
+		if ($purchaseInvoice->reference_number===$gstr2DownlodedInvoice->reference_number)
+		{
+			$addFlag=1;
+		} 
+	}
+	if($addFlag==0)
+	{
+		$additional++ ;
+		array_push($additionalId,$purchaseInvoice->purchase_invoice_id);
+		//echo "additional id".$purchaseInvoice->purchase_invoice_id."<br>";
+	}
+}
+//echo $mismatched." ".$matched." ".$missing." ".$additional;
+
+
+
+
+$matchId  =implode(",",$matchId);
+//echo "<br>$matchId<br>";
+if(sizeof($mismatchId)>0)
+{
+$mismatchId  =implode(",",$mismatchId);
+//echo "$mismatchId<br>";	
+}
+else
+{
+$mismatchId =0;	
+//echo "$mismatchId<br>";
+}
+$missingId  =implode(",",$missingId);
+//echo "$missingId<br>";
+$additionalId  =implode(",",$additionalId);
+//echo "$additionalId<br>";						
+					
+?>
+
+
+<script>
+$(document).ready(function() {
+	$('.row-offcanvas-left').addClass('');
+	$(".mobilemenu").click(function() {
+		$("#sidebar").toggle();
+		$('.row-offcanvas-left').addClass('mobileactive');
+        
+    });
+    
+});
+
+
+</script>
+
+
+</head>
+<body>
+
+
+
+                 
+                    <div class="row reconciliation">
+                    
+                     <div class="col-md-3 col-sm-3 col-xs-12">
+                            <div class="lightgreen col-text">
+                                <div class="dashcoltxt">
+                                    <div class="boxtextheading pull-left">Matched</div> 
+                                    <div class="pull-right btn bordergreen"><a href="<?php echo PROJECT_URL . '/?page=return_view_reconcile_invoices&matchedFlag=1&matchId=' . $matchId?>">View Records</a></div>
+                                    <div class="clear height10"></div>
+                                    <div class="txtnumber col-md-4 col-sm-4"><?php echo $matched?><br/><span>RECORDS</span><br/></div>
+   
+                                     
+                                </div>
+                            </div>
+                        </div>
+                        
+                         <div class="col-md-3 col-sm-3 col-xs-12">
+                            <div class="lightblue col-text">
+                                <div class="dashcoltxt">
+                                    <div class="boxtextheading pull-left">Missing</div> <div class="pull-right btn borderblue"><a href="<?php echo PROJECT_URL . '/?page=return_view_reconcile_invoices&matchedFlag=0&missingId=' . $missingId?>">View Records</a></div>
+                                    <div class="clear height10"></div>
+                                    <div class="txtnumber col-md-4 col-sm-4"><?php echo $missing?><br/><span>RECORDS</span><br/></div>
+                                    <div class="txtnumber col-md-4 col-sm-4">0<br/><span>ADDRESSED</span><br/></div>
+                                     <div class="txtnumber redtxt col-md-4 col-sm-4"><?php echo $missing?><br/><span>PENDING</span><br/></div>
+                                     
+                                </div>
+                            </div>
+                        </div>
+                        
+                         <div class="col-md-3 col-sm-3 col-xs-12">
+                            <div class="lightyellowbg col-text">
+                                <div class="dashcoltxt">
+                                    <div class="boxtextheading pull-left">Additional</div> <div class="pull-right btn borderbrown"><a href="<?php echo PROJECT_URL . '/?page=return_view_reconcile_invoices&matchedFlag=0&mismatchId=' . $additionalId?>">View Records</a></div>
+                                    <div class="clear height10"></div>
+                                    <div class="txtnumber col-md-4 col-sm-4"><?php echo $additional?><br/><span>RECORDS</span><br/></div>
+                                    <div class="txtnumber col-md-4 col-sm-4">0<br/><span>ADDRESSED</span><br/></div>
+                                     <div class="txtnumber redtxt col-md-4 col-sm-4"><?php echo $additional?><br/><span>PENDING</span><br/></div>
+                                     
+                                </div>
+                            </div>
+                        </div>
+                        
+                         <div class="col-md-3 col-sm-3 col-xs-12">
+                            <div class="pinkbg col-text">
+                                <div class="dashcoltxt">
+                                    <div class="boxtextheading pull-left">Mismatch</div> <div class="pull-right btn borderred"><a href="<?php echo PROJECT_URL . '/?page=return_view_reconcile_invoices&matchedFlag=0&additionalId=' . $mismatchId?>">View Records</a></div>
+                                    <div class="clear height10"></div>
+                                     <div class="txtnumber col-md-4 col-sm-4"><?php echo $mismatched?><br/><span>RECORDS</span><br/></div>
+                                    <div class="txtnumber col-md-4 col-sm-4">0<br/><span>ADDRESSED</span><br/></div>
+                                     <div class="txtnumber redtxt col-md-4 col-sm-4"><?php echo $mismatched?><br/><span>PENDING</span><br/></div>
+                                     
+                                </div>
+                            </div>
+                        </div>
+
+
+             
+
 <script>
 	$(document).ready(function () {
 		$('#returnmonth').on('change', function () {

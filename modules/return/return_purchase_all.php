@@ -1,5 +1,6 @@
 <?php
 $obj_client = new client();
+$obj_gstr1 = new gstr1();
 if (!isset($_REQUEST['returnmonth']) || $_REQUEST['returnmonth'] == '') {
     $obj_client->redirect(PROJECT_URL . "/?page=return_client");
     exit();
@@ -12,6 +13,14 @@ $type='invoice';
 if(isset($_POST['invoice_type']))
 {
 	$type=$_POST['invoice_type'];
+}
+if (isset($_POST['returnmonth'])) 
+{
+	
+    $returnmonth = $_POST['returnmonth'];
+	 
+    $obj_gstr1->redirect(PROJECT_URL . "/?page=return_purchase_all&returnmonth=" . $returnmonth);
+     exit();
 }
 ?>
       

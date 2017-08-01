@@ -26,16 +26,15 @@ if(!$obj_master->can_read('master_supplier')) {
             <table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable">
                 <thead>
                     <tr>
-                        <th align='left' width="72">#</th>
-                        <th align='left'>GSTIN</th>
-                        <th align='left'>Name</th>
-                        
-                        <th align='left'>Address</th>
-                        <th align='left'>State</th>
-                        <th align='left'>State Code</th>
-                        
-                        <th align='left'>Status</th>
-                        <th width="72">Action</th>
+						<th align='left' width="72">#</th>
+						<th align='left'>GSTIN</th>
+						<th align='left'>Name</th>
+						<th align='left'>Address</th>
+						<th align='left'>City</th>
+						<th align='left'>State</th>
+						<th align='left'>Country</th>
+						<th align='left'>Status</th>
+						<th width="72">Action</th>
                     </tr>
                 </thead>
             </table>
@@ -69,6 +68,7 @@ if(!$obj_master->can_read('master_supplier')) {
                         {"bSortable": false},
                         {"bSortable": false},
                         {"bSortable": false},
+						{"bSortable": false},
                         {"bSortable": false}
                     ],
                     "sDom": "lfrtip",

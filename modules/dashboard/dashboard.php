@@ -1,4 +1,5 @@
 <?php
+
 if(isset($_SESSION['user_detail']['user_group']) && $_SESSION['user_detail']['user_group']!='')
 {
 	if($_SESSION['user_detail']['user_group']=='3' || $_SESSION['user_detail']['user_group']=='4')
@@ -7,7 +8,9 @@ if(isset($_SESSION['user_detail']['user_group']) && $_SESSION['user_detail']['us
 		{
 			$db_obj->emailVerify();
 		}
+		
 	}
+	
     if($_SESSION['user_detail']['user_group']=='1')
     {
         include(PROJECT_ROOT."/modules/dashboard/view/suadmin.php");
@@ -25,6 +28,10 @@ if(isset($_SESSION['user_detail']['user_group']) && $_SESSION['user_detail']['us
 		if(isset($_REQUEST["gstr2"]) && ($_REQUEST["gstr2"]=="view"))
 		{
 			include(PROJECT_ROOT."/modules/dashboard/view/gstr2client.php");
+		}
+		else if(isset($_REQUEST["gstr3"]) && ($_REQUEST["gstr3"]=="view"))
+		{
+			include(PROJECT_ROOT."/modules/dashboard/view/gstr3client.php");
 		}
 		else
 		{

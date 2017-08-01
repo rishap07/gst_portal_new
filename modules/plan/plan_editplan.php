@@ -62,6 +62,11 @@ if( isset($_POST['submit_edit_plan']) && $_POST['submit_edit_plan'] == 'SUBMIT' 
        
         <div class="whitebg formboxcontainer">
                <h2>Edit Plan Period</h2>
+               <?php 
+//               echo "<pre>";
+//        print_r($planData);
+//        echo "</pre>";die();
+        ?>
       
         <div class="clear"></div>
 
@@ -93,7 +98,7 @@ if( isset($_POST['submit_edit_plan']) && $_POST['submit_edit_plan'] == 'SUBMIT' 
                            
                             <?php $allPlanCategories = $obj_plan->getPlanCategories(); ?>
 
-                            <label>Plan Period<span class="starred">*</span></label>
+                            <label>Plan Category <span class="starred">*</span></label>
                             <select name="plan_period" id="plan_period" class="required form-control" data-bind="number">
                                 <option value="">Select Plan</option>
                                 <?php
@@ -127,7 +132,38 @@ if( isset($_POST['submit_edit_plan']) && $_POST['submit_edit_plan'] == 'SUBMIT' 
                             <div class="clear"></div>
                             <input type="radio" name="plan_status" <?php if($planData->status == '1') { echo 'checked="checked"'; } ?> value="1" /><span>Active</span> <input type="radio" name="plan_status" <?php if($planData->status == '0') { echo 'checked="checked"'; } ?> value="0" /><span>Inactive</span>
                         </div>
-              <div class="clear"></div>
+                         <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                           
+                            <label>No.of PAN<span class="starred">*</span></label>
+                            <div class="clear"></div>
+                             <input type="text" name="pan_num" id="pan_num" placeholder="Enter no of Pan" class="required form-control" data-bind="decimal" value="<?php echo isset($planData->pan_num) ? $planData->pan_num : ''; ?>" />
+                           
+                        </div>  
+                        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                           
+                            <label>No.of company<span class="starred">*</span></label>
+                            <div class="clear"></div>
+                            <input type="text" name="company_no" id="company_no" placeholder="Enter no of company" class="required form-control" data-bind="decimal" value="<?php echo isset($planData->company_no) ? $planData->company_no : ''; ?>" required/>
+                        </div> 
+                        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                           
+                            <label>Support<span class="starred">*</span></label>
+                            <div class="clear"></div>
+                            <input type="text" name="support" id="support" placeholder="support type" class="required form-control" value="<?php echo isset($planData->support) ? $planData->support : ''; ?>" required/>
+                        </div> 
+                          <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                           
+                            <label> Cloud Stograge (Gb)<span class="starred">*</span></label>
+                           <div class="clear"></div>
+                            <input type="text" name="cloud_storage_gb" id="cloud_storage_gb" placeholder=" Cloud Stograge(gb)" class="required form-control"  value="<?php echo isset($planData->cloud_storage_gb) ? $planData->cloud_storage_gb : ''; ?>" required/>
+                        </div>
+                          <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                           
+                            <label>  GSt Expert Help <span class="starred">*</span></label>
+                            <div class="clear"></div>
+                            <input type="text" name="gst_expert_help" id="gst_expert_help" placeholder=" GSt Expert Help" class="required form-control"  value="<?php echo isset($planData->gst_expert_help) ? $planData->gst_expert_help : ''; ?>" required/>
+                        </div>                                   
+<!--              <div class="clear"></div>-->
 						 <div class="adminformbxsubmit" style="width:100%;">
                              
 						 

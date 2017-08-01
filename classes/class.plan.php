@@ -6,7 +6,7 @@
 */
 
 class plan extends validation {
-	
+
     public function __construct() {
         parent::__construct();
     }
@@ -26,12 +26,12 @@ class plan extends validation {
         if(!$this->validatePlanCategory($dataArr)){
             return false;
         }
-        
+
         if($this->checkPlanCategoryExist($dataArr['category_name'])){
             $this->setError($this->validationMessage['categoryexist']);
             return false;
         }
-        
+
         $dataInsertArray['name'] = $dataArr['category_name'];
         $dataInsertArray['month'] = $dataArr['category_month'];
         $dataInsertArray['description'] = $dataArr['category_description'];
@@ -259,6 +259,11 @@ class plan extends validation {
         $dataArr['plan_price'] = isset($_POST['plan_price']) ? $_POST['plan_price'] : '';
         $dataArr['plan_visibility'] = isset($_POST['plan_visibility']) ? $_POST['plan_visibility'] : '';
         $dataArr['plan_status'] = isset($_POST['plan_status']) ? $_POST['plan_status'] : '';
+        $dataArr['pan_num'] = isset($_POST['pan_num']) ? $_POST['pan_num'] : '';
+        $dataArr['company_no'] = isset($_POST['company_no']) ? $_POST['company_no'] : '';
+        $dataArr['support'] = isset($_POST['support']) ? $_POST['support'] : '';
+        $dataArr['cloud_storage_gb'] = isset($_POST['cloud_storage_gb']) ? $_POST['cloud_storage_gb'] : '';
+        $dataArr['gst_expert_help'] = isset($_POST['gst_expert_help']) ? $_POST['gst_expert_help'] : '';
         
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
@@ -281,6 +286,11 @@ class plan extends validation {
         $dataUpdateArray['plan_category'] = $dataArr['plan_period'];
         $dataUpdateArray['plan_price'] = $dataArr['plan_price'];
         $dataUpdateArray['status'] = $dataArr['plan_status'];
+        $dataUpdateArray['pan_num'] = $dataArr['pan_num'];
+        $dataUpdateArray['company_no'] = $dataArr['company_no'];
+        $dataUpdateArray['support'] = $dataArr['support'];
+        $dataUpdateArray['cloud_storage_gb'] = $dataArr['cloud_storage_gb'];
+        $dataUpdateArray['gst_expert_help'] = $dataArr['gst_expert_help'];
         $dataUpdateArray['visible'] = $dataArr['plan_visibility'];
         $dataUpdateArray['updated_by'] = $_SESSION['user_detail']['user_id'];
         $dataUpdateArray['update_date'] = date('Y-m-d H:i:s');
@@ -298,7 +308,7 @@ class plan extends validation {
         
         return true;
     }
-    
+
     public function getPlanDetails( $planid = '' ) {
 
         $data = $this->get_row("select * from " . $this->tableNames['subscriber_plan'] ." where id = '".$planid."' AND is_deleted='0'");

@@ -13,7 +13,7 @@ if(isset($theme_data[0]->theme_name) && $theme_data[0]->theme_name!='') {
 	define('THEME_PATH',THEME_DIR .'gst_portal');
     define('THEME_URL',PROJECT_URL."/template/gst_portal");
 }
-if (isset($_POST['forgot']) && $_POST['forgot'] == 'SendEmail'){
+if (isset($_POST['forgot']) && $_POST['forgot'] == 'Send Email'){
 
     if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])) {
         $obj_login->setError('Invalid access to files');
@@ -81,7 +81,11 @@ if (isset($_POST['forgot']) && $_POST['forgot'] == 'SendEmail'){
         <div class="loginbx">
             <a class="adminlogo" href="<?php echo PROJECT_URL; ?>" target="_blank"><img src="<?php echo PROJECT_URL;?>/image/logo.png" title="GST Keeper" alt="GST Keeper" /></a>
             <div class="logincontainer">
-               
+                 <ul class="admintab">
+                    <li class="userlogin"><a href="<?php echo PROJECT_URL; ?>">SIGN IN</a></li>
+					   <li class="userregister"><a href="<?php echo PROJECT_URL; ?>">Register</a></li>
+                   
+                </ul>
                 <div class="adminloginbx logincontent" style="<?php if (isset($_POST['login_me']) && $_POST['login_me'] == 'LOGIN') { echo "display:block";}else if (isset($_POST['register_me']) && $_POST['register_me'] == 'REGISTER') { echo "display:none";}?>">
                     <p>Please enter your email address here</p>
 					<div class="clear" ></div>
@@ -106,7 +110,7 @@ if (isset($_POST['forgot']) && $_POST['forgot'] == 'SendEmail'){
                         </div>
                        
                      
-                        <input type="submit" name="forgot" class="btnsubmit" id="forgot" value="SendEmail" />
+                        <input type="submit" name="forgot" class="btnsubmit" id="forgot" value="Send Email" />
                     </form>
                 </div>
                  

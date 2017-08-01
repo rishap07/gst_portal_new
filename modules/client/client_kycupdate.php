@@ -73,7 +73,7 @@
                             <input type="text" placeholder="Enter Email Address" name="email" id="email" class="required form-control" data-bind="email" value="<?php if(isset($_POST['email'])) { echo $_POST['email']; } else if(isset($dataArr['data']->email)) { echo $dataArr['data']->email; } ?>" />
                         </div>
 					<?php } ?>
-					
+
 					<?php if ($dataArr['data']->kyc != '' && isset($dataArr['data']->kyc->phone_number)) { ?>
 						<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 							<label>Contact Number<span class="starred">*</span></label>
@@ -92,15 +92,33 @@
 						<input type="text" placeholder="yyyy-mm-dd" name="date_of_birth" id="date_of_birth" class="required form-control" data-bind="date" value="<?php if(isset($_POST['date_of_birth'])) { echo $_POST['date_of_birth']; } else if(isset($dataArr['data']->kyc->date_of_birth)) { echo $dataArr['data']->kyc->date_of_birth; } ?>" />
 					</div>
 
-                    <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-                        <label>GSTIN Number<span class="starred">*</span></label>
-                        <input type="text" name="gstin_number" id="gstin_number" placeholder="Enter gstin number" class="required form-control" data-bind="gstin" value="<?php if(isset($_POST['gstin_number'])) { echo $_POST['gstin_number']; } else if(isset($dataArr['data']->kyc->gstin_number)) { echo $dataArr['data']->kyc->gstin_number; } ?>" />
-                    </div>
+					<?php if ($dataArr['data']->kyc != '' && isset($dataArr['data']->kyc->gstin_number)) { ?>
 
-                    <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-                        <label>Pan Card No<span class="starred">*</span></label>
-                        <input type="text" name="pan_card_number" id="pan_card_number" placeholder="Enter pan card number" class="required form-control" data-bind="pancard" value="<?php if(isset($_POST['pan_card_number'])) { echo $_POST['pan_card_number']; } else if(isset($dataArr['data']->kyc->pan_card_number)) { echo $dataArr['data']->kyc->pan_card_number; } ?>" />
-                    </div>
+						<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+							<label>GSTIN Number<span class="starred">*</span></label>
+							<input type="text" disabled="true" id="gstin_number" placeholder="Enter gstin number" class="required form-control" data-bind="gstin" value="<?php if(isset($_POST['gstin_number'])) { echo $_POST['gstin_number']; } else if(isset($dataArr['data']->kyc->gstin_number)) { echo $dataArr['data']->kyc->gstin_number; } ?>" />
+						</div>
+					<?php } else { ?>
+					
+						<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+							<label>GSTIN Number<span class="starred">*</span></label>
+							<input type="text" name="gstin_number" id="gstin_number" placeholder="Enter gstin number" class="required form-control" data-bind="gstin" value="<?php if(isset($_POST['gstin_number'])) { echo $_POST['gstin_number']; } else if(isset($dataArr['data']->kyc->gstin_number)) { echo $dataArr['data']->kyc->gstin_number; } ?>" />
+						</div>
+					<?php } ?>
+					
+					<?php if ($dataArr['data']->kyc != '' && isset($dataArr['data']->kyc->pan_card_number)) { ?>
+
+						<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+							<label>Pan Card No<span class="starred">*</span></label>
+							<input type="text" disabled="true" id="pan_card_number" placeholder="Enter pan card number" class="required form-control" data-bind="pancard" value="<?php if(isset($_POST['pan_card_number'])) { echo $_POST['pan_card_number']; } else if(isset($dataArr['data']->kyc->pan_card_number)) { echo $dataArr['data']->kyc->pan_card_number; } ?>" />
+						</div>
+					<?php } else { ?>
+						
+						<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+							<label>Pan Card No<span class="starred">*</span></label>
+							<input type="text" name="pan_card_number" id="pan_card_number" placeholder="Enter pan card number" class="required form-control" data-bind="pancard" value="<?php if(isset($_POST['pan_card_number'])) { echo $_POST['pan_card_number']; } else if(isset($dataArr['data']->kyc->pan_card_number)) { echo $dataArr['data']->kyc->pan_card_number; } ?>" />
+						</div>
+					<?php } ?>
                     <div class="clear"></div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
@@ -183,8 +201,13 @@
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
                         <label>Registered Address<span class="starred">*</span></label>
-                        <input type="text" placeholder="Registered Address" name="registered_address" id="registered_address" class="required form-control" data-bind="address" value="<?php if (isset($_POST['registered_address'])) { echo $_POST['registered_address']; } else if (isset($dataArr['data']->kyc->registered_address)) { echo $dataArr['data']->kyc->registered_address; } ?>" />
-                    </div>
+						<textarea placeholder="Registered Address" name="registered_address" id="registered_address" class="required form-control" data-bind="content"><?php if (isset($_POST['registered_address'])) { echo $_POST['registered_address']; } else if (isset($dataArr['data']->kyc->registered_address)) { echo $dataArr['data']->kyc->registered_address; } ?></textarea>
+					</div>
+
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>City <span class="starred">*</span></label>
+						<input type="text" placeholder="City" name="city" id="city" data-bind="content" class="form-control required" value="<?php if (isset($_POST['city'])) { echo $_POST['city']; } else if (isset($dataArr['data']->kyc->city)) { echo $dataArr['data']->kyc->city; } ?>">
+					</div>
 
                     <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                         <label>State <span class="starred">*</span></label>
@@ -193,11 +216,17 @@
 							<?php if (!empty($dataStateArrs)) { ?>
 								<option value=''>Select State</option>
 								<?php foreach ($dataStateArrs as $dataStateArr) { ?>
-									<option value='<?php echo $dataStateArr->state_id; ?>' data-code="<?php echo $dataStateArr->state_code; ?>" <?php if(isset($_POST['state']) && $_POST['state'] == $dataStateArr->state_id) { echo 'selected="selected"'; } else if(isset($dataArr['data']->kyc->state_id) && $dataArr['data']->kyc->state_id == $dataStateArr->state_id) { echo "selected='selected'"; } ?>><?php echo $dataStateArr->state_name; ?></option>
+									<option value='<?php echo $dataStateArr->state_id; ?>' data-tin="<?php echo $dataStateArr->state_tin; ?>" data-code="<?php echo $dataStateArr->state_code; ?>" <?php if(isset($_POST['state']) && $_POST['state'] == $dataStateArr->state_id) { echo 'selected="selected"'; } else if(isset($dataArr['data']->kyc->state_id) && $dataArr['data']->kyc->state_id == $dataStateArr->state_id) { echo "selected='selected'"; } ?>><?php echo $dataStateArr->state_name; ?></option>
 								<?php } ?>
 							<?php } ?>
                         </select>
                     </div>
+					<div class="clear"></div>
+					
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>Zipcode <span class="starred">*</span></label>
+						<input type="text" placeholder="Zipcode" name="zipcode" id="zipcode" class="form-control required" data-bind="number" value="<?php if (isset($_POST['zipcode'])) { echo $_POST['zipcode']; } else if (isset($dataArr['data']->kyc->zipcode)) { echo $dataArr['data']->kyc->zipcode; } ?>">
+					</div>
 
                     <?php if ($dataArr['data']->kyc != '' && isset($dataArr['data']->kyc->address_proof)) { ?>
 
@@ -261,14 +290,27 @@
         $("#client-kyc").submit(function(event){
 
             event.preventDefault();
+
+			var clientGSTIN = $("#gstin_number").val();
+			var clientPAN = $("#pan_card_number").val();
+
+			if(clientGSTIN.search(clientPAN) == -1) {
+				jAlert('<div style="color:#f00;background-color:#eddbe3;border-radius:4px;padding:8px 35px 8px 14px;text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom: 18px;border-color: #e8d1df;color: #bd4247;"><i class="fa fa-exclamation-triangle"></i>&nbsp;1.&nbsp;PAN should be valid according to GSTIN.</div>');
+				return false;
+			}
+
+			if(clientGSTIN.substring(0,2) != $("#state option:selected").attr("data-tin")) {
+				jAlert('<div style="color:#f00;background-color:#eddbe3;border-radius:4px;padding:8px 35px 8px 14px;text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom: 18px;border-color: #e8d1df;color: #bd4247;"><i class="fa fa-exclamation-triangle"></i>&nbsp;1.&nbsp;State should be valid according to GSTIN.</div>');
+				return false;
+			}
+
 			$("#loading").show();
-			
 			var kycFormData = new FormData(this);
+			kycFormData.append("state_tin", $("#state option:selected").attr("data-tin"));
 
             $.ajax({
                 //data: {kycData:$("#client-kyc").serialize(), action:"submitKYC"},
                 data: kycFormData,
-				async: false,
 				cache: false,
 				contentType: false,
 				processData: false,

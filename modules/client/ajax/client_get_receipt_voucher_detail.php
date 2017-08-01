@@ -13,7 +13,44 @@ if(isset($_POST['receiptVoucherNumber']) && isset($_POST['action']) && $_POST['a
 	
 	$receiptVoucherNumber = $obj_client->sanitize($_POST['receiptVoucherNumber']);
 	$currentFinancialYear = $obj_client->generateFinancialYear();
-	$receiptVoucherData = $obj_client->get_results("select crv.invoice_id, crv.serial_number, crv.invoice_date, crv.supply_place, sp.state_name as supply_state_name, sp.state_code as supply_state_code, sp.state_tin as supply_state_tin, crv.billing_name, crv.billing_address, crv.billing_state, bs.state_name as billing_state_name, bs.state_code as billing_state_code, bs.state_tin as billing_state_tin, crv.billing_gstin_number, crv.shipping_name, crv.shipping_address, crv.shipping_state, ss.state_name as shipping_state_name, ss.state_code as shipping_state_code, ss.state_tin as shipping_state_tin, crv.shipping_gstin_number, crv.invoice_total_value, crv.is_canceled from " . $obj_client->getTableName('client_rv_invoice') . " as crv INNER JOIN " . $obj_client->getTableName('state') . " as sp on crv.supply_place = sp.state_id INNER JOIN " . $obj_client->getTableName('state') . " as bs on crv.billing_state = bs.state_id INNER JOIN " . $obj_client->getTableName('state') . " as ss ON crv.shipping_state = ss.state_id where 1=1 AND crv.serial_number = '".$receiptVoucherNumber."' AND crv.is_deleted = '0' AND crv.status = '1' AND crv.financial_year = '".$currentFinancialYear."' AND crv.added_by = ". $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	$receiptVoucherData = $obj_client->get_results("select 
+													crv.invoice_id, 
+													crv.serial_number, 
+													crv.reference_number, 
+													crv.invoice_date, 
+													crv.supply_place, 
+													sp.state_name as supply_state_name, 
+													sp.state_code as supply_state_code, 
+													sp.state_tin as supply_state_tin, 
+													crv.billing_name, 
+													crv.billing_company_name, 
+													crv.billing_address, 
+													crv.billing_state, 
+													bs.state_name as billing_state_name, 
+													bs.state_code as billing_state_code, 
+													bs.state_tin as billing_state_tin, 
+													crv.billing_country, 
+													bc.country_code as billing_country_code, 
+													bc.country_name as billing_country_name, 
+													crv.billing_vendor_type, 
+													bv.vendor_name as billing_vendor_name, 
+													crv.billing_gstin_number, 
+													crv.shipping_name, 
+													crv.shipping_company_name, 
+													crv.shipping_address, 
+													crv.shipping_state, 
+													ss.state_name as shipping_state_name, 
+													ss.state_code as shipping_state_code, 
+													ss.state_tin as shipping_state_tin, 
+													crv.shipping_country, 
+													sc.country_code as shipping_country_code, 
+													sc.country_name as shipping_country_name, 
+													crv.shipping_vendor_type, 
+													sv.vendor_name as shipping_vendor_name, 
+													crv.shipping_gstin_number, 
+													crv.invoice_total_value, 
+													crv.is_canceled 
+													from " . $obj_client->getTableName('client_invoice') . " as crv LEFT JOIN " . $obj_client->getTableName('state') . " as sp on crv.supply_place = sp.state_id LEFT JOIN " . $obj_client->getTableName('state') . " as bs on crv.billing_state = bs.state_id INNER JOIN " . $obj_client->getTableName('state') . " as ss ON crv.shipping_state = ss.state_id where 1=1 AND crv.serial_number = '".$receiptVoucherNumber."' AND crv.is_deleted = '0' AND crv.status = '1' AND crv.financial_year = '".$currentFinancialYear."' AND crv.added_by = ". $obj_client->sanitize($_SESSION['user_detail']['user_id']));
 
 	if(count($receiptVoucherData) > 0) {
 

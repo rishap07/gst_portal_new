@@ -12,8 +12,24 @@ if ($_REQUEST['returnmonth'] != '') {
 $type='invoice';
 if(isset($_POST['invoice_type']))
 {
+	
     $type=$_POST['invoice_type'];
+	
+	
 }
+
+if($type=="invoice")
+{
+	if (isset($_POST['returnmonth'])) 
+{
+	
+    $returnmonth = $_POST['returnmonth'];
+	
+   $obj_gstr1->redirect(PROJECT_URL . "/?page=return_view_invoices&returnmonth=" . $returnmonth);
+   exit();
+}
+}
+
 
 if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
 {
@@ -30,7 +46,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css">
  						
- <form method='post' name='form2' id="form2" >
+   <form method='post' name='form2'>
  <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr">
 
     <div class="col-md-11 col-sm-12 col-xs-12 mobpadlr">
@@ -47,6 +63,9 @@ if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
                 </a>
                 <a href="<?php echo PROJECT_URL . '/?page=return_filling_summary&returnmonth=' . $returnmonth ?>">
                     File GSTr-1
+                </a>
+                <a href="<?php echo PROJECT_URL . '/?page=return_get_summary&returnmonth=' . $returnmonth ?>">
+                    GSTR1 SUMMARY
                 </a>
             </div>
             <div id="view_invoice" class="tabcontent">
@@ -84,8 +103,18 @@ if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
                                     <?php }
                                     ?>
                                 
-                            </div></form>  <?php
-							$flag=0;
+                           </form>  </div> 
+							  
+
+								<div class="clearfix"></div>
+								  <div class="col-md-6 col-sm-6 col-xs-12">
+                        <a class='btn btn-default btn-success btnwidth' style="margin-top:-71px;"  href='<?php echo PROJECT_URL; ?>/?page=client_create_invoice'>Add New Invoice</a>
+                    </div>  <div class="clearfix"></div>
+					   <?php $obj_client->showErrorMessage(); ?>
+                                <?php $obj_client->showSuccessMessge(); ?>
+                                <?php $obj_client->unsetMessage(); ?>
+								<?php
+								$flag=0;
                             $dataReturns = $obj_gstr1->get_results("select * from ".TAB_PREFIX."return where return_month='".$returnmonth."' and client_id='".$_SESSION['user_detail']['user_id']."' and status='3' and type='gstr1'");
                             if(!empty($dataReturns))
                             {
@@ -102,21 +131,17 @@ if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
                       
                             <?php
                             }
-                            ?>  <div class="clearfix"></div>
-                                <?php $obj_client->showErrorMessage(); ?>
-                                <?php $obj_client->showSuccessMessge(); ?>
-                                <?php $obj_client->unsetMessage(); ?>  <div class="clearfix"></div>
-								  <div class="col-md-6 col-sm-6 col-xs-12">
-                        <a class='btn btn-default btn-success btnwidth' style="margin-top:-58px;"  href='<?php echo PROJECT_URL; ?>/?page=client_create_invoice'>Add New Invoice</a>
-                    </div>  <div class="clearfix"></div>
+                            ?>
                                 <div class="invoice-types"><div class="invoice-types__heading">Types</div>
 							
                                     <div class="invoice-types__content">
+									
                                         <label for="invoice-types__invoice"><input type="radio" id="invoice-types__invoice" name="invoice_type" value="invoice" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='invoice'){ echo 'checked=""';}else{echo 'checked=""';}?>>Invoice</label>
                                         <label for="invoice-types__cdn"><input type="radio" id="invoice-types__cdn" name="invoice_type" value="cdn" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='cdn') echo 'checked=""';?>>Credit/Debit Note</label>
                                         <label for="invoice-types__advance_received"><input type="radio" id="invoice-types__advance_received" name="invoice_type" value="advance" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='advance') echo 'checked=""';?>>Advance Receipt</label>
 <!--                                        <label for="invoice-types__aggregate"><input type="radio" id="invoice-types__aggregate" name="invoice_type" value="nill" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='nill') echo 'checked=""';?>>Agg. Nil/Exempt/Non GST</label>-->
                                         <label for="invoice-types__summary"><input type="radio" id="invoice-types__summary" name="invoice_type" value="all" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='all') echo 'checked=""';?>>All Type Summary</label>
+									
                                     </div>
                                 </div>
                                 <div>
@@ -252,7 +277,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
                                             $flag=0;
                                             if($type=='invoice' || $type=='all')
                                             {
-                                                $b2bItemquery = "select i.invoice_id,  i.is_gstr1_uploaded,i.invoice_date,i.invoice_id,i.reference_number,i.invoice_total_value,i.billing_gstin_number,i.billing_name,sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_client->getTableName('client_invoice') . " i inner join " . $obj_client->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where i.invoice_nature='salesinvoice' and i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and i.invoice_date like '%" . $returnmonth . "%' group by i.invoice_id  order by i.invoice_date desc";
+                                               $b2bItemquery = "select i.invoice_id,  i.is_gstr1_uploaded,i.invoice_date,i.invoice_id,i.reference_number,i.invoice_total_value,i.billing_gstin_number,i.billing_name,sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_client->getTableName('client_invoice') . " i inner join " . $obj_client->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where i.invoice_nature='salesinvoice' and i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and i.invoice_date like '%" . $returnmonth . "%' group by i.invoice_id  order by i.invoice_date desc";
                                                 $b2bItemData = $obj_client->get_results($b2bItemquery);
                                                 
                                                 
@@ -331,14 +356,18 @@ if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
         $('#multiple-checkboxes').multiselect();
     });
 </script>
-
 <script>
     $(document).ready(function () {
         $('#returnmonth,.type').on('change', function () {
-			
+			//alert(document.forms["form2"]["returnmonth"].value);
+			//alert(document.forms["form2"]["invoice_type"].value);
             document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_view_invoices&returnmonth=<?php echo $returnmonth; ?>';
             document.form2.submit();
         });
+    });
+</script>
+<script>
+    
 		   // Handle click on "Select all" control
     $('#example-select-all').on('change', function(){
 
@@ -351,7 +380,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
         }
     });
 
-    });
+ 
 </script>
 
 <script language="javascript">

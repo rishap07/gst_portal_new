@@ -19,7 +19,6 @@ $sIndexColumn = "invoice_id";
 
 /* DB table to use */
 $ciTable = $obj_client->getTableName('client_invoice');
-$msTable = $obj_client->getTableName('state');
 
 /*
  * Paging
@@ -53,7 +52,7 @@ if (isset($_POST['iSortCol_0'])) {
  * on very large tables, and MySQL's regex functionality is very limited
 */
 
-$uWhere = " where ci.is_deleted='0' AND ci.added_by='".$_SESSION['user_detail']['user_id']."' ";
+$uWhere = " where ci.invoice_type IN('taxinvoice','exportinvoice','sezunitinvoice','deemedexportinvoice') AND ci.is_deleted='0' AND ci.added_by='".$_SESSION['user_detail']['user_id']."' ";
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
     
     $uWhere .= 'AND (';
@@ -118,10 +117,8 @@ if(isset($rResult) && !empty($rResult)) {
 
         $row = array();
         $invoice_type = '';
-		$invoice_nature = '';
-		$supply_type = '';
 		$cancelLink = '';
-		
+
 		if($aRow->invoice_type == 'taxinvoice') {
             $invoice_type = 'Tax Invoice';
         } elseif($aRow->invoice_type == 'exportinvoice'){
@@ -132,22 +129,6 @@ if(isset($rResult) && !empty($rResult)) {
             $invoice_type = 'Deemed Export Invoice';
         }
 
-		if($aRow->invoice_nature == 'salesinvoice') {
-            $invoice_nature = 'Sales Invoice';
-        } elseif($aRow->invoice_nature == 'purchaseinvoice'){
-            $invoice_nature = 'Purchase Invoice';
-        }
-
-        if($aRow->supply_type == 'reversecharge') {
-            $supply_type = 'Reverse Charge';
-        } elseif($aRow->supply_type == 'tds'){
-            $supply_type = 'TDS';
-        } elseif($aRow->supply_type == 'tcs'){
-            $supply_type = 'TCS';
-        } else {
-			$supply_type = 'Normal';
-		}
-
 		if($aRow->is_canceled == '0') {
             $cancelLink = '<a class="cancelSalesInvoice" data-invoice-id="'.$aRow->invoice_id.'" href="javascript:void(0)">Cancel</a>';
         } elseif($aRow->is_canceled == '1'){
@@ -156,10 +137,10 @@ if(isset($rResult) && !empty($rResult)) {
 		
 		$row[]= '<tr><td valign="top"><input name="sales_invoice[]" value="'.$aRow->invoice_id.'" class="salesInvoice" type="checkbox"></td></td>';
 
-		if($aRow->invoice_type == 'exportinvoice') {
-			$row[] = '<td><div class="list-primary pull-left"><div class="name"><a href="#">'.$aRow->billing_name.'</a></div><a href="'.PROJECT_URL.'/?page=client_invoice_list&action=viewInvoice&id='.$aRow->invoice_id.'" data-bind="'.$aRow->invoice_id.'">'.$aRow->serial_number.'</a> | ' . $aRow->invoice_date . '</div><span class="pull-right"><div class="amount"><i class="fa fa-inr" aria-hidden="true"></i>'.$aRow->invoice_total_value.'</div><div class="greylinktext"><a href="'.PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$aRow->invoice_id.'">Edit</a>&nbsp;&nbsp;'.$cancelLink.'</div></span></td></tr>';
-		} else {
+		if($aRow->invoice_type == 'taxinvoice') {
 			$row[] = '<td><div class="list-primary pull-left"><div class="name"><a href="#">'.$aRow->billing_name.'</a></div><a href="'.PROJECT_URL.'/?page=client_invoice_list&action=viewInvoice&id='.$aRow->invoice_id.'" data-bind="'.$aRow->invoice_id.'">'.$aRow->serial_number.'</a> | ' . $aRow->invoice_date . '</div><span class="pull-right"><div class="amount"><i class="fa fa-inr" aria-hidden="true"></i>'.$aRow->invoice_total_value.'</div><div class="greylinktext"><a href="'.PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$aRow->invoice_id.'">Edit</a>&nbsp;&nbsp;'.$cancelLink.'</div></span></td></tr>';
+		} else {
+			$row[] = '<td><div class="list-primary pull-left"><div class="name"><a href="#">'.$aRow->billing_name.'</a></div><a href="'.PROJECT_URL.'/?page=client_invoice_list&action=viewInvoice&id='.$aRow->invoice_id.'" data-bind="'.$aRow->invoice_id.'">'.$aRow->serial_number.'</a> | ' . $aRow->invoice_date . '</div><span class="pull-right"><div class="amount"><i class="fa fa-inr" aria-hidden="true"></i>'.$aRow->invoice_total_value.'</div><div class="greylinktext"><a href="'.PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$aRow->invoice_id.'">Edit</a>&nbsp;&nbsp;'.$cancelLink.'</div></span></td></tr>';
 		}
 
         $output['aaData'][] = $row;

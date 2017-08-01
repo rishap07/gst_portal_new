@@ -1,35 +1,34 @@
 <?php
 /*
- * 
- *  Developed By        :   Love Kumawat
- *  Date Created        :   Sep 12, 2016
- *  Last Modified       :   Sep 16, 2016
- *  Last Modified By    :   Love Kumawat
- *  Last Modification   :   Ternder Listing
- * 
- */
+  *
+  *  Developed By  : Ishwar lal Ghiya
+  *  Date Created  : Sep 12, 2017
+  *  Developed For : Master Receiver Listing
+  *
+*/
+
 $obj_master = new master();
 extract($_POST);
+
 //Columns to fetch from database
-$aColumns = array('r.supplier_id', 'r.gstid', 'r.name', 'r.address', 's.state_name', 's.state_code', 'r.status');
-$aSearchColumns = array('r.gstid', 'r.name', 'r.address', 's.state_name', 's.state_code');
+$aColumns = array('r.supplier_id', 'r.name', 'r.company_name', 'r.email', 'r.address', 'r.city', 'r.zipcode', 'r.phone', 'r.fax', 'r.pannumber', 'r.gstid', 'r.website', 'r.remarks', 'r.status', 's.state_id', 's.state_name', 's.state_code', 's.state_tin', 'c.id as country_id', 'c.country_code', 'c.country_name');
+$aSearchColumns = array('r.gstid', 'r.name', 'r.address', 'r.city', 's.state_name', 's.state_code', 'c.country_code', 'c.country_name');
 $sIndexColumn = "r.supplier_id";
 
 /* DB table to use */
-$sTable = $obj_master->getTableName('supplier')." r inner join ".$obj_master->getTableName('state')." s on r.state=s.state_id";
+$sTable = $obj_master->getTableName('supplier')." r left join ".$obj_master->getTableName('state')." s on r.state=s.state_id left join ".$obj_master->getTableName('country')." c on r.country=c.id";
 
 /*
  * Paging
  */
 $sLimit = "";
 if (isset($_POST['iDisplayStart']) && $_POST['iDisplayLength'] != '-1') {
-    $sLimit = "LIMIT " . $obj_master->escape($_POST['iDisplayStart']) . ", " .
-            $obj_master->escape($_POST['iDisplayLength']);
+    $sLimit = "LIMIT " . $obj_master->escape($_POST['iDisplayStart']) . ", " . $obj_master->escape($_POST['iDisplayLength']);
 }
 
 /*
  * Ordering
- */
+*/
 $sOrder = "";
 if (isset($_POST['iSortCol_0'])) {
     $sOrder = "ORDER BY ";
@@ -76,7 +75,7 @@ for ($i = 0; $i < count($aColumns); $i++) {
 /*
  * SQL queries
  * Get data to display
- */
+*/
 $sWhere = trim(trim($sWhere), 'AND');
 $sQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ", $aColumns)) . "
             FROM $sTable
@@ -117,18 +116,19 @@ if(isset($rResult) && !empty($rResult)) {
         $status = '';
         if($aRow->status == '0'){
             $status = '<span class="inactive">InActive<span>';
-        }elseif($aRow->status == '1'){
+        } else if($aRow->status == '1'){
             $status = '<span class="active">Active<span>';
         }
 
         $row[] = $temp_x;
-        $row[] = utf8_decode($aRow->gstid);
-        $row[] = utf8_decode($aRow->name);
-        $row[] = utf8_decode($aRow->address);
-        $row[] = utf8_decode($aRow->state_name);
-        $row[] = utf8_decode($aRow->state_code);
+		$row[] = utf8_decode($aRow->gstid);
+		$row[] = utf8_decode($aRow->name);
+		$row[] = utf8_decode($aRow->address);
+		$row[] = utf8_decode($aRow->city);
+		$row[] = $aRow->state_name . " (" . $aRow->state_code .")";
+		$row[] = $aRow->country_name . " (" . $aRow->country_code .")";
         $row[] = $status;
-        $row[] = '<a href="'.PROJECT_URL.'/?page=master_supplier_update&id='.$aRow->supplier_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>';
+        $row[] = '<a href="'.PROJECT_URL.'/?page=master_supplier_update&id='.$aRow->supplier_id.'" class="iconedit hint--bottom" data-hint="Edit"><i class="fa fa-pencil"></i></a>';
         $output['aaData'][] = $row;
         $temp_x++;
     }

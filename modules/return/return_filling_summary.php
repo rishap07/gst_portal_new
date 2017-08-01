@@ -39,6 +39,9 @@ if(isset($_POST['submit']) && ($_POST['submit']='File with Aadhar' || $_POST['su
                 <a href="<?php echo PROJECT_URL . '/?page=return_view_invoices&returnmonth=' . $returnmonth ?>" >View My Invoice</a>
                 <a href="<?php echo PROJECT_URL . '/?page=return_upload_invoices&returnmonth=' . $returnmonth ?>">Upload To GSTN</a>
                 <a href="<?php echo PROJECT_URL . '/?page=return_filling_summary&returnmonth=' . $returnmonth ?>" class="active">File GSTr-1</a>
+                <a href="<?php echo PROJECT_URL . '/?page=return_get_summary&returnmonth=' . $returnmonth ?>">
+                    GSTR1 SUMMARY
+                </a>
             </div>
             <div id="upload_invoice" class="tabcontent">
                 <div class="col-md-12 col-sm-12 col-xs-12">

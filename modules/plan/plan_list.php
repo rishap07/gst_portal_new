@@ -62,11 +62,12 @@ if( isset($_GET['action']) && $_GET['action'] == 'deletePlan' && isset($_GET['id
                 <thead>
                     <tr>
                         <th align='left'>#</th>
-                        <th align='left' width="100px;">Name</th>
+                        <th align='left' width="100px;">Category Name</th>
+                        <th align='left'>Name</th>
                         <th align='left' width="500px;">Description</th>
                         <th align='left'>No Of Client</th>
                         <th align='left'>No Of Company</th>
-                        <th align='left'>Category</th>
+                        <th align='left'>No Of pan</th>
                         <th align='left'>Price</th>
                         <th align='left'>Visible</th>
                         <th align='left'>Status</th>
@@ -98,6 +99,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'deletePlan' && isset($_GET['id
                 $.extend($.fn.dataTable.defaults, {'sServerMethod': 'POST'});
                 $('#mainTable').dataTable({
                     "aoColumns": [
+                        {"bSortable": false},
                         {"bSortable": false},
                         {"bSortable": false},
                         {"bSortable": false},

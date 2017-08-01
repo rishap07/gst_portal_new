@@ -63,6 +63,7 @@ class validation extends upload {
 			'api' => TAB_PREFIX . 'api',
             'return' => TAB_PREFIX . 'return',
 			'email'=>TAB_PREFIX.'email',
+			'coupon'=>TAB_PREFIX.'coupon',
 			'client_return_gstr3b'=>TAB_PREFIX.'client_return_gstr3b'
         );
 
@@ -77,12 +78,12 @@ class validation extends upload {
             exit();
         }
     }
-    
+
     //onedash   /^[a-zA-Z\d]+[(-{1})|(a-zA-Z\d)][a-zA-Z\d]+$/
     protected $validateType = array(
-        "username" => "[a-zA-Z\d]+[(_{1}\-{1}\.{1})|(a-zA-Z\d)][a-zA-Z\d]",
-		 "firstname" => "[a-zA-Z\d]+[(_{1}\-{1}\.{1})|(a-zA-Z\d)][a-zA-Z\d]",
-		 "lastname" => "[a-zA-Z\d]+[(_{1}\-{1}\.{1})|(a-zA-Z\d)][a-zA-Z\d]",
+		"username" => "[a-zA-Z\d]+[(_{1}\-{1}\.{1})|(a-zA-Z\d)][a-zA-Z\d]",
+		"firstname" => "[a-zA-Z\d]+[(_{1}\-{1}\.{1})|(a-zA-Z\d)][a-zA-Z\d]",
+		"lastname" => "[a-zA-Z\d]+[(_{1}\-{1}\.{1})|(a-zA-Z\d)][a-zA-Z\d]",
 		"companyname" => "[a-zA-Z\d]+[(_{1}\-{1}\.{1})|(a-zA-Z\d)][a-zA-Z\d]",
         "invoicenumber" => "[a-zA-Z\d]+[(-{1})|(a-zA-Z\d)][a-zA-Z\d]",
         "alphanumeric" => "A-Za-z0-9\n\r\&\/\-\(\)\,\.",
@@ -155,6 +156,7 @@ class validation extends upload {
     {
         return $this->tableNames[$tablename];
     }
+    /* Perform query to retrieve object of result */
 
     public function getValMsg($msg)
     {
@@ -168,7 +170,7 @@ class validation extends upload {
             $currentUserDetails = $this->getUserDetailsById( $_SESSION['user_detail']['user_id'] );
             if($currentUserDetails['data']->user_group == 3) {
 
-                if( isset($_GET['page']) && $_GET['page'] != "plan_chooseplan" && $_GET['page'] != "logout"  && $_GET['page'] != "payment_response") {
+                if( isset($_GET['page']) && $_GET['page'] != "plan_chooseplan" && $_GET['page'] != "logout" && $_GET['page'] != "payment_online"  && $_GET['page'] != "payment_error"  && $_GET['page'] != "payment_success" && $_GET['page'] != "payment_response") {
 
                     if($currentUserDetails['data']->plan_id == 0) {
                         $this->redirect(PROJECT_URL . "?page=plan_chooseplan");
@@ -188,7 +190,7 @@ class validation extends upload {
             }
         }
     }
-    
+
     public function getAdmin($is_deleted='0',$orderby='user_id desc',$limit='')
     {
         $query = "select user_id,first_name, last_name,user_group,username, (case when payment_status='0' Then 'pending' when  payment_status='1' then 'accepted' when  payment_status='2' then 'mark as fraud' when  payment_status='3' then 'rejected' when  payment_status='4' then 'refunded' end) as payment_status from ".$this->tableNames['user']." where  is_deleted='".$is_deleted."' and user_group='2' order by ".$orderby." ".$limit;
@@ -197,7 +199,9 @@ class validation extends upload {
     
     public function getClient($field = "*",$condition='',$orderby='user_id desc',$limit='',$group_by='')
     {
-        $query = "select ".$field."  from ".$this->tableNames['user']." where 1=1 ";
+       // $query = "select ".$field."  from ".$this->tableNames['user']." where 1=1 ";
+        $query = "select ".$field."  from ".$this->tableNames['user']." u inner join ".$this->tableNames['client_kyc']." k on u.user_id=k.added_by ";
+        //." p join ".$this->tableNames['subscriber_plan_category']." c join ".$this->tableNames['user']." u on p.added_by=u.user_id 
         if($condition !='')
         {
             $query .= " and ".$condition;
@@ -206,7 +210,8 @@ class validation extends upload {
         {
             $query .= " group by ".$group_by;
         }
-        $query .= " order by ".$orderby." ".$limit;        
+        $query .= " order by ".$orderby." ".$limit;    
+       
         return $this->get_results($query);
     }
     
@@ -299,3 +304,4 @@ class validation extends upload {
         return $dataArr;
     }
 }
+

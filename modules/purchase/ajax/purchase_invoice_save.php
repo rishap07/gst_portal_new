@@ -238,6 +238,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 			$dataArr['serial_number'] = $obj_purchase->generatePurchaseInvoiceNumber( $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) );
 
 			if ($obj_purchase->insert($obj_purchase->getTableName('client_purchase_invoice'), $dataArr)) {
+			/*	$obj_purchase->insert($obj_purchase->getTableName('client_new_purchase_invoice'), $dataArr);*/
 
 				$insertid = $obj_purchase->getInsertID();
 				$obj_purchase->logMsg("New Purchase Invoice Added. ID : " . $insertid . ".");

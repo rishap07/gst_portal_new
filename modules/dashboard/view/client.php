@@ -49,6 +49,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'Filter') {
     $query = 'select COUNT(invoice_id) as numcount, sum(invoice_total_value) as sum from ' . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0'";
     $query.="and invoice_date >= '" . date('Y-m') . "-01 00:00:00'";
     $query.="and invoice_date <= '" . date('Y-m-d') . " 23:59:59'";
+	
     $dataTotalMonths = $db_obj->get_results($query);
     $query = "SELECT COUNT(i.invoice_id) as numcount,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0'";
 
@@ -149,7 +150,9 @@ $data_month_sale = json_encode($data_month_sale);
                 <a href="<?php echo PROJECT_URL . '/?page=dashboard&gstr2=view' ?>" >
                     GSTR2
                 </a>
-              
+                <a href="<?php echo PROJECT_URL . '/?page=dashboard&gstr3=view' ?>" >
+                    GSTR3
+                </a>
             </div></div><div class="clear height10"> </div>
                 <div class="listcontent">
 
@@ -258,7 +261,7 @@ if (count($dataTotalinvoices) > 0) {
 
                                 var options = {
                                     title: 'Monthly Invoices created',
-                                    vAxis: {title: 'Cups'},
+                                    vAxis: {title: 'Number of Invoices'},
                                     hAxis: {title: 'Month'},
                                     seriesType: 'bars',
                                     series: {5: {type: 'line'}}
@@ -290,7 +293,7 @@ if (count($dataTotalMonthSales) > 0) {
 
                                 var options = {
                                     title: 'Monthly Sales',
-                                    vAxis: {title: 'Cups'},
+                                    vAxis: {title: 'Monthly Sale'},
                                     hAxis: {title: 'Month'},
                                     seriesType: 'bars',
                                     series: {5: {type: 'line'}}
