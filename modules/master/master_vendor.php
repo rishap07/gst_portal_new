@@ -1,7 +1,7 @@
 <?php
 $obj_master = new master();
-if(!$obj_master->can_read('master_state'))
-{
+if(!$obj_master->can_read('master_vendor')) {
+
     $obj_master->setError($obj_master->getValMsg('can_read'));
     $obj_master->redirect(PROJECT_URL."/?page=dashboard");
     exit();
@@ -27,7 +27,7 @@ if(!$obj_master->can_read('master_state'))
                 <thead>
                     <tr>
                         <th align='left' width="72">Sr</th>
-                        <th align='left'>State</th>
+                        <th align='left'>Name</th>
                      
                         <th align='left'>Status</th>
                         <th width="72">Action</th>

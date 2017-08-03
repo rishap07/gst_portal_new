@@ -103,20 +103,6 @@
     private function getGSTR1Data($fmonth)
     {
         
-        $obj_gst = new gstr();
-        $payload = $this->gstCreatePayload($_SESSION['user_detail']['user_id'],$fmonth);
-        $dataArr = $payload['data_arr'];
-        $data_ids = $payload['data_ids'];
-        $response = $obj_gst->returnSave($dataArr,$returnmonth); 
-        
-        if(empty($response['error'] == 1)) {
-            return true;
-        }
-        else {
-            $this->setError($response['message']);
-            return false;
-        }
-
         $dataRes = $this->generalGSTR1InvoiceList($fmonth);
         $flag=0;
         if(!empty($dataRes))

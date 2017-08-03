@@ -13,7 +13,7 @@ final class gstr2 extends validation {
     }
 
     public function downloadGSTR2() {
-
+        
 		$gstr2ReturnMonth = isset($_POST['gstr2ReturnMonth']) ? $_POST['gstr2ReturnMonth'] : '';
 
 		if (empty($gstr2ReturnMonth)) {
@@ -42,4 +42,45 @@ final class gstr2 extends validation {
 			$this->setError("There is no invoice to Download");
 		}
     }
+	public function startGstr2()
+	{
+		 $sql = "select * from " . TAB_PREFIX . "return where client_id='" . $_SESSION['user_detail']['user_id'] . "' and return_month='".$_GET["returnmonth"]."' and type='gstr2'";
+     
+       $clientdata = $this->get_results($sql);
+	   
+	   if(empty($clientdata))
+	   {
+		    
+		    $dataArr['return_month']=$this->sanitize($_GET['returnmonth']);
+			$dataArr['type']='gstr2';
+			$dataArr['client_id']= $_SESSION['user_detail']['user_id'];
+			$year = $this->generateFinancialYear();
+			$dataArr['financial_year']=$year;
+			$dataArr['status']=1;
+			
+			if ($this->insert(TAB_PREFIX.'return', $dataArr)) {
+				//$this->setSuccess('GSTR2 Saved Successfully');
+				return true;
+			}
+			else
+			{
+				$this->setError('Failed to save GSTR2 data');
+			   return false;    	   
+		   }
+	   }
+	   else
+	   {
+		   /*
+		   if ($this->update(TAB_PREFIX.'client_return_gstr3b', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
+				$this->setSuccess('GSTR3B Saved Successfully');
+				return true;
+			}
+			else
+			{
+				$this->setError('Failed to save GSTR3B data');
+			   return false;    	   
+		   }
+		   */
+	   }
+	}
 }

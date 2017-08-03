@@ -6,17 +6,17 @@
 	<title>GST Keeper</title>
 	
 	<!--COMMON CSS START HERE-->
-	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/bootstrap.min.css?7" />
-	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/style.css?7" />
-	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/font-awesome.min.css?7" />
+	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/bootstrap.min.css?8" />
+	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/style.css?8" />
+	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/font-awesome.min.css?8" />
 	<!--COMMON CSS END HERE-->
 
-	<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/datatables/media/css/jquery.dataTables.min.css?7" />
+	<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/datatables/media/css/jquery.dataTables.min.css?8" />
 	<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/jquery_ui/jquery-ui.css" />
-	<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/jquery-ui-timepicker/jquery-ui-timepicker-addon.css?7" />
-	<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/select2/select2.css?7" />
-	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/custom.css?7" />
-	<link type="text/css" rel="stylesheet" href="<?php echo PROJECT_URL; ?>/script/jalerts/jquery.alerts.css?7" />
+	<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/jquery-ui-timepicker/jquery-ui-timepicker-addon.css?8" />
+	<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/select2/select2.css?8" />
+	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/custom.css?8" />
+	<link type="text/css" rel="stylesheet" href="<?php echo PROJECT_URL; ?>/script/jalerts/jquery.alerts.css?8" />
 
 	<script src="<?php echo THEME_URL; ?>/js/jquery-1.12.4.js"></script>
 	<script type="text/javascript" src="<?php echo THEME_URL; ?>/js/bootstrap.min.js"></script>
@@ -170,10 +170,9 @@
 							<?php if ($db_obj->can_read('master_receiver')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_receiver"><i class="fa fa-circle" aria-hidden="true"></i>Receiver/Customer</a></li><?php } ?>
 							<?php if ($db_obj->can_read('master_supplier')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_supplier"><i class="fa fa-circle" aria-hidden="true"></i>Supplier/Seller</a></li><?php } ?>
 							<?php if ($db_obj->can_read('master_item')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_item"><i class="fa fa-circle" aria-hidden="true"></i>Item</a></li><?php } ?>
-								<?php if ($db_obj->can_read('master_vendor')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_vendor"><i class="fa fa-circle" aria-hidden="true"></i>Vendor</a></li><?php } ?>
+							<?php if ($db_obj->can_read('master_vendor')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_vendor"><i class="fa fa-circle" aria-hidden="true"></i>Vendor</a></li><?php } ?>
 							<?php if ($db_obj->can_read('master_business_area')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_business_area"><i class="fa fa-circle" aria-hidden="true"></i>Business Area</a></li><?php } ?>
-								<?php if ($db_obj->can_read('master_business_type')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_business_type"><i class="fa fa-circle" aria-hidden="true"></i>Business Type</a></li><?php } ?>
-							
+							<?php if ($db_obj->can_read('master_business_type')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=master_business_type"><i class="fa fa-circle" aria-hidden="true"></i>Business Type</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_master_item')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=client_item_list"><i class="fa fa-circle" aria-hidden="true"></i>Item</a></li><?php } ?>
 						</ul>
 					</li>
@@ -184,21 +183,29 @@
 						<a href="#" data-target="#item5" data-toggle="collapse"><i class="fa fa-list"></i> 
 						<span class="collapse in hidden-xs">Sales Invoices <span class="navrgtarrow"><i class="fa fa-chevron-right" aria-hidden="true"></i></span></span></a>
 						<ul class="nav nav-stacked collapse left-submenu" id="item5">
-							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_upload_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Upload Invoices</a></li><?php } ?>
+							
+							<!--<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_upload_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Upload Invoices</a></li><?php } ?>-->
+
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Tax Invoices</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Tax Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_export_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Tax Export Invoice</a></li><?php } ?>
+
 							<?php if ($db_obj->can_read('client_invoice')) { ?> <li><a href="<?php echo PROJECT_URL . '/?page=client_bill_of_supply_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Bill Of Supply Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_bill_of_supply_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Bill Of Supply Invoice</a></li><?php } ?>
+
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_receipt_voucher_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Receipt Voucher Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_receipt_voucher_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Receipt Voucher Invoice</a></li><?php } ?>
-                            <?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_refund_voucher_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Refund Voucher Invoice</a></li><?php } ?>
+
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_refund_voucher_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Refund Voucher Invoice</a></li><?php } ?>
+
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_revised_tax_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Revised Tax Invoice</a></li><?php } ?>
+
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_delivery_challan_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Delivery Challan Invoice</a></li><?php } ?>
 
 							<?php /* if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_refund_voucher_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Refund Voucher Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_refund_voucher_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Refund Voucher Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_payment_voucher_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Payment Voucher Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_payment_voucher_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Payment Voucher Invoice</a></li><?php } ?>
-							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_revised_tax_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Revised Tax Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_revised_tax_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Revised Tax Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_special_tax_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Special Cases Tax Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_special_tax_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Special Cases Tax Invoice</a></li><?php } */ ?>

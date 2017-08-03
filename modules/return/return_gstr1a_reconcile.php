@@ -25,19 +25,19 @@ if ($_REQUEST['returnmonth'] != '') {
     <div class="col-md-11 col-sm-12 col-xs-12 mobpadlr">
         <div class="col-md-12 col-sm-12 col-xs-12 heading">
             <div class="tab col-md-12 col-sm-12 col-xs-12">
-                <a href="<?php echo PROJECT_URL . '/?page=return_gstr1a_download&returnmonth=' . $returnmonth ?>" >
-                    View GSTR1 Summary
+                 <a href="<?php echo PROJECT_URL . '/?page=return_gstr1a_download&returnmonth=' . $returnmonth ?>" >
+                    Download GSTR-1A
                 </a>
-                <a href="<?php echo PROJECT_URL . '/?page=return_gstr1a_reconcile&returnmonth=' . $returnmonth ?>" class="active" >
-                    View My Invoice
+                <a href="<?php echo PROJECT_URL . '/?page=return_gstr1a_reconcile&returnmonth=' . $returnmonth ?>" class="active"  >
+                  GSTR-1A Reconcile
                 </a>
-                <a href="<?php echo PROJECT_URL . '/?page=return_gstr1a_upload_invoices&returnmonth=' . $returnmonth ?>">
-                    Upload To GSTN
+                <a href="<?php echo PROJECT_URL . '/?page=return_gstr1a_upload_invoices&returnmonth=' . $returnmonth ?>" >
+                    Upload GSTR-1A
                 </a>
                 </a>
                 <a href="<?php echo PROJECT_URL . '/?page=return_gstr1a_filling_summary&returnmonth=' . $returnmonth ?>">
-                    File GSTr-1
-                </a>
+                    File GSTR-1A
+                </a>         
                
             </div>
             <div id="London" class="tabcontent">
@@ -250,7 +250,7 @@ $additionalId  =implode(",",$additionalId);
                             <div class="lightgreen col-text">
                                 <div class="dashcoltxt">
                                     <div class="boxtextheading pull-left">Matched</div> 
-                                    <div class="pull-right btn bordergreen"><a href="<?php echo PROJECT_URL . '/?page=return_view_reconcile_invoices&matchedFlag=1&ids=' . $matchId?>">View Records</a></div>
+                                    <div class="pull-right btn bordergreen"><a href="<?php echo PROJECT_URL . '/?page=return_gstr1a_view_reconcile_invoices&matchedFlag=1&ids=' . $matchId?>">View Records</a></div>
                                     <div class="clear height10"></div>
                                     <div class="txtnumber col-md-4 col-sm-4"><?php echo $matched?><br/><span>RECORDS</span><br/></div>
    
@@ -262,7 +262,7 @@ $additionalId  =implode(",",$additionalId);
                          <div class="col-md-3 col-sm-3 col-xs-12">
                             <div class="lightblue col-text">
                                 <div class="dashcoltxt">
-                                    <div class="boxtextheading pull-left">Missing</div> <div class="pull-right btn borderblue"><a href="<?php echo PROJECT_URL . '/?page=return_view_reconcile_invoices&matchedFlag=0&ids=' . $missingId?>">View Records</a></div>
+                                    <div class="boxtextheading pull-left">Missing</div> <div class="pull-right btn borderblue"><a href="<?php echo PROJECT_URL . '/?page=return_gstr1a_view_reconcile_invoices&matchedFlag=0&ids=' . $missingId?>">View Records</a></div>
                                     <div class="clear height10"></div>
                                     <div class="txtnumber col-md-4 col-sm-4"><?php echo $missing?><br/><span>RECORDS</span><br/></div>
                                     <div class="txtnumber col-md-4 col-sm-4">0<br/><span>ADDRESSED</span><br/></div>
@@ -275,7 +275,7 @@ $additionalId  =implode(",",$additionalId);
                          <div class="col-md-3 col-sm-3 col-xs-12">
                             <div class="lightyellowbg col-text">
                                 <div class="dashcoltxt">
-                                    <div class="boxtextheading pull-left">Additional</div> <div class="pull-right btn borderbrown"><a href="<?php echo PROJECT_URL . '/?page=return_view_reconcile_invoices&matchedFlag=0&ids=' . $additionalId?>">View Records</a></div>
+                                    <div class="boxtextheading pull-left">Additional</div> <div class="pull-right btn borderbrown"><a href="<?php echo PROJECT_URL . '/?page=return_gstr1a_view_reconcile_invoices&matchedFlag=0&ids=' . $additionalId?>">View Records</a></div>
                                     <div class="clear height10"></div>
                                     <div class="txtnumber col-md-4 col-sm-4"><?php echo $additional?><br/><span>RECORDS</span><br/></div>
                                     <div class="txtnumber col-md-4 col-sm-4">0<br/><span>ADDRESSED</span><br/></div>
@@ -288,7 +288,7 @@ $additionalId  =implode(",",$additionalId);
                          <div class="col-md-3 col-sm-3 col-xs-12">
                             <div class="pinkbg col-text">
                                 <div class="dashcoltxt">
-                                    <div class="boxtextheading pull-left">Mismatch</div> <div class="pull-right btn borderred"><a href="<?php echo PROJECT_URL . '/?page=return_view_reconcile_invoices&matchedFlag=0&ids=' . $mismatchId?>">View Records</a></div>
+                                    <div class="boxtextheading pull-left">Mismatch</div> <div class="pull-right btn borderred"><a href="<?php echo PROJECT_URL . '/?page=return_gstr1a_view_reconcile_invoices&matchedFlag=0&ids=' . $mismatchId?>">View Records</a></div>
                                     <div class="clear height10"></div>
                                      <div class="txtnumber col-md-4 col-sm-4"><?php echo $mismatched?><br/><span>RECORDS</span><br/></div>
                                     <div class="txtnumber col-md-4 col-sm-4">0<br/><span>ADDRESSED</span><br/></div>

@@ -1,5 +1,6 @@
 <?php
 $obj_client = new client();
+$obj_gstr1 = new gstr1();
 if (!isset($_REQUEST['returnmonth']) || $_REQUEST['returnmonth'] == '') {
     $obj_client->redirect(PROJECT_URL . "/?page=return_client");
     exit();
@@ -12,6 +13,26 @@ if (isset($_POST['returnmonth'])) {
 $returnmonth = date('Y-m');
 if ($_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
+	
+}
+if(isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '')
+{
+    $returnmonth= $_REQUEST['returnmonth'];
+	if($obj_gstr1->startGstr1())
+	{
+		
+	}
+}
+else
+{
+	
+	$dataQuery = "SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS niceDate FROM gst_client_invoice group by nicedate ORDER by invoice_date desc LIMIT 0,1";
+	$dataRes = $obj_client->get_results($dataQuery);
+	if(!empty($dataRes))
+	{
+	$returnmonth=$dataRes[0]->niceDate;
+	}	
+	
 }
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr">

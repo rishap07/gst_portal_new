@@ -382,7 +382,7 @@ class cms_validate {
 
     protected static function invoicetypeValidation($input, $name, $lableName) {
         if (self::isBlankField($input) === false) {
-            if (preg_match("/^(?:taxinvoice|exportinvoice|importinvoice|sezunitinvoice|deemedexportinvoice|deemedimportinvoice|billofsupplyinvoice|receiptvoucherinvoice|refundvoucherinvoice)$/", $input)) {
+            if (preg_match("/^(?:taxinvoice|exportinvoice|importinvoice|sezunitinvoice|deemedexportinvoice|deemedimportinvoice|billofsupplyinvoice|receiptvoucherinvoice|refundvoucherinvoice|revisedtaxinvoice|creditnote|debitnote|deliverychallaninvoice)$/", $input)) {
                 return true;
             } else {
                 self::setMessage($name, 'invoicetype', $lableName . " should be valid");
@@ -424,12 +424,12 @@ class cms_validate {
         }
     }
 
-    protected static function invoicedocumentnatureValidation($input, $name, $lableName) {
+    protected static function deliverychallantypeValidation($input, $name, $lableName) {
         if (self::isBlankField($input) === false) {
-            if (preg_match("/^(?:revisedtaxinvoice|creditnote|debitnote)$/", $input)) {
+            if (preg_match("/^(?:jobwork|supplyofliquidgas|supplyonapproval|others)$/", $input)) {
                 return true;
             } else {
-                self::setMessage($name, 'invoicedocumentnature', $lableName . " should be valid");
+                self::setMessage($name, 'deliverychallantype', $lableName . " should be valid");
                 return false;
             }
         }
@@ -437,7 +437,7 @@ class cms_validate {
 
     protected static function invoiecorrespondingValidation($input, $name, $lableName) {
         if (self::isBlankField($input) === false) {
-            if (preg_match("/^(?:taxinvoice|bosinvoice)$/", $input)) {
+            if (preg_match("/^(?:taxinvoice|billofsupplyinvoice)$/", $input)) {
                 return true;
             } else {
                 self::setMessage($name, 'invoiecorresponding', $lableName . " should be valid");

@@ -1,19 +1,19 @@
 <?php
 $obj_master = new master();
-//if(!$obj_master->can_read('master_vendor')) {
+if(!$obj_master->can_read('master_vendor')) {
 
-   // $obj_master->setError($obj_master->getValMsg('can_read'));
-   // $obj_master->redirect(PROJECT_URL."/?page=dashboard");
-    //exit();
-//}
+    $obj_master->setError($obj_master->getValMsg('can_read'));
+    $obj_master->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
 
 if(isset($_POST['submit']) && $_POST['submit']=='submit') {
     
-	//if(!$obj_master->can_create('master_vendor')) {
-        //$obj_master->setError($obj_master->getValMsg('can_create'));
-      //  $obj_master->redirect(PROJECT_URL."/?page=master_vendor");
-       // exit();
-   // }
+	if(!$obj_master->can_create('master_vendor')) {
+        $obj_master->setError($obj_master->getValMsg('can_create'));
+       $obj_master->redirect(PROJECT_URL."/?page=master_vendor");
+        exit();
+    }
     
 	if($obj_master->updateVendor()) {
         $obj_master->redirect(PROJECT_URL."/?page=master_vendor");
@@ -22,12 +22,12 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 
 if(isset($_POST['submit']) && $_POST['submit']=='update' && isset($_GET['id'])) {
 	
-   // if(!$obj_master->can_update('master_vendor')) {
+   if(!$obj_master->can_update('master_vendor')) {
 
-        //$obj_master->setError($obj_master->getValMsg('can_update'));
-        //$obj_master->redirect(PROJECT_URL."/?page=master_vendor");
-       // exit(); 
-    //}
+        $obj_master->setError($obj_master->getValMsg('can_update'));
+        $obj_master->redirect(PROJECT_URL."/?page=master_vendor");
+        exit(); 
+    }
     
 	if($obj_master->updateVendor()) {
         $obj_master->redirect(PROJECT_URL."/?page=master_vendor");

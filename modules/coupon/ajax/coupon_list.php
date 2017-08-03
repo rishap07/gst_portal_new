@@ -10,6 +10,7 @@
  */
 
 $obj_plan = new plan();
+$obj_master = new master();
 extract($_POST);
 
 //Columns to fetch from database
@@ -18,9 +19,10 @@ $aSearchColumns = array('g.coupon_id', 'g.name', 'g.type', 'g.coupon_value','g.c
 $sIndexColumn = "g.coupon_id";
 
 /* DB table to use */
-$spTable = "gst_coupon as g";
+//$spTable = "gst_coupon as g";
  /* DB table to use */
-
+$spTable = $obj_master->getTableName('coupon');
+ $spTable = $spTable.' '.'as g';
 
 /*
  * Paging
@@ -82,7 +84,7 @@ for ($i = 0; $i < count($aColumns); $i++) {
  */
 //$spWhere = trim(trim("is_deleted=1"), 'AND');
 //$spjoin = "r inner join".$sp1Table."s on r.plan_category=s.id";
-$spjoin = "gst_coupon as g";
+$spjoin = $spTable;
 $spQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ", $aColumns)) . "
             FROM $spjoin
           
@@ -103,7 +105,7 @@ $iFilteredTotal = $iFilteredTotal->rows;
 
 /* Total data set length */
 $spQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $spTable";
-//echo $spQuery;
+
 $iTotal = $obj_plan->get_row($spQuery);
 $iTotal = $iTotal->count;
 

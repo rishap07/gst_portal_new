@@ -8,7 +8,7 @@
  *  Last Modified By    :   Rishap Gandhi
  *  Last Modification   :   file creation started
  * 
- */
+*/
 
 class common extends db {
     /* FUNCTION TO PRINT AN ARRAY AND DIE */
@@ -836,9 +836,9 @@ class common extends db {
 
     public function getClientKYCDetailsById($user_id = '') {
         
-		$query = "select ck.name, ck.email, ck.phone_number, ck.date_of_birth, ck.gstin_number, ck.pan_card_number, ck.uid_number, ck.identity_proof, ck.proof_photograph, ck.business_type, ck.business_area, ck.vendor_type, ck.address_proof, ck.registered_address, ck.city, ck.zipcode, ck.registration_type, ck.digital_certificate_status, ck.digital_certificate, ck.state_id, s.state_name, s.state_code, s.state_tin, ck.country_id, ck.added_by as kyc_added_by, ck.updated_by as kyc_updated_by from " . $this->tableNames['client_kyc'] . " as ck inner join " . $this->tableNames['state'] . " as s on ck.state_id=s.state_id where 1=1 AND ck.added_by = " . $user_id;
+		$query = "select ck.name, ck.email, ck.phone_number, ck.date_of_birth, ck.gstin_number, ck.pan_card_number, ck.uid_number, ck.identity_proof, ck.proof_photograph, ck.business_type, ck.business_area, ck.vendor_type, ck.address_proof, ck.registered_address, ck.city, ck.zipcode, ck.registration_type, ck.digital_certificate_status, ck.digital_certificate, ck.state_id, s.state_name, s.state_code, s.state_tin, ck.country_id, ck.added_by as kyc_added_by, ck.updated_by as kyc_updated_by,ck.gross_turnover,ck.cur_gross_turnover from " . $this->tableNames['client_kyc'] . " as ck inner join " . $this->tableNames['state'] . " as s on ck.state_id = s.state_id where 1=1 AND ck.added_by = " . $user_id;
         $data = $this->get_row($query);
-        $dataArr = array();
+		$dataArr = array();
         if (!empty($data)) {
             $dataArr['data'] = $data;
             $dataArr['status'] = 'success';
@@ -1059,15 +1059,14 @@ class common extends db {
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         $server_output = curl_exec($curl);*/
 
-         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $parameters);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER,$header);
-        $result = curl_exec($curl);
+		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $parameters);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curl, CURLOPT_HTTPHEADER,$header);
+		$result = curl_exec($curl);
 
-
-        curl_close($curl);
-        return $result;
+		curl_close($curl);
+		return $result;
     }
 
     public function can_read($page_name) {
@@ -1148,7 +1147,7 @@ class common extends db {
 
         return $dataArr;
     }
-	
+
 	/* state details by state code */
 
     public function getStateDetailByStateCode($state_code) {
@@ -1216,7 +1215,8 @@ class common extends db {
 
     public function generateInvoiceNumber($clientId) {
 
-        $query = "select invoice_id  from " . $this->tableNames['client_invoice'] . " where 1=1 AND added_by=" . $clientId;
+		$currentFinancialYear = $this->generateFinancialYear();
+        $query = "select invoice_id  from " . $this->tableNames['client_invoice'] . " where 1=1 AND invoice_type IN('taxinvoice','exportinvoice','sezunitinvoice','deemedexportinvoice') AND financial_year = '" . $currentFinancialYear . "' AND added_by=" . $clientId;
         $invoices = $this->get_results($query);
 
         if (!empty($invoices)) {
@@ -1278,30 +1278,13 @@ class common extends db {
             return "IRF-000000000001";
         }
     }
-
-    /* generate payment voucher invoice number for client */
-
-    public function generatePVInvoiceNumber($clientId) {
-
-        $currentFinancialYear = $this->generateFinancialYear();
-        $query = "select invoice_id  from " . $this->tableNames['client_pv_invoice'] . " where 1=1 AND financial_year = '" . $currentFinancialYear . "' AND added_by=" . $clientId;
-        $invoices = $this->get_results($query);
-
-        if (!empty($invoices)) {
-
-            $nextInvoice = count($invoices) + 1;
-            return "IPV-" . str_pad($nextInvoice, 12, "0", STR_PAD_LEFT);
-        } else {
-            return "IPV-000000000001";
-        }
-    }
-
-    /* generate revised tax invoice number for client */
+	
+	/* generate revised tax, creadit note and debit note tax invoice number for client */
 
     public function generateRTInvoiceNumber($clientId) {
 
         $currentFinancialYear = $this->generateFinancialYear();
-        $query = "select invoice_id  from " . $this->tableNames['client_rt_invoice'] . " where 1=1 AND financial_year = '" . $currentFinancialYear . "' AND added_by=" . $clientId;
+        $query = "select invoice_id  from " . $this->tableNames['client_invoice'] . " where 1=1 AND invoice_type IN('revisedtaxinvoice','creditnote','debitnote') AND financial_year = '" . $currentFinancialYear . "' AND added_by=" . $clientId;
         $invoices = $this->get_results($query);
 
         if (!empty($invoices)) {
@@ -1310,6 +1293,23 @@ class common extends db {
             return "IRT-" . str_pad($nextInvoice, 12, "0", STR_PAD_LEFT);
         } else {
             return "IRT-000000000001";
+        }
+    }
+
+    /* generate payment voucher invoice number for client */
+
+    public function generateDCInvoiceNumber($clientId) {
+
+        $currentFinancialYear = $this->generateFinancialYear();
+        $query = "select invoice_id  from " . $this->tableNames['client_invoice'] . " where 1=1 AND invoice_type = 'deliverychallaninvoice' AND financial_year = '" . $currentFinancialYear . "' AND added_by=" . $clientId;
+        $invoices = $this->get_results($query);
+
+        if (!empty($invoices)) {
+
+            $nextInvoice = count($invoices) + 1;
+            return "IDC-" . str_pad($nextInvoice, 12, "0", STR_PAD_LEFT);
+        } else {
+            return "IDC-000000000001";
         }
     }
 

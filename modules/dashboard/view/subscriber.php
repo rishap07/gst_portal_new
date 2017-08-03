@@ -1,4 +1,4 @@
-<?php ?>
+<?php $returnmonth = date('Y-m'); ?>
 <style>
     table, th, td {
 /*   border: 1px solid black;
@@ -15,16 +15,14 @@
         <div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Dashboard Overview</h1></div>
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class=" whitebg dashleftbox">
-                <div class="boxheading">New Business List</div>
-                <div class="border1"></div>
+                <div class="boxheading">New Business List<a style="float:right;" href="<?php echo PROJECT_URL; ?>/?page=subscriber_gstr_list&returnmonth=<?php echo $returnmonth; ?>" class="redbtnborder animation" style="margin-left:5px;">VIEW GSTR STATUS</a>
+        </div>
+		        <div class="border1"></div>
                 <div class="listcontent">
                     <?php $dataClientArr = $db_obj->getClient("user_id, CONCAT(first_name,' ',last_name) as name, username, u.email, company_name,k.gstin_number, (case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "u.is_deleted='0' AND u.added_by='" . $_SESSION['user_detail']['user_id'] . "'"); ?>
 
                     <?php
-//                     echo "<pre>";
-//        print_r($dataClientArr);
-//        echo "</pre>";
-//        die();
+
                     if (!empty($dataClientArr)) {
                         ?>
                     <table class=" table table-bordered table-hover ">

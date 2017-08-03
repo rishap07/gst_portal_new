@@ -20,6 +20,7 @@
 
 	$dataArr = array();
 	$dataArr = $obj_client->getUserDetailsById($obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	
 	if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
 		
 		if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])) {
@@ -194,6 +195,16 @@
 								<?php } ?>
 							<?php } ?>
 						</select>
+					</div>
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>Gross Turnover in the preceding Financial Year<span class="starred">*</span></label>
+						<input type="text" placeholder="Gross Turnover" name="gross_turnover" id="gross_turnover" class="form-control required" data-bind="gross_turnover" value="<?php if (isset($_POST['gross_turnover'])) { echo $_POST['gross_turnover']; } else if (isset($dataArr['data']->kyc->gross_turnover)) { echo $dataArr['data']->kyc->gross_turnover; } ?>">
+					</div>
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+					<?php //echo '<pre>';print_r($dataArr);die;
+					?>
+						<label>Gross Turnover - April to June, 2017 <span class="starred">*</span></label>
+						<input type="text" placeholder="Cur Gross Turnover" name="cur_gross_turnover" id="cur_gross_turnover" class="form-control required" data-bind="cur_gross_turnover" value="<?php if (isset($_POST['cur_gross_turnover'])) { echo $_POST['cur_gross_turnover']; } else if (isset($dataArr['data']->kyc->cur_gross_turnover)) { echo $dataArr['data']->kyc->cur_gross_turnover; } ?>">
 					</div>
 					<div class="clear"></div>
 

@@ -18,7 +18,22 @@ $month = date("M", strtotime("+1 month", $time));
 ?>
 <?php
          // $b2bquery = "select * from " . $obj_client->getTableName('client_invoice') . " where invoice_nature='salesinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0' and billing_gstin_number!='' and invoice_date like '%" . $returnmonth . "%'";
-         $b2bquery ="SELECT sum(item.taxable_subtotal) as subtotal,count(item.purchase_invoice_id) as totalinvoice, sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount from " . $obj_client->getTableName('client_purchase_invoice') . " as p  inner join " . $obj_client->getTableName('client_purchase_invoice_item') . "   as item on p.purchase_invoice_id = item.purchase_invoice_id WHERE p.invoice_nature='purchaseinvoice'  and p.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and p.is_canceled='0' and supplier_billing_gstin_number!='' and p.invoice_date like '%" . $returnmonth . "%'";                              
+                    $statusQuery = "select *
+                    from " . $obj_gstr1->getTableName('client_reconcile_purchase_invoice1')." where status!=''";
+                    $statusData = $obj_gstr1->get_results($statusQuery);
+                    echo "<pre>";
+                    print_r($statusData);die;
+foreach($statusData->reference_number as $ref_number)
+{
+    if($statusData->status=1)
+    {
+                 $b2bquery ="SELECT sum(item.taxable_subtotal) as subtotal,count(item.purchase_invoice_id) as totalinvoice, sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount from " . $obj_client->getTableName('client_purchase_invoice') . " as p  inner join " . $obj_client->getTableName('client_purchase_invoice_item') . "   as item on p.purchase_invoice_id = item.purchase_invoice_id  WHERE  p.invoice_nature='purchaseinvoice'  and p.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and p.reference_number=".$ref_number." p.is_canceled='0' and supplier_billing_gstin_number!='' and p.invoice_date like '%" . $returnmonth . "%'";  
+    }
+}
+
+
+
+         $b2bquery ="SELECT sum(item.taxable_subtotal) as subtotal,count(item.purchase_invoice_id) as totalinvoice, sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount from " . $obj_client->getTableName('client_purchase_invoice') . " as p  inner join " . $obj_client->getTableName('client_purchase_invoice_item') . "   as item on p.purchase_invoice_id = item.purchase_invoice_id  WHERE  p.invoice_nature='purchaseinvoice'  and p.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and p.is_canceled='0' and supplier_billing_gstin_number!='' and p.invoice_date like '%" . $returnmonth . "%'";                              
 		
 		 $b2bData = $db_obj->get_results($b2bquery);
 		 $unregister_purchase_query ="SELECT sum(item.taxable_subtotal) as subtotal,count(item.purchase_invoice_id) as totalinvoice, sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount from " . $obj_client->getTableName('client_purchase_invoice') . " as p  inner join " . $obj_client->getTableName('client_purchase_invoice_item') . "   as item on p.purchase_invoice_id = item.purchase_invoice_id WHERE p.invoice_nature='purchaseinvoice'  and p.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and p.is_canceled='0' and supplier_billing_gstin_number='' and supply_type='reversecharge' and p.invoice_date like '%" . $returnmonth . "%'";                              
@@ -63,10 +78,11 @@ $month = date("M", strtotime("+1 month", $time));
                         	<ul>
 								<li><a href="<?php echo PROJECT_URL . '/?page=return_gstr2&returnmonth=' . $returnmonth ?>"  >View GSTR2 Summary</a></li>
 								<li><a href="<?php echo PROJECT_URL . '/?page=return_purchase_all&returnmonth=' . $returnmonth ?>" > View My Data</a></li>
-								<li><a href="<?php echo PROJECT_URL . '/?page=return_vendor_invoices&returnmonth=' . $returnmonth ?>">Vendor Invoices</a></li>
+								<li><a href="<?php echo PROJECT_URL . '/?page=return_vendor_invoices&returnmonth=' . $returnmonth ?>">Download GSTR-2A</a></li>
 								<li><a href="<?php echo PROJECT_URL . '/?page=return_gstr2_reconcile&returnmonth=' . $returnmonth ?>">GSTR-2 Reconcile</a></li>
+                                <li><a href="<?php echo PROJECT_URL . '/?page=return_gstr2_upload_invoices&returnmonth=' . $returnmonth ?>" class="active">Upload To GSTN</a></li>                                
 								<li><a href="<?php echo PROJECT_URL . '/?page=return_gstr2_file&returnmonth=' . $returnmonth ?>">GSTR-2 Filing</a></li>
-								<li><a href="<?php echo PROJECT_URL . '/?page=return_gstr2_upload_invoices&returnmonth=' . $returnmonth ?>" class="active">Upload To GSTN</a></li>
+
 								
                             </ul>
                             </div>

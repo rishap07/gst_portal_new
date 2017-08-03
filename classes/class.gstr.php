@@ -153,12 +153,11 @@ final class gstr extends validation {
     
 
     public function header($fields= array()) {
-        
         $client_secret = 'a9bcf665fe424883b7b94791eb31f667';
         $clientid = 'l7xx1ed437f1e18347c38bd2aad6e6dd3b3c';
         $ip_usr = '203.197.205.110';
-        $state_cd='33';
-        $txn='TXN789123456789';
+        $state_cd = $this->state_cd();
+        $txn= 'TXN789123456789';
         $header_new_array = array();
 
         $header= array(
@@ -182,7 +181,51 @@ final class gstr extends validation {
     }
     public function gstin() {
         $gstin = '33GSPTN0741G1ZF';
+
+        if(isset($_SESSION['user_detail']['user_id'])) {
+            $clientKyc = $this->get_results("select `gstin_number` as gstin from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by = ".$_SESSION['user_detail']['user_id']." ");
+            if(!empty($clientKyc)) {
+                $gstin = $clientKyc[0]->gstin;
+
+            }
+        }
         return $gstin;
+    }
+
+    public function gross_turnover($user_id=0) {
+        $gt = '';
+        $clientGt = $this->get_results("select gross_turnover as gt from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by = ".$user_id." ");
+        $gt = $clientGt[0]->gt;
+        return $gt;
+    }
+
+    public function cur_gross_turnover($user_id=0) {
+        $cur_gt = '';
+        $clientGt = $this->get_results("select cur_gross_turnover as cur_gt from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by = ".$user_id." ");
+        $cur_gt = $clientGt[0]->cur_gt;
+        return $cur_gt;
+    }
+
+    public function is_gross_turnover_check($user_id=0) {
+        $is_checked = '';
+        $clientKyc = $this->get_results("select `id` from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by = ".$user_id." ");
+        if(!empty($clientKyc)) {
+            $is_checked = $clientKyc[0]->id;
+        }
+        return $is_checked;
+    }
+
+    public function state_cd() {
+        $state_cd = '';
+        if(isset($_SESSION['user_detail']['user_id'])) {
+            $clientKyc = $this->get_results("select `state_id` from " . $this->getTableName('client_kyc') ." where 1=1 AND `cur_gross_turnover` != '' AND `gross_turnover` != '' AND added_by = ".$_SESSION['user_detail']['user_id']." ");
+            if(!empty($clientKyc)) {
+                $state_id = $clientKyc[0]->state_id;
+                $state_cd =strlen($state_id) == '1' ? '0' . $state_id: $state_id;
+
+            }
+        }
+        return $state_cd;
     }
     
     public function authenticateToken()

@@ -1253,6 +1253,9 @@
                 }
             });
 
+			totalFinalInvoiceValue = totalInvoiceValue.toFixed(2);
+			$( ".totalprice .invoicetotalprice" ).text(totalFinalInvoiceValue);
+
 			if(totalFinalInvoiceValue.length > 16) {
 				$("#amountValidationModal").modal("show");
 				return false;
