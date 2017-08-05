@@ -679,58 +679,7 @@ composition taxable persons and UIN holders</div>
                                 <tbody>
                                     <tr>
                                     <td class="lftheading" width="25%"><strong>(A) ITC Available (whether in full or part)</strong></td>
-                                     <td> 
-							 <?php
-								 if($status > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->integrated_tax_itcavailable_a; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_itcavailable_a" value="<?php echo $returndata[0]->integrated_tax_itcavailable_a; ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> 		
-                             <td> 
-							 <?php
-								 if($status > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->central_tax_itcavailable_a; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_itcavailable_a" value="<?php echo $returndata[0]->central_tax_itcavailable_a; ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>
-                             <td> 
-							 <?php
-								 if($status > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->state_tax_itcavailable_a; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_itcavailable_a" value="<?php echo $returndata[0]->state_tax_itcavailable_a; ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> 
-                              <td> 
-							 <?php
-								 if($status > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->cess_tax_itcavailable_a; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_itcavailable_a" value="<?php echo $returndata[0]->cess_tax_itcavailable_a; ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> 						 
+                          					 
                                                                  
                                     
                                     </tr>
@@ -1031,58 +980,7 @@ composition taxable persons and UIN holders</div>
                                     <tr>
                                     <td class="lftheading"><strong>(B) ITC Reversed</strong></td>
 									
-									 <td> 
-							 <?php
-								 if($status > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->integrated_tax_itc_reversed_b; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_itc_reversed_b" value="<?php echo $returndata[0]->integrated_tax_itc_reversed_b; ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>
-								  <td> 
-							 <?php
-								 if($status > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->central_tax_itc_reversed_b; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_itc_reversed_b" value="<?php echo $returndata[0]->central_tax_itc_reversed_b; ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>
-                                     <td> 
-							 <?php
-								 if($status > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->state_tax_itc_reversed_b; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_itc_reversed_b" value="<?php echo $returndata[0]->state_tax_itc_reversed_b; ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>
-								 <td> 
-							 <?php
-								 if($status > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->cess_tax_itc_reversed_b; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_itc_reversed_b" value="<?php echo $returndata[0]->cess_tax_itc_reversed_b; ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>                            
+									                     
                                       
                                       
                                     </tr>
@@ -1266,58 +1164,7 @@ composition taxable persons and UIN holders</div>
                                     
                                     <tr>
                                     <td class="lftheading"><strong>(D) Ineligible ITC</strong></td>
-									 <td> 
-							 <?php
-								 if($status > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->integrated_tax_inligible_itc; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_inligible_itc" value="<?php echo $returndata[0]->integrated_tax_inligible_itc; ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>  
-                             <td> 
-							 <?php
-								 if($status > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->central_tax_inligible_itc; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_inligible_itc" value="<?php echo $returndata[0]->central_tax_inligible_itc; ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>   
-                             <td> 
-							 <?php
-								 if($status > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->state_tax_inligible_itc; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_inligible_itc" value="<?php echo $returndata[0]->state_tax_inligible_itc; ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>	
-                               <td> 
-							 <?php
-								 if($status > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->cess_tax_inligible_itc; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_inligible_itc" value="<?php echo $returndata[0]->cess_tax_inligible_itc; ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>									          
+													          
                                       
                                       
                                       

@@ -774,6 +774,10 @@ final class client extends validation {
         if (array_key_exists("supply_place", $dataArr)) {
             $rules['supply_place'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Place Of Supply';
         }
+		
+		if (array_key_exists("refund_voucher_receipt", $dataArr)) {
+            $rules['refund_voucher_receipt'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Receipt Voucher';
+        }
 
         if (array_key_exists("billing_name", $dataArr)) {
             $rules['billing_name'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Billing Name';
@@ -807,14 +811,25 @@ final class client extends validation {
             $rules['shipping_gstin_number'] = 'pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:Shipping GSTIN Number';
         }
 
-        $valid = $this->vali_obj->validate($dataArr, $rules);
+		$valid = $this->vali_obj->validate($dataArr, $rules);
+		if ($valid->hasErrors()) {
+			$err_arr = $valid->allErrors();
+			$this->setError($err_arr);
+			$valid->clearMessages();
+			return false;
+		}
+		return true;
+
+		/*
+		$valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
+            cms_validate::$errors = array();
             $err_arr = $valid->allErrors();
-            $this->setError($err_arr);
             $valid->clearMessages();
-            return false;
+            return $err_arr;
         }
         return true;
+		*/
     }
 
     /* end of validate client invoice */
@@ -837,14 +852,25 @@ final class client extends validation {
             $rules['invoice_taxablevalue'] = 'required||numeric|#|lable_name:Advance Amount of Item no. ' . $serialno;
         }
 
-        $valid = $this->vali_obj->validate($dataArr, $rules);
+		$valid = $this->vali_obj->validate($dataArr, $rules);
+		if ($valid->hasErrors()) {
+			$err_arr = $valid->allErrors();
+			$this->setError($err_arr);
+			$valid->clearMessages();
+			return false;
+		}
+		return true;
+
+		/*
+		$valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
+            cms_validate::$errors = array();
             $err_arr = $valid->allErrors();
-            $this->setError($err_arr);
             $valid->clearMessages();
-            return false;
+            return $err_arr;
         }
         return true;
+		*/
     }
 
     /* end of validate client invoice items */

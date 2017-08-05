@@ -26,7 +26,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 		echo json_encode($result);
 		die;
 	}
-	
+
 	$dataArr['invoice_type'] = 'taxinvoice';
 	$dataArr['invoice_nature'] = 'salesinvoice';
 	$dataArr['invoice_date'] = isset($params['invoice_date']) ? $params['invoice_date'] : '';

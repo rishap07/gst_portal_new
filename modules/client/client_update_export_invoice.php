@@ -149,24 +149,6 @@
 						<input type="text" placeholder="Invoice Reference Number" class="required form-control" data-bind="content" value="<?php echo $invoiceData[0]->reference_number; ?>" name="invoice_reference_number" id="invoice_reference_number" />
 					</div>
 				</div>
-				
-				<div class="row">
-					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Invoice Serial Number <span class="starred">*</span></label>
-						<input type="text" placeholder="Invoice Serial Number" readonly="true" class="form-control required" value="<?php echo $invoiceData[0]->serial_number; ?>" name="invoice_serial_number" id="invoice_serial_number" />
-						<input type="hidden" class="required" value="<?php echo base64_encode($invoiceData[0]->invoice_id); ?>" name="invoice_id" />
-					</div>
-
-					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Invoice Date <span class="starred">*</span></label>
-						<input type="text" placeholder="YYYY-MM-DD" class="required form-control" data-bind="date" name="invoice_date" id="invoice_date" value="<?php echo $invoiceData[0]->invoice_date; ?>" />
-					</div>
-
-					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Reference Number <span class="starred">*</span></label>
-						<input type="text" placeholder="Invoice Reference Number" class="required form-control" data-bind="content" value="<?php echo $invoiceData[0]->reference_number; ?>" name="invoice_reference_number" id="invoice_reference_number" />
-					</div>
-				 </div>
 
 				 <div class="row">
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">

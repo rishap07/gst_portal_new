@@ -266,10 +266,394 @@ if(isset($dataInvAt))
 
 
 $json_data = json_encode($dataArrAt);
-echo '<pre>'; print_r($dataArrAt);
-die;
-echo '<br/>';
+
+//Start Code For Doc
+$dataInvDoc = array();
+$dataInvDoc["gstin"]= "27GSPMH3941G1ZK";
+$dataInvDoc["fp"]= "062017";
+$dataInvDoc["gt"]= (float)"53782969.00";
+$dataInvDoc["cur_gt"]= (float)"53782969.00";
+
+$final_array = $dataRevise = $dataRevised = $dataDebit = $dataCredit = $dataReceipt = $dataRefund = $dataDeliveryJobWork = 
+$dataDeliverySUAP = $dataDeliverySULGAS = $dataDeliverySupplyOther = array();
+
+/*********** Start code For Doc Sales *************/
+$querySales =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-06%' and a.reference_number != '' and  a.invoice_type in('taxinvoice','exportinvoice','sezunitinvoice','deemedexportinvoice','sezunitinvoice')  order by a.reference_number";
+$queryCancle =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-05%' and a.reference_number != '' and a.is_canceled = 1  and  a.invoice_type in('taxinvoice','exportinvoice','sezunitinvoice','deemedexportinvoice','sezunitinvoice') group by a.reference_number order by a.reference_number";
+
+$dataInvSales = $obj_api->get_results($querySales);
+$dataInvCancelSales = $obj_api->get_results($queryCancle);
+if(isset($dataInvSales) && !empty($dataInvSales))
+{
+  $doc_num = 1;
+  $z=0;
+  $a = 1;
+  $totnum= count($dataInvSales);
+  $cancel = count($dataInvCancelSales);
+  $net_issue = $totnum - $cancel;
+  $dataSales['doc_num'] = (int)$doc_num;
+  $dataSales['docs'][$z]['num'] = (int)$a;
+  $dataSales['docs'][$z]['from'] = $dataInvSales[0]->reference_number;
+  $dataSales['docs'][$z]['to'] = $dataInvSales[$totnum-1]->reference_number;
+  $dataSales['docs'][$z]['totnum'] = (int)$totnum;
+  $dataSales['docs'][$z]['cancel'] = (int)$cancel;
+  $dataSales['docs'][$z]['net_issue'] = (int)$net_issue;
+  $final_array[] = $dataSales;
+}
+/*********** End code For Doc Sales *************/
+
+/*********** Start code For Doc Revised *************/
+$queryRevised =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-06%' and a.reference_number != '' and  a.invoice_type = 'revisedtaxinvoice'  order by a.reference_number";
+
+$queryRevisedCancle =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-05%' and a.reference_number != '' and a.is_canceled = 1  and  a.invoice_type = 'revisedtaxinvoice' group by a.reference_number order by a.reference_number";
+
+$dataInvRevised = $obj_api->get_results($queryRevised);
+$dataInvCancleRevised = $obj_api->get_results($queryRevisedCancle);
+
+if(isset($dataInvRevised) && !empty($dataInvRevised))
+{
+  $doc_num = 2;
+  $z=0;
+  $a = 1;
+  $totnum= count($dataInvRevised);
+  $cancel = count($dataInvCancleRevised);
+  $net_issue = $totnum - $cancel;
+  $dataRevised['doc_num'] = (int)$doc_num;
+  $dataRevised['docs'][$z]['num'] = (int)$a;
+  $dataRevised['docs'][$z]['from'] = $dataInvRevised[0]->reference_number;
+  $dataRevised['docs'][$z]['to'] = $dataInvRevised[$totnum-1]->reference_number;
+  $dataRevised['docs'][$z]['totnum'] = (int)$totnum;
+  $dataRevised['docs'][$z]['cancel'] = (int)$cancel;
+  $dataRevised['docs'][$z]['net_issue'] = (int)$net_issue;
+  $final_array[] = $dataRevised;
+}
+/*********** End code For Doc Revised *************/
+
+/*********** Start code For Debit  *************/
+$queryDebit =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-06%' and a.reference_number != '' and  a.invoice_type = 'debitnote'  order by a.reference_number";
+
+$queryDebitCancle =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-05%' and a.reference_number != '' and a.is_canceled = 1  and  a.invoice_type = 'debitnote' group by a.reference_number order by a.reference_number";
+
+$dataInvDebit = $obj_api->get_results($queryDebit);
+$dataInvCancleDebit = $obj_api->get_results($queryDebitCancle);
+
+if(isset($dataInvDebit) && !empty($dataInvDebit))
+{
+  $doc_num = 3;
+  $z=0;
+  $a = 1;
+  $totnum= count($dataInvDebit);
+  $cancel = count($dataInvCancleDebit);
+  $net_issue = $totnum - $cancel;
+  $dataDebit['doc_num'] = (int)$doc_num;
+  $dataDebit['docs'][$z]['num'] = (int)$a;
+  $dataDebit['docs'][$z]['from'] = $dataInvDebit[0]->reference_number;
+  $dataDebit['docs'][$z]['to'] = $dataInvDebit[$totnum-1]->reference_number;
+  $dataDebit['docs'][$z]['totnum'] = (int)$totnum;
+  $dataDebit['docs'][$z]['cancel'] = (int)$cancel;
+  $dataDebit['docs'][$z]['net_issue'] = (int)$net_issue;
+  $final_array[] = $dataDebit;
+}
+/*********** End code For Debit  *************/
+
+/*********** Start code For Credit  *************/
+$queryCredit =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-06%' and a.reference_number != '' and  a.invoice_type = 'creditnote'  order by a.reference_number";
+
+$queryCreditCancle =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-05%' and a.reference_number != '' and a.is_canceled = 1  and  a.invoice_type = 'creditnote' group by a.reference_number order by a.reference_number";
+
+$dataInvCredit = $obj_api->get_results($queryCredit);
+$dataInvCancleCredit = $obj_api->get_results($queryCreditCancle);
+
+if(isset($dataInvCredit) && !empty($dataInvCredit))
+{
+  $doc_num = 4;
+  $z=0;
+  $a = 1;
+  $totnum= count($dataInvCredit);
+  $cancel = count($dataInvCancleCredit);
+  $net_issue = $totnum - $cancel;
+  $dataCredit['doc_num'] = (int)$doc_num;
+  $dataCredit['docs'][$z]['num'] = (int)$a;
+  $dataCredit['docs'][$z]['from'] = $dataInvCredit[0]->reference_number;
+  $dataCredit['docs'][$z]['to'] = $dataInvCredit[$totnum-1]->reference_number;
+  $dataCredit['docs'][$z]['totnum'] = (int)$totnum;
+  $dataCredit['docs'][$z]['cancel'] = (int)$cancel;
+  $dataCredit['docs'][$z]['net_issue'] = (int)$net_issue;
+  $final_array[] = $dataCredit;
+}
+/*********** End code For Credit  *************/
+
+/*********** Start code For Receipt   *************/
+$queryReceipt =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-06%' and a.reference_number != '' and  a.invoice_type = 'receiptvoucherinvoice'  order by a.reference_number";
+
+$queryReceiptCancle =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-05%' and a.reference_number != '' and a.is_canceled = 1  and  a.invoice_type = 'receiptvoucherinvoice' group by a.reference_number order by a.reference_number";
+
+//End Code For Doc
+$dataInvReceipt = $obj_api->get_results($queryReceipt);
+$dataInvCancleReceipt = $obj_api->get_results($queryReceiptCancle);
+
+if(isset($dataInvReceipt) && !empty($dataInvReceipt))
+{
+  $doc_num = 5;
+  $z=0;
+  $a = 1;
+  $totnum= count($dataInvReceipt);
+  $cancel = count($dataInvCancleReceipt);
+  $net_issue = $totnum - $cancel;
+  $dataReceipt['doc_num'] = (int)$doc_num;
+  $dataReceipt['docs'][$z]['num'] = (int)$a;
+  $dataReceipt['docs'][$z]['from'] = $dataInvReceipt[0]->reference_number;
+  $dataReceipt['docs'][$z]['to'] = $dataInvReceipt[$totnum-1]->reference_number;
+  $dataReceipt['docs'][$z]['totnum'] = (int)$totnum;
+  $dataReceipt['docs'][$z]['cancel'] = (int)$cancel;
+  $dataReceipt['docs'][$z]['net_issue'] = (int)$net_issue;
+  $final_array[] = $dataReceipt;
+}
+/*********** End code For Receipt   *************/
+
+/*********** Start code For Refund   *************/
+$queryReceipt =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-06%' and a.reference_number != '' and  a.invoice_type = 'refundvoucherinvoice'  order by a.reference_number";
+
+$queryReceiptCancle =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-05%' and a.reference_number != '' and a.is_canceled = 1  and  a.invoice_type = 'refundvoucherinvoice' group by a.reference_number order by a.reference_number";
+
+//End Code For Doc
+$dataInvRefund = $obj_api->get_results($queryReceipt);
+$dataInvCancleRefund = $obj_api->get_results($queryReceiptCancle);
+
+if(isset($dataInvRefund) && !empty($dataInvRefund))
+{
+  $doc_num = 6;
+  $z=0;
+  $a = 1;
+  $totnum= count($dataInvRefund);
+  $cancel = count($dataInvCancleRefund);
+  $net_issue = $totnum - $cancel;
+  $dataRefund['doc_num'] = (int)$doc_num;
+  $dataRefund['docs'][$z]['num'] = (int)$a;
+  $dataRefund['docs'][$z]['from'] = $dataInvRefund[0]->reference_number;
+  $dataRefund['docs'][$z]['to'] = $dataInvRefund[$totnum-1]->reference_number;
+  $dataRefund['docs'][$z]['totnum'] = (int)$totnum;
+  $dataRefund['docs'][$z]['cancel'] = (int)$cancel;
+  $dataRefund['docs'][$z]['net_issue'] = (int)$net_issue;
+  $final_array[] = $dataRefund;
+}
+/*********** End code For Refund   *************/
+
+/*********** Start code Delivery Challan for job work  *************/
+$queryDeliveryJobWork =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-06%' and a.reference_number != '' and  a.invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'jobwork' order by a.reference_number";
+
+$queryDeliveryJobWorkCancle =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-05%' and a.reference_number != '' and a.is_canceled = 1  and  a.invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'jobwork' group by a.reference_number order by a.reference_number";
+
+//End Code For Doc
+$dataInvDeliveryJobWork = $obj_api->get_results($queryDeliveryJobWork);
+$dataInvCancleDeliveryJobWork = $obj_api->get_results($queryDeliveryJobWorkCancle);
+
+if(isset($dataInvDeliveryJobWork) && !empty($dataInvDeliveryJobWork))
+{
+  $doc_num = 7;
+  $z=0;
+  $a = 1;
+  $totnum= count($dataInvRefund);
+  $cancel = count($dataInvCancleDeliveryJobWork);
+  $net_issue = $totnum - $cancel;
+  $dataDeliveryJobWork['doc_num'] = (int)$doc_num;
+  $dataDeliveryJobWork['docs'][$z]['num'] = (int)$a;
+  $dataDeliveryJobWork['docs'][$z]['from'] = $dataInvDeliveryJobWork[0]->reference_number;
+  $dataDeliveryJobWork['docs'][$z]['to'] = $dataInvDeliveryJobWork[$totnum-1]->reference_number;
+  $dataDeliveryJobWork['docs'][$z]['totnum'] = (int)$totnum;
+  $dataDeliveryJobWork['docs'][$z]['cancel'] = (int)$cancel;
+  $dataDeliveryJobWork['docs'][$z]['net_issue'] = (int)$net_issue;
+  $final_array[] = $dataDeliveryJobWork;
+}
+/*********** End code Delivery Challan for job work *************/
+
+/*********** Start code Delivery Challan for supply on approval  *************/
+$queryDeliverySUAP =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-06%' and a.reference_number != '' and  a.invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'supplyonapproval' order by a.reference_number";
+
+$queryDeliverySUAPCancle =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-05%' and a.reference_number != '' and a.is_canceled = 1  and  a.invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'supplyonapproval' group by a.reference_number order by a.reference_number";
+
+//End Code For Doc
+$dataInvDeliverySUAP = $obj_api->get_results($queryDeliverySUAP);
+$dataInvCancleDeliverySUAP = $obj_api->get_results($queryDeliverySUAPCancle);
+
+if(isset($dataInvDeliverySUAP) && !empty($dataInvDeliveryJobWork))
+{
+  $doc_num = 8;
+  $z=0;
+  $a = 1;
+  $totnum= count($dataInvDeliverySUAP);
+  $cancel = count($dataInvCancleDeliverySUAP);
+  $net_issue = $totnum - $cancel;
+  $dataDeliverySUAP['doc_num'] = (int)$doc_num;
+  $dataDeliverySUAP['docs'][$z]['num'] = (int)$a;
+  $dataDeliverySUAP['docs'][$z]['from'] = $dataInvDeliverySUAP[0]->reference_number;
+  $dataDeliverySUAP['docs'][$z]['to'] = $dataInvDeliverySUAP[$totnum-1]->reference_number;
+  $dataDeliverySUAP['docs'][$z]['totnum'] = (int)$totnum;
+  $dataDeliverySUAP['docs'][$z]['cancel'] = (int)$cancel;
+  $dataDeliverySUAP['docs'][$z]['net_issue'] = (int)$net_issue;
+  $final_array[] = $dataDeliverySUAP;
+}
+/*********** End code Delivery Challan for supply on approval *************/
+
+/*********** Start code Delivery Challan in case of liquid gas  *************/
+$queryDeliverySULGAS =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-06%' and a.reference_number != '' and  a.invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'supplyofliquidgas' order by a.reference_number";
+
+$queryDeliverySULGASCancle =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-05%' and a.reference_number != '' and a.is_canceled = 1  and  invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'supplyofliquidgas' group by a.reference_number order by a.reference_number";
+
+//End Code For Doc
+$dataInvDeliverySULGAS = $obj_api->get_results($queryDeliverySULGAS);
+$dataInvCancleDeliverySULGAS = $obj_api->get_results($queryDeliverySULGASCancle);
+
+if(isset($dataInvDeliverySULGAS) && !empty($dataInvDeliverySULGAS))
+{
+  $doc_num = 9;
+  $z=0;
+  $a = 1;
+  $totnum= count($dataInvDeliverySULGAS);
+  $cancel = count($dataInvCancleDeliverySULGAS);
+  $net_issue = $totnum - $cancel;
+  $dataDeliverySULGAS['doc_num'] = (int)$doc_num;
+  $dataDeliverySULGAS['docs'][$z]['num'] = (int)$a;
+  $dataDeliverySULGAS['docs'][$z]['from'] = $dataInvDeliverySULGAS[0]->reference_number;
+  $dataDeliverySULGAS['docs'][$z]['to'] = $dataInvDeliverySULGAS[$totnum-1]->reference_number;
+  $dataDeliverySULGAS['docs'][$z]['totnum'] = (int)$totnum;
+  $dataDeliverySULGAS['docs'][$z]['cancel'] = (int)$cancel;
+  $dataDeliverySULGAS['docs'][$z]['net_issue'] = (int)$net_issue;
+  $final_array[] = $dataDeliverySULGAS;
+}
+/*********** End code Delivery Challan in case of liquid gas *************/
+
+/*********** Start code Delivery Challan in cases other than by way of supply  *************/
+$queryDeliverySupplyOther =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-06%' and a.reference_number != '' and  a.invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'supplyofliquidgas' order by a.reference_number";
+
+$queryDeliverySupplyOtherCancle =  "select a.invoice_id,a.reference_number from ".$obj_api->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."'  and a.invoice_date like '%2017-05%' and a.reference_number != '' and a.is_canceled = 1  and  invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'others' group by a.reference_number order by a.reference_number";
+
+//End Code For Doc
+$dataInvDeliverySupplyOther = $obj_api->get_results($queryDeliverySupplyOther);
+$dataInvCancleDeliverySupplyOther= $obj_api->get_results($queryDeliverySupplyOtherCancle);
+
+if(isset($dataInvDeliverySupplyOther) && !empty($dataInvDeliverySupplyOther))
+{
+  $doc_num = 10;
+  $z=0;
+  $a = 1;
+  $totnum= count($dataInvDeliverySupplyOther);
+  $cancel = count($dataInvCancleDeliverySupplyOther);
+  $net_issue = $totnum - $cancel;
+  $dataDeliverySupplyOther['doc_num'] = (int)$doc_num;
+  $dataDeliverySupplyOther['docs'][$z]['num'] = (int)$a;
+  $dataDeliverySupplyOther['docs'][$z]['from'] = $dataInvDeliverySupplyOther[0]->reference_number;
+  $dataDeliverySupplyOther['docs'][$z]['to'] = $dataInvDeliverySupplyOther[$totnum-1]->reference_number;
+  $dataDeliverySupplyOther['docs'][$z]['totnum'] = (int)$totnum;
+  $dataDeliverySupplyOther['docs'][$z]['cancel'] = (int)$cancel;
+  $dataDeliverySupplyOther['docs'][$z]['net_issue'] = (int)$net_issue;
+  $final_array[] = $dataDeliverySupplyOther;
+}
+/*********** End code Delivery Challan in cases other than by way of supply  *************/
+
+$dataInvDoc['doc_issue']['doc_det']  = $final_array;
+
+
+$json_data = json_encode($dataInvDoc);
+
+
+//exp
+//Start Code For AT Payload
+
+
+$queryExp =  "select a.export_bill_number,a.export_bill_date,a.export_bill_port_code,a.invoice_id,a.export_supply_meant,a.company_state,a.billing_gstin_number,a.reference_number,a.invoice_date,a.invoice_total_value,b.item_name,a.supply_place,a.invoice_type,b.taxable_subtotal,b.igst_rate,b.cgst_rate,b.sgst_rate, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount from ".$obj_api->getTableName('client_invoice')." a inner join ".$obj_api->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id where a.invoice_type = 'exportinvoice' and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$_SESSION['user_detail']['user_id']."' group by a.invoice_id,b.igst_rate order by a.export_supply_meant";
+
+//End Code For AT Payload
+$dataInvExp = $obj_api->get_results($queryExp);
+$dataArrExp = array();
+$dataArrExp["gstin"]= "27GSPMH3941G1ZK";
+$dataArrExp["fp"]= "062017";
+$dataArrExp["gt"]= (float)"53782969.00";
+$dataArrExp["cur_gt"]= (float)"53782969.00";
+if (isset($dataInvExp) && !empty($dataInvExp)) {
+    $y = 0;
+    $a = 1;
+    $mydata = array();
+    foreach ($dataInvExp as $key => $value) {
+        $mydata[$value->export_supply_meant][] = $value;
+    }
+    if (!empty($mydata)) {
+        if (isset($mydata['withpayment']) && !empty($mydata['withpayment'])) {
+            $x = 0;
+            $y = 0;
+            $z = 0;
+            $temp_number = '';
+            foreach ($mydata['withpayment'] as $dataIn) {
+                if ($temp_number != '' && $temp_number != $dataIn->reference_number) {
+                    $z = 0;
+                    $y++;
+                }
+                $rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
+
+                $dataArr1['exp_typ'] = "WPAY";
+                $dataArr1['inv'][$y]['inum'] = $dataIn->reference_number;
+                $dataArr1['inv'][$y]['idt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+                $dataArr1['inv'][$y]['val'] = (float) $dataIn->invoice_total_value;
+                $dataArr1['inv'][$y]['sbpcode'] = $dataIn->export_bill_port_code;
+                $dataArr1['inv'][$y]['sbnum'] = $dataIn->export_bill_number;
+                $dataArr1['inv'][$y]['sbdt'] = $dataIn->export_bill_date > 0 ? date('d-m-Y', strtotime($dataIn->export_bill_date)) : '';
+                $dataArr1['inv'][$y]['itms'][$z]['txval'] = (float) $dataIn->taxable_subtotal;
+                $dataArr1['inv'][$y]['itms'][$z]['rt'] = (float) $rt;
+                $dataArr1['inv'][$y]['itms'][$z]['iamt'] = (float) $dataIn->igst_amount;
+                $temp_number = $dataIn->reference_number;
+                $z++;
+                $exp_array[] = (array) $dataIn;
+            }
+        }
+        if (isset($mydata['withoutpayment']) && !empty($mydata['withoutpayment'])) {
+            $x = 0;
+            $y = 0;
+            $z = 0;
+            $temp_number = '';
+            foreach ($mydata['withoutpayment'] as $dataIn) {
+                $rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
+                if ($temp_number != '' && $temp_number != $dataIn->reference_number) {
+                    $z = 0;
+                    $y++;
+                }
+                $dataArr2['exp_typ'] = "WOPAY";
+                $dataArr2['inv'][$y]['inum'] = $dataIn->reference_number;
+                $dataArr2['inv'][$y]['idt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+                $dataArr2['inv'][$y]['val'] = (float) $dataIn->invoice_total_value;
+                $dataArr2['inv'][$y]['sbpcode'] = $dataIn->export_bill_port_code;
+                $dataArr2['inv'][$y]['sbnum'] = $dataIn->export_bill_number;
+                $dataArr2['inv'][$y]['sbdt'] = $dataIn->export_bill_date > 0 ? date('d-m-Y', strtotime($dataIn->export_bill_date)) : '';
+                $dataArr2['inv'][$y]['itms'][$z]['txval'] = (float) $dataIn->taxable_subtotal;
+                $dataArr2['inv'][$y]['itms'][$z]['rt'] = (float) $rt;
+                $dataArr2['inv'][$y]['itms'][$z]['iamt'] = (float) $dataIn->igst_amount;
+                $temp_number = $dataIn->reference_number;
+                $z++;
+                $exp_array[] = (array) $dataIn;
+            }
+        }
+    }
+    if (!empty($exp_array)) {
+        $exp_ids['client_invoice']['invoice_id'] = array_unique(array_column($exp_array, 'invoice_id'));
+    }
+
+    $x = 0;
+    if (!empty($dataArr1)) {
+        $dataArrExp['exp'][$x] = $dataArr1;
+        $x++;
+    }
+    if (!empty($dataArr2)) {
+        $dataArrExp['exp'][$x] = $dataArr2;
+    }
+}
+
+$json_data = json_encode($dataArrExp);
+echo '<pre>';
+print_r($json_data);die;
+//echo '<br/>';
+
+//End Code For Doc
 echo $json_data;
+die;
 if (isset($data->sek)) {
   $session_key = $data->sek;
   $decrypt_sess_key = openssl_decrypt(base64_decode($session_key), "aes-256-ecb", $key, OPENSSL_RAW_DATA);

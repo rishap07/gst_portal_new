@@ -101,7 +101,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
-        <div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Generate Invoice</h1></div>
+        <div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Tax Invoices</h1></div>
         <div class="formboxcontainer padleft0 mobinvoicecol" style="padding-top:0px;">
 
             <?php $obj_client->showErrorMessage(); ?>
@@ -115,42 +115,12 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 
                     <div class="invoiceheaderfixed">
                         <div class="col-md-8">
-
                             <a href='javascript:void(0)' class="btn btn-warning pull-left checkAll">Check All</a>
                             <a href='javascript:void(0)' class="btn btn-danger pull-left cancelAll"><i class="fa fa-times" aria-hidden="true"></i> Cancel</a>
-
-                            <!--
-                                    <ul class="nav pull-left nav-pills" role="tablist">
-                                            <li role="presentation" class="dropdown">
-                                                    <a href="#" class="dropdown-toggle greyborder" id="drop5" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> All Invoice <span class="caret"></span> </a>
-                                                    <ul class="dropdown-menu" id="menu2" aria-labelledby="drop5">
-                                                            <li><a href="#">Action</a></li>
-                                                            <li><a href="#">Another action</a></li> 
-                                                            <li><a href="#">Something else here</a></li>
-                                                            <li role="separator" class="divider"></li> <li><a href="#">Separated link</a></li> 
-                                                    </ul>
-                                            </li>
-                                    </ul>
-                            -->
                         </div>
 
                         <div class="col-md-4">
-
                             <a href='<?php echo PROJECT_URL; ?>/?page=client_create_invoice' class="btn btn-success pull-right"><i class="fa fa-plus" aria-hidden="true"></i> New</a>
-
-                            <!--
-                                    <ul class="nav nav-pills" role="tablist">
-                                            <li role="presentation" class="dropdown"> 
-                                                    <a href="#" class="dropdown-toggle iconmenu" id="drop5" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-bars" aria-hidden="true"></i></span> </a>
-                                                    <ul class="dropdown-menu" id="menu2" aria-labelledby="drop5">
-                                                            <li><a href="#">Action</a></li>
-                                                            <li><a href="#">Another action</a></li> 
-                                                            <li><a href="#">Something else here</a></li>
-                                                            <li role="separator" class="divider"></li> <li><a href="#">Separated link</a></li> 
-                                                    </ul>
-                                            </li>
-                                    </ul>
-                            -->
                         </div>
                     </div>
 
@@ -243,7 +213,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 												cii.cess_amount, 
 												cii.total 
 												from 
-											" . $obj_client->getTableName('client_invoice') . " as ci INNER JOIN " . $obj_client->getTableName('client_invoice_item') . " as cii ON ci.invoice_id = cii.invoice_id where ci.invoice_id = " . $invid . " AND ci.added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND cii.added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND ci.is_deleted='0' AND cii.is_deleted='0'");
+											" . $obj_client->getTableName('client_invoice') . " as ci INNER JOIN " . $obj_client->getTableName('client_invoice_item') . " as cii ON ci.invoice_id = cii.invoice_id where ci.invoice_id = " . $invid . " AND ci.invoice_type IN('taxinvoice','exportinvoice','sezunitinvoice','deemedexportinvoice') AND ci.added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND cii.added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND ci.is_deleted='0' AND cii.is_deleted='0'");
                 } else {
 
 					$invoiceData = $obj_client->get_results("select 
@@ -324,7 +294,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 												cii.cess_amount, 
 												cii.total 
 												from 
-											" . $obj_client->getTableName('client_invoice') . " as ci INNER JOIN " . $obj_client->getTableName('client_invoice_item') . " as cii ON ci.invoice_id = cii.invoice_id where ci.invoice_id = (SELECT invoice_id FROM ".$obj_client->getTableName('client_invoice')." Where added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND is_deleted='0' Order by invoice_id desc limit 0,1) AND ci.added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND cii.added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND ci.is_deleted='0' AND cii.is_deleted='0'");
+											" . $obj_client->getTableName('client_invoice') . " as ci INNER JOIN " . $obj_client->getTableName('client_invoice_item') . " as cii ON ci.invoice_id = cii.invoice_id where ci.invoice_id = (SELECT invoice_id FROM ".$obj_client->getTableName('client_invoice')." Where 1=1 AND invoice_type IN('taxinvoice','exportinvoice','sezunitinvoice','deemedexportinvoice') AND added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND is_deleted='0' Order by invoice_id desc limit 0,1) AND ci.invoice_type IN('taxinvoice','exportinvoice','sezunitinvoice','deemedexportinvoice') AND ci.added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND cii.added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND ci.is_deleted='0' AND cii.is_deleted='0'");
 				}
                 /* Invoice display query code end here */
                 ?>
@@ -348,24 +318,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=client_invoice_list&action=downloadInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=client_invoice_list&action=printInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>" target="_blank"><div data-toggle="tooltip" data-placement="bottom" title="PRINT"><i class="fa fa-print" aria-hidden="true"></i></div></a></li>
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=client_invoice_list&action=emailInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></div></a></li>
-                                <!--<li><a href="#"><div data-toggle="tooltip" data-placement="bottom" title="Attached File"><i class="fa fa-paperclip" aria-hidden="true"></i></div></a></li>-->
                             </ul>
-
-                            <!--
-                                    <div class="col-md-7">
-                                            <ul class="nav nav-pills pull-left" role="tablist" style="margin-left:10px;">
-                                                    <li role="presentation" class="dropdown">
-                                                            <a href="#" class="dropdown-toggle greyborder btngrey" id="drop5" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> All Invoice <span class="caret"></span> </a>
-                                                            <ul class="dropdown-menu" id="menu2" aria-labelledby="drop5">
-                                                                    <li><a href="#">Action</a></li>
-                                                                    <li><a href="#">Another action</a></li> 
-                                                                    <li><a href="#">Something else here</a></li>
-                                                                    <li role="separator" class="divider"></li> <li><a href="#">Separated link</a></li> 
-                                                            </ul>
-                                                    </li>
-                                            </ul>
-                                    </div>
-                            -->
                         </div>
 
                         <!---INVOICE div print START HERE-->
@@ -607,9 +560,9 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 
                                                         <tr class="lightgreen">
                                                             <td <?php if ($invoiceData[0]->advance_adjustment == 1) {
-                echo 'colspan="10"';
+                echo 'colspan="18"';
             } else {
-                echo 'colspan="9"';
+                echo 'colspan="17"';
             } ?> align="right" class="fontbold textsmall">Amount of Tax Subject to TDS</td>
                                                             <td>1%</td>
                                                             <td><i class="fa fa-inr"></i><?php echo round(($withoutTaxValue), 2); ?></td>
@@ -651,9 +604,9 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 
                                                         <tr class="lightgreen">
                                                             <td <?php if ($invoiceData[0]->advance_adjustment == 1) {
-                echo 'colspan="10"';
+                echo 'colspan="18"';
             } else {
-                echo 'colspan="9"';
+                echo 'colspan="17"';
             } ?> align="right" class="fontbold textsmall">Amount of Tax Subject to Reverse Charge</td>
                                                             <td>-</td>
                                                             <td><i class="fa fa-inr"></i><?php echo $total_cgst_amount; ?></td>
@@ -669,9 +622,9 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 
                                                         <tr class="lightgreen">
                                                             <td <?php if ($invoiceData[0]->advance_adjustment == 1) {
-                echo 'colspan="10"';
+                echo 'colspan="18"';
             } else {
-                echo 'colspan="9"';
+                echo 'colspan="17"';
             } ?> align="right" class="fontbold textsmall">Amount of Tax Subject to Reverse Charge</td>
                                                             <td>-</td>
                                                             <td><i class="fa fa-inr"></i>0.00</td>
@@ -691,6 +644,14 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 
                                         </td>
                                     </tr>
+                                    
+                                    <?php if(!empty($invoiceData[0]->description)) { ?>
+                                        <tr class="description">
+                                            <td colspan="2">
+												<p><b>Description:</b> <?php echo $invoiceData[0]->description; ?></p>
+                                            </td>
+                                        </tr>
+                                    <?php } ?>
 
                                 </table>			
                             </div>

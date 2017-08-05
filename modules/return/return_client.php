@@ -213,7 +213,11 @@ if(!empty($dataInvPurchase))
                 <div class="col-md-6 col-sm-6 col-xs-6 text-right">
                     <a href="<?php echo PROJECT_URL;?>/?page=client_upload_invoice" class="btn btnimport">Choose File</a></div>
                 <div class="col-md-12 col-sm-12 col-xs-12">
-                    Total Purchase Invoices : NA
+				 <?php
+                    $queryPurchase = "select * from ".$obj_client->getTableName('client_purchase_invoice')." where invoice_nature='purchaseinvoice' and added_by='".$_SESSION['user_detail']['user_id']."' and status='1' and is_canceled='0' and is_deleted='0' and invoice_date like '%".$returnmonth."%'";
+                    $purchaseData = $obj_client->get_results($querySales);
+                    ?>
+                    Total Purchase Invoices :<?php echo count($purchaseData);?>
                     <div class="clear" style="height:20px;"></div>
                 </div>
             </div>
@@ -308,7 +312,22 @@ if(!empty($dataInvPurchase))
                 <div class="row">
                     <div class="col-md-8 col-sm-8 modpadlr">
                         <div class="rowsteps">
+						 <div class="row step-col actionable">
+
+                                <div class="col-md-5 col-sm-5 col-xs-5"><span class="statusbullet"></span>
+                                    <span class="txtinovice">GSTR-1 Initiated</span></div>
+                                <div class="col-md-3 col-sm-3 col-xs-3"><?php if($sale_initiate_status==1) { ?> <span class="txtinovice"> <?php echo  "Completed"; ?> </span> <?php } else {  ?> <span class="txtorange"> <?php echo "pending"; ?> </span> <?php } ?></div>
+								<?php if($sale_initiate_status==1) { 
+								?>
+                                <div class="col-md-4 col-sm-4 txtinovice col-xs-4"><i class="fa fa-check" aria-hidden="true"></i> Completed</div>
+								<?php } else {  ?>
+								  <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on 10 <?php echo $month;?></div>
+								<?php } ?>
+                            </div>
+							</div>
+					<div class="rowsteps">
                             <div class="row step-col actionable">
+
                                 <div class="col-md-5 col-sm-5 col-xs-5"><span class="statusbullet"></span>
                                     <span class="txtinovice">Upload invoices to GSTN</span></div>
                                 <div class="col-md-3 col-sm-3 col-xs-3"><?php if($sale_upload_status==1) { ?> <span class="txtinovice"> <?php echo  "Completed"; ?> </span> <?php } else {  ?> <span class="txtorange"> <?php echo "pending"; ?> </span> <?php } ?></div>
@@ -361,6 +380,20 @@ if(!empty($dataInvPurchase))
             <div class="gstr-step-row">
                 <div class="row">
                     <div class="col-md-8 col-sm-8 modpadlr">
+					 <div class="rowsteps">
+						 <div class="row step-col actionable">
+
+                                <div class="col-md-5 col-sm-5 col-xs-5"><span class="statusbullet"></span>
+                                    <span class="txtinovice">GSTR-2 Initiated</span></div>
+                                <div class="col-md-3 col-sm-3 col-xs-3"><?php if($purchase_initiate_status==1) { ?> <span class="txtinovice"> <?php echo  "Completed"; ?> </span> <?php } else {  ?> <span class="txtorange"> <?php echo "pending"; ?> </span> <?php } ?></div>
+								<?php if($purchase_initiate_status==1) { 
+								?>
+                                <div class="col-md-4 col-sm-4 txtinovice col-xs-4"><i class="fa fa-check" aria-hidden="true"></i> Completed</div>
+								<?php } else {  ?>
+								  <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on 10 <?php echo $month;?></div>
+								<?php } ?>
+                            </div>
+							</div>
                         <div class="rowsteps">
                             <div class="row step-col actionable">
                                 <div class="col-md-5 col-sm-5 col-xs-5"><span class="statusbullet"></span>

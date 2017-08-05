@@ -31,7 +31,7 @@
 
 			<div class="whitebg formboxcontainer">
 
-				<div class="errorValidationContainer">
+				<div class="errorValidationContainer alert alert-danger">
 					<?php $obj_client->showErrorMessage(); ?>
 					<?php $obj_client->showSuccessMessge(); ?>
 					<?php $obj_client->unsetMessage(); ?>
@@ -991,9 +991,12 @@
 
 						$(".errorValidationContainer").html(response.message);
                         $(".errorValidationContainer").show();
+						$("#corresponding_document_number").html('<option value="">Select Document Number</option>');
+						$("#corresponding_document_number").select2();
 						$('html, body').animate({ scrollTop: $(".formcontainer").offset().top }, 1000);
                     } else if(response.status == "success") {
 
+						$(".errorValidationContainer").hide();
 						$("#corresponding_document_number").html(response.message);
 						$("#corresponding_document_number").select2();
                     }

@@ -73,11 +73,23 @@
 			<div class="clear"></div>
 
 			<div class="text-right">
-				<form name="gstr2-download" id="gstr2-download" method="post">
-					<input type="hidden" name="gstr2ReturnMonth" value="<?php if(isset($_GET['returnmonth'])) { echo $_GET['returnmonth']; } ?>">
-					<input type="hidden" name="flag" value="download">
-					<button type="submit" name="gstr2Download" id="gstr2Download" value="Download" class="btngreen btn"><i class="fa fa-cloud-download" aria-hidden="true"></i> Download GSTR-2A</button>
-				</form>
+				<?php
+				$dataReturns = $obj_gstr2->get_results("select * from " . TAB_PREFIX . "return where return_month='" . $returnmonth . "' and client_id='" . $_SESSION['user_detail']['user_id'] . "' and status='3' and type='gstr2'");
+				if (!empty($dataReturns)) {
+					?>
+					<div id="sucmsg" style="background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;"><i class="fa fa-check"></i> <b>Success:</b> GSTR2 is Already Filed</div>
+					<?php
+				} else {
+					?>
+					<form name="gstr2-download" id="gstr2-download" method="post">
+						<input type="hidden" name="gstr2ReturnMonth" value="<?php if(isset($_GET['returnmonth'])) { echo $_GET['returnmonth']; } ?>">
+						<input type="hidden" name="flag" value="download">
+						<button type="submit" name="gstr2Download" id="gstr2Download" value="Download" class="btngreen btn"><i class="fa fa-cloud-download" aria-hidden="true"></i> Download GSTR-2A</button>
+					</form>
+					<?php
+				}
+				?>
+				
 			</div>
 
 			<div class="invoice-types">

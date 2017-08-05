@@ -34,7 +34,7 @@ $month = date("M", strtotime("+1 month", $time));
                     <a href="#" class="active">
                         Download GSTR3 Summary
                     </a>
-                    <a href="#" >
+                    <a href="<?php echo PROJECT_URL . '/?page=return_gstr3save'?>" >
                         Save My Data
                     </a>
                     <a href="#">
@@ -1238,7 +1238,7 @@ $month = date("M", strtotime("+1 month", $time));
 
                     </tbody>
                 </table> 
-                 <h4>Minor Heads(Igst,Cgst,Sgst,Cess)</h4>
+                 <h4>Igst</h4>
                  <table  class="table  tablecontent tablecontent2">
                     <thead>
                         <tr>
@@ -1262,7 +1262,81 @@ $month = date("M", strtotime("+1 month", $time));
 
                     </tbody>
                 </table> 
-                  
+                 
+                 <h4>Cgst</h4>
+                 <table  class="table  tablecontent tablecontent2">
+                    <thead>
+                        <tr>
+                            <th class="text-right">Tax</th>
+                            <th class="text-right">Penality</th>
+                            <th class="text-right">Interest</th>
+                            <th class="text-right">Fees</th>
+                            <th class="text-right">Others</th>
+                           
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-right">200</td>
+                            <td class="text-right">200</td>
+                            <td class="text-right">200</td>
+                            <td class="text-right">200</td>
+                            <td class="text-right">200</td>
+                            
+                        </tr>
+
+                    </tbody>
+                </table> 
+                 
+                 <h4>Sgst</h4>
+                 <table  class="table  tablecontent tablecontent2">
+                    <thead>
+                        <tr>
+                            <th class="text-right">Tax</th>
+                            <th class="text-right">Penality</th>
+                            <th class="text-right">Interest</th>
+                            <th class="text-right">Fees</th>
+                            <th class="text-right">Others</th>
+                           
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-right">200</td>
+                            <td class="text-right">200</td>
+                            <td class="text-right">200</td>
+                            <td class="text-right">200</td>
+                            <td class="text-right">200</td>
+                            
+                        </tr>
+
+                    </tbody>
+                </table> 
+                 
+                 <h4>Cess</h4>
+                   <table  class="table  tablecontent tablecontent2">
+                    <thead>
+                        <tr>
+                            <th class="text-right">Tax</th>
+                            <th class="text-right">Penality</th>
+                            <th class="text-right">Interest</th>
+                            <th class="text-right">Fees</th>
+                            <th class="text-right">Others</th>
+                           
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-right">200</td>
+                            <td class="text-right">200</td>
+                            <td class="text-right">200</td>
+                            <td class="text-right">200</td>
+                            <td class="text-right">200</td>
+                            
+                        </tr>
+
+                    </tbody>
+                </table> 
                  <h3>15.Debit Entries in ledger</h3>
                   <table  class="table  tablecontent tablecontent2">
                     <thead>

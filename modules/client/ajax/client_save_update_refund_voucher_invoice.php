@@ -12,31 +12,30 @@ $obj_client = new client();
 $result = array();
 $invoiceErrorMessage = '';
 $counter = 0;
-if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] == "saveDCInvoice" && isset($_GET['ajax']) && $_GET['ajax'] == "client_save_delivery_challan_invoice") {
+if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] == "saveUpdateRFInvoice" && isset($_GET['ajax']) && $_GET['ajax'] == "client_save_update_refund_voucher_invoice") {
 
 	/* get current user data */
 	$dataCurrentUserArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
+	$currentFinancialYear = $obj_client->generateFinancialYear();
 
 	$params = array();
 	parse_str($_POST['invoiceData'], $params);
 
-	if (empty($params)) {
+	if(empty($params)) {
 		$result['status'] = "error";
 		$result['message'] = "<div style='color:#f00;background-color:#eddbe3;border-radius:4px;padding:8px 35px 8px 14px;text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#e8d1df;color:#bd4247;'><i class='fa fa-exclamation-triangle'></i>&nbsp;1.&nbsp;".$obj_client->getValMsg('mandatory')."</div>";
 		echo json_encode($result);
 		die;
 	}
 
-	$dataArr['invoice_type'] = 'deliverychallaninvoice';
+	$dataArr['invoice_type'] = 'refundvoucherinvoice';
 	$dataArr['invoice_nature'] = 'salesinvoice';
 	$dataArr['invoice_date'] = isset($params['invoice_date']) ? $params['invoice_date'] : '';
 	$dataArr['reference_number'] = isset($params['invoice_reference_number']) ? $params['invoice_reference_number'] : '';
-	$dataArr['company_name'] = $dataCurrentUserArr['data']->kyc->name;
-	$dataArr['company_address'] = $dataCurrentUserArr['data']->kyc->registered_address;
-	$dataArr['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
-	$dataArr['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
-	$dataArr['delivery_challan_type'] = isset($params['delivery_challan_type']) ? trim($params['delivery_challan_type']) : '';
+	$dataArr['company_state'] = isset($params['company_state']) ? $params['company_state'] : '';
+	$dataArr['is_tax_payable'] = isset($params['tax_reverse_charge']) ? $params['tax_reverse_charge'] : '';
 	$dataArr['description'] = isset($params['description']) ? trim($params['description']) : '';
+	$dataArr['refund_voucher_receipt'] = isset($params['receipt_voucher_number']) ? $params['receipt_voucher_number'] : '';
 
 	$supply_place = isset($params['place_of_supply']) ? $params['place_of_supply'] : '';
 	$supply_state_data = $obj_client->getStateDetailByStateId($supply_place);
@@ -72,10 +71,36 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	} else {
 		$dataArr['billing_country'] = '';
 	}
+	
+	$dataArr['shipping_name'] = isset($params['shipping_name']) ? $params['shipping_name'] : '';
+	$dataArr['shipping_company_name'] = isset($params['shipping_company_name']) ? $params['shipping_company_name'] : '';
+	$dataArr['shipping_address'] = isset($params['shipping_address']) ? $params['shipping_address'] : '';
+	$dataArr['shipping_vendor_type'] = isset($params['shipping_vendor_type']) ? $params['shipping_vendor_type'] : '';
+	$dataArr['shipping_gstin_number'] = isset($params['shipping_gstin_number']) ? $params['shipping_gstin_number'] : '';
+
+	$shipping_state_code = isset($params['shipping_state_code']) ? $params['shipping_state_code'] : '';
+	$state_data = $obj_client->getStateDetailByStateCode($shipping_state_code);
+
+	if($state_data['status'] === "success") {
+		$dataArr['shipping_state'] = $state_data['data']->state_id;
+		$dataArr['shipping_state_name'] = $state_data['data']->state_name;
+	} else {
+		$dataArr['shipping_state'] = '';
+		$dataArr['shipping_state_name'] = '';
+	}
+
+	$shipping_country_code = isset($params['shipping_country_code']) ? $params['shipping_country_code'] : '';
+	$shipping_country_data = $obj_client->getCountryDetailByCountryCode($shipping_country_code);
+
+	if($shipping_country_data['status'] === "success") {
+		$dataArr['shipping_country'] = $shipping_country_data['data']->id;
+	} else {
+		$dataArr['shipping_country'] = '';
+	}
 
 	/* validate invoice data */
 	$obj_client->validateClientInvoice($dataArr);
-
+	
 	$invoiceItemArray = array();
 	$invoiceTotalAmount = 0.00;
 	if(isset($params['invoice_itemid']) && count($params['invoice_itemid']) > 0) {
@@ -85,10 +110,8 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 
 			$dataInvoiceArr = array();
 			$dataInvoiceArr['invoice_itemid'] = isset($params['invoice_itemid'][$i]) ? $params['invoice_itemid'][$i] : '';
-			$dataInvoiceArr['invoice_quantity'] = isset($params['invoice_quantity'][$i]) ? $params['invoice_quantity'][$i] : 0.00;
-			$dataInvoiceArr['invoice_unit'] = isset($params['invoice_unit'][$i]) ? $params['invoice_unit'][$i] : '';
-			$dataInvoiceArr['invoice_discount'] = isset($params['invoice_discount'][$i]) ? $params['invoice_discount'][$i] : 0.00;
-			$dataInvoiceArr['invoice_rate'] = isset($params['invoice_rate'][$i]) ? $params['invoice_rate'][$i] : 0.00;
+			$dataInvoiceArr['invoice_receiptvalue'] = isset($params['invoice_receiptvalue'][$i]) ? $params['invoice_receiptvalue'][$i] : 0.00;
+			$dataInvoiceArr['invoice_taxablevalue'] = isset($params['invoice_taxablevalue'][$i]) ? $params['invoice_taxablevalue'][$i] : 0.00;
 			$dataInvoiceArr['invoice_cgstrate'] = isset($params['invoice_cgstrate'][$i]) ? $params['invoice_cgstrate'][$i] : 0.00;
 			$dataInvoiceArr['invoice_sgstrate'] = isset($params['invoice_sgstrate'][$i]) ? $params['invoice_sgstrate'][$i] : 0.00;
 			$dataInvoiceArr['invoice_igstrate'] = isset($params['invoice_igstrate'][$i]) ? $params['invoice_igstrate'][$i] : 0.00;
@@ -96,19 +119,13 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 
 			/* validate invoice data item */
 			$obj_client->validateClientInvoiceItem($dataInvoiceArr, ($i+1));
-
+			
 			$clientMasterItem = $obj_client->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit, u.unit_id, u.unit_name, u.unit_code from " . $obj_client->getTableName('client_master_item') . " as cm, " . $obj_client->getTableName('item') . " as m, " . $obj_client->getTableName('unit') . " as u where 1=1 AND cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.item_id = ".$dataInvoiceArr['invoice_itemid']." AND cm.is_deleted='0' AND cm.status = '1' AND cm.added_by = '".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."'");
 			if (!empty($clientMasterItem)) {
 
-				$itemUnitPrice = (float)$dataInvoiceArr['invoice_rate'];
-				$invoiceItemUnit = $dataInvoiceArr['invoice_unit'];
-				$invoiceItemQuantity = (float)$dataInvoiceArr['invoice_quantity'];
-				$invoiceItemDiscount = (float)$dataInvoiceArr['invoice_discount'];
-
-				$invoiceItemTotal = $invoiceItemQuantity * $itemUnitPrice;
-				$invoiceItemDiscountAmount = ($invoiceItemDiscount/100) * $invoiceItemTotal;
-				$invoiceItemTaxableAmount = $invoiceItemTotal - $invoiceItemDiscountAmount;
-
+				$invoiceItemTaxableAmount = (float)$dataInvoiceArr['invoice_taxablevalue'];
+				$invoiceItemReceiptAmount = (float)$dataInvoiceArr['invoice_receiptvalue'];
+				
 				if($dataArr['company_state'] === $dataArr['supply_place']) {
 
 					$itemCSGTTax = (float)$dataInvoiceArr['invoice_cgstrate'];
@@ -140,11 +157,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 								"item_id" => $clientMasterItem->item_id,
 								"item_name" => $clientMasterItem->item_name,
 								"item_hsncode" => $clientMasterItem->hsn_code,
-								"item_quantity" => $invoiceItemQuantity,
-								"item_unit" => $invoiceItemUnit,
-								"item_unit_price" => $itemUnitPrice,
-								"subtotal" => round($invoiceItemTotal, 2),
-								"discount" => $invoiceItemDiscount,
+								"advance_amount" => round($invoiceItemReceiptAmount, 2),
 								"taxable_subtotal" => round($invoiceItemTaxableAmount, 2),
 								"cgst_rate" => $itemCSGTTax,
 								"cgst_amount" => round($invoiceItemCSGTTaxAmount, 2),
@@ -166,10 +179,10 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	}
 
 	$dataArr['invoice_total_value'] = number_format($invoiceTotalAmount, 2, '.', '');
-	$dataArr['financial_year'] = $obj_client->generateFinancialYear();
 	$dataArr['status'] = 1;
-	$dataArr['added_by'] = $obj_client->sanitize($_SESSION['user_detail']['user_id']);
-	$dataArr['added_date'] = date('Y-m-d H:i:s');
+	$dataArr['updated_by'] = $obj_client->sanitize($_SESSION['user_detail']['user_id']);
+	$dataArr['updated_date'] = date('Y-m-d H:i:s');
+	$dataConditionArray['invoice_id'] = $obj_client->sanitize(base64_decode($params['invoice_id']));
 
 	if($obj_client->getErrorMessage() != '') {
 
@@ -182,31 +195,41 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 
 		if( !empty($invoiceItemArray) && count($invoiceItemArray) > 0 ) {
 
-			$dataArr['serial_number'] = $obj_client->generateDCInvoiceNumber( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
+			if ($obj_client->update($obj_client->getTableName('client_invoice'), $dataArr, $dataConditionArray)) {
 
-			if ($obj_client->insert($obj_client->getTableName('client_invoice'), $dataArr)) {
-
-				$insertid = $obj_client->getInsertID();
-				$obj_client->logMsg("Delivery Challan Invoice Added. ID : " . $insertid . ".");
+				$updatedid = $obj_client->sanitize(base64_decode($params['invoice_id']));
+				$obj_client->logMsg("Refund Voucher Invoice Updated. ID : " . $updatedid . ".");
 
 				$processedInvoiceItemArray = array();
 				foreach($invoiceItemArray as $itemArr) {
 
-					$itemArr['invoice_id'] = $insertid;
+					$itemArr['invoice_id'] = $updatedid;
 					array_push($processedInvoiceItemArray, $itemArr);
 				}
 
-				if ($obj_client->insertMultiple($obj_client->getTableName('client_invoice_item'), $processedInvoiceItemArray)) {
+				if($obj_client->deletData($obj_client->getTableName('client_invoice_item'), $dataConditionArray)) {
 
-					$obj_client->setSuccess($obj_client->getValMsg('invoiceadded'));
-					$iteminsertid = $obj_client->getInsertID();
-					$obj_client->logMsg("Delivery Challan Invoice Item Added. ID : " . $iteminsertid . ".");
-					
-					$result['status'] = "success";
-					echo json_encode($result);
-					die;
+					if ($obj_client->insertMultiple($obj_client->getTableName('client_invoice_item'), $processedInvoiceItemArray)) {
+
+						$obj_client->setSuccess($obj_client->getValMsg('invoiceadded'));
+						$iteminsertid = $obj_client->getInsertID();
+						$obj_client->logMsg("New Refund Voucher Invoice Item Added. ID : " . $iteminsertid . ".");
+
+						$result['status'] = "success";
+						echo json_encode($result);
+						die;
+					} else {
+
+						$obj_client->setError($obj_client->getValMsg('failed'));
+						$result['status'] = "error";
+						$result['message'] = $obj_client->getErrorMessage();
+						$obj_client->unsetMessage();
+						echo json_encode($result);
+						die;
+					}
+
 				} else {
-
+					
 					$obj_client->setError($obj_client->getValMsg('failed'));
 					$result['status'] = "error";
 					$result['message'] = $obj_client->getErrorMessage();

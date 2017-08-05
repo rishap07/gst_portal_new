@@ -173,8 +173,6 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 
 		if( !empty($invoiceItemArray) && count($invoiceItemArray) > 0 ) {
 
-			$dataArr['serial_number'] = $obj_client->generateBillInvoiceNumber( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
-
 			if ($obj_client->update($obj_client->getTableName('client_invoice'), $dataArr, $dataConditionArray)) {
 
 				$updatedid = $obj_client->sanitize(base64_decode($params['invoice_id']));
@@ -186,7 +184,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 					$itemArr['invoice_id'] = $updatedid;
 					array_push($processedInvoiceItemArray, $itemArr);
 				}
-				
+
 				if($obj_client->deletData($obj_client->getTableName('client_invoice_item'), $dataConditionArray)) {
 
 					if ($obj_client->insertMultiple($obj_client->getTableName('client_invoice_item'), $processedInvoiceItemArray)) {

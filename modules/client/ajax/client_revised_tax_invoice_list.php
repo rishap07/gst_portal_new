@@ -4,7 +4,7 @@
     *  Developed By        :   Ishwar Lal Ghiya
     *  Date Created        :   June 6, 2017
     *  Last Modified By    :   Ishwar Lal Ghiya
-    *  Last Modification   :   Client Item Listing
+    *  Last Modification   :   Client Bill of Supply Listing
     * 
 */
 
@@ -12,13 +12,13 @@ $obj_client = new client();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('ci.invoice_id', 'ci.serial_number', 'ci.reference_number', 'ci.company_name', 'ci.company_address', 'ci.gstin_number', 'ci.invoice_document_nature', 'ci.invoice_corresponding_type', 'ci.corresponding_invoice_number', 'ci.corresponding_invoice_date', 'ci.invoice_date', 'ci.is_canceled', 'ci.supply_place', 'ms2.state_name as supply_state_name', 'ms2.state_code as supply_state_code', 'ms2.state_tin as supply_state_tin', 'ci.invoice_total_value', 'ci.billing_name', 'ci.billing_state', 'ms.state_name as billing_state_name', 'ms.state_code as billing_state_code', 'ms.state_tin as billing_state_tin', 'ci.shipping_name', 'ci.shipping_state', 'ms1.state_name as shipping_state_name', 'ms1.state_code as shipping_state_code', 'ms1.state_tin as shipping_state_tin');
-$aSearchColumns = array('ci.serial_number', 'ci.invoice_document_nature', 'ci.invoice_corresponding_type', 'ci.corresponding_invoice_number', 'ci.corresponding_invoice_date', 'ci.invoice_date', 'ci.invoice_total_value', 'ci.billing_name', 'ci.shipping_name', 'ms.state_name', 'ms.state_code', 'ms.state_tin', 'ms1.state_name', 'ms1.state_code', 'ms1.state_tin', 'ms2.state_name', 'ms2.state_code', 'ms2.state_tin');
+$aColumns = array('ci.invoice_id', 'ci.invoice_type', 'ci.serial_number', 'ci.reference_number', 'ci.invoice_date', 'ci.is_canceled', 'ci.invoice_total_value', 'ci.billing_name');
+
+$aSearchColumns = array('ci.invoice_type', 'ci.serial_number', 'ci.reference_number', 'ci.invoice_date', 'ci.reference_number', 'ci.invoice_total_value', 'ci.billing_name');
 $sIndexColumn = "invoice_id";
 
 /* DB table to use */
-$ciTable = $obj_client->getTableName('client_rt_invoice');
-$msTable = $obj_client->getTableName('state');
+$ciTable = $obj_client->getTableName('client_invoice');
 
 /*
  * Paging
@@ -52,9 +52,9 @@ if (isset($_POST['iSortCol_0'])) {
  * on very large tables, and MySQL's regex functionality is very limited
 */
 
-$uWhere = " where ci.is_deleted='0' AND ci.added_by='".$_SESSION['user_detail']['user_id']."' ";
+$uWhere = " where ci.invoice_type IN('revisedtaxinvoice','creditnote','debitnote') AND ci.is_deleted='0' AND ci.added_by='".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."' ";
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
-    
+
     $uWhere .= 'AND (';
     for ($i = 0; $i < count($aSearchColumns); $i++) {
         $uWhere .= $aSearchColumns[$i] . " LIKE '%" . utf8_encode(htmlentities($_POST['sSearch'],ENT_COMPAT,'utf-8')) . "%' OR ";
@@ -81,7 +81,7 @@ for ($i = 0; $i < count($aColumns); $i++) {
  */
 $uWhere = trim(trim($uWhere), 'AND');
 $uQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ", $aColumns)) . "
-            FROM $ciTable as ci INNER JOIN $msTable as ms ON ci.billing_state = ms.state_id INNER JOIN $msTable as ms1 ON ci.shipping_state = ms1.state_id INNER JOIN $msTable as ms2 ON ci.supply_place = ms2.state_id
+            FROM $ciTable as ci 
             $uWhere
             $uOrder
             $uLimit
@@ -95,14 +95,13 @@ $iFilteredTotal = $obj_client->get_row($uQuery);
 $iFilteredTotal = $iFilteredTotal->rows;
 
 /* Total data set length */
-$uQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $ciTable";
-//echo $sQuery;
+$uQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $ciTable where invoice_type IN('revisedtaxinvoice','creditnote','debitnote') AND is_deleted='0' AND added_by='".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."'";
 $iTotal = $obj_client->get_row($uQuery);
 $iTotal = $iTotal->count;
 
 /*
  * Output
- */
+*/
 $output = array(
     "sEcho" => intval($_POST['sEcho']),
     "iTotalRecords" => $iTotal,
@@ -110,54 +109,27 @@ $output = array(
     "aaData" => array()
 );
 
-$temp_x=isset($_POST['iDisplayStart']) ? $_POST['iDisplayStart']+ 1 : 1;
+$temp_x = isset($_POST['iDisplayStart']) ? $_POST['iDisplayStart']+ 1 : 1;
 if(isset($rResult) && !empty($rResult)) {
 	
     foreach($rResult as $aRow) {
 
-        $row = array();
-		$is_canceled = '';
-		$invoice_document_nature = '';
-		$invoice_corresponding_type = '';
-
-		if($aRow->invoice_document_nature == 'revisedtaxinvoice') {
-            $invoice_document_nature = 'Revised Tax Invoice';
-        } else if($aRow->invoice_document_nature == 'creditnote') {
-            $invoice_document_nature = 'Credit Note';
-        } else if($aRow->invoice_document_nature == 'debitnote'){
-            $invoice_document_nature = 'Debit Note';
-        }
-
-		if($aRow->invoice_corresponding_type == 'taxinvoice') {
-            $invoice_corresponding_type = 'Tax Invoice';
-        } else if($aRow->invoice_corresponding_type == 'bosinvoice'){
-            $invoice_corresponding_type = 'Bill of Supply Invoice';
-        }
+		$row = array();
+		$cancelLink = '';
 
 		if($aRow->is_canceled == '0') {
-            $is_canceled = '<span class="no">No<span>';
-        } else if($aRow->is_canceled == '1'){
-            $is_canceled = '<span class="yes">Yes<span>';
+            $cancelLink = '<a class="cancelSalesInvoice" data-invoice-id="'.$aRow->invoice_id.'" href="javascript:void(0)">Cancel</a>';
+        } elseif($aRow->is_canceled == '1'){
+            $cancelLink = '<a class="revokeSalesInvoice" data-invoice-id="'.$aRow->invoice_id.'" href="javascript:void(0)">Revoke</a>';
         }
 
-        $row[] = $temp_x;
-		$row[] = utf8_decode($aRow->serial_number);
-        $row[] = utf8_decode($aRow->invoice_date);
-		$row[] = utf8_decode($aRow->reference_number);		
-		$row[] = $invoice_document_nature;
-		$row[] = $invoice_corresponding_type;
-		$row[] = utf8_decode($aRow->corresponding_invoice_number);
-		$row[] = utf8_decode($aRow->corresponding_invoice_date);
-		$row[] = utf8_decode($aRow->supply_state_name) . " (" . utf8_decode($aRow->supply_state_tin) . ")";
-		$row[] = utf8_decode($aRow->billing_name);
-        $row[] = utf8_decode($aRow->shipping_name);
-		$row[] = utf8_decode($aRow->invoice_total_value);
-        $row[] = $is_canceled;
-		//$row[] = '<a href="'.PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$aRow->invoice_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_invoice_list&action=deleteInvoice&id='.$aRow->invoice_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
-        $output['aaData'][] = $row;
+		$row[]= '<tr><td valign="top"><input name="sales_invoice[]" value="'.$aRow->invoice_id.'" class="salesInvoice" type="checkbox"></td></td>';
+
+		$row[] = '<td><div class="list-primary pull-left"><div class="name"><a href="'.PROJECT_URL.'/?page=client_revised_tax_invoice_list&action=viewRTInvoice&id='.$aRow->invoice_id.'">'.$aRow->billing_name.'</a></div><a href="'.PROJECT_URL.'/?page=client_revised_tax_invoice_list&action=viewRTInvoice&id='.$aRow->invoice_id.'">'.$aRow->serial_number.'</a> | ' . $aRow->invoice_date . '</div><span class="pull-right"><div class="amount"><i class="fa fa-inr" aria-hidden="true"></i>'.$aRow->invoice_total_value.'</div><div class="greylinktext"><a href="'.PROJECT_URL.'/?page=client_update_revised_tax_invoice&action=editRTInvoice&id='.$aRow->invoice_id.'">Edit</a>&nbsp;&nbsp;'.$cancelLink.'</div></span></td></tr>';
+
+		$output['aaData'][] = $row;
         $temp_x++;
     }
 }
-
 echo json_encode($output);
 ?>

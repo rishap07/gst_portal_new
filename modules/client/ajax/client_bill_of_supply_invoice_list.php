@@ -94,7 +94,7 @@ $iFilteredTotal = $obj_client->get_row($uQuery);
 $iFilteredTotal = $iFilteredTotal->rows;
 
 /* Total data set length */
-$uQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $ciTable";
+$uQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $ciTable where invoice_type = 'billofsupplyinvoice' AND is_deleted='0' AND added_by='".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."'";
 //echo $sQuery;
 $iTotal = $obj_client->get_row($uQuery);
 $iTotal = $iTotal->count;

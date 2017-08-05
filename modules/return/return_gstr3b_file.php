@@ -101,7 +101,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
         $returndata = $obj_return->get_results($sql);
 	    
 		
-	  $tdsTotquery = "SELECT COUNT(i.invoice_id) as numcount,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and supply_type='tds' and  invoice_date like '%" . $returnmonth . "%'";
+	     $tdsTotquery = "SELECT COUNT(i.invoice_id) as numcount,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and supply_type='tds' and  invoice_date like '%" . $returnmonth . "%'";
       // echo "<br>";
 	    $tdsTotData = $obj_client->get_results($tdsTotquery);
         $total = 0;
@@ -119,11 +119,11 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
          
 		
 	    $nature_of_supply_a_TotData = $obj_client->get_results($nature_of_supply_a_Totquery);
-        $total = 0;
+        $total = 0; 
         if (!empty($nature_of_supply_a_TotData)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
-	   $nature_of_supply_b_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(item.taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and invoice_type in('exportinvoice','sezunitinvoice','deemedexportinvoice') and  invoice_date like '%" . $returnmonth . "%'";
+	    $nature_of_supply_b_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(item.taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and invoice_type in('exportinvoice','sezunitinvoice','deemedexportinvoice') and  invoice_date like '%" . $returnmonth . "%'";
 
 	     $nature_of_supply_b_TotData = $obj_client->get_results($nature_of_supply_b_Totquery);
         $total = 0;
@@ -137,7 +137,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
         if (!empty($nature_of_supply_c_TotData)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
-		$nature_of_supply_d_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='purchaseinvoice'  and supply_type='reversecharge' and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and invoice_date like '%" . $returnmonth . "%'";
+		//$nature_of_supply_d_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='purchaseinvoice'  and supply_type='reversecharge' and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and invoice_date like '%" . $returnmonth . "%'";
+         $nature_of_supply_d_Totquery = "SELECT COUNT(i.purchase_invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_purchase_invoice') . " as i inner join " . $db_obj->getTableName('client_purchase_invoice_item') . " as item on item.purchase_invoice_id = i.purchase_invoice_id WHERE i.invoice_nature='purchaseinvoice'  and supply_type='reversecharge' and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and invoice_date like '%" . $returnmonth . "%'";
    
 	    $nature_of_supply_d_TotData = $obj_client->get_results($nature_of_supply_d_Totquery);
         $total = 0;
@@ -152,7 +153,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
         if (!empty($nature_of_supply_e_TotData)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
-		$supply_unregistered_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice' and billing_gstin_number=''  and billing_state <> company_state and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and invoice_date like '%" . $returnmonth . "%'";
+		 $supply_unregistered_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice' and billing_gstin_number=''  and billing_state <> company_state and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and invoice_date like '%" . $returnmonth . "%'";
    
 	    $supply_unregistered_TotData = $obj_client->get_results($supply_unregistered_Totquery);
         $total = 0;
@@ -1135,59 +1136,7 @@ composition taxable persons and UIN holders</div>
                                     <tr>
                                     <td class="lftheading"><strong>(B) ITC Reversed</strong></td>
 									
-									 <td> 
-							 <?php
-								 if($returndata[0]->totalinvoice > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->integrated_tax_itc_reversed_b; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_itc_reversed_b"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>
-								  <td> 
-							 <?php
-								 if($returndata[0]->totalinvoice > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->central_tax_itc_reversed_b; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_itc_reversed_b"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>
-                                     <td> 
-							 <?php
-								 if($returndata[0]->totalinvoice > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->state_tax_itc_reversed_b; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_itc_reversed_b"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>
-								 <td> 
-							 <?php
-								 if($returndata[0]->totalinvoice > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->cess_tax_itc_reversed_b; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_itc_reversed_b"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>                            
-                                      
+							
                                       
                                     </tr>
                                     
@@ -1370,58 +1319,7 @@ composition taxable persons and UIN holders</div>
                                     
                                     <tr>
                                     <td class="lftheading"><strong>(D) Ineligible ITC</strong></td>
-									 <td> 
-							 <?php
-								 if($returndata[0]->totalinvoice > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->integrated_tax_inligible_itc; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_inligible_itc"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>  
-                             <td> 
-							 <?php
-								 if($returndata[0]->totalinvoice > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->central_tax_inligible_itc; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_inligible_itc"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>   
-                             <td> 
-							 <?php
-								 if($returndata[0]->totalinvoice > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->state_tax_inligible_itc; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_inligible_itc"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>	
-                               <td> 
-							 <?php
-								 if($returndata[0]->totalinvoice > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->cess_tax_inligible_itc; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_inligible_itc"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>									          
+											          
                                       
                                       
                                       
@@ -1570,7 +1468,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="inter_state_supplies_composition_scheme" value="<?php if(isset($nature_of_supply_a_5a_TotData[0]->igst_amount)) { echo $nature_of_supply_a_5a_TotData[0]->igst_amount; } else { echo 0.0; } ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="inter_state_supplies_composition_scheme"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 	
@@ -1583,7 +1481,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="intra_state_supplies_composition_scheme" value="<?php if(isset($nature_of_supply_a_5a_TotData[0]->cgst_amount) || ($nature_of_supply_a_5a_TotData[0]->sgst_amount)) { echo $nature_of_supply_a_5a_TotData[0]->cgst_amount+ $nature_of_supply_a_5a_TotData[0]->sgst_amount; } else { echo 0.0; } ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="intra_state_supplies_composition_scheme" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 	                                   

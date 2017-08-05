@@ -32,52 +32,75 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	$dataArr['invoice_nature'] = 'salesinvoice';
 	$dataArr['invoice_date'] = isset($params['invoice_date']) ? $params['invoice_date'] : '';
 	$dataArr['reference_number'] = isset($params['invoice_reference_number']) ? $params['invoice_reference_number'] : '';
+	$dataArr['company_state'] = isset($params['company_state']) ? $params['company_state'] : '';
 	$dataArr['is_tax_payable'] = isset($params['tax_reverse_charge']) ? $params['tax_reverse_charge'] : '';
 	$dataArr['description'] = isset($params['description']) ? trim($params['description']) : '';
 	$dataArr['refund_voucher_receipt'] = isset($params['receipt_voucher_number']) ? $params['receipt_voucher_number'] : '';
 
-	if(empty($dataArr['refund_voucher_receipt'])) {
-		$result['status'] = "error";
-		$result['message'] = "<div style='color:#f00;background-color:#eddbe3;border-radius:4px;padding:8px 35px 8px 14px;text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#e8d1df;color:#bd4247;'><i class='fa fa-exclamation-triangle'></i>&nbsp;1.&nbsp;Receipt voucher should be valid.</div>";
-		echo json_encode($result);
-		die;
+	$supply_place = isset($params['place_of_supply']) ? $params['place_of_supply'] : '';
+	$supply_state_data = $obj_client->getStateDetailByStateId($supply_place);
+
+	if($supply_state_data['status'] === "success") {
+		$dataArr['supply_place'] = $supply_state_data['data']->state_id;
+	} else {
+		$dataArr['supply_place'] = '';
 	}
 
-	$receiptVoucherData = $obj_client->get_results("select * from " . $obj_client->getTableName('client_invoice') . " where 1=1 AND invoice_id = '".$dataArr['refund_voucher_receipt']."' AND invoice_type = 'receiptvoucherinvoice' AND is_deleted = '0' AND status = '1' AND financial_year = '".$currentFinancialYear."' AND added_by = ". $obj_client->sanitize($_SESSION['user_detail']['user_id']));
-	if(count($receiptVoucherData) > 0) {
-		
-		$dataArr['company_name'] = html_entity_decode($receiptVoucherData[0]->company_name);
-		$dataArr['company_address'] = html_entity_decode($receiptVoucherData[0]->company_address);
-		$dataArr['company_state'] = $receiptVoucherData[0]->company_state;
-		$dataArr['gstin_number'] = $receiptVoucherData[0]->gstin_number;
-		$dataArr['supply_place'] = $receiptVoucherData[0]->supply_place;
-		$dataArr['billing_name'] = html_entity_decode($receiptVoucherData[0]->billing_name);
-		$dataArr['billing_company_name'] = html_entity_decode($receiptVoucherData[0]->billing_company_name);
-		$dataArr['billing_address'] = html_entity_decode($receiptVoucherData[0]->billing_address);
-		$dataArr['billing_state'] = $receiptVoucherData[0]->billing_state;
-		$dataArr['billing_state_name'] = html_entity_decode($receiptVoucherData[0]->billing_state_name);
-		$dataArr['billing_country'] = $receiptVoucherData[0]->billing_country;
-		$dataArr['billing_vendor_type'] = $receiptVoucherData[0]->billing_vendor_type;
-		$dataArr['billing_gstin_number'] = $receiptVoucherData[0]->billing_gstin_number;
-		$dataArr['same_as_billing'] = $receiptVoucherData[0]->same_as_billing;
-		$dataArr['shipping_name'] = html_entity_decode($receiptVoucherData[0]->shipping_name);
-		$dataArr['shipping_company_name'] = html_entity_decode($receiptVoucherData[0]->shipping_company_name);
-		$dataArr['shipping_address'] = html_entity_decode($receiptVoucherData[0]->shipping_address);
-		$dataArr['shipping_state'] = $receiptVoucherData[0]->shipping_state;
-		$dataArr['shipping_state_name'] = html_entity_decode($receiptVoucherData[0]->shipping_state_name);
-		$dataArr['shipping_country'] = $receiptVoucherData[0]->shipping_country;
-		$dataArr['shipping_vendor_type'] = $receiptVoucherData[0]->shipping_vendor_type;
-		$dataArr['shipping_gstin_number'] = $receiptVoucherData[0]->shipping_gstin_number;
-	} else  {
-		$result['status'] = "error";
-		$result['message'] = "<div style='color:#f00;background-color:#eddbe3;border-radius:4px;padding:8px 35px 8px 14px;text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#e8d1df;color:#bd4247;'><i class='fa fa-exclamation-triangle'></i>&nbsp;1.&nbsp;Receipt voucher should be valid.</div>";
-		echo json_encode($result);
-		die;
+	$dataArr['billing_name'] = isset($params['billing_name']) ? $params['billing_name'] : '';
+	$dataArr['billing_company_name'] = isset($params['billing_company_name']) ? $params['billing_company_name'] : '';
+	$dataArr['billing_address'] = isset($params['billing_address']) ? $params['billing_address'] : '';
+	$dataArr['billing_vendor_type'] = isset($params['billing_vendor_type']) ? $params['billing_vendor_type'] : '';
+	$dataArr['billing_gstin_number'] = isset($params['billing_gstin_number']) ? $params['billing_gstin_number'] : '';
+
+	$billing_state_code = isset($params['billing_state_code']) ? $params['billing_state_code'] : '';
+	$billing_state_data = $obj_client->getStateDetailByStateCode($billing_state_code);
+
+	if($billing_state_data['status'] === "success") {
+		$dataArr['billing_state'] = $billing_state_data['data']->state_id;
+		$dataArr['billing_state_name'] = $billing_state_data['data']->state_name;
+	} else {
+		$dataArr['billing_state'] = '';
+		$dataArr['billing_state_name'] = '';
+	}
+
+	$billing_country_code = isset($params['billing_country_code']) ? $params['billing_country_code'] : '';
+	$billing_country_data = $obj_client->getCountryDetailByCountryCode($billing_country_code);
+
+	if($billing_country_data['status'] === "success") {
+		$dataArr['billing_country'] = $billing_country_data['data']->id;
+	} else {
+		$dataArr['billing_country'] = '';
 	}
 	
+	$dataArr['shipping_name'] = isset($params['shipping_name']) ? $params['shipping_name'] : '';
+	$dataArr['shipping_company_name'] = isset($params['shipping_company_name']) ? $params['shipping_company_name'] : '';
+	$dataArr['shipping_address'] = isset($params['shipping_address']) ? $params['shipping_address'] : '';
+	$dataArr['shipping_vendor_type'] = isset($params['shipping_vendor_type']) ? $params['shipping_vendor_type'] : '';
+	$dataArr['shipping_gstin_number'] = isset($params['shipping_gstin_number']) ? $params['shipping_gstin_number'] : '';
+
+	$shipping_state_code = isset($params['shipping_state_code']) ? $params['shipping_state_code'] : '';
+	$state_data = $obj_client->getStateDetailByStateCode($shipping_state_code);
+
+	if($state_data['status'] === "success") {
+		$dataArr['shipping_state'] = $state_data['data']->state_id;
+		$dataArr['shipping_state_name'] = $state_data['data']->state_name;
+	} else {
+		$dataArr['shipping_state'] = '';
+		$dataArr['shipping_state_name'] = '';
+	}
+
+	$shipping_country_code = isset($params['shipping_country_code']) ? $params['shipping_country_code'] : '';
+	$shipping_country_data = $obj_client->getCountryDetailByCountryCode($shipping_country_code);
+
+	if($shipping_country_data['status'] === "success") {
+		$dataArr['shipping_country'] = $shipping_country_data['data']->id;
+	} else {
+		$dataArr['shipping_country'] = '';
+	}
+
 	/* validate invoice data */
 	$obj_client->validateClientInvoice($dataArr);
-	
+
 	$invoiceItemArray = array();
 	$invoiceTotalAmount = 0.00;
 	if(isset($params['invoice_itemid']) && count($params['invoice_itemid']) > 0) {
@@ -87,6 +110,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 
 			$dataInvoiceArr = array();
 			$dataInvoiceArr['invoice_itemid'] = isset($params['invoice_itemid'][$i]) ? $params['invoice_itemid'][$i] : '';
+			$dataInvoiceArr['invoice_receiptvalue'] = isset($params['invoice_receiptvalue'][$i]) ? $params['invoice_receiptvalue'][$i] : 0.00;
 			$dataInvoiceArr['invoice_taxablevalue'] = isset($params['invoice_taxablevalue'][$i]) ? $params['invoice_taxablevalue'][$i] : 0.00;
 			$dataInvoiceArr['invoice_cgstrate'] = isset($params['invoice_cgstrate'][$i]) ? $params['invoice_cgstrate'][$i] : 0.00;
 			$dataInvoiceArr['invoice_sgstrate'] = isset($params['invoice_sgstrate'][$i]) ? $params['invoice_sgstrate'][$i] : 0.00;
@@ -100,7 +124,8 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 			if (!empty($clientMasterItem)) {
 
 				$invoiceItemTaxableAmount = (float)$dataInvoiceArr['invoice_taxablevalue'];
-				
+				$invoiceItemReceiptAmount = (float)$dataInvoiceArr['invoice_receiptvalue'];
+
 				if($dataArr['company_state'] === $dataArr['supply_place']) {
 
 					$itemCSGTTax = (float)$dataInvoiceArr['invoice_cgstrate'];
@@ -132,6 +157,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 								"item_id" => $clientMasterItem->item_id,
 								"item_name" => $clientMasterItem->item_name,
 								"item_hsncode" => $clientMasterItem->hsn_code,
+								"advance_amount" => round($invoiceItemReceiptAmount, 2),
 								"taxable_subtotal" => round($invoiceItemTaxableAmount, 2),
 								"cgst_rate" => $itemCSGTTax,
 								"cgst_amount" => round($invoiceItemCSGTTaxAmount, 2),

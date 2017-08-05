@@ -34,16 +34,14 @@ if (isset($_GET['action']) && $_GET['action'] == 'deleteClient' && isset($_GET['
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
-        <h1>Business User</h1>
+        <h1>Demo User</h1>
         <div class="whitebg formboxcontainer">
-            <div>
-                <a class='btn btn-default btn-success btnwidth addnew' href='<?php echo PROJECT_URL; ?>/?page=client_update'>Add New</a>
-            </div>
+            
             <div class="clear height10"></div>
             <?php $obj_client->showErrorMessage(); ?>
             <?php $obj_client->showSuccessMessge(); ?>
             <?php $obj_client->unsetMessage(); ?>
-            <h2 class="greyheading">Business User Listing</h2>
+            <h2 class="greyheading">Listing</h2>
             <div class="adminformbx">
                 <div class="clear"></div>
                 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable">

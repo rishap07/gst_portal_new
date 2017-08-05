@@ -44,6 +44,9 @@
 .exportmation {
 	display:none;
 }
+.errorValidationContainer {
+	display:none;
+}
 .ui-autocomplete {
     z-index: 2147483647 !important;
     max-width: 350px !important;
@@ -122,7 +125,7 @@ table.dataTable tbody tr.even {
 	padding: 0px !important;
 }
 #sidebar > .nav > li > ul.left-submenu li a {
-	padding: 10px 10px 10px 25px !important;
+	padding: 10px 10px 10px 15px !important;
 	font-size: 14px;
 	color: #333333;
 	background: #e5e5e5;

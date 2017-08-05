@@ -2,11 +2,11 @@
 
 /*
  * 
- *  Developed By        :   Sheetal
- *  Description         :   API GSTR1 encryprtion n decryption 
+ *  Developed By        :   Monika Deswal 
+ *  Description         :   API GSTR1
  *  Date Created        :   May 18, 2017
  *  Last Modified By    :   Monika Deswal 
- *  Last Modification   :   API encryprtion n decryption convert to class structure
+ *  Last Modification   :   Upload Invoice
  * 
  */
 
@@ -17,6 +17,7 @@ final class gstr1 extends validation {
     }
 
     public function gstr1Upload() {
+
         $fmonth = isset($_GET['returnmonth']) ? $_GET['returnmonth'] : date('Y-m');
         $this->getGSTR1Data($fmonth);
     }
@@ -42,11 +43,17 @@ final class gstr1 extends validation {
                 }
                 $this->updateMultiple($this->getTableName('client_invoice'), $dataUpdate);
             }
-           
+			else
+			{
+		    $this->setError('No invoice selected to upload');
+            return false;
+			}
+			
+
 
             $flag = 1;
 
-            $dataReturn = $this->get_results("select * from " . $this->getTableName('return') . " where where return_month='" . $fmonth . "' and client_id='" . $_SESSION['user_detail']['user_id'] . "' and type='gstr1'");
+            $dataReturn = $this->get_results("select * from " . $this->getTableName('return') . " where return_month='" . $fmonth . "' and client_id='" . $_SESSION['user_detail']['user_id'] . "' and type='gstr1'");
             if (!empty($dataReturn)) {
                 $dataGST1_set['financial_year'] = '2017-2018';
                 $dataGST1_set['return_month'] = $fmonth;
@@ -58,7 +65,7 @@ final class gstr1 extends validation {
 
                 $this->update($this->getTableName('return'), $dataGST1_set, $dataGST1);
             } else {
-                $dataGST1['financial_year'] = '2017-2018';
+                $dataGST1['financial_year'] = $this->generateFinancialYear();
                 $dataGST1['return_month'] = $fmonth;
                 $dataGST1['type'] = 'gstr1';
                 $dataGST1['client_id'] = $_SESSION['user_detail']['user_id'];
@@ -67,7 +74,6 @@ final class gstr1 extends validation {
             }
 
             $this->setSuccess("GSTR1 Data Uploaded");
-            
         }
         if ($flag == 1) {
             return true;
@@ -93,7 +99,8 @@ final class gstr1 extends validation {
                 $dataArr = $payload['data_arr'];
                 $data_ids = $payload['data_ids'];
                 $response = $obj_gst->returnSave($dataArr, $fmonth);
-                if (!empty($response['error'] == 1)) {
+                $this->pr($response);die;
+                if (!empty($response['error'] == 0)) {
                     $flag = 1;
                     if (!empty($data_ids)) {
                         /*                         * ****************** Start Code for Update Invoice is upload ************************* */
@@ -146,7 +153,7 @@ final class gstr1 extends validation {
                 return false;
             }
         } else {
-            $this->setError('Sorry! Please update gross turnover');
+            $this->setError('Sorry! Please update your gross turnover');
             return false;
         }
         return false;
@@ -170,6 +177,7 @@ final class gstr1 extends validation {
             }
             if ($this->updateMultiple($this->getTableName('client_invoice'), $dataUpdate)) {
                 $flag = 1;
+				$dataReturn = $this->get_results('select * from '.$this->getTableName('return')." where return_month='".$this->sanitize($_GET['returnmonth'])."' and type='gstr1'");
                 if (!empty($dataReturn)) {
                     $dataGST1_set['financial_year'] = '2017-2018';
                     $dataGST1_set['return_month'] = $fmonth;
@@ -177,7 +185,7 @@ final class gstr1 extends validation {
 
 
                     $dataGST1['type'] = 'gstr1';
-                    $dataGST1['client_id'] = $_SESSION['client_detail']['user_id'];
+                    $dataGST1['client_id'] = $_SESSION['user_detail']['user_id'];
 
                     $this->update($this->getTableName('return'), $dataGST1_set, $dataGST1);
                 } else {
@@ -318,9 +326,9 @@ final class gstr1 extends validation {
         }
         /*         * *** End Code For TXPD Payload ********** */
 
-       /* $this->pr($dataArr);
-        die;
-        */
+         //$this->pr($dataArr);
+          //die; 
+
         $temp_id = '';
         $update_final_ids = array();
         $x = 0;
@@ -479,6 +487,7 @@ final class gstr1 extends validation {
             $temp_number = '';
             $ctin = '';
             foreach ($dataInvB2CS as $dataIn) {
+                $rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
                 if ($ctin != '' && $ctin != $dataIn->billing_gstin_number) {
                     $x++;
                 }
@@ -496,7 +505,8 @@ final class gstr1 extends validation {
                 $dataArr['b2cs'][$x]['rt'] = (float) $rt;
                 $dataArr['b2cs'][$x]['typ'] = 'OE';
                 $dataArr['b2cs'][$x]['pos'] = strlen($dataIn->supply_place) == '1' ? '0' . $dataIn->supply_place : $dataIn->supply_place;
-                $dataArr['b2cs'][$x]['txval'] = (float) $rt;
+
+                $dataArr['b2cs'][$x]['txval'] = (float) $dataIn->taxable_subtotal;
                 if ($dataIn->company_state != $dataIn->supply_place) {
                     $dataArr['b2cs'][$x]['iamt'] = (float) $dataIn->igst_amount;
                 } else {
@@ -540,7 +550,7 @@ final class gstr1 extends validation {
                 }
                 $dataArr['cdnr'][$x]['ctin'] = $dataIn->billing_gstin_number;
                 $nt_type = '';
-                if ($dataIn->invoice_document_nature == 'creditnote') {
+                if ($dataIn->invoice_type == 'creditnote') {
                     $nt_type = 'C';
                 } else {
                     $nt_type = 'D';
@@ -550,8 +560,8 @@ final class gstr1 extends validation {
                 $dataArr['cdnr'][$x]['nt'][$y]['nt_dt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
                 $dataArr['cdnr'][$x]['nt'][$y]['p_gst'] = "N";
                 $dataArr['cdnr'][$x]['nt'][$y]['rsn'] = "Post Sale Discount";
-                $dataArr['cdnr'][$x]['nt'][$y]['inum'] = $dataIn->corresponding_invoice_number;
-                $dataArr['cdnr'][$x]['nt'][$y]['idt'] = date('d-m-Y', strtotime($dataIn->corresponding_invoice_date));
+                $dataArr['cdnr'][$x]['nt'][$y]['inum'] = $dataIn->corresponding_document_number;
+                $dataArr['cdnr'][$x]['nt'][$y]['idt'] = date('d-m-Y', strtotime($dataIn->corresponding_document_date));
                 $dataArr['cdnr'][$x]['nt'][$y]['val'] = (float) $dataIn->invoice_total_value;
                 $dataArr['cdnr'][$x]['nt'][$y]['itms'][$z]['num'] = (int) $a;
                 $rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
@@ -603,8 +613,8 @@ final class gstr1 extends validation {
                 $dataArr['cdnur'][$x]['nt_num'] = date('d-m-Y', strtotime($dataIn->invoice_date));
                 $dataArr['cdnur'][$x]['nt_dt'] = "N";
                 $dataArr['cdnur'][$x]['p_gst'] = "Post Sale Discount";
-                $dataArr['cdnur'][$x]['rsn'] = $dataIn->corresponding_invoice_number;
-                $dataArr['cdnur'][$x]['inum'] = date('d-m-Y', strtotime($dataIn->corresponding_invoice_date));
+                $dataArr['cdnur'][$x]['rsn'] = $dataIn->corresponding_document_number;
+                $dataArr['cdnur'][$x]['inum'] = date('d-m-Y', strtotime($dataIn->corresponding_document_date));
                 $dataArr['cdnur'][$x]['idt'] = (float) $dataIn->invoice_total_value;
                 $dataArr['cdnur'][$x]['val'][$y] = (int) $a;
                 $dataArr['cdnur'][$x]['itms'][$y]['num'] = (int) $a;
@@ -765,15 +775,251 @@ final class gstr1 extends validation {
 
     private function getDOCISSUEPayload($user_id, $returnmonth) {
         $dataArr = $response = $doc_ids = $doc_array = array();
-        $dataArr['doc_issue'][0]['doc_det'][0]['doc_num'] = '1';
-        $dataArr['doc_issue'][0]['doc_det'][0]['docs'][0]['num'] = '1';
-        $dataArr['doc_issue'][0]['doc_det'][0]['docs'][0]['from'] = '20';
-        $dataArr['doc_issue'][0]['doc_det'][0]['docs'][0]['to'] = '29';
-        $dataArr['doc_issue'][0]['doc_det'][0]['docs'][0]['totnum'] = '20';
-        $dataArr['doc_issue'][0]['doc_det'][0]['docs'][0]['cancel'] = '3';
-        $dataArr['doc_issue'][0]['doc_det'][0]['docs'][0]['net_issue'] = '17';
+        //Start Code For Doc
+        $dataInvDoc = array();
+
+        $final_array = $dataRevise = $dataRevised = $dataDebit = $dataCredit = $dataReceipt = $dataRefund = $dataDeliveryJobWork =  $dataDeliverySUAP = $dataDeliverySULGAS = $dataDeliverySupplyOther = array();
+
+        /*********** Start code For Doc Sales *************/
+        $docSales = $this->getDOCSalesInvoices($user_id, $returnmonth);
+
+        $dataInvSales =  $docSales[0];
+        $dataInvCancelSales = $docSales[1];
+        if(isset($dataInvSales) && !empty($dataInvSales))
+        {
+          $doc_num = 1;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvSales);
+          $cancel = count($dataInvCancelSales);
+          $net_issue = $totnum - $cancel;
+          $dataSales['doc_num'] = (int)$doc_num;
+          $dataSales['docs'][$z]['num'] = (int)$a;
+          $dataSales['docs'][$z]['from'] = $dataInvSales[0]->reference_number;
+          $dataSales['docs'][$z]['to'] = $dataInvSales[$totnum-1]->reference_number;
+          $dataSales['docs'][$z]['totnum'] = (int)$totnum;
+          $dataSales['docs'][$z]['cancel'] = (int)$cancel;
+          $dataSales['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataSales;
+          
+        }
+        /*********** End code For Doc Sales *************/
+
+        /*********** Start code For Doc Revised *************/
+        $docRevised = $this->getDOCRevisedInvoices($user_id, $returnmonth);
+        $dataInvSales =  $docRevised[0];
+        $dataInvCancelSales = $docRevised[1];
+        if(isset($dataInvRevised) && !empty($dataInvRevised))
+        {
+          $doc_num = 2;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvRevised);
+          $cancel = count($dataInvCancleRevised);
+          $net_issue = $totnum - $cancel;
+          $dataRevised['doc_num'] = (int)$doc_num;
+          $dataRevised['docs'][$z]['num'] = (int)$a;
+          $dataRevised['docs'][$z]['from'] = $dataInvRevised[0]->reference_number;
+          $dataRevised['docs'][$z]['to'] = $dataInvRevised[$totnum-1]->reference_number;
+          $dataRevised['docs'][$z]['totnum'] = (int)$totnum;
+          $dataRevised['docs'][$z]['cancel'] = (int)$cancel;
+          $dataRevised['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataRevised;
+        }
+        /*********** End code For Doc Revised *************/
+
+        /*********** Start code For Debit  *************/
+        $docDebit = $this->getDOCDebitInvoices($user_id, $returnmonth);
+        $dataInvDebit = $docDebit[0];
+        $dataInvCancleDebit = $docDebit[1];
+        if(isset($dataInvDebit) && !empty($dataInvDebit))
+        {
+          $doc_num = 3;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvDebit);
+          $cancel = count($dataInvCancleDebit);
+          $net_issue = $totnum - $cancel;
+          $dataDebit['doc_num'] = (int)$doc_num;
+          $dataDebit['docs'][$z]['num'] = (int)$a;
+          $dataDebit['docs'][$z]['from'] = $dataInvDebit[0]->reference_number;
+          $dataDebit['docs'][$z]['to'] = $dataInvDebit[$totnum-1]->reference_number;
+          $dataDebit['docs'][$z]['totnum'] = (int)$totnum;
+          $dataDebit['docs'][$z]['cancel'] = (int)$cancel;
+          $dataDebit['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataDebit;
+        }
+        /*********** End code For Debit  *************/
+
+        /*********** Start code For Credit  *************/
+        $docCredit = $this->getDOCCreditInvoices($user_id, $returnmonth);
+        $dataInvCredit = $docCredit[0];
+        $dataInvCancleCredit = $docCredit[1];
+        if(isset($dataInvCredit) && !empty($dataInvCredit))
+        {
+          $doc_num = 4;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvCredit);
+          $cancel = count($dataInvCancleCredit);
+          $net_issue = $totnum - $cancel;
+          $dataCredit['doc_num'] = (int)$doc_num;
+          $dataCredit['docs'][$z]['num'] = (int)$a;
+          $dataCredit['docs'][$z]['from'] = $dataInvCredit[0]->reference_number;
+          $dataCredit['docs'][$z]['to'] = $dataInvCredit[$totnum-1]->reference_number;
+          $dataCredit['docs'][$z]['totnum'] = (int)$totnum;
+          $dataCredit['docs'][$z]['cancel'] = (int)$cancel;
+          $dataCredit['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataCredit;
+        }
+        /*********** End code For Credit  *************/
+
+        /*********** Start code For Receipt   *************/
+        $docReceipt = $this->getDOCReceiptInvoices($user_id, $returnmonth);
+        $dataInvReceipt =  $docReceipt[0];
+        $dataInvCancleReceipt =  $docReceipt[1];
+        if(isset($dataInvReceipt) && !empty($dataInvReceipt))
+        {
+          $doc_num = 5;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvReceipt);
+          $cancel = count($dataInvCancleReceipt);
+          $net_issue = $totnum - $cancel;
+          $dataReceipt['doc_num'] = (int)$doc_num;
+          $dataReceipt['docs'][$z]['num'] = (int)$a;
+          $dataReceipt['docs'][$z]['from'] = $dataInvReceipt[0]->reference_number;
+          $dataReceipt['docs'][$z]['to'] = $dataInvReceipt[$totnum-1]->reference_number;
+          $dataReceipt['docs'][$z]['totnum'] = (int)$totnum;
+          $dataReceipt['docs'][$z]['cancel'] = (int)$cancel;
+          $dataReceipt['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataReceipt;
+        }
+        /*********** End code For Receipt   *************/
+
+        /*********** Start code For Refund   *************/
+        $docRefund = $this->getDOCRefundInvoices($user_id, $returnmonth);
+        $dataInvRefund = $docRefund[0];
+        $dataInvCancleRefund = $docRefund[1];
+        if(isset($dataInvRefund) && !empty($dataInvRefund))
+        {
+          $doc_num = 6;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvRefund);
+          $cancel = count($dataInvCancleRefund);
+          $net_issue = $totnum - $cancel;
+          $dataRefund['doc_num'] = (int)$doc_num;
+          $dataRefund['docs'][$z]['num'] = (int)$a;
+          $dataRefund['docs'][$z]['from'] = $dataInvRefund[0]->reference_number;
+          $dataRefund['docs'][$z]['to'] = $dataInvRefund[$totnum-1]->reference_number;
+          $dataRefund['docs'][$z]['totnum'] = (int)$totnum;
+          $dataRefund['docs'][$z]['cancel'] = (int)$cancel;
+          $dataRefund['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataRefund;
+        }
+        /*********** End code For Refund   *************/
+
+        /*********** Start code Delivery Challan for job work  *************/
+        $docDeliveryJobWork = $this->getDOCDeliveryChallanJobWorkInvoices($user_id, $returnmonth);
+        $dataInvDeliveryJobWork = $docDeliveryJobWork[0];
+        $dataInvCancleDeliveryJobWork = $docDeliveryJobWork[1];
+
+        if(isset($dataInvDeliveryJobWork) && !empty($dataInvDeliveryJobWork))
+        {
+          $doc_num = 7;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvRefund);
+          $cancel = count($dataInvCancleDeliveryJobWork);
+          $net_issue = $totnum - $cancel;
+          $dataDeliveryJobWork['doc_num'] = (int)$doc_num;
+          $dataDeliveryJobWork['docs'][$z]['num'] = (int)$a;
+          $dataDeliveryJobWork['docs'][$z]['from'] = $dataInvDeliveryJobWork[0]->reference_number;
+          $dataDeliveryJobWork['docs'][$z]['to'] = $dataInvDeliveryJobWork[$totnum-1]->reference_number;
+          $dataDeliveryJobWork['docs'][$z]['totnum'] = (int)$totnum;
+          $dataDeliveryJobWork['docs'][$z]['cancel'] = (int)$cancel;
+          $dataDeliveryJobWork['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataDeliveryJobWork;
+        }
+        /*********** End code Delivery Challan for job work *************/
+
+        /*********** Start code Delivery Challan for supply on approval  *************/
+        $docDeliverySUAP = $this->getDOCDeliveryChallanSupplyOnApprovalInvoices($user_id, $returnmonth);
+        $dataInvDeliverySUAP = $docDeliverySUAP[0];
+        $dataInvCancleDeliverySUAP = $docDeliverySUAP[1];
+
+        if(isset($dataInvDeliverySUAP) && !empty($dataInvDeliveryJobWork))
+        {
+          $doc_num = 8;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvDeliverySUAP);
+          $cancel = count($dataInvCancleDeliverySUAP);
+          $net_issue = $totnum - $cancel;
+          $dataDeliverySUAP['doc_num'] = (int)$doc_num;
+          $dataDeliverySUAP['docs'][$z]['num'] = (int)$a;
+          $dataDeliverySUAP['docs'][$z]['from'] = $dataInvDeliverySUAP[0]->reference_number;
+          $dataDeliverySUAP['docs'][$z]['to'] = $dataInvDeliverySUAP[$totnum-1]->reference_number;
+          $dataDeliverySUAP['docs'][$z]['totnum'] = (int)$totnum;
+          $dataDeliverySUAP['docs'][$z]['cancel'] = (int)$cancel;
+          $dataDeliverySUAP['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataDeliverySUAP;
+        }
+        /*********** End code Delivery Challan for supply on approval *************/
+
+        /*********** Start code Delivery Challan in case of liquid gas  *************/
+        $docDeliverySULGAS = $this->getDOCDeliveryChallanInCaseLiquidGasInvoices($user_id, $returnmonth);
+        $dataInvDeliverySULGAS = $docDeliverySULGAS[0];
+        $dataInvCancleDeliverySULGAS = $docDeliverySULGAS[1];
+
+        if(isset($dataInvDeliverySULGAS) && !empty($dataInvDeliverySULGAS))
+        {
+          $doc_num = 9;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvDeliverySULGAS);
+          $cancel = count($dataInvCancleDeliverySULGAS);
+          $net_issue = $totnum - $cancel;
+          $dataDeliverySULGAS['doc_num'] = (int)$doc_num;
+          $dataDeliverySULGAS['docs'][$z]['num'] = (int)$a;
+          $dataDeliverySULGAS['docs'][$z]['from'] = $dataInvDeliverySULGAS[0]->reference_number;
+          $dataDeliverySULGAS['docs'][$z]['to'] = $dataInvDeliverySULGAS[$totnum-1]->reference_number;
+          $dataDeliverySULGAS['docs'][$z]['totnum'] = (int)$totnum;
+          $dataDeliverySULGAS['docs'][$z]['cancel'] = (int)$cancel;
+          $dataDeliverySULGAS['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataDeliverySULGAS;
+        }
+        /*********** End code Delivery Challan in case of liquid gas *************/
+
+        /*********** Start code Delivery Challan in cases other than by way of supply  *************/
+        $docDeliveryOther = $this->getDOCDeliveryChallanInCaseOtherInvoices($user_id, $returnmonth);
+        $dataInvDeliverySupplyOther = $docDeliveryOther[0];
+        $dataInvCancleDeliverySupplyOther= $docDeliveryOther[1];
+
+        if(isset($dataInvDeliverySupplyOther) && !empty($dataInvDeliverySupplyOther))
+        {
+          $doc_num = 10;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvDeliverySupplyOther);
+          $cancel = count($dataInvCancleDeliverySupplyOther);
+          $net_issue = $totnum - $cancel;
+          $dataDeliverySupplyOther['doc_num'] = (int)$doc_num;
+          $dataDeliverySupplyOther['docs'][$z]['num'] = (int)$a;
+          $dataDeliverySupplyOther['docs'][$z]['from'] = $dataInvDeliverySupplyOther[0]->reference_number;
+          $dataDeliverySupplyOther['docs'][$z]['to'] = $dataInvDeliverySupplyOther[$totnum-1]->reference_number;
+          $dataDeliverySupplyOther['docs'][$z]['totnum'] = (int)$totnum;
+          $dataDeliverySupplyOther['docs'][$z]['cancel'] = (int)$cancel;
+          $dataDeliverySupplyOther['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataDeliverySupplyOther;
+        }
+        /*********** End code Delivery Challan in cases other than by way of supply  *************/
+
+        $dataInvDoc['doc_issue']['doc_det']  = $final_array;
         $response['doc_ids'] = $doc_ids;
-        $response['doc_arr'] = $dataArr;
+        $response['doc_arr'] = $dataInvDoc;
+
         return $response;
     }
 
@@ -872,46 +1118,42 @@ final class gstr1 extends validation {
         $response['txpd_arr'] = $dataArr;
         return $response;
     }
-	public function startGstr1()
-	{
-		 $sql = "select * from " . TAB_PREFIX . "return where client_id='" . $_SESSION['user_detail']['user_id'] . "' and return_month='".$_GET["returnmonth"]."' and type='gstr1'";
-     
-       $clientdata = $this->get_results($sql);
-	   
-	   if(empty($clientdata))
-	   {
-		    
-		    $dataArr['return_month']=$this->sanitize($_GET['returnmonth']);
-			$dataArr['type']='gstr1';
-			$dataArr['client_id']= $_SESSION['user_detail']['user_id'];
-			$year = $this->generateFinancialYear();
-			$dataArr['financial_year']=$year;
-			$dataArr['status']=1;
-			
-			if ($this->insert(TAB_PREFIX.'return', $dataArr)) {
-				//$this->setSuccess('GSTR2 Saved Successfully');
-				return true;
-			}
-			else
-			{
-				$this->setError('Failed to save GSTR1 data');
-			   return false;    	   
-		   }
-	   }
-	   else
-	   {
-		   /*
-		   if ($this->update(TAB_PREFIX.'client_return_gstr3b', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
-				$this->setSuccess('GSTR3B Saved Successfully');
-				return true;
-			}
-			else
-			{
-				$this->setError('Failed to save GSTR3B data');
-			   return false;    	   
-		   }
-		   */
-	   }
-	}
+
+    public function startGstr1() {
+
+        $sql = "select * from " . TAB_PREFIX . "return where client_id='" . $_SESSION['user_detail']['user_id'] . "' and return_month='" . $_GET["returnmonth"] . "' and type='gstr1'";
+
+        $clientdata = $this->get_results($sql);
+
+        if (empty($clientdata)) {
+
+            $dataArr['return_month'] = $this->sanitize($_GET['returnmonth']);
+            $dataArr['type'] = 'gstr1';
+            $dataArr['client_id'] = $_SESSION['user_detail']['user_id'];
+            $year = $this->generateFinancialYear();
+            $dataArr['financial_year'] = $year;
+            $dataArr['status'] = 1;
+
+            if ($this->insert(TAB_PREFIX . 'return', $dataArr)) {
+                //$this->setSuccess('GSTR2 Saved Successfully');
+                return true;
+            } else {
+                $this->setError('Failed to save GSTR1 data');
+                return false;
+            }
+        } else {
+            /*
+              if ($this->update(TAB_PREFIX.'client_return_gstr3b', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
+              $this->setSuccess('GSTR3B Saved Successfully');
+              return true;
+              }
+              else
+              {
+              $this->setError('Failed to save GSTR3B data');
+              return false;
+              }
+             */
+        }
+    }
 
 }

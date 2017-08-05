@@ -54,7 +54,15 @@ if (!empty($dataRes)) { ?>
 								
 			</ul>
 		</div>
-		
+		<div class="clear"></div>
+		<?php
+		$dataReturns = $obj_gstr2->get_results("select * from " . TAB_PREFIX . "return where return_month='" . $returnmonth . "' and client_id='" . $_SESSION['user_detail']['user_id'] . "' and status='3' and type='gstr2'");
+		if (!empty($dataReturns)) {
+			?>
+			<div id="sucmsg" style="background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;"><i class="fa fa-check"></i> <b>Success:</b> GSTR2 is Already Filed</div>
+			<?php
+		} 
+		?>
 		<div class="clear"></div>
 
 		<div class="row gstr2-reconcile">

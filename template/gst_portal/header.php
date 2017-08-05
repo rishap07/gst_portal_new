@@ -195,20 +195,16 @@
 
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_receipt_voucher_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Receipt Voucher Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_receipt_voucher_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Receipt Voucher Invoice</a></li><?php } ?>
-
+							
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_refund_voucher_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Refund Voucher Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_refund_voucher_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Refund Voucher Invoice</a></li><?php } ?>
 
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_revised_tax_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Revised Tax Invoice</a></li><?php } ?>
+                            <?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_revised_tax_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Revised Tax Invoice</a></li><?php } ?>
+                            
+                            <?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_delivery_challan_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Delivery Challan Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_delivery_challan_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Delivery Challan Invoice</a></li><?php } ?>
 
-							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_delivery_challan_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Delivery Challan Invoice</a></li><?php } ?>
-
-							<?php /* if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_refund_voucher_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Refund Voucher Invoice</a></li><?php } ?>
-							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_refund_voucher_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Refund Voucher Invoice</a></li><?php } ?>
-							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_payment_voucher_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Payment Voucher Invoice</a></li><?php } ?>
-							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_payment_voucher_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Payment Voucher Invoice</a></li><?php } ?>
-							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_revised_tax_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Revised Tax Invoice</a></li><?php } ?>
-							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_special_tax_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Special Cases Tax Invoice</a></li><?php } ?>
-							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_special_tax_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Special Cases Tax Invoice</a></li><?php } */ ?>
 						</ul>
 					</li>
 				 <?php } ?>
@@ -226,15 +222,10 @@
 				 <?php } ?>
 
 				<!--
-					<li><a href="#"><i class="fa fa-hourglass-half" aria-hidden="true"></i> <span class="collapse in hidden-xs">Time of Supply</span></a></li>
-					<li><a href="#"><i class="fa fa-refresh"></i> <span class="collapse in hidden-xs">Payment</span></a></li>
-					<li><a href="#"><i class="fa fa-file-excel-o" aria-hidden="true"></i> <span class="collapse in hidden-xs">TDS</span></a></li>
-					<li><a href="#"><i class="fa fa-credit-card" aria-hidden="true"></i> <span class="collapse in hidden-xs">TCS</span></a></li>
+					<?php if ($db_obj->can_read('client_invoice')) { ?>
+						<li><a href="<?php echo PROJECT_URL . '/?page=return_client'; ?>"><i class="fa fa-refresh"></i> <span class="collapse in hidden-xs">Return</span></a></li>
+					<?php } ?>
 				-->
-
-				<?php if ($db_obj->can_read('client_invoice')) { ?>
-					<li><a href="<?php echo PROJECT_URL . '/?page=return_client'; ?>"><i class="fa fa-refresh"></i> <span class="collapse in hidden-xs">Return</span></a></li>
-				<?php } ?>
 
 				<?php if (isset($_SESSION['publisher']['user_id'])) { ?>
 					<li><a href="<?php echo PROJECT_URL . '/?page=client_loginas&permission=revert'; ?>"><i class="fa fa-refresh"></i> <span class="collapse in hidden-xs">Revert to Login</span></a></li>

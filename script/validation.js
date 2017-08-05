@@ -132,12 +132,19 @@ vali = {
         $(".errborder").each(function (index) {
             $(this).removeClass("errborder");
         });
+		var xfocus='0';
         $(formid+' input, '+formid+' select, '+formid+' textarea, '+formid+' checkbox').each(function (index)
         {
             var tempflag = 0;
             var input = $(this);
+			
             if ((input.hasClass('required') && $.trim(input.val()) == '')||(input.hasClass('required') && input.attr('type') == 'checkbox'  && input.prop("checked")===false))
             {
+				if(xfocus=='0')
+				{
+					$(this).focus();
+					xfocus='1';
+				}
                 tempflag = 1;
                 flag = 1;
                 console.log('Type: ' + input.attr('type') + 'Name: ' + input.attr('name') + 'Value: ' + input.val());
@@ -146,12 +153,18 @@ vali = {
             }
             if (input.attr('data-bind') && tempflag == 0)
             {
+				
                 var str = input.val();
                 var temp1 = new RegExp(reg_match[input.attr('data-bind')]);
                 if ($.trim(str) != '')
                 {
                     if (!temp1.test(str))
                     {
+						if(xfocus=='0')
+						{
+							$(this).focus();
+							xfocus='1';
+						}
                         flag1 = 1;
                         name_chk = '';
                         if(input.attr('placeholder') && input.attr('placeholder')!='')

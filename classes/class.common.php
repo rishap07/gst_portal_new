@@ -51,7 +51,7 @@ class common extends db {
         $data = $this->get_results("select * from " . TAB_PREFIX . "user where user_id='" . $_SESSION['user_detail']['user_id'] . "'");
         if ($data[0]->email_verify == '0') {
             $name = $data[0]->first_name;
-            if ($this->sendMail('Email Verify', 'User ID : ' . $_SESSION['user_detail']['user_id'] . ' email verfication', $data[0]->email, 'noreply@gstkeeper.com', '', 'rishap07@gmail.com,sheetalprasad95@gmail.com', '', 'Verify Your Email Address', $this->getEmailVerifyMailBody($name))) {
+            if ($this->sendMail('Email Verify', 'User ID : ' . $_SESSION['user_detail']['user_id'] . ' email verfication', $data[0]->email, 'noreply@gstkeeper.com', '', 'rishap.gandhi@cyfuture.com', '', 'Verify Your Email Address', $this->getEmailVerifyMailBody($name))) {
                 $this->setSuccess('A confirmation mail has been sent to you (Kindly check your inbox & spam folder). <strong>Confirm your e-mail</strong> by clicking on the link in the mail. ');
             } else {
                 $this->setError('Try again, there is some issue in sending an email.');

@@ -95,7 +95,7 @@ $iFilteredTotal = $obj_client->get_row($uQuery);
 $iFilteredTotal = $iFilteredTotal->rows;
 
 /* Total data set length */
-$uQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $ciTable";
+$uQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $ciTable where invoice_type IN('taxinvoice','exportinvoice','sezunitinvoice','deemedexportinvoice') AND is_deleted='0' AND added_by='".$_SESSION['user_detail']['user_id']."'";
 //echo $sQuery;
 $iTotal = $obj_client->get_row($uQuery);
 $iTotal = $iTotal->count;
@@ -116,18 +116,7 @@ if(isset($rResult) && !empty($rResult)) {
     foreach($rResult as $aRow) {
 
         $row = array();
-        $invoice_type = '';
 		$cancelLink = '';
-
-		if($aRow->invoice_type == 'taxinvoice') {
-            $invoice_type = 'Tax Invoice';
-        } elseif($aRow->invoice_type == 'exportinvoice'){
-            $invoice_type = 'Export Invoice';
-        } elseif($aRow->invoice_type == 'sezunitinvoice'){
-            $invoice_type = 'SEZ Unit Invoice';
-        } elseif($aRow->invoice_type == 'deemedexportinvoice'){
-            $invoice_type = 'Deemed Export Invoice';
-        }
 
 		if($aRow->is_canceled == '0') {
             $cancelLink = '<a class="cancelSalesInvoice" data-invoice-id="'.$aRow->invoice_id.'" href="javascript:void(0)">Cancel</a>';

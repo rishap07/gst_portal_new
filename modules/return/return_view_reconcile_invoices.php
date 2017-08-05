@@ -152,6 +152,8 @@ switch ($action) {
 					from " . $obj_gstr2->getTableName('client_reconcile_purchase_invoice1') . " where
 					reference_number='" . $invoideData->reference_number . "'";
             $statusData = $obj_gstr2->get_results($statusQuery);
+            
+            
             $taxAmt = $invoideData->total_igst_amount + $invoideData->total_cgst_amount + $invoideData->total_sgst_amount + $invoideData->total_cess_amount;
             $action = isset($statusData[0]->status) ? $statusData[0]->status : '';
             switch ($action) {
@@ -178,11 +180,17 @@ switch ($action) {
     <td><?php echo $taxAmt ?></td> 
     <td><div class="update_div"><?php echo $status; ?></div></td> 
     <td><div  class="dropdown">
+     <?php if($statusData[0]->is_uploaded==0) { ?>
     <a href="#" class="dropdown-toggle" id="drop4" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Action <span class="caret"></span> </a>
     <ul class="dropdown-menu" id="menu1" aria-labelledby="drop4">
+   
      <li><a href="#" class="gstr2" data-bind="update" data-id=<?php echo $invoideData->purchase_invoice_id ?>>Update GSTR2 File</a></li>
      <li><a href="#" class="gstr2" data-bind="reject" data-id=<?php echo $invoideData->purchase_invoice_id ?>>Reject</a></li>
      <li><a href="#" class="gstr2" data-bind="pending" data-id=<?php echo $invoideData->purchase_invoice_id ?>>Pending</a></li>
+     <?php } else{  ?>
+           <div class="alert-success"">Invoice Uploaded</div>
+    
+          <?php }?>
       </ul>
    </div></td> 
    </tr>
@@ -288,11 +296,17 @@ switch ($action) {
     <td><?php echo $taxAmt ?></td> 
     <td><div class="update_div"><?php echo $status; ?></div></td> 
     <td><div  class="dropdown">
+     <?php if($statusData[0]->is_uploaded==0) { ?>
     <a href="#" class="dropdown-toggle" id="drop4" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Action <span class="caret"></span> </a>
     <ul class="dropdown-menu" id="menu1" aria-labelledby="drop4">
+    
      <li><a href="#" class="gstr2" data-bind="update" data-id=<?php echo $invoideData->invoice_id ?>>Update GSTR2 File</a></li>
      <li><a href="#" class="gstr2" data-bind="reject" data-id=<?php echo $invoideData->invoice_id ?>>Reject</a></li>
      <li><a href="#" class="gstr2" data-bind="pending" data-id=<?php echo $invoideData->invoice_id ?>>Pending</a></li>
+    <?php } else{  ?>
+       <div class="alert-success"">Invoice Uploaded</div>
+
+      <?php }?>
       </ul>
    </div></td> 
    </tr>
@@ -405,11 +419,16 @@ switch ($action) {
     <td><?php echo $taxAmt ?></td> 
     <td><div class="update_div"><?php echo $status; ?></div></td> 
     <td><div  class="dropdown">
+     <?php if($statusData[0]->is_uploaded==0) { ?>
     <a href="#" class="dropdown-toggle" id="drop4" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Action <span class="caret"></span> </a>
     <ul class="dropdown-menu" id="menu1" aria-labelledby="drop4">
+    
      <li><a href="#" class="gstr2" data-bind="update" data-id=<?php echo $invoideData->purchase_invoice_id ?>>Update GSTR2 File</a></li>
      <li><a href="#" class="gstr2" data-bind="reject" data-id=<?php echo $invoideData->purchase_invoice_id ?>>Reject</a></li>
      <li><a href="#" class="gstr2" data-bind="pending" data-id=<?php echo $invoideData->purchase_invoice_id ?>>Pending</a></li>
+          <?php } else{  ?>
+           <div class="alert-success"">Invoice Uploaded</div>
+          <?php }?>
       </ul>
    </div></td> 
    </tr>
