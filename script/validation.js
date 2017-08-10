@@ -74,6 +74,7 @@ vali = {
         //reg_match['telephone'] = /^\d{6,30}$/;
         reg_match['pincode'] = /^\d{6}$/;
         reg_match['decimal'] = /^\s*-?[0-9]\d*(\.\d{1,2})?\s*$/;
+		reg_match['valtax'] = /^\s*-?[0-9]\d*(\.\d{1,3})?\s*$/;
         //reg_match['avarge']=/^[0-9][0-9]{1,10}(\.[0-9]{1,2})?$/;
         reg_match['dl'] = /^[ A-Za-z0-9\-\/]*$/;
         reg_match['garage'] = /^[ A-Za-z0-9\&\/\-\(\)\.\+]*$/;
@@ -108,6 +109,7 @@ vali = {
         err_msg['number'] = "Only Number Allowed";
         err_msg['numnzero'] = "Number must be greater then 0";
         err_msg['decimal'] = "Allow 2 digit decimal numbers";
+		err_msg['valtax'] = "Allow 3 digit decimal numbers";
         err_msg['mobilenumber'] = "Should be number and 10 digit.";
         err_msg['pincode'] = "Allow 6 digit numbers";
         err_msg['email'] = "Not Valid Email";
@@ -247,7 +249,7 @@ function validateInvoiceAmount(evt, el) {
     if(number.length > 1 && charCode == 46){
          return false;
     }
-    
+
 	//get the carat position
     var caratPos = getSelectionStart(el);
     var dotPos = el.value.indexOf(".");
@@ -260,7 +262,7 @@ function validateInvoiceAmount(evt, el) {
 
 // THE SCRIPT THAT CHECKS IF THE KEY PRESSED IS A NUMERIC OR DECIMAL VALUE.
 function validateDecimalValue(evt, el) {
-    
+
 	var charCode = (evt.which) ? evt.which : event.keyCode;
     var number = el.value.split('.');
 	if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
@@ -276,6 +278,30 @@ function validateDecimalValue(evt, el) {
     var caratPos = getSelectionStart(el);
     var dotPos = el.value.indexOf(".");
     if( caratPos > dotPos && dotPos > -1 && (number[1].length > 1)){
+        return false;
+    }
+
+	return true;
+}
+
+// THE SCRIPT THAT CHECKS IF THE KEY PRESSED IS A NUMERIC OR DECIMAL VALUE 3 DIGITS ALLOW.
+function validateTaxValue(evt, el) {
+
+	var charCode = (evt.which) ? evt.which : event.keyCode;
+    var number = el.value.split('.');
+	if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
+        return false;
+    }
+
+	//just one dot
+    if(number.length > 1 && charCode == 46){
+         return false;
+    }
+
+	//get the carat position
+    var caratPos = getSelectionStart(el);
+    var dotPos = el.value.indexOf(".");
+    if( caratPos > dotPos && dotPos > -1 && (number[1].length > 2)){
         return false;
     }
 
