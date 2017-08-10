@@ -1,9 +1,16 @@
+<?php
+	$form_data = array();
+	if(isset($_GET['page'])) {
+		$form_data = $db_obj->get_results("select * from ".TAB_PREFIX."module where url='".$db_obj->sanitize($_GET['page'])."' and status='1'");
+	}
+	
+?>
 <!DOCTYPE html>
 <html lang="En">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-	<title>GST Keeper</title>
+	<title><?php echo isset($form_data[0]->Title) ? $form_data[0]->Title : 'GST Keeper'; ?></title>
 	
 	<!--COMMON CSS START HERE-->
 	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/bootstrap.min.css?8" />
@@ -30,6 +37,98 @@
 			});
 		});
 	</script>
+	
+	<style type="text/css">
+	
+        
+    #noti_Container {
+        position:relative;
+    }
+       
+    /* A CIRCLE LIKE BUTTON IN THE TOP MENU. */
+    #noti_Button {
+        width:22px;
+        height:22px;
+        line-height:22px;
+        border-radius:50%;
+        -moz-border-radius:50%; 
+        -webkit-border-radius:50%;
+        background:#FFF;
+        margin:-3px 10px 0 10px;
+        cursor:pointer;
+    }
+        
+    /* THE POPULAR RED NOTIFICATIONS COUNTER. */
+    #noti_Counter {
+        display:block;
+        position:absolute;
+        background:#E1141E;
+        color:#FFF;
+        font-size:12px;
+        font-weight:normal;
+        padding:1px 3px;
+        margin:-8px 0 0 25px;
+        border-radius:2px;
+        -moz-border-radius:2px; 
+        -webkit-border-radius:2px;
+        z-index:1;
+    }
+        
+    /* THE NOTIFICAIONS WINDOW. THIS REMAINS HIDDEN WHEN THE PAGE LOADS. */
+    #notifications {
+        display:none;
+        width:430px;
+        position:absolute;
+        top:30px;
+        left:0;
+        background:#FFF;
+        border:solid 1px rgba(100, 100, 100, .20);
+        -webkit-box-shadow:0 3px 8px rgba(0, 0, 0, .20);
+        z-index: 0;
+    }
+    /* AN ARROW LIKE STRUCTURE JUST OVER THE NOTIFICATIONS WINDOW */
+    #notifications:before {         
+        content: '';
+        display:block;
+        width:0;
+        height:0;
+        color:transparent;
+        border:10px solid #CCC;
+        border-color:transparent transparent #FFF;
+        margin-top:-20px;
+        margin-left:10px;
+    }
+        
+    h3 {
+        display:block;
+        color:#333; 
+        background:#FFF;
+        font-weight:bold;
+        font-size:13px;    
+        padding:8px;
+        margin:0;
+        border-bottom:solid 1px rgba(100, 100, 100, .30);
+    }
+        
+    .seeAll {
+        background:#F6F7F8;
+        padding:8px;
+        font-size:12px;
+        font-weight:bold;
+        border-top:solid 1px rgba(100, 100, 100, .30);
+        text-align:center;
+    }
+    .seeAll a {
+        color:#3b5998;
+    }
+    .seeAll a:hover {
+        background:#F6F7F8;
+        color:#3b5998;
+        text-decoration:underline;
+    }
+</style>
+	
+	
 </head>
 <body>
 	<div class="mobilemenu"><a href="#"><i class="fa fa-bars" aria-hidden="true"></i></a></div>
@@ -53,6 +152,34 @@
 			</ul>
 		</div>
 	</div>
+	  <?php
+						  
+						  $obj_notification = new notification();
+						  $message='';
+						  $notification_status=0;
+						  //Show total number of notification
+						 
+                         //Show all notification Message
+						 if($obj_notification->showNotificationData())
+						  {
+						   
+						  }
+						  if($message=$obj_notification->showNotificationUpdate())
+						  {
+						   
+						  }
+						  else{
+							  $count=1;
+						  }
+						   if($count=$obj_notification->totalNotification())
+						  {
+						   
+						  }
+						  $notification_status=$obj_notification->checkNotificationStatus();
+						  
+
+					?>
+				
 
 	<!--HEADER START HERE--> 
 	<div class="headertop shadow">
@@ -61,7 +188,39 @@
 			<ul class="topstripnav"> 
 				<li><div class="tollfreenumber" style="margin-top:-15px;">Toll Free<br/> <span>1800-212-2022</span> </div><span class="iconphone"></span></li>
 				<li><a href="javascript:void(0)"><div class="tollfreenumber"> <span>Live Chat</span></div> <span class="iconchat"></span></a></li>
-				<li><div class="userinfo"><img src="<?php echo PROJECT_URL; ?>/image/user-img.jpg" alt="#"><?php echo ucwords($_SESSION['user_detail']['name']);?></div></li>
+				
+				<?php 
+				if(($_SESSION["user_detail"]["user_group"]==3) || ($_SESSION["user_detail"]["user_group"]==4))
+				{
+					
+				if($count > 1)
+				{
+					
+					?>
+				 <li id="noti_Container"><i class="fa fa-bell-o" aria-hidden="true"></i>
+                <div id="noti_Counter"></div>   <!--SHOW NOTIFICATIONS COUNT.-->
+                
+                <!--A CIRCLE LIKE BUTTON TO DISPLAY NOTIFICATION DROPDOWN.-->
+                <div id="noti_Button"></div>    
+
+                <!--THE NOTIFICAIONS DROPDOWN BOX.-->
+                <div id="notifications">
+                    <h3>Notifications</h3>
+                    <div style="height:50px;">
+						<?php echo $message; ?>
+					</div>
+                    <div class="seeAll"><a href="<?php echo PROJECT_URL; ?>/?page=notification">See All</a></div>
+                </div>
+				</li> <?php } } ?>
+               <li><div class="userinfo">
+				<?php 
+				$profile_pics= '/image/user-img.jpg';
+			     if(isset($_SESSION["user_detail"]["profile_picture"]) && $_SESSION["user_detail"]["profile_picture"]!='')
+			     { 
+					$profile_pics="/upload/profile-picture/".$_SESSION["user_detail"]["profile_picture"];
+				 }
+				?>
+					<a href="<?php echo PROJECT_URL; ?>/?page=subscriber_update"><img style="height:40px;" src="<?php echo PROJECT_URL.$profile_pics; ?>" alt="#"></a><?php echo ucwords($_SESSION['user_detail']['name']);?></div></li>
 				<li style="border-right:none;"><a href="<?php echo PROJECT_URL; ?>/?page=logout" class="btnlogout"><span class="fa fa-sign-out" aria-hidden="true"></span> LOGOUT</a></li>
 			</ul>
 		</div>
@@ -122,6 +281,17 @@
 							
 							<?php if ($db_obj->can_read('coupon_update')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=coupon_update"><i class="fa fa-circle" aria-hidden="true"></i>Update Coupon</a></li><?php } ?>
 							
+						</ul>
+					</li>
+				<?php } ?>
+				<?php  if($db_obj->can_read('notification_list')) { ?>
+					<li>
+						<a href="#" data-target="#item10" data-toggle="collapse"><i class="fa fa-list"></i> 
+						<span class="collapse in hidden-xs">Notification<span class="navrgtarrow"><i class="fa fa-chevron-right" aria-hidden="true"></i></span></span></a>
+						<ul class="nav nav-stacked collapse left-submenu" id="item10">
+						<?php if ($db_obj->can_read('notification_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=notification_list"><i class="fa fa-circle" aria-hidden="true"></i>Notification Listing</a></li><?php } ?>
+							
+						
 						</ul>
 					</li>
 				<?php } ?>
@@ -221,11 +391,11 @@
 					</li>
 				 <?php } ?>
 
-				<!--
+				
 					<?php if ($db_obj->can_read('client_invoice')) { ?>
 						<li><a href="<?php echo PROJECT_URL . '/?page=return_client'; ?>"><i class="fa fa-refresh"></i> <span class="collapse in hidden-xs">Return</span></a></li>
 					<?php } ?>
-				-->
+				
 
 				<?php if (isset($_SESSION['publisher']['user_id'])) { ?>
 					<li><a href="<?php echo PROJECT_URL . '/?page=client_loginas&permission=revert'; ?>"><i class="fa fa-refresh"></i> <span class="collapse in hidden-xs">Revert to Login</span></a></li>
@@ -237,6 +407,64 @@
 			<div style="clear:both;"></div>
 		</div>
 		<!-- /sidebar -->
+<script>
+    $(document).ready(function () {
 
+        // ANIMATEDLY DISPLAY THE NOTIFICATION COUNTER.
+		<?php
+		if($notification_status > 0 )
+		{
+			?>
+        $('#noti_Counter')
+            .css({ opacity: 0 })
+            .text('<?php echo $count-1; ?>')              // ADD DYNAMIC VALUE (YOU CAN EXTRACT DATA FROM DATABASE OR XML).
+            .css({ top: '-10px' })
+			 .css({ background: '#E1141E' })
+            .animate({ top: '-2px', opacity: 1 }, 500);
+		<?php } else { 
+		?>
+           $('#noti_Counter')
+            .css({ opacity: 0 })
+           // .text('<?php echo $count-1; ?>')              // ADD DYNAMIC VALUE (YOU CAN EXTRACT DATA FROM DATABASE OR XML).
+            .css({ top: '-10px' })
+			 .css({ background: 'silver' })
+            .animate({ top: '-2px', opacity: 1 }, 500);
+	<?php	}		?>
+
+        $('#noti_Button').click(function () {
+
+            // TOGGLE (SHOW OR HIDE) NOTIFICATION WINDOW.
+            $('#notifications').fadeToggle('fast', 'linear', function () {
+                if ($('#notifications').is(':hidden')) {
+                   // $('#noti_Button').css('background-color', '#2E467C');
+                }
+                else
+				{					
+				//	$('#noti_Button').css('background-color', '#FFF'); 
+				}
+					// CHANGE BACKGROUND COLOR OF THE BUTTON.
+            });
+
+            $('#noti_Counter').fadeOut('slow');                 // HIDE THE COUNTER.
+
+            return false;
+        });
+
+        // HIDE NOTIFICATIONS WHEN CLICKED ANYWHERE ON THE PAGE.
+        $(document).click(function () {
+            $('#notifications').hide();
+
+            // CHECK IF NOTIFICATION COUNTER IS HIDDEN.
+            if ($('#noti_Counter').is(':hidden')) {
+                // CHANGE BACKGROUND COLOR OF THE BUTTON.
+               // $('#noti_Button').css('background-color', '#2E467C');
+            }
+        });
+
+        $('#notifications').click(function () {
+            //return false;       // DO NOTHING WHEN CONTAINER IS CLICKED.
+        });
+    });
+</script>
 		<!--CONTENT START HERE-->
 		<div class="column col-md-10 col-sm-9 col-xs-6" id="main" style="padding-right:0px; padding-top:0px; padding-left:0px;">
