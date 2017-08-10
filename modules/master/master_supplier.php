@@ -7,6 +7,11 @@ if(!$obj_master->can_read('master_supplier')) {
     exit();
 }
 ?>
+<style>
+    .bulkupload{
+        margin-right: 10px !important;
+    }
+</style>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
@@ -15,6 +20,9 @@ if(!$obj_master->can_read('master_supplier')) {
         <div>
             <a class='btn btn-default btn-success btnwidth addnew' href='<?php echo PROJECT_URL;?>/?page=master_supplier_update'>Add New</a>
         </div>
+            <div>
+            <a class='btn btn-default btn-success btnwidth addnew bulkupload' href='<?php echo PROJECT_URL;?>/?page=master_supplier_bulk_update'>Bulk Upload</a>
+        </div>  
          <div class="clear height10"></div>
         <?php $obj_master->showErrorMessage(); ?>
             <?php $obj_master->showSuccessMessge(); ?>

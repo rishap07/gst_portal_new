@@ -9,13 +9,13 @@
 	}
 
 	if(!$obj_client->can_create('client_invoice')) {
-		
+
 		$obj_client->setError($obj_client->getValMsg('can_create'));
 		$obj_client->redirect(PROJECT_URL."/?page=client_invoice_list");
 		exit();
 	}
 
-	$dataCurrentUserArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
+    $dataCurrentUserArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
     $invoiceNumber = $obj_client->generateInvoiceNumber( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
 	$currentFinancialYear = $obj_client->generateFinancialYear();
 ?>
@@ -23,7 +23,7 @@
 <form name="create-invoice" id="create-invoice" method="POST">
 	<input type="hidden" id="taxApplied" name="taxApplied" value="IGST">
 	<div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
-	
+
 		<div class="col-md-12 col-sm-12 col-xs-12">
 
 			<div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Generate Tax Export Invoice</h1></div>
@@ -31,7 +31,7 @@
 			<div class="clear"></div>
 
 			<div class="whitebg formboxcontainer">
-				
+
 				<div class="errorValidationContainer">
 					<?php $obj_client->showErrorMessage(); ?>
 					<?php $obj_client->showSuccessMessge(); ?>
@@ -56,7 +56,7 @@
 						</div>
 					</div>
 				</div>
-				
+
 				<div class="row">
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Invoice Serial Number <span class="starred">*</span></label>
@@ -82,7 +82,7 @@
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Supplier Address <span class="starred">*</span></label>
-						<textarea placeholder="IT Park Rd, Sitapura Industrial Area, Sitapura" data-bind="content" readonly="true" class="form-control required" name="company_address" id="company_address"><?php if(isset($dataCurrentUserArr['data']->kyc->registered_address)) { echo $dataCurrentUserArr['data']->kyc->registered_address; } ?></textarea>
+						<textarea placeholder="IT Park Rd, Sitapura Industrial Area, Sitapura" data-bind="content" readonly="true" class="form-control required" name="company_address" id="company_address"><?php if(isset($dataCurrentUserArr['data']->kyc->full_address)) { echo $dataCurrentUserArr['data']->kyc->full_address; } ?></textarea>
 					</div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
@@ -94,7 +94,7 @@
 				 <div class="row">
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Supplier GSTIN <span class="starred">*</span></label>
-						<input type="text" placeholder="BYRAJ14N3KKT" name="company_gstin_number" data-bind="gstin" readonly="true" class="form-control required" id="company_gstin_number" value="<?php if(isset($dataCurrentUserArr['data']->kyc->gstin_number)) { echo $dataCurrentUserArr['data']->kyc->gstin_number; } ?>" />
+						<input type="text" placeholder="11ABCDE1234A1ZA" name="company_gstin_number" data-bind="gstin" readonly="true" class="form-control required" id="company_gstin_number" value="<?php if(isset($dataCurrentUserArr['data']->kyc->gstin_number)) { echo $dataCurrentUserArr['data']->kyc->gstin_number; } ?>" />
 					</div>
 					
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group placeofsupply">
@@ -110,7 +110,7 @@
 						</select>
 					</div>
 				 </div>
-				 
+
 				 <div class="row">
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Advance Adjustment <span class="starred">*</span></label><br>
@@ -121,9 +121,9 @@
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group receiptvouchernumber">
 						<label>Receipt Voucher Number <span class="starred">*</span></label>
 						<select name='receipt_voucher_number' id='receipt_voucher_number' class="form-control">
-							<?php $dataReceiptVoucherArrs = $obj_client->get_results("select invoice_id, serial_number, invoice_date, supply_place, is_canceled from ".$obj_client->getTableName('client_rv_invoice')." where is_canceled='0' AND status='1' AND is_deleted='0' AND financial_year = '".$currentFinancialYear."' AND added_by = ".$obj_client->sanitize($_SESSION['user_detail']['user_id'])." order by serial_number ASC"); ?>
+							<option value=''>Select Receipt Voucher</option>
+							<?php $dataReceiptVoucherArrs = $obj_client->get_results("select invoice_id, serial_number, invoice_date, supply_place, is_canceled from ".$obj_client->getTableName('client_invoice')." where 1=1 AND invoice_type = 'receiptvoucherinvoice' AND is_canceled='0' AND status='1' AND is_deleted='0' AND financial_year = '".$currentFinancialYear."' AND added_by = ".$obj_client->sanitize($_SESSION['user_detail']['user_id'])." order by serial_number ASC"); ?>
 							<?php if(!empty($dataReceiptVoucherArrs)) { ?>
-								<option value=''>Select Receipt Voucher</option>
 								<?php foreach($dataReceiptVoucherArrs as $dataReceiptVoucherArr) { ?>
 									<option value='<?php echo $dataReceiptVoucherArr->invoice_id; ?>' data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>"><?php echo $dataReceiptVoucherArr->serial_number; ?></option>
 								<?php } ?>
@@ -168,12 +168,12 @@
 									<input type="hidden" name='billing_state_code' id='billing_state_code' />
 								</div>
 							</div>
-							
+
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Country</label> <span class="starred">*</span></div>
 								<div class="col-md-8 col-sm-3 col-xs-12">
 									<select name='billing_country' id='billing_country' class='required form-control'>
-										<?php $dataBCountryArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('country')." order by country_name asc"); ?>
+										<?php $dataBCountryArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('country')." where status='1' and is_deleted='0' order by country_name asc"); ?>
 										<?php if(!empty($dataBCountryArrs)) { ?>
 											<option value=''>Select Country</option>
 											<?php foreach($dataBCountryArrs as $dataBCountryArr) { ?>
@@ -216,7 +216,7 @@
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Contact Name</label> <span class="starred">*</span></div>
 								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Contact Name" data-bind="content" class="required form-control" name="shipping_name" id="shipping_name" /></div>
 							</div>
-
+							
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Business Name</label></div>
 								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Business Name" data-bind="content" class="form-control" name="shipping_company_name" id="shipping_company_name" /></div>
@@ -242,12 +242,12 @@
 									<input type="hidden" name='shipping_state_code' id='shipping_state_code' />
 								</div>
 							</div>
-
+							
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Country</label> <span class="starred">*</span></div>
 								<div class="col-md-8 col-sm-3 col-xs-12">
 									<select name='shipping_country' id='shipping_country' class='required form-control'>
-										<?php $dataSCountryArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('country')." order by country_name asc"); ?>
+										<?php $dataSCountryArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('country')." where status='1' and is_deleted='0' order by country_name asc"); ?>
 										<?php if(!empty($dataSCountryArrs)) { ?>
 											<option value=''>Select Country</option>
 											<?php foreach($dataSCountryArrs as $dataSCountryArr) { ?>
@@ -298,7 +298,7 @@
 					</div>
 
 				 </div>
-				 
+
 				 <div class="clear height20"></div>
 
 				 <div class="row">
@@ -309,7 +309,7 @@
 				</div>
 
 				 <div class="clear height40"></div>
-				 
+
 				 <div class="table-responsive">
 					<table width="100%" border="0" cellspacing="0" cellpadding="4" class="table invoicetable tablecontent">
 						<tr>
@@ -320,7 +320,7 @@
 							<th rowspan="2" class="active">Unit</th>
 							<th rowspan="2" class="active">Rate <br/><span style="font-family: open_sans; font-size:11px;">per item</span></th>
 							<th rowspan="2" class="active">Total</th>
-							<th rowspan="2" class="active">Discount</th>
+							<th rowspan="2" class="active">Discount<br/>(%)</th>
 							<th rowspan="2" class="advancecol active">Advance</th>
 							<th rowspan="2" class="active">Taxable<br/>value</th>
 							<th colspan="2" class="active" style="border-bottom:1px solid #dddddd;">IGST</th>
@@ -335,7 +335,7 @@
 							<th class="active">Amount</th>
 							<th class="active"></th>
 						</tr>
-						
+
 						<tr class="invoice_tr" data-row-id="1" id="invoice_tr_1">
 							<td class="text-center">
 								<span class="serialno" id="invoice_tr_1_serialno">1</span>
@@ -385,7 +385,7 @@
 								</div>
 							</td>
 							<td>
-								<input type="text" id="invoice_tr_1_igstrate" name="invoice_igstrate[]" class="inptxt validateDecimalValue invigstrate" placeholder="0.00" style="width:75px;" />
+								<input type="text" id="invoice_tr_1_igstrate" name="invoice_igstrate[]" class="inptxt validateTaxValue invigstrate" data-bind="valtax" placeholder="0.00" style="width:75px;" />
 							</td>
 							<td>
 								<div style="width:100px;" class="padrgt0">
@@ -393,7 +393,7 @@
 								</div>
 							</td>
 							<td>
-								<input type="text" id="invoice_tr_1_cessrate" name="invoice_cessrate[]" class="inptxt validateDecimalValue invcessrate" placeholder="0.00" style="width:75px;" />
+								<input type="text" id="invoice_tr_1_cessrate" name="invoice_cessrate[]" class="inptxt validateTaxValue invcessrate" data-bind="valtax" placeholder="0.00" style="width:75px;" />
 							</td>
 							<td>
 								<div style="width:100px;" class="padrgt0">
@@ -657,7 +657,7 @@
 
 		/* select2 js for shipping vendor type */
         $("#shipping_vendor_type").select2();
-		
+
 		/* Get Billing Receivers */
         $( "#billing_name" ).autocomplete({
             minLength: 1,
@@ -715,8 +715,8 @@
             }
         });
         /* End of Get Billing Receivers By Business Name */
-		
-		/* Get Shipping Receivers */
+
+        /* Get Shipping Receivers */
         $( "#shipping_name" ).autocomplete({
             minLength: 1,
             source: "<?php echo PROJECT_URL; ?>/?ajax=client_get_receiver",
@@ -745,7 +745,7 @@
         });
         /* End of Get Shipping Receivers */
 
-        /* Get Shipping Receivers By Business Name */
+		/* Get Shipping Receivers By Business Name */
         $( "#shipping_company_name" ).autocomplete({
             minLength: 1,
             source: "<?php echo PROJECT_URL; ?>/?ajax=client_get_receiver_by_business_name",
@@ -774,7 +774,7 @@
         });
         /* End of Get Shipping Receivers By Business Name */
 
-		/* If shipping address is same as billing address */
+        /* If shipping address is same as billing address */
         $("#same_as_billing").change(function(){
 
             if($(this).is(":checked")) {
@@ -832,7 +832,7 @@
                 $("#billing_state_code").val("");
             } else {
                 $("#billing_state_code").val(statecode);
-				
+
 				if($("#place_of_supply").val() == '') {
 					$("#place_of_supply").val(stateid);
 					$("#place_of_supply").select2();
@@ -906,7 +906,7 @@
         });
         /* end of on chnage place of receiver state */
 
-		/* on quantity chnage of item */
+        /* on quantity chnage of item */
         $(".invoicetable").on("input", ".invoiceQuantity", function(){
 
             var rowid = $(this).parent().parent().attr("data-row-id");
@@ -1000,6 +1000,12 @@
             return validateDecimalValue(event, this);
         });
         /* end of validate invoice decimal values allow only numbers or decimals */
+		
+		/* validate invoice tax decimal values allow only numbers or decimals */
+        $(".invoicetable").on("keypress input paste", ".validateTaxValue", function (event) {
+            return validateTaxValue(event, this);
+        });
+        /* end of validate invoice tax decimal values allow only numbers or decimals */
 
 		/* on change export supply meant */
 		$('input[type=radio][name=export_supply_meant]').change(function() {
@@ -1105,9 +1111,9 @@
                 newtr += '<td><input type="text" style="width:100%;" id="invoice_tr_'+nexttrid+'_discount" name="invoice_discount[]" class="inptxt invoiceDiscount" value="0.00" data-bind="decimal" placeholder="0.00" /></td>';
 				newtr += '<td class="advancecol"><div style="width:100px;" class="padrgt0"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_advancevalue" name="invoice_advancevalue[]" class="validateDecimalValue invoiceAdvanceValue inptxt" value="0.00" data-bind="decimal" placeholder="0.00" /></div></td>';
 				newtr += '<td><div style="width:100px;" class="padrgt0"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="inptxt" data-bind="decimal" placeholder="0.00" /></div></td>';
-				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_igstrate" name="invoice_igstrate[]" class="inptxt validateDecimalValue invigstrate" placeholder="0.00" style="width:75px;" /></td>';
+				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_igstrate" name="invoice_igstrate[]" class="inptxt validateTaxValue invigstrate" data-bind="valtax" placeholder="0.00" style="width:75px;" /></td>';
 				newtr += '<td><div style="width:100px;" class="padrgt0"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_igstamount" name="invoice_igstamount[]" readonly="true" class="inptxt invigstamount" placeholder="0.00" /></div></td>';
-				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_cessrate" name="invoice_cessrate[]" class="inptxt validateDecimalValue invcessrate" placeholder="0.00" style="width:75px;" /></td>';
+				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_cessrate" name="invoice_cessrate[]" class="inptxt validateTaxValue invcessrate" data-bind="valtax" placeholder="0.00" style="width:75px;" /></td>';
                 newtr += '<td><div style="width:100px;" class="padrgt0"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_cessamount" name="invoice_cessamount[]" readonly="true" class="inptxt invcessamount" placeholder="0.00" /></div></td>';
                 newtr += '<td nowrap="nowrap" class="icon"><a class="deleteInvoice" data-invoice-id="'+nexttrid+'" href="javascript:void(0)"><div class="tooltip2"><i class="fa fa-trash deleteicon"></i><span class="tooltiptext">Delete</span></div></a></td>';
                 newtr += '</tr>';
@@ -1129,7 +1135,7 @@
             totalInvoiceValueCalculation();
         });
 
-		/* delete invoice row script code */
+        /* delete invoice row script code */
         $(".invoicetable").on("click", ".deleteInvoice", function() {
 
             var invoiceId = $(this).attr("data-invoice-id");
@@ -1148,7 +1154,7 @@
             /* call function of total invoice */
             totalInvoiceValueCalculation();
         });
-		
+
 		/* validate invoice form */
         $('#save_invoice').click(function () {
 
@@ -1176,7 +1182,8 @@
 					$("#amountValidationModal").modal("show");
 					return false;
 				}
-				
+
+				$("#loading").show();
 				$.ajax({						
 					data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewExportInvoice"},
 					dataType: 'json',
@@ -1184,13 +1191,14 @@
 					url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_export_invoice",
 					success: function(response){
 
+						$("#loading").hide();
 						if(response.status == "error") {
-							
+
 							$(".errorValidationContainer").html(response.message);
 							$(".errorValidationContainer").show();
 							$('html, body').animate({ scrollTop: $(".formcontainer").offset().top }, 1000);
 						} else if(response.status == "success") {
-							
+
 							$(".errorValidationContainer").html("");
 							$(".errorValidationContainer").hide();
 							window.location.href = '<?php echo PROJECT_URL; ?>/?page=client_create_export_invoice';
@@ -1211,7 +1219,8 @@
 				$("#amountValidationModal").modal("show");
 				return false;
 			}
-
+			
+			$("#loading").show();
 			$.ajax({
 				data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewExportInvoice"},
                 dataType: 'json',
@@ -1219,6 +1228,7 @@
                 url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_export_invoice",
                 success: function(response){
 
+					$("#loading").hide();
                     if(response.status == "error") {
 
 						$(".errorValidationContainer").html(response.message);

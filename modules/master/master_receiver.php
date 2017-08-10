@@ -7,6 +7,11 @@
 		exit();
 	}
 ?>
+<style>
+    .bulkupload{
+        margin-right: 10px !important;
+    }
+</style>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">   
 		<h1>Receiver/Customer</h1>
@@ -14,6 +19,9 @@
         <div>
             <a class='btn btn-default btn-success btnwidth addnew' href='<?php echo PROJECT_URL;?>/?page=master_receiver_update'>Add New</a>
         </div>
+        <div>
+            <a class='btn btn-default btn-success btnwidth addnew bulkupload' href='<?php echo PROJECT_URL;?>/?page=master_receiver_bulk_update'>Bulk Upload</a>
+        </div>    
         <div class="clear height10"></div>
          <?php $obj_master->showErrorMessage(); ?>
             <?php $obj_master->showSuccessMessge(); ?>

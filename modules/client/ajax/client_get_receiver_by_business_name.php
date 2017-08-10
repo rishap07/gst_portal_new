@@ -20,14 +20,17 @@ if(isset($_GET['ajax']) && $_GET['ajax'] == "client_get_receiver_by_business_nam
 		foreach($clientGetReceivers as $clientGetReceiver) {
 
 			$item[$counter]['receiver_id'] = $clientGetReceiver->receiver_id;
-			$item[$counter]['name'] = $clientGetReceiver->name;
-			$item[$counter]['label'] = $clientGetReceiver->company_name;
-			$item[$counter]['value'] = $clientGetReceiver->company_name;
+			$item[$counter]['name'] = html_entity_decode($clientGetReceiver->name);
+			$item[$counter]['label'] = html_entity_decode($clientGetReceiver->company_name);
+			$item[$counter]['value'] = html_entity_decode($clientGetReceiver->company_name);
 			$item[$counter]['email'] = $clientGetReceiver->email;
-			$item[$counter]['address'] = html_entity_decode($clientGetReceiver->address);
-			$item[$counter]['city'] = $clientGetReceiver->city;
+			
+			$fullAddress =  $clientGetReceiver->address . ", " . $clientGetReceiver->city . ", " . $clientGetReceiver->state_name . ", " . $clientGetReceiver->zipcode . ", " . $clientGetReceiver->country_name;
+			$item[$counter]['address'] = html_entity_decode($fullAddress);
+			
+			$item[$counter]['city'] = html_entity_decode($clientGetReceiver->city);
 			$item[$counter]['state_id'] = $clientGetReceiver->state_id;
-			$item[$counter]['state_name'] = $clientGetReceiver->state_name;
+			$item[$counter]['state_name'] = html_entity_decode($clientGetReceiver->state_name);
 			$item[$counter]['state_code'] = $clientGetReceiver->state_code;
 			$item[$counter]['zipcode'] = $clientGetReceiver->zipcode;
 			$item[$counter]['phone'] = $clientGetReceiver->phone;
@@ -35,11 +38,11 @@ if(isset($_GET['ajax']) && $_GET['ajax'] == "client_get_receiver_by_business_nam
 			$item[$counter]['pannumber'] = $clientGetReceiver->pannumber;
 			$item[$counter]['gstid'] = $clientGetReceiver->gstid;
 			$item[$counter]['website'] = $clientGetReceiver->website;
-			$item[$counter]['remarks'] = $clientGetReceiver->remarks;
+			$item[$counter]['remarks'] = html_entity_decode($clientGetReceiver->remarks);
 			$item[$counter]['vendor_type'] = $clientGetReceiver->vendor_type;
 			$item[$counter]['country_id'] = $clientGetReceiver->country_id;
 			$item[$counter]['country_code'] = $clientGetReceiver->country_code;
-			$item[$counter]['country_name'] = $clientGetReceiver->country_name;
+			$item[$counter]['country_name'] = html_entity_decode($clientGetReceiver->country_name);
 			$counter++;
 		}
 	}

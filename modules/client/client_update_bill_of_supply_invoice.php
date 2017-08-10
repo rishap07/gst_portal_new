@@ -8,17 +8,10 @@
 		exit();
 	}
 
-	if(!$obj_client->can_create('client_invoice')) {
-
-		$obj_client->setError($obj_client->getValMsg('can_create'));
-		$obj_client->redirect(PROJECT_URL."/?page=client_bill_of_supply_invoice_list");
-		exit();
-	}
-
 	if(!$obj_client->can_update('client_invoice')) {
 
 		$obj_client->setError($obj_client->getValMsg('can_update'));
-		$obj_client->redirect(PROJECT_URL."/?page=client_invoice_list");
+		$obj_client->redirect(PROJECT_URL."/?page=client_bill_of_supply_invoice_list");
 		exit();
 	}
 
@@ -26,44 +19,7 @@
 
 		$invid = $obj_client->sanitize($_GET['id']);
 		$invoiceData = $obj_client->get_results("select 
-													ci.invoice_id, 
-													ci.invoice_type, 
-													(case 
-														when ci.invoice_nature='salesinvoice' Then 'Sales Invoice' 
-														when ci.invoice_nature='purchaseinvoice' then 'Purchase Invoice' 
-													end) as invoice_nature, 
-													ci.reference_number, 
-													ci.serial_number, 
-													ci.company_name, 
-													ci.company_address, 
-													ci.company_state, 
-													ci.gstin_number, 
-													ci.invoice_date, 
-													ci.billing_name, 
-													ci.billing_company_name, 
-													ci.billing_address, 
-													ci.billing_state, 
-													ci.billing_state_name, 
-													ci.billing_country, 
-													ci.billing_vendor_type, 
-													ci.billing_gstin_number, 
-													ci.same_as_billing, 
-													ci.shipping_name, 
-													ci.shipping_company_name, 
-													ci.shipping_address, 
-													ci.shipping_state, 
-													ci.shipping_state_name, 
-													ci.shipping_country, 
-													ci.shipping_vendor_type, 
-													ci.shipping_gstin_number, 
-													ci.description, 
-													ci.invoice_total_value, 
-													ci.financial_year, 
-													(case 
-														when ci.status='0' Then 'Active' 
-														when ci.status='1' then 'Inactive' 
-													end) as status, 
-													ci.is_canceled, 
+													ci.*, 
 													cii.invoice_item_id, 
 													cii.item_id, 
 													cii.item_name, 
@@ -73,7 +29,16 @@
 													cii.item_unit_price, 
 													cii.subtotal, 
 													cii.discount, 
+													cii.advance_amount, 
 													cii.taxable_subtotal, 
+													cii.cgst_rate, 
+													cii.cgst_amount, 
+													cii.sgst_rate, 
+													cii.sgst_amount, 
+													cii.igst_rate, 
+													cii.igst_amount, 
+													cii.cess_rate, 
+													cii.cess_amount, 
 													cii.total 
 													from 
 												" . $obj_client->getTableName('client_invoice') ." as ci INNER JOIN " . $obj_client->getTableName('client_invoice_item') ." as cii ON ci.invoice_id = cii.invoice_id where ci.invoice_id = ".$invid." AND ci.invoice_type = 'billofsupplyinvoice' AND ci.added_by = '".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."' AND cii.added_by = '".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."' AND ci.is_deleted='0' AND cii.is_deleted='0'");
@@ -134,13 +99,13 @@
 						<label>Supplier Address <span class="starred">*</span></label>
 						<textarea placeholder="IT Park Rd, Sitapura Industrial Area, Sitapura" data-bind="content" readonly="true" class="form-control required" name="company_address" id="company_address"><?php echo $invoiceData[0]->company_address; ?></textarea>
 					</div>
-					
+
 					<?php $company_state_data = $obj_client->getStateDetailByStateId($invoiceData[0]->company_state); ?>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Supplier State <span class="starred">*</span></label>
-						<input type="text" placeholder="Compant State" data-bind="content" readonly="true" class="form-control required" name="company_state" id="company_state" value="<?php echo $company_state_data['data']->state_name; ?>" />
-						<input type="hidden" readonly="true" class="required" name="company_state_id" id="company_state_id" value="<?php echo $invoiceData[0]->company_state; ?>" />
+						<input type="text" placeholder="Compant State" data-bind="content" readonly="true" class="form-control required" name="company_state_name" id="company_state_name" value="<?php echo $company_state_data['data']->state_name; ?>" />
+						<input type="hidden" class="required" name="company_state" id="company_state" value="<?php echo $invoiceData[0]->company_state; ?>" />
 					</div>
 				 </div>
 
@@ -151,7 +116,7 @@
 					</div>
 				 </div>
 
-				 <div class="row">
+				<div class="row">
 
 					<div class="col-md-6">
 						<div class="greyborder inovicedeatil">
@@ -200,7 +165,7 @@
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Country</label> <span class="starred">*</span></div>
 								<div class="col-md-8 col-sm-3 col-xs-12">
 									<select name='billing_country' id='billing_country' class='required form-control'>
-										<?php $dataBCountryArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('country')." order by country_name asc"); ?>
+										<?php $dataBCountryArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('country')." where status='1' and is_deleted='0' order by country_name asc"); ?>
 										<?php if(!empty($dataBCountryArrs)) { ?>
 											<option value=''>Select Country</option>
 											<?php foreach($dataBCountryArrs as $dataBCountryArr) { ?>
@@ -294,7 +259,7 @@
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Country</label> <span class="starred">*</span></div>
 								<div class="col-md-8 col-sm-3 col-xs-12">
 									<select name='shipping_country' id='shipping_country' class='required form-control'>
-										<?php $dataSCountryArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('country')." order by country_name asc"); ?>
+										<?php $dataSCountryArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('country')." where status='1' and is_deleted='0' order by country_name asc"); ?>
 										<?php if(!empty($dataSCountryArrs)) { ?>
 											<option value=''>Select Country</option>
 											<?php foreach($dataSCountryArrs as $dataSCountryArr) { ?>
@@ -342,8 +307,8 @@
 					</div>
 
 				 </div>
-
-				 <div class="clear height20"></div>
+				 
+				<div class="clear height20"></div>
 
 				<div class="row">
 					<div class="col-md-12 form-group">
@@ -351,9 +316,9 @@
 						<textarea placeholder="Enter Description" class="form-control" name="description" id="description" data-bind="content"><?php echo $invoiceData[0]->description; ?></textarea>
 					</div>
 				</div>
-				
+
 				<div class="clear height40"></div>
-				 
+
 				<div class="table-responsive">
 					<table width="100%" border="0" cellspacing="0" cellpadding="4" class="table invoicetable tablecontent">
 						<tr>
@@ -965,11 +930,7 @@
             });
         });
         /* end of autocomplete for select items for invoice */
-		
-		
-		
-		
-		
+
 		/* remove the existing invoice item */
         $(".invoicetable").on("click", ".name_selection_choice_remove", function(){
 
@@ -1031,9 +992,6 @@
 			/* insert new row */
 			$(".invoice_tr").last().after(newtr);
 
-			/* trigger advance adjustment */
-			$( "input[name=advance_adjustment]" ).trigger( "change" );
-
 			/* update tr serial number */
 			var trCounter = 1;
 			$( "tr.invoice_tr" ).each(function( index ) {
@@ -1050,9 +1008,6 @@
 
             var invoiceId = $(this).attr("data-invoice-id");
             $("#invoice_tr_"+invoiceId).remove();
-
-			/* trigger advance adjustment */
-			$( "input[name=advance_adjustment]" ).trigger( "change" );
 
             /* update tr serial number */
             var trCounter = 1;
@@ -1071,7 +1026,7 @@
 			var mesg = {};
             if (vali.validate(mesg, 'create-invoice')) {
                 return true;
-            }
+            }           
             return false;
         });
 		/* end of validate invoice form */
@@ -1093,6 +1048,7 @@
 					return false;
 				}
 
+				$("#loading").show();
 				$.ajax({
 					data: {invoiceData:$("#create-invoice").serialize(), action:"saveUpdateBillInvoice"},
 					dataType: 'json',
@@ -1100,6 +1056,7 @@
 					url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_update_bill_of_supply_invoice",
 					success: function(response){
 
+						$("#loading").hide();
 						if(response.status == "error") {
 							
 							$(".errorValidationContainer").html(response.message);
@@ -1128,6 +1085,7 @@
 				return false;
 			}
 
+			$("#loading").show();
 			$.ajax({
                 data: {invoiceData:$("#create-invoice").serialize(), action:"saveUpdateBillInvoice"},
                 dataType: 'json',
@@ -1135,6 +1093,7 @@
                 url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_update_bill_of_supply_invoice",
                 success: function(response){
 
+					$("#loading").hide();
 					if(response.status == "error") {
 
 						$(".errorValidationContainer").html(response.message);

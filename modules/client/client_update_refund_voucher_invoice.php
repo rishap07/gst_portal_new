@@ -11,7 +11,7 @@
 	if(!$obj_client->can_update('client_invoice')) {
 
 		$obj_client->setError($obj_client->getValMsg('can_update'));
-		$obj_client->redirect(PROJECT_URL."/?page=client_invoice_list");
+		$obj_client->redirect(PROJECT_URL."/?page=client_refund_voucher_invoice_list");
 		exit();
 	}
 
@@ -135,7 +135,7 @@
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Receipt Voucher Number <span class="starred">*</span></label>
 						<select name='receipt_voucher_number' id='receipt_voucher_number' class="required form-control">
-							<option value=''>Select Receipt Voucher</option>
+							<option value=''>Select Receipt Voucher</option>								
 							<?php $dataReceiptVoucherArrs = $obj_client->get_results("select invoice_id, serial_number, reference_number, invoice_date, supply_place, is_canceled from ".$obj_client->getTableName('client_invoice')." where status='1' and invoice_type = 'receiptvoucherinvoice' AND is_deleted='0' AND financial_year = '".$currentFinancialYear."' AND added_by = ".$obj_client->sanitize($_SESSION['user_detail']['user_id'])." order by serial_number asc"); ?>
 							<?php if(!empty($dataReceiptVoucherArrs)) { ?>
 								<?php foreach($dataReceiptVoucherArrs as $dataReceiptVoucherArr) { ?>
@@ -325,9 +325,9 @@
 								</td>
 
 								<?php if($invoiceData[0]->company_state == $invoiceData[0]->supply_place) { ?>
-
+								
 									<td>
-										<input type="text" id="invoice_tr_<?php echo $counter; ?>_cgstrate" name="invoice_cgstrate[]" class="inptxt validateDecimalValue invcgstrate" value="<?php echo $invData->cgst_rate; ?>" placeholder="0.00" style="width:75px;" />
+										<input type="text" id="invoice_tr_<?php echo $counter; ?>_cgstrate" name="invoice_cgstrate[]" class="inptxt validateTaxValue invcgstrate" value="<?php echo $invData->cgst_rate; ?>" data-bind="valtax" placeholder="0.00" style="width:75px;" />
 									</td>
 									<td>
 										<div style="width:100px;" class="padrgt0">
@@ -335,7 +335,7 @@
 										</div>
 									</td>
 									<td>
-										<input type="text" id="invoice_tr_<?php echo $counter; ?>_sgstrate" name="invoice_sgstrate[]" class="inptxt validateDecimalValue invsgstrate" value="<?php echo $invData->sgst_rate; ?>" placeholder="0.00" style="width:75px;" />
+										<input type="text" id="invoice_tr_<?php echo $counter; ?>_sgstrate" name="invoice_sgstrate[]" class="inptxt validateTaxValue invsgstrate" data-bind="valtax" value="<?php echo $invData->sgst_rate; ?>" placeholder="0.00" style="width:75px;" />
 									</td>
 									<td>
 										<div style="width:100px;" class="padrgt0">
@@ -343,18 +343,18 @@
 										</div>
 									</td>
 									<td>
-										<input type="text" id="invoice_tr_<?php echo $counter; ?>_igstrate" name="invoice_igstrate[]" readonly="true" class="inptxt validateDecimalValue invigstrate" value="0.00" placeholder="0.00" style="width:75px;" />
+										<input type="text" id="invoice_tr_<?php echo $counter; ?>_igstrate" name="invoice_igstrate[]" readonly="true" class="inptxt validateTaxValue invigstrate" data-bind="valtax" value="0.00" placeholder="0.00" style="width:75px;" />
 									</td>
 									<td>
 										<div style="width:100px;" class="padrgt0">
-											<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_igstamount" name="invoice_igstamount[]" readonly="true" class="inptxt invsgstamount" placeholder="0.00" value="0.00" />
+											<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_igstamount" name="invoice_igstamount[]" readonly="true" class="inptxt invigstamount" value="0.00" placeholder="0.00" />
 										</div>
 									</td>
-
+								
 								<?php } else { ?>
-
+								
 									<td>
-										<input type="text" id="invoice_tr_<?php echo $counter; ?>_cgstrate" name="invoice_cgstrate[]" readonly="true" class="inptxt validateDecimalValue invcgstrate" value="0.00" placeholder="0.00" style="width:75px;" />
+										<input type="text" id="invoice_tr_<?php echo $counter; ?>_cgstrate" name="invoice_cgstrate[]" readonly="true" class="inptxt validateTaxValue invcgstrate" value="0.00" data-bind="valtax" placeholder="0.00" style="width:75px;" />
 									</td>
 									<td>
 										<div style="width:100px;" class="padrgt0">
@@ -362,7 +362,7 @@
 										</div>
 									</td>
 									<td>
-										<input type="text" id="invoice_tr_<?php echo $counter; ?>_sgstrate" name="invoice_sgstrate[]" readonly="true" class="inptxt validateDecimalValue invsgstrate" value="0.00" placeholder="0.00" style="width:75px;" />
+										<input type="text" id="invoice_tr_<?php echo $counter; ?>_sgstrate" name="invoice_sgstrate[]" readonly="true" class="inptxt validateTaxValue invsgstrate" data-bind="valtax" value="0.00" placeholder="0.00" style="width:75px;" />
 									</td>
 									<td>
 										<div style="width:100px;" class="padrgt0">
@@ -370,22 +370,22 @@
 										</div>
 									</td>
 									<td>
-										<input type="text" id="invoice_tr_<?php echo $counter; ?>_igstrate" name="invoice_igstrate[]" class="inptxt validateDecimalValue invigstrate" value="<?php echo $invData->igst_rate; ?>" placeholder="0.00" style="width:75px;" />
+										<input type="text" id="invoice_tr_<?php echo $counter; ?>_igstrate" name="invoice_igstrate[]" class="inptxt validateTaxValue invigstrate" data-bind="valtax" value="<?php echo $invData->igst_rate; ?>" placeholder="0.00" style="width:75px;" />
 									</td>
 									<td>
 										<div style="width:100px;" class="padrgt0">
-											<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_igstamount" name="invoice_igstamount[]" readonly="true" class="inptxt invsgstamount" placeholder="0.00" value="<?php echo $invData->igst_amount; ?>" />
+											<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_igstamount" name="invoice_igstamount[]" readonly="true" class="inptxt invigstamount" value="<?php echo $invData->igst_amount; ?>" placeholder="0.00" />
 										</div>
 									</td>
 
 								<?php } ?>
 
 								<td>
-									<input type="text" id="invoice_tr_<?php echo $counter; ?>_cessrate" name="invoice_cessrate[]" class="inptxt validateDecimalValue invcessrate" value="<?php echo $invData->cess_rate; ?>" placeholder="0.00" style="width:75px;" />
+									<input type="text" id="invoice_tr_<?php echo $counter; ?>_cessrate" name="invoice_cessrate[]" class="inptxt validateTaxValue invcessrate" data-bind="valtax" value="<?php echo $invData->cess_rate; ?>" placeholder="0.00" style="width:75px;" />
 								</td>
 								<td>
 									<div style="width:100px;" class="padrgt0">
-										<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_cessamount" name="invoice_cessamount[]" readonly="true" class="inptxt invsgstamount" placeholder="0.00" value="<?php echo $invData->cess_amount; ?>" />
+										<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_cessamount" name="invoice_cessamount[]" readonly="true" class="inptxt invcessamount" value="<?php echo $invData->cess_amount; ?>" placeholder="0.00" />
 									</div>
 								</td>
 
@@ -743,7 +743,7 @@
             rowInvoiceCalculation(currentTrItemId, rowid);
         });
         /* end of on igst rate chnage of item */
-		
+
 		/* on cess rate chnage of item */
         $(".invoicetable").on("input", ".invcessrate", function(){
 
@@ -758,7 +758,13 @@
             return validateDecimalValue(event, this);
         });
         /* end of validate invoice decimal values allow only numbers or decimals */
-		
+
+		/* validate invoice tax decimal values allow only numbers or decimals */
+        $(".invoicetable").on("keypress input paste", ".validateTaxValue", function (event) {
+            return validateTaxValue(event, this);
+        });
+        /* end of validate invoice tax decimal values allow only numbers or decimals */
+
 		/* validate invoice form */
         $('#save_invoice').click(function () {
 
@@ -787,6 +793,7 @@
 					return false;
 				}
 
+				$("#loading").show();
 				$.ajax({
 					data: {invoiceData:$("#create-invoice").serialize(), action:"saveUpdateRFInvoice"},
 					dataType: 'json',
@@ -794,6 +801,7 @@
 					url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_update_refund_voucher_invoice",
 					success: function(response){
 
+						$("#loading").hide();
 						if(response.status == "error") {
 							
 							$(".errorValidationContainer").html(response.message);
@@ -822,6 +830,7 @@
 				return false;
 			}
 
+			$("#loading").show();
 			$.ajax({
                 data: {invoiceData:$("#create-invoice").serialize(), action:"saveUpdateRFInvoice"},
                 dataType: 'json',
@@ -829,6 +838,7 @@
                 url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_update_refund_voucher_invoice",
                 success: function(response){
 
+					$("#loading").hide();
                     if(response.status == "error") {
 
 						$(".errorValidationContainer").html(response.message);
@@ -878,7 +888,6 @@
 			}
 
 			/* end of get all tax rates */
-			
 			if ($.trim($("#invoice_tr_" + rowid + "_taxablevalue").val()).length == 0 || $.trim($("#invoice_tr_" + rowid + "_taxablevalue").val()).length == '' || $.trim($("#invoice_tr_" + rowid + "_taxablevalue").val()) == '.') {
 				var currentTrTaxableValue = 0.00;
 			} else {
@@ -932,12 +941,12 @@
 			totalInvoiceValueCalculation();
         }
         /* end of calculate row invoice function */
-		
+
 		/* calculate total invoice value function */
         function totalInvoiceValueCalculation() {
-			
+
             var totalInvoiceValue = 0.00;
-			
+
 			$( "tr.invoice_tr" ).each(function( index ) {
 
                 var rowid = $(this).attr("data-row-id");

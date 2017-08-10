@@ -19,47 +19,7 @@
 
 		$invid = $obj_client->sanitize($_GET['id']);
 		$invoiceData = $obj_client->get_results("select 
-													ci.invoice_id, 
-													ci.invoice_type, 
-													ci.invoice_nature, 
-													ci.reference_number, 
-													ci.serial_number, 
-													ci.company_name, 
-													ci.company_address, 
-													ci.company_state, 
-													ci.gstin_number, 
-													ci.supply_type, 
-													ci.export_supply_meant, 
-													ci.invoice_date, 
-													ci.supply_place, 
-													ci.ecommerce_gstin_number, 
-													ci.ecommerce_vendor_code, 
-													ci.advance_adjustment, 
-													ci.receipt_voucher_number, 
-													ci.billing_name, 
-													ci.billing_company_name, 
-													ci.billing_address, 
-													ci.billing_state, 
-													ci.billing_state_name, 
-													ci.billing_country, 
-													ci.billing_vendor_type, 
-													ci.billing_gstin_number, 
-													ci.same_as_billing, 
-													ci.shipping_name, 
-													ci.shipping_company_name, 
-													ci.shipping_address, 
-													ci.shipping_state, 
-													ci.shipping_state_name, 
-													ci.shipping_country, 
-													ci.export_bill_number, 
-													ci.export_bill_port_code, 
-													ci.export_bill_date, 
-													ci.shipping_vendor_type, 
-													ci.shipping_gstin_number, 
-													ci.description, 
-													ci.invoice_total_value, 
-													ci.status, 
-													ci.is_canceled, 
+													ci.*, 
 													cii.invoice_item_id, 
 													cii.item_id, 
 													cii.item_name, 
@@ -79,10 +39,9 @@
 													cii.igst_amount, 
 													cii.cess_rate, 
 													cii.cess_amount, 
-													cii.total ,
-													cii.status as item_status 
+													cii.total 
 													from 
-												" . $obj_client->getTableName('client_invoice') ." as ci INNER JOIN " . $obj_client->getTableName('client_invoice_item') ." as cii ON ci.invoice_id = cii.invoice_id where ci.invoice_id = ".$invid." AND ci.added_by = '".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."' AND cii.added_by = '".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."' AND ci.is_deleted='0' AND cii.is_deleted='0'");
+												" . $obj_client->getTableName('client_invoice') . " as ci INNER JOIN " . $obj_client->getTableName('client_invoice_item') . " as cii ON ci.invoice_id = cii.invoice_id where ci.invoice_id = " . $invid . " AND ci.invoice_type = 'taxinvoice' AND ci.added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND cii.added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND ci.is_deleted='0' AND cii.is_deleted='0'");
 
 		if (empty($invoiceData)) {
 			$obj_client->setError("No invoice found.");
@@ -92,12 +51,18 @@
 		$obj_client->redirect(PROJECT_URL."?page=client_invoice_list");
 	}
 
-    $dataCurrentUserArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
+	$dataCurrentUserArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
 	$currentFinancialYear = $obj_client->generateFinancialYear();
 ?>
 <!--========================admincontainer start=========================-->
 <form name="create-invoice" id="create-invoice" method="POST">
-	<input type="hidden" id="taxApplied" name="taxApplied" value="IGST">
+	
+	<?php if($invoiceData[0]->company_state == $invoiceData[0]->supply_place) { ?>
+		<input type="hidden" id="taxApplied" name="taxApplied" value="CGSTSGST">
+	<?php } else { ?>
+		<input type="hidden" id="taxApplied" name="taxApplied" value="IGST">
+	<?php } ?>
+
 	<div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
 		<div class="col-md-12 col-sm-12 col-xs-12">
 
@@ -147,8 +112,8 @@
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Supplier State <span class="starred">*</span></label>
-						<input type="text" placeholder="Compant State" data-bind="content" readonly="true" class="form-control required" name="company_state" id="company_state" value="<?php echo $company_state_data['data']->state_name; ?>" />
-						<input type="hidden" readonly="true" class="required" name="company_state_id" id="company_state_id" value="<?php echo $invoiceData[0]->company_state; ?>" />
+						<input type="text" placeholder="Compant State" data-bind="content" readonly="true" class="form-control required" name="company_state_name" id="company_state_name" value="<?php echo $company_state_data['data']->state_name; ?>" />
+						<input type="hidden" class="required" name="company_state" id="company_state" value="<?php echo $invoiceData[0]->company_state; ?>" />
 					</div>
 
 				 </div>
@@ -195,7 +160,7 @@
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Ecommerce GSTIN <span class="starred">*</span></label>
-						<input type="text" placeholder="22ABCDE1234A1Z9" name="ecommerce_gstin_number" id="ecommerce_gstin_number" class="form-control" <?php if($invoiceData[0]->supply_type === "tcs") { echo 'style="display:block;"'; } ?> data-bind="gstin" />
+						<input type="text" placeholder="22ABCDE1234A1Z9" name="ecommerce_gstin_number" id="ecommerce_gstin_number" class="form-control" value="<?php echo $invoiceData[0]->ecommerce_gstin_number; ?>" data-bind="gstin" />
 					</div>
 					
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
@@ -216,7 +181,7 @@
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group receiptvouchernumber" <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'style="display:block;"'; } ?>>
 						<label>Receipt Voucher Number <span class="starred">*</span></label>
 						<select name='receipt_voucher_number' id='receipt_voucher_number' class="form-control">
-							<?php $dataReceiptVoucherArrs = $obj_client->get_results("select invoice_id, serial_number, invoice_date, supply_place, is_canceled from ".$obj_client->getTableName('client_rv_invoice')." where status='1' and is_deleted='0' AND financial_year = '".$currentFinancialYear."' AND added_by = ".$obj_client->sanitize($_SESSION['user_detail']['user_id'])." order by serial_number asc"); ?>
+							<?php $dataReceiptVoucherArrs = $obj_client->get_results("select invoice_id, serial_number, invoice_date, supply_place, is_canceled from ".$obj_client->getTableName('client_invoice')." where 1=1 AND invoice_type = 'receiptvoucherinvoice' AND is_canceled='0' AND status='1' AND is_deleted='0' AND financial_year = '".$currentFinancialYear."' AND added_by = ".$obj_client->sanitize($_SESSION['user_detail']['user_id'])." order by serial_number ASC"); ?>
 							<?php if(!empty($dataReceiptVoucherArrs)) { ?>
 								<option value=''>Select Receipt Voucher</option>
 								<?php foreach($dataReceiptVoucherArrs as $dataReceiptVoucherArr) { ?>
@@ -283,7 +248,7 @@
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Country</label> <span class="starred">*</span></div>
 								<div class="col-md-8 col-sm-3 col-xs-12">
 									<select name='billing_country' id='billing_country' class='required form-control'>
-										<?php $dataBCountryArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('country')." order by country_name asc"); ?>
+										<?php $dataBCountryArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('country')." where status='1' and is_deleted='0' order by country_name asc"); ?>
 										<?php if(!empty($dataBCountryArrs)) { ?>
 											<option value=''>Select Country</option>
 											<?php foreach($dataBCountryArrs as $dataBCountryArr) { ?>
@@ -377,7 +342,7 @@
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Country</label> <span class="starred">*</span></div>
 								<div class="col-md-8 col-sm-3 col-xs-12">
 									<select name='shipping_country' id='shipping_country' class='required form-control'>
-										<?php $dataSCountryArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('country')." order by country_name asc"); ?>
+										<?php $dataSCountryArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('country')." where status='1' and is_deleted='0' order by country_name asc"); ?>
 										<?php if(!empty($dataSCountryArrs)) { ?>
 											<option value=''>Select Country</option>
 											<?php foreach($dataSCountryArrs as $dataSCountryArr) { ?>
@@ -490,7 +455,7 @@
 									<input type="text" id="invoice_tr_<?php echo $counter; ?>_hsncode" name="invoice_hsncode[]" readonly="true" class="inptxt" data-bind="content" placeholder="HSN/SAC Code" style="width:120px;" value="<?php echo $invData->item_hsncode; ?>" />
 								</td>
 								<td>
-									<input type="text" id="invoice_tr_<?php echo $counter; ?>_quantity" name="invoice_quantity[]" class="required validateDecimalValue invoiceQuantity inptxt" value="<?php echo $invData->item_quantity; ?>" placeholder="0" style="width:100px;" />
+									<input type="text" id="invoice_tr_<?php echo $counter; ?>_quantity" name="invoice_quantity[]" class="required validateDecimalValue invoiceQuantity inptxt" data-bind="decimal" value="<?php echo $invData->item_quantity; ?>" placeholder="0" style="width:100px;" />
 								</td>
 								<td>
 									<select name="invoice_unit[]" id="invoice_tr_<?php echo $counter; ?>_unit" class="required inptxt" style="width:100px;">
@@ -516,7 +481,7 @@
 								</td>
 								<td>
 									<div class="padrgt0" style="width:100px;">
-										<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_total" name="invoice_total[]" readonly="true" class="inptxt" value="<?php echo $invData->subtotal; ?>" placeholder="0.00" />
+										<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_total" name="invoice_total[]" readonly="true" class="inptxt" data-bind="decimal" value="<?php echo $invData->subtotal; ?>" placeholder="0.00" />
 									</div>
 								</td>
 								<td>
@@ -532,36 +497,69 @@
 										<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="inptxt" value="<?php echo $invData->taxable_subtotal; ?>" data-bind="decimal" placeholder="0.00" />
 									</div>
 								</td>
+								
+								<?php if($invoiceData[0]->company_state == $invoiceData[0]->supply_place) { ?>
+								
+									<td>
+										<input type="text" id="invoice_tr_<?php echo $counter; ?>_cgstrate" name="invoice_cgstrate[]" class="inptxt validateTaxValue invcgstrate" value="<?php echo $invData->cgst_rate; ?>" data-bind="valtax" placeholder="0.00" style="width:75px;" />
+									</td>
+									<td>
+										<div style="width:100px;" class="padrgt0">
+											<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_cgstamount" name="invoice_cgstamount[]" readonly="true" class="inptxt invcgstamount" placeholder="0.00" value="<?php echo $invData->cgst_amount; ?>" />
+										</div>
+									</td>
+									<td>
+										<input type="text" id="invoice_tr_<?php echo $counter; ?>_sgstrate" name="invoice_sgstrate[]" class="inptxt validateTaxValue invsgstrate" data-bind="valtax" value="<?php echo $invData->sgst_rate; ?>" placeholder="0.00" style="width:75px;" />
+									</td>
+									<td>
+										<div style="width:100px;" class="padrgt0">
+											<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_sgstamount" name="invoice_sgstamount[]" readonly="true" class="inptxt invsgstamount" placeholder="0.00" value="<?php echo $invData->sgst_amount; ?>" />
+										</div>
+									</td>
+									<td>
+										<input type="text" id="invoice_tr_<?php echo $counter; ?>_igstrate" name="invoice_igstrate[]" readonly="true" class="inptxt validateTaxValue invigstrate" data-bind="valtax" value="0.00" placeholder="0.00" style="width:75px;" />
+									</td>
+									<td>
+										<div style="width:100px;" class="padrgt0">
+											<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_igstamount" name="invoice_igstamount[]" readonly="true" class="inptxt invigstamount" value="0.00" placeholder="0.00" />
+										</div>
+									</td>
+								
+								<?php } else { ?>
+								
+									<td>
+										<input type="text" id="invoice_tr_<?php echo $counter; ?>_cgstrate" name="invoice_cgstrate[]" readonly="true" class="inptxt validateTaxValue invcgstrate" value="0.00" data-bind="valtax" placeholder="0.00" style="width:75px;" />
+									</td>
+									<td>
+										<div style="width:100px;" class="padrgt0">
+											<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_cgstamount" name="invoice_cgstamount[]" readonly="true" class="inptxt invcgstamount" placeholder="0.00" value="0.00" />
+										</div>
+									</td>
+									<td>
+										<input type="text" id="invoice_tr_<?php echo $counter; ?>_sgstrate" name="invoice_sgstrate[]" readonly="true" class="inptxt validateTaxValue invsgstrate" data-bind="valtax" value="0.00" placeholder="0.00" style="width:75px;" />
+									</td>
+									<td>
+										<div style="width:100px;" class="padrgt0">
+											<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_sgstamount" name="invoice_sgstamount[]" readonly="true" class="inptxt invsgstamount" placeholder="0.00" value="0.00" />
+										</div>
+									</td>
+									<td>
+										<input type="text" id="invoice_tr_<?php echo $counter; ?>_igstrate" name="invoice_igstrate[]" class="inptxt validateTaxValue invigstrate" data-bind="valtax" value="<?php echo $invData->igst_rate; ?>" placeholder="0.00" style="width:75px;" />
+									</td>
+									<td>
+										<div style="width:100px;" class="padrgt0">
+											<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_igstamount" name="invoice_igstamount[]" readonly="true" class="inptxt invigstamount" value="<?php echo $invData->igst_amount; ?>" placeholder="0.00" />
+										</div>
+									</td>
+
+								<?php } ?>
+
 								<td>
-									<input type="text" id="invoice_tr_<?php echo $counter; ?>_cgstrate" name="invoice_cgstrate[]" class="inptxt validateDecimalValue invcgstrate" value="<?php echo $invData->cgst_rate; ?>" placeholder="0.00" style="width:75px;" />
+									<input type="text" id="invoice_tr_<?php echo $counter; ?>_cessrate" name="invoice_cessrate[]" class="inptxt validateTaxValue invcessrate" data-bind="valtax" value="<?php echo $invData->cess_rate; ?>"  placeholder="0.00" style="width:75px;" />
 								</td>
 								<td>
 									<div style="width:100px;" class="padrgt0">
-										<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_cgstamount" name="invoice_cgstamount[]" readonly="true" class="inptxt invcgstamount" placeholder="0.00" value="<?php echo $invData->cgst_amount; ?>" />
-									</div>
-								</td>
-								<td>
-									<input type="text" id="invoice_tr_<?php echo $counter; ?>_sgstrate" name="invoice_sgstrate[]" class="inptxt validateDecimalValue invsgstrate" value="<?php echo $invData->sgst_rate; ?>" placeholder="0.00" style="width:75px;" />
-								</td>
-								<td>
-									<div style="width:100px;" class="padrgt0">
-										<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_sgstamount" name="invoice_sgstamount[]" readonly="true" class="inptxt invsgstamount" placeholder="0.00" value="<?php echo $invData->sgst_amount; ?>" />
-									</div>
-								</td>
-								<td>
-									<input type="text" id="invoice_tr_<?php echo $counter; ?>_igstrate" name="invoice_igstrate[]" class="inptxt validateDecimalValue invigstrate" value="<?php echo $invData->igst_rate; ?>" placeholder="0.00" style="width:75px;" />
-								</td>
-								<td>
-									<div style="width:100px;" class="padrgt0">
-										<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_igstamount" name="invoice_igstamount[]" readonly="true" class="inptxt invsgstamount" placeholder="0.00" value="<?php echo $invData->igst_amount; ?>" />
-									</div>
-								</td>
-								<td>
-									<input type="text" id="invoice_tr_<?php echo $counter; ?>_cessrate" name="invoice_cessrate[]" class="inptxt validateDecimalValue invcessrate" value="<?php echo $invData->cess_rate; ?>" placeholder="0.00" style="width:75px;" />
-								</td>
-								<td>
-									<div style="width:100px;" class="padrgt0">
-										<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_cessamount" name="invoice_cessamount[]" readonly="true" class="inptxt invsgstamount" placeholder="0.00" value="<?php echo $invData->cess_amount; ?>" />
+										<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_cessamount" name="invoice_cessamount[]" readonly="true" class="inptxt invcessamount" value="<?php echo $invData->cess_amount; ?>" placeholder="0.00" />
 									</div>
 								</td>
 
@@ -788,14 +786,20 @@
 
 		/* Supplier State OR Company State */
         var supplierStateId = '<?php echo $invoiceData[0]->company_state; ?>';
+		
+		<?php if($invoiceData[0]->same_as_billing == '1') { ?>
 
-		/* chnage applied tax field */
-		/*var receiverStateId = $("#place_of_supply").val();
-		if(supplierStateId === receiverStateId) {
-			$("#taxApplied").val("CGSTSGST");
-		} else {
-			$("#taxApplied").val("IGST");
-		}*/
+			$("#shipping_name").prop("readonly", true);
+			$("#shipping_company_name").prop("readonly", true);
+			$("#shipping_address").prop("readonly", true);
+			$('#shipping_state').attr('disabled', true);
+			$('#shipping_country').attr('disabled', true);
+			$('#shipping_vendor_type').attr('disabled', true);
+			$("#shipping_gstin_number").prop("readonly", true);
+			$("#shipping_state").select2();
+			$("#shipping_country").select2();
+			$("#shipping_vendor_type").select2();
+		<?php } ?>
 
 		/* call supply type change function */
 		supplyTypeChange();
@@ -892,7 +896,7 @@
 
 		/* select2 js for shipping vendor type */
         $("#shipping_vendor_type").select2();
-		
+
 		/* Get Billing Receivers */
         $( "#billing_name" ).autocomplete({
             minLength: 1,
@@ -1008,8 +1012,8 @@
             }
         });
         /* End of Get Shipping Receivers By Business Name */
-		
-		/* If shipping address is same as billing address */
+
+        /* If shipping address is same as billing address */
         $("#same_as_billing").change(function(){
 
             if($(this).is(":checked")) {
@@ -1067,7 +1071,7 @@
                 $("#billing_state_code").val("");
             } else {
                 $("#billing_state_code").val(statecode);
-				
+
 				if($("#place_of_supply").val() == '') {
 					$("#place_of_supply").val(stateid);
 					$("#place_of_supply").select2();
@@ -1141,7 +1145,7 @@
         });
         /* end of on chnage place of receiver state */
 
-        /* on quantity chnage of item */
+		/* on quantity chnage of item */
         $(".invoicetable").on("input", ".invoiceQuantity", function(){
 
             var rowid = $(this).parent().parent().attr("data-row-id");
@@ -1259,20 +1263,18 @@
             return validateDecimalValue(event, this);
         });
         /* end of validate invoice decimal values allow only numbers or decimals */
+		
+		/* validate invoice tax decimal values allow only numbers or decimals */
+        $(".invoicetable").on("keypress input paste", ".validateTaxValue", function (event) {
+            return validateTaxValue(event, this);
+        });
+        /* end of validate invoice tax decimal values allow only numbers or decimals */
 
 		/* on change supply type */
 		$('input[type=radio][name=supply_type]').change(function() {
 			supplyTypeChange();
 		});
 		/* end of on change supply type */
-
-		/* on change invoice type */
-		$('input[type=radio][name=invoice_type]').change(function() {
-
-			/* calculate row invoice and invoice total on receiver state change */
-            rowInvoiceCalculationOnStateChnage();
-		});
-		/* end of on change invoice type */
 
         /* autocomplete for select items for invoice */
         $(".invoicetable").on("keypress", ".autocompleteitemname", function(){
@@ -1370,13 +1372,13 @@
                 newtr += '<td><input type="text" style="width:100%;" id="invoice_tr_'+nexttrid+'_discount" name="invoice_discount[]" class="inptxt invoiceDiscount" value="0.00" data-bind="decimal" placeholder="0.00" /></td>';
 				newtr += '<td class="advancecol"><div style="width:100px;" class="padrgt0"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_advancevalue" name="invoice_advancevalue[]" class="validateDecimalValue invoiceAdvanceValue inptxt" value="0.00" data-bind="decimal" placeholder="0.00" /></div></td>';
 				newtr += '<td><div style="width:100px;" class="padrgt0"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="inptxt" data-bind="decimal" placeholder="0.00" /></div></td>';
-				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_cgstrate" name="invoice_cgstrate[]" class="inptxt validateDecimalValue invcgstrate" placeholder="0.00" style="width:75px;" /></td>';
+				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_cgstrate" name="invoice_cgstrate[]" class="inptxt validateTaxValue invcgstrate" data-bind="valtax" placeholder="0.00" style="width:75px;" /></td>';
 				newtr += '<td><div style="width:100px;" class="padrgt0"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_cgstamount" name="invoice_cgstamount[]" readonly="true" class="inptxt invcgstamount" placeholder="0.00" /></div></td>';
-				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_sgstrate" name="invoice_sgstrate[]" class="inptxt validateDecimalValue invsgstrate" placeholder="0.00" style="width:75px;" /></td>';
+				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_sgstrate" name="invoice_sgstrate[]" class="inptxt validateTaxValue invsgstrate" data-bind="valtax" placeholder="0.00" style="width:75px;" /></td>';
 				newtr += '<td><div style="width:100px;" class="padrgt0"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_sgstamount" name="invoice_sgstamount[]" readonly="true" class="inptxt invsgstamount" placeholder="0.00" /></div></td>';
-				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_igstrate" name="invoice_igstrate[]" class="inptxt validateDecimalValue invigstrate" placeholder="0.00" style="width:75px;" /></td>';
+				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_igstrate" name="invoice_igstrate[]" class="inptxt validateTaxValue invigstrate" data-bind="valtax" placeholder="0.00" style="width:75px;" /></td>';
 				newtr += '<td><div style="width:100px;" class="padrgt0"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_igstamount" name="invoice_igstamount[]" readonly="true" class="inptxt invigstamount" placeholder="0.00" /></div></td>';
-				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_cessrate" name="invoice_cessrate[]" class="inptxt validateDecimalValue invcessrate" placeholder="0.00" style="width:75px;" /></td>';
+				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_cessrate" name="invoice_cessrate[]" class="inptxt validateTaxValue invcessrate" data-bind="valtax" placeholder="0.00" style="width:75px;" /></td>';
                 newtr += '<td><div style="width:100px;" class="padrgt0"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_cessamount" name="invoice_cessamount[]" readonly="true" class="inptxt invcessamount" placeholder="0.00" /></div></td>';
                 newtr += '<td nowrap="nowrap" class="icon"><a class="deleteInvoice" data-invoice-id="'+nexttrid+'" href="javascript:void(0)"><div class="tooltip2"><i class="fa fa-trash deleteicon"></i><span class="tooltiptext">Delete</span></div></a></td>';
                 newtr += '</tr>';
@@ -1445,7 +1447,8 @@
 					$("#amountValidationModal").modal("show");
 					return false;
 				}
-				
+
+				$("#loading").show();
 				$.ajax({
 					data: {invoiceData:$("#create-invoice").serialize(), action:"saveUpdateInvoice"},
 					dataType: 'json',
@@ -1453,13 +1456,14 @@
 					url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_update_invoice",
 					success: function(response){
 
+						$("#loading").hide();
 						if(response.status == "error") {
-							
+
 							$(".errorValidationContainer").html(response.message);
 							$(".errorValidationContainer").show();
 							$('html, body').animate({ scrollTop: $(".formcontainer").offset().top }, 1000);
 						} else if(response.status == "success") {
-							
+
 							$(".errorValidationContainer").html("");
 							$(".errorValidationContainer").hide();
 							window.location.href = '<?php echo PROJECT_URL; ?>/?page=client_create_invoice';
@@ -1474,21 +1478,23 @@
         $("#create-invoice").submit(function(event){
 
             event.preventDefault();
-			
+
 			var finalInvoiceValue = $( ".totalprice .invoicetotalprice" ).text();
 			if(finalInvoiceValue.length > 16) {
 				$("#amountValidationModal").modal("show");
 				return false;
 			}
 
-			$.ajax({				
-				data: {invoiceData:$("#create-invoice").serialize(), action:"saveUpdateInvoice"},
+			$("#loading").show();
+			$.ajax({
+                data: {invoiceData:$("#create-invoice").serialize(), action:"saveUpdateInvoice"},
                 dataType: 'json',
                 type: 'post',
                 url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_update_invoice",
                 success: function(response){
 
-					if(response.status == "error") {
+					$("#loading").hide();
+                    if(response.status == "error") {
 
 						$(".errorValidationContainer").html(response.message);
                         $(".errorValidationContainer").show();
@@ -1551,7 +1557,7 @@
 
 		/* calculate row invoice on state change function */
         function rowInvoiceCalculationOnStateChnage() {
-
+			
 			var receiverStateId = $("#place_of_supply").val();
 			var taxOldApplied = $("#taxApplied").val();
 			var taxFlag = false;
@@ -1704,7 +1710,7 @@
 				var sgstTax = parseFloat(currentSGSTRate);
 				var sgstTaxAmount = (sgstTax/100) * currentTrTaxableValue;
 				$("#invoice_tr_"+rowid+"_sgstamount").val(sgstTaxAmount.toFixed(2));
-				
+
 				var cessTax = parseFloat(currentCESSRate);
 				var cessTaxAmount = (cessTax/100) * currentTrTaxableValue;
 				$("#invoice_tr_"+rowid+"_cessamount").val(cessTaxAmount.toFixed(2));
@@ -1735,7 +1741,7 @@
         }
         /* end of calculate row invoice function */
 
-		/* calculate total invoice value function */
+        /* calculate total invoice value function */
         function totalInvoiceValueCalculation() {
 
 			var receiverStateId = $("#place_of_supply").val();

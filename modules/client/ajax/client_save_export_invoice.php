@@ -8,10 +8,11 @@
 */
 header('Content-type: application/json');
 $obj_client = new client();
-
 $result = array();
-$invoiceErrorMessage = '';
+$invoiceErrorMessage = array();
+$invoiceErrorMessageContent = '';
 $counter = 0;
+$errorcounter = 1;
 if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] == "saveNewExportInvoice" && isset($_GET['ajax']) && $_GET['ajax'] == "client_save_export_invoice") {
 
 	/* get current user data */
@@ -33,11 +34,11 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	$dataArr['invoice_date'] = isset($params['invoice_date']) ? $params['invoice_date'] : '';
 	$dataArr['reference_number'] = isset($params['invoice_reference_number']) ? $params['invoice_reference_number'] : '';
 	$dataArr['company_name'] = $dataCurrentUserArr['data']->kyc->name;
-	$dataArr['company_address'] = $dataCurrentUserArr['data']->kyc->registered_address;
+	$dataArr['company_address'] = $dataCurrentUserArr['data']->kyc->full_address;
 	$dataArr['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
 	$dataArr['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
 	$dataArr['description'] = isset($params['description']) ? trim($params['description']) : '';
-	
+
 	$supply_place = isset($params['place_of_supply']) ? $params['place_of_supply'] : '';
 	$supply_state_data = $obj_client->getStateDetailByStateId($supply_place);
 
@@ -124,12 +125,22 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 		$dataArr['export_bill_port_code'] = isset($params['export_bill_port_code']) ? $params['export_bill_port_code'] : '';
 		$dataArr['export_bill_date'] = isset($params['export_bill_date']) ? $params['export_bill_date'] : '';
 	}
+	
+	/* check reference number */
+	$referenceStatus = $obj_client->checkReferenceNumberExist($dataArr['reference_number'], $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	if($referenceStatus == true) {
+		array_push($invoiceErrorMessage, "You have already used this reference number.");
+	}
 
 	/* validate invoice data */
-	$obj_client->validateClientInvoice($dataArr);
+	$invoiceErrors = $obj_client->validateClientSalesInvoice($dataArr);
+	if ($invoiceErrors !== true) {
+		$invoiceErrorMessage = array_merge($invoiceErrors, $invoiceErrorMessage);
+	}
 
 	$invoiceItemArray = array();
 	$invoiceTotalAmount = 0.00;
+	$consolidateRate = 0.00;
 	if(isset($params['invoice_itemid']) && count($params['invoice_itemid']) > 0) {
 
 		$invoiceitems = count($params['invoice_itemid']);
@@ -146,7 +157,10 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 			$dataInvoiceArr['invoice_cessrate'] = isset($params['invoice_cessrate'][$i]) ? $params['invoice_cessrate'][$i] : 0.00;
 
 			/* validate invoice data item */
-			$obj_client->validateClientInvoiceItem($dataInvoiceArr, ($i+1));
+			$invoiceItemErrors = $obj_client->validateClientSalesInvoiceItem($dataInvoiceArr, ($i+1));
+			if ($invoiceItemErrors !== true) {
+				$invoiceErrorMessage = array_merge($invoiceItemErrors, $invoiceErrorMessage);
+			}
 
 			$clientMasterItem = $obj_client->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit, u.unit_id, u.unit_name, u.unit_code from " . $obj_client->getTableName('client_master_item') . " as cm, " . $obj_client->getTableName('item') . " as m, " . $obj_client->getTableName('unit') . " as u where 1=1 AND cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.item_id = ".$dataInvoiceArr['invoice_itemid']." AND cm.is_deleted='0' AND cm.status = '1' AND cm.added_by = '".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."'");
 			if (!empty($clientMasterItem)) {
@@ -166,6 +180,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 
 					$itemIGSTTax = (float)$dataInvoiceArr['invoice_igstrate'];
 					$itemCESSTax = (float)$dataInvoiceArr['invoice_cessrate'];
+					$consolidateRate = $itemIGSTTax;
 
 					$invoiceItemIGSTTaxAmount = ($itemIGSTTax/100) * $invoiceItemTaxableAmount;
 					$invoiceItemCESSTaxAmount = ($itemCESSTax/100) * $invoiceItemTaxableAmount;
@@ -180,7 +195,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 
 				$invoiceItemTotalAmount = ($invoiceItemTaxableAmount + $invoiceItemIGSTTaxAmount + $invoiceItemCESSTaxAmount);
 				$invoiceTotalAmount += $invoiceItemTotalAmount;
-
+				
 				$ItemArray = array(
 								"item_id" => $clientMasterItem->item_id,
 								"item_name" => $clientMasterItem->item_name,
@@ -200,6 +215,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 								"igst_amount" => round($invoiceItemIGSTTaxAmount, 2),
 								"cess_rate" => $itemCESSTax,
 								"cess_amount" => round($invoiceItemCESSTaxAmount, 2),
+								"consolidate_rate" => $consolidateRate,
 								"total" => round($invoiceItemTotalAmount, 2),
 								"status" => 1,
 								"added_by" => $obj_client->sanitize($_SESSION['user_detail']['user_id']),
@@ -217,10 +233,21 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	$dataArr['added_by'] = $obj_client->sanitize($_SESSION['user_detail']['user_id']);
 	$dataArr['added_date'] = date('Y-m-d H:i:s');
 
-	if($obj_client->getErrorMessage() != '') {
+	if(!empty($invoiceErrorMessage) && count($invoiceErrorMessage) > 0) {
+
+		$invoiceErrorMessage = array_reverse($invoiceErrorMessage);
+		$invoiceErrorMessageContent .= "<div style='color:#f00;background-color:#eddbe3;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#e8d1df;color:#bd4247;'>";
+		foreach($invoiceErrorMessage as $errorMessage) {
+			$invoiceErrorMessageContent .= "<i class='fa fa-exclamation-triangle'></i>&nbsp;" . $errorcounter . ".&nbsp;" . $errorMessage . "<br>";
+			$errorcounter++;
+		}
+		$invoiceErrorMessageContent .= "</div>";
+	}
+	
+	if($invoiceErrorMessageContent != '') {
 
 		$result['status'] = "error";
-		$result['message'] = $obj_client->getErrorMessage();
+		$result['message'] = $invoiceErrorMessageContent;
 		$obj_client->unsetMessage();
 		echo json_encode($result);
 		die;
@@ -229,11 +256,11 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 		if( !empty($invoiceItemArray) && count($invoiceItemArray) > 0 ) {
 
 			$dataArr['serial_number'] = $obj_client->generateInvoiceNumber( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
-			
+
 			if ($obj_client->insert($obj_client->getTableName('client_invoice'), $dataArr)) {
 
 				$insertid = $obj_client->getInsertID();
-				$obj_client->logMsg("Sales Tax Invoice Added. ID : " . $insertid . ".");
+				$obj_client->logMsg("Sales Export Tax Invoice Added. ID : " . $insertid . ".");
 
 				$processedInvoiceItemArray = array();
 				foreach($invoiceItemArray as $itemArr) {
@@ -246,13 +273,12 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 
 					$obj_client->setSuccess($obj_client->getValMsg('invoiceadded'));
 					$iteminsertid = $obj_client->getInsertID();
-					$obj_client->logMsg("Sales Tax Invoice Item Added. ID : " . $iteminsertid . ".");
-					
+					$obj_client->logMsg("Sales Export Tax Invoice Item Added. ID : " . $iteminsertid . ".");
 					$result['status'] = "success";
 					echo json_encode($result);
 					die;
 				} else {
-				
+
 					$obj_client->setError($obj_client->getValMsg('failed'));
 					$result['status'] = "error";
 					$result['message'] = $obj_client->getErrorMessage();
@@ -262,7 +288,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 				}
 
 			} else {
-				
+
 				$obj_client->setError($obj_client->getValMsg('failed'));
 				$result['status'] = "error";
 				$result['message'] = $obj_client->getErrorMessage();
@@ -270,7 +296,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 				echo json_encode($result);
 				die;
 			}
-		
+
 		} else {
 
 			$obj_client->setError($obj_client->getValMsg('noiteminvoice'));

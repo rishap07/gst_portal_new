@@ -60,7 +60,7 @@
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Supplier Address <span class="starred">*</span></label>
-						<textarea placeholder="IT Park Rd, Sitapura Industrial Area, Sitapura" data-bind="content" readonly="true" class="form-control required" name="company_address" id="company_address"><?php if(isset($dataCurrentUserArr['data']->kyc->registered_address)) { echo $dataCurrentUserArr['data']->kyc->registered_address; } ?></textarea>
+						<textarea placeholder="IT Park Rd, Sitapura Industrial Area, Sitapura" data-bind="content" readonly="true" class="form-control required" name="company_address" id="company_address"><?php if(isset($dataCurrentUserArr['data']->kyc->full_address)) { echo $dataCurrentUserArr['data']->kyc->full_address; } ?></textarea>
 					</div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
@@ -820,11 +820,7 @@
             });
         });
         /* end of autocomplete for select items for invoice */
-		
-		
-		
-		
-		
+
 		/* remove the existing invoice item */
         $(".invoicetable").on("click", ".name_selection_choice_remove", function(){
 
@@ -886,9 +882,6 @@
 			/* insert new row */
 			$(".invoice_tr").last().after(newtr);
 
-			/* trigger advance adjustment */
-			$( "input[name=advance_adjustment]" ).trigger( "change" );
-
 			/* update tr serial number */
 			var trCounter = 1;
 			$( "tr.invoice_tr" ).each(function( index ) {
@@ -905,9 +898,6 @@
 
             var invoiceId = $(this).attr("data-invoice-id");
             $("#invoice_tr_"+invoiceId).remove();
-
-			/* trigger advance adjustment */
-			$( "input[name=advance_adjustment]" ).trigger( "change" );
 
             /* update tr serial number */
             var trCounter = 1;
@@ -948,6 +938,7 @@
 					return false;
 				}
 
+				$("#loading").show();
 				$.ajax({
 					data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewBillInvoice"},
 					dataType: 'json',
@@ -955,6 +946,7 @@
 					url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_bill_of_supply_invoice",
 					success: function(response){
 
+						$("#loading").hide();
 						if(response.status == "error") {
 							
 							$(".errorValidationContainer").html(response.message);
@@ -983,6 +975,7 @@
 				return false;
 			}
 
+			$("#loading").show();
 			$.ajax({
                 data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewBillInvoice"},
                 dataType: 'json',
@@ -990,6 +983,7 @@
                 url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_bill_of_supply_invoice",
                 success: function(response){
 
+					$("#loading").hide();
 					if(response.status == "error") {
 
 						$(".errorValidationContainer").html(response.message);

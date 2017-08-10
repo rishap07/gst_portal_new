@@ -11,7 +11,7 @@
 	if(!$obj_client->can_create('client_invoice')) {
 		
 		$obj_client->setError($obj_client->getValMsg('can_create'));
-		$obj_client->redirect(PROJECT_URL."/?page=client_bill_of_supply_invoice_list");
+		$obj_client->redirect(PROJECT_URL."/?page=client_refund_voucher_invoice_list");
 		exit();
 	}
 
@@ -61,20 +61,19 @@
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Supplier Address <span class="starred">*</span></label>
-						<textarea placeholder="IT Park Rd, Sitapura Industrial Area, Sitapura" data-bind="content" readonly="true" class="form-control required" name="company_address" id="company_address"><?php if(isset($dataCurrentUserArr['data']->kyc->registered_address)) { echo $dataCurrentUserArr['data']->kyc->registered_address; } ?></textarea>
+						<textarea placeholder="IT Park Rd, Sitapura Industrial Area, Sitapura" data-bind="content" readonly="true" class="form-control required" name="company_address" id="company_address"><?php if(isset($dataCurrentUserArr['data']->kyc->full_address)) { echo $dataCurrentUserArr['data']->kyc->full_address; } ?></textarea>
 					</div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Supplier State <span class="starred">*</span></label>
-						<input type="text" placeholder="Compant State" data-bind="content" readonly="true" class="form-control required" name="company_state_name" id="company_state_name" value="<?php if(isset($dataCurrentUserArr['data']->kyc->state_name)) { echo $dataCurrentUserArr['data']->kyc->state_name; } ?>" />
-						<input type="hidden" class="required" name="company_state" id="company_state" value="<?php if(isset($dataCurrentUserArr['data']->kyc->state_id)) { echo $dataCurrentUserArr['data']->kyc->state_id; } ?>" />
+						<input type="text" placeholder="Compant State" data-bind="content" readonly="true" class="form-control required" name="company_state" id="company_state" value="<?php if(isset($dataCurrentUserArr['data']->kyc->state_name)) { echo $dataCurrentUserArr['data']->kyc->state_name; } ?>" />
 					</div>
 				 </div>
 
 				 <div class="row">
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Supplier GSTIN <span class="starred">*</span></label>
-						<input type="text" placeholder="BYRAJ14N3KKT" name="company_gstin_number" data-bind="gstin" readonly="true" class="form-control required" id="company_gstin_number" value="<?php if(isset($dataCurrentUserArr['data']->kyc->gstin_number)) { echo $dataCurrentUserArr['data']->kyc->gstin_number; } ?>" />
+						<input type="text" placeholder="11ABCDE1234A1ZA" name="company_gstin_number" data-bind="gstin" readonly="true" class="form-control required" id="company_gstin_number" value="<?php if(isset($dataCurrentUserArr['data']->kyc->gstin_number)) { echo $dataCurrentUserArr['data']->kyc->gstin_number; } ?>" />
 					</div>
 				 </div>
 
@@ -96,9 +95,9 @@
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Receipt Voucher Number <span class="starred">*</span></label>
 						<select name='receipt_voucher_number' id='receipt_voucher_number' class="required form-control">
+							<option value=''>Select Receipt Voucher</option>
 							<?php $dataReceiptVoucherArrs = $obj_client->get_results("select invoice_id, serial_number, reference_number, invoice_date, supply_place, is_canceled from ".$obj_client->getTableName('client_invoice')." where status='1' and invoice_type = 'receiptvoucherinvoice' AND is_deleted='0' AND financial_year = '".$currentFinancialYear."' AND added_by = ".$obj_client->sanitize($_SESSION['user_detail']['user_id'])." order by serial_number asc"); ?>
 							<?php if(!empty($dataReceiptVoucherArrs)) { ?>
-								<option value=''>Select Receipt Voucher</option>
 								<?php foreach($dataReceiptVoucherArrs as $dataReceiptVoucherArr) { ?>
 									<option value='<?php echo $dataReceiptVoucherArr->invoice_id; ?>' data-reference="<?php echo $dataReceiptVoucherArr->reference_number; ?>" data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>"><?php echo $dataReceiptVoucherArr->serial_number; ?></option>
 								<?php } ?>
@@ -304,7 +303,7 @@
 							</div>
 						</div>
 
-						<div class='col-sm-4'>    
+						<div class='col-sm-4'>
 							<div class='form-group'>
 								<label for="item_category_name">Category <span class="starred">*</span></label>
 								<input type="text" placeholder="Item Category" name='item_category_name' id="item_category_name" data-bind="content" class="required form-control" />
@@ -605,7 +604,13 @@
             return validateDecimalValue(event, this);
         });
         /* end of validate invoice decimal values allow only numbers or decimals */
-		
+
+		/* validate invoice tax decimal values allow only numbers or decimals */
+        $(".invoicetable").on("keypress input paste", ".validateTaxValue", function (event) {
+            return validateTaxValue(event, this);
+        });
+        /* end of validate invoice tax decimal values allow only numbers or decimals */
+
 		/* validate invoice form */
         $('#save_invoice').click(function () {
 
@@ -634,6 +639,7 @@
 					return false;
 				}
 
+				$("#loading").show();
 				$.ajax({
 					data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewRFInvoice"},
 					dataType: 'json',
@@ -641,6 +647,7 @@
 					url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_refund_voucher_invoice",
 					success: function(response){
 
+						$("#loading").hide();
 						if(response.status == "error") {
 							
 							$(".errorValidationContainer").html(response.message);
@@ -669,6 +676,7 @@
 				return false;
 			}
 
+			$("#loading").show();
 			$.ajax({
                 data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewRFInvoice"},
                 dataType: 'json',
@@ -676,6 +684,7 @@
                 url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_refund_voucher_invoice",
                 success: function(response){
 
+					$("#loading").hide();
                     if(response.status == "error") {
 
 						$(".errorValidationContainer").html(response.message);
@@ -733,7 +742,7 @@
 			}
 
 			if(supplierStateId === receiverStateId) {
-				
+
 				$("#invoice_tr_"+rowid+"_igstrate").val(0.00);
 				$("#invoice_tr_"+rowid+"_igstamount").val(0.00);
 

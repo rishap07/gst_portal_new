@@ -1,7 +1,7 @@
 <?php
 $obj_client = new client();
-$obj_sub = new subscriber();
-$obj_coupon = new coupon();
+
+$obj_notification = new notification();
 if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '' ) {
     $obj_client->redirect(PROJECT_URL);
     exit();
@@ -17,31 +17,31 @@ if(!$obj_client->can_read('coupon_update')) {
 
 /* get current user data */
 $dataCurrentArr = array();
-if(isset($_GET["action"]) && ($_GET["action"]=="editCoupon") && (isset($_GET["id"])))
+if(isset($_GET["action"]) && ($_GET["action"]=="editNotification") && (isset($_GET["id"])))
 {
 
-  $sql = "select  *,count(coupon_id) as totalcoupon from gst_coupon where coupon_id=".$_GET["id"]."";
+  $sql = "select  *,count(notification_id) as totalnotification from gst_notification where notification_id=".$_GET["id"]."";
    $dataCurrentArr = $obj_client->get_results($sql);
-   $dataCurrentArr[0]->totalcoupon;
+   $dataCurrentArr[0]->totalnotification;
 //$dataCurrentArr = $obj_client->getUserDetailsById($obj_client->sanitize($_SESSION['user_detail']['user_id']));
 }
  
 if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
 
 //if(!$obj_client->can_create('coupon_update')) {
-	if($obj_coupon->updateCoupon())
+	if($obj_notification->updateNotification())
 	{
-		$obj_client->redirect(PROJECT_URL."/?page=coupon_list");
+		$obj_client->redirect(PROJECT_URL."/?page=notification_list");
 	}
 //}
 }
 if( isset($_POST['submit']) && $_POST['submit'] == 'update' ) {
 	
 	//if(!$obj_client->can_create('coupon_update')) {
-		if($obj_coupon->updateCoupon())
+		if($obj_notification->updateNotification())
 		{
 		
-			$obj_client->redirect(PROJECT_URL."/?page=coupon_list");
+			$obj_client->redirect(PROJECT_URL."/?page=notification_list");
 		}
 	
 }
@@ -52,6 +52,10 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'update' ) {
 
 
 ?>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<!--Load Script and Stylesheet -->
+	<script type="text/javascript" src="<?php echo THEME_URL; ?>/js/jquery.simple-dtpicker.js"></script>
+		<link type="text/css" href="<?php echo THEME_URL; ?>/css/jquery.simple-dtpicker.css" rel="stylesheet" />
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
@@ -74,44 +78,77 @@ echo	'Update'; } else { echo 'Create New' ; } ?>NotificationInformation</h2>
                 <div class="row">
                      	
                               
-                   	 <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                   	   <div class="col-md-4 col-sm-4 col-xs-12 form-group">
 
-                            <label>Notification Name<span class="starred">*</span></label>
-							<?php
-							if(isset($dataCurrentArr[0]->notification_name))
-							{
-								?>
-                            <input type="text" readonly="true" maxlength="6" name="notification_name" id="notification_name" placeholder="Enter notification name" class="required form-control" data-bind="content" value="<?php if(isset($_POST['notification_name'])){ echo $_POST['notification_name']; } else if(isset($dataCurrentArr[0]->notification_name)){ echo $dataCurrentArr[0]->notification_name; } ?>" />
-							<?php } else
-							{
-								?>
-							<input type="text" maxlength="6"  name="notification_name" id="notification_name" placeholder="Enter notification name" class="required form-control" data-bind="content" value="<?php if(isset($_POST['notification_name'])){ echo $_POST['notification_name']; } else if(isset($dataCurrentArr[0]->notification_name)){ echo $dataCurrentArr[0]->notification_name; } ?>" />
-							<?php } ?>
+                            <label>Title<span class="starred">*</span></label>
+							
+							
+                            <input type="text" name="notification_name" id="notification_name" placeholder="Enter notification name" class="required form-control" data-bind="content" value="<?php if(isset($_POST['notification_name'])){ echo $_POST['notification_name']; } else if(isset($dataCurrentArr[0]->notification_name)){ echo $dataCurrentArr[0]->notification_name; } ?>" />
+							
+								
+                        </div>
+					  <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+
+                            <label>Message<span class="starred">*</span></label>
+							
+                            <input type="text"  name="notification_message" id="notification_message" placeholder="Enter notification name" class="required form-control" data-bind="content" value="<?php if(isset($_POST['notification_message'])){ echo $_POST['notification_message']; } else if(isset($dataCurrentArr[0]->notification_message)){ echo $dataCurrentArr[0]->notification_message; } ?>" />
+							
 					
 								
                         </div>
-							 <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-
-                            <label>Notification Message<span class="starred">*</span></label>
+						<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>Vendor Type<span class="starred">*</span></label>
+						<select name='vendor_type' id='vendor_type' class='required form-control'>
+							<?php $dataVendorArrs = $obj_notification->get_results("select * from " . $obj_notification->getTableName('vendor_type') . " where status='1' and is_deleted='0' order by vendor_name asc"); ?>
+							<?php if (!empty($dataVendorArrs)) { ?>
 							<?php
-							if(isset($dataCurrentArr[0]->notification_message))
+							if($dataCurrentArr[0]->vendor_list==0)
 							{
 								?>
-                            <input type="text" readonly="true" maxlength="6" name="notification_message" id="notification_message" placeholder="Enter notification name" class="required form-control" data-bind="content" value="<?php if(isset($_POST['notification_message'])){ echo $_POST['notification_message']; } else if(isset($dataCurrentArr[0]->notification_message)){ echo $dataCurrentArr[0]->notification_message; } ?>" />
-							<?php } else
-							{
-								?>
-							<input type="text"   name="notification_message" id="notification_message" placeholder="Enter notification Message" class="required form-control" data-bind="content" value="<?php if(isset($_POST['notification_message'])){ echo $_POST['notification_message']; } else if(isset($dataCurrentArr[0]->notification_message)){ echo $dataCurrentArr[0]->notification_message; } ?>" />
+								<option value='0' 'selected="selected">Select AllVendor</option>
+							<?php } else { ?>
+							<option value='0'>Select AllVendor</option>
 							<?php } ?>
+								<?php foreach ($dataVendorArrs as $dataVendorArr) { ?>
+									<option value='<?php echo $dataVendorArr->vendor_id; ?>' <?php if(isset($_POST['vendor_type']) && $_POST['vendor_type'] == $dataVendorArr->vendor_id) { echo 'selected="selected"'; } else if(isset($dataArr[0]->vendor_type) && $dataCurrentArr[0]->vendor_list == $dataVendorArr->vendor_id) { echo 'selected="selected"'; } ?>><?php echo $dataVendorArr->vendor_name; ?></option>
+								<?php } ?>
+							<?php } ?>
+						</select>
+					</div> <div class="clear"></div>
 					
-								
-                        </div>
-						
-                       
-						  
+	
+						<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                         <label>StartDate<span class="starred">*</span></label>
+						     <input type="text"  name="start_date" value="<?php if (isset($_POST["start_date"])) {
+                    echo $_POST["start_date"];
+                } else {
+                    echo date('Y-m-d');
+                } ?>" class="required form-control" data-bind="date"
+                                       />
+                   
+					   </div> 
+						<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                         <label>StartTime<span class="starred">*</span></label>
+						     <input type="time" class="required form-control" placeholder="yyyy-mm-dd" name="fromtime" id="fromtime" value="<?php echo $dataCurrentArr[0]->fromtime; ?>" />
+                   
+                       </div>
+					   <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                         <label>EndDate<span class="starred">*</span></label>
+						     <input type="text" placeholder="yyyy-mm-dd" name="end_date" id="end_date" value="<?php if (isset($_POST["end_date"])) {
+                    echo $_POST["end_date"];
+                } else {
+                    echo date('Y-m-d');
+                } ?>" class="required form-control" data-bind="date"
+                                       />
+                       </div> <div class="clear"> </div>
+						<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                         <label>EndTime<span class="starred">*</span></label>
+						     <input type="time" class="required form-control" placeholder="enter time value" name="endtime" id="endtime" value="<?php echo $dataCurrentArr[0]->endtime; ?>" />
+                   
+                       </div>
 						 <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                              <label>Status<span class="starred">*</span></label>
-                         <select name='coupon_status' id='coupon_status' class='required form-control'>
+                         <select name='notification_status' id='notification_status' class='required form-control'>
                         
 						   <option value='1' <?php
                                     if (isset($dataCurrentArr[0]->status) && $dataCurrentArr[0]->status == 1) {
@@ -139,14 +176,14 @@ echo	'Update'; } else { echo 'Create New' ; } ?>NotificationInformation</h2>
 						    
 						 
                      
-              <div class="clear"></div>
+             
 						 <div class="adminformbxsubmit" style="width:100%;">
                              
 						 
 						 
 						   
 						<div class="tc">
-                            <input type='submit' class="btn btn-danger" name='submit' value='<?php if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editCoupon") { echo 'update'; } else { echo 'submit'; } ?>' id='submit'>
+                            <input type='submit' class="btn btn-danger" name='submit' value='<?php if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editNotification") { echo 'update'; } else { echo 'submit'; } ?>' id='submit'>
                             <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=coupon_list"; ?>';" class="btn btn-danger"/>
                         </div>
 						
@@ -193,3 +230,31 @@ echo	'Update'; } else { echo 'Create New' ; } ?>NotificationInformation</h2>
 	  }
 
     </script>
+	<script type="text/javascript">
+		$(function(){
+			$('*[name=start_date]').appendDtpicker();
+		});
+	</script>
+	<script type="text/javascript">
+		$(function(){
+			$('*[name=end_date]').appendDtpicker();
+		});
+	</script>
+	<script>
+	/*
+    $(document).ready(function () {
+
+        
+        
+        $("#end_date").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: 'yy-mm-dd',
+            yearRange: '2017:<?php echo date("Y"); ?>',
+            maxDate: '0:<?php echo date("Y"); ?>'
+        });
+
+    });
+	
+*/
+</script>

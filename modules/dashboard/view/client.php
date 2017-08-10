@@ -8,14 +8,14 @@ $start_year = date('Y');
 $end_year = $start_year + 1;
 // $year = $start_year."-".$end_year;
 $year = $db_obj->generateFinancialYear();
-$dataInvs = $db_obj->get_results('select * from ' . $db_obj->getTableName('client_invoice') . " where invoice_nature='salesinvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and financial_year ='" . $year . "' order by invoice_id desc limit 0,5");
+$dataInvs = $db_obj->get_results('select * from ' . $db_obj->getTableName('client_invoice') . " where invoice_nature='salesinvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and invoice_type <> 'deliverychallaninvoice' and financial_year ='" . $year . "' order by invoice_id desc limit 0,5");
 
 
 /* code for total invoices created in current financial_year */
-$dataTotalinvoices = $db_obj->get_results("select COUNT(invoice_id) as invoicecount,month(invoice_date) as month from " . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and financial_year ='" . $year . "'
+$dataTotalinvoices = $db_obj->get_results("select COUNT(invoice_id) as invoicecount,month(invoice_date) as month from " . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and invoice_type <> 'deliverychallaninvoice' and financial_year ='" . $year . "'
  GROUP by month(invoice_date) desc limit 0,5 ");
 /* code for total month sale */
-$dataTotalMonthSales = $db_obj->get_results("select count(invoice_id) as monthcount, sum(invoice_total_value) as totalsale,month(invoice_date) as month from " . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "'
+$dataTotalMonthSales = $db_obj->get_results("select count(invoice_id) as monthcount, sum(invoice_total_value) as totalsale,month(invoice_date) as month from " . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice'  and invoice_type <> 'deliverychallaninvoice' and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "'
 
   GROUP by month(invoice_date) desc limit 0,5 ");
 if (isset($_POST['submit']) && $_POST['submit'] == 'Filter') {
@@ -26,18 +26,45 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'Filter') {
     if ($from_date < $to_date) {
         // $obj_client->setError('Start date can not be less than to date');
     }
+	$query ='select * from ' . $db_obj->getTableName('client_invoice') . " where invoice_nature='salesinvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and invoice_type <> 'deliverychallaninvoice' and financial_year ='" . $year . "' order by invoice_id desc limit 0,5";
+	
+    $dataInvs = $db_obj->get_results($query);
+    
+    
+/* code for total invoices created in current financial_year */
+$query="select COUNT(invoice_id) as invoicecount,month(invoice_date) as month from " . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and invoice_type <> 'deliverychallaninvoice' and financial_year ='" . $year . "'
+  ";
+     if ($from_date != '') {
+        $query.="and invoice_date >= '" . $from_date . " 00:00:00'";
+    }
+    if ($to_date != '') {
+        $query.="and invoice_date <= '" . $to_date . " 23:59:59'";
+    }
+	$query.="GROUP by month(invoice_date)";
 
+$dataTotalinvoices = $db_obj->get_results($query);
+/* code for total month sale */
+$query="select count(invoice_id) as monthcount, sum(invoice_total_value) as totalsale,month(invoice_date) as month from " . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice'  and invoice_type <> 'deliverychallaninvoice' and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "'";
+   if ($from_date != '') {
+        $query.="and invoice_date >= '" . $from_date . " 00:00:00'";
+    }
+    if ($to_date != '') {
+        $query.="and invoice_date <= '" . $to_date . " 23:59:59'";
+    }
+	$query.="GROUP by month(invoice_date)";
+$dataTotalMonthSales = $db_obj->get_results($query);
     /* code for current month totalsale */
-    $dataTotalMonths = $db_obj->get_results('select COUNT(invoice_id) as numcount, sum(invoice_total_value) as sum from ' . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "' and invoice_date between '" . $from_date . "' and '" . $to_date . "'");
-    $query = 'select COUNT(invoice_id) as numcount, sum(invoice_total_value) as sum from ' . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0'";
+    $dataTotalMonths = $db_obj->get_results('select COUNT(invoice_id) as numcount, sum(invoice_total_value) as sum from ' . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and invoice_type <> 'deliverychallaninvoice' and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "' and invoice_date between '" . $from_date . "' and '" . $to_date . "'");
+    $query = 'select COUNT(invoice_id) as numcount, sum(invoice_total_value) as sum from ' . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and invoice_type <> 'deliverychallaninvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0'";
     if ($from_date != '') {
         $query.="and invoice_date >= '" . $from_date . " 00:00:00'";
     }
     if ($to_date != '') {
         $query.="and invoice_date <= '" . $to_date . " 23:59:59'";
     }
+	$query.="GROUP by month(invoice_date) desc limit 0,5";
     $dataTotalMonths = $db_obj->get_results($query);
-    $query = "SELECT COUNT(i.invoice_id) as numcount,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0'";
+    $query = "SELECT COUNT(i.invoice_id) as numcount,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice' and i.invoice_type <> 'deliverychallaninvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0'";
     if ($from_date != '') {
         $query.="and invoice_date >= '" . $from_date . " 00:00:00'";
     }
@@ -46,12 +73,12 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'Filter') {
     }
     $dataTotalsDue = $db_obj->get_results($query);
 } else {
-    $query = 'select COUNT(invoice_id) as numcount, sum(invoice_total_value) as sum from ' . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0'";
+    $query = 'select COUNT(invoice_id) as numcount, sum(invoice_total_value) as sum from ' . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and invoice_type <> 'deliverychallaninvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0'";
     $query.="and invoice_date >= '" . date('Y-m') . "-01 00:00:00'";
     $query.="and invoice_date <= '" . date('Y-m-d') . " 23:59:59'";
 	
     $dataTotalMonths = $db_obj->get_results($query);
-    $query = "SELECT COUNT(i.invoice_id) as numcount,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0'";
+    $query = "SELECT COUNT(i.invoice_id) as numcount,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice' and i.invoice_type <> 'deliverychallaninvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0'";
 
     $query.="and i.invoice_date >= '" . date('Y-m') . "-01 00:00:00'";
     $query.="and i.invoice_date <= '" . date('Y-m-d') . " 23:59:59'";

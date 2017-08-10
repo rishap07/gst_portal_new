@@ -5,38 +5,6 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
     exit();
 }
 
-if(!$obj_plan->can_read('plan_list')) {
-
-    $obj_plan->setError($obj_plan->getValMsg('can_read'));
-    $obj_plan->redirect(PROJECT_URL."/?page=dashboard");
-    exit();
-}
-
-if( isset($_GET['action']) && $_GET['action'] == 'deletePlan' && isset($_GET['id'])) {
-    
-	if(!$obj_plan->can_delete('plan_list')) {
-
-		$obj_plan->setError($obj_plan->getValMsg('can_delete'));
-		$obj_plan->redirect(PROJECT_URL."/?page=plan_list");
-		exit();
-	}
-	
-    $planid = $_GET['id'];
-    $planDetail = $obj_plan->getPlanDetails($planid);
-
-       
-    if( $planDetail['status'] == "success" ) {
-        
-        if($obj_plan->deletePlan($planDetail['data']->id)){
-            $obj_plan->redirect(PROJECT_URL."?page=plan_list");
-        }
-        
-    } else {
-        $obj_plan->setError($obj_plan->validationMessage['noplanexist']);
-        $obj_plan->redirect(PROJECT_URL."?page=plan_list");
-    }
-}
-/* get current user data */
 
 ?>
 
@@ -46,9 +14,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'deletePlan' && isset($_GET['id
 
        <h1>Notification List</h1>
         <div class="whitebg formboxcontainer">
-        <div>
-            <a class='btn btn-default btn-success btnwidth addnew' href='<?php echo PROJECT_URL;?>/?page=notification_update'>Add New</a>
-        </div>
+      
          <div class="clear height10"></div>
        
           <?php $obj_plan->showErrorMessage(); ?>
@@ -65,13 +31,9 @@ if( isset($_GET['action']) && $_GET['action'] == 'deletePlan' && isset($_GET['id
                     <tr>
                         <th align='left'>#</th>
                     
-                        <th align='left'>Name</th>
+                        <th align='left'>Title</th>
                         <th align='left' width="200px">Message</th>
-                        <th align='left'>VendorList</th>
-                        <th align='left'>StartTime</th>
-                         <th align='left'>EndTime</th>
-                        <th align='left'>Status</th>
-                        <th align='left'>Action</th>
+                        
                     </tr>
                 </thead>
 
@@ -101,13 +63,8 @@ if( isset($_GET['action']) && $_GET['action'] == 'deletePlan' && isset($_GET['id
                     "aoColumns": [
                         {"bSortable": false},
                         {"bSortable": false},
-                        {"bSortable": false},
-                        {"bSortable": false},
-						{"bSortable": false},
-						{"bSortable": false},
-						{"bSortable": false},
-						
-                        {"bSortable": false}
+						 {"bSortable": false}
+                     
                     ],
                     "sDom": "lfrtip",
                     "aLengthMenu": [
@@ -118,7 +75,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'deletePlan' && isset($_GET['id
                     "bServerSide": true,
                     "bStateSave": false,
                     "bDestroy": true,
-                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=notification_list",
+                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=notification",
                     "fnServerParams": function (aoData) {
                     },
                     "iDisplayLength": 50

@@ -28,6 +28,32 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'Filter') {
     if ($from_date < $to_date) {
         // $obj_client->setError('Start date can not be less than to date');
     }
+	/* code for total invoices created in current financial_year */
+	$query="select COUNT(purchase_invoice_id) as invoicecount,month(invoice_date) as month from " . $db_obj->getTableName('client_purchase_invoice') . " WHERE invoice_nature='purchaseinvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "'
+  ";
+	  if ($from_date != '') {
+        $query.="and invoice_date >= '" . $from_date . " 00:00:00'";
+    }
+    if ($to_date != '') {
+        $query.="and invoice_date <= '" . $to_date . " 23:59:59'";
+    }
+	$query.="GROUP by month(invoice_date)";
+	
+$dataTotalinvoices = $db_obj->get_results($query);
+ 
+/* code for total month sale */
+$query="select count(purchase_invoice_id) as monthcount, sum(invoice_total_value) as totalsale,month(invoice_date) as month from " . $db_obj->getTableName('client_purchase_invoice') . " WHERE invoice_nature='purchaseinvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "'
+
+   ";
+  	  if ($from_date != '') {
+        $query.="and invoice_date >= '" . $from_date . " 00:00:00'";
+    }
+    if ($to_date != '') {
+        $query.="and invoice_date <= '" . $to_date . " 23:59:59'";
+    }
+	$query.="GROUP by month(invoice_date)";
+$dataTotalMonthSales = $db_obj->get_results($query);
+
 
     /* code for current month totalsale */
     $dataTotalMonths = $db_obj->get_results('select COUNT(purchase_invoice_id) as numcount, sum(invoice_total_value) as sum from ' . $db_obj->getTableName('client_purchase_invoice') . " WHERE invoice_nature='purchaseinvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "' and invoice_date between '" . $from_date . "' and '" . $to_date . "'");

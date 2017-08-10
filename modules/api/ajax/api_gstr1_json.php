@@ -8,6 +8,7 @@
 */
 $jstr1_array = array();
 $getSummary= isset($_POST['json'])?$_POST['json']:'';
+$returnmonth= isset($_POST['returnmonth'])?$_POST['returnmonth']:'';
 $jstr1_array = json_decode($getSummary,true);
 //echo '<pre>';print_r($jstr1_array);
 $response = '';
@@ -23,6 +24,7 @@ if(!empty($jstr1_array)) {
                         <th style="text-align:right">Total CESS ( <i class="fa fa-inr"></i> )</th>
                         <th style="text-align:right">Total SGST ( <i class="fa fa-inr"></i> )</th>
                         <th style="text-align:right">Total value ( <i class="fa fa-inr"></i> )</th>
+                        <th style="text-align:right"></th>
                     </tr>';
                     if(isset($jstr1_array['sec_sum'])) {
                         foreach ($jstr1_array['sec_sum'] as $key1 => $jstr1_value) {
@@ -42,6 +44,7 @@ if(!empty($jstr1_array)) {
                                 <td align="right">'.$ttl_cess.'</td>
                                 <td align="right">'.$ttl_sgst.'</td>
                                 <td align="right">'.$ttl_val.'</td>
+                                <td align="right"><a href="'.PROJECT_URL.'?page=return_get_summary_view&type='.$jstr1_value['sec_nm'].'&returnmonth='.$returnmonth.'">view</a></td>
                             </tr>';
                         }   
                     }
@@ -49,6 +52,8 @@ if(!empty($jstr1_array)) {
                 </thead>
         	</table>';
 }
-
+else {
+    echo 'No Record found';
+}
 echo $response;
 

@@ -15,7 +15,7 @@ if(!$obj_client->can_read('subscriber_update')) {
 
 /* get current user data */
 $dataCurrentArr = array();
- $sql="select * from gst_user WHERE user_group='3' and user_id='".$_SESSION["user_detail"]["user_id"]."'";
+ $sql="select * from gst_user WHERE (user_group='3' or user_group='4') and user_id='".$_SESSION["user_detail"]["user_id"]."'";
 $dataCurrentArr = $db_obj->get_results($sql);
  
 if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
@@ -27,13 +27,15 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
     }
 	if($obj_sub->updateSubsriber())
 	{
-		
+		$obj_client->redirect(PROJECT_URL."/?page=subscriber_update");
+        exit();
 	}
 	
 }
 
-
-
+      $sql="select * from ".TAB_PREFIX."user WHERE (user_group='3' or user_group='4') and user_id='".$_SESSION["user_detail"]["user_id"]."'";
+	  $dataCurrentArr = $obj_sub->get_results($sql);
+		
 
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
@@ -48,7 +50,7 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
          
         <div class="clear"></div>
 			<div class="whitebg formboxcontainer">
-        <form name="client-user" id="client-user" method="POST">
+        <form name="client-user" id="client-user" method="POST"  enctype="multipart/form-data">
             <h2 class="greyheading">Update profile</h2>
        
                 <div class="row">
@@ -81,11 +83,11 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
                           
                         
                             <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-                                <label>Password<span class="starred">*</span></label>
+                                <label>Password</label>
                                 <input type="password" name="password" id="password" autocomplete="off" placeholder="Enter password" class="form-control" data-bind="content" />
                             </div>
 							  <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-                                <label>Confirm Password<span class="starred">*</span></label>
+                                <label>Confirm Password</label>
                                 <input type="password" name="confirmpassword" id="confirmpassword" autocomplete="off" placeholder="Enter password" class="form-control" data-bind="content" />
                             </div>
                          <div class="clear"></div>
@@ -101,7 +103,20 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
                                                         
                             <label>Phone Number<span class="starred">*</span></label>
                             <input type="text" name="phonenumber" id="phonenumber" placeholder="Enter phone number" class="required form-control" data-bind="mobilenumber" value="<?php if(isset($_POST['phonenumber'])){ echo $_POST['phonenumber']; } else if(isset($dataCurrentArr[0]->phone_number)){ echo $dataCurrentArr[0]->phone_number; } ?>" />
-                        </div>
+                        </div><div class="clear"></div>
+						 <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                        <label>Upload Profile</label>
+                        <div class="clear"></div>
+                        <input type="file" name="profile_pics" id="profile_pics">
+                        <div class="clear"></div>
+                        <small>(Recommended size w=170 and h=50)</small>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                        <?php if (isset($dataCurrentArr[0]->profile_pics) && $dataCurrentArr[0]->profile_pics!= "") { ?>
+                            <img src="<?php echo PROJECT_URL . '/upload/profile-picture/' . $dataCurrentArr[0]->profile_pics; ?>">
+                            <div class="clear"></div>
+                        <?php } ?>
+                    </div>
 						 
                      
               <div class="clear"></div>
@@ -112,7 +127,7 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
 						   
 						<div class="tc">
                             <input type='submit' class="btn btn-danger" name='submit' value='<?php if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClient") { echo 'update'; } else { echo 'submit'; } ?>' id='submit'>
-                            <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=client_list"; ?>';" class="btn btn-danger"/>
+                            <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=dashboard"; ?>';" class="btn btn-danger"/>
                         </div>
 						
 

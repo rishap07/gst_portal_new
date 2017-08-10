@@ -8,6 +8,87 @@ if(!$obj_client->can_read('client_invoice')) {
 	exit();
 }
 
+if (isset($_GET['action']) && $_GET['action'] == 'downloadRVInvoice' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
+
+    $htmlResponse = $obj_client->generateRVInvoiceHtml($_GET['id']);
+    if ($htmlResponse === false) {
+
+        $obj_client->setError("No invoice found.");
+        $obj_client->redirect(PROJECT_URL . "?page=client_receipt_voucher_invoice_list");
+        exit();
+    }
+
+    $obj_mpdf = new mPDF();
+    $obj_mpdf->SetHeader('Receipt Voucher Invoice');
+    $obj_mpdf->WriteHTML($htmlResponse);
+
+    $taxInvoicePdf = 'receipt-voucher-invoice-' . $_GET['id'] . '.pdf';
+    ob_clean();
+    $obj_mpdf->Output($taxInvoicePdf, 'D');
+}
+
+if (isset($_GET['action']) && $_GET['action'] == 'emailRVInvoice' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
+
+    $htmlResponse = $obj_client->generateRVInvoiceHtml($_GET['id']);
+
+    $dataCurrentUserArr = $obj_client->getUserDetailsById($obj_client->sanitize($_SESSION['user_detail']['user_id']));
+    $sendmail = $dataCurrentUserArr['data']->kyc->email;
+
+    $mail = new PHPMailer();
+    $message = html_entity_decode($htmlResponse);
+    $mail->IsSMTP();
+    $mail->Host = "49.50.104.11";
+    $mail->Port = 25;
+    //$mail->SMTPDebug = 2;
+
+    $mail->SMTPOptions = array(
+        'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+        )
+    );
+
+    $mail->CharSet = "UTF-8";
+    $mail->Subject = 'GST Invoice-' . $_GET['id'];
+    $mail->SetFrom('noreply.Gstkeeper@gstkeeper.com', 'GST Keeper');
+    $mail->MsgHTML($message);
+    $mail->AddAddress($sendmail);
+    $mail->AddBCC("ishwar.ghiya@cyfuture.com");
+
+    if ($mail->Send()) {
+
+        $obj_client->setSuccess("Mail Sent Successfully.");
+        $mail->ClearAllRecipients();
+        $obj_client->redirect(PROJECT_URL . "?page=client_receipt_voucher_invoice_list");
+    } else {
+
+        $obj_client->setError($mail->ErrorInfo);
+        $mail->ClearAllRecipients();
+        $obj_client->redirect(PROJECT_URL . "?page=client_receipt_voucher_invoice_list");
+    }
+}
+
+if (isset($_GET['action']) && $_GET['action'] == 'printRVInvoice' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
+
+    $htmlResponse = $obj_client->generateRVInvoiceHtml($_GET['id']);
+
+    if ($htmlResponse === false) {
+
+        $obj_client->setError("No invoice found.");
+        $obj_client->redirect(PROJECT_URL . "?page=client_receipt_voucher_invoice_list");
+        exit();
+    }
+
+    $obj_mpdf = new mPDF();
+    $obj_mpdf->SetHeader('Receipt Voucher Invoice');
+    $obj_mpdf->WriteHTML($htmlResponse);
+
+    $taxInvoicePdf = 'receipt-voucher-invoice-' . $_GET['id'] . '.pdf';
+    ob_clean();
+    $obj_mpdf->Output($taxInvoicePdf, 'I');
+}
+
 $currentFinancialYear = $obj_client->generateFinancialYear();
 $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
 ?>
@@ -32,42 +113,12 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 
                     <div class="invoiceheaderfixed">
                         <div class="col-md-8">
-
                             <a href='javascript:void(0)' class="btn btn-warning pull-left checkAll">Check All</a>
                             <a href='javascript:void(0)' class="btn btn-danger pull-left cancelAll"><i class="fa fa-times" aria-hidden="true"></i> Cancel</a>
-
-                            <!--
-                                <ul class="nav pull-left nav-pills" role="tablist">
-                                    <li role="presentation" class="dropdown">
-                                        <a href="#" class="dropdown-toggle greyborder" id="drop5" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> All Invoice <span class="caret"></span> </a>
-                                        <ul class="dropdown-menu" id="menu2" aria-labelledby="drop5">
-                                            <li><a href="#">Action</a></li>
-                                            <li><a href="#">Another action</a></li> 
-                                            <li><a href="#">Something else here</a></li>
-                                            <li role="separator" class="divider"></li> <li><a href="#">Separated link</a></li> 
-                                        </ul>
-                                    </li>
-                                </ul>
-                            -->
                         </div>
 
                         <div class="col-md-4">
-
                             <a href='<?php echo PROJECT_URL; ?>/?page=client_create_receipt_voucher_invoice' class="btn btn-success pull-right"><i class="fa fa-plus" aria-hidden="true"></i> New</a>
-
-                            <!--
-                                <ul class="nav nav-pills" role="tablist">
-                                    <li role="presentation" class="dropdown"> 
-                                        <a href="#" class="dropdown-toggle iconmenu" id="drop5" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-bars" aria-hidden="true"></i></span> </a>
-                                        <ul class="dropdown-menu" id="menu2" aria-labelledby="drop5">
-                                            <li><a href="#">Action</a></li>
-                                            <li><a href="#">Another action</a></li> 
-                                            <li><a href="#">Something else here</a></li>
-                                            <li role="separator" class="divider"></li> <li><a href="#">Separated link</a></li> 
-                                        </ul>
-                                    </li>
-                                </ul>
-                            -->
                         </div>
                     </div>
 
@@ -174,10 +225,11 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                                         <?php } ?>
                                                     </td>
 
-                                                    <td>
+													<td>
                                                         <b>Invoice #</b>: <?php echo $invoiceData[0]->serial_number; ?><br>
                                                         <b>Reference #</b>: <?php echo $invoiceData[0]->reference_number; ?><br>
-                                                        <b>Nature:</b> Sales Invoice<br>
+                                                        <b>Type:</b> Receipt Voucher<br>
+                                                        <b>Nature:</b> <?php echo "Sales Invoice"; ?><br>
                                                         <b>Invoice Date:</b> <?php echo $invoiceData[0]->invoice_date; ?>
                                                     </td>
                                                 </tr>
@@ -185,24 +237,22 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                         </td>
                                     </tr>
 
-                                    <?php $company_state_data = $obj_client->getStateDetailByStateId($invoiceData[0]->company_state); ?>
                                     <?php $supply_place_data = $obj_client->getStateDetailByStateId($invoiceData[0]->supply_place); ?>
 
                                     <tr class="information">
                                         <td colspan="2">
                                             <table>
-                                                <tr>
-                                                    <td>
+                                                <tr>													
+													<td>
                                                         <?php echo $invoiceData[0]->company_name; ?><br>
                                                         <?php echo $invoiceData[0]->company_address; ?><br>
-                                                        <?php echo $company_state_data['data']->state_name; ?><br>
                                                         <b>GSTIN:</b> <?php echo $invoiceData[0]->gstin_number; ?>
                                                     </td>
 
-                                                    <td>
-                                                        <?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php echo $supply_place_data['data']->state_name; ?><br> <?php } ?>
-                                                        <b>Reverse Charge:</b> <?php if ($invoiceData[0]->is_tax_payable == 1) { echo "Yes" . "<br>"; } else { echo "No" . "<br>"; } ?>
-                                                        <?php if ($invoiceData[0]->is_canceled == 1) { ?> <b>Canceled Invoice:</b> <?php echo "Canceled"; ?><br> <?php } ?>
+                                                    <td>                                                        
+														<?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php echo $supply_place_data['data']->state_name; ?><br> <?php } ?>
+														<b>Reverse Charge:</b> <?php if ($invoiceData[0]->is_tax_payable == 1) { echo "Yes" . "<br>"; } else { echo "No" . "<br>"; } ?>
+														<?php if ($invoiceData[0]->is_canceled == 1) { ?> <b>Canceled Invoice:</b> <?php echo "Canceled"; ?> <?php } ?>
                                                   	</td>
                                                 </tr>
                                             </table>
@@ -212,42 +262,24 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                     <tr class="information">
                                         <td colspan="2">
                                             <table>
-                                                <tr>
+												<tr>
                                                     <td>
                                                         <b>Recipient Detail</b><br>
-														<?php echo $invoiceData[0]->billing_name; ?><br>
-                                                        
-														<?php if ($invoiceData[0]->billing_company_name) { ?>
-                                                        	<?php echo $invoiceData[0]->billing_company_name; ?><br>
-                                                        <?php } ?>
-														
-														<?php $billing_state_data = $obj_client->getStateDetailByStateId($invoiceData[0]->billing_state); ?>
-                                                        <?php $billing_country_data = $obj_client->getCountryDetailByCountryId($invoiceData[0]->billing_country); ?>
-														<?php echo $invoiceData[0]->billing_address . ', ' . $billing_state_data['data']->state_name . ', ' . $billing_country_data['data']->country_name; ?><br>
-														<?php $billing_vendor_data = $obj_client->getVendorDetailByVendorId($invoiceData[0]->billing_vendor_type); ?>
-														<?php echo $billing_vendor_data['data']->vendor_name; ?><br>
-
-                                                        <?php if(!empty($invoiceData[0]->billing_gstin_number)) { ?>
-                                                            <b>GSTIN:</b> <?php echo $invoiceData[0]->billing_gstin_number; ?>
+                                                        <?php echo $invoiceData[0]->billing_name; ?><br>
+                                                        <?php if($invoiceData[0]->billing_company_name) { ?> <?php echo $invoiceData[0]->billing_company_name; ?><br> <?php } ?>
+                                                        <?php echo $invoiceData[0]->billing_address; ?><br>
+														<?php if(!empty($invoiceData[0]->billing_gstin_number)) { ?>
+															<b>GSTIN:</b> <?php echo $invoiceData[0]->billing_gstin_number; ?>
                                                         <?php } ?>
                                                     </td>
 
                                                     <td>
                                                         <b>Address Of Delivery / Shipping Detail</b><br>
                                                         <?php echo $invoiceData[0]->shipping_name; ?><br>
-                                                        
-														<?php if(!empty($invoiceData[0]->shipping_company_name)) { ?>
-                                                        	<?php echo $invoiceData[0]->shipping_company_name; ?><br>
-                                                        <?php } ?>
-
-														<?php $shipping_state_data = $obj_client->getStateDetailByStateId($invoiceData[0]->shipping_state); ?>
-                                                        <?php $shipping_country_data = $obj_client->getCountryDetailByCountryId($invoiceData[0]->shipping_country); ?>
-														<?php echo $invoiceData[0]->shipping_address . ', ' . $shipping_state_data['data']->state_name . ', ' . $shipping_country_data['data']->country_name; ?><br>
-														<?php $shipping_vendor_data = $obj_client->getVendorDetailByVendorId($invoiceData[0]->shipping_vendor_type); ?>
-														<?php echo $shipping_vendor_data['data']->vendor_name; ?><br>
-
-                                                        <?php if(!empty($invoiceData[0]->shipping_gstin_number)) { ?>
-                                                        	<b>GSTIN:</b> <?php echo $invoiceData[0]->shipping_gstin_number; ?>
+                                                        <?php if($invoiceData[0]->shipping_company_name) { ?> <?php echo $invoiceData[0]->shipping_company_name; ?><br> <?php } ?>
+                                                        <?php echo $invoiceData[0]->shipping_address; ?><br>
+														<?php if(!empty($invoiceData[0]->shipping_gstin_number)) { ?>
+															<b>GSTIN:</b> <?php echo $invoiceData[0]->shipping_gstin_number; ?>
                                                         <?php } ?>
                                                     </td>
                                                 </tr>
@@ -264,10 +296,10 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                                     <td rowspan="2">Goods/Services</td>
                                                     <td rowspan="2">HSN/SAC Code</td>
                                                     <td rowspan="2">Advance Value<br>(<i class="fa fa-inr"></i>)</td>
-                                                    <td colspan="2" style="border-bottom:1px solid #808080;">CGST</td>
-                                                    <td colspan="2" style="border-bottom:1px solid #808080;">SGST</td>
-                                                    <td colspan="2" style="border-bottom:1px solid #808080;">IGST</td>
-                                                    <td colspan="2" style="border-bottom:1px solid #808080;">CESS</td>
+													<td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">CGST</td>
+                                                    <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">SGST</td>
+                                                    <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">IGST</td>
+                                                    <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">CESS</td>
                                                 </tr>
 
                                                 <tr class="heading">

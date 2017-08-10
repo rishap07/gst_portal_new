@@ -8,6 +8,87 @@ if(!$obj_client->can_read('client_invoice')) {
 	exit();
 }
 
+if (isset($_GET['action']) && $_GET['action'] == 'downloadBOSInvoice' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
+
+    $htmlResponse = $obj_client->generateBOSInvoiceHtml($_GET['id']);
+    if ($htmlResponse === false) {
+
+        $obj_client->setError("No invoice found.");
+        $obj_client->redirect(PROJECT_URL . "?page=client_bill_of_supply_invoice_list");
+        exit();
+    }
+
+    $obj_mpdf = new mPDF();
+    $obj_mpdf->SetHeader('Bill of Supply Invoice');
+    $obj_mpdf->WriteHTML($htmlResponse);
+
+    $taxInvoicePdf = 'bos-invoice-' . $_GET['id'] . '.pdf';
+    ob_clean();
+    $obj_mpdf->Output($taxInvoicePdf, 'D');
+}
+
+if (isset($_GET['action']) && $_GET['action'] == 'emailBOSInvoice' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
+
+    $htmlResponse = $obj_client->generateBOSInvoiceHtml($_GET['id']);
+
+    $dataCurrentUserArr = $obj_client->getUserDetailsById($obj_client->sanitize($_SESSION['user_detail']['user_id']));
+    $sendmail = $dataCurrentUserArr['data']->kyc->email;
+
+    $mail = new PHPMailer();
+    $message = html_entity_decode($htmlResponse);
+    $mail->IsSMTP();
+    $mail->Host = "49.50.104.11";
+    $mail->Port = 25;
+    //$mail->SMTPDebug = 2;
+
+    $mail->SMTPOptions = array(
+        'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+        )
+    );
+
+    $mail->CharSet = "UTF-8";
+    $mail->Subject = 'GST Bill of Supply Invoice-' . $_GET['id'];
+    $mail->SetFrom('noreply.Gstkeeper@gstkeeper.com', 'GST Keeper');
+    $mail->MsgHTML($message);
+    $mail->AddAddress($sendmail);
+    $mail->AddBCC("ishwar.ghiya@cyfuture.com");
+
+    if ($mail->Send()) {
+
+        $obj_client->setSuccess("Mail Sent Successfully.");
+        $mail->ClearAllRecipients();
+        $obj_client->redirect(PROJECT_URL . "?page=client_bill_of_supply_invoice_list");
+    } else {
+
+        $obj_client->setError($mail->ErrorInfo);
+        $mail->ClearAllRecipients();
+        $obj_client->redirect(PROJECT_URL . "?page=client_bill_of_supply_invoice_list");
+    }
+}
+
+if (isset($_GET['action']) && $_GET['action'] == 'printBOSInvoice' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
+
+    $htmlResponse = $obj_client->generateBOSInvoiceHtml($_GET['id']);
+
+    if ($htmlResponse === false) {
+
+        $obj_client->setError("No invoice found.");
+        $obj_client->redirect(PROJECT_URL . "?page=client_invoice_list");
+        exit();
+    }
+
+    $obj_mpdf = new mPDF();
+    $obj_mpdf->SetHeader('Bill of Supply Invoice');
+    $obj_mpdf->WriteHTML($htmlResponse);
+
+    $taxInvoicePdf = 'bos-invoice-' . $_GET['id'] . '.pdf';
+    ob_clean();
+    $obj_mpdf->Output($taxInvoicePdf, 'I');
+}
+
 $currentFinancialYear = $obj_client->generateFinancialYear();
 $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
 ?>
@@ -28,43 +109,17 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
             <div class="row">
 
                 <!--INVOICE LEFT TABLE START HERE-->
-                <div class="fixed-left-col col-sm-12 col-xs-12" style="padding-right:0px; padding-left:0px;">
+				<div class="fixed-left-col col-sm-12 col-xs-12" style="padding-right:0px; padding-left:0px;">
 
                     <div class="invoiceheaderfixed">
                         <div class="col-md-8">
                             <a href='javascript:void(0)' class="btn btn-warning pull-left checkAll">Check All</a>
                             <a href='javascript:void(0)' class="btn btn-danger pull-left cancelAll"><i class="fa fa-times" aria-hidden="true"></i> Cancel</a>
-                            <!--
-								<ul class="nav pull-left nav-pills" role="tablist">
-									<li role="presentation" class="dropdown">
-										<a href="#" class="dropdown-toggle greyborder" id="drop5" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> All Invoice <span class="caret"></span> </a>
-										<ul class="dropdown-menu" id="menu2" aria-labelledby="drop5">
-											<li><a href="#">Action</a></li>
-											<li><a href="#">Another action</a></li> 
-											<li><a href="#">Something else here</a></li>
-											<li role="separator" class="divider"></li> <li><a href="#">Separated link</a></li>
-										</ul>
-									</li>
-								</ul>
-                            -->
                         </div>
 
                         <div class="col-md-4">
                             <a href='<?php echo PROJECT_URL; ?>/?page=client_create_bill_of_supply_invoice' class="btn btn-success pull-right"><i class="fa fa-plus" aria-hidden="true"></i> New</a>
-                            <!--
-								<ul class="nav nav-pills" role="tablist">
-									<li role="presentation" class="dropdown"> 
-										<a href="#" class="dropdown-toggle iconmenu" id="drop5" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-bars" aria-hidden="true"></i></span> </a>
-										<ul class="dropdown-menu" id="menu2" aria-labelledby="drop5">
-											<li><a href="#">Action</a></li>
-											<li><a href="#">Another action</a></li> 
-											<li><a href="#">Something else here</a></li>
-											<li role="separator" class="divider"></li> <li><a href="#">Separated link</a></li>
-										</ul>
-									</li>
-								</ul>
-                            -->
-						</div>
+                        </div>
                     </div>
 
                     <div class="tableresponsive">
@@ -79,43 +134,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 
                     $invid = $obj_client->sanitize($_GET['id']);
                     $invoiceData = $obj_client->get_results("select 
-												ci.invoice_id, 
-												ci.invoice_type, 
-												(case 
-													when ci.invoice_nature='salesinvoice' Then 'Sales Invoice' 
-													when ci.invoice_nature='purchaseinvoice' then 'Purchase Invoice' 
-												end) as invoice_nature, 
-												ci.reference_number, 
-												ci.serial_number, 
-												ci.company_name, 
-												ci.company_address, 
-												ci.company_state, 
-												ci.gstin_number, 
-												ci.invoice_date, 
-												ci.billing_name, 
-												ci.billing_company_name, 
-												ci.billing_address, 
-												ci.billing_state, 
-												ci.billing_state_name, 
-												ci.billing_country, 
-												ci.billing_vendor_type, 
-												ci.billing_gstin_number, 
-												ci.shipping_name, 
-												ci.shipping_company_name, 
-												ci.shipping_address, 
-												ci.shipping_state, 
-												ci.shipping_state_name, 
-												ci.shipping_country, 
-												ci.shipping_vendor_type, 
-												ci.shipping_gstin_number, 
-												ci.description, 
-												ci.invoice_total_value, 
-												ci.financial_year, 
-												(case 
-													when ci.status='0' Then 'Active' 
-													when ci.status='1' then 'Inactive' 
-												end) as status, 
-												ci.is_canceled, 
+												ci.*, 
 												cii.invoice_item_id, 
 												cii.item_id, 
 												cii.item_name, 
@@ -125,50 +144,23 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 												cii.item_unit_price, 
 												cii.subtotal, 
 												cii.discount, 
+												cii.advance_amount, 
 												cii.taxable_subtotal, 
+												cii.cgst_rate, 
+												cii.cgst_amount, 
+												cii.sgst_rate, 
+												cii.sgst_amount, 
+												cii.igst_rate, 
+												cii.igst_amount, 
+												cii.cess_rate, 
+												cii.cess_amount, 
 												cii.total 
 												from 
 											" . $obj_client->getTableName('client_invoice') . " as ci INNER JOIN " . $obj_client->getTableName('client_invoice_item') . " as cii ON ci.invoice_id = cii.invoice_id where ci.invoice_id = " . $invid . " AND ci.invoice_type = 'billofsupplyinvoice' AND ci.added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND cii.added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND ci.is_deleted='0' AND cii.is_deleted='0'");
                 } else {
 
 					$invoiceData = $obj_client->get_results("select 
-												ci.invoice_id, 
-												ci.invoice_type, 
-												(case 
-													when ci.invoice_nature='salesinvoice' Then 'Sales Invoice' 
-													when ci.invoice_nature='purchaseinvoice' then 'Purchase Invoice' 
-												end) as invoice_nature, 
-												ci.reference_number, 
-												ci.serial_number, 
-												ci.company_name, 
-												ci.company_address, 
-												ci.company_state, 
-												ci.gstin_number, 
-												ci.invoice_date, 
-												ci.billing_name, 
-												ci.billing_company_name, 
-												ci.billing_address, 
-												ci.billing_state, 
-												ci.billing_state_name, 
-												ci.billing_country, 
-												ci.billing_vendor_type, 
-												ci.billing_gstin_number, 
-												ci.shipping_name, 
-												ci.shipping_company_name, 
-												ci.shipping_address, 
-												ci.shipping_state, 
-												ci.shipping_state_name, 
-												ci.shipping_country, 
-												ci.shipping_vendor_type, 
-												ci.shipping_gstin_number, 
-												ci.description, 
-												ci.invoice_total_value, 
-												ci.financial_year, 
-												(case 
-													when ci.status='0' Then 'Active' 
-													when ci.status='1' then 'Inactive' 
-												end) as status, 
-												ci.is_canceled, 
+												ci.*, 
 												cii.invoice_item_id, 
 												cii.item_id, 
 												cii.item_name, 
@@ -178,10 +170,19 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 												cii.item_unit_price, 
 												cii.subtotal, 
 												cii.discount, 
+												cii.advance_amount, 
 												cii.taxable_subtotal, 
+												cii.cgst_rate, 
+												cii.cgst_amount, 
+												cii.sgst_rate, 
+												cii.sgst_amount, 
+												cii.igst_rate, 
+												cii.igst_amount, 
+												cii.cess_rate, 
+												cii.cess_amount, 
 												cii.total 
 												from 
-											" . $obj_client->getTableName('client_invoice') . " as ci INNER JOIN " . $obj_client->getTableName('client_invoice_item') . " as cii ON ci.invoice_id = cii.invoice_id where ci.invoice_id = (SELECT invoice_id FROM ".$obj_client->getTableName('client_invoice')." Where invoice_type = 'billofsupplyinvoice' AND added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND is_deleted='0' Order by invoice_id desc limit 0,1) AND ci.added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND cii.added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND ci.is_deleted='0' AND cii.is_deleted='0'");
+											" . $obj_client->getTableName('client_invoice') . " as ci INNER JOIN " . $obj_client->getTableName('client_invoice_item') . " as cii ON ci.invoice_id = cii.invoice_id where ci.invoice_id = (SELECT invoice_id FROM ".$obj_client->getTableName('client_invoice')." Where invoice_type = 'billofsupplyinvoice' AND added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND is_deleted='0' Order by invoice_id desc limit 0,1) AND ci.invoice_type = 'billofsupplyinvoice' AND ci.added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND cii.added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND ci.is_deleted='0' AND cii.is_deleted='0'");
 				}
                 /* Invoice display query code end here */
                 ?>
@@ -199,24 +200,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=client_bill_of_supply_invoice_list&action=downloadBOSInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=client_bill_of_supply_invoice_list&action=printBOSInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>" target="_blank"><div data-toggle="tooltip" data-placement="bottom" title="PRINT"><i class="fa fa-print" aria-hidden="true"></i></div></a></li>
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=client_bill_of_supply_invoice_list&action=emailBOSInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></div></a></li>
-                                <!--<li><a href="#"><div data-toggle="tooltip" data-placement="bottom" title="Attached File"><i class="fa fa-paperclip" aria-hidden="true"></i></div></a></li>-->
                             </ul>
-
-                            <!--
-								<div class="col-md-7">
-									<ul class="nav nav-pills pull-left" role="tablist" style="margin-left:10px;">
-										<li role="presentation" class="dropdown">
-											<a href="#" class="dropdown-toggle greyborder btngrey" id="drop5" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> All Invoice <span class="caret"></span> </a>
-											<ul class="dropdown-menu" id="menu2" aria-labelledby="drop5">
-												<li><a href="#">Action</a></li>
-												<li><a href="#">Another action</a></li> 
-												<li><a href="#">Something else here</a></li>
-												<li role="separator" class="divider"></li> <li><a href="#">Separated link</a></li> 
-											</ul>
-										</li>
-									</ul>
-								</div>
-                            -->
                         </div>
 
                         <!---INVOICE div print START HERE-->
@@ -244,15 +228,13 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                                         <b>Invoice #</b>: <?php echo $invoiceData[0]->serial_number; ?><br>
                                                         <b>Reference #</b>: <?php echo $invoiceData[0]->reference_number; ?><br>
                                                         <b>Type:</b> Bill of Supply Invoice<br>
-                                                        <b>Nature:</b> <?php echo $invoiceData[0]->invoice_nature; ?><br>
+                                                        <b>Nature:</b> <?php echo "Sales Invoice"; ?><br>
                                                         <b>Invoice Date:</b> <?php echo $invoiceData[0]->invoice_date; ?>
                                                     </td>
                                                 </tr>
                                             </table>
                                         </td>
                                     </tr>
-
-                                    <?php $company_state_data = $obj_client->getStateDetailByStateId($invoiceData[0]->company_state); ?>
 
                                     <tr class="information">
                                         <td colspan="2">
@@ -261,7 +243,6 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                                     <td>
                                                         <?php echo $invoiceData[0]->company_name; ?><br>
                                                         <?php echo $invoiceData[0]->company_address; ?><br>
-                                                        <?php echo $company_state_data['data']->state_name; ?><br>
                                                         <b>GSTIN:</b> <?php echo $invoiceData[0]->gstin_number; ?>
                                                     </td>
 
@@ -277,43 +258,27 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                         <td colspan="2">
                                             <table>
                                                 <tr>
-                                                    <td>
+
+													<td>
                                                         <b>Recipient Detail</b><br>
                                                         <?php echo $invoiceData[0]->billing_name; ?><br>
-                                                        <?php if (!empty($invoiceData[0]->billing_company_name)) { ?> <?php echo $invoiceData[0]->billing_company_name; ?><br> <?php } ?>
+                                                        <?php if($invoiceData[0]->billing_company_name) { ?> <?php echo $invoiceData[0]->billing_company_name; ?><br> <?php } ?>
                                                         <?php echo $invoiceData[0]->billing_address; ?><br>
-														<?php echo $invoiceData[0]->billing_state_name; ?><br>
-														<?php $billing_country_data = $obj_client->getCountryDetailByCountryId($invoiceData[0]->billing_country); ?>
-														<?php echo $billing_country_data['data']->country_name; ?><br>
-
-														<?php if (!empty($invoiceData[0]->billing_vendor_type)) { ?>
-															<?php $billing_vendor_data = $obj_client->getVendorDetailByVendorId($invoiceData[0]->billing_vendor_type); ?>
-															<?php if($billing_vendor_data['status'] === "success") { ?> <?php echo $billing_vendor_data['data']->vendor_name; ?><br> <?php } ?>
-														<?php } ?>
-
-                                                        <?php if (!empty($invoiceData[0]->billing_gstin_number)) { ?>
-                                                            <b>GSTIN:</b> <?php echo $invoiceData[0]->billing_gstin_number; ?>
+														<?php if(!empty($invoiceData[0]->billing_gstin_number)) { ?>
+															<b>GSTIN:</b> <?php echo $invoiceData[0]->billing_gstin_number; ?>
                                                         <?php } ?>
                                                     </td>
 
                                                     <td>
                                                         <b>Address Of Delivery / Shipping Detail</b><br>
                                                         <?php echo $invoiceData[0]->shipping_name; ?><br>
-                                                        <?php if ($invoiceData[0]->shipping_company_name) { ?> <?php echo $invoiceData[0]->shipping_company_name; ?><br> <?php } ?>
+                                                        <?php if($invoiceData[0]->shipping_company_name) { ?> <?php echo $invoiceData[0]->shipping_company_name; ?><br> <?php } ?>
                                                         <?php echo $invoiceData[0]->shipping_address; ?><br>
-														<?php echo $invoiceData[0]->shipping_state_name; ?><br>
-														<?php $shipping_country_data = $obj_client->getCountryDetailByCountryId($invoiceData[0]->shipping_country); ?>
-														<?php echo $shipping_country_data['data']->country_name; ?><br>
-
-														<?php if (!empty($invoiceData[0]->shipping_vendor_type)) { ?>
-															<?php $shipping_vendor_data = $obj_client->getVendorDetailByVendorId($invoiceData[0]->shipping_vendor_type); ?>
-															<?php if($shipping_vendor_data['status'] === "success") { ?> <?php echo $shipping_vendor_data['data']->vendor_name; ?><br> <?php } ?>
-														<?php } ?>
-
-														<?php if ($invoiceData[0]->shipping_gstin_number > 0) { ?>
-                                                            <b>GSTIN:</b> <?php echo $invoiceData[0]->shipping_gstin_number; ?>
+														<?php if(!empty($invoiceData[0]->shipping_gstin_number)) { ?>
+															<b>GSTIN:</b> <?php echo $invoiceData[0]->shipping_gstin_number; ?>
                                                         <?php } ?>
                                                     </td>
+
                                                 </tr>
                                             </table>
                                         </td>
@@ -370,6 +335,14 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 
                                         </td>
                                     </tr>
+									
+									<?php if(!empty($invoiceData[0]->description)) { ?>
+										<tr class="description">
+											<td colspan="2">
+												<p><b>Description:</b> <?php echo $invoiceData[0]->description; ?></p>
+											</td>
+										</tr>
+                                    <?php } ?>
 
                                 </table>			
                             </div>

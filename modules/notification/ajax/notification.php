@@ -14,16 +14,13 @@ $obj_master = new master();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('g.notification_id', 'g.notification_name', 'g.notification_message', 'g.vendor_list','g.start_date','g.end_date','g.status');
-$aSearchColumns = array('g.notification_id', 'g.notification_name', 'g.vendor_list');
-$sIndexColumn = "g.notification_id";
+$aColumns = array('n.notification_id', 'n.notification_name', 'n.notification_message');
+$aSearchColumns = array('n.notification_id', 'n.notification_name');
+$sIndexColumn = "n.notification_id";
+ // $sql="select * from " . $db_obj->getTableName('notification') . " as n INNER join " . $db_obj->getTableName('user_notification') . " as u on u.notification_id=n.notification_id  where n.status='1' and  u.user_id='".$_SESSION["user_detail"]["user_id"]."' order by u.notification_id desc";
+				
 
-/* DB table to use */
-//$spTable = "gst_coupon as g";
- /* DB table to use */
-//$spTable = $obj_master->getTableName('coupon');
-// $spTable = $spTable.' '.'as g';
-$spTable = "gst_notification as g";
+ $spTable = "gst_notification as n inner join gst_user_notification as u on u.notification_id=n.notification_id  where n.status='1' AND  u.user_id='".$_SESSION["user_detail"]["user_id"]."'";
 
 /*
  * Paging
@@ -46,7 +43,7 @@ if (isset($_POST['iSortCol_0'])) {
         }
     }
     if ($spOrder == "ORDER BY ") {
-        $spOrder = "ORDER BY g.notification_id ASC";
+        $spOrder = "ORDER BY n.notification_id ASC";
     }
 }
 
@@ -125,34 +122,12 @@ if(isset($rResult) && !empty($rResult))
 {
 foreach($rResult as $aRow) {
     $row = array();
-    $status = '';
-    if($aRow->status == '0'){
-        $status = '<span class="inactive">InActive<span>';
-    }elseif($aRow->status == '1'){
-        $status = '<span class="active">Active<span>';
-    }
-	
-	$type='';
-	  if($aRow->vendor_list == '0'){
-        $type = 'All';
-    }else{
-        $type = $aRow->vendor_list;
-    }
-	
-    
-   
-   
+      
+  
     $row[] = $temp_x;
     $row[] = utf8_decode($aRow->notification_name);
     $row[] = utf8_decode($aRow->notification_message);
-    $row[] = utf8_decode($type);
-    $row[] = utf8_decode($aRow->start_date);
-	$row[] = utf8_decode($aRow->end_date);
-	$row[] = utf8_decode($status);
    
-   
-    //$row[] = $status;
-    $row[] = '<a href="'.PROJECT_URL.'/?page=notification_update&action=editNotification&id='.$aRow->notification_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>';
     $output['aaData'][] = $row;
     $temp_x++;
 }

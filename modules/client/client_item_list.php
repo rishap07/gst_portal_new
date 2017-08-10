@@ -20,6 +20,11 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteItem' && isset($_GET['id
     }
 }
 ?>
+<style>
+    .bulkupload{
+        margin-right: 10px !important;
+    }
+</style>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">   
   <h1>Item</h1>	
@@ -27,6 +32,9 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteItem' && isset($_GET['id
         <div>
             <a class='btn btn-default btn-success btnwidth addnew' href='<?php echo PROJECT_URL;?>/?page=client_item_update'>Add New</a>
         </div>
+        <div>
+            <a class='btn btn-default btn-success btnwidth addnew bulkupload' href='<?php echo PROJECT_URL;?>/?page=client_item_bulk_upload'>Bulk Upload</a>
+        </div>    
          <div class="clear height10"></div>
          <?php $obj_client->showErrorMessage(); ?>
             <?php $obj_client->showSuccessMessge(); ?>
