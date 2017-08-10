@@ -273,7 +273,7 @@ class db {
                     $query .= '), ';
                 }
                 $query = rtrim($query, ', ');
-//                echo $query; die();
+               // echo $query; die();
                 $this->query($query);
                 if ($this->link->error) {
                     $this->log_db_errors($this->link->error, $query);

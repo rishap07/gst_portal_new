@@ -836,8 +836,8 @@ class common extends db {
 
     public function getClientKYCDetailsById($user_id = '') {
         
-		$query = "select ck.name, ck.email, ck.phone_number, ck.date_of_birth, ck.gstin_number, ck.pan_card_number, ck.uid_number, ck.identity_proof, ck.proof_photograph, ck.business_type, ck.business_area, ck.vendor_type, ck.address_proof, ck.registered_address, ck.city, ck.zipcode, ck.registration_type, ck.digital_certificate_status, ck.digital_certificate, ck.state_id, s.state_name, s.state_code, s.state_tin, ck.country_id, ck.added_by as kyc_added_by, ck.updated_by as kyc_updated_by,ck.gross_turnover,ck.cur_gross_turnover from " . $this->tableNames['client_kyc'] . " as ck inner join " . $this->tableNames['state'] . " as s on ck.state_id = s.state_id where 1=1 AND ck.added_by = " . $user_id;
-        $data = $this->get_row($query);
+		$query = "select ck.name, ck.email, ck.phone_number, ck.date_of_birth, ck.gstin_number, ck.pan_card_number, ck.uid_number, ck.identity_proof, ck.proof_photograph, ck.business_type, ck.business_area, ck.vendor_type, ck.address_proof, ck.registered_address, ck.city, ck.zipcode, ck.registration_type, ck.digital_certificate_status, ck.digital_certificate, ck.state_id, s.state_name, s.state_code, s.state_tin, ck.country_id, ck.added_by as kyc_added_by, ck.updated_by as kyc_updated_by,ck.gross_turnover,ck.cur_gross_turnover, c.country_code, c.country_name, CONCAT(ck.registered_address,', ',ck.city,', ',s.state_name,', ',ck.zipcode,', ',c.country_name) as full_address from " . $this->tableNames['client_kyc'] . " as ck left join " . $this->tableNames['state'] . " as s on ck.state_id = s.state_id left join " . $this->tableNames['country'] . " as c on ck.country_id = c.id where 1=1 AND ck.added_by = " . $user_id;
+		$data = $this->get_row($query);
 		$dataArr = array();
         if (!empty($data)) {
             $dataArr['data'] = $data;
@@ -1151,8 +1151,10 @@ class common extends db {
 	/* state details by state code */
 
     public function getStateDetailByStateCode($state_code) {
-
+        
+         
         $data = $this->get_row("select * from " . $this->tableNames['state'] . " where UPPER(state_code) = '" . strtoupper($state_code) . "'");
+       
         $dataArr = array();
         if (!empty($data)) {
             $dataArr['data'] = $data;
@@ -1165,6 +1167,22 @@ class common extends db {
         return $dataArr;
     }
 
+    /* vendor details by vendor name */
+
+    public function getVenderDetailByVendername($vendor_name) {
+
+        $data = $this->get_row("select * from " . $this->tableNames['vendor_type'] . " where vendor_name = " ."'$vendor_name'" );
+        $dataArr = array();
+        if (!empty($data)) {
+            $dataArr['data'] = $data;
+            $dataArr['status'] = 'success';
+        } else {
+            $dataArr['data'] = '';
+            $dataArr['status'] = 'error';
+        }
+
+        return $dataArr;
+    }
     /* state details by state tin */
 
     public function getStateDetailByStateTin($state_tin) {
@@ -1211,8 +1229,22 @@ class common extends db {
         return $financial_year;
     }
 
-    /* generate invoice number for client */
+	/* check reference number exist */
+	public function checkReferenceNumberExist($referenceNumber, $clientId, $invoice_id = '') {
 
+		$currentFinancialYear = $this->generateFinancialYear();
+        if ($invoice_id && $invoice_id != '') {
+            $checkReferenceNumber = $this->get_row("select * from " . $this->tableNames['client_invoice'] . " where 1=1 AND invoice_id != " . $invoice_id . " AND financial_year = '" . $currentFinancialYear . "' AND reference_number = '" . $referenceNumber . "' AND added_by = '" . $clientId . "'");
+        } else {
+            $checkReferenceNumber = $this->get_row("select * from " . $this->tableNames['client_invoice'] . " where 1=1 AND financial_year = '" . $currentFinancialYear . "' AND reference_number = '" . $referenceNumber . "' AND added_by = '" . $clientId . "'");
+        }
+
+        if(count($checkReferenceNumber) > 0) {
+            return true;
+        }
+    }
+
+	/* generate invoice number for client */
     public function generateInvoiceNumber($clientId) {
 
 		$currentFinancialYear = $this->generateFinancialYear();

@@ -330,7 +330,7 @@ class cms_validate {
             if (preg_match("/^\s*(?=.*[0-9])\d*(?:\.\d{1,2})?\s*$/", $input)) {
                 return true;
             } else {
-                self::setMessage($name, 'decimal', $lableName . " should be valid");
+                self::setMessage($name, 'decimalzero', $lableName . " should be valid");
                 return false;
             }
         }

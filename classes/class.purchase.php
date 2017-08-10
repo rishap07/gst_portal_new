@@ -39,7 +39,7 @@ final class purchase extends validation {
         }
 
 		if( array_key_exists("company_state", $dataArr) ) {
-            $rules['company_state'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Recipient State';
+            $rules['company_state'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Recipient State';
         }
 
 		if( array_key_exists("company_gstin_number", $dataArr) ) {
@@ -63,7 +63,7 @@ final class purchase extends validation {
         }
 
 		if( array_key_exists("supply_place", $dataArr) ) {
-            $rules['supply_place'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Place Of Supply';
+            $rules['supply_place'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Place Of Supply';
         }
 
 		if( array_key_exists("advance_adjustment", $dataArr) ) {
@@ -83,7 +83,7 @@ final class purchase extends validation {
         }
 
 		if( array_key_exists("supplier_billing_state", $dataArr) ) {
-            $rules['supplier_billing_state'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Supplier Billing State';
+            $rules['supplier_billing_state'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Supplier Billing State';
         }
 		
 		if( array_key_exists("supplier_billing_state_name", $dataArr) ) {
@@ -107,7 +107,7 @@ final class purchase extends validation {
         }
 
 		if( array_key_exists("recipient_shipping_state", $dataArr) ) {
-			$rules['recipient_shipping_state'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Recipient Shipping State';
+			$rules['recipient_shipping_state'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Recipient Shipping State';
         }
 
 		if( array_key_exists("recipient_shipping_state_name", $dataArr) ) {
@@ -157,11 +157,11 @@ final class purchase extends validation {
     public function validateClientPurchaseInvoiceItem($dataArr, $serialno) {
 
 		if( array_key_exists("invoice_itemid", $dataArr) ) {
-            $rules['invoice_itemid'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Invoice Item no. '.$serialno;
+            $rules['invoice_itemid'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Invoice Item no. '.$serialno;
         }
 		
 		if( array_key_exists("invoice_quantity", $dataArr) ) {
-            $rules['invoice_quantity'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Quantity of Item no. '.$serialno;
+            $rules['invoice_quantity'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Quantity of Item no. '.$serialno;
         }
 		
 		if( array_key_exists("invoice_unit", $dataArr) ) {

@@ -123,7 +123,7 @@ class plan extends validation {
 
         $rules = array(
             'category_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Name',
-            'category_month' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Month',
+            'category_month' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Month',
             'category_description' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Description',
             'plan_category_status' => 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Status'
         );
@@ -331,8 +331,8 @@ class plan extends validation {
         $rules = array(
             'plan_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Name',
             'plan_description' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Description',
-            'no_of_client' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Client',
-            'plan_period' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '*$/|#|lable_name:Month',
+            'no_of_client' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Client',
+            'plan_period' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Month',
             'plan_price' => 'required||decimal|#|lable_name:Price',
             'plan_visibility' => 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Visibility',
             'plan_status' => 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Status'

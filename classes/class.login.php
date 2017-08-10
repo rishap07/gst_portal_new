@@ -44,6 +44,7 @@ class login extends validation {
                 $_SESSION['user_detail']['username'] = $server_output->data->user[0]->username;
                 $_SESSION['user_detail']['email'] = $server_output->data->user[0]->email;
                 $_SESSION['user_detail']['user_group'] = $server_output->data->user[0]->user_group;
+				$_SESSION["user_detail"]["profile_picture"] = $server_output->data->user[0]->profile_pics;
 
                 for ($x = 0; $x < count($server_output->data->user_permission); $x++) {
 

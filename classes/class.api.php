@@ -57,7 +57,7 @@ final class api extends validation
         {
             return array('msg'=>$this->validationMessage['api'],'code'=>'1');
         }
-        $data['user'] = $this->findAll($this->tableNames["user"],array('password'=>$this->password_encrypt($dataArr['password']),'username'=>$dataArr['username'],'status'=>'1','is_deleted'=>'0'),"user_id,concat(first_name,' ',last_name)as name,username,user_group,email,user_group");
+        $data['user'] = $this->findAll($this->tableNames["user"],array('password'=>$this->password_encrypt($dataArr['password']),'username'=>$dataArr['username'],'status'=>'1','is_deleted'=>'0'),"user_id,concat(first_name,' ',last_name)as name,username,user_group,email,user_group,profile_pics");
         
         if(empty($data)) {
             return array('msg'=>$this->validationMessage['loginerror'],'code'=>'1');

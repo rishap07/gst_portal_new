@@ -163,6 +163,208 @@ final class gstr3b extends validation {
 					$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " in User has been updated");
 				   
    }
+   private function getPlaceOfSupplyUnregistered()
+   {    $dataArr = array();
+	     $dataArr['place_of_supply']='';
+	     if(!empty($_POST['place_of_supply_unregistered_person'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['place_of_supply_unregistered_person'] as $selected){
+			 
+             $dataArr['place_of_supply'] = $dataArr['place_of_supply'].$selected.',';
+			
+			} 
+			}
+			$dataArr['totaltaxable_value']='';
+			  if(!empty($_POST['total_taxable_value_unregistered_person'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['total_taxable_value_unregistered_person'] as $selected){
+			 
+             $dataArr['totaltaxable_value'] = $dataArr['totaltaxable_value'].$selected.',';
+			
+			} 
+			}
+			$dataArr['amount_of_integrated_tax']='';
+			  if(!empty($_POST['amount_of_integrated_tax_unregistered_person'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['amount_of_integrated_tax_unregistered_person'] as $selected){
+			 
+             $dataArr['amount_of_integrated_tax'] = $dataArr['amount_of_integrated_tax'].$selected.',';
+			
+			} 
+			}
+	  $sql="select * from gst_place_of_supply where added_by='".$_SESSION['user_detail']['user_id']."' and financial_month='".$this->sanitize($_GET['returnmonth'])."' and type='0'";		
+	   $data = $this->get_results($sql);
+		if(empty($data))
+		{
+			$dataArr['financial_month']=$this->sanitize($_GET['returnmonth']);
+			$dataArr['type']=0;
+			$dataArr['added_by']=$_SESSION["user_detail"]["user_id"];
+			
+			if ($this->insert('gst_place_of_supply', $dataArr)) {
+			
+				$this->setSuccess('GSTR3B Saved Successfully');
+			
+				//return true;
+			}
+			else
+			{
+				$this->setError('Failed to save GSTR3B data');
+				
+			   return false;    	   
+		   }
+
+		}
+		else
+		{
+			if ($this->update('gst_place_of_supply', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
+				
+		                      
+				//$this->setSuccess('GSTR3B Saved Successfully');
+				return true;
+			}
+			else
+			{
+				$this->setError('Failed to save GSTR3B data');
+			   return false;    	   
+		   }
+		}
+	    
+			 			
+   }
+   private function getPlaceOfSupplyComposition()
+   {
+		$dataArr['place_of_supply']='';
+		if(!empty($_POST['place_of_supply_taxable_person'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['place_of_supply_taxable_person'] as $selected){
+			 
+             $dataArr['place_of_supply'] = $dataArr['place_of_supply'].$selected.',';
+			
+			} 
+			}
+			$dataArr['totaltaxable_value']='';
+			if(!empty($_POST['total_taxable_value_taxable_person'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['total_taxable_value_taxable_person'] as $selected){
+			 
+             $dataArr['totaltaxable_value'] = $dataArr['totaltaxable_value'].$selected.',';
+			
+			} 
+			}
+			$dataArr['amount_of_integrated_tax']='';
+				if(!empty($_POST['amount_of_integrated_tax_taxable_person'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['amount_of_integrated_tax_taxable_person'] as $selected){
+			 
+             $dataArr['amount_of_integrated_tax'] = $dataArr['amount_of_integrated_tax'].$selected.',';
+			
+			} 
+			}
+			 $sql="select * from gst_place_of_supply where added_by='".$_SESSION['user_detail']['user_id']."' and financial_month='".$this->sanitize($_GET['returnmonth'])."' and type='1'";		
+	   $data = $this->get_results($sql);
+		if(empty($data))
+		{
+			$dataArr['financial_month']=$this->sanitize($_GET['returnmonth']);
+			$dataArr['type']=1;
+			$dataArr['added_by']=$_SESSION["user_detail"]["user_id"];
+			
+			
+			if ($this->insert('gst_place_of_supply', $dataArr)) {
+			
+				$this->setSuccess('GSTR3B Saved Successfully');
+				
+				//return true;
+			}
+			else
+			{
+				$this->setError('Failed to save GSTR3B data');
+			
+			   return false;    	   
+		   }
+
+		}
+		else
+		{
+			if ($this->update('gst_place_of_supply', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
+				
+		                      
+				//$this->setSuccess('GSTR3B Saved Successfully');
+				return true;
+			}
+			else
+			{
+				$this->setError('Failed to save GSTR3B data');
+			   return false;    	   
+		   }
+		}
+   }
+   private function getPlaceOfSupplyUinHolder()
+   {
+		$dataArr['place_of_supply']='';
+		if(!empty($_POST['place_of_supply_uin_holder'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['place_of_supply_uin_holder'] as $selected){
+			 
+             $dataArr['place_of_supply'] = $dataArr['place_of_supply'].$selected.',';
+			
+			} 
+			}
+			$dataArr['totaltaxable_value']='';
+		if(!empty($_POST['total_taxable_value_uin_holder'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['total_taxable_value_uin_holder'] as $selected){
+			 
+             $dataArr['totaltaxable_value'] = $dataArr['totaltaxable_value'].$selected.',';
+			
+			} 
+			}
+				$dataArr['amount_of_integrated_tax']='';
+		if(!empty($_POST['amount_of_integrated_uin_holder'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['amount_of_integrated_uin_holder'] as $selected){
+			 
+             $dataArr['amount_of_integrated_tax'] = $dataArr['amount_of_integrated_tax'].$selected.',';
+			
+			} 
+			}
+		
+			 $sql="select * from gst_place_of_supply where added_by='".$_SESSION['user_detail']['user_id']."' and financial_month='".$this->sanitize($_GET['returnmonth'])."' and type='2'";		
+	   $data = $this->get_results($sql);
+		if(empty($data))
+		{
+			$dataArr['financial_month']=$this->sanitize($_GET['returnmonth']);
+			$dataArr['type']=2;
+			$dataArr['added_by']=$_SESSION["user_detail"]["user_id"];
+			
+			if ($this->insert('gst_place_of_supply', $dataArr)) {
+			
+				$this->setSuccess('GSTR3B Saved Successfully');
+				
+				//return true;
+			}
+			else
+			{
+				$this->setError('Failed to save GSTR3B data');
+				
+			   return false;    	   
+		   }
+
+		}
+		else
+		{
+			if ($this->update('gst_place_of_supply', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
+				
+		                      
+				//$this->setSuccess('GSTR3B Saved Successfully');
+				return true;
+			}
+			else
+			{
+				$this->setError('Failed to save GSTR3B data');
+			   return false;    	   
+		   }
+		}
+   }
     private function getGSTR3bData()
 	{
 		$dataArr = array();
@@ -192,6 +394,7 @@ final class gstr3b extends validation {
 		 $dataArr['state_tax_value_supplye'] = isset($_POST['state_tax_value_supplye']) ? $_POST['state_tax_value_supplye'] : '';
 		$dataArr['cess_tax_value_supplye'] = isset($_POST['cess_tax_value_supplye']) ? $_POST['cess_tax_value_supplye'] : '';
 		//$dataArr['place_of_supply_unregistered_person'] = isset($_POST['place_of_supply_unregistered_person']) ? $_POST['place_of_supply_unregistered_person'] : '';
+		/*
 		$dataArr['place_of_supply_unregistered_person']='';
 		  if(!empty($_POST['place_of_supply_unregistered_person'])){
 // Loop to store and display values of individual checked checkbox.
@@ -228,6 +431,7 @@ final class gstr3b extends validation {
 			}
 		$dataArr['total_taxable_value_uin_holder'] = isset($_POST['total_taxable_value_uin_holder']) ? $_POST['total_taxable_value_uin_holder'] : '';
 		$dataArr['amount_of_integrated_uin_holder'] = isset($_POST['amount_of_integrated_uin_holder']) ? $_POST['amount_of_integrated_uin_holder'] : '';
+		*/
 		$dataArr['integrated_tax_itcavailable_a'] = isset($_POST['integrated_tax_itcavailable_a']) ? $_POST['integrated_tax_itcavailable_a'] : '';
     	$dataArr['central_tax_itcavailable_a'] = isset($_POST['central_tax_itcavailable_a']) ? $_POST['central_tax_itcavailable_a'] : '';
 	   	$dataArr['state_tax_itcavailable_a'] = isset($_POST['state_tax_itcavailable_a']) ? $_POST['state_tax_itcavailable_a'] : '';
@@ -704,6 +908,9 @@ border-bottom: 1px solid #f4d4ca;" width="25%"><strong>(A) ITC Available (whethe
     {
 		$data = $this->get_results("select * from ".TAB_PREFIX."client_return_gstr3b where added_by='".$_SESSION['user_detail']['user_id']."' and financial_month='".$this->sanitize($_GET['returnmonth'])."'");
 		$dataArr = $this->getGSTR3bData();
+	
+		//$dataPlaceOfSupply = $this->getPlaceOfSupply();
+		
 	    $sql = "select * from " . TAB_PREFIX . "client_kyc where added_by='" . $_SESSION['user_detail']['user_id'] . "' order by id desc limit 0,1";
        
        $clientdata = $this->get_results($sql);
@@ -720,6 +927,9 @@ border-bottom: 1px solid #f4d4ca;" width="25%"><strong>(A) ITC Available (whethe
 		{
 			$dataArr['financial_month']=$this->sanitize($_GET['returnmonth']);
 			if ($this->insert(TAB_PREFIX.'client_return_gstr3b', $dataArr)) {
+				$this->getPlaceOfSupplyUnregistered();
+				$this->getPlaceOfSupplyComposition();
+				$this->getPlaceOfSupplyUinHolder();
 				$this->setSuccess('GSTR3B Saved Successfully');
 				return true;
 			}
@@ -733,6 +943,10 @@ border-bottom: 1px solid #f4d4ca;" width="25%"><strong>(A) ITC Available (whethe
 		else
 		{
 			if ($this->update(TAB_PREFIX.'client_return_gstr3b', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
+				$this->getPlaceOfSupplyUnregistered();
+				$this->getPlaceOfSupplyComposition();
+				$this->getPlaceOfSupplyUinHolder();
+		                      
 				$this->setSuccess('GSTR3B Saved Successfully');
 				return true;
 			}

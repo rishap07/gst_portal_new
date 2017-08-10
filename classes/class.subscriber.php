@@ -66,6 +66,16 @@ final class subscriber extends validation {
         }
         return true;
     }
+	public function getUserProfilePics($userid)
+	{
+		$sql="select profile_pics from ".TAB_PREFIX."user WHERE (user_group='3' or user_group='4') and user_id='".$_SESSION["user_detail"]["user_id"]."'";
+		$dataCurrentArr = $this->get_results($sql);
+		if(!empty($dataCurrentArr))
+		{
+			
+		}
+			
+	}
     public function updateSubsriber()
     {
 		
@@ -78,7 +88,7 @@ final class subscriber extends validation {
 		$email_flag=0;
 		if(!empty($_POST['phonenumber']))
 		{
-			$sql="select * from ".TAB_PREFIX."user WHERE user_group='3' and user_id='".$_SESSION["user_detail"]["user_id"]."'";
+			$sql="select * from ".TAB_PREFIX."user WHERE (user_group='3' or user_group='4') and user_id='".$_SESSION["user_detail"]["user_id"]."'";
 			$dataCurrentArr = $this->get_results($sql);
 			
 			if($dataCurrentArr[0]->phone_number == $_POST['phonenumber'])
@@ -92,7 +102,7 @@ final class subscriber extends validation {
         }
 		if(!empty($_POST['emailaddress']))
 		{
-			$sql="select * from ".TAB_PREFIX."user WHERE user_group='3' and user_id='".$_SESSION["user_detail"]["user_id"]."'";
+			$sql="select * from ".TAB_PREFIX."user WHERE (user_group='3' or user_group='4') and user_id='".$_SESSION["user_detail"]["user_id"]."'";
 			$dataCurrentArr = $this->get_results($sql);
 			if($dataCurrentArr[0]->email == $_POST['emailaddress'])
 			{
@@ -103,6 +113,16 @@ final class subscriber extends validation {
 				$email_flag=1;
 			}
         }
+		 if ($_FILES['profile_pics']['name'] != '') {
+
+            $profile_pics = $this->imageUploads($_FILES['profile_pics'], 'profile-picture', 'upload', $this->allowImageExt, 1048576, 'Max file Size 1 MB');
+            if ($profile_pics == FALSE) {
+                return false;
+            } else {
+                $dataArr['profile_pics'] = $profile_pics;
+            }
+        }
+
 		if (!empty($_POST['password'])) {
             $dataArr['password'] = isset($_POST['password']) ? $_POST['password'] : '';
         }
@@ -149,7 +169,7 @@ final class subscriber extends validation {
       
         $dataConditionArray['user_id'] = $_SESSION['user_detail']['user_id'];
         if ($this->update($this->tableNames['user'], $dataArr, $dataConditionArray)) {
-
+			$_SESSION["user_detail"]["profile_picture"] = $dataArr['profile_pics'];
             $this->setSuccess("Your profile update successfully");
             $this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " has been updated");
             return true;
