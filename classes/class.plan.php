@@ -43,7 +43,7 @@ class plan extends validation {
             
             $this->setSuccess( $this->validationMessage['plancategoryadd'] );
             $insertid = $this->getInsertID();
-            $this->logMsg("New Plan Category Added. ID : " . $insertid . ".");
+            $this->logMsg("New Plan Category Added. ID : " . $insertid . ".","plan_add");
             return true;
         } else {
             
@@ -64,7 +64,7 @@ class plan extends validation {
         if ($this->update($this->tableNames['subscriber_plan_category'], $dataUpdateArray, $dataConditionArray)) {
             
             $this->setSuccess( $this->validationMessage['plancategorydelete'] );
-            $this->logMsg("Plan Category ID : " . $category_id . " in Subscriber Plan Category has been deleted");
+            $this->logMsg("Plan Category ID : " . $category_id . " in Subscriber Plan Category has been deleted","plan_delete");
             return true;
         } else {
             
@@ -108,7 +108,7 @@ class plan extends validation {
         if ($this->update($this->tableNames['subscriber_plan_category'], $dataUpdateArray, $dataConditionArray)) {
             
             $this->setSuccess( $this->validationMessage['plancategoryedit'] );
-            $this->logMsg("Plan Category ID : " . $dataConditionArray['id'] . " in Subscriber Plan Category has been updated");
+            $this->logMsg("Plan Category ID : " . $dataConditionArray['id'] . " in Subscriber Plan Category has been updated","plan_edit");
             return true;
         } else {
             
@@ -218,7 +218,7 @@ class plan extends validation {
             
             $this->setSuccess( $this->validationMessage['planadd'] );
             $insertid = $this->getInsertID();
-            $this->logMsg("New Plan Added. ID : " . $insertid . ".");
+            $this->logMsg("New Plan Added. ID : " . $insertid . ".","plan_addplan");
             return true;
         } else {
             $this->setError($this->validationMessage['failed']);
@@ -238,7 +238,7 @@ class plan extends validation {
         if ($this->update($this->tableNames['subscriber_plan'], $dataUpdateArray, $dataConditionArray)) {
             
             $this->setSuccess( $this->validationMessage['plandelete'] );
-            $this->logMsg("Plan ID : " . $plan_id . " in Subscriber Plan has been deleted");
+            $this->logMsg("Plan ID : " . $plan_id . " in Subscriber Plan has been deleted","plan_delete");
             return true;
         } else {
             
@@ -298,7 +298,7 @@ class plan extends validation {
         if ($this->update($this->tableNames['subscriber_plan'], $dataUpdateArray, $dataConditionArray)) {
             
             $this->setSuccess( $this->validationMessage['planedit'] );
-            $this->logMsg("Plan ID : " . $dataConditionArray['id'] . " in Subscriber Plan has been updated");
+            $this->logMsg("Plan ID : " . $dataConditionArray['id'] . " in Subscriber Plan has been updated","plan_edit");
             return true;
         } else {
             

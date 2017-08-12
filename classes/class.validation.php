@@ -70,7 +70,9 @@ class validation extends upload {
 			'client_upload_gstr2'=>TAB_PREFIX.'client_upload_gstr2',
             'user_gstr1'=>TAB_PREFIX.'user_gstr1',
 			'notification'=>TAB_PREFIX.'notification',
-			'user_notification'=>TAB_PREFIX.'user_notification'
+			'user_notification'=>TAB_PREFIX.'user_notification',
+			'module'=>TAB_PREFIX.'module',
+			'place_of_supply'=>TAB_PREFIX.'place_of_supply'
 			
         );
 
@@ -158,6 +160,7 @@ class validation extends upload {
         'noiteminvoice' => 'There is no item in invoice.',
         'receiveradded' => ' Receiver Add  successfully.',
         'supplieradded' => ' Supplier Add  successfully.',
+        'itemadded' => ' Item Add  successfully.',
         'excelerror' => 'There is an error in uploaded excel. Download and check in error information column.'
     );
 
@@ -335,7 +338,7 @@ class validation extends upload {
     }
 
     protected function getCDNURInvoices($user_id,$returnmonth){
-      echo $queryCDNUR =  "select a.invoice_id,a.invoice_type,a.reference_number,c.reference_number as corresponding_document_number,a.corresponding_document_date,a.company_state,a.billing_gstin_number,a.reference_number,a.invoice_date,a.invoice_total_value,a.supply_place,b.igst_rate,b.cgst_rate,b.sgst_rate,b.taxable_subtotal, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('client_invoice')." c  on a.corresponding_document_number=c.invoice_id where a.status='1'  and a.is_gstr1_uploaded='0' and a.invoice_date like '%".$returnmonth."%' and a.supply_place!=a.company_state and a.invoice_corresponding_type='taxinvoice' and a.billing_gstin_number='' and a.invoice_total_value >'250000' and (a.invoice_type='creditnote' or a.invoice_type='debitnote') and a.is_canceled='0' and a.is_deleted='0' group by a.reference_number, b.igst_rate order by a.supply_place";
+      $queryCDNUR =  "select a.invoice_id,a.invoice_type,a.reference_number,c.reference_number as corresponding_document_number,a.corresponding_document_date,a.company_state,a.billing_gstin_number,a.reference_number,a.invoice_date,a.invoice_total_value,a.supply_place,b.igst_rate,b.cgst_rate,b.sgst_rate,b.taxable_subtotal, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('client_invoice')." c  on a.corresponding_document_number=c.invoice_id where a.status='1'  and a.is_gstr1_uploaded='0' and a.invoice_date like '%".$returnmonth."%' and a.supply_place!=a.company_state and a.invoice_corresponding_type='taxinvoice' and a.billing_gstin_number='' and a.invoice_total_value >'250000' and (a.invoice_type='creditnote' or a.invoice_type='debitnote') and a.is_canceled='0' and a.is_deleted='0' group by a.reference_number, b.igst_rate order by a.supply_place";
         return $this->get_results($queryCDNUR);
     }
 

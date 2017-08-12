@@ -181,7 +181,7 @@ class processpayment extends validation
 			$module    = "Request Plan for Purchase";
             $moduleMsg = $_SESSION['user_detail']['user_id']." has purchased plan";
             $to        = $email[0]->email;
-			$from = 'noreply@gst.com';
+			$from = 'noreply@gstkeeper.com';
 			$cc='';
 			$bcc  = 'rishap.gandhi@cyfuture.com,aditya.kumar@cyfuture.com,sheetal.prasad@cyfuture.com,Manish.sarthak@cyfuture.com,jagat.singh@cyfuture.com';
 			$attachment=$path;

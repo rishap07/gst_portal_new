@@ -20,10 +20,17 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 		exit();
 	}
 
-    if($obj_master->add_bulk_Item()){
-        $obj_client->redirect(PROJECT_URL."/?page=client_item_list");
+
+        $uploadInvoice = $obj_master->add_bulk_Item();
+
+
+    if ($uploadInvoice === true) {
+        $obj_master->redirect(PROJECT_URL . "/?page=client_item_list");
+    } else {
+
+        $excelError = true;
+        $returnMessage = json_decode($uploadInvoice);
     }
-        
        
 }
  

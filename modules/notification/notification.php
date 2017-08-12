@@ -4,9 +4,53 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
     $obj_plan->redirect(PROJECT_URL);
     exit();
 }
+$obj_notification->updateuserNotificationDetail();
+             /*
+ 
+				$message="";
+				$count=1;
+				$flag=0;
+		        $sql="select * from " . $db_obj->getTableName('notification') . " as n INNER join " . $db_obj->getTableName('user_notification') . " as u on u.notification_id=n.notification_id  where n.status='1' and  u.user_id='".$_SESSION["user_detail"]["user_id"]."' order by u.notification_id desc";
+				$dataNotification = $db_obj->get_results($sql);
+                if(!empty($dataNotification))
+				{
+					
+						foreach($dataNotification as $dataItem)
+					   {
 
+						  ?> 
+						  <tr>
+						  <?php
+						  if((date('Y-m-d H:i:s')>=$dataItem->start_date) && (date('Y-m-d H:i:s') <= $dataItem->end_date))
+						  {
+							  $flag=1;
+						  if($dataItem->vendor_list==0)
+						  {
+							   if($obj_notification->updateNotificationDetail($dataItem->notification_id))
+		                    	{
+			                   }
+							 
+						  
+					       
+						  }
+						 if(isset($dataArr['data']->kyc->vendor_type) && $dataArr['data']->kyc->vendor_type==$dataItem->vendor_list)
+							  { 
+							    if($obj_notification->updateNotificationDetail($dataItem->notification_id))
+		                    	{
+			                   }
+							  
+								
+						  }
+						  }
+						 
+						
+					  }
+				if($flag==1){
+			
+				
+				
+				 } }  */?>
 
-?>
 
 <!--========================sidemenu over=========================-->
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">

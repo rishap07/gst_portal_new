@@ -23,10 +23,21 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
         $obj_master->redirect(PROJECT_URL."/?page=master_supplier");
         exit();
     }
+    
+    $uploadInvoice = $obj_master->add_bulk_Supplier();
 
-    if($obj_master->add_bulk_Supplier()){
+
+    if ($uploadInvoice === true) {
         $obj_master->redirect(PROJECT_URL."/?page=master_supplier");
+    } else {
+
+        $excelError = true;
+        $returnMessage = json_decode($uploadInvoice);
     }
+
+//    if($obj_master->add_bulk_Supplier()){
+//        $obj_master->redirect(PROJECT_URL."/?page=master_supplier");
+//    }
 }
 $dataCurrentArr = array();
 $dataCurrentArr = $obj_master->getUserDetailsById($obj_master->sanitize($_SESSION['user_detail']['user_id']));

@@ -524,7 +524,7 @@ final class master extends validation {
 
         $this->setSuccess($this->validationMessage['inserted']);
         $insertid = $this->getInsertID();
-        $this->logMsg("New Receiver Added. ID : " . $insertid . ".");
+        $this->logMsg("New Receiver Added. ID : " . $insertid . ".","master_receiver");
         return true;
     }
 
@@ -537,8 +537,8 @@ final class master extends validation {
         $invoiceItemArray = array();
 
         if ($_FILES['invoice_xlsx']['name'] != '' && $_FILES['invoice_xlsx']['error'] == 0) {
-            
-           
+
+
             $invoice_excel = $this->imageUploads($_FILES['invoice_xlsx'], 'master-docs', 'upload', $this->allowExcelExt);
             if ($invoice_excel == FALSE) {
                 return false;
@@ -551,7 +551,7 @@ final class master extends validation {
             $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
             $sheetData = array_map('array_filter', $sheetData);
             $sheetData = array_filter($sheetData);
-            
+
 //            print_r($sheetData);
 //            die();
             foreach ($sheetData as $rowKey => $data) {
@@ -562,7 +562,7 @@ final class master extends validation {
                     continue;
                 }
 
- //die('ohk');
+                //die('ohk');
                 $currentItemError = array();
                 $dataArray['name'] = isset($data['A']) ? $data['A'] : '';
                 $dataArray['company_name'] = isset($data['B']) ? $data['B'] : '';
@@ -577,20 +577,21 @@ final class master extends validation {
                     if ($receiver_state_data['status'] === "success") {
                         $dataArray['state'] = $receiver_state_data['data']->state_id;
                         $statetin = $receiver_state_data['data']->state_tin;
-                        
                     } else {
 
                         $errorflag = true;
                         array_push($currentItemError, "Invalid  state code.");
                         $dataArray['state'] = 'Invalid State';
-                        $statetin='';
+                        $statetin = '';
                     }
+                } else {
+                    $dataArray['state'] = $receiver_state;
                 }
                 $receiver_country = isset($data['G']) ? $data['G'] : '';
-                 if ($receiver_country != '') {
+                if ($receiver_country != '') {
 
                     $receiver_country_data = $this->getCountryDetailByCountryCode($receiver_country);
-                    
+
                     if ($receiver_country_data['status'] === "success") {
                         $dataArray['country'] = $receiver_country_data['data']->id;
                     } else {
@@ -599,8 +600,10 @@ final class master extends validation {
                         array_push($currentItemError, "Invalid  country code.");
                         $dataArray['country'] = 'Invalid Country';
                     }
+                } else {
+                    $dataArray['country'] = $receiver_country;
                 }
-                
+
                 $dataArray['zipcode'] = isset($data['H']) ? $data['H'] : '';
                 $dataArray['phone'] = isset($data['I']) ? $data['I'] : '';
                 $dataArray['fax'] = isset($data['J']) ? $data['J'] : '';
@@ -608,35 +611,27 @@ final class master extends validation {
                 $gstno = isset($data['L']) ? $data['L'] : '';
                 if ($gstno != '') {
                     $gstdigits = substr($gstno, 0, 2);
-                    if($statetin !='')
-                    {
-                       if($gstdigits == $statetin)
-                       {
-                         $dataArray['gstid']= $gstno;  
-                       }
-                       else
-                       {
-                        array_push($currentItemError, "Invalid  Gstin Number.");
-                        $dataArray['gstid'] = 'Invalid Gstin Number';   
-                       }
+                    if ($statetin != '') {
+                        if ($gstdigits == $statetin) {
+                            $dataArray['gstid'] = $gstno;
+                        } else {
+                            array_push($currentItemError, "Invalid  Gstin Number plz match state.");
+                            $dataArray['gstid'] = '';
+                        }
                     }
-                    
-                   
+                } else {
+                    $dataArray['gstid'] = $gstno;
                 }
-                else
-                {
-                 $dataArray['gstid']= $gstno;   
-                }
-                
+
                 $dataArray['website'] = isset($data['M']) ? $data['M'] : '';
                 $dataArray['remarks'] = isset($data['N']) ? $data['N'] : '';
                 $dataArray['status'] = isset($data['O']) ? $data['O'] : '';
                 $vender_type = isset($data['P']) ? $data['P'] : '';
-               
+
                 if ($vender_type != '') {
 
                     $vender_detail_data = $this->getVenderDetailByVendername($vender_type);
-                     
+
                     if ($vender_detail_data['status'] === "success") {
                         $dataArray['vendor_type'] = $vender_detail_data['data']->vendor_id;
                     } else {
@@ -650,7 +645,7 @@ final class master extends validation {
                 }
 //               print_r($dataArray);
 //                die();
-                 
+
                 $invoiceErrors = $this->validateClientInvoiceExcel($dataArray);
 
                 if ($invoiceErrors !== true || !empty($currentItemError)) {
@@ -661,9 +656,9 @@ final class master extends validation {
                     }
                     $invoiceErrors = array_merge($invoiceErrors, $currentItemError);
                     $invoiceErrors = implode(", ", $invoiceErrors);
-                    $objPHPExcel->getActiveSheet()->SetCellValue('X' . $rowKey, $invoiceErrors);
+                    $objPHPExcel->getActiveSheet()->SetCellValue('Q' . $rowKey, $invoiceErrors);
                 }
-               
+
                 $invoiceArray[$rowKey]['name'] = $dataArray['name'];
                 $invoiceArray[$rowKey]['company_name'] = $dataArray['company_name'];
                 $invoiceArray[$rowKey]['email'] = $dataArray['email'];
@@ -681,15 +676,17 @@ final class master extends validation {
                 $invoiceArray[$rowKey]['status'] = $dataArray['status'];
                 $invoiceArray[$rowKey]['vendor_type'] = $dataArray['vendor_type'];
             }
-           
+
             if ($errorflag === true) {
 
-               $objPHPExcel->getActiveSheet()->SetCellValue('X1', "Error Information");
+                $objPHPExcel->getActiveSheet()->SetCellValue('Q1', "Error Information");
                 $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
                 $objWriter->save($invoice_excel_dir_path);
                 $this->setError($this->validationMessage['excelerror']);
 
                 $resultArray = array("status" => "error", "excelurl" => $invoice_excel_url_path);
+//                print_r($resultArray);
+//                die();
                 return json_encode($resultArray);
             } else {
 //                 print_r($invoiceArray);
@@ -715,7 +712,7 @@ final class master extends validation {
             }
         }
     }
-    
+
     final public function add_bulk_Supplier() {
         $flag = true;
         $errorflag = false;
@@ -725,8 +722,8 @@ final class master extends validation {
         $invoiceItemArray = array();
 
         if ($_FILES['invoice_xlsx']['name'] != '' && $_FILES['invoice_xlsx']['error'] == 0) {
-            
-           
+
+
             $invoice_excel = $this->imageUploads($_FILES['invoice_xlsx'], 'master-docs', 'upload', $this->allowExcelExt);
             if ($invoice_excel == FALSE) {
                 return false;
@@ -739,7 +736,7 @@ final class master extends validation {
             $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
             $sheetData = array_map('array_filter', $sheetData);
             $sheetData = array_filter($sheetData);
-            
+
 //            print_r($sheetData);
 //            die();
             foreach ($sheetData as $rowKey => $data) {
@@ -750,7 +747,7 @@ final class master extends validation {
                     continue;
                 }
 
- //die('ohk');
+                //die('ohk');
                 $currentItemError = array();
                 $dataArray['name'] = isset($data['A']) ? $data['A'] : '';
                 $dataArray['company_name'] = isset($data['B']) ? $data['B'] : '';
@@ -764,7 +761,7 @@ final class master extends validation {
                     $receiver_state_data = $this->getStateDetailByStateCode($receiver_state);
                     if ($receiver_state_data['status'] === "success") {
                         $dataArray['state'] = $receiver_state_data['data']->state_id;
-                         $statetin = $receiver_state_data['data']->state_tin;
+                        $statetin = $receiver_state_data['data']->state_tin;
                     } else {
 
                         $errorflag = true;
@@ -772,11 +769,16 @@ final class master extends validation {
                         $dataArray['state'] = 'Invalid State';
                     }
                 }
+                else
+                {
+                  $dataArray['state'] = $receiver_state;  
+                }
+                
                 $receiver_country = isset($data['G']) ? $data['G'] : '';
-                 if ($receiver_country != '') {
+                if ($receiver_country != '') {
 
                     $receiver_country_data = $this->getCountryDetailByCountryCode($receiver_country);
-                    
+
                     if ($receiver_country_data['status'] === "success") {
                         $dataArray['country'] = $receiver_country_data['data']->id;
                     } else {
@@ -786,42 +788,38 @@ final class master extends validation {
                         $dataArray['country'] = 'Invalid Country';
                     }
                 }
-                
+                else
+                {
+                  $dataArray['country'] = $receiver_country;  
+                }
+
                 $dataArray['zipcode'] = isset($data['H']) ? $data['H'] : '';
                 $dataArray['phone'] = isset($data['I']) ? $data['I'] : '';
                 $dataArray['fax'] = isset($data['J']) ? $data['J'] : '';
                 $dataArray['pannumber'] = isset($data['K']) ? $data['K'] : '';
-                  $gstno = isset($data['L']) ? $data['L'] : '';
+                $gstno = isset($data['L']) ? $data['L'] : '';
                 if ($gstno != '') {
                     $gstdigits = substr($gstno, 0, 2);
-                    if($statetin !='')
-                    {
-                       if($gstdigits == $statetin)
-                       {
-                         $dataArray['gstid']= $gstno;  
-                       }
-                       else
-                       {
-                        array_push($currentItemError, "Invalid  Gstin Number.");
-                        $dataArray['gstid'] = 'Invalid Gstin Number';   
-                       }
+                    if ($statetin != '') {
+                        if ($gstdigits == $statetin) {
+                            $dataArray['gstid'] = $gstno;
+                        } else {
+                             array_push($currentItemError, "Invalid  Gstin Number plz match state.");
+                            $dataArray['gstid'] = '';
+                        }
                     }
-                    
-                   
-                }
-                else
-                {
-                 $dataArray['gstid']= $gstno;   
+                } else {
+                    $dataArray['gstid'] = $gstno;
                 }
                 $dataArray['website'] = isset($data['M']) ? $data['M'] : '';
                 $dataArray['remarks'] = isset($data['N']) ? $data['N'] : '';
                 $dataArray['status'] = isset($data['O']) ? $data['O'] : '';
                 $vender_type = isset($data['P']) ? $data['P'] : '';
-               
+
                 if ($vender_type != '') {
 
                     $vender_detail_data = $this->getVenderDetailByVendername($vender_type);
-                     
+
                     if ($vender_detail_data['status'] === "success") {
                         $dataArray['vendor_type'] = $vender_detail_data['data']->vendor_id;
                     } else {
@@ -846,9 +844,9 @@ final class master extends validation {
                     }
                     $invoiceErrors = array_merge($invoiceErrors, $currentItemError);
                     $invoiceErrors = implode(", ", $invoiceErrors);
-                    $objPHPExcel->getActiveSheet()->SetCellValue('X' . $rowKey, $invoiceErrors);
+                    $objPHPExcel->getActiveSheet()->SetCellValue('Q' . $rowKey, $invoiceErrors);
                 }
-               
+
                 $invoiceArray[$rowKey]['name'] = $dataArray['name'];
                 $invoiceArray[$rowKey]['company_name'] = $dataArray['company_name'];
                 $invoiceArray[$rowKey]['email'] = $dataArray['email'];
@@ -866,10 +864,10 @@ final class master extends validation {
                 $invoiceArray[$rowKey]['status'] = $dataArray['status'];
                 $invoiceArray[$rowKey]['vendor_type'] = $dataArray['vendor_type'];
             }
-           
+
             if ($errorflag === true) {
 
-                $objPHPExcel->getActiveSheet()->SetCellValue('X1', "Error Information");
+                $objPHPExcel->getActiveSheet()->SetCellValue('Q1', "Error Information");
                 $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
                 $objWriter->save($invoice_excel_dir_path);
                 $this->setError($this->validationMessage['excelerror']);
@@ -1048,7 +1046,7 @@ final class master extends validation {
             return false;
         }
 
-        $this->logMsg("Receiver ID : " . $_GET['id'] . " in Receiver Master has been updated");
+        $this->logMsg("Receiver ID : " . $_GET['id'] . " in Receiver Master has been updated","master_receiver");
         $this->setSuccess($this->validationMessage['update']);
         return true;
     }
@@ -1085,7 +1083,7 @@ final class master extends validation {
 
         $this->setSuccess($this->validationMessage['inserted']);
         $insertid = $this->getInsertID();
-        $this->logMsg("New Supplier Added. ID : " . $insertid . ".");
+        $this->logMsg("New Supplier Added. ID : " . $insertid . ".","master_supplier");
         return true;
     }
 
@@ -1185,7 +1183,7 @@ final class master extends validation {
             return false;
         }
 
-        $this->logMsg("Supplier ID : " . $_GET['id'] . " in Supplier Master has been updated");
+        $this->logMsg("Supplier ID : " . $_GET['id'] . " in Supplier Master has been updated","master_supplier");
         $this->setSuccess($this->validationMessage['update']);
         return true;
     }
@@ -1279,7 +1277,7 @@ final class master extends validation {
         $this->setSuccess($this->validationMessage['update']);
         return true;
     }
-    
+
     final public function add_bulk_Item() {
         $flag = true;
         $errorflag = false;
@@ -1289,8 +1287,8 @@ final class master extends validation {
         $invoiceItemArray = array();
 
         if ($_FILES['invoice_xlsx']['name'] != '' && $_FILES['invoice_xlsx']['error'] == 0) {
-            
-           
+
+
             $invoice_excel = $this->imageUploads($_FILES['invoice_xlsx'], 'master-docs', 'upload', $this->allowExcelExt);
             if ($invoice_excel == FALSE) {
                 return false;
@@ -1303,7 +1301,7 @@ final class master extends validation {
             $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
             $sheetData = array_map('array_filter', $sheetData);
             $sheetData = array_filter($sheetData);
-            
+
 //            print_r($sheetData);
 //            die();
             foreach ($sheetData as $rowKey => $data) {
@@ -1314,23 +1312,23 @@ final class master extends validation {
                     continue;
                 }
 
- //die('ohk');
+                //die('ohk');
                 $currentItemError = array();
                 $dataArray['item_name'] = isset($data['A']) ? $data['A'] : '';
                 $item_category = isset($data['B']) ? $data['B'] : '';
                 if ($item_category != '') {
 
                     $item_category_detail_data = $this->getcategoryDetailByitemname($item_category);
-                     
+
                     if ($item_category_detail_data['status'] === "success") {
                         $dataArray['item_category'] = $item_category_detail_data['data']->item_id;
-                     //   $dataArray['hsn_code'] = $item_category_detail_data['data']->hsn_code;
+                        //   $dataArray['hsn_code'] = $item_category_detail_data['data']->hsn_code;
                     } else {
 
                         $errorflag = true;
                         array_push($currentItemError, "Invalid category type.");
                         $dataArray['item_category'] = 'Invalid category';
-                       // $dataArray['hsn_code'] = 'Invalid hsn_code';
+                        // $dataArray['hsn_code'] = 'Invalid hsn_code';
                     }
                 } else {
                     $dataArray['item_category'] = $item_category;
@@ -1340,27 +1338,26 @@ final class master extends validation {
                 if ($item_unit != '') {
 
                     $item_unit_data = $this->getunitDetailByunitname($item_unit);
-                     
+
                     if ($item_unit_data['status'] === "success") {
                         $dataArray['item_unit'] = $item_unit_data['data']->unit_id;
-                     //   $dataArray['hsn_code'] = $item_category_detail_data['data']->hsn_code;
+                        //   $dataArray['hsn_code'] = $item_category_detail_data['data']->hsn_code;
                     } else {
 
                         $errorflag = true;
                         array_push($currentItemError, "Invalid unit type.");
                         $dataArray['item_unit'] = 'Invalid unit';
-                       // $dataArray['hsn_code'] = 'Invalid hsn_code';
+                        // $dataArray['hsn_code'] = 'Invalid hsn_code';
                     }
                 } else {
                     $dataArray['item_unit'] = $item_unit;
                 }
-                
+
                 $dataArray['status'] = isset($data['E']) ? $data['E'] : '';
-               // $dataArray['hsn_code'] = isset($data['F']) ? $data['F'] : '';
-                
+                // $dataArray['hsn_code'] = isset($data['F']) ? $data['F'] : '';
 //               print_r($dataArray);
 //                die();
-                $invoiceErrors = $this->validateClientItemExcel($dataArray);
+               $invoiceErrors = $this->validateClientItemExcel($dataArray);
 //                print_r($invoiceErrors);
 //                die();
                 if ($invoiceErrors !== true || !empty($currentItemError)) {
@@ -1371,21 +1368,20 @@ final class master extends validation {
                     }
                     $invoiceErrors = array_merge($invoiceErrors, $currentItemError);
                     $invoiceErrors = implode(", ", $invoiceErrors);
-                    $objPHPExcel->getActiveSheet()->SetCellValue('X' . $rowKey, $invoiceErrors);
+                    $objPHPExcel->getActiveSheet()->SetCellValue('F' . $rowKey, $invoiceErrors);
                 }
-               
+
                 $invoiceArray[$rowKey]['item_name'] = $dataArray['item_name'];
                 $invoiceArray[$rowKey]['item_category'] = $dataArray['item_category'];
                 $invoiceArray[$rowKey]['unit_price'] = $dataArray['unit_price'];
                 $invoiceArray[$rowKey]['item_unit'] = $dataArray['item_unit'];
                 $invoiceArray[$rowKey]['status'] = $dataArray['status'];
-               // $invoiceArray[$rowKey]['hsn_code'] = $dataArray['hsn_code'];
-               
+                // $invoiceArray[$rowKey]['hsn_code'] = $dataArray['hsn_code'];
             }
-           
+
             if ($errorflag === true) {
 
-                $objPHPExcel->getActiveSheet()->SetCellValue('X1', "Error Information");
+                $objPHPExcel->getActiveSheet()->SetCellValue('F1', "Error Information");
                 $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
                 $objWriter->save($invoice_excel_dir_path);
                 $this->setError($this->validationMessage['excelerror']);
@@ -1416,30 +1412,31 @@ final class master extends validation {
             }
         }
     }
-    
-     final public function validateClientItemExcel($dataArr) {
+
+    final public function validateClientItemExcel($dataArr) {
 
         $rules = array(
             'item_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Item Name',
             'item_category' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Item Category',
-           // 'unit_price' => 'decimal|#|lable_name:Price',
-            //'item_unit' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Item Unit',
+             'unit_price' => 'decimal|#|lable_name:Price',
+            'item_unit' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Item Unit',
             'status' => 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Status'
         );
 
+        
         $valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
+            cms_validate::$errors = array();
             $err_arr = $valid->allErrors();
-            $this->setError($err_arr);
             $valid->clearMessages();
-            return false;
+            return $err_arr;
         }
         return true;
     }
-    
-     final public function getcategoryDetailByitemname($vendor_name) {
 
-        $data = $this->get_row("select * from " . $this->getTableName('item') . " where item_name = " ."'$vendor_name'" );
+    final public function getcategoryDetailByitemname($vendor_name) {
+
+        $data = $this->get_row("select * from " . $this->getTableName('item') . " where item_name = " . "'$vendor_name'");
         $dataArr = array();
         if (!empty($data)) {
             $dataArr['data'] = $data;
@@ -1450,12 +1447,12 @@ final class master extends validation {
         }
 
         return $dataArr;
-    } 
-    
+    }
+
     final public function getunitDetailByunitname($vendor_name) {
 
-        $data = $this->get_row("select * from " . $this->getTableName('unit') . " where unit_name = " ."'$vendor_name'" );
-        
+        $data = $this->get_row("select * from " . $this->getTableName('unit') . " where unit_name = " . "'$vendor_name'");
+
 //        echo "select * from " . $this->getTableName('unit') . " where unit_name = " ."'$vendor_name'" ;
 //        die();
         $dataArr = array();
@@ -1468,7 +1465,8 @@ final class master extends validation {
         }
 
         return $dataArr;
-    } 
+    }
+
     /*
      * End : Supplier Add/Update/Delete Related All function
      */

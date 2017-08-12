@@ -44,6 +44,11 @@ p, ul { margin:0px; padding:0px;}
 .padlr0 { padding-left:0px; padding-right:0px;}
 .whitebg { background:#FFF;}
 .btnorange, .iconlist li a:hover { background:#e44a16; color:#FFF;}
+.btnorange:hover {color:#FFF; opacity:0.9; }
+.greenbg { background:#39b969;}
+.darkgrey { background:#39b969;}
+.btnsmall { font-size:13px; color:#FFF;}
+
 .btngrey { background:#f0f0f0;}
 .clear{clear:both;}
 .height10{height:10px;}.height20{height:20px;}.height30{height:30px;}.height40{height:40px;}.height50{height:50px;}.height100 { height:100px;}
@@ -169,8 +174,8 @@ input[type='submit'] {text-transform:capitalize;}
 .heading h1 { font-size:24px; color:#333; padding:40px 0 20px 0; font-family: opensans_light; margin:-10px 0 0 0;}
 .listcontent { min-height:200px;}
 .padrgtnone { padding-right:0px;}
-.dash-rightnav { background:#dddddd;  box-shadow: inset 4px 0 5px #bdbdbd; padding-right:0px; padding-top:30px; padding-bottom:30px;}
-.rgtmenu { background:#FFF; width:160px; height:125px; border-radius:5px; box-shadow:0 0 8px #c8c8c8; padding-top:20px; display:inline-block; text-align:center; margin:10px 0px; color:#756f6f; text-transform:uppercase; line-height:35px; font-weight:bold; font-size:13px; }
+.dash-rightnav { background:#dddddd;   box-shadow: inset 4px 0 5px #bdbdbd; padding-right:15px; padding-top:30px; padding-bottom:30px; position:fixed; right:0px; min-height:100%; width:15%; }
+.rgtmenu { background:#FFF; width:100%; height:125px; border-radius:5px; box-shadow:0 0 8px #c8c8c8; padding-top:20px; display:inline-block; text-align:center; margin:10px 0px; color:#756f6f; text-transform:uppercase; line-height:35px; font-weight:bold; font-size:13px; }
 .rgtmenu:hover { background:#e9e9e9; text-decoration:none; color:#333;}
 
 /*=====================manis tiwari css start=========================*/
@@ -252,7 +257,7 @@ input[type='submit'] {text-transform:capitalize;}
 
 /*.greyheading { background:#F0F0F0; font-family: opensans_bold; font-size:13px; font-weight:normal;}*/
 .footer{float:right;width:100%;text-align:center;font-size:12px;padding:8px 0 0px 0px; height:40px;color:#666; font-family: opensans_bold; position:fixed; left:0px; right:0px;  bottom:0px; background:#f6f6f6; }
-.dasfooter{float:right;width:66%;text-align:center;font-size:12px;padding:8px 0 0px 0px; height:40px;color:#666; font-family: opensans_bold; position:fixed; left:0px; right:0px;  bottom:0px; background:#f6f6f6; margin:0 auto; }
+.dasfooter{float:right;width:71%;text-align:center;font-size:12px;padding:8px 0 0px 0px; height:40px;color:#666; font-family: opensans_bold; position:fixed; left:0px; right:0px;  bottom:0px; background:#f6f6f6; margin:0 auto; }
 .fixed-left-col { position:fixed; width:28%; float:left; border-right:1px solid #ccc; min-height:500px; }
 .invoicergtcol { float:right; width:64%; background:#FFF; min-height:800px;  }
 
@@ -346,17 +351,15 @@ input[type='submit'] {text-transform:capitalize;}
 .bonanzaplan .smallplancol:nth-child(2) .smallplanbox .planprice { color:#9699e4;}
 .bonanzaplan .smallplanbox .plantxt { color:#333; font-size:23px; padding:20px 0px; line-height:35px;  font-family: opensans_light;}
 /*-------------------------/*---------------------------PRICE PLAN BOX END HERE-------------------------------------------*/
-.tab { margin-top:25px;}
+.tab { padding-left:0px; padding-right:0px; margin-bottom:20px; border-bottom:1px solid #e5e5e5;}
 .tab a { 
-width: 23.9%;
-    border: 1px solid #ccc;
+width: 18.9%;
     text-align: center;
-    color: #666;
-    padding: 10px 0px;
-    margin-right: 7px;
-    display: inline-block;
+    color: #000;
+    padding: 0px 0 20px 0px;
+    display: inline-block; font-family: opensans_bold; font-size:14px;
 }
-.tab a.active { background:#FFF; color:#e44a16; font-family: opensans_bold;  }
+.tab a.active { background:#FFF; color:#e44a16; font-family: opensans_bold; border-bottom:3px solid #e44a16;  }
 .invoice-types__content label { width:auto; margin-right:10px; font-family: opensans_bold; font-size:14px; color:#333;}
 .invoice-types__content label input { margin-right:10px;}
 .invoice-filter-table tr th { color:#333; font-family: opensans_bold; background:#e5e5e5; }
@@ -389,7 +392,100 @@ width: 23.9%;
 .btnaccepted:hover {border:1px solid #39b969; background:#FFF; color:#39b969; text-decoration:none;}
 .tablecontent { border-right:1px solid #ddd; border-left:1px solid #ddd; border-bottom:1px solid #ddd;} 
 .selectbox { border-radius:5px; border:1px solid #ddd; padding:5px; font-size:13px; }
+.tableresponsive { width:100%; float:left; display:block;}
 
+  #noti_Container {
+        position:relative;
+    }
+       
+    /* A CIRCLE LIKE BUTTON IN THE TOP MENU. */
+    #noti_Button {
+        width:22px;
+        height:22px;
+        line-height:22px;
+        border-radius:50%;
+        -moz-border-radius:50%; 
+        -webkit-border-radius:50%;
+     
+        margin:-21px 10px 0 0px;
+        cursor:pointer;
+		position:relative; z-index:7777;
+    }
+        
+    /* THE POPULAR RED NOTIFICATIONS COUNTER. */
+    #noti_Counter {
+        display:block;
+        position:absolute;
+       background:#00a4e4;
+	   color:#FFF;  font-size:11px; font-family: opensans_bold; text-align:center;
+		width:19px; height:18px;
+        margin:-3px 0 0 12px;
+       border-radius:50% 50%; -webkit-border-radius:50% 50%; -moz-border-radius:50% 50%; 
+        z-index:1;
+    }
+        
+    /* THE NOTIFICAIONS WINDOW. THIS REMAINS HIDDEN WHEN THE PAGE LOADS. */
+    #notifications {
+        display:none;
+        width:250px;
+        position:absolute;
+        top:37px;
+        left:0;
+        background:#FFF;
+		border-radius:5px;
+        border:solid 1px rgba(100, 100, 100, .20);
+        -webkit-box-shadow:0 3px 4px rgba(0, 0, 0, .20);
+        z-index: 0;
+		padding:15px;
+    }
+	 #notifications .txtnotfication { color:#333; font-size:14px; font-family: opensans_bold; margin-bottom:0px; margin-top:20px;  }
+    /* AN ARROW LIKE STRUCTURE JUST OVER THE NOTIFICATIONS WINDOW */
+    #notifications:before {         
+        content: '';
+        display:block;
+        width:0;
+        height:0;
+        color:transparent;
+        border:10px solid #CCC;
+        border-color:transparent transparent #FFF;
+        margin-top:-20px;
+        margin-left:10px;
+    }
+        
+   
+    .seeAll {
+        background:#F6F7F8;
+        padding:8px;
+        font-size:12px;
+        font-weight:bold;
+        border-top:solid 1px rgba(100, 100, 100, .30);
+        text-align:center;
+    }
+    .seeAll a {
+        color:#3b5998;
+    }
+    .seeAll a:hover {
+        background:#F6F7F8;
+        color:#3b5998;
+        text-decoration:underline;
+    }
+.noti-ul { width:100%; float:left; display:block}
+.noti-ul li { border-bottom:1px solid #e5e5e5;  border-right:none !important; width:100%; display:block; float:left; padding:8px 0px !important; height:auto !important;}
+.btnseeall {  width:100%; display: inline-block;}
+.btnseeall a {border: 1px solid #00a3e2;
+font-size: 14px;
+border-radius: 20px;
+display: inline-block;
+color: #00a3e2 !important;
+padding: 5px 20px;
+font-family: opensans_bold;
+ width:100%; text-align:center; margin-top:10px; text-decoration:none;
+}
+.btnseeall a:hover { background:#00a3e2; color:#FFF !important;}	
+.arrow-up {
+ background:url(../../../image/arrow-top.png) no-repeat; margin-top:-24px; width:18px; height:9px;
+}
+.btn-blue { background:#00a3e2; color:#FFF;}
 @media only screen and (max-width:1200px)
 {
 .rgtmenu { width:100%; text-align:center}

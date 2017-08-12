@@ -19,6 +19,8 @@ final class gstr3b extends validation {
 		 if($this->update(TAB_PREFIX.'client_return_gstr3b', array('is_deleted' => 1), array('return_id' => $return_id)))
 		 {
 		 $this->setSuccess('GSTR3B Data clear successfully');
+		   $this->logMsg("GSTR3B ClearData Financial month :".$this->sanitize($_GET['returnmonth']),"gstr_3b");
+  
 		 return true;
 		 }
    }
@@ -29,6 +31,8 @@ final class gstr3b extends validation {
 		 if($this->update(TAB_PREFIX.'client_return_gstr3b', array('final_submit' => 1), array('return_id' => $return_id)))
 		 {
 		 $this->setSuccess('GSTR3B Submitted Successfully');
+		 $this->logMsg("GSTR3B final submit financial month :".$this->sanitize($_GET['returnmonth']),"gstr_3b");
+   
 		 return true;
 		 }
    }
@@ -68,64 +72,7 @@ final class gstr3b extends validation {
        }
 	   
    }
-    private function getEmailVerifyMailBody2($userid, $name) {
-        $token = $this->getToken();
-        //$data = '<a href="'.PROJECT_URL.'/verify_forgot_password.php?verifyForgot=' . $token . '&passkey='.base64_encode($userid).'">Click here</a>  or copy the below url and paste on browser to verify your email';
-       $mpdfHtml='';
-		$mpdfHtml = $mpdfHtml.'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
-        $mpdfHtml = $mpdfHtml.'<html xmlns="http://www.w3.org/1999/xhtml">';
-        $mpdfHtml = $mpdfHtml.'<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>gst</title></head><body>';
-        $mpdfHtml = $mpdfHtml.'<div style="width:720px; margin:auto; border:solid #CCC 1px;">';
-        $mpdfHtml = $mpdfHtml.'<table cellpadding="0" cellspacing="0" width="100%">';
-       $mpdfHtml = $mpdfHtml.'<tbody><tr>  <td height="auto"><table width="720" cellpadding="0" cellspacing="0" bgcolor="#fff" style="font-family:Arial, Helvetica, sans-serif;margin:0px auto;">';
-       $mpdfHtml = $mpdfHtml.' <tbody>  <tr> <td width="30"></td>    <td><table width="100%" cellpadding="0" cellspacing="0">    <tbody>';
-       $mpdfHtml = $mpdfHtml.'<tr><td align="left" valign="middle" height="80"><a target="_blank" href="https://www.gstkeeper.com/"><img src="https://gstkeeper.com/newsletter/4july2017/gst-logo.png" alt="" border="0"></a></td>';
-       $mpdfHtml = $mpdfHtml.' <td align="right" valign="middle" style="font-size:18px;color:#cf3502;font-family:Arial, Helvetica, sans-serif;" height="80px"> <span><img src="https://gstkeeper.com/newsletter/6july2017/phone-icon.jpg" alt=""></span>1-800-212-2022<br>';     
-	   $mpdfHtml = $mpdfHtml.'<span><img src="https://gstkeeper.com/newsletter/6july2017/mail-icon.jpg" alt=""></span><a href="mailto:contact@gstkeeper.com" style="font-size:14px;color:#cf3502;text-decoration:none;"> contact@gstkeeper.com</a></td> </tr> </tbody> </table></td>';
-	$mpdfHtml = $mpdfHtml.' <td width="30"></td> </tr> <tr> <td width="30"></td>    <td><table width="100%" cellpadding="0" cellspacing="0"><tbody>';          
-		$mpdfHtml = $mpdfHtml.'<tr>  <td align="center" valign="middle"><img src="https://www.gstkeeper.com/newsletter/7july/images/banner.jpg" alt="" border="0" width="700"></td> </tr>';
-		$mpdfHtml = $mpdfHtml.' </tbody> </table></td> <td width="30"></td>   </tr>';           
-	  $mpdfHtml = $mpdfHtml.'<tr>  <td width="30"  ></td> <td><table width="100%" cellpadding="0" cellspacing="0">  <tbody>';          
-	$mpdfHtml = $mpdfHtml.' <tr><td height="319" align="center" valign="top"><table width="100%" cellpadding="0px" cellspacing="0" > <tbody>';        
-	 $mpdfHtml = $mpdfHtml.' <tr> <td width="13"></td>  <td width="350"  style="font-size:15px;color:#090909;font-family:Arial, Helvetica, sans-serif; padding-top:10px; "></td><td width="20"></td>  </tr>';
-	 $mpdfHtml = $mpdfHtml.' <tr>  <td colspan="3" height="10"></td>  </tr>';
-	 $mpdfHtml = $mpdfHtml.'  <tr><td width="13"></td> <td height="140" align="justify"  valign="top" style="font-size:13px;color:#191919;font-family:Arial, Helvetica, sans-serif; line-height:18px; "> <p><strong>Dear ' . $name . '</strong></p>'; 
-	 $mpdfHtml = $mpdfHtml.'  <p> We have received your request for password change.<br>Please click the link below to reset your password:</p><p><a target="_blank" style="padding:2px 5px;background:#cf3502;color:#fff;text-decoration:none;font-size:20px;" href="' . PROJECT_URL . '/verify_forgot_password.php?verifyForgot=' . $token . '&passkey=' . md5($userid) . '" >Click here</a> </p>';                           
-	 $mpdfHtml = $mpdfHtml.'  <p>Note: For security reasons, it is advisable to change the password immediately after the first login.</p>';				 
-     $mpdfHtml = $mpdfHtml.'<p>Thank You for using our services.</p><p>If you have any queries, please mail us at contact@gstkeeper.com for further assistance.</p><br><br>Thanks!<br>The GST Keeper Team</p>';
-     $mpdfHtml = $mpdfHtml.'  </td><td width="20"></td>  </tr> </tbody>   </table></td></tr>';
-     $mpdfHtml = $mpdfHtml.' </tbody>  </table></td>    </tr>';      
-     $mpdfHtml = $mpdfHtml.' <!--<tr><td  align="center" height="29"><img src="http://cdn.go4hosting.in/mailer/12-oct/resources-img.jpg"  alt=""    /></td> </tr>-->';
-     $mpdfHtml = $mpdfHtml.'  <tr>  <td colspan="3" height="15"></td> </tr>';     
-     $mpdfHtml = $mpdfHtml.'  <tr>   <td width="30"></td> <td><table width="98%" align="right" cellpadding="0" cellspacing="0" style="background-color:#f1f1f1; height:80px; padding:10px;">    <tbody>     <tr>';
-     $mpdfHtml = $mpdfHtml.'<td width="47%"><a href="http://www.cyfuture.com/" target="_blank"><img src="https://gstkeeper.com/newsletter/4july2017/cyfuture-logo.png" alt="" border="0" /></a></td>';
-     $mpdfHtml = $mpdfHtml.'<td width="53%" align="right"><table width="100%" cellpadding="0" cellspacing="0">   <tbody>';
-     $mpdfHtml = $mpdfHtml.' <tr>  <td width="20" height="50"></td>  <td valign="middle" style="font-size:14px;color:#333;font-family:Arial, Helvetica, sans-serif;"><strong><i>Connect with us</i></strong></td>';           
-                    
-     $mpdfHtml = $mpdfHtml.'<td valign="middle" width="50" align="center"><a target="_blank" href="https://www.facebook.com/GST-Keeper-632910016898628/"><img src="https://gstkeeper.com/newsletter/4july2017/fb-icon.png" alt="" border="0" /></a></td>';
-     $mpdfHtml = $mpdfHtml.'<td valign="middle" width="40" align="left"><a target="_blank" href="https://plus.google.com/101841021110541536034"><img src="https://gstkeeper.com/newsletter/4july2017/g+-icon.png" alt="" border="0" /></a></td>';
-     $mpdfHtml = $mpdfHtml.'<td valign="middle" width="40" align="left"><a target="_blank" href="https://twitter.com/GstKeeper"><img src="https://gstkeeper.com/newsletter/4july2017/twit-icon.png" alt="" border="0" /></a></td>';
-     $mpdfHtml = $mpdfHtml.'<td valign="middle" width="40" align="left"><a target="_blank" href="https://www.youtube.com/channel/UCsDdNFR8kJ3YVWpEvBrFeSA"><img src="https://gstkeeper.com/newsletter/4july2017/utube-icon.png" alt="" border="0" /></a></td>';
-     $mpdfHtml = $mpdfHtml.'<td valign="middle" width="40" align="left"><a target="_blank" href="https://www.linkedin.com/company/gst-keeper"><img src="https://gstkeeper.com/newsletter/4july2017/in-icon.jpg" alt="" border="0" /></a></td>';
-     $mpdfHtml = $mpdfHtml.'</tr> </tbody>  </table></td></tr> </tbody> </table></td><td width="30"></td>  </tr>';
-      $mpdfHtml = $mpdfHtml.'  <tr><td width="30"></td> <td height="76" valign="middle"><table width="100%" cellpadding="0" cellspacing="0"><tbody>';       
-      $mpdfHtml = $mpdfHtml.' <tr><td width="20"></td><td align="center"><font style="font-size:14px;color:#444;font-family:Arial, Helvetica, sans-serif;">Cyfuture ( India ) Pvt. Ltd.</font><br>';   
-       $mpdfHtml = $mpdfHtml.'<font style="font-size:12px;color:#444;font-family:Arial, Helvetica, sans-serif;">Plot No. 197-198 Noida Special Economic Zone (NSEZ) Phase II, Noida 201 305</font><br>';     
-       $mpdfHtml = $mpdfHtml.' <font style="font-size:12px;color:#444;font-family:Arial, Helvetica, sans-serif;">E-mail: <a style="text-decoration:none;color:#3194d5;" href="mailto:contact@gstkeeper.com">contact@gstkeeper.com</a></font><br></td>';      
-        $mpdfHtml = $mpdfHtml.' <td width="15" align="left">&nbsp;</td> </tr></tbody>  </table></td></tbody></table></td></tr></tbody></table></div></body></html>'; 
-        $this->update(TAB_PREFIX . "user", array('forgotemail_code' => $token, 'forgotemail_verify' => 0), array('user_id' => $userid));
-        $dataInsertArray['userid'] = $userid;
-        $dataInsertArray['code'] = $token;
-        $dataInsertArray['code_senttime'] = date('Y-m-d H:i:s');
-
-
-        if ($this->insert($this->tableNames['forgot_email'], $dataInsertArray)) {
-            $this->setSuccess('Kindly check your email for verification.');
-            return $mpdfHtml;
-        }
-    }
-	
-   
+    
    public function generategstr3bHtml($returnid,$returnmonth)
    {
 	         
@@ -216,10 +163,11 @@ final class gstr3b extends validation {
 		}
 		else
 		{
-			if ($this->update('gst_place_of_supply', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
+			if ($this->update('gst_place_of_supply', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'type'=>'0','financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
 				
 		                      
-				//$this->setSuccess('GSTR3B Saved Successfully');
+				$this->setSuccess('GSTR3B Saved Successfully');
+				
 				return true;
 			}
 			else
@@ -285,8 +233,8 @@ final class gstr3b extends validation {
 		}
 		else
 		{
-			if ($this->update('gst_place_of_supply', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
-				
+			if ($this->update('gst_place_of_supply', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'type'=>'1','financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
+					
 		                      
 				//$this->setSuccess('GSTR3B Saved Successfully');
 				return true;
@@ -352,8 +300,8 @@ final class gstr3b extends validation {
 		}
 		else
 		{
-			if ($this->update('gst_place_of_supply', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
-				
+			if ($this->update('gst_place_of_supply', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'type'=>'2','financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
+					
 		                      
 				//$this->setSuccess('GSTR3B Saved Successfully');
 				return true;
@@ -922,15 +870,17 @@ border-bottom: 1px solid #f4d4ca;" width="25%"><strong>(A) ITC Available (whethe
 	   $dataArr['client_gstin_number'] = $client_gstin_number;
 	   
 
-
+$returnmonth = $this->sanitize($_GET['returnmonth']);
 		if(empty($data))
 		{
 			$dataArr['financial_month']=$this->sanitize($_GET['returnmonth']);
+			
 			if ($this->insert(TAB_PREFIX.'client_return_gstr3b', $dataArr)) {
 				$this->getPlaceOfSupplyUnregistered();
 				$this->getPlaceOfSupplyComposition();
 				$this->getPlaceOfSupplyUinHolder();
 				$this->setSuccess('GSTR3B Saved Successfully');
+				$this->logMsg("GSTR3B Inserted financial month : " . $returnmonth,"gstr_3b");
 				return true;
 			}
 			else
@@ -948,6 +898,7 @@ border-bottom: 1px solid #f4d4ca;" width="25%"><strong>(A) ITC Available (whethe
 				$this->getPlaceOfSupplyUinHolder();
 		                      
 				$this->setSuccess('GSTR3B Saved Successfully');
+				$this->logMsg("GSTR3B updated financial month : " . $returnmonth,"gstr_3b");
 				return true;
 			}
 			else

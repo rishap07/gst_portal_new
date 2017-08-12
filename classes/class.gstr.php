@@ -17,6 +17,7 @@ final class gstr extends validation {
     public $app_key = '';
     public $otp_ency = '';
     public $hKey='';
+    public $error_msg = array();
     function __construct() {
         parent::__construct();
     }
@@ -79,6 +80,7 @@ final class gstr extends validation {
 
     public function getCertificateKey()
     {
+        
         if(empty($this->checkUserGstr1Exists('app_key'))) {
             $pem_private_key = file_get_contents(PROJECT_ROOT.'/modules/api/GSTN_Public_Key/GSTN_private.pem');
             $private_key = openssl_pkey_get_private($pem_private_key);
@@ -108,7 +110,13 @@ final class gstr extends validation {
     {
         $key = pack('H*', $_SESSION['hexcode']);
         //$otp = '575757';
-        $this->hKey=$key;
+        if(empty($this->checkUserGstr1Exists('hKey'))) {
+            $this->hKey = $key;
+            $_SESSION['hKey'] = $this->hKey;
+        }
+        else {
+            $_SESSION['hKey'] = $this->hKey = $this->checkUserGstr1Exists('hKey');
+        }
         $otp_code = $otp;
         $otp_encode =utf8_encode($otp_code);
         $iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
@@ -196,7 +204,7 @@ final class gstr extends validation {
 
         $data = json_decode($result_data);
 
-        if(empty($this->checkUserGstr1Exists('app_key')) && empty($this->checkUserGstr1Exists('auth_token'))) {
+        if(empty($this->checkUserGstr1Exists('app_key')) && empty($this->checkUserGstr1Exists('auth_token')) && empty($this->checkUserGstr1Exists('hKey'))) {
             if(isset($data->status_cd) && $data->status_cd=='1')
             {
                 $session_key = $data->sek;
@@ -211,6 +219,7 @@ final class gstr extends validation {
                 $savedata = array();
                 $savedata['otp'] = '575757';
                 $savedata['hexcode'] = $_SESSION['hexcode'];
+                $savedata['hKey'] = $_SESSION['hKey'];
                 $savedata['app_key'] = $_SESSION['app_key'];
                 $savedata['auth_token'] = $_SESSION['auth_token'];
                 $savedata['decrypt_sess_key'] = $session_key;
@@ -226,11 +235,13 @@ final class gstr extends validation {
         
         }
         else {
+            $hKey  = $this->checkUserGstr1Exists('hKey');
             $session_key  = $this->checkUserGstr1Exists('decrypt_sess_key');
-            $decrypt_sess_key = openssl_decrypt(base64_decode($session_key),"aes-256-ecb",$this->hKey, OPENSSL_RAW_DATA);
+            $decrypt_sess_key = openssl_decrypt(base64_decode($session_key),"aes-256-ecb",$hKey, OPENSSL_RAW_DATA);
             $_SESSION['decrypt_sess_key']= $decrypt_sess_key;
             $_SESSION['auth_token'] =  $this->checkUserGstr1Exists('auth_token');
             $_SESSION['auth_date'] =  $this->checkUserGstr1Exists('added_date');
+            $_SESSION['hKey'] =  $this->checkUserGstr1Exists('hKey');
 
             return $data;
         }   
@@ -243,7 +254,7 @@ final class gstr extends validation {
         $error = 1;
         $response = array();
         $this->authenticateToken();
-       // $this->pr($_SESSION);
+        $this->pr($_SESSION);
         $json_data = json_encode($dataArr);
        // echo $json_data;
 
@@ -287,7 +298,8 @@ final class gstr extends validation {
             $ref = json_decode($decodejson);
 
             $refId = $ref->reference_id;
-            //sleep(5);
+            sleep(5);
+            
             //Start code for create header
             $header2_array = array(
                 'auth-token:' . $_SESSION['auth_token'] . '',
@@ -315,13 +327,14 @@ final class gstr extends validation {
                 ;
                 if(!empty($decodejson1) && $msg == '') {
                     $jstr1_status = json_decode($decodejson1,true);
-               $this->pr($jstr1_status);
+                    //$this->pr($jstr1_status);
+                    
                     if(isset($jstr1_status['status_cd']) && $jstr1_status['status_cd']=='P'  && $msg == '') {
 
                         $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/gstr1?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=RETSUM';
                         $result_data_sum = $this->hitGetUrl($getReturnUrl, '', $header2);
                         $retDta_sum = json_decode($result_data_sum);
-                        // $this->pr($retDta_sum);
+                        //$this->pr($retDta_sum);
                         if(isset($retDta_sum->status_cd) && $retDta_sum->status_cd=='1'  && $msg == '')
                         {
                            
@@ -371,10 +384,8 @@ final class gstr extends validation {
                         }
                     }
                     else {
-                        $msg = $this->array_key_search('error_msg', $jstr1_status);
-                        if(!$msg) {
-                            $msg = "Sorry! Invalid data format";
-                        }
+                        $this->array_key_search('error_msg', $jstr1_status);
+                        $msg = $this->error_msg;;
                     }
                 }
                 else {
@@ -387,7 +398,8 @@ final class gstr extends validation {
         }
         else {
             if(isset($datasave->error)) {
-                $msg = $this->array_key_search('message', $datasave->error);
+                $this->array_key_search('message', $datasave->error);
+                $msg = $this->error_msg;;
             }
            
             if(!$msg) {
@@ -467,42 +479,57 @@ final class gstr extends validation {
     public function checkUserGstr1Exists($type='') {
         $check = false;
         if(!empty($type)) {
-            if(isset($_SESSION['auth_date'])) {
-                $user_gstr = $this->get_user_gstr();
-                if(!empty($user_gstr)) {
-                    $last_auth_date = $user_gstr[0]->added_date;
-                    $today_date = date('Y-m-d h:i:s');
-                    $diff = (strtotime($today_date)-strtotime($last_auth_date));
-                    
-                    //6000
-                    if($diff <= 6000) {
-                        if($type=='otp') {
-                            $check = $user_gstr[0]->otp;
-                        }
-                        if($type=='hexcode') {
-                            $check = $user_gstr[0]->hexcode;
-                        }
-                        if($type=='app_key') {
-                            $check = $user_gstr[0]->app_key;
-                        }
-                        if($type=='auth_token') {
-                            $check = $user_gstr[0]->auth_token;
-                        }
-                        if($type=='decrypt_sess_key') {
-                            $check = $user_gstr[0]->decrypt_sess_key;
-                        }
-                        if($type=='added_date') {
-                            $check = $user_gstr[0]->added_date;
-                        }
-                        
+            $user_gstr = $this->get_user_gstr();
+            if(!empty($user_gstr)) {
+                $last_auth_date = $user_gstr[0]->added_date;
+                $today_date = date('Y-m-d h:i:s');
+                $diff = (strtotime($today_date)-strtotime($last_auth_date));
+                
+                //6000
+                if($diff <= 6000) {
+                    if($type=='otp') {
+                        $check = $user_gstr[0]->otp;
                     }
+                    if($type=='hexcode') {
+                        $check = $user_gstr[0]->hexcode;
+                    }
+                    if($type=='hKey') {
+                        $check = $user_gstr[0]->hKey;
+                    }
+                    if($type=='app_key') {
+                        $check = $user_gstr[0]->app_key;
+                    }
+                    if($type=='auth_token') {
+                        $check = $user_gstr[0]->auth_token;
+                    }
+                    if($type=='decrypt_sess_key') {
+                        $check = $user_gstr[0]->decrypt_sess_key;
+                    }
+                    if($type=='added_date') {
+                        $check = $user_gstr[0]->added_date;
+                    }
+                    
                 }
-            } 
+                else {
+                    // delete query
+                }
+            }
             
         }
         return $check;
     }
-    
+
+    public function gstr_session_destroy() {
+        if(!empty($_SESSION['hexcode']) && !empty($_SESSION['app_key']) && !empty($_SESSION['auth_token']) && !empty($_SESSION['auth_date']) && !empty($_SESSION['decrypt_sess_key'])) {
+            unset($_SESSION['hexcode']);
+            unset($_SESSION['hKey']);
+            unset($_SESSION['app_key']);
+            unset($_SESSION['auth_token']);
+            unset($_SESSION['auth_date']);
+            unset($_SESSION['decrypt_sess_key']);
+        }
+    }
+
     public function header($fields= array()) {
         $client_secret = 'a9bcf665fe424883b7b94791eb31f667';
         $clientid = 'l7xx1ed437f1e18347c38bd2aad6e6dd3b3c';
@@ -600,6 +627,7 @@ final class gstr extends validation {
             if (!empty($user_ustr)) {
                 $dataGST1['otp'] = $data['otp'];
                 $dataGST1['hexcode'] = $data['hexcode'];
+                $dataGST1['hKey'] = $data['hKey'];
                 $dataGST1['app_key'] = $data['app_key'];
                 $dataGST1['auth_token'] = $data['auth_token'];
                 $dataGST1['decrypt_sess_key'] = $data['decrypt_sess_key'];
@@ -662,19 +690,16 @@ final class gstr extends validation {
         $key_value = false;
         foreach($array as $key => $value){
             $key = "$key";
-            if($key_value == false){
-                if($key == $searched_key){
-                    return $value;
-                }else{
-                    if(is_array($value)){
-                        $key_value = self::array_key_search($searched_key, $value);
-                    }
+            
+            if($key == $searched_key){
+                 $this->error_msg[] =  $value;
+            }else{
+                if(is_array($value)){
+                    $key_value = self::array_key_search($searched_key, $value);
                 }
             }
+            
         }
-        $key_value == is_null($key_value) ? false : $key_value;
-
-        return $key_value;
     }
    
 }

@@ -21,10 +21,7 @@ if ($_REQUEST['returnmonth'] != '') {
 if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 
    
-//var_dump($_POST['total_taxable_value_taxable_person']);
-//var_dump($_POST['amount_of_integrated_tax_taxable_person']);
 
-//die();
     if($obj_return->saveGstr3b()){
         //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
     }
@@ -99,7 +96,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
 }
 
        
-	   $sql = "select  *,count(return_id) as totalinvoice from gst_client_return_gstr3b where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by return_id desc limit 0,1";
+	    $sql = "select  *,count(return_id) as totalinvoice from gst_client_return_gstr3b where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by return_id desc limit 0,1";
  
         $returndata = $obj_return->get_results($sql);
 	    
@@ -650,7 +647,8 @@ composition taxable persons and UIN holders</div>
                                 
                                 <tbody>
 								<?php
-							 $sql = "select  *,count(returnid) as totalinvoice from gst_place_of_supply where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and type='0'   order by id desc limit 0,1";
+							// $sql = "select  *,count(returnid) as totalinvoice from gst_place_of_supply where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and type='0'   order by id desc limit 0,1";
+							$sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from gst_place_of_supply as s INNER join gst_client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='0'";
                              $editflag=0;
                             $return_a = $obj_return->get_results($sql);
 							if($return_a[0]->totalinvoice > 0 )
@@ -696,11 +694,11 @@ composition taxable persons and UIN holders</div>
 									 </td>
 									  <td>
 								 <?php
-								 if (!isset($return_a[0]->totalinvoice)) {
+								 if ((isset($return_a[0]->totalinvoice)) && ($return_a[0]->final_submit=='1')) {
 							
 									
 									 ?>
-									 <label><?php echo $returndata[0]->total_taxable_value_unregistered_person; ?><span class="starred"></span></label>
+									 <label><?php echo $str2[$i]; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -716,11 +714,11 @@ composition taxable persons and UIN holders</div>
                                  </td> 	
                                 <td>
 								 <?php
-								if (!isset($return_a[0]->totalinvoice)) {
+								 if ((isset($return_a[0]->totalinvoice)) && ($return_a[0]->final_submit=='1')) {
 							
 								
 									 ?>
-									 <label><?php echo $returndata[0]->amount_of_integrated_tax_unregistered_person; ?><span class="starred"></span></label>
+									 <label><?php echo $str2[$i]; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -730,18 +728,22 @@ composition taxable persons and UIN holders</div>
 								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="amount_of_integrated_tax_unregistered_person[]" id="amount_of_integrated_tax_unregistered_person" value="<?php if(isset($return_a[0]->totalinvoice)) { echo $str3[$i]; } else { echo 0.00; } ?>"
  class="form-control"  placeholder="" /> </div></div></div>
 								 <?php } ?>
-                                 </td> 										                       
+                                 </td> 	
+                                  		<?php								 
+                                 if($return_a[0]->final_submit=='1')
+								 {
+								 }
+								 else{
+                                     if($i==0) 
+										{
+                                  
+                                     ?>											
                                      <td>
-									 <input type="button" class="add-row1" value="Add Row">
-									 <button type="button" style="display:none;" class="delete-row" >Delete Row</button>
-									 
-						 <button class="add_field_button" style="display:none;">Add More</button>			
-						 <button class="remove_field_button" style="display:none;">Remove</button>			
-						 
-  <input type='button' value='Add' id='addButton' style="display:none;">
-  <input type='button' value='Remove' id='removeButton' style="display:none;">
-    
-                                    </td>									 
+									 <input type="button" style="font-size: 13px;color: #FFF;" class="btn greenbg boldfont btnsmall add-row1"  value="Add Row">
+					   
+										</td><?php } else { ?>	
+									<td><button class='del btn btnsmall btn-danger boldfont' style='font-size: 12px;'>Delete row</button></td>								 
+								 <?php } } ?>
 						</tr><?php } } } else {
 						
 							?>
@@ -812,14 +814,8 @@ composition taxable persons and UIN holders</div>
 								 <?php } ?>
                                  </td> 										                       
                                      <td>
-									 <input type="button" class="add-row1" value="Add Row">
-									 <button type="button" style="display:none;" class="delete-row" >Delete Row</button>
+									 <input type="button" style="font-size: 13px;color: #FFF;" class="btn greenbg boldfont btnsmall add-row1" value="Add Row">
 									 
-						 <button class="add_field_button" style="display:none;">Add More</button>			
-						 <button class="remove_field_button" style="display:none;">Remove</button>			
-						 
-  <input type='button' value='Add' id='addButton' style="display:none;">
-  <input type='button' value='Remove' id='removeButton' style="display:none;">
     
                                     </td>									 
 						</tr>
@@ -829,8 +825,11 @@ composition taxable persons and UIN holders</div>
                             </table></div>
 							   <div class="tableresponsive">
 						  <table  class="table  tablecontent tablecontent2 bordernone" id="table2">
+						  
 							<?php
-							 $sql = "select  *,count(returnid) as totalinvoice from gst_place_of_supply where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and type='1'   order by id desc limit 0,1";
+							// $sql = "select  *,count(returnid) as totalinvoice from gst_place_of_supply where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and type='1'   order by id desc limit 0,1";
+								$sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from gst_place_of_supply as s INNER join gst_client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='1'";
+                        
                              $editflag=0;
                             $return_a = $obj_return->get_results($sql);
 							if($return_a[0]->totalinvoice > 0 )
@@ -874,10 +873,10 @@ composition taxable persons and UIN holders</div>
 									 </td>
 									  <td>
 								 <?php
-								  if (!isset($return_a[0]->totalinvoice)) {
+								  if ((isset($return_a[0]->totalinvoice)) && ($return_a[0]->final_submit=='1')){
 							
 									 ?>
-									 <label><?php echo $returndata[0]->total_taxable_value_taxable_person; ?><span class="starred"></span></label>
+									 <label><?php echo $str2[$i]; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -887,29 +886,41 @@ composition taxable persons and UIN holders</div>
                                  </td> 	
                                   <td>
 								 <?php
-								 if (!isset($return_a[0]->totalinvoice)) {
+								 if ((isset($return_a[0]->totalinvoice)) && ($return_a[0]->final_submit=='1')){
 							
 									 ?>
-									 <label><?php echo $returndata[0]->amount_of_integrated_tax_taxable_person; ?><span class="starred"></span></label>
+									 <label><?php echo $str3[$i]; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
 								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="amount_of_integrated_tax_taxable_person[]"
  class="form-control" value="<?php if(isset($return_a[0]->totalinvoice)) { echo $str3[$i]; } else { echo '0.00'; } ?>"  placeholder="" /> 
 								 <?php } ?>
-                                 </td> 									 
-                                      
-                                    <td>
-									 <input type="button" class="add-row2" value="Add Row">
-									</td>
-                                    </tr></table></div>
-									   <div class="tableresponsive">
-									  <table  class="table  tablecontent tablecontent2 bordernone" id="table3">
-									  <tbody>
-                                   </tr><?php } } } else {
+                                 </td> 
+                                 <?php								 
+                                 if($return_a[0]->final_submit=='1')
+								 {
+									 ?><td></td>
+									 <?php
+								 }
+								 else{
+                                     if($i==0) 
+										{
+                                  
+                                     ?>											
+                                     <td>
+									 <input type="button" style="font-size: 13px;color: #FFF;" class="btn greenbg boldfont btnsmall add-row2"  value="Add Row">
+					   
+										</td><?php } else { ?>	
+									<td><button class='del btn btnsmall btn-danger boldfont' style='font-size: 12px;'>Delete row</button></td>								 
+								 <?php } } ?>
+                                  
+									  
+                                  </tr>   <?php } } } else {
 							?>
 							  <tr>
-                                    <td class="lftheading" width="25%">Supplies made to Composition Taxable Persons</td>
+                                       <td class="lftheading" width="25%">Supplies made to Composition Taxable Persons</td>
+                               
                                      <td>
 									 
 						<select name='place_of_supply_taxable_person[]'  id='place_of_supply_taxable_person' class="required form-control">
@@ -962,15 +973,17 @@ composition taxable persons and UIN holders</div>
                                  </td> 									 
                                       
                                     <td>
-									 <input type="button" class="add-row2" value="Add Row">
+									 <input type="button" style="font-size: 13px;color: #FFF;" class="btn greenbg boldfont btnsmall add-row2" value="Add Row">
 									</td>
-                                    </tr></table></div>
+                                      </tr> <?php } ?></table></div>
 									   <div class="tableresponsive">
 									  <table  class="table  tablecontent tablecontent2 bordernone" id="table3">
 									  <tbody>
-                                   </tr> <?php } ?>
+                                 
 								   <?php
-							 $sql = "select  *,count(returnid) as totalinvoice from gst_place_of_supply where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and type='2'   order by id desc limit 0,1";
+							 //$sql = "select  *,count(returnid) as totalinvoice from gst_place_of_supply where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and type='2'   order by id desc limit 0,1";
+							 $sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from gst_place_of_supply as s INNER join gst_client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='2'";
+                        
                              $editflag=0;
                             $return_a = $obj_return->get_results($sql);
 							if($return_a[0]->totalinvoice > 0 )
@@ -1015,36 +1028,48 @@ composition taxable persons and UIN holders</div>
 									 </td>
 									  <td>
 								 <?php
-								 if($returndata[0]->totalinvoice > 0)
-								 {
+								 if ((isset($return_a[0]->totalinvoice)) && ($return_a[0]->final_submit=='1')) {
+							
 									 ?>
-									 <label><?php echo $returndata[0]->total_taxable_value_uin_holder; ?><span class="starred"></span></label>
+									
+									 <label><?php echo $str2[$i]; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
 								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="total_taxable_value_uin_holder[]"
- class="form-control"  placeholder="" /> 
+ class="form-control" value="<?php if(isset($return_a[0]->totalinvoice)) { echo $str2[$i]; } else { echo '0.00'; } ?>"   placeholder="" /> 
 								 <?php } ?>
                                  </td>
                                  <td>
 								 <?php
-								 if($returndata[0]->totalinvoice > 0)
-								 {
+								  if ((isset($return_a[0]->totalinvoice)) && ($return_a[0]->final_submit=='1')) {
+							
 									 ?>
-									 <label><?php echo $returndata[0]->amount_of_integrated_uin_holder; ?><span class="starred"></span></label>
+									 <label><?php echo $str2[$i]; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
 								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="amount_of_integrated_uin_holder[]"
- class="form-control"  placeholder="" /> 
+ class="form-control" value="<?php if(isset($return_a[0]->totalinvoice)) { echo $str3[$i]; } else { echo '0.00'; } ?>" placeholder="" /> 
 								 <?php } ?>
-                                 </td> 										 
-                                      <td>
-									 <input type="button" class="add-row3" value="Add Row">
-									</td>
+                                 </td> 
+								 <?php 
+								 if($return_a[0]->final_submit=='1')
+								 {
+								 }
+								 else{
+                                     if($i==0) 
+										{
+                                     ?>											
+                                     <td>
+									 <input type="button" style="font-size: 13px;color: #FFF;" class="btn greenbg boldfont btnsmall add-row3" value="Add Row">
+					   
+										</td><?php } else { ?>	
+									<td><button class='del btn btnsmall btn-danger boldfont' style='font-size: 12px;'>Delete row</button></td>								 
+								 <?php } }?>
                                       
                                    </tr><?php } } } else {
-							?>
+							          ?>
 							<tr>
                                     <td class="lftheading" width="25%">Supplies made to UIN holders</td>
                                      <td>
@@ -1099,7 +1124,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } ?>
                                  </td> 										 
                                       <td>
-									 <input type="button" class="add-row3" value="Add Row">
+									 <input type="button" style="font-size: 13px;color: #FFF;" class="btn greenbg boldfont btnsmall add-row3" value="Add Row">
 									</td>
                                       
                                    </tr><?php } ?>
@@ -1862,13 +1887,13 @@ composition taxable persons and UIN holders</div>
            <!--CONTENT START HERE-->
 		   </form>
         <div class="clear"></div>  	
-		<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
 		
         $(".add-row1").click(function(){
        
-			var data1 ='<select class="form-control" id="place_of_supply_unregistered_person"  name="place_of_supply_unregistered_person[]">';
+			var data1 ='<select class="required form-control" id="place_of_supply_unregistered_person"  name="place_of_supply_unregistered_person[]">';
 			 var data='';
 			 data +=<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 						<?php if(!empty($dataSupplyStateArrs)) { ?>
@@ -1881,28 +1906,28 @@ composition taxable persons and UIN holders</div>
 			data = data1+ data+'</select>';
 		
 		    
-            var markup = "<tr><td><input type='hidden' name='record'></td><td>" + data + "</td><td><input type='text' class='form-control' name='total_taxable_value_unregistered_person[]'/></td><td><input type='text' class='form-control' name='amount_of_integrated_tax_unregistered_person[]'/></td><td> <button type='button' class='delete-row'>Delete Row</button></td></tr>";
+            var markup = "<tr><td><input type='hidden' name='record'></td><td>" + data + "</td><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='total_taxable_value_unregistered_person[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='amount_of_integrated_tax_unregistered_person[]'/></td><td><button class='del btn btnsmall btn-danger boldfont' style='font-size: 12px;'>Delete row</button></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table1').append(markup);
         });
+		$('body').delegate('.del','click',function(){
+			$(this).closest('tr').remove();
+		});
         
 		 
-        // Find and remove selected table rows
-        $(".delete-row").click(function(){
-            $("table tbody").find('input[name="record"]').each(function(){
-            	//if($(this).is(":checked")){
-                    $(this).parents("tr").remove();
-                //}
-            });
-        });
-    });    
+        
+    }); 
+
+</script>
+<script>
+
 </script>
 <script type="text/javascript">
     $(document).ready(function(){
 		
         $(".add-row2").click(function(){
        
-			var data1 ='<select class="form-control" id="place_of_supply_taxable_person"  name="place_of_supply_taxable_person[]">';
+			var data1 ='<select class="required form-control" id="place_of_supply_taxable_person"  name="place_of_supply_taxable_person[]">';
 			 var data='';
 			 data +=<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 						<?php if(!empty($dataSupplyStateArrs)) { ?>
@@ -1915,20 +1940,15 @@ composition taxable persons and UIN holders</div>
 			data = data1+ data+'</select>';
 		
 		    
-            var markup = "<tr><td><input type='hidden' name='record'></td><td>" + data + "</td><td><input type='text' class='form-control' name='total_taxable_value_taxable_person[]'/></td><td><input type='text' class='form-control' name='amount_of_integrated_tax_taxable_person[]'/></td><td> <button type='button' class='delete-row'>Delete Row</button></td></tr>";
+            var markup = "<tr><td><input type='hidden' name='record'></td><td>" + data + "</td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='total_taxable_value_taxable_person[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='amount_of_integrated_tax_taxable_person[]'/></td><td><button class='del btn btnsmall btn-danger boldfont' style='font-size: 12px;'>Delete row</button></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table2').append(markup);
         });
         
 		 
-        // Find and remove selected table rows
-        $(".delete-row").click(function(){
-            $("table tbody").find('input[name="record"]').each(function(){
-            	//if($(this).is(":checked")){
-                    $(this).parents("tr").remove();
-                //}
-            });
-        });
+      $('body').delegate('.del','click',function(){
+			$(this).closest('tr').remove();
+		});
     });    
 </script>
 <script type="text/javascript">
@@ -1936,7 +1956,7 @@ composition taxable persons and UIN holders</div>
 		
         $(".add-row3").click(function(){
        
-			var data1 ='<select class="form-control" id="place_of_supply_uin_holder"  name="place_of_supply_uin_holder[]">';
+			var data1 ='<select class="required form-control" id="place_of_supply_uin_holder"  name="place_of_supply_uin_holder[]">';
 			 var data='';
 			 data +=<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 						<?php if(!empty($dataSupplyStateArrs)) { ?>
@@ -1949,96 +1969,17 @@ composition taxable persons and UIN holders</div>
 			data = data1+ data+'</select>';
 		
 		    
-            var markup = "<tr><td><input type='hidden' name='record'></td><td>" + data + "</td><td><input type='text' class='form-control' name='total_taxable_value_uin_holder[]'/></td><td><input type='text' class='form-control' name='amount_of_integrated_uin_holder[]'/></td><td> <button type='button' class='delete-row'>Delete Row</button></td></tr>";
+            var markup = "<tr><td><input type='hidden' name='record'></td><td>" + data + "</td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='total_taxable_value_uin_holder[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='amount_of_integrated_uin_holder[]'/></td><td><button class='del btn btnsmall btn-danger boldfont' style='font-size: 12px;'>Delete row</button></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table3').append(markup);
         });
-        
+         $('body').delegate('.del','click',function(){
+			$(this).closest('tr').remove();
+		});
 		 
-        // Find and remove selected table rows
-        $(".delete-row").click(function(){
-            $("table tbody").find('input[name="record"]').each(function(){
-            	//if($(this).is(":checked")){
-                    $(this).parents("tr").remove();
-                //}
-            });
-        });
+        
     });    
 </script>
-
-
-
-<script>
-/*
-$(document).ready(function() {
-    var max_fields      = 28; //maximum input boxes allowed
-    var wrapper1         = $(".input_fields_wrap1"); //Fields wrapper
-	 var wrapper2         = $(".input_fields_wrap2"); //Fields wrapper
-	  var wrapper3         = $(".input_fields_wrap3"); //Fields wrapper
-    var add_button      = $(".add_field_button"); //Add button ID
-    
-    var x = 1; //initlal text box count
-    $(add_button).click(function(e){ //on add input button click
-        e.preventDefault();
-        if(x < max_fields){ //max input box allowed
-            x++; //text box increment
-			 var data1 ='<select class="form-control" id="place_of_supply_unregistered_person1"  name="place_of_supply_unregistered_person[]">';
-			 var data='';
-			 data +=<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
-						<?php if(!empty($dataSupplyStateArrs)) { ?>
-							data += '<option value="">Select Place of Supply</option>';
-							<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
-								data += '<option value="<?php echo $dataSupplyStateArr->state_id; ?>"><?php echo $dataSupplyStateArr->state_name; ?></option>';
-							<?php } ?>
-						<?php } ?>
-							
-			data = data1+ data+'</select>';
-		
-			 $(wrapper3).append(data); //add input box
-            $(wrapper1).append('<input type="text" class="form-control" name="total_taxable_value_unregistered_person[]"/>'); //add input box
-			 $(wrapper2).append('<input type="text" class="form-control" name="amount_of_integrated_tax_unregistered_person[]"/>'); //add input box
-			
-			
-        }
-    });
-    
-    $(wrapper1).on("click",".remove_field", function(e){ //user click on remove text
-        e.preventDefault(); $(this).parent('div').remove(); x--;
-    })
-	 $(wrapper2).on("click",".remove_field", function(e){ //user click on remove text
-        e.preventDefault(); $(this).parent('div').remove(); x--;
-    })
-	 $(wrapper3).on("click",".remove_field", function(e){ //user click on remove text
-        e.preventDefault(); $(this).parent('div').remove(); x--;
-    })
-});
-*/
-</script>	
-
-<script>
-/*
-$(document).ready(function() {
-	
-    var max_fields      = 10; //maximum input boxes allowed
-    var wrapper1         = $(".input_fields_wrap1"); //Fields wrapper
-	 var wrapper2         = $(".input_fields_wrap2"); //Fields wrapper
-	  var wrapper3         = $(".input_fields_wrap3"); //Fields wrapper
-    var remove_button      = $(".remove_field_button"); //Add button ID
-    
-    var x = 1; //initlal text box count
-    $(remove_button).click(function(e){ //on add input button click
-       $(wrapper1).on("click",".remove_field", function(e){ //user click on remove text
-        e.preventDefault(); $(this).parent('div').remove(); x--;
-    })
-	
-    });
-    
-   
-});
-*/
-</script>		
-  
-
 <script>
     $(document).ready(function () {
         $('#returnmonth').on('change', function () {
@@ -2101,5 +2042,4 @@ $(document).ready(function() {
 
      }
 	  }
-
-    </script>
+</script>

@@ -48,7 +48,9 @@
 .ui-front {
 	z-index: 100;
 }
-
+.ui-top {
+	z-index: 999999 !important;
+}
 
 /* Interaction Cues
 ----------------------------------*/

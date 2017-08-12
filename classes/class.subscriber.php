@@ -169,9 +169,18 @@ final class subscriber extends validation {
       
         $dataConditionArray['user_id'] = $_SESSION['user_detail']['user_id'];
         if ($this->update($this->tableNames['user'], $dataArr, $dataConditionArray)) {
+			
+			if(!empty($dataArr['profile_pics']))
+			{
 			$_SESSION["user_detail"]["profile_picture"] = $dataArr['profile_pics'];
+			}
+			else{
+				$sql="select * from ".TAB_PREFIX."user WHERE (user_group='3' or user_group='4') and user_id='".$_SESSION["user_detail"]["user_id"]."'";
+			$dataCurrentArr = $this->get_results($sql);
+			$_SESSION["user_detail"]["profile_picture"] = $dataCurrentArr[0]->profile_pics;
+			}
             $this->setSuccess("Your profile update successfully");
-            $this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " has been updated");
+            $this->logMsg("User Profile ID : " . $_SESSION['user_detail']['user_id'] . " has been updated","subscriber_update");
             return true;
         } else {
 

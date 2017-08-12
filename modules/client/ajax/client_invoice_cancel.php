@@ -76,4 +76,29 @@ if(isset($_GET['ajax']) && $_GET['ajax'] == "client_invoice_cancel" && $_POST['a
 	echo json_encode($result);
 	die;
 }
+
+if(isset($_GET['ajax']) && $_GET['ajax'] == "client_invoice_cancel" && $_POST['action'] == "revokeSelectedSalesInvoice") {
+
+	foreach($_POST['salesInvoiceIds'] as $salesInvoiceId) {
+
+		$dataConditionArray['invoice_id'] = $salesInvoiceId;
+		$dataArr['is_canceled'] = 0;
+
+		if ($obj_client->update($obj_client->getTableName('client_invoice'), $dataArr, $dataConditionArray)) {
+
+			$obj_client->logMsg("Sales Invoice Revoked. ID : " . $dataConditionArray['invoice_id'] . ".");
+		} else {
+
+			$result['status'] = "error";
+			$result['message'] = $obj_client->getValMsg('failed');
+			echo json_encode($result);
+			die;
+		}
+	}
+
+	$result['status'] = "success";
+	$obj_client->setSuccess("Invoice revoked successfully.");
+	echo json_encode($result);
+	die;
+}
 ?>

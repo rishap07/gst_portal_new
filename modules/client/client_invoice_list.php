@@ -114,7 +114,8 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                     <div class="invoiceheaderfixed">
                         <div class="col-md-8">
                             <a href='javascript:void(0)' class="btn btn-warning pull-left checkAll">Check All</a>
-                            <a href='javascript:void(0)' class="btn btn-danger pull-left cancelAll"><i class="fa fa-times" aria-hidden="true"></i> Cancel</a>
+                            <a href='javascript:void(0)' class="btn btn-danger pull-left cancelAll" data-toggle="tooltip" title="Cancel All"><i class="fa fa-times" aria-hidden="true"></i></a>
+							<a href='javascript:void(0)' class="btn btn-success pull-left revokeAll" data-toggle="tooltip" title="Revoke All"><i class="fa fa-undo" aria-hidden="true"></i></a>
                         </div>
 
                         <div class="col-md-4">
@@ -315,6 +316,8 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                                         <?php echo $invoiceData[0]->billing_name; ?><br>
                                                         <?php if($invoiceData[0]->billing_company_name) { ?> <?php echo $invoiceData[0]->billing_company_name; ?><br> <?php } ?>
                                                         <?php echo $invoiceData[0]->billing_address; ?><br>
+														<?php $billing_vendor_data = $obj_client->getVendorDetailByVendorId($invoiceData[0]->billing_vendor_type); ?>
+														<?php echo $billing_vendor_data['data']->vendor_name; ?><br>
 														<?php if(!empty($invoiceData[0]->billing_gstin_number)) { ?>
 															<b>GSTIN:</b> <?php echo $invoiceData[0]->billing_gstin_number; ?>
                                                         <?php } ?>
@@ -325,6 +328,8 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                                         <?php echo $invoiceData[0]->shipping_name; ?><br>
                                                         <?php if($invoiceData[0]->shipping_company_name) { ?> <?php echo $invoiceData[0]->shipping_company_name; ?><br> <?php } ?>
                                                         <?php echo $invoiceData[0]->shipping_address; ?><br>
+														<?php $shipping_vendor_data = $obj_client->getVendorDetailByVendorId($invoiceData[0]->shipping_vendor_type); ?>
+														<?php echo $shipping_vendor_data['data']->vendor_name; ?><br>
 														<?php if(!empty($invoiceData[0]->shipping_gstin_number)) { ?>
 															<b>GSTIN:</b> <?php echo $invoiceData[0]->shipping_gstin_number; ?>
                                                         <?php } ?>
@@ -555,6 +560,32 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
             }
         });
 
+		$(".formboxcontainer").on("click", ".revokeAll", function () {
+
+            var selectedCheckboxes = new Array();
+            $('.salesInvoice:checkbox:checked').each(function () {
+                selectedCheckboxes.push($(this).val());
+            });
+
+            if (selectedCheckboxes.length > 0) {
+
+                $.ajax({
+                    data: {salesInvoiceIds: selectedCheckboxes, action: "revokeSelectedSalesInvoice"},
+                    dataType: 'json',
+                    type: 'post',
+                    url: "<?php echo PROJECT_URL; ?>/?ajax=client_invoice_cancel",
+                    success: function (response) {
+
+                        if (response.status == "success") {
+                            window.location.reload();
+                        } else {
+                            jAlert(response.message);
+                        }
+                    }
+                });
+            }
+        });
+
         $("#mainTable").on("click", ".salesInvoice", function () {
 
             if ($('[name="sales_invoice[]"]:checked').length == 0) {
@@ -607,6 +638,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                 }
             });
         });
+
         TableManaged.init();
     });
 

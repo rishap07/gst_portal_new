@@ -12,11 +12,7 @@ final class coupon extends validation {
         parent::__construct();
     }
     
-   
-   
-  
-  
-   
+        
 	 
 	private function getcouponData()
 	{
@@ -77,7 +73,7 @@ final class coupon extends validation {
 				if ($this->update(TAB_PREFIX.'coupon', $dataArr, $dataConditionArray)) {
 
 					$this->setSuccess("Your coupon information updated successfully");
-					$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update the coupon info");
+					$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update the coupon info","coupon_update");
 					return true;
 				} else {
 

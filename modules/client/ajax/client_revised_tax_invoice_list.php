@@ -124,7 +124,6 @@ if(isset($rResult) && !empty($rResult)) {
         }
 
 		$row[]= '<tr><td valign="top"><input name="sales_invoice[]" value="'.$aRow->invoice_id.'" class="salesInvoice" type="checkbox"></td></td>';
-
 		$row[] = '<td><div class="list-primary pull-left"><div class="name"><a href="'.PROJECT_URL.'/?page=client_revised_tax_invoice_list&action=viewRTInvoice&id='.$aRow->invoice_id.'">'.$aRow->billing_name.'</a></div><a href="'.PROJECT_URL.'/?page=client_revised_tax_invoice_list&action=viewRTInvoice&id='.$aRow->invoice_id.'">'.$aRow->serial_number.'</a> | ' . $aRow->invoice_date . '</div><span class="pull-right"><div class="amount"><i class="fa fa-inr" aria-hidden="true"></i>'.$aRow->invoice_total_value.'</div><div class="greylinktext"><a href="'.PROJECT_URL.'/?page=client_update_revised_tax_invoice&action=editRTInvoice&id='.$aRow->invoice_id.'">Edit</a>&nbsp;&nbsp;'.$cancelLink.'</div></span></td></tr>';
 
 		$output['aaData'][] = $row;

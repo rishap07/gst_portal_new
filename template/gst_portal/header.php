@@ -38,96 +38,7 @@
 		});
 	</script>
 	
-	<style type="text/css">
-	
-        
-    #noti_Container {
-        position:relative;
-    }
-       
-    /* A CIRCLE LIKE BUTTON IN THE TOP MENU. */
-    #noti_Button {
-        width:22px;
-        height:22px;
-        line-height:22px;
-        border-radius:50%;
-        -moz-border-radius:50%; 
-        -webkit-border-radius:50%;
-        background:#FFF;
-        margin:-3px 10px 0 10px;
-        cursor:pointer;
-    }
-        
-    /* THE POPULAR RED NOTIFICATIONS COUNTER. */
-    #noti_Counter {
-        display:block;
-        position:absolute;
-        background:#E1141E;
-        color:#FFF;
-        font-size:12px;
-        font-weight:normal;
-        padding:1px 3px;
-        margin:-8px 0 0 25px;
-        border-radius:2px;
-        -moz-border-radius:2px; 
-        -webkit-border-radius:2px;
-        z-index:1;
-    }
-        
-    /* THE NOTIFICAIONS WINDOW. THIS REMAINS HIDDEN WHEN THE PAGE LOADS. */
-    #notifications {
-        display:none;
-        width:430px;
-        position:absolute;
-        top:30px;
-        left:0;
-        background:#FFF;
-        border:solid 1px rgba(100, 100, 100, .20);
-        -webkit-box-shadow:0 3px 8px rgba(0, 0, 0, .20);
-        z-index: 0;
-    }
-    /* AN ARROW LIKE STRUCTURE JUST OVER THE NOTIFICATIONS WINDOW */
-    #notifications:before {         
-        content: '';
-        display:block;
-        width:0;
-        height:0;
-        color:transparent;
-        border:10px solid #CCC;
-        border-color:transparent transparent #FFF;
-        margin-top:-20px;
-        margin-left:10px;
-    }
-        
-    h3 {
-        display:block;
-        color:#333; 
-        background:#FFF;
-        font-weight:bold;
-        font-size:13px;    
-        padding:8px;
-        margin:0;
-        border-bottom:solid 1px rgba(100, 100, 100, .30);
-    }
-        
-    .seeAll {
-        background:#F6F7F8;
-        padding:8px;
-        font-size:12px;
-        font-weight:bold;
-        border-top:solid 1px rgba(100, 100, 100, .30);
-        text-align:center;
-    }
-    .seeAll a {
-        color:#3b5998;
-    }
-    .seeAll a:hover {
-        background:#F6F7F8;
-        color:#3b5998;
-        text-decoration:underline;
-    }
-</style>
-	
+
 	
 </head>
 <body>
@@ -159,11 +70,9 @@
 						  $notification_status=0;
 						  //Show total number of notification
 						 
-                         //Show all notification Message
-						 if($obj_notification->showNotificationData())
-						  {
-						   
-						  }
+                          //Check user notification
+						  $obj_notification->showNotificationData();
+						    //Show all notification Message
 						  if($message=$obj_notification->showNotificationUpdate())
 						  {
 						   
@@ -171,10 +80,8 @@
 						  else{
 							  $count=1;
 						  }
-						   if($count=$obj_notification->totalNotification())
-						  {
-						   
-						  }
+						  //Check total user notification
+						  $count=$obj_notification->totalNotification(); 
 						  $notification_status=$obj_notification->checkNotificationStatus();
 						  
 
@@ -205,11 +112,12 @@
 
                 <!--THE NOTIFICAIONS DROPDOWN BOX.-->
                 <div id="notifications">
-                    <h3>Notifications</h3>
-                    <div style="height:50px;">
+                <div class="arrow-up"></div>
+                    <div class="txtnotfication">Notifications</div>
+                   
 						<?php echo $message; ?>
-					</div>
-                    <div class="seeAll"><a href="<?php echo PROJECT_URL; ?>/?page=notification">See All</a></div>
+					<div class="clear"></div>
+                    <div class="btnseeall"><a href="<?php echo PROJECT_URL; ?>/?page=notification" class="btn">See All</a></div>
                 </div>
 				</li> <?php } } ?>
                <li><div class="userinfo">
@@ -290,6 +198,17 @@
 						<span class="collapse in hidden-xs">Notification<span class="navrgtarrow"><i class="fa fa-chevron-right" aria-hidden="true"></i></span></span></a>
 						<ul class="nav nav-stacked collapse left-submenu" id="item10">
 						<?php if ($db_obj->can_read('notification_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=notification_list"><i class="fa fa-circle" aria-hidden="true"></i>Notification Listing</a></li><?php } ?>
+							
+						
+						</ul>
+					</li>
+				<?php } ?>
+				<?php  if($db_obj->can_read('module_list')) { ?>
+					<li>
+						<a href="#" data-target="#item11" data-toggle="collapse"><i class="fa fa-list"></i> 
+						<span class="collapse in hidden-xs">Module<span class="navrgtarrow"><i class="fa fa-chevron-right" aria-hidden="true"></i></span></span></a>
+						<ul class="nav nav-stacked collapse left-submenu" id="item11">
+						<?php if ($db_obj->can_read('module_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=module_list"><i class="fa fa-circle" aria-hidden="true"></i>Module Listing</a></li><?php } ?>
 							
 						
 						</ul>
@@ -427,8 +346,8 @@
             .css({ opacity: 0 })
            // .text('<?php echo $count-1; ?>')              // ADD DYNAMIC VALUE (YOU CAN EXTRACT DATA FROM DATABASE OR XML).
             .css({ top: '-10px' })
-			 .css({ background: 'silver' })
-            .animate({ top: '-2px', opacity: 1 }, 500);
+			 //.css({ background: 'silver' })
+          //  .animate({ top: '-2px', opacity: 1 }, 500);
 	<?php	}		?>
 
         $('#noti_Button').click(function () {

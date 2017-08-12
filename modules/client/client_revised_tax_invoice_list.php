@@ -8,6 +8,87 @@ if(!$obj_client->can_read('client_invoice')) {
 	exit();
 }
 
+if (isset($_GET['action']) && $_GET['action'] == 'downloadRTInvoice' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
+
+    $htmlResponse = $obj_client->generateRTInvoiceHtml($_GET['id']);
+    if ($htmlResponse === false) {
+
+        $obj_client->setError("No invoice found.");
+        $obj_client->redirect(PROJECT_URL . "?page=client_revised_tax_invoice_list");
+        exit();
+    }
+
+    $obj_mpdf = new mPDF();
+    $obj_mpdf->SetHeader('Revised Tax Invoice');
+    $obj_mpdf->WriteHTML($htmlResponse);
+
+    $taxInvoicePdf = 'revised-tax-invoice-' . $_GET['id'] . '.pdf';
+    ob_clean();
+    $obj_mpdf->Output($taxInvoicePdf, 'D');
+}
+
+if (isset($_GET['action']) && $_GET['action'] == 'emailRTInvoice' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
+
+    $htmlResponse = $obj_client->generateRTInvoiceHtml($_GET['id']);
+
+    $dataCurrentUserArr = $obj_client->getUserDetailsById($obj_client->sanitize($_SESSION['user_detail']['user_id']));
+    $sendmail = $dataCurrentUserArr['data']->kyc->email;
+
+    $mail = new PHPMailer();
+    $message = html_entity_decode($htmlResponse);
+    $mail->IsSMTP();
+    $mail->Host = "49.50.104.11";
+    $mail->Port = 25;
+    //$mail->SMTPDebug = 2;
+
+    $mail->SMTPOptions = array(
+        'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+        )
+    );
+
+    $mail->CharSet = "UTF-8";
+    $mail->Subject = 'GST Invoice-' . $_GET['id'];
+    $mail->SetFrom('noreply.Gstkeeper@gstkeeper.com', 'GST Keeper');
+    $mail->MsgHTML($message);
+    $mail->AddAddress($sendmail);
+    $mail->AddBCC("ishwar.ghiya@cyfuture.com");
+
+    if ($mail->Send()) {
+
+        $obj_client->setSuccess("Mail Sent Successfully.");
+        $mail->ClearAllRecipients();
+        $obj_client->redirect(PROJECT_URL . "?page=client_revised_tax_invoice_list");
+    } else {
+
+        $obj_client->setError($mail->ErrorInfo);
+        $mail->ClearAllRecipients();
+        $obj_client->redirect(PROJECT_URL . "?page=client_revised_tax_invoice_list");
+    }
+}
+
+if (isset($_GET['action']) && $_GET['action'] == 'printRTInvoice' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
+
+    $htmlResponse = $obj_client->generateRTInvoiceHtml($_GET['id']);
+
+    if ($htmlResponse === false) {
+
+        $obj_client->setError("No invoice found.");
+        $obj_client->redirect(PROJECT_URL . "?page=client_revised_tax_invoice_list");
+        exit();
+    }
+
+    $obj_mpdf = new mPDF();
+    $obj_mpdf->SetHeader('Revised Tax Invoice');
+    $obj_mpdf->WriteHTML($htmlResponse);
+
+    $taxInvoicePdf = 'revised-tax-invoice-' . $_GET['id'] . '.pdf';
+    ob_clean();
+    $obj_mpdf->Output($taxInvoicePdf, 'I');
+}
+
 $currentFinancialYear = $obj_client->generateFinancialYear();
 $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
 ?>
@@ -32,42 +113,13 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 
                     <div class="invoiceheaderfixed">
                         <div class="col-md-8">
-
                             <a href='javascript:void(0)' class="btn btn-warning pull-left checkAll">Check All</a>
-                            <a href='javascript:void(0)' class="btn btn-danger pull-left cancelAll"><i class="fa fa-times" aria-hidden="true"></i> Cancel</a>
-
-                            <!--
-                                <ul class="nav pull-left nav-pills" role="tablist">
-                                    <li role="presentation" class="dropdown">
-                                        <a href="#" class="dropdown-toggle greyborder" id="drop5" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> All Invoice <span class="caret"></span> </a>
-                                        <ul class="dropdown-menu" id="menu2" aria-labelledby="drop5">
-                                            <li><a href="#">Action</a></li>
-                                            <li><a href="#">Another action</a></li> 
-                                            <li><a href="#">Something else here</a></li>
-                                            <li role="separator" class="divider"></li> <li><a href="#">Separated link</a></li> 
-                                        </ul>
-                                    </li>
-                                </ul>
-                            -->
+                            <a href='javascript:void(0)' class="btn btn-danger pull-left cancelAll" data-toggle="tooltip" title="Cancel All"><i class="fa fa-times" aria-hidden="true"></i></a>
+							<a href='javascript:void(0)' class="btn btn-success pull-left revokeAll" data-toggle="tooltip" title="Revoke All"><i class="fa fa-undo" aria-hidden="true"></i></a>
                         </div>
 
                         <div class="col-md-4">
-
                             <a href='<?php echo PROJECT_URL; ?>/?page=client_create_revised_tax_invoice' class="btn btn-success pull-right"><i class="fa fa-plus" aria-hidden="true"></i> New</a>
-
-                            <!--
-                                <ul class="nav nav-pills" role="tablist">
-                                    <li role="presentation" class="dropdown"> 
-                                        <a href="#" class="dropdown-toggle iconmenu" id="drop5" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-bars" aria-hidden="true"></i></span> </a>
-                                        <ul class="dropdown-menu" id="menu2" aria-labelledby="drop5">
-                                            <li><a href="#">Action</a></li>
-                                            <li><a href="#">Another action</a></li> 
-                                            <li><a href="#">Something else here</a></li>
-                                            <li role="separator" class="divider"></li> <li><a href="#">Separated link</a></li> 
-                                        </ul>
-                                    </li>
-                                </ul>
-                            -->
                         </div>
                     </div>
 
@@ -79,7 +131,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 
                 <?php
                 /* code for display invoice according to invoice id pass in query string */
-                if (isset($_GET['action']) && $_GET['action'] == 'viewRVInvoice' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
+                if (isset($_GET['action']) && $_GET['action'] == 'viewRTInvoice' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
 
                     $invid = $obj_client->sanitize($_GET['id']);
                     $invoiceData = $obj_client->get_results("select 
@@ -146,10 +198,10 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                         <div class="inovicergttop">
                             <ul class="iconlist">
                                 
-                                <li><a href="<?php echo PROJECT_URL; ?>/?page=client_update_revised_tax_invoice&action=editRVInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Edit"><i class="fa fa-pencil" aria-hidden="true"></i></div></a></li>
-                                <li><a href="<?php echo PROJECT_URL; ?>/?page=client_revised_tax_invoice_list&action=downloadRVInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
-                                <li><a href="<?php echo PROJECT_URL; ?>/?page=client_revised_tax_invoice_list&action=printRVInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>" target="_blank"><div data-toggle="tooltip" data-placement="bottom" title="PRINT"><i class="fa fa-print" aria-hidden="true"></i></div></a></li>
-                                <li><a href="<?php echo PROJECT_URL; ?>/?page=client_revised_tax_invoice_list&action=emailRVInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></div></a></li>
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=client_update_revised_tax_invoice&action=editRTInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Edit"><i class="fa fa-pencil" aria-hidden="true"></i></div></a></li>
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=client_revised_tax_invoice_list&action=downloadRTInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=client_revised_tax_invoice_list&action=printRTInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>" target="_blank"><div data-toggle="tooltip" data-placement="bottom" title="PRINT"><i class="fa fa-print" aria-hidden="true"></i></div></a></li>
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=client_revised_tax_invoice_list&action=emailRTInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></div></a></li>
 							</ul>
                         </div>
 
@@ -174,10 +226,10 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                                         <?php } ?>
                                                     </td>
 
-                                                    <td>
+													<td>
                                                         <b>Invoice #</b>: <?php echo $invoiceData[0]->serial_number; ?><br>
                                                         <b>Reference #</b>: <?php echo $invoiceData[0]->reference_number; ?><br>
-                                                        <b>Nature:</b> Sales Invoice<br>
+                                                        <b>Nature:</b> <?php echo "Sales Invoice"; ?><br>
                                                         <b>Invoice Date:</b> <?php echo $invoiceData[0]->invoice_date; ?>
                                                     </td>
                                                 </tr>
@@ -185,7 +237,6 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                         </td>
                                     </tr>
 
-                                    <?php $company_state_data = $obj_client->getStateDetailByStateId($invoiceData[0]->company_state); ?>
                                     <?php $supply_place_data = $obj_client->getStateDetailByStateId($invoiceData[0]->supply_place); ?>
 
                                     <tr class="information">
@@ -195,24 +246,23 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                                     <td>
                                                         <?php echo $invoiceData[0]->company_name; ?><br>
                                                         <?php echo $invoiceData[0]->company_address; ?><br>
-                                                        <?php echo $company_state_data['data']->state_name; ?><br>
                                                         <b>GSTIN:</b> <?php echo $invoiceData[0]->gstin_number; ?>
                                                     </td>
 
                                                     <td>
                                                         <?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php echo $supply_place_data['data']->state_name; ?><br> <?php } ?>
-                                                        <b>Document Nature:</b> <?php if($invoiceData[0]->invoice_type == "creditnote") { echo "Credit Note" . "<br>"; } else if($invoiceData[0]->invoice_type == "debitnote") { echo "Debit Note" . "<br>"; } else { echo "Revised Tax" . "<br>"; } ?>
-                                                        <b>Type:</b> <?php if($invoiceData[0]->invoice_corresponding_type == "taxinvoice") { echo "Tax Invoice" . "<br>"; } else if($invoiceData[0]->invoice_corresponding_type == "billofsupplyinvoice") { echo "Bill of Supply Invoice" . "<br>"; } ?>
-														
+                                                        <b>Document Nature:</b> <?php if($invoiceData[0]->invoice_type == "creditnote") { echo "Credit Note"; } else if($invoiceData[0]->invoice_type == "debitnote") { echo "Debit Note"; } else { echo "Revised Tax Invoice"; } ?><br>
+														<b>Corresponding Type:</b> <?php if($invoiceData[0]->invoice_corresponding_type == "taxinvoice") { echo "Tax Invoice" . "<br>"; } else if($invoiceData[0]->invoice_corresponding_type == "billofsupplyinvoice") { echo "Bill of Supply Invoice" . "<br>"; } ?>
+
 														<?php $dataCorresDocumentRow = $obj_client->get_row("select * from ".$obj_client->getTableName('client_invoice')." where invoice_id = '".$invoiceData[0]->corresponding_document_number."' AND invoice_type = '".$invoiceData[0]->invoice_corresponding_type."' AND is_deleted='0' AND added_by = ".$obj_client->sanitize($_SESSION['user_detail']['user_id'])); ?>
 
                                                         <?php if(!empty($dataCorresDocumentRow)) { ?>
-                                                            <b>Document Serial Number:</b> <?php echo $dataCorresDocumentRow->serial_number; ?><br>
-                                                            <b>Document Reference Number:</b> <?php echo $dataCorresDocumentRow->reference_number; ?><br>
+                                                            <b>Document Serial:</b> <?php echo $dataCorresDocumentRow->serial_number; ?><br>
+                                                            <b>Document Reference:</b> <?php echo $dataCorresDocumentRow->reference_number; ?><br>
                                                             <b>Document Date:</b> <?php echo $dataCorresDocumentRow->invoice_date; ?><br>
 														<?php } ?>
-														
-														<?php if ($invoiceData[0]->is_canceled == 1) { ?> <b>Canceled Invoice:</b> <?php echo "Canceled"; ?><br> <?php } ?>
+
+														<?php if ($invoiceData[0]->is_canceled == 1) { ?> <b>Canceled Invoice:</b> <?php echo "Canceled"; ?> <?php } ?>
                                                   	</td>
                                                 </tr>
                                             </table>
@@ -225,39 +275,25 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                                 <tr>
                                                     <td>
                                                         <b>Recipient Detail</b><br>
-														<?php echo $invoiceData[0]->billing_name; ?><br>
-                                                        
-														<?php if ($invoiceData[0]->billing_company_name) { ?>
-                                                        	<?php echo $invoiceData[0]->billing_company_name; ?><br>
-                                                        <?php } ?>
-														
-														<?php $billing_state_data = $obj_client->getStateDetailByStateId($invoiceData[0]->billing_state); ?>
-                                                        <?php $billing_country_data = $obj_client->getCountryDetailByCountryId($invoiceData[0]->billing_country); ?>
-														<?php echo $invoiceData[0]->billing_address . ', ' . $billing_state_data['data']->state_name . ', ' . $billing_country_data['data']->country_name; ?><br>
+                                                        <?php echo $invoiceData[0]->billing_name; ?><br>
+                                                        <?php if($invoiceData[0]->billing_company_name) { ?> <?php echo $invoiceData[0]->billing_company_name; ?><br> <?php } ?>
+                                                        <?php echo $invoiceData[0]->billing_address; ?><br>
 														<?php $billing_vendor_data = $obj_client->getVendorDetailByVendorId($invoiceData[0]->billing_vendor_type); ?>
 														<?php echo $billing_vendor_data['data']->vendor_name; ?><br>
-
-                                                        <?php if(!empty($invoiceData[0]->billing_gstin_number)) { ?>
-                                                            <b>GSTIN:</b> <?php echo $invoiceData[0]->billing_gstin_number; ?>
+														<?php if(!empty($invoiceData[0]->billing_gstin_number)) { ?>
+															<b>GSTIN:</b> <?php echo $invoiceData[0]->billing_gstin_number; ?>
                                                         <?php } ?>
                                                     </td>
 
                                                     <td>
                                                         <b>Address Of Delivery / Shipping Detail</b><br>
                                                         <?php echo $invoiceData[0]->shipping_name; ?><br>
-                                                        
-														<?php if(!empty($invoiceData[0]->shipping_company_name)) { ?>
-                                                        	<?php echo $invoiceData[0]->shipping_company_name; ?><br>
-                                                        <?php } ?>
-
-														<?php $shipping_state_data = $obj_client->getStateDetailByStateId($invoiceData[0]->shipping_state); ?>
-                                                        <?php $shipping_country_data = $obj_client->getCountryDetailByCountryId($invoiceData[0]->shipping_country); ?>
-														<?php echo $invoiceData[0]->shipping_address . ', ' . $shipping_state_data['data']->state_name . ', ' . $shipping_country_data['data']->country_name; ?><br>
+                                                        <?php if($invoiceData[0]->shipping_company_name) { ?> <?php echo $invoiceData[0]->shipping_company_name; ?><br> <?php } ?>
+                                                        <?php echo $invoiceData[0]->shipping_address; ?><br>
 														<?php $shipping_vendor_data = $obj_client->getVendorDetailByVendorId($invoiceData[0]->shipping_vendor_type); ?>
 														<?php echo $shipping_vendor_data['data']->vendor_name; ?><br>
-
-                                                        <?php if(!empty($invoiceData[0]->shipping_gstin_number)) { ?>
-                                                        	<b>GSTIN:</b> <?php echo $invoiceData[0]->shipping_gstin_number; ?>
+														<?php if(!empty($invoiceData[0]->shipping_gstin_number)) { ?>
+															<b>GSTIN:</b> <?php echo $invoiceData[0]->shipping_gstin_number; ?>
                                                         <?php } ?>
                                                     </td>
                                                 </tr>
@@ -357,7 +393,124 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 </div>
 <script>
     $(document).ready(function () {
-		TableManaged.init();
+
+        $(".formboxcontainer").on("click", ".checkAll", function () {
+
+            if ($('[name="sales_invoice[]"]:checked').length > 0) {
+                $(".checkAll").text("Check All");
+                $('.salesInvoice').prop('checked', false);
+            } else {
+                $(".checkAll").text("Uncheck All");
+                $('.salesInvoice').prop('checked', true);
+            }
+        });
+
+        $(".formboxcontainer").on("click", ".cancelAll", function () {
+
+            var selectedCheckboxes = new Array();
+            $('.salesInvoice:checkbox:checked').each(function () {
+                selectedCheckboxes.push($(this).val());
+            });
+
+            if (selectedCheckboxes.length > 0) {
+
+                $.ajax({
+                    data: {salesInvoiceIds: selectedCheckboxes, action: "cancelSelectedSalesInvoice"},
+                    dataType: 'json',
+                    type: 'post',
+                    url: "<?php echo PROJECT_URL; ?>/?ajax=client_invoice_cancel",
+                    success: function (response) {
+
+                        if (response.status == "success") {
+                            window.location.reload();
+                        } else {
+                            jAlert(response.message);
+                        }
+                    }
+                });
+            }
+        });
+
+		$(".formboxcontainer").on("click", ".revokeAll", function () {
+
+            var selectedCheckboxes = new Array();
+            $('.salesInvoice:checkbox:checked').each(function () {
+                selectedCheckboxes.push($(this).val());
+            });
+
+            if (selectedCheckboxes.length > 0) {
+
+                $.ajax({
+                    data: {salesInvoiceIds: selectedCheckboxes, action: "revokeSelectedSalesInvoice"},
+                    dataType: 'json',
+                    type: 'post',
+                    url: "<?php echo PROJECT_URL; ?>/?ajax=client_invoice_cancel",
+                    success: function (response) {
+
+                        if (response.status == "success") {
+                            window.location.reload();
+                        } else {
+                            jAlert(response.message);
+                        }
+                    }
+                });
+            }
+        });
+
+        $("#mainTable").on("click", ".salesInvoice", function () {
+
+            if ($('[name="sales_invoice[]"]:checked').length == 0) {
+                $(".checkAll").text("Check All");
+            }
+        });
+
+        $("#mainTable").on("click", ".cancelSalesInvoice", function () {
+
+            var dataInvoiceId = $(this).attr("data-invoice-id");
+            $.ajax({
+                data: {salesInvoiceId: dataInvoiceId, action: "cancelSalesInvoice"},
+                dataType: 'json',
+                type: 'post',
+                url: "<?php echo PROJECT_URL; ?>/?ajax=client_invoice_cancel",
+                success: function (response) {
+
+                    if (response.status == "success") {
+
+                        $('a[data-invoice-id=' + dataInvoiceId + ']').addClass("revokeSalesInvoice");
+                        $('a[data-invoice-id=' + dataInvoiceId + ']').removeClass("cancelSalesInvoice");
+                        $('a[data-invoice-id=' + dataInvoiceId + ']').text("Revoke");
+                        jAlert(response.message);
+                    } else {
+                        jAlert(response.message);
+                    }
+                }
+            });
+        });
+
+        $("#mainTable").on("click", ".revokeSalesInvoice", function () {
+
+            var dataInvoiceId = $(this).attr("data-invoice-id");
+            $.ajax({
+                data: {salesInvoiceId: dataInvoiceId, action: "revokeSalesInvoice"},
+                dataType: 'json',
+                type: 'post',
+                url: "<?php echo PROJECT_URL; ?>/?ajax=client_invoice_cancel",
+                success: function (response) {
+
+                    if (response.status == "success") {
+
+                        $('a[data-invoice-id=' + dataInvoiceId + ']').addClass("cancelSalesInvoice");
+                        $('a[data-invoice-id=' + dataInvoiceId + ']').removeClass("revokeSalesInvoice");
+                        $('a[data-invoice-id=' + dataInvoiceId + ']').text("Cancel");
+                        jAlert(response.message);
+                    } else {
+                        jAlert(response.message);
+                    }
+                }
+            });
+        });
+
+        TableManaged.init();
     });
 
     var TableManaged = function () {

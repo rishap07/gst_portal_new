@@ -22,6 +22,7 @@ if(!empty($jstr1_array)) {
                 <th>Number</th>
                 <th style="text-align:center">Invoice number</th> 
                 <th style="text-align:center">Pos </th> 
+                <th style="text-align:center">Item </th>
                 <th style="text-align:center">Invoice type</th>    
                 <th style="text-align:center">Invoice date</th>
                 <th style="text-align:center">Value ( <i class="fa fa-inr"></i> )</th>
@@ -50,6 +51,7 @@ if(!empty($jstr1_array)) {
 
 
                         if(!empty($itms)) {
+                            $i=1;
                             foreach ($itms as $key3 => $value) {
                                 $num = isset($value['num'])?$value['num']:0;
                                 $csamt = isset($value['itm_det']['csamt'])?$value['itm_det']['csamt']:0;
@@ -61,6 +63,7 @@ if(!empty($jstr1_array)) {
                                     <td align="right">'.$num.'</td>
                                     <td align="center">'.$inum.'</td>
                                     <td align="center">'.$pos.'</td>
+                                    <td align="center">'.$i++.'</td>
                                     <td align="center">'.$inv_typ.'</td>
                                     <td align="center">'.$idt.'</td>
                                     <td align="center">'.$val.'</td>
@@ -127,12 +130,14 @@ if(!empty($jstr1_array)) {
     }
 
     if($type == 'B2CL') {
+        //echo '<pre>';print_r($jstr1_array);
        $response .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
                     <thead>
                     <tr>
                         <th>Number</th>
                         <th style="text-align:center">Invoice number</th>
                         <th style="text-align:center">Pos </th>
+                        <th style="text-align:center">Item </th>
                         <th style="text-align:center">Invoice date </th>
                         <th style="text-align:center">Value ( <i class="fa fa-inr"></i> )</th>
                         <th style="text-align:center">Csamt ( <i class="fa fa-inr"></i> ) </th>
@@ -150,8 +155,9 @@ if(!empty($jstr1_array)) {
                                 $pos = isset($inv_value['pos'])?$inv_value['pos']:0;
                                 $idt = isset($jstr1_value['idt'])?$jstr1_value['idt']:'';
                                 $inum = isset($jstr1_value['inum'])?$jstr1_value['inum']:'';
-
+                                
                                 if(!empty($itms)) {
+                                    $i=1;
                                     foreach ($itms as $key3 => $value) {
                                         $num = isset($value['num'])?$value['num']:0;
                                         $csamt = isset($value['itm_det']['csamt'])?$value['itm_det']['csamt']:0;
@@ -163,6 +169,7 @@ if(!empty($jstr1_array)) {
                                             <td align="right">'.$num.'</td>
                                             <td align="center">'.$inum.'</td>
                                             <td align="center">'.$pos.'</td>
+                                            <td align="center">'.$i++.'</td>
                                             <td align="center">'.$idt.'</td>
                                             <td align="center">'.$val.'</td>
                                             <td align="center">'.$csamt.'</td>
@@ -240,6 +247,7 @@ if(!empty($jstr1_array)) {
             <tr>
                 <th>Num</th>
                 <th style="text-align:center">Inum</th> 
+                <th style="text-align:center">Item </th>
                 <th style="text-align:center">Nt num</th>    
                 <th style="text-align:center">Nt date</th>
                 <th style="text-align:center">Pgst</th>
@@ -274,6 +282,7 @@ if(!empty($jstr1_array)) {
 
 
                         if(!empty($itms)) {
+                            $i=1;
                             foreach ($itms as $key3 => $value) {
                                 $num = isset($value['num'])?$value['num']:0;
                                 $csamt = isset($value['itm_det']['csamt'])?$value['itm_det']['csamt']:0;
@@ -284,6 +293,7 @@ if(!empty($jstr1_array)) {
                                 $response .='<tr>
                                     <td align="right">'.$num.'</td>
                                     <td align="center">'.$inum.'</td>
+                                    <td align="center">'.$i++.'</td>
                                     <td align="center">'.$nt_num.'</td>
                                     <td align="center">'.$nt_dt.'</td>
                                     <td align="center">'.$p_gst.'</td>
@@ -308,12 +318,88 @@ if(!empty($jstr1_array)) {
             </table>';
     }
 
+    if($type == 'CDNUR') {
+        //echo '<pre>';print_r($jstr1_array);
+        $response .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
+            <thead>
+            <tr>
+                <th>Num</th>
+                <th >Inum</th> 
+                <th>Item </th>
+                <th >Idt</th>
+                <th >Typ</th>
+                <th >NtNum</th>    
+                <th >NtDt</th>
+                <th>Pgst</th>
+                
+                <th >Val(<i class="fa fa-inr"></i>)</th>
+                <th >Csamt(<i class="fa fa-inr"></i>)</th>
+                <th >Rt</th>
+                <th >Txval(<i class="fa fa-inr"></i>)</th>
+                <th >Iamt(<i class="fa fa-inr"></i>)</th>                
+                <th >Rsn</th>
+                <th >Ntty</th>
+                
+            </tr>';
+            foreach ($jstr1_array['cdnur'] as $key1 => $jstr1_value) {
+                   
+                $val = isset($jstr1_value['val'])?$jstr1_value['val']:0;
+                $itms = isset($jstr1_value['itms'])?$jstr1_value['itms']:array();
+                $nt_num = isset($jstr1_value['nt_num'])?$jstr1_value['nt_num']:'';
+                $inum = isset($jstr1_value['inum'])?$jstr1_value['inum']:'';
+                $rsn = isset($jstr1_value['rsn'])?$jstr1_value['rsn']:0;
+                
+                $idt = isset($jstr1_value['idt'])?$jstr1_value['idt']:'';
+                $nt_dt = isset($jstr1_value['nt_dt'])?$jstr1_value['nt_dt']:'';
+                $p_gst = isset($jstr1_value['p_gst'])?$jstr1_value['p_gst']:'';
+                $rsn = isset($jstr1_value['rsn'])?$jstr1_value['rsn']:'';
+                $ntty = isset($jstr1_value['ntty'])?$jstr1_value['ntty']:'';
+                $typ = isset($jstr1_value['typ'])?$jstr1_value['typ']:'';
+
+                if(!empty($itms)) {
+                    $i=1;
+                    foreach ($itms as $key3 => $value) {
+                        $num = isset($value['num'])?$value['num']:0;
+                        $csamt = isset($value['itm_det']['csamt'])?$value['itm_det']['csamt']:0;
+                        $rt = isset($value['itm_det']['rt'])?$value['itm_det']['rt']:0;
+                        $txval = isset($value['itm_det']['txval'])?$value['itm_det']['txval']:0;
+                        $iamt = isset($value['itm_det']['iamt'])?$value['itm_det']['iamt']:0;
+
+                        $response .='<tr>
+                            <td align="right">'.$num.'</td>
+                            <td align="center">'.$inum.'</td>
+                            <td align="center">'.$i++.'</td>
+                            <td align="center">'.$typ.'</td>
+                            <td align="center">'.$idt.'</td>
+                            <td align="center">'.$nt_num.'</td>
+                            <td align="center">'.$nt_dt.'</td>
+                            <td align="center">'.$p_gst.'</td>
+                            
+                            <td align="center">'.$val.'</td>
+                            <td align="center">'.$csamt.'</td>
+                            <td align="center">'.$rt.'</td>
+                            <td align="center">'.$txval.'</td>
+                            <td align="center">'.$iamt.'</td>
+                            <td align="center">'.$rsn.'</td>
+                            <td align="center">'.$ntty.'</td>
+                        </tr>';
+                    }
+                }
+
+
+            }
+            $response .= '
+                </thead>
+            </table>';
+    }
+
     if($type == 'TXPD') {
         $response .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
                     <thead>
                     <tr>
                         <th>Supply Type</th>
                         <th style="text-align:center">Place of supply</th>
+                        <th style="text-align:center">Item</th>
                         <th style="text-align:center">Csamt ( <i class="fa fa-inr"></i> ) </th>
                         <th style="text-align:center">Rate</th>
                         <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th>
@@ -325,6 +411,7 @@ if(!empty($jstr1_array)) {
                             $itms = isset($jstr1_value['itms'])?$jstr1_value['itms']:array();
                             $sply_ty = isset($jstr1_value['sply_ty'])?$jstr1_value['sply_ty']:'';
                             if(!empty($itms)) {
+                                $i=1;
                                 foreach ($itms as $key3 => $value) {
                                     $csamt = isset($value['csamt'])?$value['csamt']:0;
                                     $rt = isset($value['rt'])?$value['rt']:0;
@@ -333,6 +420,7 @@ if(!empty($jstr1_array)) {
                                     $response .='<tr>
                                         <td >'.$sply_ty.'</td>
                                         <td align="center">'.$pos.'</td>
+                                        <td align="center">'.$i++.'</td>
                                         <td align="center">'.$csamt.'</td>
                                         <td align="center">'.$rt.'</td>
                                         <td align="center">'.$iamt.'</td>
@@ -347,12 +435,13 @@ if(!empty($jstr1_array)) {
             </table>';
     }
     if($type == 'AT') {
-        
+        //echo '<pre>';print_r($jstr1_array);
        $response .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
                     <thead>
                     <tr>
                         <th>Supply Type</th>
                         <th style="text-align:center">Place of supply</th>
+                        <th style="text-align:center">Item</th>
                         <th style="text-align:center">Csamt ( <i class="fa fa-inr"></i> ) </th>
                         <th style="text-align:center">Rate</th>
                         <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th>
@@ -363,6 +452,7 @@ if(!empty($jstr1_array)) {
                             $pos = isset($jstr1_value['pos'])?$jstr1_value['pos']:0;
                             $itms = isset($jstr1_value['itms'])?$jstr1_value['itms']:array();
                             $sply_ty = isset($jstr1_value['sply_ty'])?$jstr1_value['sply_ty']:'';
+                            $i=1;
                             if(!empty($itms)) {
                                 foreach ($itms as $key3 => $value) {
                                     $csamt = isset($value['csamt'])?$value['csamt']:0;
@@ -372,6 +462,7 @@ if(!empty($jstr1_array)) {
                                     $response .='<tr>
                                         <td >'.$sply_ty.'</td>
                                         <td align="center">'.$pos.'</td>
+                                         <td align="center">'.$i++.'</td>
                                         <td align="center">'.$csamt.'</td>
                                         <td align="center">'.$rt.'</td>
                                         <td align="center">'.$iamt.'</td>
@@ -391,6 +482,7 @@ if(!empty($jstr1_array)) {
                     <tr>
                         <th>Exp Type</th>
                         <th style="text-align:center">Invoice number</th>
+                        <th style="text-align:center">Item</th>
                         <th style="text-align:center">Invoice date  </th>
                         <th style="text-align:center">Sb Num </th>
                         <th style="text-align:center">Sb Code</th>
@@ -415,6 +507,7 @@ if(!empty($jstr1_array)) {
                                 $sbpcode = isset($jstr1_value['sbpcode'])?$jstr1_value['sbpcode']:'';
 
                                 if(!empty($itms)) {
+                                    $i=1;
                                     foreach ($itms as $key3 => $value) {
                                         $rt = isset($value['rt'])?$value['rt']:0;
                                         $txval = isset($value['txval'])?$value['txval']:0;
@@ -423,6 +516,7 @@ if(!empty($jstr1_array)) {
                                         $response .='<tr>
                                             <td align="center">'.$exp_typ.'</td>
                                             <td align="center">'.$inum.'</td>
+                                            <td align="center">'.$i++.'</td>
                                             <td align="center">'.$idt.'</td>
                                             <td align="center">'.$sbnum.'</td>
                                             <td align="center">'.$sbpcode.'</td>
@@ -449,4 +543,5 @@ else {
     echo 'No Record found';
 }
 echo $response;
+
 

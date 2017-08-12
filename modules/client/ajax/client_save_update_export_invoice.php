@@ -27,13 +27,12 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 		echo json_encode($result);
 		die;
 	}
-	
+
 	$dataArr['invoice_type'] = isset($params['invoice_type']) ? $params['invoice_type'] : '';
 	$dataArr['export_supply_meant'] = isset($params['export_supply_meant']) ? $params['export_supply_meant'] : '';
 	$dataArr['invoice_nature'] = 'salesinvoice';
 	$dataArr['invoice_date'] = isset($params['invoice_date']) ? $params['invoice_date'] : '';
 	$dataArr['reference_number'] = isset($params['invoice_reference_number']) ? $params['invoice_reference_number'] : '';
-	$dataArr['company_state'] = isset($params['company_state']) ? $params['company_state'] : '';
 	$dataArr['description'] = isset($params['description']) ? trim($params['description']) : '';
 
 	$supply_place = isset($params['place_of_supply']) ? $params['place_of_supply'] : '';

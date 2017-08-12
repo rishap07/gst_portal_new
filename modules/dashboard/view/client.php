@@ -169,8 +169,8 @@ $data_month_sale = json_encode($data_month_sale);
                     $currentmonth_total_sale = 0;
                 }
                 ?>
-				 <div class="col-md-12">
-                 <div class="tab col-md-12 col-sm-12 col-xs-12">
+				
+                 <div class="tab">
                 <a href="<?php echo PROJECT_URL . '/?page=dashboard' ?>" class="active">
                     GSTR1 
                 </a>
@@ -180,13 +180,14 @@ $data_month_sale = json_encode($data_month_sale);
                 <a href="<?php echo PROJECT_URL . '/?page=dashboard&gstr3=view' ?>" >
                     GSTR3
                 </a>
-            </div></div><div class="clear height10"> </div>
+            </div>
+            <div class="clear height10"> </div>
                 <div class="listcontent">
 
   
                     <div class="row dashtopbox">
                         <form method="post" enctype="multipart/form-data" name="client-dashboard" id='client-dashboard'>
-                            <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                            <div class="col-md-5 col-sm-4 col-xs-12 form-group">
                                 <label>From Date<span class="starred">*</span></label>
                                 <input type="text" placeholder="yyyy-mm-dd" name="from_date" id="from_date" value="<?php if (isset($_POST["from_date"])) {
                     echo $_POST["from_date"];
@@ -195,7 +196,7 @@ $data_month_sale = json_encode($data_month_sale);
                 } ?>" class="required form-control" data-bind="date" 
                                        />
                             </div>
-                            <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                            <div class="col-md-5 col-sm-4 col-xs-12 form-group">
                                 <label>To Date<span class="starred">*</span></label>
                                 <input type="text" placeholder="yyyy-mm-dd" name="to_date" id="to_date" value="<?php if (isset($_POST["to_date"])) {
                     echo $_POST["to_date"];
@@ -204,14 +205,14 @@ $data_month_sale = json_encode($data_month_sale);
                 } ?>" class="required form-control" data-bind="date"
                                        />
                             </div>
-                            <div class="col-md-4 col-sm-4 col-xs-12 form-group text-left">
+                            <div class="col-md-2 col-sm-4 col-xs-12 form-group text-left">
 
-                                <input type='submit' class="btn btn-danger martop20" name='submit' value='Filter' id='submit'>
+                                <input type='submit' class="btn btnorange boldfont martop20" name='submit' value='Filter' id='submit' style="width:100%;">
 
 
                             </div>
                         </form>
-                        <div class="clear"></div>
+                        <div class="clear height20"></div>
 
 
                         <div class="dasboardbox">

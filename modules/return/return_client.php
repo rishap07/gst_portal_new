@@ -243,7 +243,7 @@ if(!empty($dataInvPurchase))
                       
                        
                     </div>
-                    <div class="col-md-4 col-sm-4" style="background:#fde7e0; border-radius:3px; padding:15px">
+                    <div class="col-md-4 col-sm-4" style="background:#fde7e0; margin-top:20px; border-radius:3px; padding:15px">
                         <div class="gstrrgtbox">File GSTR-3B<br/><span>To work on GST Return 3B File</span></div>
                         <a href="<?php echo PROJECT_URL;?>/?page=return_gstr3b_file&returnmonth=<?php echo $returnmonth;?>" class="btn btn-orange" style="width:100%;">Start Now</a>
                     </div>
@@ -295,7 +295,7 @@ if(!empty($dataInvPurchase))
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 col-sm-4" style="background:#fde7e0; border-radius:3px; padding:15px">
+                    <div class="col-md-4 col-sm-4" style="background:#fde7e0; margin-top:20px; border-radius:3px; padding:15px">
                         <div class="gstrrgtbox">File GSTR-4<br/><span>To work on GST Return 4</span></div>
                         <a href="<?php echo PROJECT_URL.'/?page=return_gstr3'; ?>" class="btn btn-orange" style="width:100%;">Start Now</a>
                     </div>

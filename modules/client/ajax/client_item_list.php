@@ -6,16 +6,14 @@
     *  Last Modified By    :   Ishwar Lal Ghiya
     *  Last Modification   :   Client Item Listing
     * 
- */
-
+*/
 $obj_client = new client();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('cm.item_id','cm.item_name', 'cm.item_category','CONCAT(UCASE(LEFT(m.item_name,1)),LCASE(SUBSTRING(m.item_name,2))) as category_name','m.hsn_code', 'cm.unit_price', 'cm.status');
-$aSearchColumns = array('cm.item_name', 'm.item_name', 'm.hsn_code', 'cm.unit_price', 'cm.status');
-$sIndexColumn = "item_id";
-$sIndexColumn1 = "cm.item_id";
+$aColumns = array('cm.item_id','cm.item_name', 'cm.item_category','CONCAT(UCASE(LEFT(m.item_name,1)),LCASE(SUBSTRING(m.item_name,2))) as category_name','m.hsn_code', 'cm.unit_price', 'cm.item_description', 'cm.status');
+$aSearchColumns = array('cm.item_name', 'm.item_name', 'm.hsn_code', 'cm.unit_price', 'cm.item_description');
+$sIndexColumn = "cm.item_id";
 
 /* DB table to use */
 $cmTable = $obj_client->getTableName('client_master_item');
@@ -68,7 +66,7 @@ if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
 for ($i = 0; $i < count($aColumns); $i++) {
     
     if (isset($_POST['bSearchable_' . $i])) {
-        
+
         if ((isset($_POST['bSearchable_' . $i]) && $_POST['bSearchable_' . $i] == "true") && (isset($_POST['sSearch_' . $i]) && $_POST['sSearch_' . $i] != '')) {
             $uWhere .= " AND ";
             $uWhere .= $aColumns[$i] . " LIKE '%" . $obj_client->escape($_POST['sSearch_' . $i]) . "%' ";
@@ -96,7 +94,7 @@ $iFilteredTotal = $obj_client->get_row($uQuery);
 $iFilteredTotal = $iFilteredTotal->rows;
 
 /* Total data set length */
-$uQuery = "SELECT COUNT(" . $sIndexColumn1 . ") as count FROM $cmTable as cm, $mTable as m $uWhere";
+$uQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $cmTable as cm, $mTable as m $uWhere";
 $iTotal = $obj_client->get_row($uQuery);
 $iTotal = $iTotal->count;
 
@@ -127,10 +125,11 @@ if(isset($rResult) && !empty($rResult))
         $row[] = $temp_x;
         $row[] = utf8_decode($aRow->item_name);
         $row[] = utf8_decode($aRow->category_name);
+		$row[] = utf8_decode($aRow->item_description);
         $row[] = utf8_decode($aRow->hsn_code);
         $row[] = utf8_decode($aRow->unit_price);
         $row[] = $status;
-        $row[] = '<a href="'.PROJECT_URL.'/?page=client_item_update&action=editItem&id='.$aRow->item_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_item_list&action=deleteItem&id='.$aRow->item_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
+        $row[] = '<a href="'.PROJECT_URL.'/?page=client_item_update&action=editItem&id='.$aRow->item_id.'" class="iconedit hint--bottom" data-hint="Edit"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_item_list&action=deleteItem&id='.$aRow->item_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
         $output['aaData'][] = $row;
         $temp_x++;
     }

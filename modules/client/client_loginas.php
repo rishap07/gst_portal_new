@@ -35,13 +35,16 @@ if (isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
         $_SESSION['user_role'][$dataGrp->role_page]['can_update'] = $dataGrp->can_update;
         $_SESSION['user_role'][$dataGrp->role_page]['can_delete'] = $dataGrp->can_delete;
     }
+	  $obj_client->logMsg("Login As client:".$_SESSION['user_detail']['user_id'],"login");
+  
     $obj_client->redirect(PROJECT_URL . "/?page=dashboard");
     exit();
 } else if (isset($_GET['permission']) && $_GET['permission'] == 'revert') {
-
+  $obj_client->logMsg("Revert login from client:".$_SESSION['user_detail']['user_id'],"login");
+  
     $_SESSION['user_detail']['user_group'] = '3';
     $_SESSION['user_detail']['user_id'] = $_SESSION['publisher']['user_id'];
-
+   
     if (isset($_SESSION['publisher'])) {
         unset($_SESSION['publisher']);
     }
@@ -56,6 +59,7 @@ if (isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
         $_SESSION['user_role'][$dataGrp->role_page]['can_update'] = $dataGrp->can_update;
         $_SESSION['user_role'][$dataGrp->role_page]['can_delete'] = $dataGrp->can_delete;
     }
+	
     $obj_client->redirect(PROJECT_URL . "/?page=dashboard");
     exit();
 }

@@ -8,9 +8,9 @@ if(!$obj_client->can_read('client_master_item')) {
 }
 
 if( isset($_GET['action']) && $_GET['action'] == 'deleteItem' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
-        
+
     if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
-        
+
         $obj_client->setError('Invalid access to files');
     } else {
 
@@ -21,8 +21,8 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteItem' && isset($_GET['id
 }
 ?>
 <style>
-    .bulkupload{
-        margin-right: 10px !important;
+    .bulkupload {
+        margin-right:10px;
     }
 </style>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
@@ -45,13 +45,14 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteItem' && isset($_GET['id
             <table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable">
                 <thead>
                     <tr>
-                        <th align='left'>#</th>
-                        <th align='left'>Item</th>
-                        <th align='left'>HSN/SAC Category</th>
-                        <th align='left'>HSN/SAC Code</th>
-                        <th align='left'>Unit Price(Rs)</th>
-                        <th align='left'>Status</th>
-                        <th align='left'>Action</th>
+                        <th align='left' style="width:5%;">#</th>
+                        <th align='left' style="width:15%;">Item</th>
+                        <th align='left' style="width:25%;">HSN/SAC Category</th>
+						<th align='left' style="width:25%;">Description</th>
+                        <th align='left' style="width:10%;">HSN/SAC Code</th>
+                        <th align='left' style="width:10%;">Unit Price(Rs)</th>
+                        <th align='left' style="width:5%;">Status</th>
+                        <th align='left' style="width:5%;">Action</th>
                     </tr>
                 </thead>
             </table>
@@ -62,11 +63,10 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteItem' && isset($_GET['id
 <div class="clear height80">
 </div>
 <script>
-    
     $(document).ready(function () {
         TableManaged.init();
     });
-    
+
     var TableManaged = function () {
         return {
             init: function () {
@@ -83,6 +83,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteItem' && isset($_GET['id
                         {"bSortable": false},
                         {"bSortable": false},
                         {"bSortable": false},
+						{"bSortable": false},
                         {"bSortable": false},
                         {"bSortable": false}
                     ],
@@ -98,7 +99,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteItem' && isset($_GET['id
                     "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=client_item_list",
                     "fnServerParams": function (aoData) {
                     },
-                    "iDisplayLength": 50
+                    "iDisplayLength": 20
                 });
             }
         };

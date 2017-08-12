@@ -15,17 +15,24 @@ if (!$obj_master->can_read('master_receiver')) {
     exit();
 }
 
-if(isset($_POST['submit']) && $_POST['submit']=='submit') {
+if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
 
-    if(!$obj_master->can_create('master_receiver')) {
+    if (!$obj_master->can_create('master_receiver')) {
 
         $obj_master->setError($obj_master->getValMsg('can_create'));
-        $obj_master->redirect(PROJECT_URL."/?page=master_receiver");
+        $obj_master->redirect(PROJECT_URL . "/?page=master_receiver");
         exit();
     }
 
-    if($obj_master->add_bulk_Receiver()){
-        $obj_master->redirect(PROJECT_URL."/?page=master_receiver");
+    $uploadInvoice = $obj_master->add_bulk_Receiver();
+
+
+    if ($uploadInvoice === true) {
+        $obj_master->redirect(PROJECT_URL . "/?page=master_receiver");
+    } else {
+
+        $excelError = true;
+        $returnMessage = json_decode($uploadInvoice);
     }
 }
 $dataCurrentArr = array();
