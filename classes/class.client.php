@@ -1059,7 +1059,7 @@ final class client extends validation {
             $objPHPExcel = PHPExcel_IOFactory::load($invoice_excel_dir_path);
             $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
 			$sheetData = array_map('array_filter', $sheetData);
-			$sheetData = array_filter($sheetData);
+			//$sheetData = array_filter($sheetData);
 			
 			print_r($sheetData);
 			die;

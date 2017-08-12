@@ -110,13 +110,7 @@ final class gstr extends validation {
     {
         $key = pack('H*', $_SESSION['hexcode']);
         //$otp = '575757';
-        if(empty($this->checkUserGstr1Exists('hKey'))) {
-            $this->hKey = $key;
-            $_SESSION['hKey'] = $this->hKey;
-        }
-        else {
-            $_SESSION['hKey'] = $this->hKey = $this->checkUserGstr1Exists('hKey');
-        }
+        $this->hKey=$key;
         $otp_code = $otp;
         $otp_encode =utf8_encode($otp_code);
         $iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
@@ -204,7 +198,7 @@ final class gstr extends validation {
 
         $data = json_decode($result_data);
 
-        if(empty($this->checkUserGstr1Exists('app_key')) && empty($this->checkUserGstr1Exists('auth_token')) && empty($this->checkUserGstr1Exists('hKey'))) {
+        if(empty($this->checkUserGstr1Exists('app_key')) && empty($this->checkUserGstr1Exists('auth_token'))) {
             if(isset($data->status_cd) && $data->status_cd=='1')
             {
                 $session_key = $data->sek;
@@ -219,7 +213,6 @@ final class gstr extends validation {
                 $savedata = array();
                 $savedata['otp'] = '575757';
                 $savedata['hexcode'] = $_SESSION['hexcode'];
-                $savedata['hKey'] = $_SESSION['hKey'];
                 $savedata['app_key'] = $_SESSION['app_key'];
                 $savedata['auth_token'] = $_SESSION['auth_token'];
                 $savedata['decrypt_sess_key'] = $session_key;
@@ -235,13 +228,11 @@ final class gstr extends validation {
         
         }
         else {
-            $hKey  = $this->checkUserGstr1Exists('hKey');
             $session_key  = $this->checkUserGstr1Exists('decrypt_sess_key');
-            $decrypt_sess_key = openssl_decrypt(base64_decode($session_key),"aes-256-ecb",$hKey, OPENSSL_RAW_DATA);
+            $decrypt_sess_key = openssl_decrypt(base64_decode($session_key),"aes-256-ecb",$this->hKey, OPENSSL_RAW_DATA);
             $_SESSION['decrypt_sess_key']= $decrypt_sess_key;
             $_SESSION['auth_token'] =  $this->checkUserGstr1Exists('auth_token');
             $_SESSION['auth_date'] =  $this->checkUserGstr1Exists('added_date');
-            $_SESSION['hKey'] =  $this->checkUserGstr1Exists('hKey');
 
             return $data;
         }   
@@ -254,7 +245,7 @@ final class gstr extends validation {
         $error = 1;
         $response = array();
         $this->authenticateToken();
-        $this->pr($_SESSION);
+        //$this->pr($_SESSION);
         $json_data = json_encode($dataArr);
        // echo $json_data;
 
@@ -493,9 +484,6 @@ final class gstr extends validation {
                     if($type=='hexcode') {
                         $check = $user_gstr[0]->hexcode;
                     }
-                    if($type=='hKey') {
-                        $check = $user_gstr[0]->hKey;
-                    }
                     if($type=='app_key') {
                         $check = $user_gstr[0]->app_key;
                     }
@@ -510,9 +498,6 @@ final class gstr extends validation {
                     }
                     
                 }
-                else {
-                    // delete query
-                }
             }
             
         }
@@ -522,7 +507,6 @@ final class gstr extends validation {
     public function gstr_session_destroy() {
         if(!empty($_SESSION['hexcode']) && !empty($_SESSION['app_key']) && !empty($_SESSION['auth_token']) && !empty($_SESSION['auth_date']) && !empty($_SESSION['decrypt_sess_key'])) {
             unset($_SESSION['hexcode']);
-            unset($_SESSION['hKey']);
             unset($_SESSION['app_key']);
             unset($_SESSION['auth_token']);
             unset($_SESSION['auth_date']);
@@ -627,7 +611,6 @@ final class gstr extends validation {
             if (!empty($user_ustr)) {
                 $dataGST1['otp'] = $data['otp'];
                 $dataGST1['hexcode'] = $data['hexcode'];
-                $dataGST1['hKey'] = $data['hKey'];
                 $dataGST1['app_key'] = $data['app_key'];
                 $dataGST1['auth_token'] = $data['auth_token'];
                 $dataGST1['decrypt_sess_key'] = $data['decrypt_sess_key'];
