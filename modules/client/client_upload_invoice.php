@@ -28,10 +28,7 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
 			
 			$uploadInvoice = $obj_client->uploadClientInvoice();
 			$redirectPath = "client_invoice_list";
-		} 
-		
-		/*
-		else if($_POST['invoice_type'] == "taxexportinvoice") {
+		} else if($_POST['invoice_type'] == "taxexportinvoice") {
 			
 			$uploadInvoice = $obj_client->uploadClientExportInvoice();
 			$redirectPath = "client_invoice_list";
@@ -39,7 +36,9 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
 
 			$uploadInvoice = $obj_client->uploadClientBOSInvoice();
 			$redirectPath = "client_bill_of_supply_invoice_list";
-		} else if($_POST['invoice_type'] == "rvinvoice") {
+		}
+		/*
+		else if($_POST['invoice_type'] == "rvinvoice") {
 
 			$uploadInvoice = $obj_client->uploadClientRVInvoice();
 			$redirectPath = "client_receipt_voucher_invoice_list";
@@ -104,8 +103,8 @@ $dataCurrentArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSI
 						<select name="invoice_type" id="invoice_type" class="required form-control">
 							<option value=''>Select Invoice Type</option>
 							<option value='taxinvoice'>Tax Invoice</option>
-							<!--<option value='taxexportinvoice'>Tax Export Invoice</option>-->
-							<!--<option value='bosinvoice'>Bill of Supply Invoice</option>-->
+							<option value='taxexportinvoice'>Tax Export Invoice</option>
+							<option value='bosinvoice'>Bill of Supply Invoice</option>
 							<!--<option value='rvinvoice'>Receipt Voucher Invoice</option>-->
 							<!--<option value='rfinvoice'>Refund Voucher Invoice</option>-->
 							<!--<option value='pvinvoice'>Payment Voucher Invoice</option>-->
@@ -129,7 +128,7 @@ $dataCurrentArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSI
 
 					<div class="adminformbxsubmit" style="width:100%;">
 						<div class="tc">
-							<input type='submit' class="btn btn-danger" name='submit' value='submit' id='submit'>
+							<input type='submit' class="btn btn-success" name='submit' value='submit' id='submit'>
 							<input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href='<?php echo PROJECT_URL . "/?page=client_invoice_list"; ?>';" class="btn btn-danger" />
 						</div>
 					</div>

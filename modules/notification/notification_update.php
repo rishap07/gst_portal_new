@@ -86,17 +86,15 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
                     <div class="col-md-4 col-sm-4 col-xs-12 form-group">
 
                         <label>Message<span class="starred">*</span></label>
-
-                        <input type="text"  name="notification_message" id="notification_message" placeholder="Enter notification name" class="required form-control" data-bind="content" value="<?php
+                         <textarea placeholder="Enter notification message" maxlength="255"  name="notification_message" id="notification_message" class="required form-control"><?php
                         if (isset($_POST['notification_message'])) {
                             echo $_POST['notification_message'];
                         } else if (isset($dataCurrentArr[0]->notification_message)) {
                             echo $dataCurrentArr[0]->notification_message;
                         }
-                        ?>" />
-
-
-
+                        ?></textarea>
+						
+                        
                     </div>
                     <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                         <label>Vendor Type<span class="starred">*</span></label>
@@ -173,7 +171,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
 
 
                         <div class="tc">
-                            <input type='submit' class="btn btn-danger" name='submit' value='<?php
+                            <input type='submit' class="btn btn-default btn-success" name='submit' value='<?php
                             if (isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editNotification") {
                                 echo 'update';
                             } else {

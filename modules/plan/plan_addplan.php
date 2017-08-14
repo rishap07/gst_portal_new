@@ -140,7 +140,8 @@ if( isset($_POST['submit_add_plan']) && $_POST['submit_add_plan'] == 'SUBMIT' ) 
 						 
 						 
 						    <div class="tc">
-                            <input type="submit" name="submit_add_plan" id="submit_add_plan" value="SUBMIT" class="btn btn-danger">
+                            <input type="submit" name="submit_add_plan" id="submit_add_plan" value="SUBMIT" class="btn btn-success">
+							 <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=plan_list"; ?>';" class="btn btn-danger"/>
                             <div class="clear height20"></div>
                         </div>
 						

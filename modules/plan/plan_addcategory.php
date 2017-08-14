@@ -83,7 +83,8 @@ if( isset($_POST['submit_plan_category']) && $_POST['submit_plan_category'] == '
               <div class="clear"></div>
 						 <div class="adminformbxsubmit" style="width:100%;">
                              <div class="tc">
-                            <input type="submit" name="submit_plan_category" id="submit_plan_category" value="SUBMIT" class="btn btn-danger">
+                            <input type="submit" name="submit_plan_category" id="submit_plan_category" value="SUBMIT" class="btn btn-success">
+							  <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=plan_categorylist"; ?>';" class="btn btn-danger" class="redbtn marlef10"/>
                             <div class="clear height20"></div>
                         </div>
 

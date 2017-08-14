@@ -302,7 +302,7 @@
                         <div class="tc">
 							<input type="hidden" name="action" value="submitKYCBySubscriber">
                             <input type="hidden" name="clientID" value="<?php echo base64_encode($clientID); ?>">
-							<input type='submit' class="btn btn-danger" name='submit' value='submit' id='submit'>
+							<input type='submit' class="btn btn-success" name='submit' value='submit' id='submit'>
                             <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=dashboard"; ?>';" class="btn btn-danger" />
                         </div>
                     </div>

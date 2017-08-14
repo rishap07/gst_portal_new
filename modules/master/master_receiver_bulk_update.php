@@ -84,7 +84,7 @@ $dataCurrentArr = $obj_master->getUserDetailsById($obj_master->sanitize($_SESSIO
                     <div class="adminformbxsubmit" style="width:100%;">
 
                         <div class="tc">
-                            <input type='submit' class="btn btn-danger" name='submit' value='submit' id='submit'>
+                            <input type='submit' class="btn btn-success" name='submit' value='submit' id='submit'>
                             <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=master_receiver"; ?>';" class="btn btn-danger" />
                         </div>
 

@@ -32,6 +32,7 @@ if(!empty($jstr1_array)) {
                 <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th>                
                 <th style="text-align:center">Updby </th>
                 <th style="text-align:center">Rchrg</th>
+                <th></th>
                 
             </tr>';
             foreach ($jstr1_array['b2b'] as $key1 => $inv_value) {
@@ -73,6 +74,7 @@ if(!empty($jstr1_array)) {
                                     <td align="center">'.$iamt.'</td>
                                     <td align="center">'.$updby.'</td>
                                     <td align="center">'.$rchrg.'</td>
+                                    <td align="center"><a href="javascript:;" id="gstr1ViewDeleteBtn"><i class="fa fa-trash"></i></a></td>
                                 </tr>';
                             }
                         }
@@ -99,7 +101,7 @@ if(!empty($jstr1_array)) {
                         <th style="text-align:center">Rate</th>
                         <th style="text-align:center">Tax Value  ( <i class="fa fa-inr"></i> )</th>
                         <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th>
-                        
+                        <th></th>
                     </tr>';
                     if(isset($jstr1_array['b2cs'])) {
                         foreach ($jstr1_array['b2cs'] as $key1 => $jstr1_value) {
@@ -120,7 +122,7 @@ if(!empty($jstr1_array)) {
                                 <td align="center">'.$rt.'</td>
                                 <td align="center">'.$txval.'</td>
                                 <td align="center">'.$iamt.'</td>
-                                
+                                <td align="center"><a href="javascript:;" id="gstr1ViewDeleteBtn"><i class="fa fa-trash"></i></a></td>
                             </tr>';
                         }   
                     }
@@ -144,7 +146,7 @@ if(!empty($jstr1_array)) {
                         <th style="text-align:center">Rate</th>
                         <th style="text-align:center">Tax value ( <i class="fa fa-inr"></i> )</th>
                         <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th>
-                        
+                        <th></th>
                         
                     </tr>';
                     foreach ($jstr1_array['b2cl'] as $key1 => $inv_value) {
@@ -176,7 +178,7 @@ if(!empty($jstr1_array)) {
                                             <td align="center">'.$rt.'</td>
                                             <td align="center">'.$txval.'</td>
                                             <td align="center">'.$iamt.'</td>
-                                            
+                                            <td align="center"><a href="javascript:;" id="gstr1ViewDeleteBtn"><i class="fa fa-trash"></i></a></td>
                                         </tr>';
                                     }
                                 }
@@ -205,6 +207,7 @@ if(!empty($jstr1_array)) {
                         <th style="text-align:center">Camt ( <i class="fa fa-inr"></i> )</th>
                         <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th>
                         <th style="text-align:center">Description</th>
+                        <th></th>
                     </tr>';
                     if(isset($jstr1_array['hsn']['data'])) {
                         $hsn = $jstr1_array['hsn']['data'];
@@ -233,6 +236,7 @@ if(!empty($jstr1_array)) {
                                 <td align="center">'.$camt.'</td>
                                 <td align="center">'.$iamt.'</td>
                                 <td align="center">'.$desc.'</td>
+                                <td align="center"><a href="javascript:;" id="gstr1ViewDeleteBtn"><i class="fa fa-trash"></i></a></td>
                             </tr>';
                         }   
                     }
@@ -259,6 +263,7 @@ if(!empty($jstr1_array)) {
                 <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th>                
                 <th style="text-align:center">Updby </th>
                 <th style="text-align:center">Ntty</th>
+                <th></th>
                 
             </tr>';
             foreach ($jstr1_array['cdnr'] as $key1 => $inv_value) {
@@ -305,6 +310,7 @@ if(!empty($jstr1_array)) {
                                     <td align="center">'.$iamt.'</td>
                                     <td align="center">'.$updby.'</td>
                                     <td align="center">'.$ntty.'</td>
+                                    <td align="center"><a href="javascript:;" id="gstr1ViewDeleteBtn"><i class="fa fa-trash"></i></a></td>
                                 </tr>';
                             }
                         }
@@ -339,6 +345,7 @@ if(!empty($jstr1_array)) {
                 <th >Iamt(<i class="fa fa-inr"></i>)</th>                
                 <th >Rsn</th>
                 <th >Ntty</th>
+                <th></th>
                 
             </tr>';
             foreach ($jstr1_array['cdnur'] as $key1 => $jstr1_value) {
@@ -382,6 +389,7 @@ if(!empty($jstr1_array)) {
                             <td align="center">'.$iamt.'</td>
                             <td align="center">'.$rsn.'</td>
                             <td align="center">'.$ntty.'</td>
+                            <td align="center"><a href="javascript:;" id="gstr1ViewDeleteBtn"><i class="fa fa-trash"></i></a></td>
                         </tr>';
                     }
                 }
@@ -404,6 +412,7 @@ if(!empty($jstr1_array)) {
                         <th style="text-align:center">Rate</th>
                         <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th>
                         <th style="text-align:center">Ad Amt ( <i class="fa fa-inr"></i> )</th>
+                        <th></th>
                     </tr>';
                     if(isset($jstr1_array['txpd'])) {
                         foreach ($jstr1_array['txpd'] as $key1 => $jstr1_value) {
@@ -425,6 +434,7 @@ if(!empty($jstr1_array)) {
                                         <td align="center">'.$rt.'</td>
                                         <td align="center">'.$iamt.'</td>
                                         <td align="center">'.$ad_amt.'</td>
+                                        <td align="center"><a href="javascript:;" id="gstr1ViewDeleteBtn"><i class="fa fa-trash"></i></a></td>
                                     </tr>';
                                 }
                             }   
@@ -435,7 +445,7 @@ if(!empty($jstr1_array)) {
             </table>';
     }
     if($type == 'AT') {
-        //echo '<pre>';print_r($jstr1_array);
+        echo '<pre>';print_r($jstr1_array);
        $response .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
                     <thead>
                     <tr>
@@ -446,10 +456,12 @@ if(!empty($jstr1_array)) {
                         <th style="text-align:center">Rate</th>
                         <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th>
                         <th style="text-align:center">Ad Amt ( <i class="fa fa-inr"></i> )</th>
+                        <th></th>
                     </tr>';
                     if(isset($jstr1_array['at'])) {
                         foreach ($jstr1_array['at'] as $key1 => $jstr1_value) {
                             $pos = isset($jstr1_value['pos'])?$jstr1_value['pos']:0;
+                            $chksum = isset($jstr1_value['chksum'])?$jstr1_value['chksum']:'';
                             $itms = isset($jstr1_value['itms'])?$jstr1_value['itms']:array();
                             $sply_ty = isset($jstr1_value['sply_ty'])?$jstr1_value['sply_ty']:'';
                             $i=1;
@@ -462,11 +474,12 @@ if(!empty($jstr1_array)) {
                                     $response .='<tr>
                                         <td >'.$sply_ty.'</td>
                                         <td align="center">'.$pos.'</td>
-                                         <td align="center">'.$i++.'</td>
+                                        <td align="center">'.$i++.'</td>
                                         <td align="center">'.$csamt.'</td>
                                         <td align="center">'.$rt.'</td>
                                         <td align="center">'.$iamt.'</td>
                                         <td align="center">'.$ad_amt.'</td>
+                                        <td align="center"><a href="javascript:;" class="gstr1ViewATDeleteBtn" sply_ty = '.$sply_ty.' pos = '.$pos.' type="AT" ><i class="fa fa-trash"></i></a></td>
                                     </tr>';
                                 }
                             }   
@@ -491,6 +504,7 @@ if(!empty($jstr1_array)) {
                         <th style="text-align:center">Rate</th>
                         <th style="text-align:center">Tax value ( <i class="fa fa-inr"></i> )</th>
                         <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th>
+                        <th></th>
                         
                         
                     </tr>';
@@ -525,7 +539,7 @@ if(!empty($jstr1_array)) {
                                             <td align="center">'.$rt.'</td>
                                             <td align="center">'.$txval.'</td>
                                             <td align="center">'.$iamt.'</td>
-                                            
+                                            <td align="center"><a href="javascript:;" id="gstr1ViewDeleteBtn"><i class="fa fa-trash"></i></a></td>
                                         </tr>';
                                     }
                                 }
@@ -543,5 +557,42 @@ else {
     echo 'No Record found';
 }
 echo $response;
+?>
+<script type="text/javascript">
+    
+    
+    $(document).ready(function () {
+        $('.gstr1ViewATDeleteBtn').on('click', function () {
+            var sply_ty = $(this).attr('sply_ty');
+            var type = $(this).attr('type');
+            var pos = $(this).attr('pos');
+            var arrValues = [];
+            arrValues = [sply_ty,pos];
+            delete_item_invoice(type,arrValues);          
+        });
+    });
+
+    /******* To delele invoice of GSTR1 ********/
+    function delete_item_invoice(type,arrValues) {
+        if(type!= '' && arrValues != '') {
+            $.ajax({
+                url: "<?php echo PROJECT_URL; ?>/?ajax=api_gstr1_delete_item_invoice",
+                type: "post",
+                data: {type:type,arrValues: arrValues},
+                success: function (response) {
+                    // refresh page
+                    //window.location.reload();
+                },
+                error: function() {
+                }
+            });
+        }
+        else {
+            alert('Invalid procces');
+        }
+        
+    }
+    /******* To delele invoice of GSTR1 ********/
+</script>
 
 

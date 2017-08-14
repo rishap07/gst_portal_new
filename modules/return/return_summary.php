@@ -1,13 +1,13 @@
 <?php
-$obj_client = new client();
+//$obj_gstr1 = new client();
 $obj_gstr1 = new gstr1();
 if (!isset($_REQUEST['returnmonth']) || $_REQUEST['returnmonth'] == '') {
-    $obj_client->redirect(PROJECT_URL . "/?page=return_client");
+    $obj_gstr1->redirect(PROJECT_URL . "/?page=return_client");
     exit();
 }
 if (isset($_POST['returnmonth'])) {
     $returnmonth = $_POST['returnmonth'];
-    $obj_client->redirect(PROJECT_URL . "/?page=return_summary&returnmonth=" . $returnmonth);
+    $obj_gstr1->redirect(PROJECT_URL . "/?page=return_summary&returnmonth=" . $returnmonth);
     exit();
 }
 $returnmonth = date('Y-m');
@@ -27,7 +27,7 @@ else
 {
 	
 	$dataQuery = "SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS niceDate FROM gst_client_invoice group by nicedate ORDER by invoice_date desc LIMIT 0,1";
-	$dataRes = $obj_client->get_results($dataQuery);
+	$dataRes = $obj_gstr1->get_results($dataQuery);
 	if(!empty($dataRes))
 	{
 	$returnmonth=$dataRes[0]->niceDate;
@@ -68,7 +68,7 @@ else
                                     Month Of Return
                                     <?php
                                     $dataQuery = "SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS niceDate FROM gst_client_invoice group by nicedate";
-                                    $dataRes = $obj_client->get_results($dataQuery);
+                                    $dataRes = $obj_gstr1->get_results($dataQuery);
                                     if (!empty($dataRes)) {
                                         ?>
                                         <select class="dateselectbox" id="returnmonth" name="returnmonth">
@@ -90,9 +90,9 @@ else
                                     ?>
                                 </form>
                             </div>
-                            <?php $obj_client->showErrorMessage(); ?>
-                            <?php $obj_client->showSuccessMessge(); ?>
-                            <?php $obj_client->unsetMessage(); ?>
+                            <?php $obj_gstr1->showErrorMessage(); ?>
+                            <?php $obj_gstr1->showSuccessMessge(); ?>
+                            <?php $obj_gstr1->unsetMessage(); ?>
                             <div class="clearfix height80"></div>
                             <div class="adminformbx">
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
@@ -106,12 +106,12 @@ else
                                         </tr>
                                         <tr>
                                             <?php
-                                            $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_client->getTableName('client_invoice') . " i inner join " . $obj_client->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where i.invoice_type='taxinvoice' and i.invoice_nature='salesinvoice' and i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and i.billing_gstin_number!='' and i.invoice_date like '%" . $returnmonth . "%' ";
-                                            $b2bItemData = $obj_client->get_results($b2bItemquery);
-                                            $b2bquery = "select * from " . $obj_client->getTableName('client_invoice') . " where invoice_type='taxinvoice' and invoice_nature='salesinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0' and billing_gstin_number!='' and invoice_date like '%" . $returnmonth . "%'";
-                                            $b2bData = $obj_client->get_results($b2bquery);
-                                            $b2bTotquery = "select sum(invoice_total_value) as invoice_total_value from " . $obj_client->getTableName('client_invoice') . " where invoice_type='taxinvoice' and invoice_nature='salesinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0' and billing_gstin_number!='' and invoice_date like '%" . $returnmonth . "%'";
-                                            $b2bTotData = $obj_client->get_results($b2bTotquery);
+                                            $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_gstr1->getTableName('client_invoice') . " i inner join " . $obj_gstr1->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where i.invoice_type='taxinvoice' and i.invoice_nature='salesinvoice' and i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and i.billing_gstin_number!='' and i.invoice_date like '%" . $returnmonth . "%' ";
+                                            $b2bItemData = $obj_gstr1->get_results($b2bItemquery);
+                                            $b2bquery = "select * from " . $obj_gstr1->getTableName('client_invoice') . " where invoice_type='taxinvoice' and invoice_nature='salesinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0' and billing_gstin_number!='' and invoice_date like '%" . $returnmonth . "%'";
+                                            $b2bData = $obj_gstr1->get_results($b2bquery);
+                                            $b2bTotquery = "select sum(invoice_total_value) as invoice_total_value from " . $obj_gstr1->getTableName('client_invoice') . " where invoice_type='taxinvoice' and invoice_nature='salesinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0' and billing_gstin_number!='' and invoice_date like '%" . $returnmonth . "%'";
+                                            $b2bTotData = $obj_gstr1->get_results($b2bTotquery);
                                             $total = 0;
                                             if (!empty($b2bItemData)) {
                                                 $total = $b2bItemData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $b2bItemData[0]->igst_amount + $b2bItemData[0]->cess_amount;
@@ -132,12 +132,12 @@ else
                                         </tr>-->
                                         <tr>
                                             <?php
-                                            $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_client->getTableName('client_invoice') . " i inner join " . $obj_client->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where i.invoice_type='taxinvoice' and i.invoice_nature='salesinvoice' and i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and i.billing_gstin_number!='' and i.invoice_total_value>'250000' and i.company_state!=i.supply_place  and i.invoice_date like '%" . $returnmonth . "%' ";
-                                            $b2bItemData = $obj_client->get_results($b2bItemquery);
-                                            $b2bquery = "select * from " . $obj_client->getTableName('client_invoice') . " where invoice_type='taxinvoice' and invoice_nature='salesinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0' and billing_gstin_number!='' and invoice_total_value>'250000' and company_state!=supply_place  and invoice_date like '%" . $returnmonth . "%'";
-                                            $b2bData = $obj_client->get_results($b2bquery);
-                                            $b2bTotquery = "select sum(invoice_total_value) as invoice_total_value from " . $obj_client->getTableName('client_invoice') . " where invoice_type='taxinvoice' and invoice_nature='salesinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0' and billing_gstin_number!='' and invoice_total_value>'250000' and company_state!=supply_place and invoice_date like '%" . $returnmonth . "%'";
-                                            $b2bTotData = $obj_client->get_results($b2bTotquery);
+                                            $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_gstr1->getTableName('client_invoice') . " i inner join " . $obj_gstr1->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where i.invoice_type='taxinvoice' and i.invoice_nature='salesinvoice' and i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and i.invoice_total_value>'250000' and i.company_state!=i.supply_place  and i.invoice_date like '%" . $returnmonth . "%' ";
+                                            $b2bItemData = $obj_gstr1->get_results($b2bItemquery);
+                                            $b2bquery = "select * from " . $obj_gstr1->getTableName('client_invoice') . " where invoice_type='taxinvoice' and invoice_nature='salesinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0' and invoice_total_value>'250000' and company_state!=supply_place  and invoice_date like '%" . $returnmonth . "%'";
+                                            $b2bData = $obj_gstr1->get_results($b2bquery);
+                                            $b2bTotquery = "select sum(invoice_total_value) as invoice_total_value from " . $obj_gstr1->getTableName('client_invoice') . " where invoice_type='taxinvoice' and invoice_nature='salesinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0' and invoice_total_value>'250000' and company_state!=supply_place and invoice_date like '%" . $returnmonth . "%'";
+                                            $b2bTotData = $obj_gstr1->get_results($b2bTotquery);
                                             $total = 0;
                                             if (!empty($b2bItemData)) {
                                                 $total = $b2bItemData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $b2bItemData[0]->igst_amount + $b2bItemData[0]->cess_amount;
@@ -158,12 +158,12 @@ else
                                         </tr>-->
                                         <tr>
                                             <?php
-                                            $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_client->getTableName('client_invoice') . " i inner join " . $obj_client->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where i.invoice_type='taxinvoice' and i.invoice_nature='salesinvoice' and i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and i.billing_gstin_number='' and i.invoice_total_value<='250000'  and i.invoice_date like '%" . $returnmonth . "%' ";
-                                            $b2bItemData = $obj_client->get_results($b2bItemquery);
-                                            $b2bquery = "select * from " . $obj_client->getTableName('client_invoice') . " where invoice_type='taxinvoice' and invoice_nature='salesinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0' and billing_gstin_number='' and invoice_total_value<='250000'  and invoice_date like '%" . $returnmonth . "%'";
-                                            $b2bData = $obj_client->get_results($b2bquery);
-                                            $b2bTotquery = "select sum(invoice_total_value) as invoice_total_value from " . $obj_client->getTableName('client_invoice') . " where invoice_type='taxinvoice' and invoice_nature='salesinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0' and billing_gstin_number='' and invoice_total_value<='250000'  and invoice_date like '%" . $returnmonth . "%'";
-                                            $b2bTotData = $obj_client->get_results($b2bTotquery);
+                                            $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_gstr1->getTableName('client_invoice') . " i inner join " . $obj_gstr1->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where i.invoice_type='taxinvoice' and i.invoice_nature='salesinvoice' and i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and i.billing_gstin_number='' and i.invoice_total_value<='250000'  and i.invoice_date like '%" . $returnmonth . "%' ";
+                                            $b2bItemData = $obj_gstr1->get_results($b2bItemquery);
+                                            $b2bquery = "select * from " . $obj_gstr1->getTableName('client_invoice') . " where invoice_type='taxinvoice' and invoice_nature='salesinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0' and billing_gstin_number='' and invoice_total_value<='250000'  and invoice_date like '%" . $returnmonth . "%'";
+                                            $b2bData = $obj_gstr1->get_results($b2bquery);
+                                            $b2bTotquery = "select sum(invoice_total_value) as invoice_total_value from " . $obj_gstr1->getTableName('client_invoice') . " where invoice_type='taxinvoice' and invoice_nature='salesinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0' and billing_gstin_number='' and invoice_total_value<='250000'  and invoice_date like '%" . $returnmonth . "%'";
+                                            $b2bTotData = $obj_gstr1->get_results($b2bTotquery);
                                             $total = 0;
                                             if (!empty($b2bItemData)) {
                                                 $total = $b2bItemData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $b2bItemData[0]->igst_amount + $b2bItemData[0]->cess_amount;
@@ -184,12 +184,12 @@ else
                                         </tr>-->
                                         <tr>
                                             <?php
-                                            $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_client->getTableName('client_invoice') . " i inner join " . $obj_client->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where (i.invoice_type='creditnote' or i.invoice_type='debitnote') and i.billing_gstin_number!='' and  i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0'  and i.invoice_date like '%" . $returnmonth . "%'";
-                                            $b2bItemData = $obj_client->get_results($b2bItemquery);
-                                            $b2bquery = "select * from " . $obj_client->getTableName('client_invoice') . " where  (invoice_type='creditnote' or invoice_type='debitnote') and billing_gstin_number!='' and  added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%' ";
-                                            $b2bData = $obj_client->get_results($b2bquery);
-                                            $b2bTotquery = "select sum(invoice_total_value) as invoice_total_value from " . $obj_client->getTableName('client_invoice') . " where  (invoice_type='creditnote' or invoice_type='debitnote') and billing_gstin_number!='' and  added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%'";
-                                            $b2bTotData = $obj_client->get_results($b2bTotquery);
+                                            $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_gstr1->getTableName('client_invoice') . " i inner join " . $obj_gstr1->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where (i.invoice_type='creditnote' or i.invoice_type='debitnote') and i.billing_gstin_number!='' and  i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0'  and i.invoice_date like '%" . $returnmonth . "%'";
+                                            $b2bItemData = $obj_gstr1->get_results($b2bItemquery);
+                                            $b2bquery = "select * from " . $obj_gstr1->getTableName('client_invoice') . " where  (invoice_type='creditnote' or invoice_type='debitnote') and billing_gstin_number!='' and  added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%' ";
+                                            $b2bData = $obj_gstr1->get_results($b2bquery);
+                                            $b2bTotquery = "select sum(invoice_total_value) as invoice_total_value from " . $obj_gstr1->getTableName('client_invoice') . " where  (invoice_type='creditnote' or invoice_type='debitnote') and billing_gstin_number!='' and  added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%'";
+                                            $b2bTotData = $obj_gstr1->get_results($b2bTotquery);
                                             $total = 0;
                                             if (!empty($b2bItemData)) {
                                                 $total = $b2bItemData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $b2bItemData[0]->igst_amount + $b2bItemData[0]->cess_amount;
@@ -217,12 +217,12 @@ else
                                         </tr>-->
                                         <tr>
                                             <?php
-                                            $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_client->getTableName('client_invoice') . " i inner join " . $obj_client->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where (i.invoice_type='exportinvoice' or i.invoice_type='sezunitinvoice' or i.invoice_type='deemedexportinvoice') and i.invoice_nature='salesinvoice' and i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0'  and i.invoice_date like '%" . $returnmonth . "%'";
-                                            $b2bItemData = $obj_client->get_results($b2bItemquery);
-                                            $b2bquery = "select * from " . $obj_client->getTableName('client_invoice') . " where (invoice_type='exportinvoice' or invoice_type='sezunitinvoice' or invoice_type='deemedexportinvoice') and invoice_nature='salesinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%'  ";
-                                            $b2bData = $obj_client->get_results($b2bquery);
-                                            $b2bTotquery = "select sum(invoice_total_value) as invoice_total_value from " . $obj_client->getTableName('client_invoice') . " where (invoice_type='exportinvoice' or invoice_type='sezunitinvoice' or invoice_type='deemedexportinvoice') and  invoice_nature='salesinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%'  ";
-                                            $b2bTotData = $obj_client->get_results($b2bTotquery);
+                                            $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_gstr1->getTableName('client_invoice') . " i inner join " . $obj_gstr1->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where (i.invoice_type='exportinvoice' or i.invoice_type='sezunitinvoice' or i.invoice_type='deemedexportinvoice') and i.invoice_nature='salesinvoice' and i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0'  and i.invoice_date like '%" . $returnmonth . "%'";
+                                            $b2bItemData = $obj_gstr1->get_results($b2bItemquery);
+                                            $b2bquery = "select * from " . $obj_gstr1->getTableName('client_invoice') . " where (invoice_type='exportinvoice' or invoice_type='sezunitinvoice' or invoice_type='deemedexportinvoice') and invoice_nature='salesinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%'  ";
+                                            $b2bData = $obj_gstr1->get_results($b2bquery);
+                                            $b2bTotquery = "select sum(invoice_total_value) as invoice_total_value from " . $obj_gstr1->getTableName('client_invoice') . " where (invoice_type='exportinvoice' or invoice_type='sezunitinvoice' or invoice_type='deemedexportinvoice') and  invoice_nature='salesinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%'  ";
+                                            $b2bTotData = $obj_gstr1->get_results($b2bTotquery);
                                             $total = 0;
                                             if (!empty($b2bItemData)) {
                                                 $total = $b2bItemData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $b2bItemData[0]->igst_amount + $b2bItemData[0]->cess_amount;
@@ -243,12 +243,12 @@ else
                                         </tr>-->
                                         <tr>
                                             <?php
-                                            $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_client->getTableName('client_invoice') . " i inner join " . $obj_client->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where i.invoice_type='receiptvoucherinvoice' and i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0'  and i.invoice_date like '%" . $returnmonth . "%'";
-                                            $b2bItemData = $obj_client->get_results($b2bItemquery);
-                                            $b2bquery = "select * from " . $obj_client->getTableName('client_invoice') . " where invoice_type='receiptvoucherinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%' ";
-                                            $b2bData = $obj_client->get_results($b2bquery);
-                                            $b2bTotquery = "select sum(invoice_total_value) as invoice_total_value from " . $obj_client->getTableName('client_invoice') . " where invoice_type='receiptvoucherinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%'";
-                                            $b2bTotData = $obj_client->get_results($b2bTotquery);
+                                            $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_gstr1->getTableName('client_invoice') . " i inner join " . $obj_gstr1->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where i.invoice_type='receiptvoucherinvoice' and i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0'  and i.invoice_date like '%" . $returnmonth . "%'";
+                                            $b2bItemData = $obj_gstr1->get_results($b2bItemquery);
+                                            $b2bquery = "select * from " . $obj_gstr1->getTableName('client_invoice') . " where invoice_type='receiptvoucherinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%' ";
+                                            $b2bData = $obj_gstr1->get_results($b2bquery);
+                                            $b2bTotquery = "select sum(invoice_total_value) as invoice_total_value from " . $obj_gstr1->getTableName('client_invoice') . " where invoice_type='receiptvoucherinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%'";
+                                            $b2bTotData = $obj_gstr1->get_results($b2bTotquery);
                                             $total = 0;
                                             if (!empty($b2bItemData)) {
                                                 $total = $b2bItemData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $b2bItemData[0]->igst_amount + $b2bItemData[0]->cess_amount;
@@ -269,12 +269,12 @@ else
                                         </tr>-->
                                         <tr>
                                             <?php
-                                            $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_client->getTableName('client_invoice') . " i inner join " . $obj_client->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where (i.invoice_type='creditnote' or i.invoice_type='debitnote') and i.billing_gstin_number='' and  i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0'  and i.invoice_date like '%" . $returnmonth . "%'";
-                                            $b2bItemData = $obj_client->get_results($b2bItemquery);
-                                            $b2bquery = "select * from " . $obj_client->getTableName('client_invoice') . " where(invoice_type='creditnote' or invoice_type='debitnote') and billing_gstin_number='' and  added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%' ";
-                                            $b2bData = $obj_client->get_results($b2bquery);
-                                            $b2bTotquery = "select sum(invoice_total_value) as invoice_total_value from " . $obj_client->getTableName('client_invoice') . " where (invoice_type='creditnote' or invoice_type='debitnote') and billing_gstin_number='' and  added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%'";
-                                            $b2bTotData = $obj_client->get_results($b2bTotquery);
+                                            $b2bItemquery = "select sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_gstr1->getTableName('client_invoice') . " i inner join " . $obj_gstr1->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where (i.invoice_type='creditnote' or i.invoice_type='debitnote') and i.billing_gstin_number='' and  i.added_by='" . $_SESSION['user_detail']['user_id'] . "' and i.status='1' and i.is_canceled='0' and i.is_deleted='0'  and i.invoice_date like '%" . $returnmonth . "%'";
+                                            $b2bItemData = $obj_gstr1->get_results($b2bItemquery);
+                                            $b2bquery = "select * from " . $obj_gstr1->getTableName('client_invoice') . " where(invoice_type='creditnote' or invoice_type='debitnote') and billing_gstin_number='' and  added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%' ";
+                                            $b2bData = $obj_gstr1->get_results($b2bquery);
+                                            $b2bTotquery = "select sum(invoice_total_value) as invoice_total_value from " . $obj_gstr1->getTableName('client_invoice') . " where (invoice_type='creditnote' or invoice_type='debitnote') and billing_gstin_number='' and  added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%'";
+                                            $b2bTotData = $obj_gstr1->get_results($b2bTotquery);
                                             $total = 0;
                                             if (!empty($b2bItemData)) {
                                                 $total = $b2bItemData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $b2bItemData[0]->igst_amount + $b2bItemData[0]->cess_amount;

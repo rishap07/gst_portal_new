@@ -1,55 +1,64 @@
 <?php
-$obj_master = new master();
-if(!$obj_master->can_read('master_vendor')) {
 
-    $obj_master->setError($obj_master->getValMsg('can_read'));
-    $obj_master->redirect(PROJECT_URL."/?page=dashboard");
+$obj_plan = new plan();
+if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '' ) {
+    $obj_plan->redirect(PROJECT_URL);
     exit();
 }
+
+
+
+
+/* get current user data */
+
 ?>
+
+<!--========================sidemenu over=========================-->
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
-         <h1>Vendor</h1>
+       <h1>AdminSetting List</h1>
         <div class="whitebg formboxcontainer">
         <div>
-            <a class='btn btn-default btn-success btnwidth addnew' href='<?php echo PROJECT_URL;?>/?page=master_vendor_update'>Add New</a>
+            <a class='btn btn-default btn-success btnwidth addnew' href='<?php echo PROJECT_URL;?>/?page=notification_update'>Add New</a>
         </div>
-     <div class="clear"></div>
-    
-           <?php $obj_master->showErrorMessage(); ?>
-            <?php $obj_master->showSuccessMessge(); ?>
-            <?php $obj_master->unsetMessage(); ?>
-        <h2 class="greyheading">Vendor Listing</h2>
+         <div class="clear height10"></div>
+       
+          <?php $obj_plan->showErrorMessage(); ?>
+            <?php $obj_plan->showSuccessMessge(); ?>
+            <?php $obj_plan->unsetMessage(); ?>
+        <h2 class="greyheading">AdminSetting Listing</h2>
+        
         <div class="adminformbx">
-         
+          
+        
             <table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable">
+                
                 <thead>
                     <tr>
-                        <th align='left' width="72">Sr</th>
-                        <th align='left'>Name</th>
-                       <th align='left'>Status</th>
-                        <th width="72">Action</th>
+                        <th align='left'>#</th>
+                    
+                           <th align='left' width="200px">TollFree</th>
+                        <th align='left' width="200px">LiveChat</th>
+						  <th align='left'>Status</th>
+						    <th align='left'>Action</th>
+                      
                     </tr>
                 </thead>
+
             </table>
         </div>
+<!--========================adminformbox over=========================-->    
     </div>
-</div>
-</div>
+<!--========================admincontainer over=========================-->
+    </div></div>
 <div class="clear height80">
 </div>
 <script>
     $(document).ready(function () {
         TableManaged.init();
-        $('#submit').click(function () {
-            var mesg = {};
-            if (vali.validate(mesg,'form')) {
-                return true;
-            }
-            return false;
-        });
     });
+    
     var TableManaged = function () {
         return {
             init: function () {
@@ -63,8 +72,12 @@ if(!$obj_master->can_read('master_vendor')) {
                     "aoColumns": [
                         {"bSortable": false},
                         {"bSortable": false},
-                      	  {"bSortable": false},
-                        {"bSortable": false}
+						 {"bSortable": false},
+						 {"bSortable": false},
+						
+						{"bSortable": false}
+						
+                     
                     ],
                     "sDom": "lfrtip",
                     "aLengthMenu": [
@@ -75,7 +88,7 @@ if(!$obj_master->can_read('master_vendor')) {
                     "bServerSide": true,
                     "bStateSave": false,
                     "bDestroy": true,
-                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=master_vendor",
+                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=adminsetting_list",
                     "fnServerParams": function (aoData) {
                     },
                     "iDisplayLength": 50

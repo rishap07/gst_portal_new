@@ -96,7 +96,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
 }
 
        
-	    $sql = "select  *,count(return_id) as totalinvoice from gst_client_return_gstr3b where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by return_id desc limit 0,1";
+	    $sql = "select  *,count(return_id) as totalinvoice from ".TAB_PREFIX."client_return_gstr3b where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by return_id desc limit 0,1";
  
         $returndata = $obj_return->get_results($sql);
 	    
@@ -640,15 +640,14 @@ composition taxable persons and UIN holders</div>
                                 <th>Place of Supply (State/UT)</th>
                                 <th>Total Taxable value</th>
                                 <th>Amount of Integrated Tax</th>
-								  <th>Add New Record</th>
-   
+								
                                 </tr>
                                 </thead>
                                 
                                 <tbody>
 								<?php
 							// $sql = "select  *,count(returnid) as totalinvoice from gst_place_of_supply where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and type='0'   order by id desc limit 0,1";
-							$sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from gst_place_of_supply as s INNER join gst_client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='0'";
+							$sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from ".TAB_PREFIX."place_of_supply as s INNER join ".TAB_PREFIX."client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='0'";
                              $editflag=0;
                             $return_a = $obj_return->get_results($sql);
 							if($return_a[0]->totalinvoice > 0 )
@@ -739,10 +738,14 @@ composition taxable persons and UIN holders</div>
                                   
                                      ?>											
                                      <td>
-									 <input type="button" style="font-size: 13px;color: #FFF;" class="btn greenbg boldfont btnsmall add-row1"  value="Add Row">
-					   
+									 <a class="addMoreInvoice add-row1"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
 										</td><?php } else { ?>	
-									<td><button class='del btn btnsmall btn-danger boldfont' style='font-size: 12px;'>Delete row</button></td>								 
+									<td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
 								 <?php } } ?>
 						</tr><?php } } } else {
 						
@@ -814,8 +817,12 @@ composition taxable persons and UIN holders</div>
 								 <?php } ?>
                                  </td> 										                       
                                      <td>
-									 <input type="button" style="font-size: 13px;color: #FFF;" class="btn greenbg boldfont btnsmall add-row1" value="Add Row">
-									 
+									  <a class="addMoreInvoice add-row1"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
     
                                     </td>									 
 						</tr>
@@ -828,7 +835,7 @@ composition taxable persons and UIN holders</div>
 						  
 							<?php
 							// $sql = "select  *,count(returnid) as totalinvoice from gst_place_of_supply where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and type='1'   order by id desc limit 0,1";
-								$sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from gst_place_of_supply as s INNER join gst_client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='1'";
+								$sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from ".TAB_PREFIX."place_of_supply as s INNER join ".TAB_PREFIX."client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='1'";
                         
                              $editflag=0;
                             $return_a = $obj_return->get_results($sql);
@@ -909,10 +916,14 @@ composition taxable persons and UIN holders</div>
                                   
                                      ?>											
                                      <td>
-									 <input type="button" style="font-size: 13px;color: #FFF;" class="btn greenbg boldfont btnsmall add-row2"  value="Add Row">
-					   
+									 <a class="addMoreInvoice add-row2"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
 										</td><?php } else { ?>	
-									<td><button class='del btn btnsmall btn-danger boldfont' style='font-size: 12px;'>Delete row</button></td>								 
+								<td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>
 								 <?php } } ?>
                                   
 									  
@@ -973,8 +984,12 @@ composition taxable persons and UIN holders</div>
                                  </td> 									 
                                       
                                     <td>
-									 <input type="button" style="font-size: 13px;color: #FFF;" class="btn greenbg boldfont btnsmall add-row2" value="Add Row">
-									</td>
+									 <a class="addMoreInvoice add-row2"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a></td>
                                       </tr> <?php } ?></table></div>
 									   <div class="tableresponsive">
 									  <table  class="table  tablecontent tablecontent2 bordernone" id="table3">
@@ -982,7 +997,7 @@ composition taxable persons and UIN holders</div>
                                  
 								   <?php
 							 //$sql = "select  *,count(returnid) as totalinvoice from gst_place_of_supply where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and type='2'   order by id desc limit 0,1";
-							 $sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from gst_place_of_supply as s INNER join gst_client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='2'";
+							 $sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from ".TAB_PREFIX."place_of_supply as s INNER join ".TAB_PREFIX."client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='2'";
                         
                              $editflag=0;
                             $return_a = $obj_return->get_results($sql);
@@ -1062,10 +1077,14 @@ composition taxable persons and UIN holders</div>
 										{
                                      ?>											
                                      <td>
-									 <input type="button" style="font-size: 13px;color: #FFF;" class="btn greenbg boldfont btnsmall add-row3" value="Add Row">
-					   
+									 <a class="addMoreInvoice add-row3"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
 										</td><?php } else { ?>	
-									<td><button class='del btn btnsmall btn-danger boldfont' style='font-size: 12px;'>Delete row</button></td>								 
+									<td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
 								 <?php } }?>
                                       
                                    </tr><?php } } } else {
@@ -1124,8 +1143,12 @@ composition taxable persons and UIN holders</div>
 								 <?php } ?>
                                  </td> 										 
                                       <td>
-									 <input type="button" style="font-size: 13px;color: #FFF;" class="btn greenbg boldfont btnsmall add-row3" value="Add Row">
-									</td>
+									 <a class="addMoreInvoice add-row3"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a></td>
                                       
                                    </tr><?php } ?>
                                
@@ -1852,9 +1875,9 @@ composition taxable persons and UIN holders</div>
 								?>
                                 <div class="adminformbxsubmit" style="width:100%;"> 
                             <div class="tc">
-                               <input type="button" value="<?php echo ucfirst('Edit'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_gstr3b_file_submit&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-danger" class="redbtn marlef10"/>
+                               <input type="button" value="<?php echo ucfirst('Edit'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_gstr3b_file_submit&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/>
 							    <input type='submit' class="btn btn-danger" name='cleardata' value='clear data' id='cleardata'>
-							  <input type='submit' class="btn btn-danger" name='finalsubmit' value='final submit' id='finalsubmit'>
+							  <input type='submit' class="btn btn-success" name='finalsubmit' value='final submit' id='finalsubmit'>
 							  <input type='hidden' name="returnid" id="returnid" value="<?php echo $returndata[0]->return_id; ?>" />
 									
                                
@@ -1866,7 +1889,7 @@ composition taxable persons and UIN holders</div>
 								?>
 								  <div class="adminformbxsubmit" style="width:100%;"> 
                             <div class="tc">
-                                <input type='submit' class="btn btn-danger" name='submit' value='submit' id='submit'>
+                                <input type='submit' class="btn btn-success" name='submit' value='submit' id='submit'>
 								
                                
                             </div>
@@ -1906,7 +1929,7 @@ composition taxable persons and UIN holders</div>
 			data = data1+ data+'</select>';
 		
 		    
-            var markup = "<tr><td><input type='hidden' name='record'></td><td>" + data + "</td><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='total_taxable_value_unregistered_person[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='amount_of_integrated_tax_unregistered_person[]'/></td><td><button class='del btn btnsmall btn-danger boldfont' style='font-size: 12px;'>Delete row</button></td></tr>";
+            var markup = "<tr><td><input type='hidden' name='record'></td><td>" + data + "</td><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='total_taxable_value_unregistered_person[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='amount_of_integrated_tax_unregistered_person[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table1').append(markup);
         });
@@ -1940,7 +1963,7 @@ composition taxable persons and UIN holders</div>
 			data = data1+ data+'</select>';
 		
 		    
-            var markup = "<tr><td><input type='hidden' name='record'></td><td>" + data + "</td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='total_taxable_value_taxable_person[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='amount_of_integrated_tax_taxable_person[]'/></td><td><button class='del btn btnsmall btn-danger boldfont' style='font-size: 12px;'>Delete row</button></td></tr>";
+            var markup = "<tr><td><input type='hidden' name='record'></td><td>" + data + "</td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='total_taxable_value_taxable_person[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='amount_of_integrated_tax_taxable_person[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table2').append(markup);
         });
@@ -1969,7 +1992,7 @@ composition taxable persons and UIN holders</div>
 			data = data1+ data+'</select>';
 		
 		    
-            var markup = "<tr><td><input type='hidden' name='record'></td><td>" + data + "</td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='total_taxable_value_uin_holder[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='amount_of_integrated_uin_holder[]'/></td><td><button class='del btn btnsmall btn-danger boldfont' style='font-size: 12px;'>Delete row</button></td></tr>";
+            var markup = "<tr><td><input type='hidden' name='record'></td><td>" + data + "</td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='total_taxable_value_uin_holder[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='amount_of_integrated_uin_holder[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table3').append(markup);
         });

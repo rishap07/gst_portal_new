@@ -161,7 +161,7 @@ $data_month_sale = json_encode($data_month_sale);
                 <?php
                 /* current month total sale */
 
-                if ($dataTotalMonths[0]->numcount > 0) {
+                if (!empty($dataTotalMonths[0]->numcount)) {
                     foreach ($dataTotalMonths as $dataTotalMonth) {
                         $currentmonth_total_sale = $dataTotalMonth->sum;
                     }
