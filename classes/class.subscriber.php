@@ -13,16 +13,7 @@ final class subscriber extends validation {
     }
     
    
-    public function finalSaveGstr3b()
-   {
-		$return_id =   isset($_POST['returnid']) ? $_POST['returnid'] : '';
-		$userid = $_SESSION['user_detail']['user_id'];
-		 if($this->update("gst_client_return_gstr3b", array('final_submit' => 1), array('return_id' => $return_id)))
-		 {
-		 $this->setSuccess('GSTR3B Submitted Successfully');
-		 return true;
-		 }
-   }
+    
   
   
    

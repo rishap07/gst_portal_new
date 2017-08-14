@@ -44,20 +44,21 @@ final class gstr1 extends validation {
                     $x++;
                 }
                 $this->updateMultiple($this->getTableName('client_invoice'), $dataUpdate);
+				$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update GSTR1 all invoices financial month ".$fmonth,"gstr1");
+			
+				
             }
-      else
-      {
-        $this->setError('No invoice selected to upload');
-            return false;
-      }
-      
-
+            else
+            {
+                $this->setError('No invoice selected to upload');
+                return false;
+            }
 
             $flag = 1;
 
             $dataReturn = $this->get_results("select * from " . $this->getTableName('return') . " where return_month='" . $fmonth . "' and client_id='" . $_SESSION['user_detail']['user_id'] . "' and type='gstr1'");
             if (!empty($dataReturn)) {
-                $dataGST1_set['financial_year'] = '2017-2018';
+                $dataGST1_set['financial_year'] = $this->generateFinancialYear();
                 $dataGST1_set['return_month'] = $fmonth;
                 $dataGST1_set['status'] = '2';
 
@@ -66,6 +67,8 @@ final class gstr1 extends validation {
                 $dataGST1['client_id'] = $_SESSION['user_detail']['user_id'];
 
                 $this->update($this->getTableName('return'), $dataGST1_set, $dataGST1);
+				$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update GSTR1 upload status financial month ".$fmonth,"gstr1");
+			
             } else {
                 $dataGST1['financial_year'] = $this->generateFinancialYear();
                 $dataGST1['return_month'] = $fmonth;
@@ -73,6 +76,8 @@ final class gstr1 extends validation {
                 $dataGST1['client_id'] = $_SESSION['user_detail']['user_id'];
                 $dataGST1['status'] = '2';
                 $this->insert($this->getTableName('return'), $dataGST1);
+				$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " Upload GSTR1 for financial month ".$fmonth,"gstr1");
+			
             }
 
             $this->setSuccess("GSTR1 Data Uploaded");
@@ -102,41 +107,44 @@ final class gstr1 extends validation {
                 $dataArr = $payload['data_arr'];
                 $data_ids = $payload['data_ids'];
                 $response = $obj_gst->returnSave($dataArr, $fmonth);
-                //$this->pr($response);die;
                 if (!empty($response['error'] == 0)) {
                     $flag = 1;
                     if (!empty($data_ids)) {
-                        /*                         * ****************** Start Code for Update Invoice is upload ************************* */
+                        /********** Start Code for Update Invoice is upload ************* */
                         $flagup = 0;
-                        foreach ($data_ids as $table => $data_val) {
-                            if ($this->updateMultiple($this->getTableName($table), $data_val)) {
-                                $flagup = 1;
-                            }
-                        }
-                        /*                         * ****************** End code for Update Invoice is upload ************************* */
+                        /*$this->pr($data_ids);
+                        die;*/
+                        $this->query("UPDATE ".$this->getTableName('client_invoice')." SET is_gstr1_uploaded='1' WHERE invoice_id in (".$data_ids.")");
+						
+                        /*********** End code for Update Invoice is upload ********* */
 
-                        /*                         * ****************** Start Code Return Save ************************* */
+                        /******************* Start Code Return Save **************** */
                         $dataReturn = $this->get_results("select * from " . $this->getTableName('return') . " where return_month='" . $fmonth . "' and client_id='" . $_SESSION['user_detail']['user_id'] . "' and type='gstr1'");
                         if ($flagup == '1') {
                             if (!empty($dataReturn)) {
-                                $dataGST1_set['financial_year'] = '2017-2018';
+                                $dataGST1_set['financial_year'] = $this->generateFinancialYear();
                                 $dataGST1_set['return_month'] = $fmonth;
                                 $dataGST1_set['status'] = '2';
                                 $dataGST1['type'] = 'gstr1';
                                 $dataGST1['client_id'] = $_SESSION['user_detail']['user_id'];
                                 $this->update($this->getTableName('return'), $dataGST1_set, $dataGST1);
+								$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update GSTR1 upload status financial month ".$fmonth,"gstr1");
+			
                             } else {
-                                $dataGST1['financial_year'] = '2017-2018';
+                                $dataGST1['financial_year'] = $this->generateFinancialYear();
                                 $dataGST1['return_month'] = $fmonth;
                                 $dataGST1['type'] = 'gstr1';
                                 $dataGST1['client_id'] = $_SESSION['user_detail']['user_id'];
                                 $dataGST1['status'] = '2';
                                 $this->insert($this->getTableName('return'), $dataGST1);
+								$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " Uploaded GSTR1 for financial month ".$fmonth,"gstr1");
+			
                             }
                         }
-                        /*                         * ****************** Start Code for Return Save ************************* */
-                        $this->setSuccess("GSTR1 Data Uploaded");
-                    } else {
+                        /* ******* End Code for Return Save ************************* */
+                        $this->setSuccess($response['message']);
+                    } 
+                    else {
                         $flag = 2;
                         $this->setError('file not updated');
                     }
@@ -182,7 +190,7 @@ final class gstr1 extends validation {
                 $flag = 1;
         $dataReturn = $this->get_results('select * from '.$this->getTableName('return')." where return_month='".$this->sanitize($_GET['returnmonth'])."' and type='gstr1'");
                 if (!empty($dataReturn)) {
-                    $dataGST1_set['financial_year'] = '2017-2018';
+                    $dataGST1_set['financial_year'] = $this->generateFinancialYear();
                     $dataGST1_set['return_month'] = $fmonth;
                     $dataGST1_set['status'] = '3';
 
@@ -191,6 +199,8 @@ final class gstr1 extends validation {
                     $dataGST1['client_id'] = $_SESSION['user_detail']['user_id'];
 
                     $this->update($this->getTableName('return'), $dataGST1_set, $dataGST1);
+					$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . "Update GSTR1 File status financial month ".$fmonth,"gstr1");
+			
                 } else {
                     $dataGST1['financial_year'] = '2017-2018';
                     $dataGST1['return_month'] = $fmonth;
@@ -198,6 +208,8 @@ final class gstr1 extends validation {
                     $dataGST1['client_id'] = $_SESSION['user_detail']['user_id'];
                     $dataGST1['status'] = '3';
                     $this->insert($this->getTableName('return'), $dataGST1);
+					$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " file GSTR1 for financial month ".$fmonth,"gstr1");
+			
                 }
                 $this->setSuccess("GSTR1 is Filed");
             } else {
@@ -236,138 +248,128 @@ final class gstr1 extends validation {
         $data_ids = array();
         $dataArr = $this->gstPayloadHeader($user_id, $returnmonth);
 
-        /*        * *** Start Code For B2B Payload ********** */
+        /***** Start Code For B2B Payload ********** */
         $b2b_data = $this->gstB2BPayload($user_id, $returnmonth);
         if (!empty($b2b_data)) {
             $data_ids[] = $b2b_ids = $b2b_data['b2b_ids'];
             $b2b_arr = $b2b_data['b2b_arr'];
             $dataArr = array_merge($dataArr, $b2b_arr);
         }
-        /*         * *** End Code For B2B Payload ********** */
+        /***** End Code For B2B Payload ********** */
 
-        /*         * *** Start Code For B2CL Payload ********** */
+        /***** Start Code For B2CL Payload ********** */
         $b2cl_data = $this->gstB2CLPayload($user_id, $returnmonth);
         if (!empty($b2cl_data)) {
             $data_ids[] = $b2cl_ids = $b2cl_data['b2cl_ids'];
             $b2cl_arr = $b2cl_data['b2cl_arr'];
             $dataArr = array_merge($dataArr, $b2cl_arr);
         }
-        /*         * *** End Code For B2CL Payload ********** */
+        /***** End Code For B2CL Payload ********** */
 
-        /*         * *** Start Code For B2CS Payload ********** */
+        /***** Start Code For B2CS Payload ********** */
         $b2cs_data = $this->gstB2CSPayload($user_id, $returnmonth);
         if (!empty($b2cs_data)) {
             $data_ids[] = $b2cs_ids = $b2cs_data['b2cs_ids'];
             $b2cs_arr = $b2cs_data['b2cs_arr'];
             $dataArr = array_merge($dataArr, $b2cs_arr);
         }
-        /*         * *** End Code For B2CS Payload ********** */
+        /***** End Code For B2CS Payload ********** */
 
-        /*         * *** Start Code For CDNR Payload ********** */
+        /** *** Start Code For CDNR Payload ********** */
         $cdnr_data = $this->gstCDNRPayload($user_id, $returnmonth);
         if (!empty($cdnr_data)) {
             $data_ids[] = $cdnr_ids = $cdnr_data['cdnr_ids'];
             $cdnr_arr = $cdnr_data['cdnr_arr'];
             $dataArr = array_merge($dataArr, $cdnr_arr);
-            //$this->pr($cdnr_data);
         }
-        /*         * *** End Code For CDNR Payload ********** */
+        /****** End Code For CDNR Payload ********** */
 
-        /*         * *** Start Code For CDNUR Payload ********** */
+        /** *** Start Code For CDNUR Payload ********** */
         $cdnur_data = $this->gstCDNURPayload($user_id, $returnmonth);
         if (!empty($cdnur_data)) {
             $data_ids[] = $cdnur_ids = $cdnur_data['cdnur_ids'];
             $cdnur_arr = $cdnur_data['cdnur_arr'];
             $dataArr = array_merge($dataArr, $cdnur_arr);
         }
-        /*         * *** End Code For CDNUR Payload ********** */
+        /***** End Code For CDNUR Payload ********** */
 
-        /*         * *** Start Code For HSN Summary Payload ********** */
+        /***** Start Code For HSN Summary Payload ********** */
         $hsn_data = $this->gstHSNPayload($user_id, $returnmonth);
         if (!empty($hsn_data)) {
-            $data_ids[] = $hsn_ids = $hsn_data['hsn_ids'];
+            //$data_ids[] = $hsn_ids = $hsn_data['hsn_ids'];
             $hsn_arr = $hsn_data['hsn_arr'];
             $dataArr = array_merge($dataArr, $hsn_arr);
         }
-        /*         * *** END Code For HSN Summary Payload ********** */
+        /***** END Code For HSN Summary Payload ********** */
 
-        /*         * *** Start Code For AT Payload ********** */
+        /***** Start Code For AT Payload ********** */
         $at_data = $this->gstATPayload($user_id, $returnmonth);
         if (!empty($at_data)) {
             $data_ids[] = $at_ids = $at_data['at_ids'];
             $at_arr = $at_data['at_arr'];
             $dataArr = array_merge($dataArr, $at_arr);
         }
-        /*         * *** End Code For AT Payload ********** */
+        /***** End Code For AT Payload ********** */
 
-        /*         * *** Start Code For NIL Payload ********** */
+        /***** Start Code For NIL Payload ********** */
         $nil_data = $this->getNILPayload($user_id, $returnmonth);
         if (!empty($nil_data)) {
-            $data_ids[] = $nil_ids = $nil_data['nil_ids'];
+            //$data_ids[] = $nil_ids = $nil_data['nil_ids'];
             $nil_arr = $nil_data['nil_arr'];
             $dataArr = array_merge($dataArr, $nil_arr);
         }
-        /*         * *** End Code For NIL Payload ********** */
+        /***** End Code For NIL Payload ********** */
 
-        /*         * *** Start Code For Doc Issue Payload ********** */
+        /***** Start Code For Doc Issue Payload ********** */
         $doc_data = $this->getDOCISSUEPayload($user_id, $returnmonth);
         if (!empty($doc_data)) {
             $data_ids[] = $doc_ids = $doc_data['doc_ids'];
             $doc_arr = $doc_data['doc_arr'];
             $dataArr = array_merge($dataArr, $doc_arr);
         }
-        /*         * *** End Code For Doc Issue Payload ********** */
+        /***** End Code For Doc Issue Payload ********** */
 
-        /*         * *** Start Code For Exp Payload ********** */
+        /***** Start Code For Exp Payload ********** */
         $exp_data = $this->getEXPPayload($user_id, $returnmonth);
         if (!empty($exp_data)) {
             $data_ids[] = $exp_ids = $exp_data['exp_ids'];
             $exp_arr = $exp_data['exp_arr'];
             $dataArr = array_merge($dataArr, $exp_arr);
         }
-        /*         * *** End Code For Exp Payload ********** */
+        /***** End Code For Exp Payload ********** */
 
-        /*         * *** Start Code For TXPD  Payload ********** */
-        /*$txpd_data = $this->getTXPDPayload($user_id, $returnmonth);
+        /***** Start Code For TXPD  Payload ********** */
+        $txpd_data = $this->getTXPDPayload($user_id, $returnmonth);
         if (!empty($txpd_data)) {
             $data_ids[] = $txpd_ids = $txpd_data['txpd_ids'];
             $txpd_arr = $txpd_data['txpd_arr'];
             $dataArr = array_merge($dataArr, $txpd_arr);
         }
-        /*         * *** End Code For TXPD Payload ********** */
+        /***** End Code For TXPD Payload ********** */
 
-        //$this->pr($dataArr);
-        //echo json_encode($dataArr);
-         // die; 
         
+       //$this->pr($cdnur_data);
+        /*$this->pr($dataArr);
+        $this->pr($data_ids);        
+        die; 
+        */
         $temp_id = '';
-        $update_final_ids = array();
         $x = 0;
-        foreach ($data_ids as $key => $value) {
-            $x = 0;
-            foreach ($value as $key => $val) {
-                if (isset($update_final_ids[$key]) && !in_array($val, $update_final_ids[$key])) {
-                    if (!empty($val)) {
-                        $y = 0;
-                        foreach ($val['invoice_id'] as $va) {
-                            $update_final_ids[$key][$y]['set']['is_gstr1_uploaded'] = '1';
-                            $update_final_ids[$key][$y]['where']['invoice_id'] = $va;
-                            $y++;
-                        }
-                    }
-                } else {
-                    if (!empty($val)) {
-                        $y = 0;
-                        foreach ($val['invoice_id'] as $va) {
-                            $update_final_ids[$key][$y]['set']['is_gstr1_uploaded'] = '1';
-                            $update_final_ids[$key][$y]['where']['invoice_id'] = $va;
-                            $y++;
+        $update_final_string = '';
+        if(!empty($data_ids)) {
+            foreach ($data_ids as $key => $value) {
+                if (!empty($value)) {
+                    foreach ($value as $key => $val) {
+                        if (!empty($val)) {
+                            $update_final_string .= $val.',';
                         }
                     }
                 }
             }
+            $update_final_string = rtrim($update_final_string, ',');
         }
-        $response['data_ids'] = $update_final_ids;
+        //$this->pr($update_final_string);
+        $response['data_ids'] = $update_final_string;
         $response['data_arr'] = $dataArr;
         return $response;
     }
@@ -424,7 +426,7 @@ final class gstr1 extends validation {
                 $b2b_array[] = (array) $dataIn;
             }
             if (!empty($b2b_array)) {
-                $b2b_ids['client_invoice']['invoice_id'] = array_unique(array_column($b2b_array, 'invoice_id'));
+                $b2b_ids = array_unique(array_column($b2b_array, 'invoice_id'));
             }
         }
         $response['b2b_ids'] = $b2b_ids;
@@ -479,7 +481,7 @@ final class gstr1 extends validation {
                 $b2cl_array[] = (array) $dataIn;
             }
             if (!empty($b2cl_array)) {
-                $b2cl_ids['client_invoice']['invoice_id'] = array_unique(array_column($b2cl_array, 'invoice_id'));
+                $b2cl_ids = array_unique(array_column($b2cl_array, 'invoice_id'));
             }
         }
         $response['b2cl_ids'] = $b2cl_ids;
@@ -534,7 +536,7 @@ final class gstr1 extends validation {
                 $b2cs_array[] = (array) $dataIn;
             }
             if (!empty($b2cs_array)) {
-                $b2cs_ids['client_invoice']['invoice_id'] = array_unique(array_column($b2cs_array, 'invoice_id'));
+                $b2cs_ids = array_unique(array_column($b2cs_array, 'invoice_id'));
             }
         }
         $response['b2cs_ids'] = $b2cs_ids;
@@ -594,9 +596,10 @@ final class gstr1 extends validation {
                 $cdnr_array[] = (array) $dataIn;
             }
             if (!empty($cdnr_array)) {
-                $cdnr_ids['client_invoice']['invoice_id'] = array_unique(array_column($cdnr_array, 'invoice_id'));
+                $cdnr_ids = array_unique(array_column($cdnr_array, 'invoice_id'));
             }
         }
+        
         $response['cdnr_ids'] = $cdnr_ids;
         $response['cdnr_arr'] = $dataArr;
         return $response;
@@ -651,7 +654,7 @@ final class gstr1 extends validation {
                 $cdnur_array[] = (array) $dataIn;
             }
             if (!empty($cdnur_array)) {
-                $cdnur_ids['client_invoice']['invoice_id'] = array_unique(array_column($cdnur_array, 'invoice_id'));
+                $cdnur_ids = array_unique(array_column($cdnur_array, 'invoice_id'));
             }
         }
         //$this->pr($dataArr);
@@ -685,9 +688,10 @@ final class gstr1 extends validation {
             }
 
             if (!empty($hsn_array)) {
-                $hsn_ids['client_invoice']['invoice_id'] = array_unique(array_column($hsn_array, 'invoice_id'));
+                $hsn_ids = array_unique(array_column($hsn_array, 'invoice_id'));
             }
         }
+        //$this->pr($dataInvHsn);
         $response['hsn_ids'] = $hsn_ids;
         $response['hsn_arr'] = $dataArr;
         return $response;
@@ -735,7 +739,7 @@ final class gstr1 extends validation {
                 $at_array[] = (array) $dataIn;
             }
             if (!empty($at_array)) {
-                $at_ids['client_invoice']['invoice_id'] = array_unique(array_column($at_array, 'invoice_id'));
+                $at_ids = array_unique(array_column($at_array, 'invoice_id'));
             }
         }
         $response['at_ids'] = $at_ids;
@@ -786,7 +790,7 @@ final class gstr1 extends validation {
                 $nill_inv_array_b2b = array_merge($nill_inv_array_b2b, $nill_inv_array_b2c);
             }
             if (!empty($nil_array)) {
-                $nil_ids['client_invoice']['invoice_id'] = array_unique(array_column($nil_array, 'invoice_id'));
+                $nil_ids = array_unique(array_column($nil_array, 'invoice_id'));
             }
 
             $dataArr["nill"][0]["inv"] = $nill_inv_array_b2b;
@@ -1113,7 +1117,7 @@ final class gstr1 extends validation {
                 }
             }
             if (!empty($exp_array)) {
-                $exp_ids['client_invoice']['invoice_id'] = array_unique(array_column($exp_array, 'invoice_id'));
+                $exp_ids = array_unique(array_column($exp_array, 'invoice_id'));
             }
 
             $x = 0;
@@ -1126,7 +1130,6 @@ final class gstr1 extends validation {
                 $dataArr['exp'][$x] = $dataArr2;
             }
         }
-        //$this->pr($dataArr);
         $response['exp_ids'] = $exp_ids;
         $response['exp_arr'] = $dataArr;
         return $response;
@@ -1161,6 +1164,8 @@ final class gstr1 extends validation {
             $dataArr['status'] = 1;
 
             if ($this->insert(TAB_PREFIX . 'return', $dataArr)) {
+				$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . "Initiated GSTR1 filling for financial month ".$fmonth,"gstr1");
+			
                 //$this->setSuccess('GSTR2 Saved Successfully');
                 return true;
             } else {
@@ -1168,17 +1173,7 @@ final class gstr1 extends validation {
                 return false;
             }
         } else {
-            /*
-              if ($this->update(TAB_PREFIX.'client_return_gstr3b', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
-              $this->setSuccess('GSTR3B Saved Successfully');
-              return true;
-              }
-              else
-              {
-              $this->setError('Failed to save GSTR3B data');
-              return false;
-              }
-             */
+           
         }
     }
 

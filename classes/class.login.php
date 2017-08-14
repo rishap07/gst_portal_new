@@ -45,7 +45,15 @@ class login extends validation {
                 $_SESSION['user_detail']['email'] = $server_output->data->user[0]->email;
                 $_SESSION['user_detail']['user_group'] = $server_output->data->user[0]->user_group;
 				$_SESSION["user_detail"]["profile_picture"] = $server_output->data->user[0]->profile_pics;
-
+				 $sql = "select  *,count(id) as total from ".TAB_PREFIX."admin_setting";
+                 $dataCurrentArr = $this->get_results($sql);
+				 if(!empty($dataCurrentArr))
+				 {
+					 $_SESSION["user_detail"]["tollfree_info"] = $dataCurrentArr[0]->tollfree_setting;
+					 $_SESSION["user_detail"]["livechat_info"] = $dataCurrentArr[0]->livechat_setting;
+				 }
+                $this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . "successfully login","login");
+		
                 for ($x = 0; $x < count($server_output->data->user_permission); $x++) {
 
                     $_SESSION['user_role'][$server_output->data->user_permission[$x]->role_page]['can_read'] = $server_output->data->user_permission[$x]->can_read;

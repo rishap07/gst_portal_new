@@ -29,6 +29,8 @@ final class gstr2 extends validation {
             }
             if ($this->updateMultiple($this->getTableName('client_invoice'), $dataUpdate)) {
                 $this->setSuccess("GSTR2 Data Downloaded");
+				$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " Download The GSTR2","gstr2");
+			
             } else {
                 $this->setError("Failed to Download Data");
             }
@@ -53,6 +55,8 @@ final class gstr2 extends validation {
 
             if ($this->insert(TAB_PREFIX . 'return', $dataArr)) {
                 //$this->setSuccess('GSTR2 Saved Successfully');
+				$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . "Initiated the GSTR2 Filling","gstr2");
+			
                 return true;
             } else {
                 $this->setError('Failed to save GSTR2 data');
@@ -80,11 +84,17 @@ final class gstr2 extends validation {
 				$id = $da->id;
 				unset($da->id);
 				$this->insert($this->getTableName('client_upload_gstr2'),$da);
+				$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . "Upload GSTR2 Data","gstr2");
+			
 				$this->update($this->getTableName('client_reconcile_purchase_invoice1'),array('is_uploaded'=>'1'),array('id'=>$id));
+					$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . "upload reconcile purchase invoice data","gstr2");
+			
 				$dataReturn = $this->get_results('select * from '.$this->getTableName('return')." where return_month='".$this->sanitize($_GET['returnmonth'])."' and type='gstr2'");
 				if(!empty($dataReturn))
 				{
 					$this->update($this->getTableName('return'),array('status'=>'2'),array('return_id'=>$dataReturn[0]->return_id));
+					$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . "Uploaded GSTR2 data","gstr2");
+			
 				}
 				else
 				{
@@ -94,9 +104,13 @@ final class gstr2 extends validation {
 					$dataRet['client_id']=$_SESSION['user_detail']['user_id'];
 					$dataRet['status']='2';
 					$this->insert($this->getTableName('return'),$dataRet);
+					$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . "Upload GSTR2 Data","gstr2");
+			
 				}
 			}
 			$this->setSuccess('Invoice Uploaded Successfully');
+			$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . "uploaded GSTR2 Invoice","gstr2");
+			
 			return true;
         }
 		else
@@ -111,7 +125,7 @@ final class gstr2 extends validation {
         
 		$dataReturn = $this->get_results('select * from '.$this->getTableName('return')." where return_month='".$this->sanitize($_GET['returnmonth'])."' and type='gstr1'");
 		if (!empty($dataReturn)) {
-			$dataGST1_set['financial_year'] = '2017-2018';
+			$dataGST1_set['financial_year'] = $this->generateFinancialYear();
 			$dataGST1_set['return_month'] = $fmonth;
 			$dataGST1_set['status'] = '3';
 
@@ -120,13 +134,17 @@ final class gstr2 extends validation {
 			$dataGST1['client_id'] = $_SESSION['user_detail']['user_id'];
 
 			$this->update($this->getTableName('return'), $dataGST1_set, $dataGST1);
+			$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . "update GSTR2 File ".$fmonth,"gstr2");
+			
 		} else {
-			$dataGST1['financial_year'] = '2017-2018';
+			$dataGST1['financial_year'] = $this->generateFinancialYear();
 			$dataGST1['return_month'] = $fmonth;
 			$dataGST1['type'] = 'gstr2';
 			$dataGST1['client_id'] = $_SESSION['user_detail']['user_id'];
 			$dataGST1['status'] = '3';
 			$this->insert($this->getTableName('return'), $dataGST1);
+			$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . "update GSTR2 File ".$fmonth,"gstr2");
+			
 		}
 		$this->setSuccess("GSTR2 is Filed");
         return true;

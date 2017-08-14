@@ -556,6 +556,7 @@ class common extends db {
             $this->insert(TAB_PREFIX . "admin_log", $dataArr);
         }
     }
+	
 
     public function clientlogMsg($msg = '') {
         if ($msg != '') {
@@ -564,6 +565,17 @@ class common extends db {
             $dataArr['ip'] = $this->getIPAddress();
             $dataArr['dateoflog'] = date('Y-m-d H:i:s');
             $this->insert(TAB_PREFIX . "user_log", $dataArr);
+        }
+    }
+	public function forgotemaillogMsg($msg = '', $module = '', $module_id = '',$userid) {
+        if ($msg != '') {
+            $dataArr['module_name'] = $module;
+            $dataArr['module_id'] = $module_id;
+            $dataArr['msg'] = $msg;
+            $dataArr['userid'] = $userid;
+            $dataArr['ip'] = $this->getIPAddress();
+            $dataArr['dateoflog'] = date('Y-m-d H:i:s');
+            $this->insert(TAB_PREFIX . "admin_log", $dataArr);
         }
     }
 

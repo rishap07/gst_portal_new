@@ -35,7 +35,7 @@ final class users extends validation {
         if ($this->insert($this->tableNames['user_subscribed_plan'], $dataArr)) {
 
             $insertid = $this->getInsertID();
-            $this->logMsg("New Plan Subscribed Added. ID : " . $insertid . ".");
+            $this->logMsg("New Plan Subscribed Added. ID : " . $insertid . ".","plan_addplan");
 
             $dataConditionArray['user_id'] = $_SESSION['user_detail']['user_id'];
             $dataUpdateArr['payment_status'] = "0";
@@ -328,7 +328,7 @@ final class users extends validation {
             if ($this->update($this->tableNames['user_theme_setting'], $dataArr, $dataConditionArray)) {
 
                 $this->setSuccess($this->validationMessage['themesettingsaved']);
-                $this->logMsg("Theme Setting ID : " . $_SESSION['user_detail']['user_id'] . " in theme setting has been updated.");
+                $this->logMsg("Theme Setting ID : " . $_SESSION['user_detail']['user_id'] . " in theme setting has been updated.","user_themesetting");
                 return true;
             } else {
 
@@ -344,7 +344,7 @@ final class users extends validation {
 
                 $this->setSuccess($this->validationMessage['themesettingsaved']);
                 $insertid = $this->getInsertID();
-                $this->logMsg("New Theme Setting Added. ID : " . $insertid . ".");
+                $this->logMsg("New Theme Setting Added. ID : " . $insertid . ".","user_themesetting");
                 return true;
             } else {
                 $this->setError($this->validationMessage['failed']);
@@ -418,7 +418,7 @@ final class users extends validation {
 
             $this->setSuccess($this->validationMessage['useradded']);
             $insertid = $this->getInsertID();
-            $this->logMsg("New User Added. ID : " . $insertid . ".");
+            $this->logMsg("New User Added. ID : " . $insertid . ".","user_adminupdate");
             return true;
         } else {
 
@@ -508,7 +508,7 @@ final class users extends validation {
         if ($this->update($this->tableNames['user'], $dataArr, $dataConditionArray)) {
 
             $this->setSuccess($this->validationMessage['useredited']);
-            $this->logMsg("User ID : " . $_GET['id'] . " in User has been updated");
+            $this->logMsg("User ID : " . $_GET['id'] . " in User has been updated","user_adminupdate");
             return true;
         } else {
 
@@ -563,7 +563,7 @@ final class users extends validation {
         if ($this->update($this->tableNames['user'], $dataArr, $dataConditionArray)) {
 
             $this->setSuccess($this->validationMessage['profileupdated']);
-            $this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " has been updated");
+            $this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " has been updated","update_subscriber");
             return true;
         } else {
 
@@ -610,7 +610,7 @@ final class users extends validation {
         if ($this->update($this->tableNames['user'], $dataUpdateArray, $dataConditionArray)) {
 
             $this->setSuccess($this->validationMessage['userdeleted']);
-            $this->logMsg("User ID : " . $userid . " in User has been deleted");
+            $this->logMsg("User ID : " . $userid . " in User has been deleted","user_update");
             return true;
         } else {
 
@@ -683,7 +683,7 @@ final class users extends validation {
         }
         $this->setSuccess($this->validationMessage['inserted']);
         $insertid = $this->getInsertID();
-        $this->logMsg("New User Role Added. ID : " . $insertid . ".");
+        $this->logMsg("New User Role Added. ID : " . $insertid . ".","user_role");
         return true;
     }
 
@@ -730,7 +730,7 @@ final class users extends validation {
             $this->setError($this->validationMessage['failed']);
             return false;
         }
-        $this->logMsg("User Role ID : " . $_GET['id'] . " in User Role Module has been updated");
+        $this->logMsg("User Role ID : " . $_GET['id'] . " in User Role Module has been updated","user_role");
         $this->setSuccess($this->validationMessage['update']);
         return true;
     }
@@ -765,7 +765,7 @@ final class users extends validation {
         }
         $this->setSuccess($this->validationMessage['inserted']);
         $insertid = $this->getInsertID();
-        $this->logMsg("New User Group Permission Added. ID : " . $insertid . ".");
+        $this->logMsg("New User Group Permission Added. ID : " . $insertid . ".","group_permission");
         return true;
     }
 

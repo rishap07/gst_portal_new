@@ -51,7 +51,7 @@ final class module extends validation {
 				if ($this->update(TAB_PREFIX.'module', $dataArr, $dataConditionArray)) {
 
 					$this->setSuccess("Module information updated successfully");
-					$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update the Module info");
+					$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update the Module info","module_update");
 					return true;
 				} else {
 
@@ -76,6 +76,7 @@ final class module extends validation {
 				
 					if ($this->insert(TAB_PREFIX.'module', $dataArr)) {
 						$this->setSuccess('Module Saved Successfully');
+						 $this->logMsg("New module added UserId :" .$_SESSION["user_detail"]["user_id"]."module name".$dataArr['module_name'],"module");
 						return true;
 					}
 					else
@@ -102,6 +103,8 @@ final class module extends validation {
 			{
 				if ($this->insert(TAB_PREFIX.'module', $dataArr)) {
 					$this->setSuccess('Module Saved Successfully');
+				  $this->logMsg("New module added UserId :" .$_SESSION["user_detail"]["user_id"]."module name".$dataArr['module_name'],"module");
+					
 					return true;
 				}
 				else

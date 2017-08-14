@@ -48,7 +48,7 @@ final class master extends validation {
         }
         $this->setSuccess($this->validationMessage['inserted']);
         $insertid = $this->getInsertID();
-        $this->logMsg("New State Added. ID : " . $insertid . ".");
+        $this->logMsg("New State Added. ID : " . $insertid . ".","state_master");
         return true;
     }
 
@@ -124,7 +124,7 @@ final class master extends validation {
                 if ($this->update(TAB_PREFIX . 'business_area', $dataArr, $dataConditionArray)) {
 
                     $this->setSuccess("Business area information updated successfully");
-                    $this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update the Business Area info");
+                    $this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update the Business Area info","business_area");
 
                     return true;
                 } else {
@@ -185,7 +185,7 @@ final class master extends validation {
                 if ($this->update(TAB_PREFIX . 'business_type', $dataArr, $dataConditionArray)) {
 
                     $this->setSuccess("Business name information updated successfully");
-                    $this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update the Business type info");
+                    $this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update the Business type info","business_type");
 
                     return true;
                 } else {
@@ -246,7 +246,7 @@ final class master extends validation {
                 if ($this->update(TAB_PREFIX . 'vendor_type', $dataArr, $dataConditionArray)) {
 
                     $this->setSuccess("Vendor information updated successfully");
-                    $this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update the vendor info");
+                    $this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update the vendor info","vendor_info");
 
                     return true;
                 } else {
@@ -349,7 +349,7 @@ final class master extends validation {
             $this->setError($this->validationMessage['failed']);
             return false;
         }
-        $this->logMsg("State ID : " . $_GET['id'] . " in State Master has been updated");
+        $this->logMsg("State ID : " . $_GET['id'] . " in State Master has been updated","state_master");
         $this->setSuccess($this->validationMessage['update']);
         return true;
     }
@@ -416,7 +416,7 @@ final class master extends validation {
 
         $this->setSuccess($this->validationMessage['inserted']);
         $insertid = $this->getInsertID();
-        $this->logMsg("New Unit Added. ID : " . $insertid . ".");
+        $this->logMsg("New Unit Added. ID : " . $insertid . ".","unit_master");
         return true;
     }
 
@@ -475,7 +475,7 @@ final class master extends validation {
             return false;
         }
 
-        $this->logMsg("Unit ID : " . $_GET['id'] . " in unit Master has been updated");
+        $this->logMsg("Unit ID : " . $_GET['id'] . " in unit Master has been updated","unit_master");
         $this->setSuccess($this->validationMessage['update']);
         return true;
     }
@@ -703,7 +703,7 @@ final class master extends validation {
                 if ($this->insertMultiple($this->tableNames['receiver'], $processedInvoiceItemArray)) {
 
                     $iteminsertid = $this->getInsertID();
-                    $this->logMsg("New Receiver Added. ID : " . $iteminsertid . ".");
+                    $this->logMsg("New Receiver Added. ID : " . $iteminsertid . ".","master_receiver");
                 }
 
 
@@ -889,7 +889,7 @@ final class master extends validation {
                 if ($this->insertMultiple($this->tableNames['supplier'], $processedInvoiceItemArray)) {
 
                     $iteminsertid = $this->getInsertID();
-                    $this->logMsg("New Supplier Added. ID : " . $iteminsertid . ".");
+                    $this->logMsg("New Supplier Added. ID : " . $iteminsertid . ".","master_supplier");
                 }
 
 
@@ -1216,7 +1216,7 @@ final class master extends validation {
         }
         $this->setSuccess($this->validationMessage['inserted']);
         $insertid = $this->getInsertID();
-        $this->logMsg("New Item Added. ID : " . $insertid . ".");
+        $this->logMsg("New Item Added. ID : " . $insertid . ".","item_master");
         return true;
     }
 
@@ -1273,7 +1273,7 @@ final class master extends validation {
             $this->setError($this->validationMessage['failed']);
             return false;
         }
-        $this->logMsg("Item ID : " . $_GET['id'] . " in Item Master has been updated");
+        $this->logMsg("Item ID : " . $_GET['id'] . " in Item Master has been updated","item_master");
         $this->setSuccess($this->validationMessage['update']);
         return true;
     }
@@ -1403,7 +1403,7 @@ final class master extends validation {
                 if ($this->insertMultiple($this->tableNames['client_master_item'], $processedInvoiceItemArray)) {
 
                     $iteminsertid = $this->getInsertID();
-                    $this->logMsg("New item Added. ID : " . $iteminsertid . ".");
+                    $this->logMsg("New item Added. ID : " . $iteminsertid . ".","item_master");
                 }
 
 

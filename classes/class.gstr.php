@@ -109,6 +109,7 @@ final class gstr extends validation {
     public function getOTPEncypt($otp)
     {
         $key = pack('H*', $_SESSION['hexcode']);
+        //echo 'key: '. $key ;
         //$otp = '575757';
         $this->hKey=$key;
         $otp_code = $otp;
@@ -247,7 +248,7 @@ final class gstr extends validation {
         $this->authenticateToken();
         //$this->pr($_SESSION);
         $json_data = json_encode($dataArr);
-       // echo $json_data;
+        // echo $json_data;
 
         $encodejson=base64_encode(openssl_encrypt(base64_encode($json_data),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
         $hmac = base64_encode(hash_hmac('sha256', base64_encode($json_data), $_SESSION['decrypt_sess_key'], true));
@@ -289,7 +290,7 @@ final class gstr extends validation {
             $ref = json_decode($decodejson);
 
             $refId = $ref->reference_id;
-            sleep(5);
+            //sleep(5);
             
             //Start code for create header
             $header2_array = array(
@@ -318,61 +319,48 @@ final class gstr extends validation {
                 ;
                 if(!empty($decodejson1) && $msg == '') {
                     $jstr1_status = json_decode($decodejson1,true);
-                    //$this->pr($jstr1_status);
+                    $this->pr($jstr1_status);
                     
-                    if(isset($jstr1_status['status_cd']) && $jstr1_status['status_cd']=='P'  && $msg == '') {
+                    if(isset($jstr1_status['status_cd']) && $jstr1_status['status_cd']=='P' && $msg == '') {
 
-                        $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/gstr1?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=RETSUM';
-                        $result_data_sum = $this->hitGetUrl($getReturnUrl, '', $header2);
-                        $retDta_sum = json_decode($result_data_sum);
-                        //$this->pr($retDta_sum);
-                        if(isset($retDta_sum->status_cd) && $retDta_sum->status_cd=='1'  && $msg == '')
+                        $msg = " Congratulations! GSTR1 Data Uploaded.";
+                        $error = 0;
+
+                        /*
+                        $sub_data='{
+                          "gstin": "'.$gstin.'",
+                          "ret_period": "'.$api_return_period.'"
+                        }';
+                        $encodejson=base64_encode(openssl_encrypt(base64_encode($sub_data),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
+                        $sdata1 = array("action" => 'RETSUBMIT', "data" => $encodejson);
+
+                        $data_string = json_encode($sdata1);
+                        
+                        //Start code for create header
+                        $header3_array = array(
+                          'accept:application/json',
+                          'auth-token:' . $_SESSION['auth_token'] . '',
+                          'gstin:' . $gstin . '',
+                          'ret_period: '.$api_return_period.' ',
+                          'username:' . $username . '',
+                          'action:RETSUBMIT'
+                        );
+                        $header3 = $this->header($header3_array);
+                        //End code for create header
+                        $mygetSubmitUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/gstr1';
+                        $submit_final_data = $this->hitUrl($mygetSubmitUrl, $data_string, $header3);
+                        $retDta_sumbit = json_decode($submit_final_data);
+                        //echo '<pre>'; print_r($retDta_sumbit);
+                        //die;
+                        if(isset($retDta_sumbit->status_cd) && $retDta_sumbit->status_cd=='1'  && $msg == '')
                         {
-                           
-                            $retRek_sum = $retDta_sum->rek;
-                            $retData_sum = $retDta_sum->data;
-                            $apiEk1_sum = openssl_decrypt(base64_decode($retRek_sum),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
-                            $decodejson_sum = base64_decode(openssl_decrypt(base64_decode($retData_sum),"aes-256-ecb",$apiEk1_sum, OPENSSL_RAW_DATA));
-                            $return_encode = $decodejson_sum;
-
-
-                            $sub_data='{
-                              "gstin": "'.$gstin.'",
-                              "ret_period": "'.$api_return_period.'"
-                            }';
-                            $encodejson=base64_encode(openssl_encrypt(base64_encode($sub_data),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
-                            $sdata1 = array("action" => 'RETSUBMIT', "data" => $encodejson);
-
-                            $data_string = json_encode($sdata1);
-                            
-                            //Start code for create header
-                            $header3_array = array(
-                              'accept:application/json',
-                              'auth-token:' . $_SESSION['auth_token'] . '',
-                              'gstin:' . $gstin . '',
-                              'ret_period: '.$api_return_period.' ',
-                              'username:' . $username . '',
-                              'action:RETSUBMIT'
-                            );
-                            $header3 = $this->header($header3_array);
-                            //End code for create header
-                            $mygetSubmitUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/gstr1';
-                            $submit_final_data = $this->hitUrl($mygetSubmitUrl, $data_string, $header3);
-                            $retDta_sumbit = json_decode($submit_final_data);
-                            //echo '<pre>'; print_r($retDta_sumbit);
-                            //die;
-                            if(isset($retDta_sumbit->status_cd) && $retDta_sumbit->status_cd=='1'  && $msg == '')
-                            {
-                                $msg = "Congratulations! invoice has been saved";
-                                $error = 0;
-                            }
-                            else {
-                               $msg = $retDta_sumbit->error->message;
-                            }
+                            $msg = "Congratulations! invoice has been saved";
+                            $error = 0;
                         }
                         else {
-                            $msg = "Sorry! Unable to process";
+                           $msg = $retDta_sumbit->error->message;
                         }
+                        */
                     }
                     else {
                         $this->array_key_search('error_msg', $jstr1_status);
@@ -473,6 +461,7 @@ final class gstr extends validation {
             $user_gstr = $this->get_user_gstr();
             if(!empty($user_gstr)) {
                 $last_auth_date = $user_gstr[0]->added_date;
+                $user_id = $user_gstr[0]->user_id;
                 $today_date = date('Y-m-d h:i:s');
                 $diff = (strtotime($today_date)-strtotime($last_auth_date));
                 
@@ -497,6 +486,9 @@ final class gstr extends validation {
                         $check = $user_gstr[0]->added_date;
                     }
                     
+                }
+                else {
+                    $this->query("DELETE FROM ".$this->getTableName('user_gstr1')." WHERE user_id = ".$user_id);
                 }
             }
             
