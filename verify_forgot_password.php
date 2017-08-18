@@ -21,7 +21,16 @@ if(isset($_GET['verifyForgot']) && isset($_GET['passkey']))
 			if($db_obj->forgotEmailVerify())
 			{
 			
-			//$_SESSION["success_verify"] ="success";
+			$sql="select email,user_id from ".TAB_PREFIX."user WHERE forgotemail_code='".$_SESSION['user_detail']['token']."'";
+	
+			$dataUserArr = $obj_login->get_results($sql);
+				
+			
+			 if(!empty($dataUserArr))
+			 {
+			$obj_login->forgotemaillogMsg("User ID : " . $dataUserArr[0]->user_id . "verify ForgotPassword link","forgot_password",'',$dataUserArr[0]->user_id);
+		    	 
+			 }	
 			$db_obj->redirect(PROJECT_URL."/verify_forgot_password.php");
 			}
 			else
@@ -51,9 +60,21 @@ if (isset($_POST['resetpass']) && $_POST['resetpass'] == 'Reset Password'){
 		
 			if($obj_login->updatePassword())
 			{
+			$sql="select email,user_id from ".TAB_PREFIX."user WHERE forgotemail_code='".$_SESSION['user_detail']['token']."'";
+	
+			$dataUserArr = $obj_login->get_results($sql);
+				
+			
+			 if(!empty($dataUserArr))
+			 {
+			$obj_login->forgotemaillogMsg("User ID : " . $dataUserArr[0]->user_id . " update the password","forgot_password",'',$dataUserArr[0]->user_id);
+		    	 
+			// $obj_login->forgotemaillogMsg("ForgotPassword link is sent to User ID : " . $dataUserArr[0]->user_id,"forgot_password",'',$dataUserArr[0]->user_id);
+			 }	
 			unset($_SESSION['user_detail']['passkey']);
 			unset($_SESSION['user_detail']['token']);
 			$_SESSION["success_verify_forgot"]="success";
+			
 		
 			}
 	}
