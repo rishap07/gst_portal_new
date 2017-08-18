@@ -20,9 +20,15 @@ if (isset($_POST['forgot']) && $_POST['forgot'] == 'Send Email'){
     } else {
 		
      if ($obj_login->forgotPassword()) {
-		 
+		 $sql="select email,user_id from ".TAB_PREFIX."user WHERE email='".$_POST["email"]."'";
+		 $dataUserArr = $obj_login->get_results($sql);
+	
 		 $_SESSION['success_forgot']='success';
-         
+		 if(!empty($dataUserArr))
+		 {
+			 
+         $obj_login->forgotemaillogMsg("ForgotPassword link is sent to User ID : " . $dataUserArr[0]->user_id,"forgot_password",'',$dataUserArr[0]->user_id);
+		 }
       }
 	   
 	 
