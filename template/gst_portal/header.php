@@ -5,7 +5,7 @@
 	}
 	
 ?>
-<!DOCTYPE html>
+
 <html lang="En">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -14,7 +14,7 @@
 	
 	<!--COMMON CSS START HERE-->
 	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/bootstrap.min.css?8" />
-	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/style.css?8" />
+	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/style.css?10" />
 	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/font-awesome.min.css?8" />
 	<!--COMMON CSS END HERE-->
 
@@ -93,9 +93,19 @@
 		<div class="logo"><a href="#"></a></div> 
 		<div class="topnav">
 			<ul class="topstripnav"> 
+			  <?php
+			 
+				$dataArrSetting = $db_obj->getAdminSetting();
+			  if (!empty($dataArrSetting)) {
+                 echo  html_entity_decode($dataArrSetting[0]->tollfree_setting);
+				 echo  html_entity_decode($dataArrSetting[0]->livechat_setting);			 
+				}
+				
+				 ?>
+				<!--
 				<li><div class="tollfreenumber" style="margin-top:-15px;">Toll Free<br/> <span>1800-212-2022</span> </div><span class="iconphone"></span></li>
 				<li><a href="javascript:void(0)"><div class="tollfreenumber"> <span>Live Chat</span></div> <span class="iconchat"></span></a></li>
-				
+		     //-->
 				<?php 
 				if(($_SESSION["user_detail"]["user_group"]==3) || ($_SESSION["user_detail"]["user_group"]==4))
 				{
@@ -123,10 +133,13 @@
                <li><div class="userinfo">
 				<?php 
 				$profile_pics= '/image/user-img.jpg';
-			     if(isset($_SESSION["user_detail"]["profile_picture"]) && $_SESSION["user_detail"]["profile_picture"]!='')
-			     { 
-					$profile_pics="/upload/profile-picture/".$_SESSION["user_detail"]["profile_picture"];
-				 }
+				$dataArr = $db_obj->getUserDetailsById($_SESSION["user_detail"]["user_id"]);
+			  
+				 if ($dataArr['data'] != '' && isset($dataArr['data']->profile_pics) &&($dataArr['data']->profile_pics!='') ) {
+                  $profile_pics="/upload/profile-picture/".$dataArr['data']->profile_pics;					 
+				}
+				
+			    
 				?>
 					<a href="<?php echo PROJECT_URL; ?>/?page=subscriber_update"><img style="height:40px;" src="<?php echo PROJECT_URL.$profile_pics; ?>" alt="#"></a><?php echo ucwords($_SESSION['user_detail']['name']);?></div></li>
 				<li style="border-right:none;"><a href="<?php echo PROJECT_URL; ?>/?page=logout" class="btnlogout"><span class="fa fa-sign-out" aria-hidden="true"></span> LOGOUT</a></li>
@@ -272,9 +285,7 @@
 						<a href="#" data-target="#item5" data-toggle="collapse"><i class="fa fa-list"></i> 
 						<span class="collapse in hidden-xs">Sales Invoices <span class="navrgtarrow"><i class="fa fa-chevron-right" aria-hidden="true"></i></span></span></a>
 						<ul class="nav nav-stacked collapse left-submenu" id="item5">
-							
-							<!--<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_upload_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Upload Invoices</a></li><?php } ?>-->
-
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_upload_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Upload Invoices</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Tax Invoices</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Tax Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_export_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Tax Export Invoice</a></li><?php } ?>
@@ -309,12 +320,22 @@
 						</ul>
 					</li>
 				 <?php } ?>
+				 
 
 				
 					<?php if ($db_obj->can_read('client_invoice')) { ?>
 						<li><a href="<?php echo PROJECT_URL . '/?page=return_client'; ?>"><i class="fa fa-refresh"></i> <span class="collapse in hidden-xs">Return</span></a></li>
 					<?php } ?>
-				
+				 <?php if ($db_obj->can_read('activitylog')) { ?>
+					<li>
+						<a href="#" data-target="#itemActivity" data-toggle="collapse"><i class="fa fa-list"></i> 
+						<span class="collapse in hidden-xs">System Setting <span class="navrgtarrow"><i class="fa fa-chevron-right" aria-hidden="true"></i></span></span></a>
+						<ul class="nav nav-stacked collapse left-submenu" id="itemActivity">
+							<?php if ($db_obj->can_read('activitylog')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=activitylog'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>ActivityLog</a></li><?php } ?>
+						
+						</ul>
+					</li>
+				 <?php } ?>
 
 				<?php if (isset($_SESSION['publisher']['user_id'])) { ?>
 					<li><a href="<?php echo PROJECT_URL . '/?page=client_loginas&permission=revert'; ?>"><i class="fa fa-refresh"></i> <span class="collapse in hidden-xs">Revert to Login</span></a></li>

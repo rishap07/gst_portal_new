@@ -63,7 +63,7 @@ input[type='submit'] {text-transform:capitalize;}
 	transform: translateY(-50%) translateX(-50%) rotate(90deg);}
 .animation:hover:after {opacity: 1;height: 600% !important;}
 
-.wrapper, .row { height: 100%; margin-left:0; margin-right:0;}
+.wrapper, .row {  margin-left:0; margin-right:0;}
 .wrapper:before, .wrapper:after,
 .column:before, .column:after {content: ""; display: table;}
 .wrapper:after, .column:after {clear: both;}
@@ -149,7 +149,7 @@ input[type='submit'] {text-transform:capitalize;}
 .btnlogout:hover { background:#e44a16; color:#FFF !important; text-decoration:none;}
 .btnlogout:hover .fa {color:#FFF !important;}
 .userinfo { margin-top:-14px; font-family: opensans_bold; font-size:13px;}
-.userinfo img { margin-right:5px}
+.userinfo img { margin-right:5px; border-radius:50% 50%; min-height:40px; min-width:45px;  max-height:40px; max-width:45px;}
 .hidemenu a { font-size:13px; color:#00a3e2 !important;}
 .hidemenu a .fa { font-size:25px}
 .mobilemenu, .mobileheader { display:none;}
