@@ -56,15 +56,15 @@ if (isset($_POST['iSortCol_0'])) {
  * word by word on any field. It's possible to do here, but concerned about efficiency
  * on very large tables, and MySQL's regex functionality is very limited
  */
-
+ $spWhere = "where is_deleted='0'";
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
     
-   // $spWhere .= 'AND (';
-   // for ($i = 0; $i < count($aSearchColumns); $i++) {
-    //    $spWhere .= $aSearchColumns[$i] . " LIKE '%" . utf8_encode(htmlentities($_POST['sSearch'],ENT_COMPAT,'utf-8')) . "%' OR ";
-  //  }
-  //  $spWhere = substr_replace($spWhere, "", -3);
-   // $spWhere .= ')';
+    $spWhere .= 'AND (';
+    for ($i = 0; $i < count($aSearchColumns); $i++) {
+        $spWhere .= $aSearchColumns[$i] . " LIKE '%" . utf8_encode(htmlentities($_POST['sSearch'],ENT_COMPAT,'utf-8')) . "%' OR ";
+  }
+   $spWhere = substr_replace($spWhere, "", -3);
+    $spWhere .= ')';
 }
 
 /* Individual column filtering */
@@ -88,7 +88,7 @@ for ($i = 0; $i < count($aColumns); $i++) {
 $spjoin = $spTable;
 $spQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ", $aColumns)) . "
             FROM $spjoin
-          
+            $spWhere
             $spOrder
             $spLimit
 	"; 

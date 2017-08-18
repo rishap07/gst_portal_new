@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
 }
 
 
-if (!$obj_client->can_read('coupon_update')) {
+if (!$obj_client->can_read('notification_list')) {
 
     $obj_client->setError($obj_client->getValMsg('can_read'));
     $obj_client->redirect(PROJECT_URL . "/?page=dashboard");
