@@ -17,137 +17,161 @@ final class purchase extends validation {
 
 	/* validate client purchase invoice */
 	public function validateClientPurchaseInvoice($dataArr) {
-
-		if( array_key_exists("reference_number", $dataArr) ) {
-            $rules['reference_number'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Reference Number';
-        }
-
-		if( array_key_exists("invoice_type", $dataArr) ) {
+		
+		if (array_key_exists("invoice_type", $dataArr)) {
             $rules['invoice_type'] = 'required||invoicetype|#|lable_name:Invoice Type';
         }
 
-		if( array_key_exists("invoice_nature", $dataArr) ) {
+        if (array_key_exists("invoice_nature", $dataArr)) {
             $rules['invoice_nature'] = 'required||invoicenature|#|lable_name:Invoice Nature';
         }
-
-		if( array_key_exists("company_name", $dataArr) ) {
-            $rules['company_name'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Recipient Name';
+		
+		if (array_key_exists("invoice_date", $dataArr)) {
+            $rules['invoice_date'] = 'required||date|#|lable_name:Invoice Date';
+        }
+		
+		if (array_key_exists("reference_number", $dataArr)) {
+            $rules['reference_number'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||max:16|#|lable_name:Reference Number';
         }
 
-		if( array_key_exists("company_address", $dataArr) ) {
-            $rules['company_address'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Recipient Address';
+		if (array_key_exists("company_name", $dataArr)) {
+            $rules['company_name'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Company Name';
         }
 
-		if( array_key_exists("company_state", $dataArr) ) {
-            $rules['company_state'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Recipient State';
+        if (array_key_exists("company_address", $dataArr)) {
+            $rules['company_address'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Company Address';
         }
 
-		if( array_key_exists("company_gstin_number", $dataArr) ) {
-            $rules['company_gstin_number'] = 'required||pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:Recipient GSTIN Number';
+        if (array_key_exists("company_state", $dataArr)) {
+            $rules['company_state'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Company State';
         }
 
-		if( array_key_exists("supply_type", $dataArr) ) {
+        if (array_key_exists("company_gstin_number", $dataArr)) {
+            $rules['company_gstin_number'] = 'required||pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:Company GSTIN Number';
+        }
+
+        if (array_key_exists("supply_type", $dataArr)) {
             $rules['supply_type'] = 'required||supplytype|#|lable_name:Supply Type';
         }
-
+		
 		if( array_key_exists("import_supply_meant", $dataArr) ) {
             $rules['import_supply_meant'] = 'required||supplymeant|#|lable_name:Supply Meant';
         }
 
-		if( array_key_exists("invoice_date", $dataArr) ) {
-            $rules['invoice_date'] = 'required||date|#|lable_name:Invoice Date';
+		if (array_key_exists("import_bill_number", $dataArr)) {
+            $rules['import_bill_number'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Import Bill Number';
+        }
+
+		if (array_key_exists("import_bill_port_code", $dataArr)) {
+            $rules['import_bill_port_code'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||max:6|#|lable_name:Import Bill Port Code';
+        }
+
+		if (array_key_exists("import_bill_date", $dataArr)) {
+            $rules['import_bill_date'] = 'required||date|#|lable_name:Import Bill Date';
+        }
+		
+		if (array_key_exists("invoice_corresponding_type", $dataArr)) {
+            $rules['invoice_corresponding_type'] = 'required||invoiecorresponding|#|lable_name:Invoice Corresponding Type';
+        }
+
+        if (array_key_exists("corresponding_document_number", $dataArr)) {
+            $rules['corresponding_document_number'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Corresponding Document Number';
+        }
+
+        if (array_key_exists("corresponding_document_date", $dataArr)) {
+            $rules['corresponding_document_date'] = 'required||date|#|lable_name:Corresponding Document Date';
+        }
+
+        if (array_key_exists("is_tax_payable", $dataArr)) {
+            $rules['is_tax_payable'] = 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Tax Reverse Charge';
+        }
+
+		if (array_key_exists("supply_place", $dataArr)) {
+            $rules['supply_place'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Place Of Supply';
         }
 
 		if( array_key_exists("description", $dataArr) ) {
             $rules['description'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Description';
         }
 
-		if( array_key_exists("supply_place", $dataArr) ) {
-            $rules['supply_place'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Place Of Supply';
-        }
-
-		if( array_key_exists("advance_adjustment", $dataArr) ) {
+		if (array_key_exists("advance_adjustment", $dataArr)) {
             $rules['advance_adjustment'] = 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Advance Adjustment';
         }
 
-		if( array_key_exists("supplier_billing_name", $dataArr) ) {
-            $rules['supplier_billing_name'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Supplier Billing Name';
+		if (array_key_exists("refund_voucher_receipt", $dataArr)) {
+            $rules['refund_voucher_receipt'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Receipt Voucher';
         }
 
-		if( array_key_exists("supplier_billing_company_name", $dataArr) ) {
-            $rules['supplier_billing_company_name'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Supplier Billing Company Name';
-        }
-
-		if( array_key_exists("supplier_billing_address", $dataArr) ) {
-            $rules['supplier_billing_address'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Supplier Billing Address';
-        }
-
-		if( array_key_exists("supplier_billing_state", $dataArr) ) {
-            $rules['supplier_billing_state'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Supplier Billing State';
+		if (array_key_exists("supplier_billing_name", $dataArr)) {
+            $rules['supplier_billing_name'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Billing Name';
         }
 		
-		if( array_key_exists("supplier_billing_state_name", $dataArr) ) {
-            $rules['supplier_billing_state_name'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Supplier Billing State Name';
+		if (array_key_exists("supplier_billing_company_name", $dataArr)) {
+            $rules['supplier_billing_company_name'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Billing Company Name';
         }
 
-		if( array_key_exists("supplier_billing_gstin_number", $dataArr) ) {
-			$rules['supplier_billing_gstin_number'] = 'pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:Supplier Billing GSTIN Number';
+        if (array_key_exists("supplier_billing_address", $dataArr)) {
+            $rules['supplier_billing_address'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Billing Address';
         }
 
-		if( array_key_exists("recipient_shipping_name", $dataArr) ) {
-			$rules['recipient_shipping_name'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Recipient Shipping Name';
+        if (array_key_exists("supplier_billing_state", $dataArr)) {
+            $rules['supplier_billing_state'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Billing State';
         }
 		
-		if( array_key_exists("recipient_shipping_company_name", $dataArr) ) {
+		if (array_key_exists("supplier_billing_state_name", $dataArr)) {
+            $rules['supplier_billing_state_name'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Billing State Name';
+        }
+
+		if (array_key_exists("supplier_billing_country", $dataArr)) {
+            $rules['supplier_billing_country'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Billing Country';
+        }
+
+		if (array_key_exists("supplier_billing_vendor_type", $dataArr)) {
+            $rules['supplier_billing_vendor_type'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Billing Vendor Type';
+        }
+
+        if (array_key_exists("supplier_billing_gstin_number", $dataArr)) {
+            $rules['supplier_billing_gstin_number'] = 'pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:Billing GSTIN Number';
+        }
+
+		if (array_key_exists("recipient_shipping_name", $dataArr)) {
+            $rules['recipient_shipping_name'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Recipient Shipping Name';
+        }
+		
+		if (array_key_exists("recipient_shipping_company_name", $dataArr)) {
             $rules['recipient_shipping_company_name'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Recipient Shipping Company Name';
         }
 
-		if( array_key_exists("recipient_shipping_address", $dataArr) ) {
-			$rules['recipient_shipping_address'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Recipient Shipping Address';
+        if (array_key_exists("recipient_shipping_address", $dataArr)) {
+            $rules['recipient_shipping_address'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Recipient Shipping Address';
         }
 
-		if( array_key_exists("recipient_shipping_state", $dataArr) ) {
-			$rules['recipient_shipping_state'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Recipient Shipping State';
+        if (array_key_exists("recipient_shipping_state", $dataArr)) {
+            $rules['recipient_shipping_state'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Recipient Shipping State';
         }
 
-		if( array_key_exists("recipient_shipping_state_name", $dataArr) ) {
+		if (array_key_exists("recipient_shipping_state_name", $dataArr)) {
             $rules['recipient_shipping_state_name'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Recipient Shipping State Name';
         }
 
-		if( array_key_exists("recipient_shipping_gstin_number", $dataArr) ) {
-			$rules['recipient_shipping_gstin_number'] = 'pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:Recipient Shipping GSTIN Number';
+		if (array_key_exists("recipient_shipping_country", $dataArr)) {
+            $rules['recipient_shipping_country'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Recipient Shipping Country';
         }
 
-		if( array_key_exists("invoice_document_nature", $dataArr) ) {
-            $rules['invoice_document_nature'] = 'required||invoicedocumentnature|#|lable_name:Invoice Document Nature';
+		if (array_key_exists("recipient_shipping_vendor_type", $dataArr)) {
+            $rules['recipient_shipping_vendor_type'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Recipient Shipping Vendor Type';
         }
 
-		if( array_key_exists("invoice_corresponding_type", $dataArr) ) {
-            $rules['invoice_corresponding_type'] = 'required||invoiecorresponding|#|lable_name:Corresponding Invoice Type';
+        if (array_key_exists("recipient_shipping_gstin_number", $dataArr)) {
+            $rules['recipient_shipping_gstin_number'] = 'pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:Recipient Shipping GSTIN Number';
         }
 
-		if( array_key_exists("corresponding_invoice_number", $dataArr) ) {
-            $rules['corresponding_invoice_number'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Corresponding Invoice Number';
-        }
-
-		if( array_key_exists("corresponding_invoice_date", $dataArr) ) {
-            $rules['corresponding_invoice_date'] = 'required||date|#|lable_name:Corresponding Invoice Date';
-        }
-
-		if( array_key_exists("is_canceled", $dataArr) ) {
-            $rules['is_canceled'] = 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Canceled Value';
-        }
-
-		if( array_key_exists("is_tax_payable", $dataArr) ) {
-            $rules['is_tax_payable'] = 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Tax Reverse Charge';
-        }
-		
 		$valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
+            cms_validate::$errors = array();
             $err_arr = $valid->allErrors();
-            $this->setError($err_arr);
             $valid->clearMessages();
-            return false;
+            return $err_arr;
         }
         return true;
     }
@@ -155,53 +179,53 @@ final class purchase extends validation {
 
 	/* validate client invoice items */
     public function validateClientPurchaseInvoiceItem($dataArr, $serialno) {
-
-		if( array_key_exists("invoice_itemid", $dataArr) ) {
-            $rules['invoice_itemid'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Invoice Item no. '.$serialno;
-        }
 		
-		if( array_key_exists("invoice_quantity", $dataArr) ) {
-            $rules['invoice_quantity'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Quantity of Item no. '.$serialno;
-        }
-		
-		if( array_key_exists("invoice_unit", $dataArr) ) {
-            $rules['invoice_unit'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Unit of Item no. '.$serialno;
+		if (array_key_exists("invoice_itemid", $dataArr)) {
+            $rules['invoice_itemid'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Invoice Item no. ' . $serialno;
         }
 
-		if( array_key_exists("invoice_rate", $dataArr) ) {
-            $rules['invoice_rate'] = 'required||numeric|#|lable_name:Rate of Item no. '.$serialno;
+		if (array_key_exists("invoice_quantity", $dataArr)) {
+            $rules['invoice_quantity'] = 'required||numeric||decimal|#|lable_name:Quantity of Item no. ' . $serialno;
         }
 
-		if( array_key_exists("invoice_discount", $dataArr) ) {
-            $rules['invoice_discount'] = 'numeric|#|lable_name:Discount of Item no. '.$serialno;
+        if (array_key_exists("invoice_discount", $dataArr)) {
+            $rules['invoice_discount'] = 'numeric||decimalzero|#|lable_name:Discount of Item no. ' . $serialno;
         }
 
-		if( array_key_exists("invoice_advancevalue", $dataArr) ) {
-            $rules['invoice_advancevalue'] = 'numeric|#|lable_name:Advance Amount of Item no. '.$serialno;
+		if (array_key_exists("invoice_rate", $dataArr)) {
+            $rules['invoice_rate'] = 'required||numeric||decimal|#|lable_name:Rate of Item no. ' . $serialno;
         }
 
-		if( array_key_exists("invoice_cgstrate", $dataArr) ) {
-            $rules['invoice_cgstrate'] = 'numeric|#|lable_name:CGST Rate of Item no. '.$serialno;
+        if (array_key_exists("invoice_taxablevalue", $dataArr)) {
+            $rules['invoice_taxablevalue'] = 'required||numeric||decimalzero|#|lable_name:Taxable Amount of Item no. ' . $serialno;
         }
 
-		if( array_key_exists("invoice_sgstrate", $dataArr) ) {
-            $rules['invoice_sgstrate'] = 'numeric|#|lable_name:SGST Rate of Item no. '.$serialno;
+		if (array_key_exists("invoice_advancevalue", $dataArr)) {
+            $rules['invoice_advancevalue'] = 'numeric||decimalzero|#|lable_name:Advance Amount of Item no. ' . $serialno;
         }
 
-		if( array_key_exists("invoice_igstrate", $dataArr) ) {
-            $rules['invoice_igstrate'] = 'numeric|#|lable_name:IGST Rate of Item no. '.$serialno;
+		if (array_key_exists("invoice_cgstrate", $dataArr)) {
+            $rules['invoice_cgstrate'] = 'numeric|#|lable_name:CGST Rate of Item no. ' . $serialno;
         }
 
-		if( array_key_exists("invoice_cessrate", $dataArr) ) {
-            $rules['invoice_cessrate'] = 'numeric|#|lable_name:CESS Rate of Item no. '.$serialno;
+		if (array_key_exists("invoice_sgstrate", $dataArr)) {
+            $rules['invoice_sgstrate'] = 'numeric|#|lable_name:SGST Rate of Item no. ' . $serialno;
         }
 
-        $valid = $this->vali_obj->validate($dataArr, $rules);
+		if (array_key_exists("invoice_igstrate", $dataArr)) {
+            $rules['invoice_igstrate'] = 'numeric|#|lable_name:IGST Rate of Item no. ' . $serialno;
+        }
+
+		if (array_key_exists("invoice_cessrate", $dataArr)) {
+            $rules['invoice_cessrate'] = 'numeric|#|lable_name:CESS Rate of Item no. ' . $serialno;
+        }
+
+		$valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
+            cms_validate::$errors = array();
             $err_arr = $valid->allErrors();
-            $this->setError($err_arr);
             $valid->clearMessages();
-            return false;
+            return $err_arr;
         }
         return true;
     }

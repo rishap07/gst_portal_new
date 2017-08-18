@@ -45,7 +45,6 @@ final class gstr1 extends validation {
                 }
                 $this->updateMultiple($this->getTableName('client_invoice'), $dataUpdate);
 				$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update GSTR1 all invoices financial month ".$fmonth,"gstr1");
-			
 				
             }
             else
@@ -107,6 +106,7 @@ final class gstr1 extends validation {
                 $dataArr = $payload['data_arr'];
                 $data_ids = $payload['data_ids'];
                 $response = $obj_gst->returnSave($dataArr, $fmonth);
+                
                 if (!empty($response['error'] == 0)) {
                     $flag = 1;
                     if (!empty($data_ids)) {
@@ -142,7 +142,7 @@ final class gstr1 extends validation {
                             }
                         }
                         /* ******* End Code for Return Save ************************* */
-                        $this->setSuccess($response['message']);
+                        $this->setSuccess(" Congratulations! GSTR1 Data Uploaded.");
                     } 
                     else {
                         $flag = 2;
@@ -188,7 +188,7 @@ final class gstr1 extends validation {
             }
             if ($this->updateMultiple($this->getTableName('client_invoice'), $dataUpdate)) {
                 $flag = 1;
-        $dataReturn = $this->get_results('select * from '.$this->getTableName('return')." where return_month='".$this->sanitize($_GET['returnmonth'])."' and type='gstr1'");
+                $dataReturn = $this->get_results('select * from '.$this->getTableName('return')." where return_month='".$this->sanitize($_GET['returnmonth'])."' and type='gstr1'");
                 if (!empty($dataReturn)) {
                     $dataGST1_set['financial_year'] = $this->generateFinancialYear();
                     $dataGST1_set['return_month'] = $fmonth;
@@ -244,6 +244,7 @@ final class gstr1 extends validation {
 
         return $dataArr;
     }
+
     public function gstCreatePayload($user_id, $returnmonth) {
         $data_ids = array();
         $dataArr = $this->gstPayloadHeader($user_id, $returnmonth);
@@ -347,12 +348,12 @@ final class gstr1 extends validation {
         }
         /***** End Code For TXPD Payload ********** */
 
-        
+       /* 
        //$this->pr($cdnur_data);
-        /*$this->pr($dataArr);
+        $this->pr($dataArr);
         $this->pr($data_ids);        
-        die; 
-        */
+        die;*/ 
+        
         $temp_id = '';
         $x = 0;
         $update_final_string = '';
@@ -372,6 +373,81 @@ final class gstr1 extends validation {
         $response['data_ids'] = $update_final_string;
         $response['data_arr'] = $dataArr;
         return $response;
+    }
+
+    public function gstDeleteItemPayload($returnmonth,$type,$data) {
+        $obj_gst = new gstr();
+        $user_id = $_SESSION['user_detail']['user_id'];
+        $dataArr = $this->gstPayloadHeader($user_id, $returnmonth);
+        $deletePayload = $this->gstDeletePayload($type,$data);
+        $dataArr = array_merge($dataArr, $deletePayload);
+        $response = $obj_gst->returnDeleteItems($dataArr,$returnmonth);
+        $obj_gst = new gstr();
+        //$obj_gst->gstr_session_destroy();
+        $is_gross_turnover_check = $obj_gst->is_gross_turnover_check($_SESSION['user_detail']['user_id']);
+        $flag = 0;
+        if (!empty($is_gross_turnover_check)) {
+                if (!empty($response['error'] == 0)) {
+                    $flag = 1;
+                    if (!empty($data_ids)) {
+                        /********** Start Code for Update Invoice is upload ************* */
+                        $flagup = 0;
+                        /*$this->pr($data_ids);
+                        die;*/
+                        $this->query("UPDATE ".$this->getTableName('client_invoice')." SET is_gstr1_uploaded='0' WHERE invoice_id in (".$data_ids.")");
+                        
+                        /*********** End code for Update Invoice is upload ********* */
+                        $this->setSuccess(" Congratulations! GSTR1 Data Deleted.");
+                    } 
+                    else {
+                        $flag = 2;
+                        $this->setError('file not deleted');
+                    }
+                } else {
+                    $flag = 2;
+                    $this->setError($response['message']);
+                }
+            }
+            if ($flag == 1) {
+                return true;
+            }
+            if ($flag == 2) {
+                return false;
+            }
+        } else {
+            $this->setError('Sorry! Please update your gross turnover');
+            return false;
+        }
+        return false;
+        
+    }
+
+    public function gstDeletePayload($type,$data) {
+        $dataArr = array();
+        
+        if($type == 'B2CS') {
+            $sply_ty = isset($data['sply_ty'])?$data['sply_ty']:'';
+            $typ = isset($data['typ'])?$data['typ']:'';
+            $pos = isset($data['pos'])?$data['pos']:'';
+
+            $dataArr['b2cs'][0]['typ'] = $typ;
+            $dataArr['b2cs'][0]['sply_ty'] = $sply_ty;
+            $dataArr['b2cs'][0]['pos'] = $pos;
+            $dataArr['b2cs'][0]['flag'] = 'D';
+        }
+
+        if($type == 'AT') {
+            $sply_ty = isset($data['sply_ty'])?$data['sply_ty']:'';
+            $typ = isset($data['typ'])?$data['typ']:'';
+            $pos = isset($data['pos'])?$data['pos']:'';
+
+            $dataArr['b2cs'][0]['typ'] = $typ;
+            $dataArr['b2cs'][0]['sply_ty'] = $sply_ty;
+            $dataArr['b2cs'][0]['pos'] = $pos;
+            $dataArr['b2cs'][0]['flag'] = 'D';
+        }
+        
+        return $dataArr;
     }
 
     public function gstB2BPayload($user_id, $returnmonth) {

@@ -435,7 +435,7 @@ final class master extends validation {
 
         $rules = array(
             'unit_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Unit Name',
-            'unit_code' => 'required||pattern:/^[' . $this->validateType['alphanumeric'] . ']+$/|#|lable_name:Unit Code',
+            'unit_code' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Unit Code',
             'status' => 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Status'
         );
 

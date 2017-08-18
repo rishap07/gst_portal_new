@@ -17,7 +17,7 @@ class login extends validation {
         $dataArr['password'] = isset($_POST['login_password']) ? $_POST['login_password'] : '';
 
         if (!$this->validateLogin($dataArr)) {
-            return false;
+			 return false;
         }
 
         $dataArr['api_code'] = 'XYZ';
@@ -45,6 +45,7 @@ class login extends validation {
                 $_SESSION['user_detail']['email'] = $server_output->data->user[0]->email;
                 $_SESSION['user_detail']['user_group'] = $server_output->data->user[0]->user_group;
 				$_SESSION["user_detail"]["profile_picture"] = $server_output->data->user[0]->profile_pics;
+				/*
 				 $sql = "select  *,count(id) as total from ".TAB_PREFIX."admin_setting";
                  $dataCurrentArr = $this->get_results($sql);
 				 if(!empty($dataCurrentArr))
@@ -52,6 +53,7 @@ class login extends validation {
 					 $_SESSION["user_detail"]["tollfree_info"] = $dataCurrentArr[0]->tollfree_setting;
 					 $_SESSION["user_detail"]["livechat_info"] = $dataCurrentArr[0]->livechat_setting;
 				 }
+				 */
                 $this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . "successfully login","login");
 		
                 for ($x = 0; $x < count($server_output->data->user_permission); $x++) {
@@ -78,7 +80,9 @@ class login extends validation {
                 return false;
             }
         } else {
+
             $this->setError($this->validationMessage['loginerror']);
+						
             return false;
         }
     }
@@ -95,6 +99,7 @@ class login extends validation {
             $err_arr = $valid->allErrors();
             $this->setError($err_arr);
             $valid->clearMessages();
+			
             return false;
         }
         return true;

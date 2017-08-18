@@ -74,7 +74,8 @@ class validation extends upload {
 			'module'=>TAB_PREFIX.'module',
 			'place_of_supply'=>TAB_PREFIX.'place_of_supply',
 			'admin_log'=>TAB_PREFIX.'admin_log',
-			'admin_setting'=>TAB_PREFIX.'admin_setting'
+			'admin_setting'=>TAB_PREFIX.'admin_setting',
+            'email_templates'=>TAB_PREFIX.'email_templates'
 			
 			
         );

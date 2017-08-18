@@ -166,7 +166,7 @@ final class client extends validation {
             
 			if ($this->update($this->tableNames['client_kyc'], $dataArr, $dataConditionArray)) {
                 $this->setSuccess($this->validationMessage['kycupdated']);
-                $this->logMsg("User KYC ID : " . $this->sanitize(base64_decode($_POST['clientID'])) . " has been updated.");
+                $this->logMsg("User KYC ID : " . $this->sanitize(base64_decode($_POST['clientID'])) . " has been updated.","client_kycupdate");
                 return true;
             } else {
                 $this->setError($this->validationMessage['failed']);
@@ -180,7 +180,7 @@ final class client extends validation {
 			if ($this->insert($this->tableNames['client_kyc'], $dataArr)) {
                 $this->setSuccess($this->validationMessage['kycupdated']);
                 $insertid = $this->getInsertID();
-                $this->logMsg("User KYC Added. ID : " . $insertid . ".");
+                $this->logMsg("User KYC Added. ID : " . $insertid . ".","client_kycupdate");
                 return true;
             } else {
                 $this->setError($this->validationMessage['failed']);
@@ -297,6 +297,8 @@ final class client extends validation {
 
 						$x509 = new File_X509();
 						$cert = $x509->loadX509($cert_content);
+						/*echo '';print_r($cert);
+						die;*/
 						if(!empty($cert)) {
 							
 							if(!empty($x509->validateDate())) {
@@ -341,7 +343,7 @@ final class client extends validation {
             //$this->pr($dataArr);die;
 			if ($this->update($this->tableNames['client_kyc'], $dataArr, $dataConditionArray)) {
                 $this->setSuccess($this->validationMessage['kycupdated']);
-                $this->logMsg("User KYC ID : " . $_SESSION['user_detail']['user_id'] . " has been updated.");
+                $this->logMsg("User KYC ID : " . $_SESSION['user_detail']['user_id'] . " has been updated.","client_kycupdate");
                 return true;
             } else {
                 $this->setError($this->validationMessage['failed']);
@@ -355,7 +357,7 @@ final class client extends validation {
 			if ($this->insert($this->tableNames['client_kyc'], $dataArr)) {
                 $this->setSuccess($this->validationMessage['kycupdated']);
                 $insertid = $this->getInsertID();
-                $this->logMsg("User KYC Added. ID : " . $insertid . ".");
+                $this->logMsg("User KYC Added. ID : " . $insertid . ".","client_kycupdate");
                 return true;
             } else {
                 $this->setError($this->validationMessage['failed']);
@@ -466,7 +468,7 @@ final class client extends validation {
 
             $this->setSuccess($this->validationMessage['iteminserted']);
             $insertid = $this->getInsertID();
-            $this->logMsg("New Item Added. ID : " . $insertid . ".");
+            $this->logMsg("New Item Added. ID : " . $insertid . ".","client_item_update");
             return true;
         } else {
 
@@ -502,7 +504,7 @@ final class client extends validation {
         if ($this->update($this->tableNames['client_master_item'], $dataArr, $dataConditionArray)) {
 
             $this->setSuccess($this->validationMessage['itemupdated']);
-            $this->logMsg("Item ID : " . $_GET['id'] . " has been updated");
+            $this->logMsg("Item ID : " . $_GET['id'] . " has been updated","client_item_update");
             return true;
         } else {
 
@@ -545,7 +547,7 @@ final class client extends validation {
         if ($this->update($this->tableNames['client_master_item'], $dataUpdateArray, $dataConditionArray)) {
 
             $this->setSuccess($this->validationMessage['itemdeleted']);
-            $this->logMsg("Item ID : " . $itemid . " in client master Item has been deleted");
+            $this->logMsg("Item ID : " . $itemid . " in client master Item has been deleted","client_item_update");
             return true;
         } else {
 
@@ -600,7 +602,7 @@ final class client extends validation {
 
             $this->setSuccess($this->validationMessage['useradded']);
             $insertid = $this->getInsertID();
-            $this->logMsg("New User Added. ID : " . $insertid . ".");
+            $this->logMsg("New User Added. ID : " . $insertid . ".","addClientUser");
             return true;
         } else {
 
@@ -644,7 +646,7 @@ final class client extends validation {
         if ($this->update($this->tableNames['user'], $dataArr, $dataConditionArray)) {
 
             $this->setSuccess($this->validationMessage['useredited']);
-            $this->logMsg("User ID : " . $_GET['id'] . " has been updated");
+            $this->logMsg("User ID : " . $_GET['id'] . " has been updated","updateClientUser");
             return true;
         } else {
 
@@ -694,7 +696,7 @@ final class client extends validation {
         if ($this->update($this->tableNames['user'], $dataUpdateArray, $dataConditionArray)) {
 
             $this->setSuccess($this->validationMessage['userdeleted']);
-            $this->logMsg("User ID : " . $userid . " in User has been deleted");
+            $this->logMsg("User ID : " . $userid . " in User has been deleted","deleteClientUser");
             return true;
         } else {
 
@@ -864,11 +866,11 @@ final class client extends validation {
         if (array_key_exists("invoice_type", $dataArr)) {
 			$rules['invoice_type'] = 'required||invoicetype|#|lable_name:Invoice Type';
 		}
-		
+
 		if (array_key_exists("invoice_date", $dataArr)) {
 			$rules['invoice_date'] = 'required||date|#|lable_name:Invoice Date';
 		}
-		
+
 		if (array_key_exists("reference_number", $dataArr)) {
 			$rules['reference_number'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||max:16|#|lable_name:Reference Number';
 		}
@@ -876,7 +878,7 @@ final class client extends validation {
 		if (array_key_exists("supply_type", $dataArr)) {
 			$rules['supply_type'] = 'required||supplytype|#|lable_name:Supply Type';
 		}
-		
+
 		if (array_key_exists("ecommerce_gstin_number", $dataArr)) {
 			$rules['ecommerce_gstin_number'] = 'required||pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:Ecommerce GSTIN Number';
 		}
@@ -920,6 +922,10 @@ final class client extends validation {
 		if (array_key_exists("supply_place", $dataArr)) {
 			$rules['supply_place'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Place Of Supply';
 		}
+		
+		if( array_key_exists("description", $dataArr) ) {
+            $rules['description'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Description';
+        }
 
 		if (array_key_exists("advance_adjustment", $dataArr)) {
 			$rules['advance_adjustment'] = 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Advance Adjustment';
@@ -1569,7 +1575,7 @@ final class client extends validation {
                         if ($this->insert($this->tableNames['client_invoice'], $InsertArray)) {
 
                             $insertid = $this->getInsertID();
-                            $this->logMsg("Sales Tax Invoice Added. ID : " . $insertid . ".");
+                            $this->logMsg("Sales Tax Invoice Added. ID : " . $insertid . ".","client_create_invoice");
 
                             $processedInvoiceItemArray = array();
                             foreach ($invoiceItemArray as $itemArr) {
@@ -1581,7 +1587,7 @@ final class client extends validation {
                             if ($this->insertMultiple($this->tableNames['client_invoice_item'], $processedInvoiceItemArray)) {
 
                                 $iteminsertid = $this->getInsertID();
-                                $this->logMsg("Sales Tax Invoice Item Added. ID : " . $iteminsertid . ".");
+                                $this->logMsg("Sales Tax Invoice Item Added. ID : " . $iteminsertid . ".","client_create_invoice");
                             }
                         }
                     }
@@ -1639,6 +1645,7 @@ final class client extends validation {
                     $dataArray['invoice_type'] = "sezunitinvoice";
                 } else {
 					$errorflag = true;
+					$dataArray['invoice_type'] = "Invalid Invoice Type.";
 					array_push($currentItemError, "Invalid Invoice Type.");
                 }
 				
@@ -1649,6 +1656,7 @@ final class client extends validation {
                     $dataArray['export_supply_meant'] = "withoutpayment";
                 } else {
 					$errorflag = true;
+					$dataArray['export_supply_meant'] = "Invalid Export Supply Meant.";
 					array_push($currentItemError, "Invalid Export Supply Meant.");
                 }
 
@@ -1657,7 +1665,7 @@ final class client extends validation {
 				$supply_place = isset($data['E']) ? $data['E'] : '';
                 if ($supply_place != '') {
 
-                    $supply_state_data = $this->getStateDetailByStateCode($supply_place);
+                    $supply_state_data = $this->getStateDetailByStateNameCode($supply_place);
                     if ($supply_state_data['status'] === "success") {
                         $dataArray['supply_place'] = $supply_state_data['data']->state_id;
                     } else {
@@ -1667,6 +1675,7 @@ final class client extends validation {
                     }
                 } else {
 					$errorflag = true;
+					$dataArray['supply_place'] = 'Invalid Place Of Supply.';
 					array_push($currentItemError, "Invalid Place Of Supply.");
                 }
 
@@ -1677,6 +1686,7 @@ final class client extends validation {
                     $dataArray['advance_adjustment'] = 0;
                 } else {
 					$errorflag = true;
+					$dataArray['advance_adjustment'] = "Invalid Advance Adjustment.";
 					array_push($currentItemError, "Invalid Advance Adjustment.");
                 }
 
@@ -1688,6 +1698,7 @@ final class client extends validation {
 						$dataArray['receipt_voucher_number'] = $dataReceiptVoucherArrs->invoice_id;
                     } else {
                         $errorflag = true;
+						$dataArray['receipt_voucher_number'] = "Invalid Receipt Voucher.";
                         array_push($currentItemError, "Invalid Receipt Voucher.");
                     }
 				}
@@ -1699,16 +1710,20 @@ final class client extends validation {
 				$billing_state = isset($data['K']) ? $data['K'] : '';
                 if ($billing_state != '') {
 
-                    $billing_state_data = $this->getStateDetailByStateCode($billing_state);
+                    $billing_state_data = $this->getStateDetailByStateNameCode($billing_state);
                     if ($billing_state_data['status'] === "success") {
 						$dataArray['billing_state'] = $billing_state_data['data']->state_id;
 						$dataArray['billing_state_name'] = $billing_state_data['data']->state_name;
                     } else {
                         $errorflag = true;
+						$dataArray['billing_state'] = "Invalid Billing State.";
+						$dataArray['billing_state_name'] = "Invalid Billing State.";
                         array_push($currentItemError, "Invalid Billing State.");
                     }
                 } else {
 					$errorflag = true;
+					$dataArray['billing_state'] = "Invalid Billing State.";
+					$dataArray['billing_state_name'] = "Invalid Billing State.";
 					array_push($currentItemError, "Invalid Billing State.");
                 }
 
@@ -1720,10 +1735,12 @@ final class client extends validation {
 						$dataArray['billing_country'] = $billing_country_data['data']->id;
                     } else {
                         $errorflag = true;
+						$dataArray['billing_country'] = "Invalid Billing Country.";
                         array_push($currentItemError, "Invalid Billing Country.");
                     }
                 } else {
 					$errorflag = true;
+					$dataArray['billing_country'] = "Invalid Billing Country.";
 					array_push($currentItemError, "Invalid Billing Country.");
                 }
 
@@ -1735,10 +1752,12 @@ final class client extends validation {
 						$dataArray['billing_vendor_type'] = $dataVendorNameArrs->vendor_id;
                     } else {
                         $errorflag = true;
+						$dataArray['billing_vendor_type'] = "Invalid Billing Vendor Type.";
                         array_push($currentItemError, "Invalid Billing Vendor Type.");
                     }
                 } else {
 					$errorflag = true;
+					$dataArray['billing_vendor_type'] = "Invalid Billing Vendor Type.";
 					array_push($currentItemError, "Invalid Billing Vendor Type.");
                 }
 
@@ -1751,16 +1770,20 @@ final class client extends validation {
 				$shipping_state = isset($data['R']) ? $data['R'] : '';
                 if ($shipping_state != '') {
 
-                    $shipping_state_data = $this->getStateDetailByStateCode($shipping_state);
+                    $shipping_state_data = $this->getStateDetailByStateNameCode($shipping_state);
                     if ($shipping_state_data['status'] === "success") {
 						$dataArray['shipping_state'] = $shipping_state_data['data']->state_id;
 						$dataArray['shipping_state_name'] = $shipping_state_data['data']->state_name;
                     } else {
                         $errorflag = true;
+						$dataArray['shipping_state'] = "Invalid Shipping State.";
+						$dataArray['shipping_state_name'] = "Invalid Shipping State.";
                         array_push($currentItemError, "Invalid Shipping State.");
                     }
                 } else {
 					$errorflag = true;
+					$dataArray['shipping_state'] = "Invalid Shipping State.";
+					$dataArray['shipping_state_name'] = "Invalid Shipping State.";
 					array_push($currentItemError, "Invalid Shipping State.");
                 }
 
@@ -1772,10 +1795,12 @@ final class client extends validation {
 						$dataArray['shipping_country'] = $shipping_country_data['data']->id;
                     } else {
                         $errorflag = true;
+						$dataArray['shipping_country'] = "Invalid Shipping Country.";
                         array_push($currentItemError, "Invalid Shipping Country.");
                     }
                 } else {
 					$errorflag = true;
+					$dataArray['shipping_country'] = "Invalid Shipping Country.";
 					array_push($currentItemError, "Invalid Shipping Country.");
                 }
 
@@ -1787,10 +1812,12 @@ final class client extends validation {
 						$dataArray['shipping_vendor_type'] = $dataVendorNameArrs->vendor_id;
                     } else {
                         $errorflag = true;
+						$dataArray['shipping_vendor_type'] = "Invalid Shipping Vendor Type.";
                         array_push($currentItemError, "Invalid Shipping Vendor Type.");
                     }
                 } else {
 					$errorflag = true;
+					$dataArray['shipping_vendor_type'] = "Invalid Shipping Vendor Type.";
 					array_push($currentItemError, "Invalid Shipping Vendor Type.");
                 }
 
@@ -2099,7 +2126,7 @@ final class client extends validation {
                         if ($this->insert($this->tableNames['client_invoice'], $InsertArray)) {
 
                             $insertid = $this->getInsertID();
-                            $this->logMsg("Sales Export Tax Invoice Added. ID : " . $insertid . ".");
+                            $this->logMsg("Sales Export Tax Invoice Added. ID : " . $insertid . ".","Salesexport_tax_invoice");
 
                             $processedInvoiceItemArray = array();
                             foreach ($invoiceItemArray as $itemArr) {
@@ -2111,7 +2138,7 @@ final class client extends validation {
                             if ($this->insertMultiple($this->tableNames['client_invoice_item'], $processedInvoiceItemArray)) {
 
                                 $iteminsertid = $this->getInsertID();
-                                $this->logMsg("Sales Export Tax Invoice Item Added. ID : " . $iteminsertid . ".");
+                                $this->logMsg("Sales Export Tax Invoice Item Added. ID : " . $iteminsertid . ".","Salesexport_tax_invoice");
                             }
                         }
                     }
@@ -2493,7 +2520,7 @@ final class client extends validation {
 						if ($this->insert($this->tableNames['client_invoice'], $InsertArray)) {
 
 							$insertid = $this->getInsertID();
-							$this->logMsg("BOS Invoice Added. ID : " . $insertid . ".");
+							$this->logMsg("BOS Invoice Added. ID : " . $insertid . ".","client_create_bill_of_supply_invoice");
 
 							$processedInvoiceItemArray = array();
 							foreach ($invoiceItemArray as $itemArr) {
@@ -2505,7 +2532,7 @@ final class client extends validation {
 							if ($this->insertMultiple($this->tableNames['client_invoice_item'], $processedInvoiceItemArray)) {
 
 								$iteminsertid = $this->getInsertID();
-								$this->logMsg("BOS Invoice Item Added. ID : " . $iteminsertid . ".");
+								$this->logMsg("BOS Invoice Item Added. ID : " . $iteminsertid . ".","client_create_bill_of_supply_invoice");
 							}
 						}
                     }
@@ -2521,298 +2548,429 @@ final class client extends validation {
     public function uploadClientRVInvoice() {
 
         $flag = true;
-        $errorflag = false;
-        $dataArray = array();
-        $indexArray = array();
-        $invoiceArray = array();
-        $invoiceItemArray = array();
+		$errorflag = false;
+		$dataArray = array();
+		$indexArray = array();
+		$invoiceArray = array();
+		$invoiceItemArray = array();
+		$currentFinancialYear = $this->generateFinancialYear();
 
         if ($_FILES['invoice_xlsx']['name'] != '' && $_FILES['invoice_xlsx']['error'] == 0) {
 
             $invoice_excel = $this->imageUploads($_FILES['invoice_xlsx'], 'invoice-docs', 'upload', $this->allowExcelExt);
-            if ($invoice_excel == FALSE) {
-                return false;
-            }
+			if ($invoice_excel == FALSE) {
+				return false;
+			}
 
-            $invoice_excel_dir_path = PROJECT_ROOT . UPLOAD_DIR . "/invoice-docs/" . $invoice_excel;
-            $invoice_excel_url_path = PROJECT_URL . UPLOAD_DIR . "/invoice-docs/" . $invoice_excel;
+			$invoice_excel_dir_path = PROJECT_ROOT . UPLOAD_DIR . "/invoice-docs/" . $invoice_excel;
+			$invoice_excel_url_path = PROJECT_URL . UPLOAD_DIR . "/invoice-docs/" . $invoice_excel;
 
             $objPHPExcel = PHPExcel_IOFactory::load($invoice_excel_dir_path);
-            $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+			$sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
 			$sheetData = array_map('array_filter', $sheetData);
 			$sheetData = array_filter($sheetData);
 
             foreach ($sheetData as $rowKey => $data) {
 
-                if ($flag) {
-                    $indexArray = $data;
-                    $flag = false;
-                    continue;
-                }
+				if ($flag) {
+					$indexArray = $data;
+					$flag = false;
+					continue;
+				}
 
                 $currentItemError = array();
                 $dataArray['reference_number'] = isset($data['A']) ? $data['A'] : '';
                 $dataArray['invoice_date'] = isset($data['B']) ? $data['B'] : '';
 
-                $supply_place = isset($data['C']) ? $data['C'] : '';
-                if ($supply_place != '') {
-
-                    $supply_state_data = $this->getStateDetailByStateCode($supply_place);
-                    if ($supply_state_data['status'] === "success") {
-                        $dataArray['supply_place'] = $supply_state_data['data']->state_id;
-                    } else {
-
-                        $errorflag = true;
-                        array_push($currentItemError, "Invalid supply state code.");
-                        $dataArray['supply_place'] = 'Invalid State';
-                    }
-                } else {
-                    $dataArray['supply_place'] = $supply_place;
-                }
-
-                $dataArray['billing_name'] = isset($data['D']) ? $data['D'] : '';
-                $dataArray['billing_address'] = isset($data['E']) ? $data['E'] : '';
-                $billing_state = isset($data['F']) ? $data['F'] : '';
-
-                if ($billing_state != '') {
-
-                    $billing_state_data = $this->getStateDetailByStateCode($billing_state);
-                    if ($billing_state_data['status'] === "success") {
-                        $dataArray['billing_state'] = $billing_state_data['data']->state_id;
-                        $dataArray['billing_state_name'] = $billing_state_data['data']->state_name;
-                    } else {
-
-                        $errorflag = true;
-                        array_push($currentItemError, "Invalid billing state code.");
-                        $dataArray['billing_state'] = 'Invalid State';
-                    }
-                } else {
-                    $dataArray['billing_state'] = $billing_state;
-                }
-
-                $dataArray['billing_gstin_number'] = isset($data['G']) ? $data['G'] : '';
-                $dataArray['shipping_name'] = isset($data['H']) ? $data['H'] : '';
-                $dataArray['shipping_address'] = isset($data['I']) ? $data['I'] : '';
-                $shipping_state = isset($data['J']) ? $data['J'] : '';
-
-                if ($shipping_state != '') {
-
-                    $shipping_state_data = $this->getStateDetailByStateCode($shipping_state);
-                    if ($shipping_state_data['status'] === "success") {
-                        $dataArray['shipping_state'] = $shipping_state_data['data']->state_id;
-                        $dataArray['shipping_state_name'] = $shipping_state_data['data']->state_name;
-                    } else {
-
-                        $errorflag = true;
-                        array_push($currentItemError, "Invalid shipping state code.");
-                        $dataArray['shipping_state'] = 'Invalid State';
-                    }
-                } else {
-                    $dataArray['shipping_state'] = $shipping_state;
-                }
-
-                $dataArray['shipping_gstin_number'] = isset($data['K']) ? $data['K'] : '';
-
-                $item_name = isset($data['L']) ? trim($data['L']) : '';
-                $item_hsn_code = isset($data['M']) ? trim($data['M']) : '';
-
-                //if(!empty($item_hsn_code)) { $item_hsn_code = str_pad($item_hsn_code, 8, "0", STR_PAD_LEFT); }
-
-                $dataArray['advance_value'] = isset($data['N']) ? $data['N'] : '';
-
-                $is_tax_payable = isset($data['O']) ? $data['O'] : '';
+				$is_tax_payable = isset($data['C']) ? $data['C'] : '';
                 if ($is_tax_payable != '' && strtoupper($is_tax_payable) === 'Y') {
                     $dataArray['is_tax_payable'] = 1;
                 } else if ($is_tax_payable != '' && strtoupper($is_tax_payable) === 'N') {
                     $dataArray['is_tax_payable'] = 0;
                 } else {
-                    $dataArray['is_tax_payable'] = $is_tax_payable;
-                }
-
-                if ($item_name != '' && $item_hsn_code != '') {
-
-                    $checkClientMasterItem = $this->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit, u.unit_id, u.unit_name, u.unit_code from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m, " . $this->tableNames['unit'] . " as u where 1=1 AND cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.item_name = '" . $item_name . "' && m.hsn_code = '" . $item_hsn_code . "' AND cm.is_deleted='0' AND cm.status = '1' AND cm.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
-
-                    if (count($checkClientMasterItem) == 1) {
-
-                        $dataArray['item_name'] = $item_name;
-                        $dataArray['item_hsn_code'] = $item_hsn_code;
-                    } else {
-
-                        $errorflag = true;
-                        array_push($currentItemError, "Item not exist with this hsn code.");
-                        $dataArray['item_name'] = "#####Item not exist#####";
-                        $dataArray['item_hsn_code'] = "#####HSN code not exist#####";
-                    }
-                } else {
-                    $dataArray['item_name'] = $item_name;
-                    $dataArray['item_hsn_code'] = $item_hsn_code;
-                }
-
-                $invoiceErrors = $this->validateClientInvoiceExcel($dataArray);
-                if ($invoiceErrors !== true || !empty($currentItemError)) {
-
                     $errorflag = true;
-                    if ($invoiceErrors === true) {
-                        $invoiceErrors = array();
-                    }
-                    $invoiceErrors = array_merge($invoiceErrors, $currentItemError);
-                    $invoiceErrors = implode(", ", $invoiceErrors);
-                    $objPHPExcel->getActiveSheet()->SetCellValue('P' . $rowKey, $invoiceErrors);
+					array_push($currentItemError, "Invalid Tax Payable.");
                 }
 
-                /* get current user data */
-                $dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
+                $supply_place = isset($data['D']) ? $data['D'] : '';
+				if ($supply_place != '') {
 
-                /* create invoice array */
-                $arrayKey = $dataArray['reference_number'];
+					$supply_state_data = $this->getStateDetailByStateCode($supply_place);
+					if ($supply_state_data['status'] === "success") {
+						$dataArray['supply_place'] = $supply_state_data['data']->state_id;
+					} else {
+						$errorflag = true;
+						array_push($currentItemError, "Invalid Place Of Supply.");
+						$dataArray['supply_place'] = 'Invalid Place Of Supply.';
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Place Of Supply.");
+				}
 
-                $invoiceArray[$arrayKey]['reference_number'] = $dataArray['reference_number'];
-                $invoiceArray[$arrayKey]['company_name'] = $dataCurrentUserArr['data']->kyc->name;
-                $invoiceArray[$arrayKey]['company_address'] = $dataCurrentUserArr['data']->kyc->registered_address;
-                $invoiceArray[$arrayKey]['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
-                $invoiceArray[$arrayKey]['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
-                $invoiceArray[$arrayKey]['invoice_date'] = $dataArray['invoice_date'];
-                $invoiceArray[$arrayKey]['supply_place'] = $dataArray['supply_place'];
+				$dataArray['billing_name'] = isset($data['E']) ? $data['E'] : '';
+				$dataArray['billing_company_name'] = isset($data['F']) ? $data['F'] : '';
+				$dataArray['billing_address'] = isset($data['G']) ? $data['G'] : '';
+
+				$billing_state = isset($data['H']) ? $data['H'] : '';
+				if ($billing_state != '') {
+
+					$billing_state_data = $this->getStateDetailByStateCode($billing_state);
+					if ($billing_state_data['status'] === "success") {
+						$dataArray['billing_state'] = $billing_state_data['data']->state_id;
+						$dataArray['billing_state_name'] = $billing_state_data['data']->state_name;
+					} else {
+						$errorflag = true;
+						array_push($currentItemError, "Invalid Billing State.");
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Billing State.");
+				}
+
+				$billing_country = isset($data['I']) ? $data['I'] : '';
+				if ($billing_country != '') {
+
+					$billing_country_data = $this->getCountryDetailByCountryCode($billing_country);
+					if ($billing_country_data['status'] === "success") {
+						$dataArray['billing_country'] = $billing_country_data['data']->id;
+					} else {
+						$errorflag = true;
+						array_push($currentItemError, "Invalid Billing Country.");
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Billing Country.");
+				}
+
+				$billing_vendor_type = isset($data['J']) ? $data['J'] : '';
+				if ($billing_vendor_type != '') {
+
+					$dataVendorNameArrs = $this->get_row("select vendor_id, vendor_name from ".$this->tableNames['vendor_type']." where 1=1 AND UPPER(vendor_name) = '".strtoupper($billing_vendor_type)."' AND status='1' AND is_deleted='0'");
+					if (!empty($dataVendorNameArrs) && isset($dataVendorNameArrs->vendor_id)) {
+						$dataArray['billing_vendor_type'] = $dataVendorNameArrs->vendor_id;
+					} else {
+						$errorflag = true;
+						array_push($currentItemError, "Invalid Billing Vendor Type.");
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Billing Vendor Type.");
+				}
+
+				$dataArray['billing_gstin_number'] = isset($data['K']) ? $data['K'] : '';
+
+				$dataArray['shipping_name'] = isset($data['L']) ? $data['L'] : '';
+				$dataArray['shipping_company_name'] = isset($data['M']) ? $data['M'] : '';
+				$dataArray['shipping_address'] = isset($data['N']) ? $data['N'] : '';
+
+				$shipping_state = isset($data['O']) ? $data['O'] : '';
+				if ($shipping_state != '') {
+
+					$shipping_state_data = $this->getStateDetailByStateCode($shipping_state);
+					if ($shipping_state_data['status'] === "success") {
+						$dataArray['shipping_state'] = $shipping_state_data['data']->state_id;
+						$dataArray['shipping_state_name'] = $shipping_state_data['data']->state_name;
+					} else {
+						$errorflag = true;
+						array_push($currentItemError, "Invalid Shipping State.");
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Shipping State.");
+				}
+
+				$shipping_country = isset($data['P']) ? $data['P'] : '';
+				if ($shipping_country != '') {
+
+					$shipping_country_data = $this->getCountryDetailByCountryCode($shipping_country);
+					if ($shipping_country_data['status'] === "success") {
+						$dataArray['shipping_country'] = $shipping_country_data['data']->id;
+					} else {
+						$errorflag = true;
+						array_push($currentItemError, "Invalid Shipping Country.");
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Shipping Country.");
+				}
+
+				$shipping_vendor_type = isset($data['Q']) ? $data['Q'] : '';
+				if ($shipping_vendor_type != '') {
+
+					$dataVendorNameArrs = $this->get_row("select vendor_id, vendor_name from ".$this->tableNames['vendor_type']." where 1=1 AND UPPER(vendor_name) = '".strtoupper($shipping_vendor_type)."' AND status='1' AND is_deleted='0'");
+					if (!empty($dataVendorNameArrs) && isset($dataVendorNameArrs->vendor_id)) {
+						$dataArray['shipping_vendor_type'] = $dataVendorNameArrs->vendor_id;
+					} else {
+						$errorflag = true;
+						array_push($currentItemError, "Invalid Shipping Vendor Type.");
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Shipping Vendor Type.");
+				}
+
+				$dataArray['shipping_gstin_number'] = isset($data['R']) ? $data['R'] : '';
+
+                $item_name = isset($data['S']) ? trim($data['S']) : '';
+				$item_hsncode = isset($data['T']) ? trim($data['T']) : '';				
+
+				if(!empty($item_name) && !empty($item_hsncode)) {
+
+					$checkClientMasterItem = $this->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_description, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m where 1=1 AND cm.item_category = m.item_id AND cm.item_name = '" . $item_name . "' && m.hsn_code = '" . $item_hsncode . "' AND cm.is_deleted='0' AND cm.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
+					if (!empty($checkClientMasterItem)) {
+
+						$dataArray['item_id'] = $checkClientMasterItem->item_id;
+						$dataArray['item_name'] = $item_name;
+						$dataArray['item_hsncode'] = $item_hsncode;
+					} else {
+
+						$masterItem = $this->get_row("select item_id, item_name, hsn_code from " . $this->tableNames['item'] . " where hsn_code='".$item_hsncode."' and is_deleted='0' AND status='1'");						
+						if(!empty($masterItem)) {
+
+							$masterNUnit = $this->get_row("select unit_id from " . $this->tableNames['unit'] . " as u where u.unit_code='NA' and u.is_deleted='0' AND u.status = '1'");
+							if(!empty($masterNUnit)) {
+								$master_unit_id = $masterNUnit->unit_id;
+							} else {
+								$master_unit_id = 0;
+							}
+
+							$dataInsertItemArray['item_name'] = $item_name;
+							$dataInsertItemArray['item_category'] = $masterItem->item_id;
+							$dataInsertItemArray['item_unit'] = $master_unit_id;
+							$dataInsertItemArray['status'] = '1';
+							$dataInsertItemArray['added_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);
+							$dataInsertItemArray['added_date'] = date('Y-m-d H:i:s');
+
+							if ($this->insert($this->tableNames['client_master_item'], $dataInsertItemArray)) {
+
+								$iteminsertid = $this->getInsertID();
+								$dataArray['item_id'] = $iteminsertid;
+								$dataArray['item_name'] = $item_name;
+								$dataArray['item_hsncode'] = $masterItem->hsn_code;
+							} else {
+								$errorflag = true;
+								array_push($currentItemError, $this->getValMsg('failed'));
+							}
+						} else {
+							$errorflag = true;
+							array_push($currentItemError, "Description of Goods and HSN Code should be valid.");
+						}
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Description of Goods and HSN Code should be valid.");
+				}
+
+				$dataArray['advance_amount'] = isset($data['U']) ? $data['U'] : 0.000;
+				$dataArray['cgst_rate'] = isset($data['V']) ? $data['V'] : 0.000;
+				$dataArray['sgst_rate'] = isset($data['W']) ? $data['W'] : 0.000;
+				$dataArray['igst_rate'] = isset($data['X']) ? $data['X'] : 0.000;
+				$dataArray['cess_rate'] = isset($data['Y']) ? $data['Y'] : 0.000;
+
+				/* get current user data */
+				$dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
+
+				if($dataCurrentUserArr['data']->kyc->state_id === $dataArray['supply_place']) {
+
+					if($dataArray['cgst_rate'] != $dataArray['sgst_rate']) {
+						$errorflag = true;
+						array_push($currentItemError, "CGST and SGST rate should be same for item number.");
+					}
+				}
+
+				/* check reference number */
+				$referenceStatus = $this->checkReferenceNumberExist($dataArray['reference_number'], $this->sanitize($_SESSION['user_detail']['user_id']));
+				if($referenceStatus == true) {
+					$errorflag = true;
+					array_push($currentItemError, "You have already used this reference number.");
+				}
+
+				/* Invoice Description */
+				$dataArray['description'] = isset($data['Z']) ? $data['Z'] : '';
+
+				$invoiceErrors = $this->validateClientInvoiceExcel($dataArray);
+				if ($invoiceErrors !== true || !empty($currentItemError)) {
+
+					$errorflag = true;
+					if ($invoiceErrors === true) {
+						$invoiceErrors = array();
+					}
+					$invoiceErrors = array_merge($invoiceErrors, $currentItemError);
+					$invoiceErrors = implode(", ", $invoiceErrors);
+					$objPHPExcel->getActiveSheet()->SetCellValue('AA' . $rowKey, $invoiceErrors);
+				}
+
+				/* create invoice array */
+				$arrayKey = $dataArray['reference_number'];
+
+				$invoiceArray[$arrayKey]['invoice_type'] = 'receiptvoucherinvoice';
+				$invoiceArray[$arrayKey]['invoice_nature'] = 'salesinvoice';
+				$invoiceArray[$arrayKey]['reference_number'] = $dataArray['reference_number'];
+				$invoiceArray[$arrayKey]['company_name'] = $dataCurrentUserArr['data']->kyc->name;
+				$invoiceArray[$arrayKey]['company_address'] = $dataCurrentUserArr['data']->kyc->full_address;
+				$invoiceArray[$arrayKey]['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
+				$invoiceArray[$arrayKey]['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
+				$invoiceArray[$arrayKey]['invoice_date'] = $dataArray['invoice_date'];
+				$invoiceArray[$arrayKey]['supply_place'] = $dataArray['supply_place'];				
                 $invoiceArray[$arrayKey]['is_tax_payable'] = $dataArray['is_tax_payable'];
-                $invoiceArray[$arrayKey]['billing_name'] = $dataArray['billing_name'];
-                $invoiceArray[$arrayKey]['billing_address'] = $dataArray['billing_address'];
-                $invoiceArray[$arrayKey]['billing_state'] = $dataArray['billing_state'];
-                $invoiceArray[$arrayKey]['billing_state_name'] = $dataArray['billing_state_name'];
-                $invoiceArray[$arrayKey]['billing_gstin_number'] = $dataArray['billing_gstin_number'];
-                $invoiceArray[$arrayKey]['shipping_name'] = $dataArray['shipping_name'];
-                $invoiceArray[$arrayKey]['shipping_address'] = $dataArray['shipping_address'];
-                $invoiceArray[$arrayKey]['shipping_state'] = $dataArray['shipping_state'];
-                $invoiceArray[$arrayKey]['shipping_state_name'] = $dataArray['shipping_state_name'];
-                $invoiceArray[$arrayKey]['shipping_gstin_number'] = $dataArray['shipping_gstin_number'];
+				$invoiceArray[$arrayKey]['billing_name'] = $dataArray['billing_name'];
+				$invoiceArray[$arrayKey]['billing_company_name'] = $dataArray['billing_company_name'];
+				$invoiceArray[$arrayKey]['billing_address'] = $dataArray['billing_address'];
+				$invoiceArray[$arrayKey]['billing_state'] = $dataArray['billing_state'];
+				$invoiceArray[$arrayKey]['billing_state_name'] = $dataArray['billing_state_name'];
+				$invoiceArray[$arrayKey]['billing_country'] = $dataArray['billing_country'];
+				$invoiceArray[$arrayKey]['billing_vendor_type'] = $dataArray['billing_vendor_type'];
+				$invoiceArray[$arrayKey]['billing_gstin_number'] = $dataArray['billing_gstin_number'];
+				$invoiceArray[$arrayKey]['shipping_name'] = $dataArray['shipping_name'];
+				$invoiceArray[$arrayKey]['shipping_company_name'] = $dataArray['shipping_company_name'];
+				$invoiceArray[$arrayKey]['shipping_address'] = $dataArray['shipping_address'];
+				$invoiceArray[$arrayKey]['shipping_state'] = $dataArray['shipping_state'];
+				$invoiceArray[$arrayKey]['shipping_state_name'] = $dataArray['shipping_state_name'];
+				$invoiceArray[$arrayKey]['shipping_country'] = $dataArray['shipping_country'];
+				$invoiceArray[$arrayKey]['shipping_vendor_type'] = $dataArray['shipping_vendor_type'];
+				$invoiceArray[$arrayKey]['shipping_gstin_number'] = $dataArray['shipping_gstin_number'];
+				$invoiceArray[$arrayKey]['description'] = $dataArray['description'];
 
                 //items
-                $invoiceItemArray['item_name'] = $dataArray['item_name'];
-                $invoiceItemArray['item_hsncode'] = $dataArray['item_hsn_code'];
-                $invoiceItemArray['advance_value'] = $dataArray['advance_value'];
+				$invoiceItemArray['item_id'] = $dataArray['item_id'];
+				$invoiceItemArray['item_name'] = $dataArray['item_name'];
+				$invoiceItemArray['item_hsncode'] = $dataArray['item_hsncode'];
+				$invoiceItemArray['advance_amount'] = $dataArray['advance_amount'];
+				$invoiceItemArray['cgst_rate'] = $dataArray['cgst_rate'];
+				$invoiceItemArray['sgst_rate'] = $dataArray['sgst_rate'];
+				$invoiceItemArray['igst_rate'] = $dataArray['igst_rate'];
+				$invoiceItemArray['cess_rate'] = $dataArray['cess_rate'];
 
-                $invoiceArray[$arrayKey]['items'][] = $invoiceItemArray;
+				$invoiceArray[$arrayKey]['items'][] = $invoiceItemArray;
             }
 
             if ($errorflag === true) {
 
-                $objPHPExcel->getActiveSheet()->SetCellValue('P1', "Error Information");
-                $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-                $objWriter->save($invoice_excel_dir_path);
-                $this->setError($this->validationMessage['excelerror']);
-
-                $resultArray = array("status" => "error", "excelurl" => $invoice_excel_url_path);
-                return json_encode($resultArray);
-            } else {
+				$objPHPExcel->getActiveSheet()->SetCellValue('AA1', "Error Information");
+				$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
+				$objWriter->save($invoice_excel_dir_path);
+				$this->setError($this->validationMessage['excelerror']);
+				$resultArray = array("status" => "error", "excelurl" => $invoice_excel_url_path);
+				return json_encode($resultArray);
+			} else {
 
                 foreach ($invoiceArray as $invoiceRow) {
 
-                    $invoiceItemArray = array();
-                    $invoiceTotalAmount = 0.00;
+					$invoiceItemArray = array();
+					$invoiceTotalAmount = 0.00;
+					$consolidateRate = 0.00;
 
-                    foreach ($invoiceRow['items'] as $invoiceInnerRow) {
+					foreach ($invoiceRow['items'] as $invoiceInnerRow) {
+						
+						$invoiceItemTaxableAmount = (float) $invoiceInnerRow['advance_amount'];
+						
+						if($invoiceRow['company_state'] === $invoiceRow['supply_place']) {
 
-                        $clientMasterItem = $this->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit, u.unit_id, u.unit_name, u.unit_code from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m, " . $this->tableNames['unit'] . " as u where 1=1 AND cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.item_name = '" . $invoiceInnerRow['item_name'] . "' && m.hsn_code = '" . $invoiceInnerRow['item_hsncode'] . "' AND cm.is_deleted='0' AND cm.status = '1' AND cm.added_by = '" . $_SESSION['user_detail']['user_id'] . "'");
-                        if (!empty($clientMasterItem)) {
+							$itemCSGTTax = (float)$invoiceInnerRow['cgst_rate'];
+							$itemSGSTTax = (float)$invoiceInnerRow['sgst_rate'];
+							$itemIGSTTax = 0.00;
+							$itemCESSTax = (float)$invoiceInnerRow['cess_rate'];
+							$consolidateRate = $itemCSGTTax + $itemSGSTTax;
 
-                            $advanceValue = (float) $invoiceInnerRow['advance_value'];
-                            $invoiceItemTaxableAmount = round($advanceValue, 2);
+							$invoiceItemCSGTTaxAmount = ($itemCSGTTax/100) * $invoiceItemTaxableAmount;
+							$invoiceItemSGSTTaxAmount = ($itemSGSTTax/100) * $invoiceItemTaxableAmount;
+							$invoiceItemIGSTTaxAmount = 0.00;
+							$invoiceItemCESSTaxAmount = ($itemCESSTax/100) * $invoiceItemTaxableAmount;
+						} else {
+							
+							$itemCSGTTax = 0.00;
+							$itemSGSTTax = 0.00;
+							$itemIGSTTax = (float)$invoiceInnerRow['igst_rate'];
+							$itemCESSTax = (float)$invoiceInnerRow['cess_rate'];
+							$consolidateRate = $itemIGSTTax;
 
-                            if ($invoiceRow['supply_place'] === $invoiceRow['shipping_state']) {
+							$invoiceItemCSGTTaxAmount = 0.00;
+							$invoiceItemSGSTTaxAmount = 0.00;
+							$invoiceItemIGSTTaxAmount = ($itemIGSTTax/100) * $invoiceItemTaxableAmount;
+							$invoiceItemCESSTaxAmount = ($itemCESSTax/100) * $invoiceItemTaxableAmount;
+						}
 
-                                $itemCSGTTax = (float) $clientMasterItem->csgt_tax_rate;
-                                $itemSGSTTax = (float) $clientMasterItem->sgst_tax_rate;
-                                $itemIGSTTax = 0.00;
-                                $itemCESSTax = (float) $clientMasterItem->cess_tax_rate;
+						$invoiceItemTotalAmount = ($invoiceItemTaxableAmount + $invoiceItemCSGTTaxAmount + $invoiceItemSGSTTaxAmount + $invoiceItemIGSTTaxAmount + $invoiceItemCESSTaxAmount);
+						$invoiceTotalAmount += $invoiceItemTotalAmount;
 
-                                $invoiceItemCSGTTaxAmount = round((($itemCSGTTax / 100) * $invoiceItemTaxableAmount), 2);
-                                $invoiceItemSGSTTaxAmount = round((($itemSGSTTax / 100) * $invoiceItemTaxableAmount), 2);
-                                $invoiceItemIGSTTaxAmount = 0.00;
-                                $invoiceItemCESSTaxAmount = round((($itemCESSTax / 100) * $invoiceItemTaxableAmount), 2);
-                            } else {
+						$ItemArray = array(
+							"item_id" => $invoiceInnerRow['item_id'],
+							"item_name" => $invoiceInnerRow['item_name'],
+							"item_hsncode" => $invoiceInnerRow['item_hsncode'],
+							"taxable_subtotal" => round($invoiceItemTaxableAmount, 2),
+							"cgst_rate" => $itemCSGTTax,
+							"cgst_amount" => round($invoiceItemCSGTTaxAmount, 2),
+							"sgst_rate" => $itemSGSTTax,
+							"sgst_amount" => round($invoiceItemSGSTTaxAmount, 2),
+							"igst_rate" => $itemIGSTTax,
+							"igst_amount" => round($invoiceItemIGSTTaxAmount, 2),
+							"cess_rate" => $itemCESSTax,
+							"cess_amount" => round($invoiceItemCESSTaxAmount, 2),
+							"consolidate_rate" => $consolidateRate,
+							"total" => round($invoiceItemTotalAmount, 2),
+							"status" => 1,
+							"added_by" => $this->sanitize($_SESSION['user_detail']['user_id']),
+							"added_date" => date('Y-m-d H:i:s')
+						);
 
-                                $itemCSGTTax = 0.00;
-                                $itemSGSTTax = 0.00;
-                                $itemIGSTTax = (float) $clientMasterItem->igst_tax_rate;
-                                $itemCESSTax = (float) $clientMasterItem->cess_tax_rate;
-
-                                $invoiceItemCSGTTaxAmount = 0.00;
-                                $invoiceItemSGSTTaxAmount = 0.00;
-                                $invoiceItemIGSTTaxAmount = round((($itemIGSTTax / 100) * $invoiceItemTaxableAmount), 2);
-                                $invoiceItemCESSTaxAmount = round((($itemCESSTax / 100) * $invoiceItemTaxableAmount), 2);
-                            }
-
-                            $invoiceItemTotalAmount = round(($invoiceItemTaxableAmount + $invoiceItemCSGTTaxAmount + $invoiceItemSGSTTaxAmount + $invoiceItemIGSTTaxAmount + $invoiceItemCESSTaxAmount), 2);
-                            $invoiceTotalAmount += $invoiceItemTotalAmount;
-
-                            $ItemArray = array(
-                                "item_id" => $clientMasterItem->item_id,
-                                "item_name" => $clientMasterItem->item_name,
-                                "item_hsncode" => $clientMasterItem->hsn_code,
-                                "taxable_subtotal" => $invoiceItemTaxableAmount,
-                                "cgst_rate" => $itemCSGTTax,
-                                "cgst_amount" => $invoiceItemCSGTTaxAmount,
-                                "sgst_rate" => $itemSGSTTax,
-                                "sgst_amount" => $invoiceItemSGSTTaxAmount,
-                                "igst_rate" => $itemIGSTTax,
-                                "igst_amount" => $invoiceItemIGSTTaxAmount,
-                                "cess_rate" => $itemCESSTax,
-                                "cess_amount" => $invoiceItemCESSTaxAmount,
-                                "total" => $invoiceItemTotalAmount,
-                                "status" => 1,
-                                "added_by" => $_SESSION['user_detail']['user_id'],
-                                "added_date" => date('Y-m-d H:i:s')
-                            );
-
-                            array_push($invoiceItemArray, $ItemArray);
-                        }
-                    }
+						array_push($invoiceItemArray, $ItemArray);
+					}
 
                     if (!empty($invoiceItemArray) && count($invoiceItemArray) > 0) {
-
-                        $InsertArray['reference_number'] = $invoiceRow['reference_number'];
-                        $InsertArray['serial_number'] = $this->generateRVInvoiceNumber($this->sanitize($_SESSION['user_detail']['user_id']));
-                        $InsertArray['company_name'] = $invoiceRow['company_name'];
-                        $InsertArray['company_address'] = $invoiceRow['company_address'];
-                        $InsertArray['company_state'] = $invoiceRow['company_state'];
-                        $InsertArray['gstin_number'] = $invoiceRow['gstin_number'];
-                        $InsertArray['invoice_date'] = $invoiceRow['invoice_date'];
-                        $InsertArray['is_tax_payable'] = $invoiceRow['is_tax_payable'];
-                        $InsertArray['supply_place'] = $invoiceRow['supply_place'];
+						
+						$InsertArray['invoice_type'] = $invoiceRow['invoice_type'];
+						$InsertArray['invoice_nature'] = $invoiceRow['invoice_nature'];
+						$InsertArray['reference_number'] = $invoiceRow['reference_number'];
+						$InsertArray['serial_number'] = $this->generateRVInvoiceNumber($this->sanitize($_SESSION['user_detail']['user_id']));
+						$InsertArray['company_name'] = $invoiceRow['company_name'];
+						$InsertArray['company_address'] = $invoiceRow['company_address'];
+						$InsertArray['company_state'] = $invoiceRow['company_state'];
+						$InsertArray['gstin_number'] = $invoiceRow['gstin_number'];
+						$InsertArray['invoice_date'] = $invoiceRow['invoice_date'];
+						$InsertArray['is_tax_payable'] = $invoiceRow['is_tax_payable'];
+						$InsertArray['supply_place'] = $invoiceRow['supply_place'];
                         $InsertArray['billing_name'] = $invoiceRow['billing_name'];
-                        $InsertArray['billing_address'] = $invoiceRow['billing_address'];
-                        $InsertArray['billing_state'] = $invoiceRow['billing_state'];
-                        $InsertArray['billing_state_name'] = $invoiceRow['billing_state_name'];
-                        $InsertArray['billing_gstin_number'] = $invoiceRow['billing_gstin_number'];
-                        $InsertArray['shipping_name'] = $invoiceRow['shipping_name'];
-                        $InsertArray['shipping_address'] = $invoiceRow['shipping_address'];
-                        $InsertArray['shipping_state'] = $invoiceRow['shipping_state'];
-                        $InsertArray['shipping_state_name'] = $invoiceRow['shipping_state_name'];
-                        $InsertArray['shipping_gstin_number'] = $invoiceRow['shipping_gstin_number'];
-                        $InsertArray['invoice_total_value'] = $invoiceTotalAmount;
-                        $InsertArray['financial_year'] = $this->generateFinancialYear();
-                        $InsertArray['status'] = 1;
-                        $InsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
-                        $InsertArray['added_date'] = date('Y-m-d H:i:s');
+						$InsertArray['billing_company_name'] = $invoiceRow['billing_company_name'];
+						$InsertArray['billing_address'] = $invoiceRow['billing_address'];
+						$InsertArray['billing_state'] = $invoiceRow['billing_state'];
+						$InsertArray['billing_state_name'] = $invoiceRow['billing_state_name'];
+						$InsertArray['billing_country'] = $invoiceRow['billing_country'];
+						$InsertArray['billing_vendor_type'] = $invoiceRow['billing_vendor_type'];
+						$InsertArray['billing_gstin_number'] = $invoiceRow['billing_gstin_number'];
+						$InsertArray['shipping_name'] = $invoiceRow['shipping_name'];
+						$InsertArray['shipping_company_name'] = $invoiceRow['shipping_company_name'];
+						$InsertArray['shipping_address'] = $invoiceRow['shipping_address'];
+						$InsertArray['shipping_state'] = $invoiceRow['shipping_state'];
+						$InsertArray['shipping_state_name'] = $invoiceRow['shipping_state_name'];
+						$InsertArray['shipping_country'] = $invoiceRow['shipping_country'];
+						$InsertArray['shipping_vendor_type'] = $invoiceRow['shipping_vendor_type'];
+						$InsertArray['shipping_gstin_number'] = $invoiceRow['shipping_gstin_number'];
+						$InsertArray['description'] = $invoiceRow['description'];						
+						$InsertArray['invoice_total_value'] = number_format($invoiceTotalAmount, 2, '.', '');
+						$InsertArray['financial_year'] = $this->generateFinancialYear();
+						$InsertArray['status'] = 1;
+						$InsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
+						$InsertArray['added_date'] = date('Y-m-d H:i:s');
 
-                        if ($this->insert($this->tableNames['client_rv_invoice'], $InsertArray)) {
+						if ($this->insert($this->tableNames['client_invoice'], $InsertArray)) {
 
-                            $insertid = $this->getInsertID();
-                            $this->logMsg("New RV Invoice Added. ID : " . $insertid . ".");
+							$insertid = $this->getInsertID();
+							$this->logMsg("RV Invoice Added. ID : " . $insertid . ".","client_create_Rv_invoice");
 
-                            $processedInvoiceItemArray = array();
-                            foreach ($invoiceItemArray as $itemArr) {
+							$processedInvoiceItemArray = array();
+							foreach ($invoiceItemArray as $itemArr) {
 
-                                $itemArr['invoice_id'] = $insertid;
-                                array_push($processedInvoiceItemArray, $itemArr);
-                            }
+								$itemArr['invoice_id'] = $insertid;
+								array_push($processedInvoiceItemArray, $itemArr);
+							}
 
-                            if ($this->insertMultiple($this->tableNames['client_rv_invoice_item'], $processedInvoiceItemArray)) {
+							if ($this->insertMultiple($this->tableNames['client_invoice_item'], $processedInvoiceItemArray)) {
 
-                                $iteminsertid = $this->getInsertID();
-                                $this->logMsg("New RV Invoice Item Added. ID : " . $iteminsertid . ".");
-                            }
-                        }
+								$iteminsertid = $this->getInsertID();
+								$this->logMsg("RV Invoice Item Added. ID : " . $iteminsertid . ".");
+							}
+						}
                     }
                 }
 
@@ -2822,244 +2980,498 @@ final class client extends validation {
         }
     }
 
-    /* upload client refund voucher invoice */
+    /* upload client Revised tax invoices / debit note / credit note invoice */
+    public function uploadClientRTInvoice() {
 
-    public function uploadClientRFInvoice() {
-
-        $flag = true;
-        $errorflag = false;
-        $dataArray = array();
-        $indexArray = array();
-        $invoiceArray = array();
-        $invoiceItemArray = array();
+		$flag = true;
+		$errorflag = false;
+		$dataArray = array();
+		$indexArray = array();
+		$invoiceArray = array();
+		$invoiceItemArray = array();
+		$currentFinancialYear = $this->generateFinancialYear();
 
         if ($_FILES['invoice_xlsx']['name'] != '' && $_FILES['invoice_xlsx']['error'] == 0) {
 
-            $invoice_excel = $this->imageUploads($_FILES['invoice_xlsx'], 'invoice-docs', 'upload', $this->allowExcelExt);
-            if ($invoice_excel == FALSE) {
-                return false;
-            }
+			$invoice_excel = $this->imageUploads($_FILES['invoice_xlsx'], 'invoice-docs', 'upload', $this->allowExcelExt);
+			if ($invoice_excel == FALSE) {
+				return false;
+			}
 
-            $invoice_excel_dir_path = PROJECT_ROOT . UPLOAD_DIR . "/invoice-docs/" . $invoice_excel;
-            $invoice_excel_url_path = PROJECT_URL . UPLOAD_DIR . "/invoice-docs/" . $invoice_excel;
+			$invoice_excel_dir_path = PROJECT_ROOT . UPLOAD_DIR . "/invoice-docs/" . $invoice_excel;
+			$invoice_excel_url_path = PROJECT_URL . UPLOAD_DIR . "/invoice-docs/" . $invoice_excel;
 
-            $objPHPExcel = PHPExcel_IOFactory::load($invoice_excel_dir_path);
-            $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+			$objPHPExcel = PHPExcel_IOFactory::load($invoice_excel_dir_path);
+			$sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
 			$sheetData = array_map('array_filter', $sheetData);
 			$sheetData = array_filter($sheetData);
 
             foreach ($sheetData as $rowKey => $data) {
 
-                if ($flag) {
-                    $indexArray = $data;
-                    $flag = false;
-                    continue;
-                }
+				if ($flag) {
+					$indexArray = $data;
+					$flag = false;
+					continue;
+				}
+				
+				$currentItemError = array();
+				$dataArray['reference_number'] = isset($data['A']) ? $data['A'] : '';
+				$dataArray['invoice_date'] = isset($data['B']) ? $data['B'] : '';
 
-                $currentItemError = array();
-                $dataArray['reference_number'] = isset($data['A']) ? $data['A'] : '';
-                $dataArray['invoice_date'] = isset($data['B']) ? $data['B'] : '';
-
-                $currentFinancialYear = $this->generateFinancialYear();
-                $receipt_voucher_number = isset($data['C']) ? $data['C'] : '';
-                $dataReceiptVoucherArrs = $this->get_row("select serial_number, invoice_date, supply_place, shipping_state, is_canceled from " . $this->tableNames['client_rv_invoice'] . " where status='1' and is_deleted='0' AND financial_year = '" . $currentFinancialYear . "' AND added_by = " . $this->sanitize($_SESSION['user_detail']['user_id']) . " AND serial_number = '" . $receipt_voucher_number . "'");
-
-                if ($dataReceiptVoucherArrs) {
-                    $dataArray['receipt_voucher_number'] = isset($dataReceiptVoucherArrs->serial_number) ? $dataReceiptVoucherArrs->serial_number : '';
-                    $dataArray['receipt_voucher_date'] = isset($dataReceiptVoucherArrs->invoice_date) ? $dataReceiptVoucherArrs->invoice_date : '0000-00-00';
-                    $dataArray['supply_place'] = isset($dataReceiptVoucherArrs->supply_place) ? $dataReceiptVoucherArrs->supply_place : '';
-                    $dataArray['shipping_state'] = isset($dataReceiptVoucherArrs->shipping_state) ? $dataReceiptVoucherArrs->shipping_state : '';
+				$invoice_type = isset($data['C']) ? $data['C'] : '';
+				if ($invoice_type != '' && strtoupper($invoice_type) === 'REVISED TAX INVOICE') {
+                    $dataArray['invoice_type'] = "revisedtaxinvoice";
+                } else if ($invoice_type != '' && strtoupper($invoice_type) === 'CREDIT NOTE') {
+					$dataArray['invoice_type'] = "creditnote";
+                } else if ($invoice_type != '' && strtoupper($invoice_type) === 'DEBIT NOTE') {
+                    $dataArray['invoice_type'] = "debitnote";
                 } else {
-                    $dataArray['receipt_voucher_number'] = $receipt_voucher_number;
-                    $dataArray['receipt_voucher_date'] = '0000-00-00';
-                    $dataArray['supply_place'] = 'Invalid Supply State';
-                    $dataArray['shipping_state'] = 'Invalid Shipping State';
-
-                    $errorflag = true;
-                    array_push($currentItemError, "Invalid receipt voucher number.");
-                    $dataArray['receipt_voucher_number'] = 'Invalid receipt voucher number.';
-
-                    array_push($currentItemError, "Invalid receipt voucher date.");
-                    $dataArray['receipt_voucher_date'] = 'Invalid receipt voucher date.';
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Invoice Type.");
                 }
 
-                $item_name = isset($data['D']) ? trim($data['D']) : '';
-                $item_hsn_code = isset($data['E']) ? trim($data['E']) : '';
-
-                //if(!empty($item_hsn_code)) { $item_hsn_code = str_pad($item_hsn_code, 8, "0", STR_PAD_LEFT); }
-
-                $dataArray['refund_value'] = isset($data['F']) ? $data['F'] : '';
-
-                $is_tax_payable = isset($data['G']) ? $data['G'] : '';
-                if ($is_tax_payable != '' && strtoupper($is_tax_payable) === 'Y') {
-                    $dataArray['is_tax_payable'] = 1;
-                } else if ($is_tax_payable != '' && strtoupper($is_tax_payable) === 'N') {
-                    $dataArray['is_tax_payable'] = 0;
+				$invoice_corresponding_type = isset($data['D']) ? $data['D'] : '';
+				if ($invoice_corresponding_type != '' && strtoupper($invoice_corresponding_type) === 'TAX INVOICE') {
+                    $dataArray['invoice_corresponding_type'] = "taxinvoice";
+                } else if ($invoice_corresponding_type != '' && strtoupper($invoice_corresponding_type) === 'BILL OF SUPPLY') {
+                    $dataArray['invoice_corresponding_type'] = "billofsupplyinvoice";
                 } else {
-                    $dataArray['is_tax_payable'] = $is_tax_payable;
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Corresponding Type.");
                 }
 
-                if ($item_name != '' && $item_hsn_code != '') {
+                $corresponding_document_number = isset($data['E']) ? $data['E'] : '';
+				$correspondingTypeData = $this->get_row("select 
+													invoice_id, 
+													serial_number, 
+													reference_number, 
+													invoice_type, 
+													invoice_date 
+													from " . $this->getTableName('client_invoice') . " 
+													where 1=1 AND serial_number = '".$corresponding_document_number."' AND invoice_type = '".$dataArray['invoice_corresponding_type']."' AND is_canceled='0' AND is_deleted = '0' AND status = '1' AND financial_year = '".$currentFinancialYear."' AND added_by = '".$this->sanitize($_SESSION['user_detail']['user_id'])."'");
 
-                    $checkClientMasterItem = $this->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit, u.unit_id, u.unit_name, u.unit_code from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m, " . $this->tableNames['unit'] . " as u where 1=1 AND cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.item_name = '" . $item_name . "' && m.hsn_code = '" . $item_hsn_code . "' AND cm.is_deleted='0' AND cm.status = '1' AND cm.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
-
-                    if (count($checkClientMasterItem) == 1) {
-
-                        $dataArray['item_name'] = $item_name;
-                        $dataArray['item_hsn_code'] = $item_hsn_code;
-                    } else {
-
-                        $errorflag = true;
-                        array_push($currentItemError, "Item not exist with this hsn code.");
-                        $dataArray['item_name'] = "#####Item not exist#####";
-                        $dataArray['item_hsn_code'] = "#####HSN code not exist#####";
-                    }
-                } else {
-                    $dataArray['item_name'] = $item_name;
-                    $dataArray['item_hsn_code'] = $item_hsn_code;
+				if(!empty($correspondingTypeData)) {
+					
+					$dataArray['corresponding_document_number'] = $correspondingTypeData->invoice_id;
+					$dataArray['corresponding_document_date'] = $correspondingTypeData->invoice_date;
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Corresponding Document Number.");
                 }
 
-                $invoiceErrors = $this->validateClientInvoiceExcel($dataArray);
-                if ($invoiceErrors !== true || !empty($currentItemError)) {
+				$supply_place = isset($data['F']) ? $data['F'] : '';
+				if ($supply_place != '') {
 
-                    $errorflag = true;
-                    if ($invoiceErrors === true) {
-                        $invoiceErrors = array();
-                    }
-                    $invoiceErrors = array_merge($invoiceErrors, $currentItemError);
-                    $invoiceErrors = implode(", ", $invoiceErrors);
-                    $objPHPExcel->getActiveSheet()->SetCellValue('H' . $rowKey, $invoiceErrors);
-                }
+					$supply_state_data = $this->getStateDetailByStateCode($supply_place);
+					if ($supply_state_data['status'] === "success") {
+						$dataArray['supply_place'] = $supply_state_data['data']->state_id;
+					} else {
+						$errorflag = true;
+						array_push($currentItemError, "Invalid Place Of Supply.");
+						$dataArray['supply_place'] = 'Invalid Place Of Supply.';
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Place Of Supply.");
+				}
 
-                /* get current user data */
-                $dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
+				$dataArray['billing_name'] = isset($data['G']) ? $data['G'] : '';
+				$dataArray['billing_company_name'] = isset($data['H']) ? $data['H'] : '';
+				$dataArray['billing_address'] = isset($data['I']) ? $data['I'] : '';
 
-                /* create invoice array */
-                $arrayKey = $dataArray['reference_number'];
+				$billing_state = isset($data['J']) ? $data['J'] : '';
+				if ($billing_state != '') {
 
-                $invoiceArray[$arrayKey]['reference_number'] = $dataArray['reference_number'];
-                $invoiceArray[$arrayKey]['invoice_date'] = $dataArray['invoice_date'];
-                $invoiceArray[$arrayKey]['is_tax_payable'] = $dataArray['is_tax_payable'];
-                $invoiceArray[$arrayKey]['receipt_voucher_number'] = $dataArray['receipt_voucher_number'];
-                $invoiceArray[$arrayKey]['receipt_voucher_date'] = $dataArray['receipt_voucher_date'];
-                $invoiceArray[$arrayKey]['supply_place'] = $dataArray['supply_place'];
-                $invoiceArray[$arrayKey]['shipping_state'] = $dataArray['shipping_state'];
+					$billing_state_data = $this->getStateDetailByStateCode($billing_state);
+					if ($billing_state_data['status'] === "success") {
+						$dataArray['billing_state'] = $billing_state_data['data']->state_id;
+						$dataArray['billing_state_name'] = $billing_state_data['data']->state_name;
+					} else {
+						$errorflag = true;
+						array_push($currentItemError, "Invalid Billing State.");
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Billing State.");
+				}
 
-                //items
-                $invoiceItemArray['item_name'] = $dataArray['item_name'];
-                $invoiceItemArray['item_hsncode'] = $dataArray['item_hsn_code'];
-                $invoiceItemArray['refund_value'] = $dataArray['refund_value'];
+				$billing_country = isset($data['K']) ? $data['K'] : '';
+				if ($billing_country != '') {
 
-                $invoiceArray[$arrayKey]['items'][] = $invoiceItemArray;
+					$billing_country_data = $this->getCountryDetailByCountryCode($billing_country);
+					if ($billing_country_data['status'] === "success") {
+						$dataArray['billing_country'] = $billing_country_data['data']->id;
+					} else {
+						$errorflag = true;
+						array_push($currentItemError, "Invalid Billing Country.");
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Billing Country.");
+				}
+
+				$billing_vendor_type = isset($data['L']) ? $data['L'] : '';
+				if ($billing_vendor_type != '') {
+
+					$dataVendorNameArrs = $this->get_row("select vendor_id, vendor_name from ".$this->tableNames['vendor_type']." where 1=1 AND UPPER(vendor_name) = '".strtoupper($billing_vendor_type)."' AND status='1' AND is_deleted='0'");
+					if (!empty($dataVendorNameArrs) && isset($dataVendorNameArrs->vendor_id)) {
+						$dataArray['billing_vendor_type'] = $dataVendorNameArrs->vendor_id;
+					} else {
+						$errorflag = true;
+						array_push($currentItemError, "Invalid Billing Vendor Type.");
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Billing Vendor Type.");
+				}
+
+				$dataArray['billing_gstin_number'] = isset($data['M']) ? $data['M'] : '';
+
+				$dataArray['shipping_name'] = isset($data['N']) ? $data['N'] : '';
+				$dataArray['shipping_company_name'] = isset($data['O']) ? $data['O'] : '';
+				$dataArray['shipping_address'] = isset($data['P']) ? $data['P'] : '';
+
+				$shipping_state = isset($data['Q']) ? $data['Q'] : '';
+				if ($shipping_state != '') {
+
+					$shipping_state_data = $this->getStateDetailByStateCode($shipping_state);
+					if ($shipping_state_data['status'] === "success") {
+						$dataArray['shipping_state'] = $shipping_state_data['data']->state_id;
+						$dataArray['shipping_state_name'] = $shipping_state_data['data']->state_name;
+					} else {
+						$errorflag = true;
+						array_push($currentItemError, "Invalid Shipping State.");
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Shipping State.");
+				}
+
+				$shipping_country = isset($data['R']) ? $data['R'] : '';
+				if ($shipping_country != '') {
+
+					$shipping_country_data = $this->getCountryDetailByCountryCode($shipping_country);
+					if ($shipping_country_data['status'] === "success") {
+						$dataArray['shipping_country'] = $shipping_country_data['data']->id;
+					} else {
+						$errorflag = true;
+						array_push($currentItemError, "Invalid Shipping Country.");
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Shipping Country.");
+				}
+
+				$shipping_vendor_type = isset($data['S']) ? $data['S'] : '';
+				if ($shipping_vendor_type != '') {
+
+					$dataVendorNameArrs = $this->get_row("select vendor_id, vendor_name from ".$this->tableNames['vendor_type']." where 1=1 AND UPPER(vendor_name) = '".strtoupper($shipping_vendor_type)."' AND status='1' AND is_deleted='0'");
+					if (!empty($dataVendorNameArrs) && isset($dataVendorNameArrs->vendor_id)) {
+						$dataArray['shipping_vendor_type'] = $dataVendorNameArrs->vendor_id;
+					} else {
+						$errorflag = true;
+						array_push($currentItemError, "Invalid Shipping Vendor Type.");
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Shipping Vendor Type.");
+				}
+
+				$dataArray['shipping_gstin_number'] = isset($data['T']) ? $data['T'] : '';
+
+				$item_name = isset($data['U']) ? trim($data['U']) : '';
+				$item_hsncode = isset($data['V']) ? trim($data['V']) : '';
+				$dataArray['item_quantity'] = isset($data['W']) ? $data['W'] : '';
+
+				$dataArray['item_unit'] = isset($data['X']) ? $data['X'] : '';
+				$item_unit =  $dataArray['item_unit'];
+				
+				$dataArray['item_rate'] = isset($data['Y']) ? $data['Y'] : 0.00;
+				$item_rate =  $dataArray['item_rate'];
+
+				$dataArray['item_discount'] = isset($data['Z']) ? $data['Z'] : 0.00;
+
+				if(!empty($item_name) && !empty($item_hsncode)) {
+
+					$checkClientMasterItem = $this->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_description, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m where 1=1 AND cm.item_category = m.item_id AND cm.item_name = '" . $item_name . "' && m.hsn_code = '" . $item_hsncode . "' AND cm.is_deleted='0' AND cm.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
+					if (!empty($checkClientMasterItem)) {
+
+						$dataArray['item_id'] = $checkClientMasterItem->item_id;
+						$dataArray['item_name'] = $item_name;
+						$dataArray['item_hsncode'] = $item_hsncode;
+					} else {
+
+						$masterItem = $this->get_row("select item_id, item_name, hsn_code from " . $this->tableNames['item'] . " where hsn_code='".$item_hsncode."' and is_deleted='0' AND status='1'");						
+						if(!empty($masterItem)) {
+
+							$masterUnit = $this->get_row("select unit_id from " . $this->tableNames['unit'] . " as u where u.unit_code='".$item_unit."' and u.is_deleted='0' AND u.status = '1'");
+							if(!empty($masterUnit)) {
+								$master_unit_id = $masterUnit->unit_id;
+							} else {
+								
+								$masterNUnit = $this->get_row("select unit_id from " . $this->tableNames['unit'] . " as u where u.unit_code='NA' and u.is_deleted='0' AND u.status = '1'");
+								if(!empty($masterNUnit)) {
+									$master_unit_id = $masterNUnit->unit_id;
+								} else {
+									$master_unit_id = 0;
+								}
+							}
+
+							$dataInsertItemArray['item_name'] = $item_name;
+							$dataInsertItemArray['item_category'] = $masterItem->item_id;
+							$dataInsertItemArray['unit_price'] = $item_rate;
+							$dataInsertItemArray['item_unit'] = $master_unit_id;
+							$dataInsertItemArray['status'] = '1';
+							$dataInsertItemArray['added_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);
+							$dataInsertItemArray['added_date'] = date('Y-m-d H:i:s');
+
+							if ($this->insert($this->tableNames['client_master_item'], $dataInsertItemArray)) {
+
+								$iteminsertid = $this->getInsertID();
+								$dataArray['item_id'] = $iteminsertid;
+								$dataArray['item_name'] = $item_name;
+								$dataArray['item_hsncode'] = $masterItem->hsn_code;
+							} else {
+								$errorflag = true;
+								array_push($currentItemError, $this->getValMsg('failed'));
+							}
+						} else {
+							$errorflag = true;
+							array_push($currentItemError, "Description of Goods and HSN Code should be valid.");
+						}
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Description of Goods and HSN Code should be valid.");
+				}
+
+				$dataArray['cgst_rate'] = isset($data['AA']) ? $data['AA'] : 0.000;
+				$dataArray['sgst_rate'] = isset($data['AB']) ? $data['AB'] : 0.000;
+				$dataArray['igst_rate'] = isset($data['AC']) ? $data['AC'] : 0.000;
+				$dataArray['cess_rate'] = isset($data['AD']) ? $data['AD'] : 0.000;
+
+				/* get current user data */
+				$dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
+
+				if($dataCurrentUserArr['data']->kyc->state_id === $dataArray['supply_place']) {
+
+					if($dataArray['cgst_rate'] != $dataArray['sgst_rate']) {
+						$errorflag = true;
+						array_push($currentItemError, "CGST and SGST rate should be same for item number.");
+					}
+				}
+
+				/* check reference number */
+				$referenceStatus = $this->checkReferenceNumberExist($dataArray['reference_number'], $this->sanitize($_SESSION['user_detail']['user_id']));
+				if($referenceStatus == true) {
+					$errorflag = true;
+					array_push($currentItemError, "You have already used this reference number.");
+				}
+
+				/* Invoice Description */
+				$dataArray['description'] = isset($data['AE']) ? $data['AE'] : '';
+
+				$invoiceErrors = $this->validateClientInvoiceExcel($dataArray);
+				if ($invoiceErrors !== true || !empty($currentItemError)) {
+
+					$errorflag = true;
+					if ($invoiceErrors === true) {
+						$invoiceErrors = array();
+					}
+					$invoiceErrors = array_merge($invoiceErrors, $currentItemError);
+					$invoiceErrors = implode(", ", $invoiceErrors);
+					$objPHPExcel->getActiveSheet()->SetCellValue('AF' . $rowKey, $invoiceErrors);
+				}
+
+				/* create invoice array */
+				$arrayKey = $dataArray['reference_number'];
+
+				$invoiceArray[$arrayKey]['invoice_type'] = $dataArray['invoice_type'];
+				$invoiceArray[$arrayKey]['invoice_nature'] = 'salesinvoice';
+				$invoiceArray[$arrayKey]['reference_number'] = $dataArray['reference_number'];
+				$invoiceArray[$arrayKey]['company_name'] = $dataCurrentUserArr['data']->kyc->name;
+				$invoiceArray[$arrayKey]['company_address'] = $dataCurrentUserArr['data']->kyc->full_address;
+				$invoiceArray[$arrayKey]['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
+				$invoiceArray[$arrayKey]['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
+				$invoiceArray[$arrayKey]['invoice_date'] = $dataArray['invoice_date'];
+				$invoiceArray[$arrayKey]['invoice_corresponding_type'] = $dataArray['invoice_corresponding_type'];
+				$invoiceArray[$arrayKey]['corresponding_document_number'] = $dataArray['corresponding_document_number'];
+				$invoiceArray[$arrayKey]['corresponding_document_date'] = $dataArray['corresponding_document_date'];
+				$invoiceArray[$arrayKey]['supply_place'] = $dataArray['supply_place'];
+				$invoiceArray[$arrayKey]['billing_name'] = $dataArray['billing_name'];
+				$invoiceArray[$arrayKey]['billing_company_name'] = $dataArray['billing_company_name'];
+				$invoiceArray[$arrayKey]['billing_address'] = $dataArray['billing_address'];
+				$invoiceArray[$arrayKey]['billing_state'] = $dataArray['billing_state'];
+				$invoiceArray[$arrayKey]['billing_state_name'] = $dataArray['billing_state_name'];
+				$invoiceArray[$arrayKey]['billing_country'] = $dataArray['billing_country'];
+				$invoiceArray[$arrayKey]['billing_vendor_type'] = $dataArray['billing_vendor_type'];
+				$invoiceArray[$arrayKey]['billing_gstin_number'] = $dataArray['billing_gstin_number'];
+				$invoiceArray[$arrayKey]['shipping_name'] = $dataArray['shipping_name'];
+				$invoiceArray[$arrayKey]['shipping_company_name'] = $dataArray['shipping_company_name'];
+				$invoiceArray[$arrayKey]['shipping_address'] = $dataArray['shipping_address'];
+				$invoiceArray[$arrayKey]['shipping_state'] = $dataArray['shipping_state'];
+				$invoiceArray[$arrayKey]['shipping_state_name'] = $dataArray['shipping_state_name'];
+				$invoiceArray[$arrayKey]['shipping_country'] = $dataArray['shipping_country'];
+				$invoiceArray[$arrayKey]['shipping_vendor_type'] = $dataArray['shipping_vendor_type'];
+				$invoiceArray[$arrayKey]['shipping_gstin_number'] = $dataArray['shipping_gstin_number'];
+				$invoiceArray[$arrayKey]['description'] = $dataArray['description'];
+
+				//items
+				$invoiceItemArray['item_id'] = $dataArray['item_id'];
+				$invoiceItemArray['item_name'] = $dataArray['item_name'];
+				$invoiceItemArray['item_hsncode'] = $dataArray['item_hsncode'];
+				$invoiceItemArray['item_quantity'] = $dataArray['item_quantity'];
+				$invoiceItemArray['item_unit'] = $dataArray['item_unit'];
+				$invoiceItemArray['item_unit_price'] = $dataArray['item_rate'];
+				$invoiceItemArray['item_discount'] = $dataArray['item_discount'];
+				$invoiceItemArray['cgst_rate'] = $dataArray['cgst_rate'];
+				$invoiceItemArray['sgst_rate'] = $dataArray['sgst_rate'];
+				$invoiceItemArray['igst_rate'] = $dataArray['igst_rate'];
+				$invoiceItemArray['cess_rate'] = $dataArray['cess_rate'];
+
+				$invoiceArray[$arrayKey]['items'][] = $invoiceItemArray;
             }
 
             if ($errorflag === true) {
 
-                $objPHPExcel->getActiveSheet()->SetCellValue('H1', "Error Information");
-                $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-                $objWriter->save($invoice_excel_dir_path);
-                $this->setError($this->validationMessage['excelerror']);
+				$objPHPExcel->getActiveSheet()->SetCellValue('AF1', "Error Information");
+				$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
+				$objWriter->save($invoice_excel_dir_path);
+				$this->setError($this->validationMessage['excelerror']);
+				$resultArray = array("status" => "error", "excelurl" => $invoice_excel_url_path);
+				return json_encode($resultArray);
+			} else {
 
-                $resultArray = array("status" => "error", "excelurl" => $invoice_excel_url_path);
-                return json_encode($resultArray);
-            } else {
+				foreach ($invoiceArray as $invoiceRow) {
 
-                foreach ($invoiceArray as $invoiceRow) {
+					$invoiceItemArray = array();
+					$invoiceTotalAmount = 0.00;
+					$consolidateRate = 0.00;
 
-                    $invoiceItemArray = array();
-                    $invoiceTotalAmount = 0.00;
+					foreach ($invoiceRow['items'] as $invoiceInnerRow) {
+						
+						$itemUnitPrice = (float) $invoiceInnerRow['item_unit_price'];
+						$invoiceItemQuantity = (float) $invoiceInnerRow['item_quantity'];
+						$invoiceItemDiscount = (float) $invoiceInnerRow['item_discount'];
 
-                    foreach ($invoiceRow['items'] as $invoiceInnerRow) {
+						$invoiceItemTotal = $invoiceItemQuantity * $itemUnitPrice;
+						$invoiceItemDiscountAmount = ($invoiceItemDiscount / 100) * $invoiceItemTotal;
+						$invoiceItemTaxableAmount = $invoiceItemTotal - $invoiceItemDiscountAmount;
 
-                        $clientMasterItem = $this->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit, u.unit_id, u.unit_name, u.unit_code from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m, " . $this->tableNames['unit'] . " as u where 1=1 AND cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.item_name = '" . $invoiceInnerRow['item_name'] . "' && m.hsn_code = '" . $invoiceInnerRow['item_hsncode'] . "' AND cm.is_deleted='0' AND cm.status = '1' AND cm.added_by = '" . $_SESSION['user_detail']['user_id'] . "'");
-                        if (!empty($clientMasterItem)) {
+						if($invoiceRow['company_state'] === $invoiceRow['supply_place']) {
 
-                            $refundValue = (float) $invoiceInnerRow['refund_value'];
-                            $invoiceItemTaxableAmount = round($refundValue, 2);
+							$itemCSGTTax = (float)$invoiceInnerRow['cgst_rate'];
+							$itemSGSTTax = (float)$invoiceInnerRow['sgst_rate'];
+							$itemIGSTTax = 0.00;
+							$itemCESSTax = (float)$invoiceInnerRow['cess_rate'];
+							$consolidateRate = $itemCSGTTax + $itemSGSTTax;
 
-                            if ($invoiceRow['supply_place'] === $invoiceRow['shipping_state']) {
+							$invoiceItemCSGTTaxAmount = ($itemCSGTTax/100) * $invoiceItemTaxableAmount;
+							$invoiceItemSGSTTaxAmount = ($itemSGSTTax/100) * $invoiceItemTaxableAmount;
+							$invoiceItemIGSTTaxAmount = 0.00;
+							$invoiceItemCESSTaxAmount = ($itemCESSTax/100) * $invoiceItemTaxableAmount;
+						} else {
+							
+							$itemCSGTTax = 0.00;
+							$itemSGSTTax = 0.00;
+							$itemIGSTTax = (float)$invoiceInnerRow['igst_rate'];
+							$itemCESSTax = (float)$invoiceInnerRow['cess_rate'];
+							$consolidateRate = $itemIGSTTax;
 
-                                $itemCSGTTax = (float) $clientMasterItem->csgt_tax_rate;
-                                $itemSGSTTax = (float) $clientMasterItem->sgst_tax_rate;
-                                $itemIGSTTax = 0.00;
-                                $itemCESSTax = (float) $clientMasterItem->cess_tax_rate;
+							$invoiceItemCSGTTaxAmount = 0.00;
+							$invoiceItemSGSTTaxAmount = 0.00;
+							$invoiceItemIGSTTaxAmount = ($itemIGSTTax/100) * $invoiceItemTaxableAmount;
+							$invoiceItemCESSTaxAmount = ($itemCESSTax/100) * $invoiceItemTaxableAmount;
+						}
 
-                                $invoiceItemCSGTTaxAmount = round((($itemCSGTTax / 100) * $invoiceItemTaxableAmount), 2);
-                                $invoiceItemSGSTTaxAmount = round((($itemSGSTTax / 100) * $invoiceItemTaxableAmount), 2);
-                                $invoiceItemIGSTTaxAmount = 0.00;
-                                $invoiceItemCESSTaxAmount = round((($itemCESSTax / 100) * $invoiceItemTaxableAmount), 2);
-                            } else {
+						$invoiceItemTotalAmount = ($invoiceItemTaxableAmount + $invoiceItemCSGTTaxAmount + $invoiceItemSGSTTaxAmount + $invoiceItemIGSTTaxAmount + $invoiceItemCESSTaxAmount);
+						$invoiceTotalAmount += $invoiceItemTotalAmount;
 
-                                $itemCSGTTax = 0.00;
-                                $itemSGSTTax = 0.00;
-                                $itemIGSTTax = (float) $clientMasterItem->igst_tax_rate;
-                                $itemCESSTax = (float) $clientMasterItem->cess_tax_rate;
+						$ItemArray = array(
+							"item_id" => $invoiceInnerRow['item_id'],
+							"item_name" => $invoiceInnerRow['item_name'],
+							"item_hsncode" => $invoiceInnerRow['item_hsncode'],
+							"item_quantity" => $invoiceItemQuantity,
+							"item_unit" => $invoiceInnerRow['item_unit'],
+							"item_unit_price" => $itemUnitPrice,
+							"subtotal" => round($invoiceItemTotal, 2),
+							"discount" => $invoiceItemDiscount,
+							"taxable_subtotal" => round($invoiceItemTaxableAmount, 2),
+							"cgst_rate" => $itemCSGTTax,
+							"cgst_amount" => round($invoiceItemCSGTTaxAmount, 2),
+							"sgst_rate" => $itemSGSTTax,
+							"sgst_amount" => round($invoiceItemSGSTTaxAmount, 2),
+							"igst_rate" => $itemIGSTTax,
+							"igst_amount" => round($invoiceItemIGSTTaxAmount, 2),
+							"cess_rate" => $itemCESSTax,
+							"cess_amount" => round($invoiceItemCESSTaxAmount, 2),
+							"consolidate_rate" => $consolidateRate,
+							"total" => round($invoiceItemTotalAmount, 2),
+							"status" => 1,
+							"added_by" => $this->sanitize($_SESSION['user_detail']['user_id']),
+							"added_date" => date('Y-m-d H:i:s')
+						);
 
-                                $invoiceItemCSGTTaxAmount = 0.00;
-                                $invoiceItemSGSTTaxAmount = 0.00;
-                                $invoiceItemIGSTTaxAmount = round((($itemIGSTTax / 100) * $invoiceItemTaxableAmount), 2);
-                                $invoiceItemCESSTaxAmount = round((($itemCESSTax / 100) * $invoiceItemTaxableAmount), 2);
-                            }
-
-                            $invoiceItemTotalAmount = round(($invoiceItemTaxableAmount + $invoiceItemCSGTTaxAmount + $invoiceItemSGSTTaxAmount + $invoiceItemIGSTTaxAmount + $invoiceItemCESSTaxAmount), 2);
-                            $invoiceTotalAmount += $invoiceItemTotalAmount;
-
-                            $ItemArray = array(
-                                "item_id" => $clientMasterItem->item_id,
-                                "item_name" => $clientMasterItem->item_name,
-                                "item_hsncode" => $clientMasterItem->hsn_code,
-                                "taxable_subtotal" => $invoiceItemTaxableAmount,
-                                "cgst_rate" => $itemCSGTTax,
-                                "cgst_amount" => $invoiceItemCSGTTaxAmount,
-                                "sgst_rate" => $itemSGSTTax,
-                                "sgst_amount" => $invoiceItemSGSTTaxAmount,
-                                "igst_rate" => $itemIGSTTax,
-                                "igst_amount" => $invoiceItemIGSTTaxAmount,
-                                "cess_rate" => $itemCESSTax,
-                                "cess_amount" => $invoiceItemCESSTaxAmount,
-                                "total" => $invoiceItemTotalAmount,
-                                "status" => 1,
-                                "added_by" => $_SESSION['user_detail']['user_id'],
-                                "added_date" => date('Y-m-d H:i:s')
-                            );
-
-                            array_push($invoiceItemArray, $ItemArray);
-                        }
+						array_push($invoiceItemArray, $ItemArray);
                     }
 
-                    if (!empty($invoiceItemArray) && count($invoiceItemArray) > 0) {
+					if (!empty($invoiceItemArray) && count($invoiceItemArray) > 0) {
 
-                        $InsertArray['reference_number'] = $invoiceRow['reference_number'];
-                        $InsertArray['serial_number'] = $this->generateRFInvoiceNumber($this->sanitize($_SESSION['user_detail']['user_id']));
-                        $InsertArray['receipt_voucher_number'] = $invoiceRow['receipt_voucher_number'];
-                        $InsertArray['receipt_voucher_date'] = $invoiceRow['receipt_voucher_date'];
-                        $InsertArray['invoice_date'] = $invoiceRow['invoice_date'];
-                        $InsertArray['is_tax_payable'] = $invoiceRow['is_tax_payable'];
-                        $InsertArray['invoice_total_value'] = $invoiceTotalAmount;
-                        $InsertArray['financial_year'] = $this->generateFinancialYear();
-                        $InsertArray['status'] = 1;
-                        $InsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
-                        $InsertArray['added_date'] = date('Y-m-d H:i:s');
+						$InsertArray['invoice_type'] = $invoiceRow['invoice_type'];
+						$InsertArray['invoice_nature'] = $invoiceRow['invoice_nature'];
+						$InsertArray['reference_number'] = $invoiceRow['reference_number'];
+						$InsertArray['serial_number'] = $this->generateRTInvoiceNumber($this->sanitize($_SESSION['user_detail']['user_id']));
+						$InsertArray['company_name'] = $invoiceRow['company_name'];
+						$InsertArray['company_address'] = $invoiceRow['company_address'];
+						$InsertArray['company_state'] = $invoiceRow['company_state'];
+						$InsertArray['gstin_number'] = $invoiceRow['gstin_number'];
+						$InsertArray['invoice_date'] = $invoiceRow['invoice_date'];
+						$InsertArray['invoice_corresponding_type'] = $invoiceRow['invoice_corresponding_type'];
+						$InsertArray['corresponding_document_number'] = $invoiceRow['corresponding_document_number'];
+						$InsertArray['corresponding_document_date'] = $invoiceRow['corresponding_document_date'];
+						$InsertArray['supply_place'] = $invoiceRow['supply_place'];
+						$InsertArray['billing_name'] = $invoiceRow['billing_name'];
+						$InsertArray['billing_company_name'] = $invoiceRow['billing_company_name'];
+						$InsertArray['billing_address'] = $invoiceRow['billing_address'];
+						$InsertArray['billing_state'] = $invoiceRow['billing_state'];
+						$InsertArray['billing_state_name'] = $invoiceRow['billing_state_name'];
+						$InsertArray['billing_country'] = $invoiceRow['billing_country'];
+						$InsertArray['billing_vendor_type'] = $invoiceRow['billing_vendor_type'];
+						$InsertArray['billing_gstin_number'] = $invoiceRow['billing_gstin_number'];
+						$InsertArray['shipping_name'] = $invoiceRow['shipping_name'];
+						$InsertArray['shipping_company_name'] = $invoiceRow['shipping_company_name'];
+						$InsertArray['shipping_address'] = $invoiceRow['shipping_address'];
+						$InsertArray['shipping_state'] = $invoiceRow['shipping_state'];
+						$InsertArray['shipping_state_name'] = $invoiceRow['shipping_state_name'];
+						$InsertArray['shipping_country'] = $invoiceRow['shipping_country'];
+						$InsertArray['shipping_vendor_type'] = $invoiceRow['shipping_vendor_type'];
+						$InsertArray['shipping_gstin_number'] = $invoiceRow['shipping_gstin_number'];
+						$InsertArray['description'] = $invoiceRow['description'];						
+						$InsertArray['invoice_total_value'] = number_format($invoiceTotalAmount, 2, '.', '');
+						$InsertArray['financial_year'] = $this->generateFinancialYear();
+						$InsertArray['status'] = 1;
+						$InsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
+						$InsertArray['added_date'] = date('Y-m-d H:i:s');
 
-                        if ($this->insert($this->tableNames['client_rf_invoice'], $InsertArray)) {
+						if ($this->insert($this->tableNames['client_invoice'], $InsertArray)) {
 
-                            $insertid = $this->getInsertID();
-                            $this->logMsg("New RF Invoice Added. ID : " . $insertid . ".");
+							$insertid = $this->getInsertID();
+							$this->logMsg("Revised Tax Invoice Added. ID : " . $insertid . ".","client_create_revised_tax_invoice");
 
-                            $processedInvoiceItemArray = array();
-                            foreach ($invoiceItemArray as $itemArr) {
+							$processedInvoiceItemArray = array();
+							foreach ($invoiceItemArray as $itemArr) {
 
-                                $itemArr['invoice_id'] = $insertid;
-                                array_push($processedInvoiceItemArray, $itemArr);
-                            }
+								$itemArr['invoice_id'] = $insertid;
+								array_push($processedInvoiceItemArray, $itemArr);
+							}
 
-                            if ($this->insertMultiple($this->tableNames['client_rf_invoice_item'], $processedInvoiceItemArray)) {
+							if ($this->insertMultiple($this->tableNames['client_invoice_item'], $processedInvoiceItemArray)) {
 
-                                $iteminsertid = $this->getInsertID();
-                                $this->logMsg("New RF Invoice Item Added. ID : " . $iteminsertid . ".");
-                            }
-                        }
-                    }
+								$iteminsertid = $this->getInsertID();
+								$this->logMsg("Revised Tax Invoice Item Added. ID : " . $iteminsertid . ".");
+							}
+						}
+					}
                 }
 
                 $this->setSuccess($this->validationMessage['invoiceadded']);
@@ -3068,606 +3480,399 @@ final class client extends validation {
         }
     }
 
-    /* upload client payment voucher invoice */
+	/* upload client delivery challan invoice */
+    public function uploadClientDCInvoice() {
 
-    public function uploadClientPVInvoice() {
-
-        $flag = true;
-        $errorflag = false;
-        $dataArray = array();
-        $indexArray = array();
-        $invoiceArray = array();
-        $invoiceItemArray = array();
+		$flag = true;
+		$errorflag = false;
+		$dataArray = array();
+		$indexArray = array();
+		$invoiceArray = array();
+		$invoiceItemArray = array();
+		$currentFinancialYear = $this->generateFinancialYear();
 
         if ($_FILES['invoice_xlsx']['name'] != '' && $_FILES['invoice_xlsx']['error'] == 0) {
 
-            $invoice_excel = $this->imageUploads($_FILES['invoice_xlsx'], 'invoice-docs', 'upload', $this->allowExcelExt);
-            if ($invoice_excel == FALSE) {
-                return false;
-            }
+			$invoice_excel = $this->imageUploads($_FILES['invoice_xlsx'], 'invoice-docs', 'upload', $this->allowExcelExt);
+			if ($invoice_excel == FALSE) {
+				return false;
+			}
 
-            $invoice_excel_dir_path = PROJECT_ROOT . UPLOAD_DIR . "/invoice-docs/" . $invoice_excel;
-            $invoice_excel_url_path = PROJECT_URL . UPLOAD_DIR . "/invoice-docs/" . $invoice_excel;
+			$invoice_excel_dir_path = PROJECT_ROOT . UPLOAD_DIR . "/invoice-docs/" . $invoice_excel;
+			$invoice_excel_url_path = PROJECT_URL . UPLOAD_DIR . "/invoice-docs/" . $invoice_excel;
 
-            $objPHPExcel = PHPExcel_IOFactory::load($invoice_excel_dir_path);
-            $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+			$objPHPExcel = PHPExcel_IOFactory::load($invoice_excel_dir_path);
+			$sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
 			$sheetData = array_map('array_filter', $sheetData);
 			$sheetData = array_filter($sheetData);
 
             foreach ($sheetData as $rowKey => $data) {
 
-                if ($flag) {
-                    $indexArray = $data;
-                    $flag = false;
-                    continue;
-                }
+				if ($flag) {
+					$indexArray = $data;
+					$flag = false;
+					continue;
+				}
 
-                $currentItemError = array();
-                $dataArray['reference_number'] = isset($data['A']) ? $data['A'] : '';
-                $dataArray['invoice_date'] = isset($data['B']) ? $data['B'] : '';
+				$currentItemError = array();
+				$dataArray['reference_number'] = isset($data['A']) ? $data['A'] : '';
+				$dataArray['invoice_date'] = isset($data['B']) ? $data['B'] : '';
 
-                $supply_place = isset($data['C']) ? $data['C'] : '';
-                if ($supply_place != '') {
-
-                    $supply_state_data = $this->getStateDetailByStateCode($supply_place);
-                    if ($supply_state_data['status'] === "success") {
-                        $dataArray['supply_place'] = $supply_state_data['data']->state_id;
-                    } else {
-
-                        $errorflag = true;
-                        array_push($currentItemError, "Invalid supply state code.");
-                        $dataArray['supply_place'] = 'Invalid State';
-                    }
+				$delivery_challan_type = isset($data['C']) ? $data['C'] : '';
+				if ($delivery_challan_type != '' && strtoupper($delivery_challan_type) === 'JOB WORK') {
+                    $dataArray['delivery_challan_type'] = "jobwork";
+                } else if ($delivery_challan_type != '' && strtoupper($delivery_challan_type) === 'SUPPLY OF LIQUID GAS') {
+					$dataArray['delivery_challan_type'] = "supplyofliquidgas";
+                } else if ($delivery_challan_type != '' && strtoupper($delivery_challan_type) === 'SUPPLY ON APPROVAL') {
+                    $dataArray['delivery_challan_type'] = "supplyonapproval";
+                } else if ($delivery_challan_type != '' && strtoupper($delivery_challan_type) === 'OTHERS') {
+                    $dataArray['delivery_challan_type'] = "others";
                 } else {
-                    $dataArray['supply_place'] = $supply_place;
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Delivery Challan.");
                 }
 
-                $dataArray['billing_name'] = isset($data['D']) ? $data['D'] : '';
-                $dataArray['billing_address'] = isset($data['E']) ? $data['E'] : '';
-                $billing_state = isset($data['F']) ? $data['F'] : '';
+				$supply_place = isset($data['D']) ? $data['D'] : '';
+				if ($supply_place != '') {
 
-                if ($billing_state != '') {
+					$supply_state_data = $this->getStateDetailByStateCode($supply_place);
+					if ($supply_state_data['status'] === "success") {
+						$dataArray['supply_place'] = $supply_state_data['data']->state_id;
+					} else {
+						$errorflag = true;
+						array_push($currentItemError, "Invalid Place Of Supply.");
+						$dataArray['supply_place'] = 'Invalid Place Of Supply.';
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Place Of Supply.");
+				}
 
-                    $billing_state_data = $this->getStateDetailByStateCode($billing_state);
-                    if ($billing_state_data['status'] === "success") {
-                        $dataArray['billing_state'] = $billing_state_data['data']->state_id;
-                        $dataArray['billing_state_name'] = $billing_state_data['data']->state_name;
-                    } else {
+				$dataArray['billing_name'] = isset($data['E']) ? $data['E'] : '';
+				$dataArray['billing_company_name'] = isset($data['F']) ? $data['F'] : '';
+				$dataArray['billing_address'] = isset($data['G']) ? $data['G'] : '';
 
-                        $errorflag = true;
-                        array_push($currentItemError, "Invalid billing state code.");
-                        $dataArray['billing_state'] = 'Invalid State';
-                    }
-                } else {
-                    $dataArray['billing_state'] = $billing_state;
-                }
+				$billing_state = isset($data['H']) ? $data['H'] : '';
+				if ($billing_state != '') {
 
-                $dataArray['billing_gstin_number'] = isset($data['G']) ? $data['G'] : '';
-                $dataArray['shipping_name'] = isset($data['H']) ? $data['H'] : '';
-                $dataArray['shipping_address'] = isset($data['I']) ? $data['I'] : '';
-                $shipping_state = isset($data['J']) ? $data['J'] : '';
+					$billing_state_data = $this->getStateDetailByStateCode($billing_state);
+					if ($billing_state_data['status'] === "success") {
+						$dataArray['billing_state'] = $billing_state_data['data']->state_id;
+						$dataArray['billing_state_name'] = $billing_state_data['data']->state_name;
+					} else {
+						$errorflag = true;
+						array_push($currentItemError, "Invalid Consignee State.");
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Consignee State.");
+				}
 
-                if ($shipping_state != '') {
+				$billing_country = isset($data['I']) ? $data['I'] : '';
+				if ($billing_country != '') {
 
-                    $shipping_state_data = $this->getStateDetailByStateCode($shipping_state);
-                    if ($shipping_state_data['status'] === "success") {
-                        $dataArray['shipping_state'] = $shipping_state_data['data']->state_id;
-                        $dataArray['shipping_state_name'] = $shipping_state_data['data']->state_name;
-                    } else {
+					$billing_country_data = $this->getCountryDetailByCountryCode($billing_country);
+					if ($billing_country_data['status'] === "success") {
+						$dataArray['billing_country'] = $billing_country_data['data']->id;
+					} else {
+						$errorflag = true;
+						array_push($currentItemError, "Invalid Consignee Country.");
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Consignee Country.");
+				}
 
-                        $errorflag = true;
-                        array_push($currentItemError, "Invalid shipping state code.");
-                        $dataArray['shipping_state'] = 'Invalid State';
-                    }
-                } else {
-                    $dataArray['shipping_state'] = $shipping_state;
-                }
+				$billing_vendor_type = isset($data['J']) ? $data['J'] : '';
+				if ($billing_vendor_type != '') {
 
-                $dataArray['shipping_gstin_number'] = isset($data['K']) ? $data['K'] : '';
+					$dataVendorNameArrs = $this->get_row("select vendor_id, vendor_name from ".$this->tableNames['vendor_type']." where 1=1 AND UPPER(vendor_name) = '".strtoupper($billing_vendor_type)."' AND status='1' AND is_deleted='0'");
+					if (!empty($dataVendorNameArrs) && isset($dataVendorNameArrs->vendor_id)) {
+						$dataArray['billing_vendor_type'] = $dataVendorNameArrs->vendor_id;
+					} else {
+						$errorflag = true;
+						array_push($currentItemError, "Invalid Consignee Vendor Type.");
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Consignee Vendor Type.");
+				}
 
-                $item_name = isset($data['L']) ? trim($data['L']) : '';
-                $item_hsn_code = isset($data['M']) ? trim($data['M']) : '';
+				$dataArray['billing_gstin_number'] = isset($data['K']) ? $data['K'] : '';
 
-                //if(!empty($item_hsn_code)) { $item_hsn_code = str_pad($item_hsn_code, 8, "0", STR_PAD_LEFT); }
+				$item_name = isset($data['L']) ? trim($data['L']) : '';
+				$item_hsncode = isset($data['M']) ? trim($data['M']) : '';
+				$dataArray['item_quantity'] = isset($data['N']) ? $data['N'] : '';
 
-                $dataArray['amount_paid'] = isset($data['N']) ? $data['N'] : '';
+				$dataArray['item_unit'] = isset($data['O']) ? $data['O'] : '';
+				$item_unit =  $dataArray['item_unit'];
 
-                if ($item_name != '' && $item_hsn_code != '') {
+				$dataArray['item_rate'] = isset($data['P']) ? $data['P'] : 0.00;
+				$item_rate =  $dataArray['item_rate'];
 
-                    $checkClientMasterItem = $this->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit, u.unit_id, u.unit_name, u.unit_code from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m, " . $this->tableNames['unit'] . " as u where 1=1 AND cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.item_name = '" . $item_name . "' && m.hsn_code = '" . $item_hsn_code . "' AND cm.is_deleted='0' AND cm.status = '1' AND cm.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
+				$dataArray['item_discount'] = isset($data['Q']) ? $data['Q'] : 0.00;
 
-                    if (count($checkClientMasterItem) == 1) {
+				if(!empty($item_name) && !empty($item_hsncode)) {
 
-                        $dataArray['item_name'] = $item_name;
-                        $dataArray['item_hsn_code'] = $item_hsn_code;
-                    } else {
+					$checkClientMasterItem = $this->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_description, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m where 1=1 AND cm.item_category = m.item_id AND cm.item_name = '" . $item_name . "' && m.hsn_code = '" . $item_hsncode . "' AND cm.is_deleted='0' AND cm.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
+					if (!empty($checkClientMasterItem)) {
 
-                        $errorflag = true;
-                        array_push($currentItemError, "Item not exist with this hsn code.");
-                        $dataArray['item_name'] = "#####Item not exist#####";
-                        $dataArray['item_hsn_code'] = "#####HSN code not exist#####";
-                    }
-                } else {
-                    $dataArray['item_name'] = $item_name;
-                    $dataArray['item_hsn_code'] = $item_hsn_code;
-                }
+						$dataArray['item_id'] = $checkClientMasterItem->item_id;
+						$dataArray['item_name'] = $item_name;
+						$dataArray['item_hsncode'] = $item_hsncode;
+					} else {
 
-                $invoiceErrors = $this->validateClientInvoiceExcel($dataArray);
-                if ($invoiceErrors !== true || !empty($currentItemError)) {
+						$masterItem = $this->get_row("select item_id, item_name, hsn_code from " . $this->tableNames['item'] . " where hsn_code='".$item_hsncode."' and is_deleted='0' AND status='1'");						
+						if(!empty($masterItem)) {
 
-                    $errorflag = true;
-                    if ($invoiceErrors === true) {
-                        $invoiceErrors = array();
-                    }
-                    $invoiceErrors = array_merge($invoiceErrors, $currentItemError);
-                    $invoiceErrors = implode(", ", $invoiceErrors);
-                    $objPHPExcel->getActiveSheet()->SetCellValue('O' . $rowKey, $invoiceErrors);
-                }
+							$masterUnit = $this->get_row("select unit_id from " . $this->tableNames['unit'] . " as u where u.unit_code='".$item_unit."' and u.is_deleted='0' AND u.status = '1'");
+							if(!empty($masterUnit)) {
+								$master_unit_id = $masterUnit->unit_id;
+							} else {
+								
+								$masterNUnit = $this->get_row("select unit_id from " . $this->tableNames['unit'] . " as u where u.unit_code='NA' and u.is_deleted='0' AND u.status = '1'");
+								if(!empty($masterNUnit)) {
+									$master_unit_id = $masterNUnit->unit_id;
+								} else {
+									$master_unit_id = 0;
+								}
+							}
 
-                /* get current user data */
-                $dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
+							$dataInsertItemArray['item_name'] = $item_name;
+							$dataInsertItemArray['item_category'] = $masterItem->item_id;
+							$dataInsertItemArray['unit_price'] = $item_rate;
+							$dataInsertItemArray['item_unit'] = $master_unit_id;
+							$dataInsertItemArray['status'] = '1';
+							$dataInsertItemArray['added_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);
+							$dataInsertItemArray['added_date'] = date('Y-m-d H:i:s');
 
-                /* create invoice array */
-                $arrayKey = $dataArray['reference_number'];
+							if ($this->insert($this->tableNames['client_master_item'], $dataInsertItemArray)) {
 
-                $invoiceArray[$arrayKey]['reference_number'] = $dataArray['reference_number'];
-                $invoiceArray[$arrayKey]['company_name'] = $dataCurrentUserArr['data']->kyc->name;
-                $invoiceArray[$arrayKey]['company_address'] = $dataCurrentUserArr['data']->kyc->registered_address;
-                $invoiceArray[$arrayKey]['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
-                $invoiceArray[$arrayKey]['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
-                $invoiceArray[$arrayKey]['invoice_date'] = $dataArray['invoice_date'];
-                $invoiceArray[$arrayKey]['supply_place'] = $dataArray['supply_place'];
-                $invoiceArray[$arrayKey]['billing_name'] = $dataArray['billing_name'];
-                $invoiceArray[$arrayKey]['billing_address'] = $dataArray['billing_address'];
-                $invoiceArray[$arrayKey]['billing_state'] = $dataArray['billing_state'];
-                $invoiceArray[$arrayKey]['billing_state_name'] = $dataArray['billing_state_name'];
-                $invoiceArray[$arrayKey]['billing_gstin_number'] = $dataArray['billing_gstin_number'];
-                $invoiceArray[$arrayKey]['shipping_name'] = $dataArray['shipping_name'];
-                $invoiceArray[$arrayKey]['shipping_address'] = $dataArray['shipping_address'];
-                $invoiceArray[$arrayKey]['shipping_state'] = $dataArray['shipping_state'];
-                $invoiceArray[$arrayKey]['shipping_state_name'] = $dataArray['shipping_state_name'];
-                $invoiceArray[$arrayKey]['shipping_gstin_number'] = $dataArray['shipping_gstin_number'];
+								$iteminsertid = $this->getInsertID();
+								$dataArray['item_id'] = $iteminsertid;
+								$dataArray['item_name'] = $item_name;
+								$dataArray['item_hsncode'] = $masterItem->hsn_code;
+							} else {
+								$errorflag = true;
+								array_push($currentItemError, $this->getValMsg('failed'));
+							}
+						} else {
+							$errorflag = true;
+							array_push($currentItemError, "Description of Goods and HSN Code should be valid.");
+						}
+					}
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Description of Goods and HSN Code should be valid.");
+				}
 
-                //items
-                $invoiceItemArray['item_name'] = $dataArray['item_name'];
-                $invoiceItemArray['item_hsncode'] = $dataArray['item_hsn_code'];
-                $invoiceItemArray['amount_paid'] = $dataArray['amount_paid'];
+				$dataArray['cgst_rate'] = isset($data['R']) ? $data['R'] : 0.000;
+				$dataArray['sgst_rate'] = isset($data['S']) ? $data['S'] : 0.000;
+				$dataArray['igst_rate'] = isset($data['T']) ? $data['T'] : 0.000;
+				$dataArray['cess_rate'] = isset($data['U']) ? $data['U'] : 0.000;
 
-                $invoiceArray[$arrayKey]['items'][] = $invoiceItemArray;
+				/* get current user data */
+				$dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
+
+				if($dataCurrentUserArr['data']->kyc->state_id === $dataArray['supply_place']) {
+
+					if($dataArray['cgst_rate'] != $dataArray['sgst_rate']) {
+						$errorflag = true;
+						array_push($currentItemError, "CGST and SGST rate should be same for item number.");
+					}
+				}
+
+				/* check reference number */
+				$referenceStatus = $this->checkReferenceNumberExist($dataArray['reference_number'], $this->sanitize($_SESSION['user_detail']['user_id']));
+				if($referenceStatus == true) {
+					$errorflag = true;
+					array_push($currentItemError, "You have already used this reference number.");
+				}
+
+				/* Invoice Description */
+				$dataArray['description'] = isset($data['V']) ? $data['V'] : '';
+
+				$invoiceErrors = $this->validateClientInvoiceExcel($dataArray);
+				if ($invoiceErrors !== true || !empty($currentItemError)) {
+
+					$errorflag = true;
+					if ($invoiceErrors === true) {
+						$invoiceErrors = array();
+					}
+					$invoiceErrors = array_merge($invoiceErrors, $currentItemError);
+					$invoiceErrors = implode(", ", $invoiceErrors);
+					$objPHPExcel->getActiveSheet()->SetCellValue('W' . $rowKey, $invoiceErrors);
+				}
+
+				/* create invoice array */
+				$arrayKey = $dataArray['reference_number'];
+
+				$invoiceArray[$arrayKey]['invoice_type'] = 'deliverychallaninvoice';
+				$invoiceArray[$arrayKey]['invoice_nature'] = 'salesinvoice';
+				$invoiceArray[$arrayKey]['reference_number'] = $dataArray['reference_number'];
+				$invoiceArray[$arrayKey]['company_name'] = $dataCurrentUserArr['data']->kyc->name;
+				$invoiceArray[$arrayKey]['company_address'] = $dataCurrentUserArr['data']->kyc->full_address;
+				$invoiceArray[$arrayKey]['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
+				$invoiceArray[$arrayKey]['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
+				$invoiceArray[$arrayKey]['invoice_date'] = $dataArray['invoice_date'];
+				$invoiceArray[$arrayKey]['delivery_challan_type'] = $dataArray['delivery_challan_type'];
+				$invoiceArray[$arrayKey]['supply_place'] = $dataArray['supply_place'];
+				$invoiceArray[$arrayKey]['billing_name'] = $dataArray['billing_name'];
+				$invoiceArray[$arrayKey]['billing_company_name'] = $dataArray['billing_company_name'];
+				$invoiceArray[$arrayKey]['billing_address'] = $dataArray['billing_address'];
+				$invoiceArray[$arrayKey]['billing_state'] = $dataArray['billing_state'];
+				$invoiceArray[$arrayKey]['billing_state_name'] = $dataArray['billing_state_name'];
+				$invoiceArray[$arrayKey]['billing_country'] = $dataArray['billing_country'];
+				$invoiceArray[$arrayKey]['billing_vendor_type'] = $dataArray['billing_vendor_type'];
+				$invoiceArray[$arrayKey]['billing_gstin_number'] = $dataArray['billing_gstin_number'];
+				$invoiceArray[$arrayKey]['description'] = $dataArray['description'];
+
+				//items
+				$invoiceItemArray['item_id'] = $dataArray['item_id'];
+				$invoiceItemArray['item_name'] = $dataArray['item_name'];
+				$invoiceItemArray['item_hsncode'] = $dataArray['item_hsncode'];
+				$invoiceItemArray['item_quantity'] = $dataArray['item_quantity'];
+				$invoiceItemArray['item_unit'] = $dataArray['item_unit'];
+				$invoiceItemArray['item_unit_price'] = $dataArray['item_rate'];
+				$invoiceItemArray['item_discount'] = $dataArray['item_discount'];
+				$invoiceItemArray['cgst_rate'] = $dataArray['cgst_rate'];
+				$invoiceItemArray['sgst_rate'] = $dataArray['sgst_rate'];
+				$invoiceItemArray['igst_rate'] = $dataArray['igst_rate'];
+				$invoiceItemArray['cess_rate'] = $dataArray['cess_rate'];
+
+				$invoiceArray[$arrayKey]['items'][] = $invoiceItemArray;
             }
 
             if ($errorflag === true) {
 
-                $objPHPExcel->getActiveSheet()->SetCellValue('O1', "Error Information");
-                $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-                $objWriter->save($invoice_excel_dir_path);
-                $this->setError($this->validationMessage['excelerror']);
+				$objPHPExcel->getActiveSheet()->SetCellValue('W1', "Error Information");
+				$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
+				$objWriter->save($invoice_excel_dir_path);
+				$this->setError($this->validationMessage['excelerror']);
+				$resultArray = array("status" => "error", "excelurl" => $invoice_excel_url_path);
+				return json_encode($resultArray);
+			} else {
 
-                $resultArray = array("status" => "error", "excelurl" => $invoice_excel_url_path);
-                return json_encode($resultArray);
-            } else {
+				foreach ($invoiceArray as $invoiceRow) {
 
-                foreach ($invoiceArray as $invoiceRow) {
+					$invoiceItemArray = array();
+					$invoiceTotalAmount = 0.00;
+					$consolidateRate = 0.00;
 
-                    $invoiceItemArray = array();
-                    $invoiceTotalAmount = 0.00;
+					foreach ($invoiceRow['items'] as $invoiceInnerRow) {
+						
+						$itemUnitPrice = (float) $invoiceInnerRow['item_unit_price'];
+						$invoiceItemQuantity = (float) $invoiceInnerRow['item_quantity'];
+						$invoiceItemDiscount = (float) $invoiceInnerRow['item_discount'];
 
-                    foreach ($invoiceRow['items'] as $invoiceInnerRow) {
+						$invoiceItemTotal = $invoiceItemQuantity * $itemUnitPrice;
+						$invoiceItemDiscountAmount = ($invoiceItemDiscount / 100) * $invoiceItemTotal;
+						$invoiceItemTaxableAmount = $invoiceItemTotal - $invoiceItemDiscountAmount;
 
-                        $clientMasterItem = $this->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit, u.unit_id, u.unit_name, u.unit_code from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m, " . $this->tableNames['unit'] . " as u where 1=1 AND cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.item_name = '" . $invoiceInnerRow['item_name'] . "' && m.hsn_code = '" . $invoiceInnerRow['item_hsncode'] . "' AND cm.is_deleted='0' AND cm.status = '1' AND cm.added_by = '" . $_SESSION['user_detail']['user_id'] . "'");
-                        if (!empty($clientMasterItem)) {
+						if($invoiceRow['company_state'] === $invoiceRow['supply_place']) {
 
-                            $amountPaid = (float) $invoiceInnerRow['amount_paid'];
-                            $invoiceItemTaxableAmount = round($amountPaid, 2);
+							$itemCSGTTax = (float)$invoiceInnerRow['cgst_rate'];
+							$itemSGSTTax = (float)$invoiceInnerRow['sgst_rate'];
+							$itemIGSTTax = 0.00;
+							$itemCESSTax = (float)$invoiceInnerRow['cess_rate'];
+							$consolidateRate = $itemCSGTTax + $itemSGSTTax;
 
-                            if ($invoiceRow['supply_place'] === $invoiceRow['shipping_state']) {
+							$invoiceItemCSGTTaxAmount = ($itemCSGTTax/100) * $invoiceItemTaxableAmount;
+							$invoiceItemSGSTTaxAmount = ($itemSGSTTax/100) * $invoiceItemTaxableAmount;
+							$invoiceItemIGSTTaxAmount = 0.00;
+							$invoiceItemCESSTaxAmount = ($itemCESSTax/100) * $invoiceItemTaxableAmount;
+						} else {
+							
+							$itemCSGTTax = 0.00;
+							$itemSGSTTax = 0.00;
+							$itemIGSTTax = (float)$invoiceInnerRow['igst_rate'];
+							$itemCESSTax = (float)$invoiceInnerRow['cess_rate'];
+							$consolidateRate = $itemIGSTTax;
 
-                                $itemCSGTTax = (float) $clientMasterItem->csgt_tax_rate;
-                                $itemSGSTTax = (float) $clientMasterItem->sgst_tax_rate;
-                                $itemIGSTTax = 0.00;
-                                $itemCESSTax = (float) $clientMasterItem->cess_tax_rate;
+							$invoiceItemCSGTTaxAmount = 0.00;
+							$invoiceItemSGSTTaxAmount = 0.00;
+							$invoiceItemIGSTTaxAmount = ($itemIGSTTax/100) * $invoiceItemTaxableAmount;
+							$invoiceItemCESSTaxAmount = ($itemCESSTax/100) * $invoiceItemTaxableAmount;
+						}
 
-                                $invoiceItemCSGTTaxAmount = round((($itemCSGTTax / 100) * $invoiceItemTaxableAmount), 2);
-                                $invoiceItemSGSTTaxAmount = round((($itemSGSTTax / 100) * $invoiceItemTaxableAmount), 2);
-                                $invoiceItemIGSTTaxAmount = 0.00;
-                                $invoiceItemCESSTaxAmount = round((($itemCESSTax / 100) * $invoiceItemTaxableAmount), 2);
-                            } else {
+						$invoiceItemTotalAmount = ($invoiceItemTaxableAmount + $invoiceItemCSGTTaxAmount + $invoiceItemSGSTTaxAmount + $invoiceItemIGSTTaxAmount + $invoiceItemCESSTaxAmount);
+						$invoiceTotalAmount += $invoiceItemTotalAmount;
 
-                                $itemCSGTTax = 0.00;
-                                $itemSGSTTax = 0.00;
-                                $itemIGSTTax = (float) $clientMasterItem->igst_tax_rate;
-                                $itemCESSTax = (float) $clientMasterItem->cess_tax_rate;
+						$ItemArray = array(
+							"item_id" => $invoiceInnerRow['item_id'],
+							"item_name" => $invoiceInnerRow['item_name'],
+							"item_hsncode" => $invoiceInnerRow['item_hsncode'],
+							"item_quantity" => $invoiceItemQuantity,
+							"item_unit" => $invoiceInnerRow['item_unit'],
+							"item_unit_price" => $itemUnitPrice,
+							"subtotal" => round($invoiceItemTotal, 2),
+							"discount" => $invoiceItemDiscount,
+							"taxable_subtotal" => round($invoiceItemTaxableAmount, 2),
+							"cgst_rate" => $itemCSGTTax,
+							"cgst_amount" => round($invoiceItemCSGTTaxAmount, 2),
+							"sgst_rate" => $itemSGSTTax,
+							"sgst_amount" => round($invoiceItemSGSTTaxAmount, 2),
+							"igst_rate" => $itemIGSTTax,
+							"igst_amount" => round($invoiceItemIGSTTaxAmount, 2),
+							"cess_rate" => $itemCESSTax,
+							"cess_amount" => round($invoiceItemCESSTaxAmount, 2),
+							"consolidate_rate" => $consolidateRate,
+							"total" => round($invoiceItemTotalAmount, 2),
+							"status" => 1,
+							"added_by" => $this->sanitize($_SESSION['user_detail']['user_id']),
+							"added_date" => date('Y-m-d H:i:s')
+						);
 
-                                $invoiceItemCSGTTaxAmount = 0.00;
-                                $invoiceItemSGSTTaxAmount = 0.00;
-                                $invoiceItemIGSTTaxAmount = round((($itemIGSTTax / 100) * $invoiceItemTaxableAmount), 2);
-                                $invoiceItemCESSTaxAmount = round((($itemCESSTax / 100) * $invoiceItemTaxableAmount), 2);
-                            }
-
-                            $invoiceItemTotalAmount = round(($invoiceItemTaxableAmount + $invoiceItemCSGTTaxAmount + $invoiceItemSGSTTaxAmount + $invoiceItemIGSTTaxAmount + $invoiceItemCESSTaxAmount), 2);
-                            $invoiceTotalAmount += $invoiceItemTotalAmount;
-
-                            $ItemArray = array(
-                                "item_id" => $clientMasterItem->item_id,
-                                "item_name" => $clientMasterItem->item_name,
-                                "item_hsncode" => $clientMasterItem->hsn_code,
-                                "taxable_subtotal" => $invoiceItemTaxableAmount,
-                                "cgst_rate" => $itemCSGTTax,
-                                "cgst_amount" => $invoiceItemCSGTTaxAmount,
-                                "sgst_rate" => $itemSGSTTax,
-                                "sgst_amount" => $invoiceItemSGSTTaxAmount,
-                                "igst_rate" => $itemIGSTTax,
-                                "igst_amount" => $invoiceItemIGSTTaxAmount,
-                                "cess_rate" => $itemCESSTax,
-                                "cess_amount" => $invoiceItemCESSTaxAmount,
-                                "total" => $invoiceItemTotalAmount,
-                                "status" => 1,
-                                "added_by" => $_SESSION['user_detail']['user_id'],
-                                "added_date" => date('Y-m-d H:i:s')
-                            );
-
-                            array_push($invoiceItemArray, $ItemArray);
-                        }
+						array_push($invoiceItemArray, $ItemArray);
                     }
 
-                    if (!empty($invoiceItemArray) && count($invoiceItemArray) > 0) {
-
-                        $InsertArray['reference_number'] = $invoiceRow['reference_number'];
-                        $InsertArray['serial_number'] = $this->generatePVInvoiceNumber($this->sanitize($_SESSION['user_detail']['user_id']));
-                        $InsertArray['company_name'] = $invoiceRow['company_name'];
-                        $InsertArray['company_address'] = $invoiceRow['company_address'];
-                        $InsertArray['company_state'] = $invoiceRow['company_state'];
-                        $InsertArray['gstin_number'] = $invoiceRow['gstin_number'];
-                        $InsertArray['invoice_date'] = $invoiceRow['invoice_date'];
-                        $InsertArray['supply_place'] = $invoiceRow['supply_place'];
-                        $InsertArray['billing_name'] = $invoiceRow['billing_name'];
-                        $InsertArray['billing_address'] = $invoiceRow['billing_address'];
-                        $InsertArray['billing_state'] = $invoiceRow['billing_state'];
-                        $InsertArray['billing_state_name'] = $invoiceRow['billing_state_name'];
-                        $InsertArray['billing_gstin_number'] = $invoiceRow['billing_gstin_number'];
-                        $InsertArray['shipping_name'] = $invoiceRow['shipping_name'];
-                        $InsertArray['shipping_address'] = $invoiceRow['shipping_address'];
-                        $InsertArray['shipping_state'] = $invoiceRow['shipping_state'];
-                        $InsertArray['shipping_state_name'] = $invoiceRow['shipping_state_name'];
-                        $InsertArray['shipping_gstin_number'] = $invoiceRow['shipping_gstin_number'];
-                        $InsertArray['invoice_total_value'] = $invoiceTotalAmount;
-                        $InsertArray['financial_year'] = $this->generateFinancialYear();
-                        $InsertArray['status'] = 1;
-                        $InsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
-                        $InsertArray['added_date'] = date('Y-m-d H:i:s');
-
-                        if ($this->insert($this->tableNames['client_pv_invoice'], $InsertArray)) {
-
-                            $insertid = $this->getInsertID();
-                            $this->logMsg("New PV Invoice Added. ID : " . $insertid . ".");
-
-                            $processedInvoiceItemArray = array();
-                            foreach ($invoiceItemArray as $itemArr) {
-
-                                $itemArr['invoice_id'] = $insertid;
-                                array_push($processedInvoiceItemArray, $itemArr);
-                            }
-
-                            if ($this->insertMultiple($this->tableNames['client_pv_invoice_item'], $processedInvoiceItemArray)) {
-
-                                $iteminsertid = $this->getInsertID();
-                                $this->logMsg("New PV Invoice Item Added. ID : " . $iteminsertid . ".");
-                            }
-                        }
-                    }
-                }
-
-                $this->setSuccess($this->validationMessage['invoiceadded']);
-                return true;
-            }
-        }
-    }
-
-    /* upload client special tax invoice */
-
-    public function uploadClientSTInvoice() {
-
-        $flag = true;
-        $errorflag = false;
-        $dataArray = array();
-        $indexArray = array();
-        $invoiceArray = array();
-        $invoiceItemArray = array();
-
-        if ($_FILES['invoice_xlsx']['name'] != '' && $_FILES['invoice_xlsx']['error'] == 0) {
-
-            $invoice_excel = $this->imageUploads($_FILES['invoice_xlsx'], 'invoice-docs', 'upload', $this->allowExcelExt);
-            if ($invoice_excel == FALSE) {
-                return false;
-            }
-
-            $invoice_excel_dir_path = PROJECT_ROOT . UPLOAD_DIR . "/invoice-docs/" . $invoice_excel;
-            $invoice_excel_url_path = PROJECT_URL . UPLOAD_DIR . "/invoice-docs/" . $invoice_excel;
-
-            $objPHPExcel = PHPExcel_IOFactory::load($invoice_excel_dir_path);
-            $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
-			$sheetData = array_map('array_filter', $sheetData);
-			$sheetData = array_filter($sheetData);
-
-            foreach ($sheetData as $rowKey => $data) {
-
-                if ($flag) {
-                    $indexArray = $data;
-                    $flag = false;
-                    continue;
-                }
-
-                $currentItemError = array();
-                $dataArray['reference_number'] = isset($data['A']) ? $data['A'] : '';
-                $dataArray['invoice_date'] = isset($data['B']) ? $data['B'] : '';
-
-                $supply_place = isset($data['C']) ? $data['C'] : '';
-
-                if ($supply_place != '') {
-
-                    $supply_state_data = $this->getStateDetailByStateCode($supply_place);
-                    if ($supply_state_data['status'] === "success") {
-                        $dataArray['supply_place'] = $supply_state_data['data']->state_id;
-                    } else {
-
-                        $errorflag = true;
-                        array_push($currentItemError, "Invalid supply state code.");
-                        $dataArray['supply_place'] = 'Invalid State';
-                    }
-                } else {
-                    $dataArray['supply_place'] = $supply_place;
-                }
-
-                $dataArray['billing_name'] = isset($data['D']) ? $data['D'] : '';
-                $dataArray['billing_address'] = isset($data['E']) ? $data['E'] : '';
-                $billing_state = isset($data['F']) ? $data['F'] : '';
-
-                if ($billing_state != '') {
-
-                    $billing_state_data = $this->getStateDetailByStateCode($billing_state);
-                    if ($billing_state_data['status'] === "success") {
-                        $dataArray['billing_state'] = $billing_state_data['data']->state_id;
-                        $dataArray['billing_state_name'] = $billing_state_data['data']->state_name;
-                    } else {
-
-                        $errorflag = true;
-                        array_push($currentItemError, "Invalid billing state code.");
-                        $dataArray['billing_state'] = 'Invalid State';
-                    }
-                } else {
-                    $dataArray['billing_state'] = $billing_state;
-                }
-
-                $dataArray['billing_gstin_number'] = isset($data['G']) ? $data['G'] : '';
-                $dataArray['shipping_name'] = isset($data['H']) ? $data['H'] : '';
-                $dataArray['shipping_address'] = isset($data['I']) ? $data['I'] : '';
-                $shipping_state = isset($data['J']) ? $data['J'] : '';
-
-                if ($shipping_state != '') {
-
-                    $shipping_state_data = $this->getStateDetailByStateCode($shipping_state);
-                    if ($shipping_state_data['status'] === "success") {
-                        $dataArray['shipping_state'] = $shipping_state_data['data']->state_id;
-                        $dataArray['shipping_state_name'] = $shipping_state_data['data']->state_name;
-                    } else {
-
-                        $errorflag = true;
-                        array_push($currentItemError, "Invalid shipping state code.");
-                        $dataArray['shipping_state'] = 'Invalid State';
-                    }
-                } else {
-                    $dataArray['shipping_state'] = $shipping_state;
-                }
-
-                $dataArray['shipping_gstin_number'] = isset($data['K']) ? $data['K'] : '';
-
-                $item_name = isset($data['L']) ? trim($data['L']) : '';
-                $item_hsn_code = isset($data['M']) ? trim($data['M']) : '';
-
-                //if(!empty($item_hsn_code)) { $item_hsn_code = str_pad($item_hsn_code, 8, "0", STR_PAD_LEFT); }
-
-                $dataArray['item_quantity'] = isset($data['N']) ? $data['N'] : '';
-
-                $dataArray['item_unit'] = isset($data['O']) ? $data['O'] : '';
-                $dataArray['item_rate'] = isset($data['P']) ? $data['P'] : '';
-                $dataArray['item_discount'] = isset($data['Q']) ? $data['Q'] : '';
-
-                if ($item_name != '' && $item_hsn_code != '') {
-
-                    $checkClientMasterItem = $this->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit, u.unit_id, u.unit_name, u.unit_code from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m, " . $this->tableNames['unit'] . " as u where 1=1 AND cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.item_name = '" . $item_name . "' && m.hsn_code = '" . $item_hsn_code . "' AND m.item_type = '1' AND cm.is_deleted='0' AND cm.status = '1' AND cm.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
-
-                    if (count($checkClientMasterItem) == 1) {
-
-                        $dataArray['item_name'] = $item_name;
-                        $dataArray['item_hsn_code'] = $item_hsn_code;
-                    } else {
-
-                        $errorflag = true;
-                        array_push($currentItemError, "Service not exist with this hsn code.");
-                        $dataArray['item_name'] = "#####Item not exist#####";
-                        $dataArray['item_hsn_code'] = "#####HSN code not exist#####";
-                    }
-                } else {
-                    $dataArray['item_name'] = $item_name;
-                    $dataArray['item_hsn_code'] = $item_hsn_code;
-                }
-
-                $invoiceErrors = $this->validateClientInvoiceExcel($dataArray);
-                if ($invoiceErrors !== true || !empty($currentItemError)) {
-
-                    $errorflag = true;
-                    if ($invoiceErrors === true) {
-                        $invoiceErrors = array();
-                    }
-                    $invoiceErrors = array_merge($invoiceErrors, $currentItemError);
-                    $invoiceErrors = implode(", ", $invoiceErrors);
-                    $objPHPExcel->getActiveSheet()->SetCellValue('R' . $rowKey, $invoiceErrors);
-                }
-
-                /* get current user data */
-                $dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
-
-                /* create invoice array */
-                $arrayKey = $dataArray['reference_number'];
-
-                $invoiceArray[$arrayKey]['reference_number'] = $dataArray['reference_number'];
-                $invoiceArray[$arrayKey]['company_name'] = $dataCurrentUserArr['data']->kyc->name;
-                $invoiceArray[$arrayKey]['company_address'] = $dataCurrentUserArr['data']->kyc->registered_address;
-                $invoiceArray[$arrayKey]['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
-                $invoiceArray[$arrayKey]['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
-                $invoiceArray[$arrayKey]['invoice_date'] = $dataArray['invoice_date'];
-                $invoiceArray[$arrayKey]['supply_place'] = $dataArray['supply_place'];
-                $invoiceArray[$arrayKey]['billing_name'] = $dataArray['billing_name'];
-                $invoiceArray[$arrayKey]['billing_address'] = $dataArray['billing_address'];
-                $invoiceArray[$arrayKey]['billing_state'] = $dataArray['billing_state'];
-                $invoiceArray[$arrayKey]['billing_state_name'] = $dataArray['billing_state_name'];
-                $invoiceArray[$arrayKey]['billing_gstin_number'] = $dataArray['billing_gstin_number'];
-                $invoiceArray[$arrayKey]['shipping_name'] = $dataArray['shipping_name'];
-                $invoiceArray[$arrayKey]['shipping_address'] = $dataArray['shipping_address'];
-                $invoiceArray[$arrayKey]['shipping_state'] = $dataArray['shipping_state'];
-                $invoiceArray[$arrayKey]['shipping_state_name'] = $dataArray['shipping_state_name'];
-                $invoiceArray[$arrayKey]['shipping_gstin_number'] = $dataArray['shipping_gstin_number'];
-
-                //items
-                $invoiceItemArray['item_name'] = $dataArray['item_name'];
-                $invoiceItemArray['item_hsncode'] = $dataArray['item_hsn_code'];
-                $invoiceItemArray['item_quantity'] = $dataArray['item_quantity'];
-                $invoiceItemArray['item_unit'] = $dataArray['item_unit'];
-                $invoiceItemArray['item_unit_price'] = $dataArray['item_rate'];
-                $invoiceItemArray['item_discount'] = $dataArray['item_discount'];
-
-                $invoiceArray[$arrayKey]['items'][] = $invoiceItemArray;
-            }
-
-            if ($errorflag === true) {
-
-                $objPHPExcel->getActiveSheet()->SetCellValue('R1', "Error Information");
-                $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-                $objWriter->save($invoice_excel_dir_path);
-                $this->setError($this->validationMessage['excelerror']);
-
-                $resultArray = array("status" => "error", "excelurl" => $invoice_excel_url_path);
-                return json_encode($resultArray);
-            } else {
-
-                foreach ($invoiceArray as $invoiceRow) {
-
-                    $invoiceItemArray = array();
-                    $invoiceTotalAmount = 0.00;
-
-                    foreach ($invoiceRow['items'] as $invoiceInnerRow) {
-
-                        $clientMasterItem = $this->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit, u.unit_id, u.unit_name, u.unit_code from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m, " . $this->tableNames['unit'] . " as u where 1=1 AND cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.item_name = '" . $invoiceInnerRow['item_name'] . "' && m.hsn_code = '" . $invoiceInnerRow['item_hsncode'] . "' AND cm.is_deleted='0' AND cm.status = '1' AND cm.added_by = '" . $_SESSION['user_detail']['user_id'] . "'");
-                        if (!empty($clientMasterItem)) {
-
-                            $itemUnitPrice = (float) $invoiceInnerRow['item_unit_price'];
-                            $invoiceItemQuantity = (int) $invoiceInnerRow['item_quantity'];
-                            $invoiceItemDiscount = (float) $invoiceInnerRow['item_discount'];
-
-                            $invoiceItemTotal = round(($invoiceItemQuantity * $itemUnitPrice), 2);
-                            $invoiceItemDiscountAmount = ($invoiceItemDiscount / 100) * $invoiceItemTotal;
-                            $invoiceItemTaxableAmount = round(($invoiceItemTotal - $invoiceItemDiscountAmount), 2);
-
-                            if ($invoiceRow['company_state'] === $invoiceRow['supply_place']) {
-
-                                $itemCSGTTax = (float) $clientMasterItem->csgt_tax_rate;
-                                $itemSGSTTax = (float) $clientMasterItem->sgst_tax_rate;
-                                $itemIGSTTax = 0.00;
-                                $itemCESSTax = (float) $clientMasterItem->cess_tax_rate;
-
-                                $invoiceItemCSGTTaxAmount = round((($itemCSGTTax / 100) * $invoiceItemTaxableAmount), 2);
-                                $invoiceItemSGSTTaxAmount = round((($itemSGSTTax / 100) * $invoiceItemTaxableAmount), 2);
-                                $invoiceItemIGSTTaxAmount = 0.00;
-                                $invoiceItemCESSTaxAmount = round((($itemCESSTax / 100) * $invoiceItemTaxableAmount), 2);
-                            } else {
-
-                                $itemCSGTTax = 0.00;
-                                $itemSGSTTax = 0.00;
-                                $itemIGSTTax = (float) $clientMasterItem->igst_tax_rate;
-                                $itemCESSTax = (float) $clientMasterItem->cess_tax_rate;
-
-                                $invoiceItemCSGTTaxAmount = 0.00;
-                                $invoiceItemSGSTTaxAmount = 0.00;
-                                $invoiceItemIGSTTaxAmount = round((($itemIGSTTax / 100) * $invoiceItemTaxableAmount), 2);
-                                $invoiceItemCESSTaxAmount = round((($itemCESSTax / 100) * $invoiceItemTaxableAmount), 2);
-                            }
-
-                            $invoiceItemTotalAmount = round(($invoiceItemTaxableAmount + $invoiceItemCSGTTaxAmount + $invoiceItemSGSTTaxAmount + $invoiceItemIGSTTaxAmount + $invoiceItemCESSTaxAmount), 2);
-                            $invoiceTotalAmount += $invoiceItemTotalAmount;
-
-                            $ItemArray = array(
-                                "item_id" => $clientMasterItem->item_id,
-                                "item_name" => $clientMasterItem->item_name,
-                                "item_hsncode" => $clientMasterItem->hsn_code,
-                                "item_quantity" => $invoiceItemQuantity,
-                                "item_unit" => $clientMasterItem->unit_code,
-                                "item_unit_price" => $itemUnitPrice,
-                                "subtotal" => $invoiceItemTotal,
-                                "discount" => $invoiceItemDiscount,
-                                "taxable_subtotal" => $invoiceItemTaxableAmount,
-                                "cgst_rate" => $itemCSGTTax,
-                                "cgst_amount" => $invoiceItemCSGTTaxAmount,
-                                "sgst_rate" => $itemSGSTTax,
-                                "sgst_amount" => $invoiceItemSGSTTaxAmount,
-                                "igst_rate" => $itemIGSTTax,
-                                "igst_amount" => $invoiceItemIGSTTaxAmount,
-                                "cess_rate" => $itemCESSTax,
-                                "cess_amount" => $invoiceItemCESSTaxAmount,
-                                "total" => $invoiceItemTotalAmount,
-                                "status" => 1,
-                                "added_by" => $_SESSION['user_detail']['user_id'],
-                                "added_date" => date('Y-m-d H:i:s')
-                            );
-
-                            array_push($invoiceItemArray, $ItemArray);
-                        }
-                    }
-
-                    if (!empty($invoiceItemArray) && count($invoiceItemArray) > 0) {
-
-                        $InsertArray['reference_number'] = $invoiceRow['reference_number'];
-                        $InsertArray['serial_number'] = $this->generateSTInvoiceNumber($this->sanitize($_SESSION['user_detail']['user_id']));
-                        $InsertArray['company_name'] = $invoiceRow['company_name'];
-                        $InsertArray['company_address'] = $invoiceRow['company_address'];
-                        $InsertArray['company_state'] = $invoiceRow['company_state'];
-                        $InsertArray['gstin_number'] = $invoiceRow['gstin_number'];
-                        $InsertArray['invoice_date'] = $invoiceRow['invoice_date'];
-                        $InsertArray['supply_place'] = $invoiceRow['supply_place'];
-                        $InsertArray['billing_name'] = $invoiceRow['billing_name'];
-                        $InsertArray['billing_address'] = $invoiceRow['billing_address'];
-                        $InsertArray['billing_state'] = $invoiceRow['billing_state'];
-                        $InsertArray['billing_state_name'] = $invoiceRow['billing_state_name'];
-                        $InsertArray['billing_gstin_number'] = $invoiceRow['billing_gstin_number'];
-                        $InsertArray['shipping_name'] = $invoiceRow['shipping_name'];
-                        $InsertArray['shipping_address'] = $invoiceRow['shipping_address'];
-                        $InsertArray['shipping_state'] = $invoiceRow['shipping_state'];
-                        $InsertArray['shipping_state_name'] = $invoiceRow['shipping_state_name'];
-                        $InsertArray['shipping_gstin_number'] = $invoiceRow['shipping_gstin_number'];
-                        $InsertArray['invoice_total_value'] = $invoiceTotalAmount;
-                        $InsertArray['financial_year'] = $this->generateFinancialYear();
-                        $InsertArray['status'] = 1;
-                        $InsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
-                        $InsertArray['added_date'] = date('Y-m-d H:i:s');
-
-                        if ($this->insert($this->tableNames['client_st_invoice'], $InsertArray)) {
-
-                            $insertid = $this->getInsertID();
-                            $this->logMsg("New Special Tax Added. ID : " . $insertid . ".");
-
-                            $processedInvoiceItemArray = array();
-                            foreach ($invoiceItemArray as $itemArr) {
-
-                                $itemArr['invoice_id'] = $insertid;
-                                array_push($processedInvoiceItemArray, $itemArr);
-                            }
-
-                            if ($this->insertMultiple($this->tableNames['client_st_invoice_item'], $processedInvoiceItemArray)) {
-
-                                $iteminsertid = $this->getInsertID();
-                                $this->logMsg("New Special Tax Item Added. ID : " . $iteminsertid . ".");
-                            }
-                        }
-                    }
+					if (!empty($invoiceItemArray) && count($invoiceItemArray) > 0) {
+
+						$InsertArray['invoice_type'] = $invoiceRow['invoice_type'];
+						$InsertArray['invoice_nature'] = $invoiceRow['invoice_nature'];
+						$InsertArray['reference_number'] = $invoiceRow['reference_number'];
+						$InsertArray['serial_number'] = $this->generateDCInvoiceNumber($this->sanitize($_SESSION['user_detail']['user_id']));
+						$InsertArray['company_name'] = $invoiceRow['company_name'];
+						$InsertArray['company_address'] = $invoiceRow['company_address'];
+						$InsertArray['company_state'] = $invoiceRow['company_state'];
+						$InsertArray['gstin_number'] = $invoiceRow['gstin_number'];
+						$InsertArray['invoice_date'] = $invoiceRow['invoice_date'];
+						$InsertArray['delivery_challan_type'] = $invoiceRow['delivery_challan_type'];
+						$InsertArray['supply_place'] = $invoiceRow['supply_place'];
+						$InsertArray['billing_name'] = $invoiceRow['billing_name'];
+						$InsertArray['billing_company_name'] = $invoiceRow['billing_company_name'];
+						$InsertArray['billing_address'] = $invoiceRow['billing_address'];
+						$InsertArray['billing_state'] = $invoiceRow['billing_state'];
+						$InsertArray['billing_state_name'] = $invoiceRow['billing_state_name'];
+						$InsertArray['billing_country'] = $invoiceRow['billing_country'];
+						$InsertArray['billing_vendor_type'] = $invoiceRow['billing_vendor_type'];
+						$InsertArray['billing_gstin_number'] = $invoiceRow['billing_gstin_number'];
+						$InsertArray['description'] = $invoiceRow['description'];						
+						$InsertArray['invoice_total_value'] = number_format($invoiceTotalAmount, 2, '.', '');
+						$InsertArray['financial_year'] = $this->generateFinancialYear();
+						$InsertArray['status'] = 1;
+						$InsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
+						$InsertArray['added_date'] = date('Y-m-d H:i:s');
+
+						if ($this->insert($this->tableNames['client_invoice'], $InsertArray)) {
+
+							$insertid = $this->getInsertID();
+							$this->logMsg("Delivery Challan Invoice Added. ID : " . $insertid . ".","client_create_delivery_challan_invoice");
+
+							$processedInvoiceItemArray = array();
+							foreach ($invoiceItemArray as $itemArr) {
+
+								$itemArr['invoice_id'] = $insertid;
+								array_push($processedInvoiceItemArray, $itemArr);
+							}
+
+							if ($this->insertMultiple($this->tableNames['client_invoice_item'], $processedInvoiceItemArray)) {
+
+								$iteminsertid = $this->getInsertID();
+								$this->logMsg("Delivery Challan Invoice Item Added. ID : " . $iteminsertid . ".","client_create_delivery_challan_invoice");
+							}
+						}
+					}
                 }
 
                 $this->setSuccess($this->validationMessage['invoiceadded']);
@@ -5439,6 +5644,10 @@ final class client extends validation {
             $rules['supply_type'] = 'required||supplytype|#|lable_name:Supply Type';
         }
 		
+		if( array_key_exists("export_supply_meant", $dataArr) ) {
+            $rules['export_supply_meant'] = 'required||supplymeant|#|lable_name:Supply Meant';
+        }
+
 		if (array_key_exists("ecommerce_gstin_number", $dataArr)) {
             $rules['ecommerce_gstin_number'] = 'required||pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:Ecommerce GSTIN Number';
         }
@@ -5452,7 +5661,7 @@ final class client extends validation {
         }
 		
 		if (array_key_exists("export_bill_port_code", $dataArr)) {
-            $rules['export_bill_port_code'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Export Bill Port Code';
+            $rules['export_bill_port_code'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||max:6|#|lable_name:Export Bill Port Code';
         }
 		
 		if (array_key_exists("export_bill_date", $dataArr)) {
@@ -5481,6 +5690,10 @@ final class client extends validation {
 
         if (array_key_exists("supply_place", $dataArr)) {
             $rules['supply_place'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Place Of Supply';
+        }
+		
+		if( array_key_exists("description", $dataArr) ) {
+            $rules['description'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Description';
         }
 
 		if (array_key_exists("advance_adjustment", $dataArr)) {

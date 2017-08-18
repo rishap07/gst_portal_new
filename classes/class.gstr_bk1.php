@@ -240,7 +240,7 @@ final class gstr extends validation {
     }
     
     public function returnSave($dataArr,$returnmonth) {
-        $this->authenticateToken();
+
         $msg = $return_encode = '';
         $error = 1;
         $response = array();
@@ -251,7 +251,108 @@ final class gstr extends validation {
         $encodejson=base64_encode(openssl_encrypt(base64_encode($json_data),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
         $hmac = base64_encode(hash_hmac('sha256', base64_encode($json_data), $_SESSION['decrypt_sess_key'], true));
         
-        $response = $this->gstCommonRetunSave($encodejson,$hmac,$returnmonth);      
+        $response = $this->gstCommonRetunSave($encodejson,$hmac,$returnmonth);
+
+        
+        /*$gstin = $this->gstin();
+        $username = $this->username();
+        $action = 'RETSAVE';
+
+        $data = array(
+          "action" => $action,
+          "data" => $encodejson,
+          "hmac" => $hmac
+        );
+        $data_string = json_encode($data);
+        if(!empty($returnmonth)) {
+          $api_return_period_array = explode('-',$returnmonth);
+          $api_return_period = $api_return_period_array[1].$api_return_period_array[0];
+        }
+        $header_array = array(
+            'Content-Length: ' . strlen($data_string).'',
+            'auth-token:' . $_SESSION['auth_token'] . '',
+            'gstin:' . $gstin . '',
+            'ret_period: '.$api_return_period.' ',
+            'username:' . $username . '',
+            'accept:application/json',
+        );
+        $header = $this->header($header_array);
+        $url = 'http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/gstr1';
+        $result_data = $this->hitPulUrl($url, $data_string, $header);
+        $datasave = json_decode($result_data);
+        $this->pr($datasave);
+        if(isset($datasave->status_cd) && $datasave->status_cd=='1' && $msg == '')
+        {
+            $retData=$datasave->data;
+            $rek=$datasave->rek;
+            $apiEk=openssl_decrypt(base64_decode($rek),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
+            $decodejson= base64_decode(openssl_decrypt(base64_decode($retData),"aes-256-ecb",$apiEk, OPENSSL_RAW_DATA));
+            $ref = json_decode($decodejson);
+
+            $refId = $ref->reference_id;
+            //sleep(5);
+            
+            //Start code for create header
+            $header2_array = array(
+                'auth-token:' . $_SESSION['auth_token'] . '',
+                'gstin:' . $gstin . '',
+                'ret_period: '.$api_return_period.' ',
+                'username:' . $username . '',
+                'accept:application/json',
+                'action:' . 'RETSTATUS' . ''
+            );
+            
+            $header2 = $this->header($header2_array);
+            //End code for create header
+            $url2 = 'http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns?action=RETSTATUS&gstin='.$gstin. '&ret_period='.$api_return_period.'&ref_id='.$refId.'';
+            $result_data1 = $this->hitGetUrl($url2, '', $header2);
+            
+            $retDta = json_decode($result_data1);
+            $this->pr($retDta);
+            if(isset($retDta->status_cd) && $retDta->status_cd=='1' && $msg == '')
+            {
+                $retRek=$retDta->rek;
+                $retData1=$retDta->data;
+
+                $apiEk1=openssl_decrypt(base64_decode($retRek),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
+                $decodejson1= base64_decode(openssl_decrypt(base64_decode($retData1),"aes-256-ecb",$apiEk1, OPENSSL_RAW_DATA));
+                ;
+                if(!empty($decodejson1) && $msg == '') {
+                    $jstr1_status = json_decode($decodejson1,true);
+                    $this->pr($jstr1_status);
+                    
+                    if(isset($jstr1_status['status_cd']) && $jstr1_status['status_cd']=='P' && $msg == '') {
+
+                        $msg = " Congratulations! GSTR1 Data Uploaded.";
+                        $error = 0;
+                    }
+                    else {
+                        $this->array_key_search('error_msg', $jstr1_status);
+                        $msg = $this->error_msg;;
+                    }
+                }
+                else {
+                   $msg = "Sorry! Invalid proccess";
+                }
+            }
+            else {
+                $msg = "Sorry! Invalid proccess";
+            }
+        }
+        else {
+            if(isset($datasave->error)) {
+                $this->array_key_search('message', $datasave->error);
+                $msg = $this->error_msg
+            }
+           
+            if(!$msg) {
+                $msg = "Sorry! Unable to authenticate";
+            }
+            
+        }
+*/
+        /*$response['message'] = $msg;
+        $response['error'] = $error;*/
         return $response;
     }
 
@@ -415,18 +516,6 @@ final class gstr extends validation {
         }
     }
 
-    public function returnDeleteItems($deleteData,$returnmonth) {
-        $this->authenticateToken();
-        $action = 'RETSAVE';
-        $deleteData = json_encode($deleteData);
-        $encodejson=base64_encode(openssl_encrypt(base64_encode($deleteData),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
-
-        $hmac = base64_encode(hash_hmac('sha256', base64_encode($deleteData), $_SESSION['decrypt_sess_key'], true));
-        $response = $this->gstCommonRetunSave($encodejson,$hmac,$returnmonth); 
-        return $response;
-
-    }
-
     public function gstCommonRetunSave($encodejson,$hmac,$returnmonth) {
         $error =1;
         $msg = '';
@@ -456,7 +545,7 @@ final class gstr extends validation {
         $url = 'http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/gstr1';
         $result_data = $this->hitPulUrl($url, $data_string, $header);
         $datasave = json_decode($result_data);
-        //$this->pr($datasave);
+        $this->pr($datasave);
         if(isset($datasave->status_cd) && $datasave->status_cd=='1' && $msg == '')
         {
             $retData=$datasave->data;
@@ -484,7 +573,7 @@ final class gstr extends validation {
             $result_data1 = $this->hitGetUrl($url2, '', $header2);
             
             $retDta = json_decode($result_data1);
-            //$this->pr($retDta);
+            $this->pr($retDta);
             if(isset($retDta->status_cd) && $retDta->status_cd=='1' && $msg == '')
             {
                 $retRek=$retDta->rek;
@@ -531,6 +620,99 @@ final class gstr extends validation {
         return $response;
     }
 
+    public function returnDeleteItems($deleteData,$returnmonth) {
+        $this->authenticateToken();
+        $msg = '';
+        $error = 1;
+        $gstin = $this->gstin();
+        $username = $this->username();
+        $action = 'RETSAVE';
+        $deleteData = json_encode($deleteData);
+        $api_return_period = $this->getRetrunPeriodFormat($returnmonth);
+        $encodejson=base64_encode(openssl_encrypt(base64_encode($deleteData),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
+
+        $hmac = base64_encode(hash_hmac('sha256', base64_encode($deleteData), $_SESSION['decrypt_sess_key'], true));
+        $data = array(
+          "action" => $action,
+          "data" => $encodejson,
+          "hmac" => $hmac
+        );
+        $data_string = json_encode($data);
+
+        //Start code for create header
+        $header_array = array(
+            'Content-Length: ' . strlen($data_string).'',
+            'auth-token:' . $_SESSION['auth_token'] . '',
+            'gstin:' . $gstin . '',
+            'ret_period: '.$api_return_period.' ',
+            'username:' . $username . '',
+            'accept:application/json',
+        );
+        $header = $this->header($header_array);
+        //End code for create header
+        $url = 'http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/gstr1';
+        $result_data = $this->hitPulUrl($url, $data_string, $header);
+        $datasave = json_decode($result_data);
+
+        $apiEk=openssl_decrypt(base64_decode($rek),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
+        $decodejson= base64_decode(openssl_decrypt(base64_decode($retData),"aes-256-ecb",$apiEk, OPENSSL_RAW_DATA));
+        $ref = json_decode($decodejson);
+
+        $refId = $ref->reference_id;
+        //sleep(5);
+        
+        //Start code for create header
+        $header2_array = array(
+            'auth-token:' . $_SESSION['auth_token'] . '',
+            'gstin:' . $gstin . '',
+            'ret_period: '.$api_return_period.' ',
+            'username:' . $username . '',
+            'accept:application/json',
+            'action:' . 'RETSTATUS' . ''
+        );
+        
+        $header2 = $this->header($header2_array);
+        //End code for create header
+        $url2 = 'http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns?action=RETSTATUS&gstin='.$gstin. '&ret_period='.$api_return_period.'&ref_id='.$refId.'';
+        $result_data1 = $this->hitGetUrl($url2, '', $header2);
+        
+        $retDta = json_decode($result_data1);
+        $this->pr($retDta);
+        if(isset($retDta->status_cd) && $retDta->status_cd=='1' && $msg == '')
+        {
+            $retRek=$retDta->rek;
+            $retData1=$retDta->data;
+
+            $apiEk1=openssl_decrypt(base64_decode($retRek),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
+            $decodejson1= base64_decode(openssl_decrypt(base64_decode($retData1),"aes-256-ecb",$apiEk1, OPENSSL_RAW_DATA));
+            ;
+            if(!empty($decodejson1) && $msg == '') {
+                $jstr1_status = json_decode($decodejson1,true);
+                $this->pr($jstr1_status);
+                
+                if(isset($jstr1_status['status_cd']) && $jstr1_status['status_cd']=='P' && $msg == '') {
+
+                    $msg = " Congratulations! GSTR1 Item Deleted.";
+                    $error = 0;
+                }
+                else {
+                    $this->array_key_search('error_msg', $jstr1_status);
+                    $msg = $this->error_msg;;
+                }
+            }
+            else {
+               $msg = "Sorry! Invalid proccess";
+            }
+        }
+        else {
+            $msg = "Sorry! Invalid proccess";
+        }
+
+        $response['message'] = $msg;
+        $response['error'] = $error;
+        return $response;
+
+    }
 
     public function getRetrunPeriodFormat($returnmonth) {
         $api_return_period = '';

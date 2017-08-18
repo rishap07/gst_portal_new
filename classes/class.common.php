@@ -822,7 +822,18 @@ class common extends db {
             return false;
         }
     }
+	 /* Get admin setting for livechat and tollfree number */
+    public function getAdminSetting()
 
+	{
+		$sql = "select  * from ".TAB_PREFIX."admin_setting";
+         $dataCurrentArr = $this->get_results($sql);
+		if(!empty($dataCurrentArr))
+		{
+			return $dataCurrentArr;	
+		}
+		return false;
+	}		
     /* Get user details by user id */
 
     public function getUserDetailsById($user_id = '') {
@@ -1161,11 +1172,26 @@ class common extends db {
     }
 
 	/* state details by state code */
-
     public function getStateDetailByStateCode($state_code) {
-        
-         
+
         $data = $this->get_row("select * from " . $this->tableNames['state'] . " where UPPER(state_code) = '" . strtoupper($state_code) . "'");
+       
+        $dataArr = array();
+        if (!empty($data)) {
+            $dataArr['data'] = $data;
+            $dataArr['status'] = 'success';
+        } else {
+            $dataArr['data'] = '';
+            $dataArr['status'] = 'error';
+        }
+
+        return $dataArr;
+    }
+	
+	/* state details by state code */
+    public function getStateDetailByStateNameCode($state_name_code) {
+
+        $data = $this->get_row("select * from " . $this->tableNames['state'] . " where 1=1 AND (UPPER(state_code) = '" . strtoupper($state_name_code) . "' OR UPPER(state_name) = '" . strtoupper($state_name_code) . "')");
        
         $dataArr = array();
         if (!empty($data)) {
@@ -1356,7 +1382,6 @@ class common extends db {
             return "IDC-000000000001";
         }
     }
-
     /* generate special tax invoice number for client */
 
     public function generateSTInvoiceNumber($clientId) {
@@ -1373,13 +1398,27 @@ class common extends db {
             return "IST-000000000001";
         }
     }
+	
+	/* check purchase reference number exist */
+	public function checkPurchaseReferenceNumberExist($referenceNumber, $clientId, $purchase_invoice_id = '') {
+
+		$currentFinancialYear = $this->generateFinancialYear();
+        if ($purchase_invoice_id && $purchase_invoice_id != '') {
+            $checkReferenceNumber = $this->get_row("select * from " . $this->tableNames['client_purchase_invoice'] . " where 1=1 AND purchase_invoice_id != " . $purchase_invoice_id . " AND financial_year = '" . $currentFinancialYear . "' AND reference_number = '" . $referenceNumber . "' AND added_by = '" . $clientId . "'");
+        } else {
+            $checkReferenceNumber = $this->get_row("select * from " . $this->tableNames['client_purchase_invoice'] . " where 1=1 AND financial_year = '" . $currentFinancialYear . "' AND reference_number = '" . $referenceNumber . "' AND added_by = '" . $clientId . "'");
+        }
+
+        if(count($checkReferenceNumber) > 0) {
+            return true;
+        }
+    }
 
     /* generate purchase invoice number for client */
-
     public function generatePurchaseInvoiceNumber($clientId) {
 
         $currentFinancialYear = $this->generateFinancialYear();
-        $query = "select purchase_invoice_id  from " . $this->tableNames['client_purchase_invoice'] . " where 1=1 AND financial_year = '" . $currentFinancialYear . "' AND added_by=" . $clientId;
+        $query = "select purchase_invoice_id  from " . $this->tableNames['client_purchase_invoice'] . " where 1=1 AND invoice_type IN('taxinvoice','importinvoice','sezunitinvoice','deemedimportinvoice') AND financial_year = '" . $currentFinancialYear . "' AND added_by=" . $clientId;
         $invoices = $this->get_results($query);
 
         if (!empty($invoices)) {
