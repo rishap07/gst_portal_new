@@ -42,7 +42,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
     }
 }
 ?>
-
+<script src="http://cdn.ckeditor.com/4.5.5/standard/ckeditor.js"></script>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
@@ -69,7 +69,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
 
 
                    
-                    <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                    <div class="col-md-6 col-sm-6 col-xs-12 form-group">
 
                         <label>TollFree<span class="starred">*</span></label>
                          <textarea placeholder="TollFree Setting text"   name="tollfree_setting" id="tollfree_setting" class="required form-control"><?php
@@ -80,19 +80,24 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
                         }
                         ?></textarea>
 						
-                        
+                        <script>
+ CKEDITOR.replace( 'tollfree_setting' );
+</script>
                     </div>
-					  <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+					  <div class="col-md-6 col-sm-6 col-xs-12 form-group">
 
                         <label>LiveChat<span class="starred">*</span></label>
-                         <textarea placeholder="TollFree Setting text"   name="livechat_setting" id="livechat_setting" class="required form-control"><?php
+                         <textarea name="text" placeholder="TollFree Setting text"   name="livechat_setting" id="livechat_setting" class="required form-control"><?php
                         if (isset($_POST['livechat_setting'])) {
                             echo $_POST['livechat_setting'];
                         } else if (isset($dataCurrentArr[0]->livechat_setting)) {
                             echo $dataCurrentArr[0]->livechat_setting;
                         }
                         ?></textarea>
-						
+						 <script>
+ CKEDITOR.replace( 'livechat_setting' );
+</script>
+ 
                         
                     </div>
                                 

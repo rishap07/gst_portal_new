@@ -1,5 +1,12 @@
 <?php
 $obj_master = new master();
+if(!$obj_master->can_read('master_unit')){
+
+    $obj_master->setError($obj_master->getValMsg('can_read'));
+    $obj_master->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
+
 if(!$obj_master->can_create('master_unit') && !isset($_GET['id'])){
 	
     $obj_master->setError($obj_master->getValMsg('can_create'));
@@ -7,8 +14,8 @@ if(!$obj_master->can_create('master_unit') && !isset($_GET['id'])){
     exit();
 }
 
-if(!$obj_master->can_update('master_unit') && isset($_GET['id']))
-{
+if(!$obj_master->can_update('master_unit') && isset($_GET['id'])) {
+
     $obj_master->setError($obj_master->getValMsg('can_update'));
     $obj_master->redirect(PROJECT_URL."/?page=master_unit");
     exit();
@@ -71,7 +78,7 @@ if(isset($_GET['id'])){
                       <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                       
                             <label>Unit Code<span class="starred">*</span></label>
-                            <input type="text" name='unit_code' placeholder="Code" class='required form-control' data-bind="alphanum" value='<?php if(isset($_POST['unit_code'])){ echo $_POST['unit_code']; } else if(isset($dataArr[0]->unit_code)){ echo $dataArr['0']->unit_code; } ?>' />
+                            <input type="text" name='unit_code' placeholder="Code" class='required form-control' data-bind="content" value='<?php if(isset($_POST['unit_code'])){ echo $_POST['unit_code']; } else if(isset($dataArr[0]->unit_code)){ echo $dataArr['0']->unit_code; } ?>' />
                         </div>
    <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                           

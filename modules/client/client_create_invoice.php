@@ -288,7 +288,7 @@
 
 				 <div class="clear height20"></div>
 
-				 <div class="row">
+				<div class="row">
 					<div class="col-md-12 form-group">
 						<label>Description</label>
 						<textarea placeholder="Enter Description" class="form-control" name="description" id="description" data-bind="content"></textarea>

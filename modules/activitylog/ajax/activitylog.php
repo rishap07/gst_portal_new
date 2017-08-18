@@ -15,7 +15,7 @@ extract($_POST);
 
 //Columns to fetch from database
 $aColumns = array('u.username','u.first_name','u.user_group', 'g.module_name', 'g.msg','g.ip','g.dateoflog','g.userid');
-$aSearchColumns = array('g.userid', 'u.first_name','u.username');
+$aSearchColumns = array('g.userid', 'u.first_name','u.username','g.module_name');
 $sIndexColumn = "g.id";
  // $sql="select * from " . $db_obj->getTableName('notification') . " as n INNER join " . $db_obj->getTableName('user_notification') . " as u on u.notification_id=n.notification_id  where n.status='1' and  u.user_id='".$_SESSION["user_detail"]["user_id"]."' order by u.notification_id desc";
 $spTable='';				
@@ -84,15 +84,15 @@ if (isset($_POST['iSortCol_0'])) {
  * word by word on any field. It's possible to do here, but concerned about efficiency
  * on very large tables, and MySQL's regex functionality is very limited
  */
-
+$spWhere ="And is_deleted='0'";
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
     
-   // $spWhere .= 'AND (';
-   // for ($i = 0; $i < count($aSearchColumns); $i++) {
-    //    $spWhere .= $aSearchColumns[$i] . " LIKE '%" . utf8_encode(htmlentities($_POST['sSearch'],ENT_COMPAT,'utf-8')) . "%' OR ";
-  //  }
-  //  $spWhere = substr_replace($spWhere, "", -3);
-   // $spWhere .= ')';
+    $spWhere .= 'AND (';
+    for ($i = 0; $i < count($aSearchColumns); $i++) {
+        $spWhere .= $aSearchColumns[$i] . " LIKE '%" . utf8_encode(htmlentities($_POST['sSearch'],ENT_COMPAT,'utf-8')) . "%' OR ";
+    }
+   $spWhere = substr_replace($spWhere, "", -3);
+    $spWhere .= ')';
 }
 
 /* Individual column filtering */
@@ -116,11 +116,11 @@ for ($i = 0; $i < count($aColumns); $i++) {
 $spjoin = $spTable;
 $spQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ", $aColumns)) . "
             FROM $spjoin
-          
+            $spWhere
             $spOrder
             $spLimit
 	"; 
-  $spQuery;
+ 
 $rResult = $obj_plan->get_results($spQuery);
 // echo "<pre>";
 //        print_r($rResult);

@@ -8,7 +8,6 @@
  */
 
 $obj_client = new client();
-
 $item = array();
 $counter = 0;
 if(isset($_GET['ajax']) && $_GET['ajax'] == "client_hsnsac_code" && isset($_GET['term'])) {

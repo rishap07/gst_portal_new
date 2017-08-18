@@ -1,11 +1,11 @@
 <?php
 $obj_master = new master();
-/*if(!$obj_master->can_read('master_unit')){
+if(!$obj_master->can_read('master_unit')){
 
     $obj_master->setError($obj_master->getValMsg('can_read'));
     $obj_master->redirect(PROJECT_URL."/?page=dashboard");
     exit();
-}*/
+}
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">

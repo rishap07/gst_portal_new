@@ -92,8 +92,9 @@ $iFilteredTotal = $iFilteredTotal->rows;
 
 /* Total data set length */
 $sQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $sTable $sWhere";
-//echo $sQuery;
+
 $iTotal = $obj_master->get_row($sQuery);
+
 $iTotal = $iTotal->count;
 
 /*
