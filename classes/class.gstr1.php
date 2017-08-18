@@ -423,31 +423,36 @@ final class gstr1 extends validation {
     }
 
     public function gstDeletePayload($type,$data) {
-        $dataArr = array();
+        $response = $data_ids = $dataArr = array();
         
         if($type == 'B2CS') {
             $sply_ty = isset($data['sply_ty'])?$data['sply_ty']:'';
             $typ = isset($data['typ'])?$data['typ']:'';
             $pos = isset($data['pos'])?$data['pos']:'';
+            $chksum = isset($data['chksum'])?$data['chksum']:'';
 
             $dataArr['b2cs'][0]['typ'] = $typ;
             $dataArr['b2cs'][0]['sply_ty'] = $sply_ty;
             $dataArr['b2cs'][0]['pos'] = $pos;
+            $dataArr['b2cs'][0]['chksum'] = $chksum;
             $dataArr['b2cs'][0]['flag'] = 'D';
+
         }
 
         if($type == 'AT') {
             $sply_ty = isset($data['sply_ty'])?$data['sply_ty']:'';
-            $typ = isset($data['typ'])?$data['typ']:'';
+            $chksum = isset($data['chksum'])?$data['chksum']:'';
             $pos = isset($data['pos'])?$data['pos']:'';
 
-            $dataArr['b2cs'][0]['typ'] = $typ;
-            $dataArr['b2cs'][0]['sply_ty'] = $sply_ty;
-            $dataArr['b2cs'][0]['pos'] = $pos;
-            $dataArr['b2cs'][0]['flag'] = 'D';
+            $dataArr['at'][0]['sply_ty'] = $sply_ty;
+            $dataArr['at'][0]['pos'] = $pos;
+            $dataArr['at'][0]['flag'] = 'D';
+            $dataArr['at'][0]['chksum'] = $chksum;
         }
         
-        return $dataArr;
+        $response['data_ids'] = $data_ids;
+        $response['data_arr'] = $dataArr;
+        return $response;
     }
 
     public function gstB2BPayload($user_id, $returnmonth) {

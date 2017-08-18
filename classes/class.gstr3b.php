@@ -250,7 +250,7 @@ final class gstr3b extends validation {
 	foreach($Header as $ind_el)
 	{
 		//Convert index to Excel compatible Location
-		$Location = PHPExcel_Cell::stringFromColumnIndex($i) . '18';
+		$Location = PHPExcel_Cell::stringFromColumnIndex($i) . $rowIndex;
 		$ActiveSheet->setCellValue($Location, $ind_el);
 		$i++;
 	}
@@ -278,11 +278,11 @@ final class gstr3b extends validation {
 	
     
 	//Write the Header
-	$i=$rowIndex;
+	$i=0;
 	foreach($Header as $ind_el)
 	{
 		//Convert index to Excel compatible Location
-		$Location = PHPExcel_Cell::stringFromColumnIndex($i) . $i;
+		$Location = PHPExcel_Cell::stringFromColumnIndex($i) . $rowIndex;
 		$ActiveSheet->setCellValue($Location, $ind_el);
 		$i++;
 	}
@@ -309,11 +309,11 @@ final class gstr3b extends validation {
 	
     
 	//Write the Header
-	$i=$rowIndex;
+	$i=0;
 	foreach($Header as $ind_el)
 	{
 		//Convert index to Excel compatible Location
-		$Location = PHPExcel_Cell::stringFromColumnIndex($i) . $i;
+		$Location = PHPExcel_Cell::stringFromColumnIndex($i) . $rowIndex;
 		$ActiveSheet->setCellValue($Location, $ind_el);
 		$i++;
 	}
