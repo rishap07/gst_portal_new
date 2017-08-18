@@ -103,10 +103,11 @@ $response = $obj_api->returnSummary($returnmonth,$_REQUEST['type']);
     function get_summary() {
         var json = '<?php echo $response;?>';
         var type = '<?php echo $type;?>';
+        var returnmonth = '<?php echo $returnmonth;?>';
         $.ajax({
             url: "<?php echo PROJECT_URL; ?>/?ajax=api_gstr1_json_view",
             type: "post",
-           data: {json: json,type: type},
+           data: {json: json,type: type,returnmonth:returnmonth},
             success: function (response) {
                $('#display_json').html(response);
 

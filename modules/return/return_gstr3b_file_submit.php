@@ -1,11 +1,11 @@
 <?php
-$obj_client = new client();
+
 $obj_return = new gstr3b();
 $returnmonth = date('Y-m');
 if(isset($_POST['returnmonth']))
 {
     $returnmonth = $_POST['returnmonth'];
-	$obj_client->redirect(PROJECT_URL."/?page=return_gstr3b_file&returnmonth=".$returnmonth);
+	$obj_return->redirect(PROJECT_URL."/?page=return_gstr3b_file&returnmonth=".$returnmonth);
 	exit();
 }
 $returnmonth= date('Y-m');
@@ -58,16 +58,16 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
                     <div class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav"><a href="#">Home</a>
 					<i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GSTR-3B Filing</span> </div>
                      <div class="whitebg formboxcontainer">
-					  <?php $obj_client->showErrorMessage(); ?>
-			<?php $obj_client->showSuccessMessge(); ?>
-			<?php $obj_client->unsetMessage(); ?>
+					  <?php $obj_return->showErrorMessage(); ?>
+			<?php $obj_return->showSuccessMessge(); ?>
+			<?php $obj_return->unsetMessage(); ?>
 
 					  <div class="pull-right rgtdatetxt">
                                 <form method='post' name='form2'>
                                     Month Of Return
                                     <?php
                                     $dataQuery = "SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS niceDate FROM gst_client_invoice group by nicedate";
-                                    $dataRes = $obj_client->get_results($dataQuery);
+                                    $dataRes = $obj_return->get_results($dataQuery);
                                     if (!empty($dataRes)) {
                                         ?>
                                         <select class="dateselectbox" id="returnmonth" name="returnmonth">
@@ -518,7 +518,7 @@ composition taxable persons and UIN holders</div>
 	                               <div id="TextBoxDiv3">
 								   <div class="input_fields_wrap3">
 						<select  name="place_of_supply_unregistered_person[]"   id='place_of_supply_unregistered_person' class="required form-control">
-							<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+							<?php $dataSupplyStateArrs = $obj_return->get_results("select * from ".$obj_return->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 							<?php if(!empty($dataSupplyStateArrs)) { ?>
 								<option value=''>Select Place Of Supply</option>
 								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
@@ -595,7 +595,7 @@ composition taxable persons and UIN holders</div>
 	                               <div id="TextBoxDiv3">
 								   <div class="input_fields_wrap3">
 						<select  name="place_of_supply_unregistered_person[]"   id='place_of_supply_unregistered_person' class="required form-control">
-							<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+							<?php $dataSupplyStateArrs = $obj_return->get_results("select * from ".$obj_return->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 							<?php if(!empty($dataSupplyStateArrs)) { ?>
 								<option value=''>Select Place Of Supply</option>
 								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
@@ -697,7 +697,7 @@ composition taxable persons and UIN holders</div>
                                      <td>
 									 
 						<select name='place_of_supply_taxable_person[]'  id='place_of_supply_taxable_person' class="required form-control">
-							<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+							<?php $dataSupplyStateArrs = $obj_return->get_results("select * from ".$obj_return->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 							<?php if(!empty($dataSupplyStateArrs)) { ?>
 								<option value=''>Select Place Of Supply</option>
 								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
@@ -763,7 +763,7 @@ composition taxable persons and UIN holders</div>
                                      <td>
 									 
 						<select name='place_of_supply_taxable_person[]'  id='place_of_supply_taxable_person' class="required form-control">
-								<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+								<?php $dataSupplyStateArrs = $obj_return->get_results("select * from ".$obj_return->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 							<?php if(!empty($dataSupplyStateArrs)) { ?>
 								<option value=''>Select Place Of Supply</option>
 								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
@@ -850,7 +850,7 @@ composition taxable persons and UIN holders</div>
 									 
 									
 						<select name='place_of_supply_uin_holder[]'  id='place_of_supply_uin_holder' class="required form-control">
-							<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+							<?php $dataSupplyStateArrs = $obj_return->get_results("select * from ".$obj_return->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 							<?php if(!empty($dataSupplyStateArrs)) { ?>
 								<option value=''>Select Place Of Supply</option>
 								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
@@ -916,7 +916,7 @@ composition taxable persons and UIN holders</div>
 									 
 									
 						<select name='place_of_supply_uin_holder[]'  id='place_of_supply_uin_holder' class="required form-control">
-							<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+							<?php $dataSupplyStateArrs = $obj_return->get_results("select * from ".$obj_return->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 							<?php if(!empty($dataSupplyStateArrs)) { ?>
 								<option value=''>Select Place Of Supply</option>
 								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
@@ -1684,6 +1684,83 @@ composition taxable persons and UIN holders</div>
                                 </tbody>
                             </table>
                         </div>
+						 <div class="greyheading">5.1 Interest and late fee payable</div>
+                         <div class="tableresponsive">
+                            <table  class="table  tablecontent tablecontent2 bordernone">
+                                <thead>
+                                
+                                <tr>
+                               <th>Interest and late fee</th>
+                                <th>IntegratedTax</th>
+                                <th>CentralTax</th>
+                                <th>State/UT</th>  
+                                 <th>Cess</th>  		                              
+                                   </tr>
+                                </thead>
+                                
+                                <tbody>
+                                    <tr>
+                                    <td class="lftheading" width="25%">Interest amount</td>
+									 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->interest_latefees_integrated_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_integrated_tax" value="<?php echo $returndata[0]->interest_latefees_integrated_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 	
+                              <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->interest_latefees_central_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_central_tax" value="<?php echo $returndata[0]->interest_latefees_central_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 	 
+                                <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->interest_latefees_state_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_state_tax" value="<?php echo $returndata[0]->interest_latefees_state_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 	
+                              <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->interest_latefees_cess_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_cess_tax" value="<?php echo $returndata[0]->interest_latefees_cess_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 	 								 
+                                    
+                                    </tr>
+                                    
+                                    
+                                    
+                                </tbody>
+                            </table>
+                        </div>
                         
                         
                         
@@ -1720,7 +1797,7 @@ composition taxable persons and UIN holders</div>
        
 			var data1 ='<select class="required form-control" id="place_of_supply_unregistered_person"  name="place_of_supply_unregistered_person[]">';
 			 var data='';
-			 data +=<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+			 data +=<?php $dataSupplyStateArrs = $obj_return->get_results("select * from ".$obj_return->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 						<?php if(!empty($dataSupplyStateArrs)) { ?>
 							data += '<option value="">Select Place of Supply</option>';
 							<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
@@ -1754,7 +1831,7 @@ composition taxable persons and UIN holders</div>
        
 			var data1 ='<select class="required form-control" id="place_of_supply_taxable_person"  name="place_of_supply_taxable_person[]">';
 			 var data='';
-			 data +=<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+			 data +=<?php $dataSupplyStateArrs = $obj_return->get_results("select * from ".$obj_return->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 						<?php if(!empty($dataSupplyStateArrs)) { ?>
 							data += '<option value="">Select Place of Supply</option>';
 							<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
@@ -1783,7 +1860,7 @@ composition taxable persons and UIN holders</div>
        
 			var data1 ='<select class="required form-control" id="place_of_supply_uin_holder"  name="place_of_supply_uin_holder[]">';
 			 var data='';
-			 data +=<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+			 data +=<?php $dataSupplyStateArrs = $obj_return->get_results("select * from ".$obj_return->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 						<?php if(!empty($dataSupplyStateArrs)) { ?>
 							data += '<option value="">Select Place of Supply</option>';
 							<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
