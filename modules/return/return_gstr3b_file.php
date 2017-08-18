@@ -1,12 +1,12 @@
 <?php
-$obj_client = new client();
+
 $obj_return = new gstr3b();
-$obj_login = new login();
 $returnmonth = date('Y-m');
+
 if(isset($_POST['returnmonth']))
 {
     $returnmonth = $_POST['returnmonth'];
-	$obj_client->redirect(PROJECT_URL."/?page=return_gstr3b_file&returnmonth=".$returnmonth);
+	$obj_return->redirect(PROJECT_URL."/?page=return_gstr3b_file&returnmonth=".$returnmonth);
 	exit();
 }
 $returnmonth= date('Y-m');
@@ -19,8 +19,6 @@ if ($_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
 }
 if(isset($_POST['submit']) && $_POST['submit']=='submit') {
-
-   
 
     if($obj_return->saveGstr3b()){
         //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
@@ -41,13 +39,13 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
         //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
     }
 }
-if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
+if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GET['id']) && $obj_return->validateId($_GET['id'])) {
 
     $htmlResponse = $obj_return->generategstr3bHtml($_GET['id'],$_GET['returnmonth']);
     if ($htmlResponse === false) {
 
-        $obj_client->setError("No invoice found.");
-        $obj_client->redirect(PROJECT_URL . "?page=return_gstr3b_file");
+        $obj_return->setError("No invoice found.");
+        $obj_return->redirect(PROJECT_URL . "?page=return_gstr3b_file");
         exit();
     }
 
@@ -57,34 +55,42 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 
   
 }
-if (isset($_GET['action']) && $_GET['action'] == 'emailInvoice' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
+if (isset($_GET['action']) && $_GET['action'] == 'emailInvoice' && isset($_GET['id']) && $obj_return->validateId($_GET['id'])) {
 
     $htmlResponse = $obj_return->generategstr3bHtml($_GET['id'],$_GET['returnmonth']);
     
-    $dataCurrentUserArr = $obj_client->getUserDetailsById($obj_client->sanitize($_SESSION['user_detail']['user_id']));
+    $dataCurrentUserArr = $obj_return->getUserDetailsById($obj_return->sanitize($_SESSION['user_detail']['user_id']));
     $sendmail = $dataCurrentUserArr['data']->kyc->email;
 	$userid = $_SESSION["user_detail"]["user_id"];
 	 if ($obj_return->sendMail('Email GSTR-3Bfile', 'User ID : ' . $userid . ' email GSTR-3B', $sendmail, 'noreply@gstkeeper.com', '', 'rishap07@gmail.com,sheetalprasad95@gmail.com', '', 'GSTR-3Bfile',$htmlResponse )) {
 
-						$obj_login->setSuccess('Kindly check your email');
-						$obj_client->redirect(PROJECT_URL . "?page=return_gstr3b_file&returnmonth=" . $returnmonth);
+						$obj_return->setSuccess('Kindly check your email');
+						$obj_return->redirect(PROJECT_URL . "?page=return_gstr3b_file&returnmonth=" . $returnmonth);
                        // return true;
                     } else {
-                        $obj_login->setError('Try again some issue in sending in email.');
-							$obj_client->redirect(PROJECT_URL . "?page=return_gstr3b_file&returnmonth=" . $returnmonth);
+                        $obj_return->setError('Try again some issue in sending in email.');
+							$obj_return->redirect(PROJECT_URL . "?page=return_gstr3b_file&returnmonth=" . $returnmonth);
                        // return false;
                     }
    
 }
 
-if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
+if (isset($_GET['action']) && $_GET['action'] == 'downloadExcelInvoice' && isset($_GET['id']) && $obj_return->validateId($_GET['id'])) {
+	//The Header Row
+
+
+$filename =$obj_return->write_excel();
+
+}
+if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['id']) && $obj_return->validateId($_GET['id'])) {
+
 
     $htmlResponse = $obj_return->generategstr3bHtml($_GET['id'],$_GET['returnmonth']);
 
     if ($htmlResponse === false) {
 
-        $obj_client->setError("No invoice found.");
-        $obj_client->redirect(PROJECT_URL . "?page=client_invoice_list");
+        $obj_return->setError("No invoice found.");
+        $obj_return->redirect(PROJECT_URL . "?page=client_invoice_list");
         exit();
     }
 
@@ -95,6 +101,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
     
 }
 
+
        
 	    $sql = "select  *,count(return_id) as totalinvoice from ".TAB_PREFIX."client_return_gstr3b where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by return_id desc limit 0,1";
  
@@ -103,36 +110,36 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
 		
 	     $tdsTotquery = "SELECT COUNT(i.invoice_id) as numcount,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and supply_type='tds' and  invoice_date like '%" . $returnmonth . "%'";
       // echo "<br>";
-	    $tdsTotData = $obj_client->get_results($tdsTotquery);
+	    $tdsTotData = $obj_return->get_results($tdsTotquery);
         $total = 0;
         if (!empty($tdsTotData)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
 	    $tcsTotquery = "SELECT COUNT(i.invoice_id) as numcount,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and supply_type='tcs' and  invoice_date like '%" . $returnmonth . "%'";
   
-	    $tcsTotData = $obj_client->get_results($tcsTotquery);
+	    $tcsTotData = $obj_return->get_results($tcsTotquery);
         $total = 0;
         if (!empty($tcsTotData)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
-	     $nature_of_supply_a_Totquery = "SELECT sum(item.taxable_subtotal) as taxable_subtotal, COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and invoice_type not in('exportinvoice','sezunitinvoice','deemedexportinvoice') and item.igst_rate > 0 and item.sgst_rate > 0 and item.cgst_rate > 0 and invoice_date like '%" . $returnmonth . "%'";
+	    $nature_of_supply_a_Totquery = "SELECT sum(item.taxable_subtotal) as taxable_subtotal, COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and invoice_type not in('exportinvoice','sezunitinvoice','deemedexportinvoice') and item.igst_rate > 0 and item.sgst_rate > 0 and item.cgst_rate > 0 and invoice_date like '%" . $returnmonth . "%'";
          
 		
-	    $nature_of_supply_a_TotData = $obj_client->get_results($nature_of_supply_a_Totquery);
+	    $nature_of_supply_a_TotData = $obj_return->get_results($nature_of_supply_a_Totquery);
         $total = 0; 
         if (!empty($nature_of_supply_a_TotData)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
 	    $nature_of_supply_b_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(item.taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and invoice_type in('exportinvoice','sezunitinvoice','deemedexportinvoice') and  invoice_date like '%" . $returnmonth . "%'";
 
-	     $nature_of_supply_b_TotData = $obj_client->get_results($nature_of_supply_b_Totquery);
+	     $nature_of_supply_b_TotData = $obj_return->get_results($nature_of_supply_b_Totquery);
         $total = 0;
         if (!empty($nature_of_supply_b_TotData)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
 	    $nature_of_supply_c_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and item.igst_rate = 0 and item.sgst_rate = 0 and item.cgst_rate = 0 and invoice_date like '%" . $returnmonth . "%'";
    
-	    $nature_of_supply_c_TotData = $obj_client->get_results($nature_of_supply_c_Totquery);
+	    $nature_of_supply_c_TotData = $obj_return->get_results($nature_of_supply_c_Totquery);
         $total = 0;
         if (!empty($nature_of_supply_c_TotData)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
@@ -140,7 +147,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
 		//$nature_of_supply_d_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='purchaseinvoice'  and supply_type='reversecharge' and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and invoice_date like '%" . $returnmonth . "%'";
          $nature_of_supply_d_Totquery = "SELECT COUNT(i.purchase_invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_purchase_invoice') . " as i inner join " . $db_obj->getTableName('client_purchase_invoice_item') . " as item on item.purchase_invoice_id = i.purchase_invoice_id WHERE i.invoice_nature='purchaseinvoice'  and supply_type='reversecharge' and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and invoice_date like '%" . $returnmonth . "%'";
    
-	    $nature_of_supply_d_TotData = $obj_client->get_results($nature_of_supply_d_Totquery);
+	    $nature_of_supply_d_TotData = $obj_return->get_results($nature_of_supply_d_Totquery);
         $total = 0;
         if (!empty($nature_of_supply_d_TotData)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
@@ -148,35 +155,35 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
 		
 	    $nature_of_supply_e_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice' and billing_gstin_number='' and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and invoice_date like '%" . $returnmonth . "%'";
    
-	    $nature_of_supply_e_TotData = $obj_client->get_results($nature_of_supply_e_Totquery);
+	    $nature_of_supply_e_TotData = $obj_return->get_results($nature_of_supply_e_Totquery);
         $total = 0;
         if (!empty($nature_of_supply_e_TotData)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
 		 $supply_unregistered_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice' and billing_gstin_number=''  and billing_state <> company_state and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and invoice_date like '%" . $returnmonth . "%'";
    
-	    $supply_unregistered_TotData = $obj_client->get_results($supply_unregistered_Totquery);
+	    $supply_unregistered_TotData = $obj_return->get_results($supply_unregistered_Totquery);
         $total = 0;
         if (!empty($supply_unregistered_TotData)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
 	    $import_of_goods_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id INNER join " . $db_obj->getTableName('item') . " as m on m.hsn_code = item.item_hsncode WHERE i.invoice_nature='purchaseinvoice' and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and m.item_type=0 and invoice_date like '%" . $returnmonth . "%'";
    
-	    $import_of_goods_TotData = $obj_client->get_results($import_of_goods_Totquery);
+	    $import_of_goods_TotData = $obj_return->get_results($import_of_goods_Totquery);
         $total = 0;
         if (!empty($import_of_goods_TotData)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
 		 $import_of_services_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id INNER join " . $db_obj->getTableName('item') . " as m on m.hsn_code = item.item_hsncode WHERE i.invoice_nature='purchaseinvoice' and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and m.item_type=1 and invoice_date like '%" . $returnmonth . "%'";
    
-	    $import_of_services_TotData = $obj_client->get_results($import_of_services_Totquery);
+	    $import_of_services_TotData = $obj_return->get_results($import_of_services_Totquery);
         $total = 0;
         if (!empty($import_of_services_TotData)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
 		 $inward_supplies_r_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id INNER join " . $db_obj->getTableName('item') . " as m on m.hsn_code = item.item_hsncode WHERE i.invoice_nature='purchaseinvoice' and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and m.item_type=1 and invoice_date like '%" . $returnmonth . "%'";
    
-	    $inward_supplies_r_Data = $obj_client->get_results($inward_supplies_r_Totquery);
+	    $inward_supplies_r_Data = $obj_return->get_results($inward_supplies_r_Totquery);
         $total = 0;
         if (!empty($inward_supplies_r_Data)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
@@ -184,17 +191,13 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
 		 /*
 	   $nature_of_supply_a_5aTotquery = "SELECT COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='purchaseinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and item.igst_rate = 0 and item.sgst_rate = 0 and item.cgst_rate = 0 and invoice_date like '%" . $returnmonth . "%'";
    
-	   $nature_of_supply_a_5a_TotData = $obj_client->get_results($nature_of_supply_a_5aTotquery);
+	   $nature_of_supply_a_5a_TotData = $obj_return->get_results($nature_of_supply_a_5aTotquery);
         $total = 0;
         if (!empty($nature_of_supply_a_5a_TotData)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
 		 */
-	
 	   ?>
-
-   
-   
        <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
        			<div class="col-md-12 col-sm-12 col-xs-12">
                
@@ -202,16 +205,24 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
                     <div class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav"><a href="#">Home</a>
 					<i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GSTR-3B Filing</span> </div>
                      <div class="whitebg formboxcontainer">
-				<?php $obj_client->showErrorMessage(); ?>
-				<?php $obj_client->showSuccessMessge(); ?>
-				<?php $obj_client->unsetMessage(); ?>
-				
+				<?php $obj_return->showErrorMessage(); ?>
+				<?php $obj_return->showSuccessMessge(); ?>
+				<?php $obj_return->unsetMessage(); ?>
+				<div class="tab">
+                <a href="<?php echo PROJECT_URL . '/?page=return_gstr3b_file&returnmonth='.$returnmonth ?>" class="active">
+                    Prepare GSTR-3B 
+                </a>
+                <a href="<?php echo PROJECT_URL . '/?page=return_filegstr3b_file&returnmonth='.$returnmonth ?>" >
+                    File GSTR-3B
+                </a>
+              
+            </div>
 					  <div class="pull-right rgtdatetxt">
                                 <form method='post' name='form2'>
                                     Month Of Return
                                     <?php
-                                    $dataQuery = "SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS niceDate FROM gst_client_invoice group by nicedate";
-                                    $dataRes = $obj_client->get_results($dataQuery);
+                                    $dataQuery = "SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS niceDate FROM " . $db_obj->getTableName('client_invoice') . " group by nicedate";
+                                    $dataRes = $obj_return->get_results($dataQuery);
                                     if (!empty($dataRes)) {
                                         ?>
                                         <select class="dateselectbox" id="returnmonth" name="returnmonth">
@@ -241,7 +252,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
                             <ul class="iconlist">
 
                                 
-
+                                  <li><a href="<?php echo PROJECT_URL; ?>/?page=return_gstr3b_file&action=downloadExcelInvoice&id=<?php echo $returndata[0]->return_id; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Excel"><i class="fa fa-file-excel-o" aria-hidden="true"></i></div></a></li>
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=return_gstr3b_file&action=downloadInvoice&id=<?php echo $returndata[0]->return_id; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=return_gstr3b_file&action=printInvoice&id=<?php echo $returndata[0]->return_id; ?>&returnmonth=<?php echo $returnmonth; ?>" target="_blank"><div data-toggle="tooltip" data-placement="bottom" title="PRINT"><i class="fa fa-print" aria-hidden="true"></i></div></a></li>
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=return_gstr3b_file&action=emailInvoice&id=<?php echo $returndata[0]->return_id; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></div></a></li>
@@ -674,7 +685,7 @@ composition taxable persons and UIN holders</div>
 	                               <div id="TextBoxDiv3">
 								   <div class="input_fields_wrap3">
 						<select  name="place_of_supply_unregistered_person[]"   id='place_of_supply_unregistered_person' class="required form-control">
-							<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+							<?php $dataSupplyStateArrs = $obj_return->get_results("select * from ".$obj_return->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 							<?php if(!empty($dataSupplyStateArrs)) { ?>
 								<option value=''>Select Place Of Supply</option>
 								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
@@ -757,7 +768,7 @@ composition taxable persons and UIN holders</div>
 	                               <div id="TextBoxDiv3">
 								   <div class="input_fields_wrap3">
 						<select  name="place_of_supply_unregistered_person[]"   id='place_of_supply_unregistered_person' class="required form-control">
-							<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+							<?php $dataSupplyStateArrs = $obj_return->get_results("select * from ".$obj_return->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 							<?php if(!empty($dataSupplyStateArrs)) { ?>
 								<option value=''>Select Place Of Supply</option>
 								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
@@ -859,9 +870,9 @@ composition taxable persons and UIN holders</div>
                                      <tr>
                                     <td class="lftheading" width="25%">Supplies made to Composition Taxable Persons</td>
                                      <td>
-									 
+									   <div class="input_fields_wrap3">
 						<select name='place_of_supply_taxable_person[]'  id='place_of_supply_taxable_person' class="required form-control">
-							<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+							<?php $dataSupplyStateArrs = $obj_return->get_results("select * from ".$obj_return->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 							<?php if(!empty($dataSupplyStateArrs)) { ?>
 								<option value=''>Select Place Of Supply</option>
 								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
@@ -876,7 +887,7 @@ composition taxable persons and UIN holders</div>
                                     ?>><?php echo $dataSupplyStateArr->state_name . " (" . $dataSupplyStateArr->state_tin . ")"; ?></option>
 								<?php } ?>
 							<?php } ?>
-						</select>
+						</select></div>
 									 </td>
 									  <td>
 								 <?php
@@ -933,9 +944,9 @@ composition taxable persons and UIN holders</div>
                                        <td class="lftheading" width="25%">Supplies made to Composition Taxable Persons</td>
                                
                                      <td>
-									 
+									   <div class="input_fields_wrap3">
 						<select name='place_of_supply_taxable_person[]'  id='place_of_supply_taxable_person' class="required form-control">
-								<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+								<?php $dataSupplyStateArrs = $obj_return->get_results("select * from ".$obj_return->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 							<?php if(!empty($dataSupplyStateArrs)) { ?>
 								<option value=''>Select Place Of Supply</option>
 								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
@@ -954,7 +965,7 @@ composition taxable persons and UIN holders</div>
                                     ?>><?php echo $dataSupplyStateArr->state_name . " (" . $dataSupplyStateArr->state_tin . ")"; ?></option>
 								<?php } ?>
 							<?php } ?>
-						</select>
+						</select></div>
 									 </td>
 									  <td>
 								 <?php
@@ -1022,9 +1033,9 @@ composition taxable persons and UIN holders</div>
                                     <td class="lftheading" width="25%">Supplies made to UIN holders</td>
                                      <td>
 									 
-									
+								  <div class="input_fields_wrap3">	
 						<select name='place_of_supply_uin_holder[]'  id='place_of_supply_uin_holder' class="required form-control">
-							<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+							<?php $dataSupplyStateArrs = $obj_return->get_results("select * from ".$obj_return->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 							<?php if(!empty($dataSupplyStateArrs)) { ?>
 								<option value=''>Select Place Of Supply</option>
 								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
@@ -1039,7 +1050,7 @@ composition taxable persons and UIN holders</div>
                                     ?>><?php echo $dataSupplyStateArr->state_name . " (" . $dataSupplyStateArr->state_tin . ")"; ?></option>
 								<?php } ?>
 							<?php } ?>
-						</select>
+						</select></div>
 									 </td>
 									  <td>
 								 <?php
@@ -1093,9 +1104,9 @@ composition taxable persons and UIN holders</div>
                                     <td class="lftheading" width="25%">Supplies made to UIN holders</td>
                                      <td>
 									 
-									
+								  <div class="input_fields_wrap3">	
 						<select name='place_of_supply_uin_holder[]'  id='place_of_supply_uin_holder' class="required form-control">
-							<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+							<?php $dataSupplyStateArrs = $obj_return->get_results("select * from ".$obj_return->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 							<?php if(!empty($dataSupplyStateArrs)) { ?>
 								<option value=''>Select Place Of Supply</option>
 								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
@@ -1114,7 +1125,7 @@ composition taxable persons and UIN holders</div>
                                     ?>><?php echo $dataSupplyStateArr->state_name . " (" . $dataSupplyStateArr->state_tin . ")"; ?></option>
 								<?php } ?>
 							<?php } ?>
-						</select>
+						</select></div>
 									 </td>
 									  <td>
 								 <?php
@@ -1862,6 +1873,82 @@ composition taxable persons and UIN holders</div>
                                 </tbody>
                             </table>
                         </div>
+						  <div class="greyheading">5.1 Interest and late fee payable</div>
+                         <div class="tableresponsive">
+                            <table  class="table  tablecontent tablecontent2 bordernone">
+                                <thead>
+                                
+                                <tr>
+								 <th>Interest and late fee</th>
+                                <th>IntegratedTax</th>
+                                <th>CentralTax</th>
+                                <th>State/UT</th>  
+                                 <th>Cess</th>  								
+                                   </tr>
+                                </thead>
+                                
+                                <tbody>
+                                    <tr>
+                                    <td class="lftheading" width="25%">Interest amount</td>
+									 <td> 
+							 <?php
+								 if($returndata[0]->totalinvoice > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->interest_latefees_integrated_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_integrated_tax"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 	
+                              <td> 
+							 <?php
+								 if($returndata[0]->totalinvoice > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->interest_latefees_central_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_central_tax" 
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 	 
+                               <td> 
+							 <?php
+								 if($returndata[0]->totalinvoice > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->interest_latefees_state_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_state_tax" 
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 	 
+<td> 
+							 <?php
+								 if($returndata[0]->totalinvoice > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->interest_latefees_cess_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_cess_tax" 
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 	 								 
+                                    
+                                    </tr>
+                                    
+                             
+                                </tbody>
+                            </table>
+                        </div>
                         
                     
                       
@@ -1910,7 +1997,6 @@ composition taxable persons and UIN holders</div>
            <!--CONTENT START HERE-->
 		   </form>
         <div class="clear"></div>  	
-<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
 		
@@ -1918,7 +2004,7 @@ composition taxable persons and UIN holders</div>
        
 			var data1 ='<select class="required form-control" id="place_of_supply_unregistered_person"  name="place_of_supply_unregistered_person[]">';
 			 var data='';
-			 data +=<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+			 data +=<?php $dataSupplyStateArrs = $obj_return->get_results("select * from ".$obj_return->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 						<?php if(!empty($dataSupplyStateArrs)) { ?>
 							data += '<option value="">Select Place of Supply</option>';
 							<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
@@ -1952,7 +2038,7 @@ composition taxable persons and UIN holders</div>
        
 			var data1 ='<select class="required form-control" id="place_of_supply_taxable_person"  name="place_of_supply_taxable_person[]">';
 			 var data='';
-			 data +=<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+			 data +=<?php $dataSupplyStateArrs = $obj_return->get_results("select * from ".$obj_return->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 						<?php if(!empty($dataSupplyStateArrs)) { ?>
 							data += '<option value="">Select Place of Supply</option>';
 							<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
@@ -1981,7 +2067,7 @@ composition taxable persons and UIN holders</div>
        
 			var data1 ='<select class="required form-control" id="place_of_supply_uin_holder"  name="place_of_supply_uin_holder[]">';
 			 var data='';
-			 data +=<?php $dataSupplyStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+			 data +=<?php $dataSupplyStateArrs = $obj_return->get_results("select * from ".$obj_return->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 						<?php if(!empty($dataSupplyStateArrs)) { ?>
 							data += '<option value="">Select Place of Supply</option>';
 							<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
