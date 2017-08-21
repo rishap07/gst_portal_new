@@ -41,7 +41,10 @@
 .tcsamount {
 	display:none;
 }
-.exportmation {
+.exportinformation {
+	display:none;
+}
+.importinformation {
 	display:none;
 }
 .errorValidationContainer {
