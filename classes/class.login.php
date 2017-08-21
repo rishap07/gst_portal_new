@@ -34,11 +34,11 @@ class login extends validation {
 
         $server_output = $this->hitCurl($url, $dataArr);
         $server_output = json_decode($server_output);
-
+      
         if (count($server_output) > 0) {
-
+               //var_dump($server_output); die();
             if (isset($server_output->msg) && $server_output->msg == 'success' && $server_output->code == '2') {
-
+               
                 $_SESSION['user_detail']['user_id'] = $server_output->data->user[0]->user_id;
                 $_SESSION['user_detail']['name'] = $server_output->data->user[0]->name;
                 $_SESSION['user_detail']['username'] = $server_output->data->user[0]->username;
@@ -80,7 +80,7 @@ class login extends validation {
                 return false;
             }
         } else {
-
+              
             $this->setError($this->validationMessage['loginerror']);
 						
             return false;

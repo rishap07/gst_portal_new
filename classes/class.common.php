@@ -1429,6 +1429,37 @@ class common extends db {
             return "PIN-000000000001";
         }
     }
+	
+	/* generate purchase bill invoice number for client */
+    public function generatePurchaseBillInvoiceNumber($clientId) {
+
+        $currentFinancialYear = $this->generateFinancialYear();
+        $query = "select purchase_invoice_id  from " . $this->tableNames['client_purchase_invoice'] . " where 1=1 AND invoice_type = 'billofsupplyinvoice' AND financial_year = '" . $currentFinancialYear . "' AND added_by=" . $clientId;
+        $invoices = $this->get_results($query);
+
+        if (!empty($invoices)) {
+
+            $nextInvoice = count($invoices) + 1;
+            return "PBS-" . str_pad($nextInvoice, 12, "0", STR_PAD_LEFT);
+        } else {
+            return "PBS-000000000001";
+        }
+    }
+
+	public function generatePurchaseRVInvoiceNumber($clientId) {
+
+        $currentFinancialYear = $this->generateFinancialYear();
+        $query = "select purchase_invoice_id  from " . $this->tableNames['client_purchase_invoice'] . " where 1=1 AND invoice_type = 'receiptvoucherinvoice' AND financial_year = '" . $currentFinancialYear . "' AND added_by=" . $clientId;
+        $invoices = $this->get_results($query);
+
+        if (!empty($invoices)) {
+
+            $nextInvoice = count($invoices) + 1;
+            return "PRV-" . str_pad($nextInvoice, 12, "0", STR_PAD_LEFT);
+        } else {
+            return "PRV-000000000001";
+        }
+    }
 
     function convert_number_to_words($number) {
 
@@ -1585,7 +1616,7 @@ class common extends db {
     }
 
     final public function generalGSTR1InvoiceList($returnmonth,$uploaded='0') {
-        $query = "select invoice_id from " . TAB_PREFIX . 'client_invoice' . " where invoice_nature='salesinvoice' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%' and is_gstr1_uploaded='".$uploaded."'";
+        $query = "select invoice_id from " . TAB_PREFIX . 'client_invoice' . " where invoice_nature='salesinvoice' and (invoice_type='creditnote' or invoice_type='debitnote' or invoice_type='taxinvoice' or invoice_type='receiptvoucherinvoice' or  invoice_type='exportinvoice' or invoice_type='sezunitinvoice' or invoice_type='deemedexportinvoice') and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%' and is_gstr1_uploaded='".$uploaded."'";
         return $this->get_results($query);
     }
 

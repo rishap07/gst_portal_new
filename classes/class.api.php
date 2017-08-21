@@ -33,6 +33,7 @@ final class api extends validation
     */
     final public function login()
     {
+		
         //$this->pr($_SERVER);
         $server_name= $_SERVER['SERVER_NAME'];
         $server_addr= $_SERVER['SERVER_ADDR'];
@@ -64,8 +65,9 @@ final class api extends validation
         }
 		
         $query = "select b.role_page,a.can_read,a.can_create,a.can_update,a.can_delete from ".$this->tableNames['user_role_permission']." a left join ".$this->tableNames['user_role']." b on a.role_id=b.user_role_id where a.group_id='".$data['user']['0']->user_group."' and a.is_deleted='0' and a.status='1'";
+	   
         $data['user_permission'] = $this->get_results($query);
-        
+      
         return array('data'=>$data,'msg'=>'success','code'=>'2');
     }
     

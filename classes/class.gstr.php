@@ -244,9 +244,10 @@ final class gstr extends validation {
         $msg = $return_encode = '';
         $error = 1;
         $response = array();
-        $this->authenticateToken();
         
         $json_data = json_encode($dataArr);
+
+        echo $json_data;
 
         $encodejson=base64_encode(openssl_encrypt(base64_encode($json_data),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
         $hmac = base64_encode(hash_hmac('sha256', base64_encode($json_data), $_SESSION['decrypt_sess_key'], true));
@@ -419,6 +420,7 @@ final class gstr extends validation {
         $this->authenticateToken();
         $action = 'RETSAVE';
         $deleteData = json_encode($deleteData);
+        //echo $deleteData;
         $encodejson=base64_encode(openssl_encrypt(base64_encode($deleteData),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
 
         $hmac = base64_encode(hash_hmac('sha256', base64_encode($deleteData), $_SESSION['decrypt_sess_key'], true));
@@ -495,7 +497,7 @@ final class gstr extends validation {
                 ;
                 if(!empty($decodejson1) && $msg == '') {
                     $jstr1_status = json_decode($decodejson1,true);
-                    $this->pr($jstr1_status);
+                    //$this->pr($jstr1_status);
                     
                     if(isset($jstr1_status['status_cd']) && $jstr1_status['status_cd']=='P' && $msg == '') {
 
@@ -621,14 +623,14 @@ final class gstr extends validation {
     }
 
     public function gstin() {
-        $gstin = '33GSPTN3941G1Z7';//'33GSPTN3941G1Z7';
-        /*if(isset($_SESSION['user_detail']['user_id'])) {
+        $gstin = '';//'33GSPTN3941G1Z7';
+        if(isset($_SESSION['user_detail']['user_id'])) {
             $clientKyc = $this->get_results("select `gstin_number` as gstin from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by = ".$_SESSION['user_detail']['user_id']." ");
             if(!empty($clientKyc)) {
                 $gstin = $clientKyc[0]->gstin;
 
             }
-        }*/
+        }
         return $gstin;
     }
 

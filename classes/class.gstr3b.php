@@ -34,7 +34,7 @@ final class gstr3b extends validation {
 	$objPHPExcel = new PHPExcel();
 	//Activate the First Excel Sheet
 	$ActiveSheet = $objPHPExcel->setActiveSheetIndex(0);
-	$Header = array('Nature of Supplies','TotalTaxableValue', 'IntegratedtaxVlaue','CentralTax','State','Cess');
+	$Header = array('Nature of Supplies','Total Taxable Value', 'Integrated Tax','Central Tax','State/UT Tax','Cess Tax');
      $sql = "select  *  from ".TAB_PREFIX."client_return_gstr3b where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by return_id desc limit 0,1";
  
     $returndata = $this->get_results($sql);
@@ -43,6 +43,12 @@ final class gstr3b extends validation {
    $data2 = array();
    $data3 = array();
    $datalate_fees = array();
+   $datapayment_integrated = array();
+   $datapayment_central = array();
+   $datapayment_state = array();
+   $datapayment_cess = array();
+   $data_tds = array();
+	$data_tcs = array();
 		foreach($returndata as $data)
 		{
 		array_push($dataitem, array('(a) Outward taxable supplies (other than zero rated, nil rated and exempted)',$data->total_tax_value_supplya,$data->integrated_tax_value_supplya,$data->central_tax_value_supplya,$data->state_tax_value_supplya,$data->cess_tax_value_supplya));
@@ -54,7 +60,7 @@ final class gstr3b extends validation {
 		array_push($data2, array('(1) Import of goods',$data->integrated_tax_import_of_goods,$data->central_tax_import_of_goods,$data->state_tax_import_of_goods,$data->cess_tax_import_of_goods));
 		array_push($data2, array('(2) Import of services',$data->integrated_tax_import_of_services,$data->central_tax_import_of_services,$data->state_tax_import_of_services,$data->cess_tax_import_of_services));
 		array_push($data2, array('(3) Inward supplies liable to reverse charge (other than 1 & 2 above)	',$data->integrated_tax_inward_supplies_reverse_charge,$data->central_tax_inward_supplies_reverse_charge,$data->state_tax_inward_supplies_reverse_charge,$data->cess_tax_inward_supplies_reverse_charge));
-		array_push($data2, array('(4)Inward supplies from ISD',$data->integrated_tax_inward_supplies_reverse_charge,$data->central_tax_inward_supplies_reverse_charge,$data->state_tax_inward_supplies_reverse_charge,$data->cess_tax_inward_supplies_reverse_charge));
+		array_push($data2, array('(4)Inward supplies from ISD',$data->integrated_tax_inward_supplies,$data->central_tax_inward_supplies,$data->state_tax_inward_supplies,$data->cess_tax_inward_supplies));
 		array_push($data2, array('(5) All other ITC',$data->integrated_tax_allother_itc,$data->central_tax_allother_itc,$data->state_tax_allother_itc,$data->cess_tax_allother_itc));
 		array_push($data2, array('(B) ITC Reversed','','','',''));
 		array_push($data2, array('(1) As per rules 42 & 43 of CGST Rules',$data->integrated_tax_itc_reversed_cgstrules,$data->central_tax_itc_reversed_cgstrules,$data->state_tax_itc_reversed_cgstrules,$data->cess_tax_itc_reversed_cgstrules));
@@ -66,7 +72,14 @@ final class gstr3b extends validation {
 		array_push($data3, array('From a supplier under composition scheme, Exempt and Nil rated supply',$data->inter_state_supplies_composition_scheme,$data->intra_state_supplies_composition_scheme));
 		array_push($data3, array('Non GST supply',$data->inter_state_supplies_nongst_supply,$data->intra_state_supplies_nongst_supply));
         array_push($datalate_fees, array('Interest amount',$data->interest_latefees_integrated_tax,$data->interest_latefees_central_tax,$data->interest_latefees_state_tax,$data->interest_latefees_cess_tax));
+		array_push($datapayment_integrated, array('Integrated Tax',$data->tax_payable_integrated_tax,$data->integrated_fee_integrated_tax,$data->central_integrated_tax,$data->state_integrated_tax,$data->cess_integrated_tax,$data->taxpaid_tdstcs_integrated_tax,$data->taxpaid_cess_integrated_tax,$data->interest_integrated_tax,$data->latefee_integrated_tax));
+       	array_push($datapayment_central, array('Central Tax',$data->tax_payable_central_tax,$data->integrated_fee_central_tax,$data->central_central_tax,$data->state_central_tax,$data->cess_central_tax,$data->taxpaid_tdstcs_central_tax,$data->taxpaid_cess_central_tax,$data->interest_central_tax,$data->latefee_central_tax));
+        array_push($datapayment_state, array('State/UT Tax',$data->tax_payable_stateut_tax,$data->integrated_stateut_tax,$data->central_stateut_tax,$data->state_stateut_tax,$data->cess_stateut_tax,$data->taxpaid_tcs_stateut_tax,$data->taxpaid_cess_stateut_tax,$data->interest_stateut_tax,$data->latefee_stateut_tax));
+        array_push($datapayment_cess, array('Cess',$data->tax_payable_cess_tax,$data->integrated_cess_tax,$data->central_cess_tax,$data->state_cess_tax,$data->cess_stateut_tax,$data->taxpaid_tcs_cess_tax,$data->taxpaid_cess_cess_tax,$data->interest_cess_tax,$data->latefee_stateut_tax));
+        array_push($data_tds, array('TDS',$data->integrated_tax_tds,$data->central_tax_tds,$data->state_tax_tds));
+		array_push($data_tcs, array('TCS',$data->integrated_tax_tcs,$data->central_tax_tcs,$data->state_tax_tcs));
 
+ 
 		}
 	//Write the Header
 	$i=0;
@@ -97,7 +110,7 @@ final class gstr3b extends validation {
 	
 	//code for 3.2 supply made to unregistered person	
 	
-	$Header = array('','Place Of supply', 'TotalTaxableValue','Amount Of Integrated');
+	$Header = array('','Place of Supply (State/UT)', 'Total Taxable value','Amount of Integrated Tax');
 	$data1 = array();
 	$state='';
 	$total_taxable_value='';
@@ -129,7 +142,7 @@ final class gstr3b extends validation {
 								$state = $state.$return_state[0]->state_name.',';	
 								 //array_push($data1, array('Supplies made to Unregistered Persons',$return_state[0]->state_name,$str2[$i],$str3[$i]));
 								}
-									 array_push($data1, array('Supplies to Unregistered Persons',$return_state[0]->state_name,$str2[$i],$str3[i]));
+									 array_push($data1, array('Supplies to Unregistered Persons',$return_state[0]->state_name,$str2[$i],$str3[$i]));
 
 								  }
 								
@@ -166,7 +179,7 @@ final class gstr3b extends validation {
 								$state = $state.$return_state[0]->state_name.',';	
 								 //array_push($data1, array('Supplies made to Unregistered Persons',$return_state[0]->state_name,$str2[$i],$str3[$i]));
 								}
-								array_push($data1, array('Supplies made to Composition Taxable Persons',$return_state[0]->state_name,$str2[i],$str3[i]));
+								array_push($data1, array('Supplies made to Composition Taxable Persons',$return_state[0]->state_name,$str2[$i],$str3[$i]));
 	
 								  }
 								
@@ -230,6 +243,10 @@ final class gstr3b extends validation {
 			//var_dump($Location);
 			$ActiveSheet->setCellValue($Location, $ind_el); 	//Insert the Data at the specific cell specified by $Location
 			$columnIndex++;
+			 $Range = 'A'.$rowIndex;
+	         $color = 'fdede8'; // Subheading color
+	         $ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+  
 		}
 		
 		$rowIndex++;
@@ -239,24 +256,40 @@ final class gstr3b extends validation {
 	//code end here
 	//code for eligible ITc
 	
-	$Header = array('Details','IntegratedTax', 'CentralTax','State/UT','Cess');
+	$Header = array('Details','Integrated Tax', 'Central Tax','State/UT Tax','Cess');
     
 	
 	
 //Write the Header
+    $cell='A'.$rowIndex.':'.'J'.$rowIndex;
+    $Range = $cell;
+	$color = 'adadad'; // Topheading color
+	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+ 
+	$ActiveSheet->mergeCells($cell);
+	$ActiveSheet->setCellValue('A'.$rowIndex, '4. Eligible ITC');
+	$newrow=0;
+	$newrow= $rowIndex+1;
+	$cell='';
+	$cell='A'.$newrow.':'.'J'.$newrow;
+    $Range = $cell;
+	$color = 'f0f0f0'; // heading color
+	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+   
 	$i=0;
 	
+     $start =$rowIndex+1;
 	
 	foreach($Header as $ind_el)
 	{
 		//Convert index to Excel compatible Location
-		$Location = PHPExcel_Cell::stringFromColumnIndex($i) . $rowIndex;
+		$Location = PHPExcel_Cell::stringFromColumnIndex($i) . $start;
 		$ActiveSheet->setCellValue($Location, $ind_el);
 		$i++;
 	}
 	
   //Insert that data from Row 2, Column A (index 0)
-	$rowIndex=$i;
+	$rowIndex=$rowIndex+2;
 	$columnIndex=0; //Column A
 	foreach($data2 as $row)
 	{			
@@ -266,6 +299,10 @@ final class gstr3b extends validation {
 			//var_dump($Location);
 			$ActiveSheet->setCellValue($Location, $ind_el); 	//Insert the Data at the specific cell specified by $Location
 			$columnIndex++;
+			 $Range = 'A'.$rowIndex;
+	         $color = 'fdede8'; // Subheading color
+	         $ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+  
 		}
 		
 		$rowIndex++;
@@ -273,22 +310,38 @@ final class gstr3b extends validation {
 	}		
 	//end here eligible ITC Code
 	//code for value exempt,nil-rated and non-gst inward supplies
-	$Header = array('Nature of supplies','InterStateSupply', 'Intra-State');
+	$Header = array('Nature of supplies','Inter-State supplies', 'Intra-State supplies');
 	
-	
+	 $cell='A'.$rowIndex.':'.'J'.$rowIndex;
+    $Range = $cell;
+	$color = 'adadad'; // Topheading color
+	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+ 
+	$ActiveSheet->mergeCells($cell);
+	$ActiveSheet->setCellValue('A'.$rowIndex, '5. Values of exempt, nil-rated and non-GST inward supplies');
+	$newrow=0;
+	$newrow= $rowIndex+1;
+	$cell='';
+	$cell='A'.$newrow.':'.'J'.$newrow;
+    $Range = $cell;
+	$color = 'f0f0f0'; // heading color
+	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+   
     
 	//Write the Header
 	$i=0;
+	$start=0;
+	$start =$rowIndex+1;
 	foreach($Header as $ind_el)
 	{
 		//Convert index to Excel compatible Location
-		$Location = PHPExcel_Cell::stringFromColumnIndex($i) . $rowIndex;
+		$Location = PHPExcel_Cell::stringFromColumnIndex($i) . $start;
 		$ActiveSheet->setCellValue($Location, $ind_el);
 		$i++;
 	}
 	
   //Insert that data from Row 2, Column A (index 0)
-	$rowIndex=$i;
+		$rowIndex=$rowIndex+2;
 	$columnIndex=0; //Column A
 	foreach($data3 as $row)
 	{			
@@ -298,28 +351,50 @@ final class gstr3b extends validation {
 			//var_dump($Location);
 			$ActiveSheet->setCellValue($Location, $ind_el); 	//Insert the Data at the specific cell specified by $Location
 			$columnIndex++;
+			 $Range = 'A'.$rowIndex;
+	         $color = 'fdede8'; // Subheading color
+	         $ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+               $ActiveSheet->getStyle($Range)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+	
 		}
 		
 		$rowIndex++;
 		$columnIndex = 0;
 	}
 	//code for interest & late fees header and data code
-	$Header = array('Interest and late fee','IntegratedTax', 'CentralTax','State/UT','Cess');
+	$Header = array('Interest and late fee','Integrated Tax', 'Central Tax','State/UT','Cess');
 	
 	
     
 	//Write the Header
+	 $cell='A'.$rowIndex.':'.'J'.$rowIndex;
+    $Range = $cell;
+	$color = 'adadad'; // Topheading color
+	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+ 
+	$ActiveSheet->mergeCells($cell);
+	$ActiveSheet->setCellValue('A'.$rowIndex, '5.1 Interest and late fee payable');
+	$newrow=0;
+	$newrow= $rowIndex+1;
+	$cell='';
+	$cell='A'.$newrow.':'.'J'.$newrow;
+    $Range = $cell;
+	$color = 'f0f0f0'; // heading color
+	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+   
 	$i=0;
+	$start=0;
+	$start =$rowIndex+1;
 	foreach($Header as $ind_el)
 	{
 		//Convert index to Excel compatible Location
-		$Location = PHPExcel_Cell::stringFromColumnIndex($i) . $rowIndex;
+		$Location = PHPExcel_Cell::stringFromColumnIndex($i) . $start;
 		$ActiveSheet->setCellValue($Location, $ind_el);
 		$i++;
 	}
 	
   //Insert that data from Row 2, Column A (index 0)
-	$rowIndex=$i;
+	$rowIndex=$rowIndex+2;
 	$columnIndex=0; //Column A
 	foreach($datalate_fees as $row)
 	{			
@@ -329,13 +404,275 @@ final class gstr3b extends validation {
 			//var_dump($Location);
 			$ActiveSheet->setCellValue($Location, $ind_el); 	//Insert the Data at the specific cell specified by $Location
 			$columnIndex++;
+			 $Range = 'A'.$rowIndex;
+	         $color = 'fdede8'; // Subheading color
+	         $ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+             $ActiveSheet->getStyle($Range)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+	
+		}
+		
+		$rowIndex++;
+		$columnIndex = 0;
+	}
+	//Code for 6.1 payment of tax
+	//code for interest & late fees header and data code
+	$Header = array('Description','Tax payable', 'Paid through ITC','Paid through ITC','Paid through ITC','Paid through ITC','Tax paid TDS./TCS','Tax/Cess paid in cash','Interest','LateFee');
+	
+	
+    
+	//Write the Header
+	 $cell='A'.$rowIndex.':'.'J'.$rowIndex;
+    $Range = $cell;
+	$color = 'adadad'; // Topheading color
+	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+ 
+	$ActiveSheet->mergeCells($cell);
+	$ActiveSheet->setCellValue('A'.$rowIndex, '6.1 Payment of tax');
+	$newrow=0;
+	$newrow= $rowIndex+1;
+	$cell='';
+	$cell='A'.$newrow.':'.'J'.$newrow;
+    $Range = $cell;
+	$color = 'f0f0f0'; // heading color
+	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+   
+	$i=0;
+	$start=0;
+	$start =$rowIndex+1;
+	foreach($Header as $ind_el)
+	{
+		//Convert index to Excel compatible Location
+		$Location = PHPExcel_Cell::stringFromColumnIndex($i) . $start;
+		
+		$ActiveSheet->setCellValue($Location, $ind_el);
+		$i++;
+	}
+	//second header payment of tax 
+	$Header = array('','', 'Integrated Fee Tax','Central Tax','State/UTTax','Cess','','','','','');
+	
+	
+    $rowIndex=$rowIndex+1;
+	//Write the Header
+	
+	$newrow=0;
+	$newrow= $rowIndex+1;
+	$cell='';
+	$cell='A'.$newrow.':'.'J'.$newrow;
+    $Range = $cell;
+	$color = 'f0f0f0'; // heading color
+	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+   
+	$i=0;
+	$start=0;
+	$start =$rowIndex+1;
+	foreach($Header as $ind_el)
+	{
+		//Convert index to Excel compatible Location
+		$Location = PHPExcel_Cell::stringFromColumnIndex($i) . $start;
+		$ActiveSheet->setCellValue($Location, $ind_el);
+		$i++;
+	}
+	//code end here for payment of tax
+	
+  //Insert that data from Row 2, Column A (index 0)
+	$rowIndex=$rowIndex+2;
+	$columnIndex=0; //Column A
+	foreach($datapayment_integrated as $row)
+	{			
+		foreach($row as $ind_el)
+		{
+			$Location = PHPExcel_Cell::stringFromColumnIndex($columnIndex) . $rowIndex;
+			//var_dump($Location);
+			$ActiveSheet->setCellValue($Location, $ind_el); 	//Insert the Data at the specific cell specified by $Location
+			$columnIndex++;
+			 $Range = 'A'.$rowIndex;
+	         $color = 'fdede8'; // Subheading color
+	         $ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+             $ActiveSheet->getStyle($Range)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+	
+		}
+		
+		$rowIndex++;
+		$columnIndex = 0;
+	}
+	//Insert that data from Row 2, Column A (index 0)
+	$rowIndex=$rowIndex;
+	$columnIndex=0; //Column A
+	foreach($datapayment_central as $row)
+	{			
+		foreach($row as $ind_el)
+		{
+			$Location = PHPExcel_Cell::stringFromColumnIndex($columnIndex) . $rowIndex;
+			//var_dump($Location);
+			$ActiveSheet->setCellValue($Location, $ind_el); 	//Insert the Data at the specific cell specified by $Location
+			$columnIndex++;
+			 $Range = 'A'.$rowIndex;
+	         $color = 'fdede8'; // Subheading color
+	         $ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+             $ActiveSheet->getStyle($Range)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+	       if($columnIndex==4)
+			 {
+			 $Range = 'E'.$rowIndex; 
+	         $color = '000000'; // Subheading color
+	         $ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+             $ActiveSheet->getStyle($Range)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+			 }
+		}
+		
+		$rowIndex++;
+		$columnIndex = 0;
+	}
+	//Insert that data from Row 2, Column A (index 0)
+	$rowIndex=$rowIndex;
+	$columnIndex=0; //Column A
+	foreach($datapayment_state as $row)
+	{			
+		foreach($row as $ind_el)
+		{
+			$Location = PHPExcel_Cell::stringFromColumnIndex($columnIndex) . $rowIndex;
+			//var_dump($Location);
+			$ActiveSheet->setCellValue($Location, $ind_el); 	//Insert the Data at the specific cell specified by $Location
+			$columnIndex++;
+			 $Range = 'A'.$rowIndex;
+	         $color = 'fdede8'; // Subheading color
+	         $ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+             $ActiveSheet->getStyle($Range)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+	         if($columnIndex==3)
+			 {
+			 $Range = 'D'.$rowIndex; 
+	         $color = '000000'; // Subheading color
+	         $ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+             $ActiveSheet->getStyle($Range)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+			 }
+		}
+		
+		$rowIndex++;
+		$columnIndex = 0;
+	}
+	//Insert that data from Row 2, Column A (index 0)
+	$rowIndex=$rowIndex;
+	$columnIndex=0; //Column A
+	foreach($datapayment_cess as $row)
+	{			
+		foreach($row as $ind_el)
+		{
+			$Location = PHPExcel_Cell::stringFromColumnIndex($columnIndex) . $rowIndex;
+			//var_dump($Location);
+			
+			$ActiveSheet->setCellValue($Location, $ind_el); 	//Insert the Data at the specific cell specified by $Location
+			$columnIndex++;
+			
+			 $Range = 'A'.$rowIndex;
+	         $color = 'fdede8'; // Subheading color
+	         $ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+             $ActiveSheet->getStyle($Range)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+			 if($columnIndex==2) 
+			 {
+			 $Range = 'C'.$rowIndex; 
+	         $color = '000000'; // Subheading color
+	         $ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+             $ActiveSheet->getStyle($Range)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+			 }
+			  if($columnIndex==3)
+			 {
+			 $Range = 'D'.$rowIndex; 
+	         $color = '000000'; // Subheading color
+	         $ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+             $ActiveSheet->getStyle($Range)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+			 }
+			  if($columnIndex==4) 
+			 {
+			 $Range = 'E'.$rowIndex; 
+	         $color = '000000'; // Subheading color
+	         $ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+             $ActiveSheet->getStyle($Range)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+			 }
 		}
 		
 		$rowIndex++;
 		$columnIndex = 0;
 	}
 	
-	/*
+	//code for 6.2 TDS Credit 
+	$Header = array('Details','Integrated Tax', 'Central Tax','State/UT');
+	
+	
+    
+	//Write the Header
+	 $cell='A'.$rowIndex.':'.'J'.$rowIndex;
+    $Range = $cell;
+	$color = 'adadad'; // Topheading color
+	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+ 
+	$ActiveSheet->mergeCells($cell);
+	$ActiveSheet->setCellValue('A'.$rowIndex, '6.2 TDS/TCS Credit');
+	$newrow=0;
+	$newrow= $rowIndex+1;
+	$cell='';
+	$cell='A'.$newrow.':'.'J'.$newrow;
+    $Range = $cell;
+	$color = 'f0f0f0'; // heading color
+	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+   
+	$i=0;
+	$start=0;
+	$start =$rowIndex+1;
+	foreach($Header as $ind_el)
+	{
+		//Convert index to Excel compatible Location
+		$Location = PHPExcel_Cell::stringFromColumnIndex($i) . $start;
+		$ActiveSheet->setCellValue($Location, $ind_el);
+		$i++;
+	}
+	
+  //Insert that data from Row 2, Column A (index 0)
+	$rowIndex=$rowIndex+2;
+	$columnIndex=0; //Column A
+	foreach($data_tds as $row)
+	{			
+		foreach($row as $ind_el)
+		{
+			$Location = PHPExcel_Cell::stringFromColumnIndex($columnIndex) . $rowIndex;
+			//var_dump($Location);
+			$ActiveSheet->setCellValue($Location, $ind_el); 	//Insert the Data at the specific cell specified by $Location
+			$columnIndex++;
+			 $Range = 'A'.$rowIndex;
+	         $color = 'fdede8'; // Subheading color
+	         $ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+             $ActiveSheet->getStyle($Range)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+	
+		}
+		
+		$rowIndex++;
+		$columnIndex = 0;
+	}
+	//code for TCS 6.2
+	
+  //Insert that data from Row 2, Column A (index 0)
+	$rowIndex=$rowIndex;
+	$columnIndex=0; //Column A
+	foreach($data_tds as $row)
+	{			
+		foreach($row as $ind_el)
+		{
+			$Location = PHPExcel_Cell::stringFromColumnIndex($columnIndex) . $rowIndex;
+			//var_dump($Location);
+			$ActiveSheet->setCellValue($Location, $ind_el); 	//Insert the Data at the specific cell specified by $Location
+			$columnIndex++;
+			 $Range = 'A'.$rowIndex;
+	         $color = 'fdede8'; // Subheading color
+	         $ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+             $ActiveSheet->getStyle($Range)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+	
+		}
+		
+		$rowIndex++;
+		$columnIndex = 0;
+	}
+	//code for tcs 6.2
+	// code for 6.1 payment of tax end here
+	
+	
 	
 	########### Optional    ##################
 	########### Cell -Style ##################
@@ -343,21 +680,29 @@ final class gstr3b extends validation {
 	$color = 'fdede8'; // Sub heading color
 	$color = 'adadad'; // top heading color
 	//1. Mark the Header Row  in Color Red
-	$Range = 'A1:F1';
+	$Range = 'A1:J1';
 	$color = 'adadad'; // top heading color
 	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
-	$Range = 'A2:F2';
+	$Range = 'A2:J2';
 	$color = 'f0f0f0'; // heading color
 	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
     $Range = 'A3:A7';
 	$color = 'fdede8'; // Subheading color
 	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
-	 $Range = 'A34';
-	$color = 'fdede8'; // Subheading color
-	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
      $Range = 'A9:E9';
 	$color = 'f0f0f0'; // heading color
 	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+		$Range = 'A8:J8';
+	$color = 'adadad';
+	
+	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+    $ActiveSheet->mergeCells('A8:J8');
+	$ActiveSheet->setCellValue('A8', '3.2 Of the supplies shown in 3.1 (a) above, details of inter-State supplies made to unregistered persons, composition taxable persons and UIN holders');
+    $ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+    $ActiveSheet->mergeCells('A1:J1');
+	$ActiveSheet->setCellValue('A1', '3.1 Details of Outward Supplies and inward supplies liable to reverse charge.');
+
+	/*
      $Range = 'A10:A12';
 	$color = 'fdede8'; // Subheading color
 	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
@@ -377,10 +722,6 @@ final class gstr3b extends validation {
 	$ActiveSheet->mergeCells('A1:E1');
 	$ActiveSheet->setCellValue('A1', '3.1 Details of Outward Supplies and inward supplies liable to reverse charge');
 	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
-	$Range = 'A8:F8';
-	$color = 'adadad';
-	
-	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
 	$Range = 'A32:F32';
 	$color = 'adadad';
 	
@@ -394,22 +735,21 @@ final class gstr3b extends validation {
 	$Range = 'A33:E33';
 	$color = 'f0f0f0'; // heading color
 	$ActiveSheet->getStyle($Range)->getFill($Range)->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB($color);
-	$ActiveSheet->mergeCells('A8:F8');
-	$ActiveSheet->setCellValue('A8', '3.2 Of the supplies shown in 3.1 (a) above, details of inter-State supplies made to unregistered persons, composition taxable persons and UIN holders');
 	$ActiveSheet->mergeCells('A13:F13');
 	$ActiveSheet->setCellValue('A13', '4. Eligible ITC');
 	$ActiveSheet->mergeCells('A28:F28');
 	$ActiveSheet->setCellValue('A28', '5. Values of exempt, nil-rated and non-GST inward supplies');
 	$ActiveSheet->mergeCells('A32:F32');
-	$ActiveSheet->setCellValue('A32', '5.1 Interest and late fee payable');
-	$ActiveSheet->getStyle('A2:A34')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
-	$ActiveSheet->getStyle('B2:B34')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
-	$ActiveSheet->getStyle('C2:C34')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
-	$ActiveSheet->getStyle('D2:D34')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
-	$ActiveSheet->getStyle('E2:E34')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
-	$ActiveSheet->getStyle('F2:F34')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
-	$ActiveSheet->getStyle('F2:F34')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
 	*/
+	
+	$ActiveSheet->getStyle('A2:A500')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+	$ActiveSheet->getStyle('B2:B500')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+	$ActiveSheet->getStyle('C2:C500')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+	$ActiveSheet->getStyle('D2:D500')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+	$ActiveSheet->getStyle('E2:E500')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+	$ActiveSheet->getStyle('F2:F500')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+	$ActiveSheet->getStyle('F2:F500')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+
 	for($i=0; $i<count($Header);$i++)
 	{
 		$Location = PHPExcel_Cell::stringFromColumnIndex($i) ;
@@ -480,8 +820,8 @@ if ($fd = fopen ($fullPath, "r")) {
           readfile($fullPath);
         break;
     }
-    header("Content-length: $fsize");
-    header("Cache-control: private"); //use this to open files directly
+   // header("Content-length: $fsize");
+    //header("Cache-control: private"); //use this to open files directly
     while(!feof($fd)) {
         $buffer = fread($fd, 2048);
         echo $buffer;
@@ -646,6 +986,19 @@ exit;
 	    
 			 			
    }
+   public function checkVerifyUser() {
+        if (isset($_SESSION['user_detail']['user_id']) && $_SESSION['user_detail']['user_id'] != '') {
+			$data = $this->get_results("select * from " . TAB_PREFIX . "user where user_id='" . $_SESSION['user_detail']['user_id'] . "'");
+          
+                if ($data[0]->email_verify == '0' || $data[0]->mobileno_verify == '0') {
+					
+					 $this->setError("GSTR-3B File first verify your email and mobile number");
+					return "notverify";
+				}
+				return 'verify';
+         
+        }
+    }
    private function getPlaceOfSupplyComposition()
    {
 		$dataArr['place_of_supply']='';
@@ -920,108 +1273,7 @@ exit;
 	 $sql = "select  *,count(return_id) as totalinvoice from " . TAB_PREFIX . "client_return_gstr3b where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' order by return_id desc limit 0,1";
      $returndata = $this->get_results($sql);
 	
-	$place_of_supply_arr='';
-	$place_of_supply_total_taxable_value='';
-	$place_of_supply_total_amount_of_integrated_tax='';
-	$sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from ".TAB_PREFIX."place_of_supply as s INNER join ".TAB_PREFIX."client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='0'";
-     $editflag=0;
-                            $return_a = $this->get_results($sql);
-							if($return_a[0]->totalinvoice > 0 )
-							{
-								 if (isset($return_a[0]->totalinvoice)) {
-									 $editflag=1;
-									    $str1  = substr($return_a[0]->place_of_supply,0,-1);
-										$str1 = (explode(",",$str1));
-										$str2  = substr($return_a[0]->totaltaxable_value,0,-1);
-										$place_of_supply_total_taxable_value  = $str2;
-										$str2 = (explode(",",$str2));
-										$str3  = substr($return_a[0]->amount_of_integrated_tax,0,-1);
-										$place_of_supply_total_amount_of_integrated_tax=$str3;
-										$str3 = (explode(",",$str3));
-								
-						
-								 } 
-								
-								  for($i=0;$i < sizeof($str1); $i++) {
-                                $sql="select state_name from gst_master_state as s where state_id=".$str1[$i]."";
-                                $return_state = $this->get_results($sql);
-								if(!empty($return_state))
-								{
-								$place_of_supply_arr = $place_of_supply_arr.$return_state[0]->state_name.',';	
-								 //array_push($data1, array('Supplies made to Unregistered Persons',$return_state[0]->state_name,$str2[$i],$str3[$i]));
-								}
-								  }
-								
-							}     
-	$place_of_supply_arr  = substr($place_of_supply_arr,0,-1);						
-    $place_of_supply_arr_taxable='';
-	$place_of_supply_taxable_total_taxable_value='';
-	$place_of_supply_taxable_total_amount_of_integrated_tax='';
-	$sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from ".TAB_PREFIX."place_of_supply as s INNER join ".TAB_PREFIX."client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='1'";
-    $editflag=0;
-                            $return_a = $this->get_results($sql);
-							if($return_a[0]->totalinvoice > 0 )
-							{
-								 if (isset($return_a[0]->totalinvoice)) {
-									 $editflag=1;
-									    $str1  = substr($return_a[0]->place_of_supply,0,-1);
-										$str1 = (explode(",",$str1));
-										$str2  = substr($return_a[0]->totaltaxable_value,0,-1);
-										$place_of_supply_taxable_total_taxable_value  = $str2;
-										$str2 = (explode(",",$str2));
-										$str3  = substr($return_a[0]->amount_of_integrated_tax,0,-1);
-										$place_of_supply_taxable_total_amount_of_integrated_tax=$str3;
-										$str3 = (explode(",",$str3));
-								
-						
-								 } 
-								
-								  for($i=0;$i < sizeof($str1); $i++) {
-                                $sql="select state_name from gst_master_state as s where state_id=".$str1[$i]."";
-                                $return_state = $this->get_results($sql);
-								if(!empty($return_state))
-								{
-								$place_of_supply_arr_taxable = $place_of_supply_arr_taxable.$return_state[0]->state_name.',';	
-								 //array_push($data1, array('Supplies made to Unregistered Persons',$return_state[0]->state_name,$str2[$i],$str3[$i]));
-								}
-								  }
-								
-							} 
-	$place_of_supply_arr_taxable  = substr($place_of_supply_arr_taxable,0,-1);						
-    $place_of_supply_arr_uin_holder='';
-	$place_of_supply_uin_holder_total_taxable_value='';
-	$place_of_supply_uin_holder_total_amount_of_integrated_tax='';
-	$sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from ".TAB_PREFIX."place_of_supply as s INNER join ".TAB_PREFIX."client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='2'";
-    $editflag=0;
-                            $return_a = $this->get_results($sql);
-							if($return_a[0]->totalinvoice > 0 )
-							{
-								 if (isset($return_a[0]->totalinvoice)) {
-									 $editflag=1;
-									    $str1  = substr($return_a[0]->place_of_supply,0,-1);
-										$str1 = (explode(",",$str1));
-										$str2  = substr($return_a[0]->totaltaxable_value,0,-1);
-										$place_of_supply_uin_holder_total_taxable_value  = $str2;
-										$str2 = (explode(",",$str2));
-										$str3  = substr($return_a[0]->amount_of_integrated_tax,0,-1);
-										$place_of_supply_uin_holder_total_amount_of_integrated_tax=$str3;
-										$str3 = (explode(",",$str3));
-								
-						
-								 } 
-								
-								  for($i=0;$i < sizeof($str1); $i++) {
-                                $sql="select state_name from gst_master_state as s where state_id=".$str1[$i]."";
-                                $return_state = $this->get_results($sql);
-								if(!empty($return_state))
-								{
-								$place_of_supply_arr_uin_holder = $place_of_supply_arr_uin_holder.$return_state[0]->state_name.',';	
-								 //array_push($data1, array('Supplies made to Unregistered Persons',$return_state[0]->state_name,$str2[$i],$str3[$i]));
-								}
-								  }
-								
-							}  							
-            $place_of_supply_arr_uin_holder  = substr($place_of_supply_arr_uin_holder,0,-1);                
+	                
 	// array_push($data1, array('Supplies to Unregistered Persons',$place_of_supply_arr,$place_of_supply_total_taxable_value,$place_of_supply_total_amount_of_integrated_tax));
 
 	   $sql = "select  * from " . TAB_PREFIX . "client_kyc where added_by='" . $_SESSION['user_detail']['user_id'] . "'";
@@ -1092,19 +1344,138 @@ composition taxable persons and UIN holders</div>
 <thead><tr><th align="left" style="background:#f0f0f0 !important;"></th>
 <th align="left" style="background:#f0f0f0 !important;">Place of Supply (State/UT)</th>
 <th align="left" style="background:#f0f0f0 !important;">Total Taxable value</th>
-<th align="left" style="background:#f0f0f0 !important;">Amount Of Integrated Tax</th></tr></thead><tbody>
-<tr><td class="lftheading" style="font-size: 13px;background: #fdede8;color: #333;border-bottom: 1px solid #f4d4ca;" width="25%">Supplies made to Unregistered Persons</td>
-<td><label>'.$place_of_supply_arr.'<span class="starred"></span></label></td>
-<td><label>'.$place_of_supply_total_taxable_value.'<span class="starred"></span></label></td> 	
-<td><label>'.$place_of_supply_total_amount_of_integrated_tax.'<span class="starred"></span></label></td></tr> 										                       
-<tr><td class="lftheading" style="font-size: 13px;background: #fdede8;color: #333;border-bottom: 1px solid #f4d4ca;" width="25%">Supplies made to Composition Taxable Persons</td>
-<td><label>'.$place_of_supply_arr_taxable.'<span class="starred"></span></label></td>
-<td><label>'.$place_of_supply_taxable_total_taxable_value.'<span class="starred"></span></label></td> 	
-<td><label>'.$place_of_supply_taxable_total_amount_of_integrated_tax.'<span class="starred"></span></label></td></tr>									 
-<tr><td class="lftheading" style="font-size: 13px;background: #fdede8;color: #333;border-bottom: 1px solid #f4d4ca;" width="25%">Supplies made to UIN holders</td>
-<td><label>'.$place_of_supply_arr_uin_holder.'<span class="starred"></span></label></td>
-<td><label>'.$place_of_supply_uin_holder_total_taxable_value.'<span class="starred"></span></label></td>
-<td><label>'.$place_of_supply_uin_holder_total_amount_of_integrated_tax.'<span class="starred"></span></label></td></tr></tbody></table></div>';				
+<th align="left" style="background:#f0f0f0 !important;">Amount Of Integrated Tax</th></tr></thead><tbody>';
+
+    $place_of_supply_arr='';
+	$place_of_supply_arr_new='';
+	$place_of_supply_total_taxable_value='';
+	$place_of_supply_total_amount_of_integrated_tax='';
+	$sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from ".TAB_PREFIX."place_of_supply as s INNER join ".TAB_PREFIX."client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='0'";
+     $editflag=0;
+                            $return_a = $this->get_results($sql);
+							if($return_a[0]->totalinvoice > 0 )
+							{
+								 if (isset($return_a[0]->totalinvoice)) {
+									 $editflag=1;
+									    $str1  = substr($return_a[0]->place_of_supply,0,-1);
+										$str1 = (explode(",",$str1));
+										$str2  = substr($return_a[0]->totaltaxable_value,0,-1);
+										$place_of_supply_total_taxable_value  = $str2;
+										$str2 = (explode(",",$str2));
+										$str3  = substr($return_a[0]->amount_of_integrated_tax,0,-1);
+										$place_of_supply_total_amount_of_integrated_tax=$str3;
+										$str3 = (explode(",",$str3));
+								
+						
+								 } 
+								$mpdfHtml1='';
+								  for($i=0;$i < sizeof($str1); $i++) {
+                                $sql="select state_name from gst_master_state as s where state_id=".$str1[$i]."";
+                                $return_state = $this->get_results($sql);
+								if(!empty($return_state))
+								{
+								//$place_of_supply_arr = $place_of_supply_arr.$return_state[0]->state_name.',';	
+								 //array_push($data1, array('Supplies made to Unregistered Persons',$return_state[0]->state_name,$str2[$i],$str3[$i]));
+								}
+			$mpdfHtml .='<tr>';					  
+            $mpdfHtml .= '<td class="lftheading" style="font-size: 13px;background: #fdede8;color: #333;border-bottom: 1px solid #f4d4ca;" width="25%">Supplies made to Unregistered Persons</td>';
+            $mpdfHtml .= '<td><label>'.$return_state[0]->state_name.'<span class="starred"></span></label></td>';
+            $mpdfHtml .= '<td><label>'.(!empty($str2[$i])?$str2[$i]: '').'<span class="starred"></span></label></td>';
+			$mpdfHtml .= '<td><label>'.(!empty($str3[$i])?$str3[$i]: '').'<span class="starred"></span></label></td>';
+			$mpdfHtml .= '</tr>';
+		
+							
+								  }
+								
+							}
+							$place_of_supply_arr='';
+	$place_of_supply_arr_new='';
+	$place_of_supply_total_taxable_value='';
+	$place_of_supply_total_amount_of_integrated_tax='';
+	$sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from ".TAB_PREFIX."place_of_supply as s INNER join ".TAB_PREFIX."client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='1'";
+     $editflag=0;
+                            $return_a = $this->get_results($sql);
+							if($return_a[0]->totalinvoice > 0 )
+							{
+								 if (isset($return_a[0]->totalinvoice)) {
+									 $editflag=1;
+									    $str1  = substr($return_a[0]->place_of_supply,0,-1);
+										$str1 = (explode(",",$str1));
+										$str2  = substr($return_a[0]->totaltaxable_value,0,-1);
+										$place_of_supply_total_taxable_value  = $str2;
+										$str2 = (explode(",",$str2));
+										$str3  = substr($return_a[0]->amount_of_integrated_tax,0,-1);
+										$place_of_supply_total_amount_of_integrated_tax=$str3;
+										$str3 = (explode(",",$str3));
+								
+						
+								 } 
+								$mpdfHtml1='';
+								  for($i=0;$i < sizeof($str1); $i++) {
+                                $sql="select state_name from gst_master_state as s where state_id=".$str1[$i]."";
+                                $return_state = $this->get_results($sql);
+								if(!empty($return_state))
+								{
+								//$place_of_supply_arr = $place_of_supply_arr.$return_state[0]->state_name.',';	
+								 //array_push($data1, array('Supplies made to Unregistered Persons',$return_state[0]->state_name,$str2[$i],$str3[$i]));
+								}
+			$mpdfHtml .='<tr>';					  
+            $mpdfHtml .= '<td class="lftheading" style="font-size: 13px;background: #fdede8;color: #333;border-bottom: 1px solid #f4d4ca;" width="25%">Supplies made to Composition Taxable Persons</td>';
+            $mpdfHtml .= '<td><label>'.$return_state[0]->state_name.'<span class="starred"></span></label></td>';
+            $mpdfHtml .= '<td><label>'.(!empty($str2[$i])?$str2[$i]: '').'<span class="starred"></span></label></td>';
+			$mpdfHtml .= '<td><label>'.(!empty($str3[$i])?$str3[$i]: '').'<span class="starred"></span></label></td>';
+			$mpdfHtml .= '</tr>';
+		
+							
+								  }
+								
+							}
+							$place_of_supply_arr='';
+	$place_of_supply_arr_new='';
+	$place_of_supply_total_taxable_value='';
+	$place_of_supply_total_amount_of_integrated_tax='';
+	$sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from ".TAB_PREFIX."place_of_supply as s INNER join ".TAB_PREFIX."client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='2'";
+     $editflag=0;
+                            $return_a = $this->get_results($sql);
+							if($return_a[0]->totalinvoice > 0 )
+							{
+								 if (isset($return_a[0]->totalinvoice)) {
+									 $editflag=1;
+									    $str1  = substr($return_a[0]->place_of_supply,0,-1);
+										$str1 = (explode(",",$str1));
+										$str2  = substr($return_a[0]->totaltaxable_value,0,-1);
+										$place_of_supply_total_taxable_value  = $str2;
+										$str2 = (explode(",",$str2));
+										$str3  = substr($return_a[0]->amount_of_integrated_tax,0,-1);
+										$place_of_supply_total_amount_of_integrated_tax=$str3;
+										$str3 = (explode(",",$str3));
+								
+						
+								 } 
+								$mpdfHtml1='';
+								  for($i=0;$i < sizeof($str1); $i++) {
+                                $sql="select state_name from gst_master_state as s where state_id=".$str1[$i]."";
+                                $return_state = $this->get_results($sql);
+								if(!empty($return_state))
+								{
+								//$place_of_supply_arr = $place_of_supply_arr.$return_state[0]->state_name.',';	
+								 //array_push($data1, array('Supplies made to Unregistered Persons',$return_state[0]->state_name,$str2[$i],$str3[$i]));
+								}
+			$mpdfHtml .='<tr>';					  
+            $mpdfHtml .= '<td class="lftheading" style="font-size: 13px;background: #fdede8;color: #333;border-bottom: 1px solid #f4d4ca;" width="25%">Supplies made to UIN holders</td>';
+            $mpdfHtml .= '<td><label>'.$return_state[0]->state_name.'<span class="starred"></span></label></td>';
+            $mpdfHtml .= '<td><label>'.(!empty($str2[$i])?$str2[$i]: '').'<span class="starred"></span></label></td>';
+			$mpdfHtml .= '<td><label>'.(!empty($str3[$i])?$str3[$i]: '').'<span class="starred"></span></label></td>';
+			$mpdfHtml .= '</tr>';
+		
+							
+								  }
+								
+							}
+								
+                      
+						 										                       
+$mpdfHtml .='</tbody></table></div>';				
 $mpdfHtml .='<div class="greyheading" style="float: left;width: 100%;font-size: 15px;margin: 15px 0 15px 0;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;">4. Eligible ITC</div><div class="tableresponsive">
 <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone"><thead>
 <tr><th align="left">Details</th><th align="left">Integrated Tax</th><th align="left">Central Tax</th><th align="left">State/UT Tax</th>
@@ -1189,7 +1560,119 @@ border-bottom: 1px solid #f4d4ca;" width="25%"><strong>(A) ITC Available (whethe
 <td> <label>'.$returndata[0]->interest_latefees_central_tax.'<span class="starred"></span></label></td>
 <td><label>'.$returndata[0]->interest_latefees_state_tax.'<span class="starred"></span></label>  </td>
  <td> <label>'.$returndata[0]->interest_latefees_cess_tax.'<span class="starred"></span></label> </td> </tr></tbody></table>
- </div> </div></div>   </div>';
+ </div>';
+ $mpdfHtml .='<div class="greyheading" style="float: left;width: 100%;font-size: 15px;margin: 15px 0 15px 0;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;">6.1 Payment of tax</div>
+  <div class="tableresponsive"> <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+ <tr><th align="left">Description</th><th align="left">Tax payable</th><th colspan="4" align="center">Paid through ITC</th><th align="left">Tax paid <br/>TDS./TCS</th>
+ <th align="left">Tax/Cess <br/>paid in<br/>cash</th>  <th align="left">Interest</th>  <th align="left">Late Fee</th>   </tr>	
+<tr>  <th>&nbsp;</th>  <th>&nbsp;</th><th align="left">Integrated Fee<br> Tax</th> <th align="left">Central<br>Tax</th>  <th align="left">State/UT<br>Tax</th>
+   <th align="left">Cess</th>     <th>&nbsp;</th>  <th>&nbsp;</th>  <th>&nbsp;</th>    <th>&nbsp;</th>     </tr>                               
+<tr><td style="font-size: 13px;background: #fdede8; color: #333;border-bottom: 1px solid #f4d4ca;" class="lftheading" width="25%">Integrated Tax</td>                                 
+ <td> <label>'.$returndata[0]->tax_payable_integrated_tax.'<span class="starred"></span></label>  </td>
+<td> <label>'.$returndata[0]->integrated_fee_integrated_tax.'<span class="starred"></span></label>  </td> 
+<td><label>'.$returndata[0]->central_integrated_tax.'<span class="starred"></span></label> </td>
+<td> <label>'.$returndata[0]->state_integrated_tax.'<span class="starred"></span></label></td>
+<td><label>'.$returndata[0]->cess_integrated_tax.'<span class="starred"></span></label> </td>								 
+ <td> <label>'.$returndata[0]->taxpaid_tdstcs_integrated_tax.'<span class="starred"></span></label></td>							
+  <td><label>'.$returndata[0]->taxpaid_cess_integrated_tax.'<span class="starred"></span></label>  </td>								 
+<td> <label>'.$returndata[0]->interest_integrated_tax.'<span class="starred"></span></label></td>
+ <td><label>'.$returndata[0]->latefee_integrated_tax.'<span class="starred"></span></label> </td>  </tr>
+   <tr>    <td style="font-size: 13px;  background: #fdede8; color: #333; border-bottom: 1px solid #f4d4ca;" class="lftheading">Central Tax</td>                              									 
+<td>  <label>'.$returndata[0]->tax_payable_central_tax.'<span class="starred"></span></label>    </td>	
+ <td> <label>'.$returndata[0]->integrated_fee_central_tax.'<span class="starred"></span></label>  </td>
+<td> <label>'.$returndata[0]->central_central_tax.'<span class="starred"></span></label>   </td>								 
+ <td style="background:black;"> <label>'.$returndata[0]->state_central_tax.'<span class="starred"></span></label>  </td>						
+ <td> <label>'.$returndata[0]->cess_central_tax.'<span class="starred"></span></label>    </td>								 
+ <td>	 <label>'.$returndata[0]->taxpaid_tdstcs_central_tax.'<span class="starred"></span></label>   </td>									
+ <td> <label>'.$returndata[0]->taxpaid_cess_central_tax.'<span class="starred"></span></label></td>							
+<td>  <label>'.$returndata[0]->interest_central_tax.'<span class="starred"></span></label> </td>							 
+  <td>	 <label>'.$returndata[0]->latefee_central_tax.'<span class="starred"></span></label>   </td>   </tr>
+  <tr>  <td style="font-size: 13px; background: #fdede8; color: #333;  border-bottom: 1px solid #f4d4ca;" class="lftheading">State/UT Tax</td>							                  
+ <td><label>'.$returndata[0]->tax_payable_stateut_tax.'<span class="starred"></span></label> </td>                          
+<td><label>'.$returndata[0]->integrated_stateut_tax.'<span class="starred"></span></label> </td>  
+ <td style="background:black;">	 <label>'.$returndata[0]->central_stateut_tax.'<span class="starred"></span></label> </td>
+ <td> <label>'.$returndata[0]->state_stateut_tax.'<span class="starred"></span></label>  </td>	
+ <td> <label>'.$returndata[0]->cess_stateut_tax.'<span class="starred"></span></label> </td>
+ <td><label>'.$returndata[0]->taxpaid_tcs_stateut_tax.'<span class="starred"></span></label>    </td>
+<td> <label>'.$returndata[0]->taxpaid_cess_stateut_tax.'<span class="starred"></span></label>  </td>							                      
+<td> <label>'.$returndata[0]->interest_stateut_tax.'<span class="starred"></span></label> </td>								 
+<td><label>'.$returndata[0]->latefee_stateut_tax.'<span class="starred"></span></label>  </td></tr> 
+<tr> <td style="font-size: 13px; background: #fdede8;color: #333; border-bottom: 1px solid #f4d4ca;" class="lftheading">Cess</td>							
+<td><label>'.$returndata[0]->tax_payable_cess_tax.'<span class="starred"></span></label>  </td>
+ <td style="background:black;"><label>'.$returndata[0]->integrated_cess_tax.'<span class="starred"></span></label> </td>  
+  <td style="background:black;"> <label>'.$returndata[0]->central_cess_tax.'<span class="starred"></span></label>  </td>	
+<td style="background:black;"> <label>'.$returndata[0]->state_cess_tax.'<span class="starred"></span></label>  </td>                              
+<td><label>'.$returndata[0]->cess_cess_tax.'<span class="starred"></span></label>     </td>
+ <td><label>'.$returndata[0]->taxpaid_tcs_cess_tax.'<span class="starred"></span></label>    </td>								 
+ <td>  <label>'.$returndata[0]->taxpaid_cess_cess_tax.'<span class="starred"></span></label>  </td>
+ <td> <label>'.$returndata[0]->interest_cess_tax.'<span class="starred"></span></label> </td>								
+ <td>	 <label>'.$returndata[0]->latefee_cess_tax.'<span class="starred"></span></label></td>	</tr> </table>  </div>	
+  <div class="greyheading" style="float: left;width: 100%;font-size: 15px;margin: 15px 0 15px 0;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;">6.2 TDS/TCS Credit</div>
+ <div class="tableresponsive">  <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+ <thead>
+                                
+                                <tr>
+                                 <th align="left">Details</th>
+                                 <th align="left">Integrated Tax</th>
+                                 <th align="left">Central Tax</th> 
+                                  <th align="left">State/UT Tax</th>                                  
+                                   </tr>
+                                </thead>
+                                
+                                <tbody>
+                                    <tr>
+                                    <td class="lftheading" style="font-size: 13px;
+    background: #fdede8;
+    color: #333;
+    border-bottom: 1px solid #f4d4ca;" width="25%">TDS</td>
+									 <td> 
+							
+									 <label>'.$returndata[0]->integrated_tax_tds.'<span class="starred"></span></label>
+								
+                                 </td>
+								  <td> 
+						
+									 <label>'.$returndata[0]->central_tax_tds.'<span class="starred"></span></label>
+							
+                                 </td>
+								 <td> 
+						
+									 <label>'.$returndata[0]->state_tax_tds.'<span class="starred"></span></label>
+								
+                                 </td>
+                                    </tr>
+                                    
+                                     <tr>
+                                    <td style="font-size: 13px;
+    background: #fdede8;
+    color: #333;
+    border-bottom: 1px solid #f4d4ca;" class="lftheading" width="25%">TCS</td>
+									 <td> 
+							
+									 <label>'.$returndata[0]->integrated_tax_tcs.'<span class="starred"></span></label>
+							
+                                 </td>
+								 <td> 
+						
+						
+									 <label>'.$returndata[0]->central_tax_tcs.'<span class="starred"></span></label>
+								
+                                 </td>
+								 <td> 
+							
+									 <label>'.$returndata[0]->state_tax_tcs.'<span class="starred"></span></label>
+							
+                                 </td>
+                                    </tr>
+                                    
+                                   
+                                    
+                                </tbody>
+                            </table>
+								
+                          								
+                        </div>';
+$mpdfHtml .='</div></div></div>'; 
 $mpdfHtml .='</div>';
 $mpdfHtml .='</body>';
 $mpdfHtml .='</html>';
@@ -1241,7 +1724,7 @@ $returnmonth = $this->sanitize($_GET['returnmonth']);
 				$this->getPlaceOfSupplyComposition();
 				$this->getPlaceOfSupplyUinHolder();
 		                      
-				$this->setSuccess('GSTR3B Saved Successfully');
+				$this->setSuccess('GSTR3B month of return'.$returnmonth."updated Successfully");
 				$this->logMsg("GSTR3B updated financial month : " . $returnmonth,"gstr_3b");
 				return true;
 			}

@@ -1267,8 +1267,8 @@ final class client extends validation {
 				$dataArray['item_unit'] = isset($data['Z']) ? $data['Z'] : '';
 				$item_unit =  $dataArray['item_unit'];
 				
-                $dataArray['item_rate'] = isset($data['AA']) ? $data['AA'] : 0.00;
-				$item_rate =  $dataArray['item_rate'];
+                $dataArray['item_rate'] = isset($data['AA']) ? round($data['AA'], 2) : 0.00;
+				$item_rate = round($dataArray['item_rate'], 2);
 
                 $dataArray['item_discount'] = isset($data['AB']) ? $data['AB'] : 0.00;
                 $dataArray['advance_amount'] = isset($data['AC']) ? $data['AC'] : 0.00;
@@ -1645,7 +1645,6 @@ final class client extends validation {
                     $dataArray['invoice_type'] = "sezunitinvoice";
                 } else {
 					$errorflag = true;
-					$dataArray['invoice_type'] = "Invalid Invoice Type.";
 					array_push($currentItemError, "Invalid Invoice Type.");
                 }
 				
@@ -1656,7 +1655,6 @@ final class client extends validation {
                     $dataArray['export_supply_meant'] = "withoutpayment";
                 } else {
 					$errorflag = true;
-					$dataArray['export_supply_meant'] = "Invalid Export Supply Meant.";
 					array_push($currentItemError, "Invalid Export Supply Meant.");
                 }
 
@@ -1671,11 +1669,9 @@ final class client extends validation {
                     } else {
                         $errorflag = true;
                         array_push($currentItemError, "Invalid Place Of Supply.");
-                        $dataArray['supply_place'] = 'Invalid Place Of Supply.';
                     }
                 } else {
 					$errorflag = true;
-					$dataArray['supply_place'] = 'Invalid Place Of Supply.';
 					array_push($currentItemError, "Invalid Place Of Supply.");
                 }
 
@@ -1686,7 +1682,6 @@ final class client extends validation {
                     $dataArray['advance_adjustment'] = 0;
                 } else {
 					$errorflag = true;
-					$dataArray['advance_adjustment'] = "Invalid Advance Adjustment.";
 					array_push($currentItemError, "Invalid Advance Adjustment.");
                 }
 
@@ -1698,7 +1693,6 @@ final class client extends validation {
 						$dataArray['receipt_voucher_number'] = $dataReceiptVoucherArrs->invoice_id;
                     } else {
                         $errorflag = true;
-						$dataArray['receipt_voucher_number'] = "Invalid Receipt Voucher.";
                         array_push($currentItemError, "Invalid Receipt Voucher.");
                     }
 				}
@@ -1716,14 +1710,10 @@ final class client extends validation {
 						$dataArray['billing_state_name'] = $billing_state_data['data']->state_name;
                     } else {
                         $errorflag = true;
-						$dataArray['billing_state'] = "Invalid Billing State.";
-						$dataArray['billing_state_name'] = "Invalid Billing State.";
                         array_push($currentItemError, "Invalid Billing State.");
                     }
                 } else {
 					$errorflag = true;
-					$dataArray['billing_state'] = "Invalid Billing State.";
-					$dataArray['billing_state_name'] = "Invalid Billing State.";
 					array_push($currentItemError, "Invalid Billing State.");
                 }
 
@@ -1735,12 +1725,10 @@ final class client extends validation {
 						$dataArray['billing_country'] = $billing_country_data['data']->id;
                     } else {
                         $errorflag = true;
-						$dataArray['billing_country'] = "Invalid Billing Country.";
                         array_push($currentItemError, "Invalid Billing Country.");
                     }
                 } else {
 					$errorflag = true;
-					$dataArray['billing_country'] = "Invalid Billing Country.";
 					array_push($currentItemError, "Invalid Billing Country.");
                 }
 
@@ -1752,12 +1740,10 @@ final class client extends validation {
 						$dataArray['billing_vendor_type'] = $dataVendorNameArrs->vendor_id;
                     } else {
                         $errorflag = true;
-						$dataArray['billing_vendor_type'] = "Invalid Billing Vendor Type.";
                         array_push($currentItemError, "Invalid Billing Vendor Type.");
                     }
                 } else {
 					$errorflag = true;
-					$dataArray['billing_vendor_type'] = "Invalid Billing Vendor Type.";
 					array_push($currentItemError, "Invalid Billing Vendor Type.");
                 }
 
@@ -1776,14 +1762,10 @@ final class client extends validation {
 						$dataArray['shipping_state_name'] = $shipping_state_data['data']->state_name;
                     } else {
                         $errorflag = true;
-						$dataArray['shipping_state'] = "Invalid Shipping State.";
-						$dataArray['shipping_state_name'] = "Invalid Shipping State.";
                         array_push($currentItemError, "Invalid Shipping State.");
                     }
                 } else {
 					$errorflag = true;
-					$dataArray['shipping_state'] = "Invalid Shipping State.";
-					$dataArray['shipping_state_name'] = "Invalid Shipping State.";
 					array_push($currentItemError, "Invalid Shipping State.");
                 }
 
@@ -1795,12 +1777,10 @@ final class client extends validation {
 						$dataArray['shipping_country'] = $shipping_country_data['data']->id;
                     } else {
                         $errorflag = true;
-						$dataArray['shipping_country'] = "Invalid Shipping Country.";
                         array_push($currentItemError, "Invalid Shipping Country.");
                     }
                 } else {
 					$errorflag = true;
-					$dataArray['shipping_country'] = "Invalid Shipping Country.";
 					array_push($currentItemError, "Invalid Shipping Country.");
                 }
 
@@ -1812,12 +1792,10 @@ final class client extends validation {
 						$dataArray['shipping_vendor_type'] = $dataVendorNameArrs->vendor_id;
                     } else {
                         $errorflag = true;
-						$dataArray['shipping_vendor_type'] = "Invalid Shipping Vendor Type.";
                         array_push($currentItemError, "Invalid Shipping Vendor Type.");
                     }
                 } else {
 					$errorflag = true;
-					$dataArray['shipping_vendor_type'] = "Invalid Shipping Vendor Type.";
 					array_push($currentItemError, "Invalid Shipping Vendor Type.");
                 }
 
@@ -1832,16 +1810,16 @@ final class client extends validation {
 
                 $item_name = isset($data['Y']) ? trim($data['Y']) : '';
                 $item_hsncode = isset($data['Z']) ? trim($data['Z']) : '';
-				$dataArray['item_quantity'] = isset($data['AA']) ? $data['AA'] : '';
+				$dataArray['item_quantity'] = isset($data['AA']) ? round($data['AA'], 2) : '';
 
 				$dataArray['item_unit'] = isset($data['AB']) ? $data['AB'] : '';
 				$item_unit =  $dataArray['item_unit'];
-				
-                $dataArray['item_rate'] = isset($data['AC']) ? $data['AC'] : 0.00;
-				$item_rate =  $dataArray['item_rate'];
 
-                $dataArray['item_discount'] = isset($data['AD']) ? $data['AD'] : 0.00;
-                $dataArray['advance_amount'] = isset($data['AE']) ? $data['AE'] : 0.00;
+                $dataArray['item_rate'] = isset($data['AC']) ? round($data['AC'], 2) : 0.00;
+				$item_rate = round($dataArray['item_rate'], 2);
+
+                $dataArray['item_discount'] = isset($data['AD']) ? round($data['AD'], 2) : 0.00;
+                $dataArray['advance_amount'] = isset($data['AE']) ? round($data['AE'], 2) : 0.00;
 
 				if(!empty($item_name) && !empty($item_hsncode)) {
 
@@ -1897,8 +1875,8 @@ final class client extends validation {
 					array_push($currentItemError, "Description of Goods and HSN Code should be valid.");
                 }
 
-				$dataArray['igst_rate'] = isset($data['AF']) ? $data['AF'] : 0.000;
-				$dataArray['cess_rate'] = isset($data['AG']) ? $data['AG'] : 0.000;
+				$dataArray['igst_rate'] = isset($data['AF']) ? round($data['AF'], 3) : 0.000;
+				$dataArray['cess_rate'] = isset($data['AG']) ? round($data['AG'], 3) : 0.000;
 
 				/* get current user data */
                 $dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
@@ -1925,68 +1903,71 @@ final class client extends validation {
                     $objPHPExcel->getActiveSheet()->SetCellValue('AI' . $rowKey, $invoiceErrors);
                 }
 
-                /* create invoice array */
-                $arrayKey = $dataArray['reference_number'];
+				if ($errorflag === false) {
+				
+					/* create invoice array */
+					$arrayKey = $dataArray['reference_number'];
 
-                $invoiceArray[$arrayKey]['invoice_type'] = $dataArray['invoice_type'];
-				$invoiceArray[$arrayKey]['invoice_nature'] = 'salesinvoice';
-                $invoiceArray[$arrayKey]['reference_number'] = $dataArray['reference_number'];
-                $invoiceArray[$arrayKey]['company_name'] = $dataCurrentUserArr['data']->kyc->name;
-                $invoiceArray[$arrayKey]['company_address'] = $dataCurrentUserArr['data']->kyc->full_address;
-                $invoiceArray[$arrayKey]['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
-                $invoiceArray[$arrayKey]['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
-				$invoiceArray[$arrayKey]['invoice_date'] = $dataArray['invoice_date'];
-				$invoiceArray[$arrayKey]['export_supply_meant'] = $dataArray['export_supply_meant'];
-				$invoiceArray[$arrayKey]['supply_place'] = $dataArray['supply_place'];
-                $invoiceArray[$arrayKey]['billing_name'] = $dataArray['billing_name'];
-				$invoiceArray[$arrayKey]['billing_company_name'] = $dataArray['billing_company_name'];
-                $invoiceArray[$arrayKey]['billing_address'] = $dataArray['billing_address'];
-                $invoiceArray[$arrayKey]['billing_state'] = $dataArray['billing_state'];
-                $invoiceArray[$arrayKey]['billing_state_name'] = $dataArray['billing_state_name'];
-				$invoiceArray[$arrayKey]['billing_country'] = $dataArray['billing_country'];
-				$invoiceArray[$arrayKey]['billing_vendor_type'] = $dataArray['billing_vendor_type'];
-                $invoiceArray[$arrayKey]['billing_gstin_number'] = $dataArray['billing_gstin_number'];
-				$invoiceArray[$arrayKey]['shipping_name'] = $dataArray['shipping_name'];
-				$invoiceArray[$arrayKey]['shipping_company_name'] = $dataArray['shipping_company_name'];
-                $invoiceArray[$arrayKey]['shipping_address'] = $dataArray['shipping_address'];
-                $invoiceArray[$arrayKey]['shipping_state'] = $dataArray['shipping_state'];
-                $invoiceArray[$arrayKey]['shipping_state_name'] = $dataArray['shipping_state_name'];
-                $invoiceArray[$arrayKey]['shipping_country'] = $dataArray['shipping_country'];
-				$invoiceArray[$arrayKey]['shipping_vendor_type'] = $dataArray['shipping_vendor_type'];
-				$invoiceArray[$arrayKey]['shipping_gstin_number'] = $dataArray['shipping_gstin_number'];
+					$invoiceArray[$arrayKey]['invoice_type'] = $dataArray['invoice_type'];
+					$invoiceArray[$arrayKey]['invoice_nature'] = 'salesinvoice';
+					$invoiceArray[$arrayKey]['reference_number'] = $dataArray['reference_number'];
+					$invoiceArray[$arrayKey]['company_name'] = $dataCurrentUserArr['data']->kyc->name;
+					$invoiceArray[$arrayKey]['company_address'] = $dataCurrentUserArr['data']->kyc->full_address;
+					$invoiceArray[$arrayKey]['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
+					$invoiceArray[$arrayKey]['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
+					$invoiceArray[$arrayKey]['invoice_date'] = $dataArray['invoice_date'];
+					$invoiceArray[$arrayKey]['export_supply_meant'] = $dataArray['export_supply_meant'];
+					$invoiceArray[$arrayKey]['supply_place'] = $dataArray['supply_place'];
+					$invoiceArray[$arrayKey]['billing_name'] = $dataArray['billing_name'];
+					$invoiceArray[$arrayKey]['billing_company_name'] = $dataArray['billing_company_name'];
+					$invoiceArray[$arrayKey]['billing_address'] = $dataArray['billing_address'];
+					$invoiceArray[$arrayKey]['billing_state'] = $dataArray['billing_state'];
+					$invoiceArray[$arrayKey]['billing_state_name'] = $dataArray['billing_state_name'];
+					$invoiceArray[$arrayKey]['billing_country'] = $dataArray['billing_country'];
+					$invoiceArray[$arrayKey]['billing_vendor_type'] = $dataArray['billing_vendor_type'];
+					$invoiceArray[$arrayKey]['billing_gstin_number'] = $dataArray['billing_gstin_number'];
+					$invoiceArray[$arrayKey]['shipping_name'] = $dataArray['shipping_name'];
+					$invoiceArray[$arrayKey]['shipping_company_name'] = $dataArray['shipping_company_name'];
+					$invoiceArray[$arrayKey]['shipping_address'] = $dataArray['shipping_address'];
+					$invoiceArray[$arrayKey]['shipping_state'] = $dataArray['shipping_state'];
+					$invoiceArray[$arrayKey]['shipping_state_name'] = $dataArray['shipping_state_name'];
+					$invoiceArray[$arrayKey]['shipping_country'] = $dataArray['shipping_country'];
+					$invoiceArray[$arrayKey]['shipping_vendor_type'] = $dataArray['shipping_vendor_type'];
+					$invoiceArray[$arrayKey]['shipping_gstin_number'] = $dataArray['shipping_gstin_number'];
 
-				if($dataArray['invoice_type'] == "exportinvoice") {
-					$invoiceArray[$arrayKey]['export_bill_number'] = $dataArray['export_bill_number'];
-					$invoiceArray[$arrayKey]['export_bill_port_code'] = $dataArray['export_bill_port_code'];
-					$invoiceArray[$arrayKey]['export_bill_date'] = $dataArray['export_bill_date'];
+					if($dataArray['invoice_type'] == "exportinvoice") {
+						$invoiceArray[$arrayKey]['export_bill_number'] = $dataArray['export_bill_number'];
+						$invoiceArray[$arrayKey]['export_bill_port_code'] = $dataArray['export_bill_port_code'];
+						$invoiceArray[$arrayKey]['export_bill_date'] = $dataArray['export_bill_date'];
+					}
+
+					$invoiceArray[$arrayKey]['advance_adjustment'] = $dataArray['advance_adjustment'];
+					if($dataArray['advance_adjustment'] == 1) {
+						$invoiceArray[$arrayKey]['receipt_voucher_number'] = $dataArray['receipt_voucher_number'];
+					}
+
+					$invoiceArray[$arrayKey]['description'] = $dataArray['description'];
+
+					//items
+					$invoiceItemArray['item_id'] = $dataArray['item_id'];
+					$invoiceItemArray['item_name'] = $dataArray['item_name'];
+					$invoiceItemArray['item_hsncode'] = $dataArray['item_hsncode'];
+					$invoiceItemArray['item_quantity'] = $dataArray['item_quantity'];
+					$invoiceItemArray['item_unit'] = $dataArray['item_unit'];
+					$invoiceItemArray['item_unit_price'] = $dataArray['item_rate'];
+					$invoiceItemArray['item_discount'] = $dataArray['item_discount'];
+
+					if($dataArray['advance_adjustment'] == 1) {
+						$invoiceItemArray['advance_amount'] = $dataArray['advance_amount'];
+					} else {
+						$invoiceItemArray['advance_amount'] = 0.00;
+					}
+
+					$invoiceItemArray['igst_rate'] = $dataArray['igst_rate'];
+					$invoiceItemArray['cess_rate'] = $dataArray['cess_rate'];
+
+					$invoiceArray[$arrayKey]['items'][] = $invoiceItemArray;
 				}
-
-				$invoiceArray[$arrayKey]['advance_adjustment'] = $dataArray['advance_adjustment'];
-				if($dataArray['advance_adjustment'] == 1) {
-					$invoiceArray[$arrayKey]['receipt_voucher_number'] = $dataArray['receipt_voucher_number'];
-				}
-
-				$invoiceArray[$arrayKey]['description'] = $dataArray['description'];
-
-                //items
-				$invoiceItemArray['item_id'] = $dataArray['item_id'];
-                $invoiceItemArray['item_name'] = $dataArray['item_name'];
-                $invoiceItemArray['item_hsncode'] = $dataArray['item_hsncode'];
-				$invoiceItemArray['item_quantity'] = $dataArray['item_quantity'];
-                $invoiceItemArray['item_unit'] = $dataArray['item_unit'];
-                $invoiceItemArray['item_unit_price'] = $dataArray['item_rate'];
-				$invoiceItemArray['item_discount'] = $dataArray['item_discount'];
-
-				if($dataArray['advance_adjustment'] == 1) {
-					$invoiceItemArray['advance_amount'] = $dataArray['advance_amount'];
-				} else {
-					$invoiceItemArray['advance_amount'] = 0.00;
-				}
-
-				$invoiceItemArray['igst_rate'] = $dataArray['igst_rate'];
-				$invoiceItemArray['cess_rate'] = $dataArray['cess_rate'];
-
-                $invoiceArray[$arrayKey]['items'][] = $invoiceItemArray;
             }
 
             if ($errorflag === true) {
@@ -2301,8 +2282,8 @@ final class client extends validation {
 				$dataArray['item_unit'] = isset($data['T']) ? $data['T'] : '';
 				$item_unit =  $dataArray['item_unit'];
 				
-				$dataArray['item_rate'] = isset($data['U']) ? $data['U'] : 0.00;
-				$item_rate =  $dataArray['item_rate'];
+				$dataArray['item_rate'] = isset($data['U']) ? round($data['U'], 2) : 0.00;
+				$item_rate = round($dataArray['item_rate'], 2);
 
 				$dataArray['item_discount'] = isset($data['V']) ? $data['V'] : 0.00;
 
@@ -3186,8 +3167,8 @@ final class client extends validation {
 				$dataArray['item_unit'] = isset($data['X']) ? $data['X'] : '';
 				$item_unit =  $dataArray['item_unit'];
 				
-				$dataArray['item_rate'] = isset($data['Y']) ? $data['Y'] : 0.00;
-				$item_rate =  $dataArray['item_rate'];
+				$dataArray['item_rate'] = isset($data['Y']) ? round($data['Y'], 2) : 0.00;
+				$item_rate = round($dataArray['item_rate'], 2);
 
 				$dataArray['item_discount'] = isset($data['Z']) ? $data['Z'] : 0.00;
 
@@ -3607,8 +3588,8 @@ final class client extends validation {
 				$dataArray['item_unit'] = isset($data['O']) ? $data['O'] : '';
 				$item_unit =  $dataArray['item_unit'];
 
-				$dataArray['item_rate'] = isset($data['P']) ? $data['P'] : 0.00;
-				$item_rate =  $dataArray['item_rate'];
+				$dataArray['item_rate'] = isset($data['P']) ? round($data['P'], 2) : 0.00;
+				$item_rate = round($dataArray['item_rate'], 2);
 
 				$dataArray['item_discount'] = isset($data['Q']) ? $data['Q'] : 0.00;
 
@@ -4330,6 +4311,7 @@ final class client extends validation {
 				$mpdfHtml .= '</td>';
 			$mpdfHtml .= '</tr>';
 		}
+
 
         $mpdfHtml .= '</table>';
         $mpdfHtml .= '</div>';
