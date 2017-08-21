@@ -1,7 +1,7 @@
 <?php
 $obj_gstr1 = new gstr1();
 $obj_api =  new gstr();
-
+$returnmonth = '2017-07';
 if (!isset($_REQUEST['type']) || $_REQUEST['type'] == '') 
 {
   $obj_gstr1->redirect(PROJECT_URL . "/?page=return_client");
@@ -17,12 +17,13 @@ if ($_REQUEST['type'] != '') {
   $type = $_REQUEST['type'];
 }
 
-$returnmonth = '2017-07';
+
 if ($_REQUEST['returnmonth'] != '') {
   $returnmonth = $_REQUEST['returnmonth'];
 }
 //echo $_REQUEST['type'];
 $response = $obj_api->returnSummary($returnmonth,$_REQUEST['type']);
+//echo $response;
 
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr">
@@ -81,6 +82,9 @@ $response = $obj_api->returnSummary($returnmonth,$_REQUEST['type']);
                                 </form>
                             </div>
                             <div class="clearfix"></div>
+                            <?php $obj_gstr1->showErrorMessage(); ?>
+                            <?php $obj_gstr1->showSuccessMessge(); ?>
+                            <?php $obj_gstr1->unsetMessage(); ?>
                             <div id="display_json"></div>
                         </div>
                     </div>
@@ -94,6 +98,7 @@ $response = $obj_api->returnSummary($returnmonth,$_REQUEST['type']);
     
     $(document).ready(function () {
         $('#returnmonth').on('change', function () {
+            //alert(<?php echo $returnmonth; ?>);
             document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_get_summary_view&type=<?php echo $type; ?>&returnmonth=<?php echo $returnmonth; ?>';
             document.form2.submit();            
         });

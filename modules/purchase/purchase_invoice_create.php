@@ -98,7 +98,7 @@
 					</div>
 				 </div>
 
-				 <div class="row">
+				 <div class="row" style="display:none;">
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Advance Adjustment <span class="starred">*</span></label><br>
 						<label class="radio-inline"><input type="radio" name="advance_adjustment" value="1" />Yes</label>
@@ -763,6 +763,9 @@
 			} else {
 				$("#supplier_billing_state_code").val(statecode);
 			}
+			
+			/* calculate row invoice and invoice total on receiver state change */
+            rowInvoiceCalculationOnStateChnage();
         });
 
 		/* on chnage supplier billing country */
@@ -779,6 +782,9 @@
 				$("#supplier_billing_state_code").val('');
 				$("#supplier_billing_state").select2();
 			}
+
+			/* calculate row invoice and invoice total on receiver state change */
+            rowInvoiceCalculationOnStateChnage();
 		});
 		/* end of on chnage supplier billing country */
 

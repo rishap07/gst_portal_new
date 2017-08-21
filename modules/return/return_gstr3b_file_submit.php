@@ -1763,6 +1763,622 @@ composition taxable persons and UIN holders</div>
                         </div>
                         
                         
+                         <div class="greyheading">6.1 Payment of tax</div>
+                         <div class="tableresponsive">
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table  tablecontent tablecontent2 bordernone">
+                                  <tr>
+                                    <th>Description</th>
+                                    <th>Tax payable</th>
+                                    <th colspan="4" align="center">Paid through ITC</th>
+                                    <th>Tax paid <br/>TDS./TCS</th>
+                                    <th>Tax/Cess <br/>paid in<br/>cash</th>
+                                    <th>Interest</th>
+                                    <th>Late Fee</th>
+                                  </tr>
+                                  
+                                  <tr>
+                                    <th>&nbsp;</th>
+                                    <th>&nbsp;</th>
+                                    <th>Integrated Fee<br> Tax</th>
+                                    <th>Central<br>Tax</th>
+                                    <th>State/UT<br>Tax</th>
+                                    <th>Cess</th>
+                                    <th>&nbsp;</th>
+                                    <th>&nbsp;</th>
+                                    <th>&nbsp;</th>
+                                    <th>&nbsp;</th>
+                                  </tr>
+                                  <tr>
+                                    <td class="lftheading" width="25%">Integrated Tax</td>
+									 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->tax_payable_integrated_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="tax_payable_integrated_tax" value="<?php echo $returndata[0]->tax_payable_integrated_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->integrated_fee_integrated_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_fee_integrated_tax" value="<?php echo $returndata[0]->integrated_fee_integrated_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->central_integrated_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_integrated_tax" value="<?php echo $returndata[0]->central_integrated_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                             <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->state_integrated_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_integrated_tax" value="<?php echo $returndata[0]->state_integrated_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->cess_integrated_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_integrated_tax" value="<?php echo $returndata[0]->cess_integrated_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                               <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->taxpaid_tdstcs_integrated_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="taxpaid_tdstcs_integrated_tax" value="<?php echo $returndata[0]->taxpaid_tdstcs_integrated_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                               <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->taxpaid_cess_integrated_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="taxpaid_cess_integrated_tax" value="<?php echo $returndata[0]->taxpaid_cess_integrated_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>	
+                              <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->interest_integrated_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_integrated_tax" value="<?php echo $returndata[0]->interest_integrated_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                            <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->latefee_integrated_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="latefee_integrated_tax" value="<?php echo $returndata[0]->latefee_integrated_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>								 
+                               
+                                    
+                                  </tr>
+                                  
+                                   <tr>
+                                    <td class="lftheading">Central Tax</td>
+									 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->tax_payable_central_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="tax_payable_central_tax" value="<?php echo $returndata[0]->tax_payable_central_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>	
+								  <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->integrated_fee_central_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_fee_central_tax" value="<?php echo $returndata[0]->integrated_fee_central_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->central_central_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_central_tax" value="<?php echo $returndata[0]->central_central_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->state_central_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+						 <label><span class="starred"></span></label>
+								 <?php } ?>
+                                 </td>
+                                <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->cess_central_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_central_tax" value="<?php echo $returndata[0]->cess_central_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                             <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->taxpaid_tdstcs_central_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="taxpaid_tdstcs_central_tax" value="<?php echo $returndata[0]->taxpaid_tdstcs_central_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>	
+                             <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->taxpaid_cess_central_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="taxpaid_cess_central_tax" value="<?php echo $returndata[0]->taxpaid_cess_central_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                             <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->interest_central_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_central_tax" value="<?php echo $returndata[0]->interest_central_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>	
+                             <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->latefee_central_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="latefee_central_tax" value="<?php echo $returndata[0]->latefee_central_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>									 
+                                   
+                                  </tr>
+                                  
+                                   <tr>
+                                    <td class="lftheading">State/UT Tax</td>
+									  <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->tax_payable_stateut_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="tax_payable_stateut_tax" value="<?php echo $returndata[0]->tax_payable_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->integrated_stateut_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_stateut_tax" value="<?php echo $returndata[0]->integrated_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								  <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->central_stateut_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <label><span class="starred"></span></label>
+								 <?php } ?>
+                                 </td>
+								  <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->state_stateut_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_stateut_tax" value="<?php echo $returndata[0]->state_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->cess_stateut_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_stateut_tax" value="<?php echo $returndata[0]->cess_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->taxpaid_tcs_stateut_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="taxpaid_tcs_stateut_tax" value="<?php echo $returndata[0]->taxpaid_tcs_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								  <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->taxpaid_cess_stateut_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="taxpaid_cess_stateut_tax" value="<?php echo $returndata[0]->taxpaid_cess_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->interest_stateut_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_stateut_tax" value="<?php echo $returndata[0]->interest_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->latefee_stateut_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="latefee_stateut_tax" value="<?php echo $returndata[0]->latefee_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                  </tr>
+								   <tr>
+                                    <td class="lftheading">CESS</td>
+									  <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->tax_payable_cess_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="tax_payable_cess_tax" value="<?php echo $returndata[0]->tax_payable_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->integrated_cess_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+							 <label><span class="starred"></span></label>
+								 <?php } ?>
+                                 </td>
+								  <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->central_cess_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+							 <label><span class="starred"></span></label>
+								 <?php } ?>
+                                 </td>
+								  <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->state_cess_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+							 <label><span class="starred"></span></label>
+								 <?php } ?>
+                                 </td>
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->cess_stateut_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_stateut_tax" value="<?php echo $returndata[0]->cess_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->taxpaid_tcs_cess_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="taxpaid_tcs_cess_tax" value="<?php echo $returndata[0]->taxpaid_tcs_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								  <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->taxpaid_cess_cess_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="taxpaid_cess_cess_tax" value="<?php echo $returndata[0]->taxpaid_cess_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->interest_cess_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_cess_tax" value="<?php echo $returndata[0]->interest_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->latefee_cess_tax; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="latefee_cess_tax" value="<?php echo $returndata[0]->latefee_stateut_tax; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                  </tr>
+                                  
+                                </table>
+                            </div>
+                        
+                        <div class="greyheading">6.2 TDS/TCS Credit</div>
+                         <div class="tableresponsive">
+                            <table  class="table  tablecontent tablecontent2 bordernone">
+                                <thead>
+                                
+                                <tr>
+                                <th>Details</th>
+                                <th>Integrated Tax</th>
+                                <th>Central Tax</th> 
+                                 <th>State/UT Tax</th>                                  
+                                   </tr>
+                                </thead>
+                                
+                                <tbody>
+                                    <tr>
+                                    <td class="lftheading" width="25%">TDS</td>
+									 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->integrated_tax_tds; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_tds" value="<?php echo $returndata[0]->integrated_tax_tds; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								  <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->central_tax_tds; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_tds" value="<?php echo $returndata[0]->central_tax_tds; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->state_tax_tds; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_tds" value="<?php echo $returndata[0]->state_tax_tds; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                    </tr>
+                                    
+                                     <tr>
+                                    <td class="lftheading" width="25%">TCS</td>
+									 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->integrated_tax_tcs; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_tcs" value="<?php echo $returndata[0]->integrated_tax_tcs; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->central_tax_tcs; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_tcs" value="<?php echo $returndata[0]->central_tax_tcs; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td> 
+							 <?php
+								 if($status > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->state_tax_tcs; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_tcs" value="<?php echo $returndata[0]->state_tax_tcs; ?>"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                    </tr>
+                                    
+                                   
+                                    
+                                </tbody>
+                            </table>
+							
+                          				  
+                        </div>
                         
                        
                          <div class="tableresponsive">

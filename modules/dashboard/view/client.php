@@ -3,6 +3,7 @@ $obj_client = new client();
 $dataTotalYears;
 $dataTotalMonths;
 $dataTotalsDue;
+$dataTotalsDue_cr_rv;
 $month = date('m');
 $start_year = date('Y');
 $end_year = $start_year + 1;
@@ -15,9 +16,13 @@ $dataInvs = $db_obj->get_results('select * from ' . $db_obj->getTableName('clien
 $dataTotalinvoices = $db_obj->get_results("select COUNT(invoice_id) as invoicecount,month(invoice_date) as month from " . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and invoice_type <> 'deliverychallaninvoice' and financial_year ='" . $year . "'
  GROUP by month(invoice_date) desc limit 0,5 ");
 /* code for total month sale */
-$dataTotalMonthSales = $db_obj->get_results("select count(invoice_id) as monthcount, sum(invoice_total_value) as totalsale,month(invoice_date) as month from " . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice'  and invoice_type <> 'deliverychallaninvoice' and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "'
+$sql="select count(invoice_id) as monthcount, sum(invoice_total_value) as totalsale,month(invoice_date) as month from " . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and (invoice_type <> 'deliverychallaninvoice' and invoice_type<>'creditnote' and invoice_type<>'refundvoucherinvoice') and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "'
 
-  GROUP by month(invoice_date) desc limit 0,5 ");
+  GROUP by month(invoice_date) desc limit 0,5 ";
+$dataTotalMonthSales = $db_obj->get_results($sql); $sql="select count(invoice_id) as monthcount, sum(invoice_total_value) as totalsale,month(invoice_date) as month from " . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and (invoice_type='creditnote' or invoice_type='refundvoucherinvoice') and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "'
+
+  GROUP by month(invoice_date) desc limit 0,5 ";
+  $dataTotalMonthSales_cr_rv = $db_obj->get_results($sql);
 if (isset($_POST['submit']) && $_POST['submit'] == 'Filter') {
 
     $from_date = isset($_POST['from_date']) ? $_POST['from_date'] : '';
@@ -52,19 +57,28 @@ $query="select count(invoice_id) as monthcount, sum(invoice_total_value) as tota
         $query.="and invoice_date <= '" . $to_date . " 23:59:59'";
     }
 	$query.="GROUP by month(invoice_date)";
-$dataTotalMonthSales = $db_obj->get_results($query);
+ $dataTotalMonthSales = $db_obj->get_results($query);
     /* code for current month totalsale */
-    $dataTotalMonths = $db_obj->get_results('select COUNT(invoice_id) as numcount, sum(invoice_total_value) as sum from ' . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and invoice_type <> 'deliverychallaninvoice' and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "' and invoice_date between '" . $from_date . "' and '" . $to_date . "'");
-    $query = 'select COUNT(invoice_id) as numcount, sum(invoice_total_value) as sum from ' . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and invoice_type <> 'deliverychallaninvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0'";
+  //  $dataTotalMonths = $db_obj->get_results('select COUNT(invoice_id) as numcount, sum(invoice_total_value) as sum from ' . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and invoice_type <> 'deliverychallaninvoice' and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "' and invoice_date between '" . $from_date . "' and '" . $to_date . "'");
+    $query = 'select COUNT(invoice_id) as numcount, sum(invoice_total_value) as sum from ' . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and (invoice_type <> 'deliverychallaninvoice' and invoice_type<>'creditnote' and invoice_type<>'refundvoucherinvoice')  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0'";
     if ($from_date != '') {
         $query.="and invoice_date >= '" . $from_date . " 00:00:00'";
     }
     if ($to_date != '') {
         $query.="and invoice_date <= '" . $to_date . " 23:59:59'";
     }
-	$query.="GROUP by month(invoice_date) desc limit 0,5";
+	//$query.="GROUP by month(invoice_date) desc limit 0,5";
     $dataTotalMonths = $db_obj->get_results($query);
-    $query = "SELECT COUNT(i.invoice_id) as numcount,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice' and i.invoice_type <> 'deliverychallaninvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0'";
+	$query = 'select COUNT(invoice_id) as numcount, sum(invoice_total_value) as sum from ' . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and (invoice_type='creditnote' or invoice_type='refundvoucherinvoice') and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0'";
+    if ($from_date != '') {
+        $query.="and invoice_date >= '" . $from_date . " 00:00:00'";
+    }
+    if ($to_date != '') {
+        $query.="and invoice_date <= '" . $to_date . " 23:59:59'";
+    }
+	//$query.="GROUP by month(invoice_date) desc limit 0,5";
+    $dataTotalMonthsB = $db_obj->get_results($query);
+    $query = "SELECT COUNT(i.invoice_id) as numcount,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice')  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0'";
     if ($from_date != '') {
         $query.="and invoice_date >= '" . $from_date . " 00:00:00'";
     }
@@ -72,17 +86,37 @@ $dataTotalMonthSales = $db_obj->get_results($query);
         $query.="and invoice_date <= '" . $to_date . " 23:59:59'";
     }
     $dataTotalsDue = $db_obj->get_results($query);
+	 $query = "SELECT COUNT(i.invoice_id) as numcount,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice' and (i.invoice_type='creditnote' or i.invoice_type='refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0'";
+    if ($from_date != '') {
+        $query.="and invoice_date >= '" . $from_date . " 00:00:00'";
+    }
+    if ($to_date != '') {
+        $query.="and invoice_date <= '" . $to_date . " 23:59:59'";
+    }
+	
+    $dataTotalsDue_cr_rv = $db_obj->get_results($query);
 } else {
-    $query = 'select COUNT(invoice_id) as numcount, sum(invoice_total_value) as sum from ' . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and invoice_type <> 'deliverychallaninvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0'";
+    $query = 'select COUNT(invoice_id) as numcount, sum(invoice_total_value) as sum from ' . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and (invoice_type <> 'deliverychallaninvoice' and invoice_type<>'creditnote' and invoice_type<>'refundvoucherinvoice') and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0'";
     $query.="and invoice_date >= '" . date('Y-m') . "-01 00:00:00'";
     $query.="and invoice_date <= '" . date('Y-m-d') . " 23:59:59'";
-	
+   // echo $query;
     $dataTotalMonths = $db_obj->get_results($query);
-    $query = "SELECT COUNT(i.invoice_id) as numcount,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice' and i.invoice_type <> 'deliverychallaninvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0'";
+	 $query = 'select COUNT(invoice_id) as numcount, sum(invoice_total_value) as sum from ' . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and (invoice_type='creditnote' or invoice_type='refundvoucherinvoice') and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0'";
+    $query.="and invoice_date >= '" . date('Y-m') . "-01 00:00:00'";
+    $query.="and invoice_date <= '" . date('Y-m-d') . " 23:59:59'";
 
+
+    $dataTotalMonthsB = $db_obj->get_results($query);
+    $query = "SELECT COUNT(i.invoice_id) as numcount,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice')  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0'";
     $query.="and i.invoice_date >= '" . date('Y-m') . "-01 00:00:00'";
     $query.="and i.invoice_date <= '" . date('Y-m-d') . " 23:59:59'";
+    // echo $query;
     $dataTotalsDue = $db_obj->get_results($query);
+	$query = "SELECT COUNT(i.invoice_id) as numcount,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice' and (i.invoice_type='creditnote' or i.invoice_type='refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0'";
+    $query.="and i.invoice_date >= '" . date('Y-m') . "-01 00:00:00'";
+    $query.="and i.invoice_date <= '" . date('Y-m-d') . " 23:59:59'";
+	
+    $dataTotalsDue_cr_rv = $db_obj->get_results($query);
 }
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr">
@@ -114,7 +148,9 @@ if (count($dataTotalMonthSales) > 0) {
     foreach ($dataTotalMonthSales as $dataTotalMonthSale) {
 
         array_push($data_month_sale, array($start_year . "/" . $dataTotalMonthSale->month, round($dataTotalMonthSale->totalsale)));
-    }
+   }
+ 
+
 }
 
 //print_r($data);
@@ -139,6 +175,23 @@ $data_month_sale = json_encode($data_month_sale);
                     $currentmonth_total_due_igst = $dataTotalsDue[0]->igst_amount;
                     $currentmonth_total_due_cess = $dataTotalsDue[0]->cess_amount;
                 }
+				
+                $currentmonth_total_due_cgst_cr_rv = 0;
+                $currentmonth_total_due_sgst_cr_rv = 0;
+                $currentmonth_total_due_igst_cr_rv = 0;
+                $currentmonth_total_due_cess_cr_rv = 0;
+                $current_total_month_due_cr_rv = 0;
+
+               
+                if ($dataTotalsDue_cr_rv[0]->numcount > 0) {
+
+
+                    $currentmonth_total_due_cgst_cr_rv = $dataTotalsDue_cr_rv[0]->cgst_amount;
+                    $currentmonth_total_due_sgst_cr_rv = $dataTotalsDue_cr_rv[0]->sgst_amount;
+                    $currentmonth_total_due_igst_cr_rv = $dataTotalsDue_cr_rv[0]->igst_amount;
+                    $currentmonth_total_due_cess_cr_rv = $dataTotalsDue_cr_rv[0]->cess_amount;
+                }
+				
                 ?>
                 <?php
                 /*
@@ -160,7 +213,9 @@ $data_month_sale = json_encode($data_month_sale);
                 ?>
                 <?php
                 /* current month total sale */
-
+                $currentmonth_total_sale=0;
+				$currentmonth_total_saleb=0;
+				$total_sale_a_b=0;
                 if (!empty($dataTotalMonths[0]->numcount)) {
                     foreach ($dataTotalMonths as $dataTotalMonth) {
                         $currentmonth_total_sale = $dataTotalMonth->sum;
@@ -168,6 +223,14 @@ $data_month_sale = json_encode($data_month_sale);
                 } else {
                     $currentmonth_total_sale = 0;
                 }
+				if (!empty($dataTotalMonthsB[0]->numcount)) {
+                    foreach ($dataTotalMonthsB as $dataTotalMonth) {
+                        $currentmonth_total_saleb = $dataTotalMonth->sum;
+                    }
+                } else {
+                    $currentmonth_total_saleb = 0;
+                }
+				//$total_sale_a_b= $currentmonth_total_sale-$currentmonth_total_saleb;
                 ?>
 				
                  <div class="tab">
@@ -218,7 +281,7 @@ $data_month_sale = json_encode($data_month_sale);
                         <div class="dasboardbox">
                             <div class="lightblue dashtopcol">
                                 <div class="dashcoltxt">
-                                    <span class="boxpricetxt"><i class="fa fa-inr" aria-hidden="true"></i><?php echo $currentmonth_total_sale; ?></span><br /><div class="txtyear">Monthly Sale</div>
+                                    <span class="boxpricetxt"><i class="fa fa-inr" aria-hidden="true"></i><?php echo $currentmonth_total_sale-$currentmonth_total_saleb; ?></span><br /><div class="txtyear">Monthly Sale</div>
                                 </div>
                             </div>
                         </div>
@@ -229,7 +292,7 @@ $data_month_sale = json_encode($data_month_sale);
                                 <div class="dashcoltxt">
                                     <span class="boxpricetxt"><i class="fa fa-inr" aria-hidden="true"></i>
 
-<?php echo $currentmonth_total_due_cgst; ?>
+<?php echo $currentmonth_total_due_cgst-$currentmonth_total_due_cgst_cr_rv; ?>
                                     </span><br /><div class="txtyear">CGST</div>
                                 </div>
                             </div>
@@ -239,7 +302,7 @@ $data_month_sale = json_encode($data_month_sale);
                                 <div class="dashcoltxt">
                                     <span class="boxpricetxt"><i class="fa fa-inr" aria-hidden="true"></i>
 
-<?php echo $currentmonth_total_due_sgst; ?>
+<?php echo $currentmonth_total_due_sgst-$currentmonth_total_due_sgst_cr_rv; ?>
                                     </span><br /><div class="txtyear">SGST</div>
                                 </div>
                             </div>
@@ -249,7 +312,7 @@ $data_month_sale = json_encode($data_month_sale);
                                 <div class="dashcoltxt">
                                     <span class="boxpricetxt"><i class="fa fa-inr" aria-hidden="true"></i>
 
-<?php echo $currentmonth_total_due_igst; ?>
+<?php echo $currentmonth_total_due_igst-$currentmonth_total_due_igst_cr_rv; ?>
                                     </span><br /><div class="txtyear">IGST</div>
                                 </div>
                             </div>
@@ -259,7 +322,7 @@ $data_month_sale = json_encode($data_month_sale);
                                 <div class="dashcoltxt">
                                     <span class="boxpricetxt"><i class="fa fa-inr" aria-hidden="true"></i>
 
-<?php echo $currentmonth_total_due_cess; ?>
+<?php echo $currentmonth_total_due_cess-$currentmonth_total_due_cess_cr_rv; ?>
                                     </span><br /><div class="txtyear">CESS</div>
                                 </div>
                             </div>

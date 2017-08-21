@@ -379,17 +379,17 @@
 								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="GSTIN" class="form-control" name='shipping_gstin_number' data-bind="gstin" id='shipping_gstin_number' value="<?php echo $invoiceData[0]->shipping_gstin_number; ?>" /></div>
 							</div>
 
-							<div class="row form-group exportmation">
+							<div class="row form-group exportinformation">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Export Bill Number</label> <span class="starred">*</span></div>
 								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Export Bill Number" name='export_bill_number' class="form-control" id='export_bill_number' data-bind="content" value="<?php echo $invoiceData[0]->export_bill_number; ?>" /></div>
 							</div>
 							
-							<div class="row form-group exportmation">
+							<div class="row form-group exportinformation">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Export Bill Port Code</label> <span class="starred">*</span></div>
 								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Export Bill Port Code" name='export_bill_port_code' class="form-control" id='export_bill_port_code' data-bind="content" value="<?php echo $invoiceData[0]->export_bill_port_code; ?>" /></div>
 							</div>
 
-							<div class="row form-group exportmation">
+							<div class="row form-group exportinformation">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Export Bill Date</label> <span class="starred">*</span></div>
 								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Export Bill Date" class="form-control" name='export_bill_date' id='export_bill_date' data-bind="date" value="<?php if($invoiceData[0]->export_bill_date != "0000-00-00") { echo $invoiceData[0]->export_bill_date; } ?>" /></div>
 							</div>
@@ -1419,13 +1419,13 @@
 
 			if(invoiceType === "exportinvoice") {
 
-				$(".exportmation").show();
+				$(".exportinformation").show();
 				$("#export_bill_number").addClass('required');
 				$("#export_bill_port_code").addClass('required');
 				$("#export_bill_date").addClass('required');
 			} else {
 
-				$(".exportmation").hide();
+				$(".exportinformation").hide();
 				$("#export_bill_number").removeClass('required');
 				$("#export_bill_port_code").removeClass('required');
 				$("#export_bill_date").removeClass('required');

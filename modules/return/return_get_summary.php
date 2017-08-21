@@ -76,6 +76,9 @@ $response = $obj_api->returnSummary($returnmonth);
                             </form>
                         </div>
                         <div class="clearfix"></div>
+                        <?php $obj_gstr1->showErrorMessage(); ?>
+                        <?php $obj_gstr1->showSuccessMessge(); ?>
+                        <?php $obj_gstr1->unsetMessage(); ?>
                         <div id="display_json"></div>
                     </div>
                 </div>

@@ -13,15 +13,17 @@ $returnmonth= isset($_POST['returnmonth'])?$_POST['returnmonth']:'';
 
 $jstr1_array = json_decode($getSummary,true);
 $response = '';
+//echo '<pre>'; print_r($_POST);
 if(!empty($jstr1_array)) {
 
-    if($type == 'B2B') {             
+    if($type == 'B2B') {         
         if(isset($jstr1_array['b2b'])) {
             $response .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
             <thead>
             <tr>
                 <th>Number</th>
                 <th style="text-align:center">Invoice number</th> 
+                <th style="text-align:center">Ctin</th> 
                 <th style="text-align:center">Pos </th> 
                 <th style="text-align:center">Item </th>
                 <th style="text-align:center">Invoice type</th>    
@@ -38,9 +40,8 @@ if(!empty($jstr1_array)) {
             </tr>';
             foreach ($jstr1_array['b2b'] as $key1 => $inv_value) {
                 if(isset($inv_value['inv'])) {
+                    $ctin = isset($inv_value['ctin'])?$inv_value['ctin']:'';
                     foreach ($inv_value['inv'] as $key2 => $jstr1_value) {
-                       /* echo '<pre>';
-                       print_r($jstr1_value);*/
                         $val = isset($jstr1_value['val'])?$jstr1_value['val']:0;
                         $itms = isset($jstr1_value['itms'])?$jstr1_value['itms']:array();
                         $inv_typ = isset($jstr1_value['inv_typ'])?$jstr1_value['inv_typ']:'';
@@ -64,6 +65,7 @@ if(!empty($jstr1_array)) {
                                 $response .='<tr>
                                     <td align="right">'.$num.'</td>
                                     <td align="center">'.$inum.'</td>
+                                    <td align="center">'.$ctin.'</td>
                                     <td align="center">'.$pos.'</td>
                                     <td align="center">'.$i++.'</td>
                                     <td align="center">'.$inv_typ.'</td>
@@ -75,7 +77,7 @@ if(!empty($jstr1_array)) {
                                     <td align="center">'.$iamt.'</td>
                                     <td align="center">'.$updby.'</td>
                                     <td align="center">'.$rchrg.'</td>
-                                    <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn"><i class="fa fa-trash"></i></a></td>
+                                    <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" ctin = '.$ctin.' idt = '.$idt.' inum = '.$inum.' type="B2B"><i class="fa fa-trash"></i></a></td>
                                 </tr>';
                             }
                         }
@@ -91,7 +93,7 @@ if(!empty($jstr1_array)) {
     }
 
     if($type == 'B2CS') {
-       echo '<pre>'; print_r($jstr1_array);
+       //echo '<pre>'; print_r($jstr1_array);
 	   $response .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
                     <thead>
                     <tr>
@@ -125,7 +127,7 @@ if(!empty($jstr1_array)) {
                                 <td align="center">'.$rt.'</td>
                                 <td align="center">'.$txval.'</td>
                                 <td align="center">'.$iamt.'</td>
-                                <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" chksum = '.$chksum.' type="B2CS" ><i class="fa fa-trash"></i></a></td>
+                                <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" sply_ty = '.$sply_ty.' pos = '.$pos.' iamt = '.$iamt.' typ = '.$typ.' rt = '.$rt.' chksum = '.$chksum.' type="B2CS" ><i class="fa fa-trash"></i></a></td>
                             </tr>';
                         }   
                     }
@@ -313,7 +315,7 @@ if(!empty($jstr1_array)) {
                                     <td align="center">'.$iamt.'</td>
                                     <td align="center">'.$updby.'</td>
                                     <td align="center">'.$ntty.'</td>
-                                    <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn"><i class="fa fa-trash"></i></a></td>
+                                    <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" ctin = '.$ctin.' idt = '.$idt.' inum = '.$inum.' nt_num = '.$nt_num.' nt_dt = '.$nt_dt.' type="CDNR"><i class="fa fa-trash"></i></a></td>
                                 </tr>';
                             }
                         }
@@ -448,8 +450,8 @@ if(!empty($jstr1_array)) {
             </table>';
     }
     if($type == 'AT') {
-        echo '<pre>';print_r($jstr1_array);
-       $response .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
+        //echo '<pre>';print_r($jstr1_array);
+        $response .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
                     <thead>
                     <tr>
                         <th>Supply Type</th>
@@ -482,7 +484,7 @@ if(!empty($jstr1_array)) {
                                         <td align="center">'.$rt.'</td>
                                         <td align="center">'.$iamt.'</td>
                                         <td align="center">'.$ad_amt.'</td>
-                                        <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" sply_ty = '.$sply_ty.' pos = '.$pos.' type="AT" ><i class="fa fa-trash"></i></a></td>
+                                        <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" sply_ty = '.$sply_ty.' pos = '.$pos.' chksum = '.$chksum.' type="AT" ><i class="fa fa-trash"></i></a></td>
                                     </tr>';
                                 }
                             }   
@@ -558,23 +560,39 @@ else {
 }
 echo $response;
 ?>
-<script type="text/javascript">
-    
-    
+<script type="text/javascript">    
     $(document).ready(function () {
         $('.gstr1ViewDeleteBtn').on('click', function () {
             var type = $(this).attr('type');
             var returnmonth = "<?php echo $returnmonth;?>";
             var arrValues = [];
-
+            if(type == 'B2B') {
+                var ctin = $(this).attr('ctin');
+                var inum = $(this).attr('inum');
+                var idt = $(this).attr('idt');
+                arrValues = [ctin,inum,idt];
+            }
+             if(type == 'CDNR') {
+                var ctin = $(this).attr('ctin');
+                var inum = $(this).attr('inum');
+                var idt = $(this).attr('idt');
+                var nt_num = $(this).attr('nt_num');
+                var nt_dt = $(this).attr('nt_dt');
+                arrValues = [ctin,inum,idt,nt_num,nt_dt];
+            }
             if(type == 'AT') {
                 var sply_ty = $(this).attr('sply_ty');
                 var pos = $(this).attr('pos');
-                arrValues = [sply_ty,pos];
+                var chksum = $(this).attr('chksum');
+                arrValues = [sply_ty,pos,chksum];
             }
             if(type == 'B2CS') {
                 var chksum = $(this).attr('chksum');
-                arrValues = [chksum];
+                var sply_ty = $(this).attr('sply_ty');
+                var pos = $(this).attr('pos');
+                var typ = $(this).attr('typ');
+                var rt = $(this).attr('rt');
+                arrValues = [sply_ty,pos,typ,rt,chksum];
             }
                         
             delete_item_invoice(type,returnmonth,arrValues);          
@@ -589,9 +607,9 @@ echo $response;
                 type: "post",
                 data: {type:type,returnmonth:returnmonth,arrValues: arrValues},
                 success: function (response) {
-                    alert(type+' '+arrValues+' '+returnmonth);
-                    // refresh page
-                    //window.location.reload();
+                    location.reload();
+                    
+
                 },
                 error: function() {
                 }

@@ -1,6 +1,6 @@
 <?php
 $obj_gstr2 = new gstr2();
-$dataCurrentUserArr = $obj_gstr2->getUserDetailsById($obj_gstr2->sanitize($_SESSION['user_detail']['user_id']));
+$dataCurrentUserArr = $obj_gstr2->getUserDetailsById($_SESSION['user_detail']['user_id']);
 $returnmonth = date('Y-m');
 if (isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
@@ -51,6 +51,7 @@ if (isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
                     <li><a href="<?php echo PROJECT_URL . '/?page=return_purchase_all&returnmonth=' . $returnmonth ?>" > View My Data</a></li>
                     <li><a href="<?php echo PROJECT_URL . '/?page=return_vendor_invoices&returnmonth=' . $returnmonth ?>">Download GSTR-2A</a></li>
                     <li><a href="<?php echo PROJECT_URL . '/?page=return_gstr2_reconcile&returnmonth=' . $returnmonth ?>" class="active">GSTR-2 Reconcile</a></li>
+                    <li><a href="<?php echo PROJECT_URL . '/?page=return_gstr2_claim_itc&returnmonth=' . $returnmonth ?>" >Claim ITC</a></li>                   
                     <li><a href="<?php echo PROJECT_URL . '/?page=return_gstr2_upload_invoices&returnmonth=' . $returnmonth ?>">Upload To GSTN</a></li>
                     <li><a href="<?php echo PROJECT_URL . '/?page=return_gstr2_file&returnmonth=' . $returnmonth ?>">GSTR-2 Filing</a></li>
 
@@ -165,16 +166,17 @@ if (isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
 					reference_number='" . $gstr2DownlodedInvoice->reference_number . "'";
                                     $statusData = $obj_gstr2->get_results($statusQuery);
                                     if (count($statusData) <= 0) {
-                                        $dataArr['invoice_type'] = $purchaseInvoice->invoice_type;
-                                        $dataArr['invoice_nature'] = $purchaseInvoice->invoice_nature;
-                                        $dataArr['reference_number'] = $purchaseInvoice->reference_number;
-                                        $dataArr['serial_number'] = $purchaseInvoice->serial_number;
-                                        $dataArr['invoice_date'] = $purchaseInvoice->invoice_date;
-                                        $dataArr['invoice_status'] = '0';
-                                        $dataArr['status'] = '1';
-                                        $dataArr['added_by'] = $obj_gstr2->sanitize($_SESSION['user_detail']['user_id']);
-                                        $dataArr['added_date'] = date('Y-m-d H:i:s');
-                                        $obj_gstr2->insert($obj_gstr2->getTableName('client_reconcile_purchase_invoice1'), $dataArr);
+                                        $dataPurInv= array();
+                                        $dataPurInv['invoice_type'] = $purchaseInvoice->invoice_type;
+                                        $dataPurInv['invoice_nature'] = $purchaseInvoice->invoice_nature;
+                                        $dataPurInv['reference_number'] = $purchaseInvoice->reference_number;
+                                        $dataPurInv['serial_number'] = $purchaseInvoice->serial_number;
+                                        $dataPurInv['invoice_date'] = $purchaseInvoice->invoice_date;
+                                        $dataPurInv['invoice_status'] = '0';
+                                        $dataPurInv['status'] = '1';
+                                        $dataPurInv['added_by'] = $_SESSION['user_detail']['user_id'];
+                                        $dataPurInv['added_date'] = date('Y-m-d H:i:s');
+                                        $obj_gstr2->insert($obj_gstr2->getTableName('client_reconcile_purchase_invoice1'), $dataPurInv);
                                     }
                                 } else {
                                     $statusQuery = "select *
@@ -190,16 +192,17 @@ if (isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
 			reference_number='" . $purchaseInvoice->reference_number . "'";
                                     $statusData = $obj_gstr2->get_results($statusQuery);
                                     if (count($statusData) <= 0) {
-                                        $dataArr['invoice_type'] = $purchaseInvoice->invoice_type;
-                                        $dataArr['invoice_nature'] = $purchaseInvoice->invoice_nature;
-                                        $dataArr['reference_number'] = $purchaseInvoice->reference_number;
-                                        $dataArr['serial_number'] = $purchaseInvoice->serial_number;
-                                        $dataArr['invoice_date'] = $purchaseInvoice->invoice_date;
-                                        $dataArr['invoice_status'] = '3';
-                                        $dataArr['status'] = NULL;
-                                        $dataArr['added_by'] = $obj_gstr2->sanitize($_SESSION['user_detail']['user_id']);
-                                        $dataArr['added_date'] = date('Y-m-d H:i:s');
-                                        $obj_gstr2->insert($obj_gstr2->getTableName('client_reconcile_purchase_invoice1'), $dataArr);
+                                        $dataPurInv = array();
+                                        $dataPurInv['invoice_type'] = $purchaseInvoice->invoice_type;
+                                        $dataPurInv['invoice_nature'] = $purchaseInvoice->invoice_nature;
+                                        $dataPurInv['reference_number'] = $purchaseInvoice->reference_number;
+                                        $dataPurInv['serial_number'] = $purchaseInvoice->serial_number;
+                                        $dataPurInv['invoice_date'] = $purchaseInvoice->invoice_date;
+                                        $dataPurInv['invoice_status'] = '3';
+                                        $dataPurInv['status'] = NULL;
+                                        $dataPurInv['added_by'] = $_SESSION['user_detail']['user_id'];
+                                        $dataPurInv['added_date'] = date('Y-m-d H:i:s');
+                                        $obj_gstr2->insert($obj_gstr2->getTableName('client_reconcile_purchase_invoice1'), $dataPurInv);
                                     }
                                     $mismatched++;
                                     array_push($mismatchId, $purchaseInvoice->purchase_invoice_id);
@@ -225,16 +228,17 @@ if (isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
                             $statusData = $obj_gstr2->get_results($statusQuery);
                             if (count($statusData) <= 0) {
 
-                                $dataArr['invoice_type'] = $gstr2DownlodedInvoice->invoice_type;
-                                $dataArr['invoice_nature'] = $gstr2DownlodedInvoice->invoice_nature;
-                                $dataArr['reference_number'] = $gstr2DownlodedInvoice->reference_number;
-                                $dataArr['serial_number'] = $gstr2DownlodedInvoice->serial_number;
-                                $dataArr['invoice_date'] = $gstr2DownlodedInvoice->invoice_date;
-                                $dataArr['invoice_status'] = '1';
-                                $dataArr['status'] = NULL;
-                                $dataArr['added_by'] = $obj_gstr2->sanitize($_SESSION['user_detail']['user_id']);
-                                $dataArr['added_date'] = date('Y-m-d H:i:s');
-                                $obj_gstr2->insert($obj_gstr2->getTableName('client_reconcile_purchase_invoice1'), $dataArr);
+                                $dataPurInv = array();
+                                $dataPurInv['invoice_type'] = $gstr2DownlodedInvoice->invoice_type;
+                                $dataPurInv['invoice_nature'] = $gstr2DownlodedInvoice->invoice_nature;
+                                $dataPurInv['reference_number'] = $gstr2DownlodedInvoice->reference_number;
+                                $dataPurInv['serial_number'] = $gstr2DownlodedInvoice->serial_number;
+                                $dataPurInv['invoice_date'] = $gstr2DownlodedInvoice->invoice_date;
+                                $dataPurInv['invoice_status'] = '1';
+                                $dataPurInv['status'] = NULL;
+                                $dataPurInv['added_by'] = $_SESSION['user_detail']['user_id'];
+                                $dataPurInv['added_date'] = date('Y-m-d H:i:s');
+                                $obj_gstr2->insert($obj_gstr2->getTableName('client_reconcile_purchase_invoice1'), $dataPurInv);
                             }
                         }
                     }
@@ -260,25 +264,23 @@ if (isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
 			reference_number='" . $purchaseInvoice->reference_number . "'";
                             $statusData = $obj_gstr2->get_results($statusQuery);
                             if (count($statusData) <= 0) {
-                                $dataArr['invoice_type'] = $purchaseInvoice->invoice_type;
-                                $dataArr['invoice_nature'] = $purchaseInvoice->invoice_nature;
-                                $dataArr['reference_number'] = $purchaseInvoice->reference_number;
-                                $dataArr['serial_number'] = $purchaseInvoice->serial_number;
-                                $dataArr['invoice_date'] = $purchaseInvoice->invoice_date;
-                                $dataArr['invoice_status'] = '2';
-                                $dataArr['status'] = NULL;
-                                $dataArr['added_by'] = $obj_gstr2->sanitize($_SESSION['user_detail']['user_id']);
-                                $dataArr['added_date'] = date('Y-m-d H:i:s');
-                                $obj_gstr2->insert($obj_gstr2->getTableName('client_reconcile_purchase_invoice1'), $dataArr);
+                                $dataPurInv = array();
+                                $dataPurInv['invoice_type'] = $purchaseInvoice->invoice_type;
+                                $dataPurInv['invoice_nature'] = $purchaseInvoice->invoice_nature;
+                                $dataPurInv['reference_number'] = $purchaseInvoice->reference_number;
+                                $dataPurInv['serial_number'] = $purchaseInvoice->serial_number;
+                                $dataPurInv['invoice_date'] = $purchaseInvoice->invoice_date;
+                                $dataPurInv['invoice_status'] = '2';
+                                $dataPurInv['status'] = NULL;
+                                $dataPurInv['added_by'] = $_SESSION['user_detail']['user_id'];
+                                $dataPurInv['added_date'] = date('Y-m-d H:i:s');
+                                $obj_gstr2->insert($obj_gstr2->getTableName('client_reconcile_purchase_invoice1'), $dataPurInv);
                             }
                             //echo "additional id".$purchaseInvoice->purchase_invoice_id."<br>";
                         }
                     }
 
-                    $matchId = 0;
-                    $mismatchId = 0;
-                    $missingId = 0;
-                    $additionalId = 0;
+
                     if (sizeof($matchId) > 0) {
                         $matchId = implode(",", $matchId);
                     } 
@@ -291,6 +293,10 @@ if (isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
                     if (sizeof($additionalId) > 0) {
                         $additionalId = implode(",", $additionalId);
                     }
+/*                    print_r(sizeof($matchId));
+                    print_r($mismatchId);
+                    print_r($missingId);
+                    print_r($additionalId);die;*/
                     ?>
                     <script>
                         $(document).ready(function () {
@@ -314,7 +320,7 @@ if (isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
                             <div class="lightgreen col-text">
                                 <div class="dashcoltxt">
                                     <div class="boxtextheading pull-left">Matched</div>
-                                    <?php if ($matchId != 0) { ?> 
+                                    <?php if (sizeof($matchId) > 0) { ?> 
                                         <a class="pull-right btn bordergreen" href="<?php echo PROJECT_URL . '/?page=return_view_reconcile_invoices&returnmonth=' . $returnmonth . '&matchId=' . $matchId ?>">View Records</a>
                                     <?php } ?>
                                     <div class="clear height10"></div>
@@ -328,7 +334,7 @@ if (isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
                         <div class="col-md-3 col-sm-3 col-xs-12">
                             <div class="lightblue col-text">
                                 <div class="dashcoltxt">
-                                    <div class="boxtextheading pull-left">Missing</div>            <?php if ($missingId != 0) { ?> 
+                                    <div class="boxtextheading pull-left">Missing</div>            <?php if (sizeof($missingId) > 0) { ?> 
                                         <a class="pull-right btn borderblue" href="<?php echo PROJECT_URL . '/?page=return_view_reconcile_invoices&returnmonth=' . $returnmonth . '&missingId=' . $missingId ?>">View Records</a>
                                     <?php } ?>
                                     <div class="clear height10"></div>
@@ -344,7 +350,7 @@ if (isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
                             <div class="lightyellowbg col-text">
                                 <div class="dashcoltxt">
                                     <div class="boxtextheading pull-left">Additional</div>
-                                    <?php if ($additionalId != 0) { ?> 
+                                    <?php if (sizeof($additionalId) > 0) { ?> 
                                         <a class="pull-right btn borderbrown" href="<?php echo PROJECT_URL . '/?page=return_view_reconcile_invoices&returnmonth=' . $returnmonth . '&additionalId=' . $additionalId ?>">View Records</a>
                                     <?php } ?>
                                     <div class="clear height10"></div>
@@ -360,7 +366,7 @@ if (isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
                             <div class="pinkbg col-text">
                                 <div class="dashcoltxt">
                                     <div class="boxtextheading pull-left">Mismatch</div>
-                                    <?php if ($mismatchId != 0) { ?> 
+                                    <?php if (sizeof($mismatchId) > 0) { ?> 
                                         <a class="pull-right btn borderred" href="<?php echo PROJECT_URL . '/?page=return_view_reconcile_invoices&returnmonth=' . $returnmonth . '&mismatchId=' . $mismatchId ?>">View Records</a>
                                     <?php } ?>
                                     <div class="clear height10"></div>

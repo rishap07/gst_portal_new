@@ -173,6 +173,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 					$itemSGSTTax = 0.00;
 					$itemIGSTTax = (float)$dataInvoiceArr['invoice_igstrate'];
 					$itemCESSTax = (float)$dataInvoiceArr['invoice_cessrate'];
+					$consolidateRate = $itemIGSTTax;
 
 					$invoiceItemCSGTTaxAmount = 0.00;
 					$invoiceItemSGSTTaxAmount = 0.00;

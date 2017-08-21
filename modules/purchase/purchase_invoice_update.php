@@ -99,7 +99,7 @@
 				<div class="row">
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Recipient Name <span class="starred">*</span></label>
-						<input type="text" placeholder="Cyfuture India Pvt. Ltd" data-bind="content" readonly="true" class="form-control required" name="company_name" id="company_name" value="<?php echo $invoiceData[0]->company_name; ?>" />
+						<input type="text" placeholder="Cyfuture India Pvt. Ltd" data-vendor-type="<?php if(isset($dataCurrentUserArr['data']->kyc->vendor_type)) { echo $dataCurrentUserArr['data']->kyc->vendor_type; } ?>" data-bind="content" readonly="true" class="form-control required" name="company_name" id="company_name" value="<?php echo $invoiceData[0]->company_name; ?>" />
 					</div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
@@ -150,7 +150,7 @@
 					</div>
 				 </div>
 
-				 <div class="row">
+				 <div class="row" style="display:none;">
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group" <?php if($invoiceData[0]->advance_adjustment == "1") { echo 'style="display:block;"'; } ?>>
 						<label>Advance Adjustment <span class="starred">*</span></label><br>
 						<label class="radio-inline"><input type="radio" name="advance_adjustment" value="1" <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'checked="checked"'; } ?> />Yes</label>
@@ -952,6 +952,9 @@
 			} else {
 				$("#supplier_billing_state_code").val(statecode);
 			}
+			
+			/* calculate row invoice and invoice total on receiver state change */
+            rowInvoiceCalculationOnStateChnage();
         });
 
 		/* on chnage supplier billing country */
@@ -968,6 +971,9 @@
 				$("#supplier_billing_state_code").val('');
 				$("#supplier_billing_state").select2();
 			}
+			
+			/* calculate row invoice and invoice total on receiver state change */
+            rowInvoiceCalculationOnStateChnage();
 		});
 		/* end of on chnage supplier billing country */
 
