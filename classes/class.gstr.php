@@ -402,6 +402,7 @@ final class gstr extends validation {
 
         $result_data_sum = $this->hitGetUrl($getReturnUrl, '', $header2);
         $retDta_sum = json_decode($result_data_sum);
+        //$this->pr($retDta_sum);
         if(isset($retDta_sum->status_cd) && $retDta_sum->status_cd=='1')
         {
             $retRek_sum = $retDta_sum->rek;
@@ -413,7 +414,15 @@ final class gstr extends validation {
         }
         else {
             $msg = "Sorry! Unable to process";
+            if(isset($retDta_sum->error)) {
+                $this->array_key_search('message', $retDta_sum->error);
+                $msg = $this->error_msg;;
+            }
+
+            $this->setError($msg);
+            return false;
         }
+
     }
 
     public function returnDeleteItems($deleteData,$returnmonth) {
@@ -458,7 +467,7 @@ final class gstr extends validation {
         $url = 'http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/gstr1';
         $result_data = $this->hitPulUrl($url, $data_string, $header);
         $datasave = json_decode($result_data);
-        //$this->pr($datasave);
+       // $this->pr($datasave);
         if(isset($datasave->status_cd) && $datasave->status_cd=='1' && $msg == '')
         {
             $retData=$datasave->data;
@@ -486,7 +495,7 @@ final class gstr extends validation {
             $result_data1 = $this->hitGetUrl($url2, '', $header2);
             
             $retDta = json_decode($result_data1);
-            //$this->pr($retDta);
+           //$this->pr($retDta);
             if(isset($retDta->status_cd) && $retDta->status_cd=='1' && $msg == '')
             {
                 $retRek=$retDta->rek;
@@ -623,14 +632,14 @@ final class gstr extends validation {
     }
 
     public function gstin() {
-        $gstin = '';//'33GSPTN3941G1Z7';
-        if(isset($_SESSION['user_detail']['user_id'])) {
+        $gstin = '33GSPTN3941G1Z7';//'33GSPTN3941G1Z7';
+        /*if(isset($_SESSION['user_detail']['user_id'])) {
             $clientKyc = $this->get_results("select `gstin_number` as gstin from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by = ".$_SESSION['user_detail']['user_id']." ");
             if(!empty($clientKyc)) {
                 $gstin = $clientKyc[0]->gstin;
 
             }
-        }
+        }*/
         return $gstin;
     }
 
@@ -677,7 +686,6 @@ final class gstr extends validation {
 
     public function get_user_gstr() {
         $user_ustr = array();
-
         if(isset($_SESSION['user_detail']['user_id'])) {
             $user_ustr = $this->get_results("select * from " . $this->getTableName('user_gstr1') ." where user_id = ".$_SESSION['user_detail']['user_id']." ");
             

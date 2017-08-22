@@ -73,6 +73,7 @@ final class gstr2 extends validation {
         //Sales Data;
         $dataQuery = "select re.id,pur.billing_gstin_number as gstin_number,re.reference_number,re.invoice_status,re.status,sum(pur_it.cgst_amount) as cgst_amount,sum(pur_it.sgst_amount) as sgst_amount,sum(pur_it.igst_amount) as igst_amount,sum(pur_it.cess_amount) as cess_amount,pur.invoice_total_value,re.invoice_date,re.invoice_status,re.status from ".$this->getTableName('client_reconcile_purchase_invoice1')." re inner join ".$this->getTableName('client_invoice')." pur on re.reference_number=pur.reference_number inner join ".$this->getTableName('client_invoice_item')." pur_it on pur.invoice_id=pur_it.invoice_id where  re.invoice_date like('%".$this->sanitize($_GET['returnmonth'])."%') and re.added_by='".$_SESSION['user_detail']['user_id']."' and ((re.invoice_status='0' and re.status='1')or(re.invoice_status='0' and re.status='2')or(re.invoice_status='0' and re.status='4')or(re.invoice_status='1' and re.status='1')or(re.invoice_status='1' and re.status='2')or(re.invoice_status='1' and re.status='3')or(re.invoice_status='1' and re.status='4')or(re.invoice_status='3' and re.status='1')or(re.invoice_status='3' and re.status='2')or(re.invoice_status='3' and re.status='4')) and re.is_uploaded='0'  group by pur.reference_number ";
         $dataSale = $this->get_results($dataQuery);
+
         $data = array_merge($dataPur,$dataSale);
 		if(!empty($data))
 		{
@@ -121,11 +122,13 @@ final class gstr2 extends validation {
     }
 
     public function claimItc(){
-        $dataQuery = "select re.id,pur.supplier_billing_gstin_number as gstin_number,re.reference_number,pur.company_name,pur_it.taxable_subtotal,re.invoice_status,re.status,sum(pur_it.cgst_amount) as cgst_amount,sum(pur_it.sgst_amount) as sgst_amount,sum(pur_it.igst_amount) as igst_amount,sum(pur_it.cess_amount) as cess_amount,pur.invoice_total_value,re.invoice_date,re.invoice_status,re.status from ".$this->getTableName('client_reconcile_purchase_invoice1')." re inner join ".$this->getTableName('client_purchase_invoice')." pur on re.reference_number=pur.reference_number inner join ".$this->getTableName('client_purchase_invoice_item')." pur_it on pur.purchase_invoice_id=pur_it.purchase_invoice_id where re.invoice_date like('%".$this->sanitize($_GET['returnmonth'])."%') and re.added_by='".$_SESSION['user_detail']['user_id']."' and ((re.invoice_status='0' and re.status='3')or(re.invoice_status='2' and re.status='1')or(re.invoice_status='2' and re.status='2')or(re.invoice_status='2' and re.status='3')or(re.invoice_status='2' and re.status='4')or(re.invoice_status='3' and re.status='3')) and re.is_uploaded='0' group by pur.reference_number  ";
+         $dataQuery = "select re.category,re.claim_rate,re.claim_value, re.id,pur.supplier_billing_gstin_number as gstin_number,re.reference_number,pur.company_name,pur_it.taxable_subtotal,re.invoice_status,re.status,sum(pur_it.cgst_amount) as cgst_amount,sum(pur_it.sgst_amount) as sgst_amount,sum(pur_it.igst_amount) as igst_amount,sum(pur_it.cess_amount) as cess_amount,pur.invoice_total_value,re.invoice_date,re.invoice_status,re.status from ".$this->getTableName('client_reconcile_purchase_invoice1')." re inner join ".$this->getTableName('client_purchase_invoice')." pur on re.reference_number=pur.reference_number inner join ".$this->getTableName('client_purchase_invoice_item')." pur_it on pur.purchase_invoice_id=pur_it.purchase_invoice_id where re.invoice_date like('%".$this->sanitize($_GET['returnmonth'])."%') and re.added_by='".$_SESSION['user_detail']['user_id']."' and ((re.invoice_status='0' and re.status='3')or(re.invoice_status='2' and re.status='1')or(re.invoice_status='2' and re.status='2')or(re.invoice_status='2' and re.status='3')or(re.invoice_status='2' and re.status='4')or(re.invoice_status='3' and re.status='3')) and re.is_uploaded='0' group by pur.reference_number  ";
         $dataPur = $this->get_results($dataQuery);
         //Sales Data;
-        $dataQuery = "select re.id,pur.billing_gstin_number as gstin_number,re.reference_number,pur.company_name,pur_it.taxable_subtotal,re.invoice_status,re.status,sum(pur_it.cgst_amount) as cgst_amount,sum(pur_it.sgst_amount) as sgst_amount,sum(pur_it.igst_amount) as igst_amount,sum(pur_it.cess_amount) as cess_amount,pur.invoice_total_value,re.invoice_date,re.invoice_status,re.status from ".$this->getTableName('client_reconcile_purchase_invoice1')." re inner join ".$this->getTableName('client_invoice')." pur on re.reference_number=pur.reference_number inner join ".$this->getTableName('client_invoice_item')." pur_it on pur.invoice_id=pur_it.invoice_id where  re.invoice_date like('%".$this->sanitize($_GET['returnmonth'])."%') and re.added_by='".$_SESSION['user_detail']['user_id']."' and ((re.invoice_status='0' and re.status='1')or(re.invoice_status='0' and re.status='2')or(re.invoice_status='0' and re.status='4')or(re.invoice_status='1' and re.status='1')or(re.invoice_status='1' and re.status='2')or(re.invoice_status='1' and re.status='3')or(re.invoice_status='1' and re.status='4')or(re.invoice_status='3' and re.status='1')or(re.invoice_status='3' and re.status='2')or(re.invoice_status='3' and re.status='4')) and re.is_uploaded='0'  group by pur.reference_number ";
+        $dataQuery = "select re.category,re.claim_rate,re.claim_value, re.id,pur.billing_gstin_number as gstin_number,re.reference_number,pur.company_name,pur_it.taxable_subtotal,re.invoice_status,re.status,sum(pur_it.cgst_amount) as cgst_amount,sum(pur_it.sgst_amount) as sgst_amount,sum(pur_it.igst_amount) as igst_amount,sum(pur_it.cess_amount) as cess_amount,pur.invoice_total_value,re.invoice_date,re.invoice_status,re.status from ".$this->getTableName('client_reconcile_purchase_invoice1')." re inner join ".$this->getTableName('client_invoice')." pur on re.reference_number=pur.reference_number inner join ".$this->getTableName('client_invoice_item')." pur_it on pur.invoice_id=pur_it.invoice_id where  re.invoice_date like('%".$this->sanitize($_GET['returnmonth'])."%') and re.added_by='".$_SESSION['user_detail']['user_id']."' and ((re.invoice_status='0' and re.status='1')or(re.invoice_status='0' and re.status='2')or(re.invoice_status='0' and re.status='4')or(re.invoice_status='1' and re.status='1')or(re.invoice_status='1' and re.status='2')or(re.invoice_status='1' and re.status='3')or(re.invoice_status='1' and re.status='4')or(re.invoice_status='3' and re.status='1')or(re.invoice_status='3' and re.status='2')or(re.invoice_status='3' and re.status='4')) and re.is_uploaded='0'  group by pur.reference_number ";
         $dataSale = $this->get_results($dataQuery);
+
+       // print_r($this->sanitize($_GET['returnmonth']));
         $data = array_merge($dataPur,$dataSale);
 		if(!empty($data))
 		{
@@ -164,5 +167,33 @@ final class gstr2 extends validation {
 		}
 		$this->setSuccess("GSTR2 is Filed");
         return true;
+    }
+
+    public function submitITCClaim()
+    {
+    	$dataArr = $this->getITCClaimData();
+		if($this->updateMultiple($this->getTableName('client_reconcile_purchase_invoice1'), $dataArr))
+		{
+			$this->setSuccess('ITC Claim data is saved');
+			return true;
+		}
+		$this->setError('Failed to save try again.');
+		return false;
+    }
+
+    private function getITCClaimData()
+    {
+    	$dataArr = array();
+    	if(isset($_POST['sub']) && $_POST['sub']=="Save ITC Values")
+    	{
+			for($x=0;$x<count($_POST['category']);$x++)
+			{
+				$dataArr[$x]['set']['category']=isset($_POST['category'][$x]) ? $_POST['category'][$x] : '';
+				$dataArr[$x]['set']['claim_rate']=isset($_POST['claim_rate'][$x]) ? $_POST['claim_rate'][$x] : '';
+
+				$dataArr[$x]['where']['reference_number']=isset($_POST['id'][$x]) ? $_POST['id'][$x] : '';
+			}
+		}
+		return $dataArr;
     }
 }

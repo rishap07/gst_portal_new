@@ -117,7 +117,7 @@ final class notification extends validation {
 								 {
 								 }
 								
-								 $message .="<li>".$count.' '.$dataItem->notification_message. "</li>";
+								 $message .="<li><a href=''>".$count.' '.$dataItem->notification_message. "</a></li>";
 								  //$message = $message."<br>";
 								  $count = $count+1;
 							  }
@@ -128,7 +128,7 @@ final class notification extends validation {
 								 {
 								 }
 						
-							    $message .="<li>".$count.' '.$dataItem->notification_message. "</li>";
+							    $message .="<li><a href=''>".$count.' '.$dataItem->notification_message. "</a></li>";
 								  // $message= $message.$count.' '.$dataItem->notification_message;
 									//$message = $message."<br>";
 									 $count = $count+1;
