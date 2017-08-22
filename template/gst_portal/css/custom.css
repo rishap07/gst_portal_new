@@ -148,3 +148,6 @@ table.dataTable tbody tr.even {
     position: relative;
     z-index: 999999;
 }
+.bulk-upload-btn {
+	margin-right:10px;
+}
