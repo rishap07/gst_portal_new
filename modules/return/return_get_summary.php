@@ -24,9 +24,10 @@ $response = $obj_api->returnSummary($returnmonth);
   <div class="col-md-11 col-sm-12 col-xs-12 mobpadlr">
     <div class="col-md-12 col-sm-12 col-xs-12 heading">
         <div class="tab col-md-12 col-sm-12 col-xs-12">
-            <a href="<?php echo PROJECT_URL . '/?page=return_summary&returnmonth=' . $returnmonth ?>" >
-                View GSTR1 Summary
-            </a>
+            <a href="<?php echo PROJECT_URL . '/?page=return_get_summary&returnmonth=' . $returnmonth ?>" class="active">
+                GSTR1 SUMMARY
+            </a> 
+           
             <a href="<?php echo PROJECT_URL . '/?page=return_view_invoices&returnmonth=' . $returnmonth ?>">
                 View My Invoice
             </a>
@@ -37,9 +38,9 @@ $response = $obj_api->returnSummary($returnmonth);
             <a href="<?php echo PROJECT_URL . '/?page=return_filling_summary&returnmonth=' . $returnmonth ?>">
                 File GSTr-1
             </a>
-            <a href="<?php echo PROJECT_URL . '/?page=return_get_summary&returnmonth=' . $returnmonth ?>" class="active">
-                GSTR1 SUMMARY
-            </a>                
+            <a href="<?php echo PROJECT_URL . '/?page=return_summary&returnmonth=' . $returnmonth ?>" >
+                View GSTR1 Summary
+            </a>              
         </div>
         <div id="get_summary" class="tabcontent">
             <div class="col-md-12 col-sm-12 col-xs-12">
@@ -101,7 +102,7 @@ $response = $obj_api->returnSummary($returnmonth);
         var json = '<?php echo $response;?>';
         var returnmonth = '<?php echo $returnmonth;?>';
         $.ajax({
-            url: "<?php echo PROJECT_URL; ?>/?ajax=api_gstr1_json",
+            url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_json",
             type: "post",
            data: {json: json,returnmonth:returnmonth},
             success: function (response) {

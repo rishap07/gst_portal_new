@@ -5,6 +5,20 @@ $returnmonth = date('Y-m');
 if (isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
 }
+if(isset($_POST['sub']) && $_POST['sub']=="Save ITC Values")
+{
+	
+	if($obj_gstr2->submitITCClaim())
+	{
+		$obj_gstr2->redirect(PROJECT_URL."/?page=return_gstr2_claim_itc&returnmonth=".$returnmonth);
+		exit();
+	}
+	
+}
+$claim_data=$obj_gstr2->claimItc();
+/*echo "<pre>";
+print_r($claim_data);*/
+
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
@@ -46,56 +60,21 @@ if (isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
             </div>
 
             <div class="col-md-12 col-sm-12 col-xs-12 tablistnav padleft0">
-                <ul>
-                    <li><a href="<?php echo PROJECT_URL . '/?page=return_gstr2&returnmonth=' . $returnmonth ?>">View GSTR2 Summary</a></li>
-                    <li><a href="<?php echo PROJECT_URL . '/?page=return_purchase_all&returnmonth=' . $returnmonth ?>" > View My Data</a></li>
-                    <li><a href="<?php echo PROJECT_URL . '/?page=return_vendor_invoices&returnmonth=' . $returnmonth ?>">Download GSTR-2A</a></li>
-                    <li><a href="<?php echo PROJECT_URL . '/?page=return_gstr2_reconcile&returnmonth=' . $returnmonth ?>" class="active">GSTR-2 Reconcile</a></li>
-                    <li><a href="<?php echo PROJECT_URL . '/?page=return_gstr2_claim_itc&returnmonth=' . $returnmonth ?>" >Claim ITC</a></li>                   
-                    <li><a href="<?php echo PROJECT_URL . '/?page=return_gstr2_upload_invoices&returnmonth=' . $returnmonth ?>">Upload To GSTN</a></li>
-                    <li><a href="<?php echo PROJECT_URL . '/?page=return_gstr2_file&returnmonth=' . $returnmonth ?>">GSTR-2 Filing</a></li>
-
-
-                </ul>
+               <?php
+                              include(PROJECT_ROOT."/modules/return/include/tab.php");
+               ?>
             </div>
             <div class="clear"></div>
-            <?php
-$claim_data=$obj_gstr2->claimItc();
-
-if(isset($_POST['sub']) && $_POST['sub']=="Save ITC Values")
-{
-	
-	$dataArr = array();
-	for($x=0;$x<count($_POST['category']);$x++)
-	{
-		$dataArr[$x]['set']['category']=isset($_POST['category'][$x]) ? $_POST['category'][$x] : '';
-		$dataArr[$x]['set']['claim_rate']=isset($_POST['claim_rate'][$x]) ? $_POST['claim_rate'][$x] : '';
-		$dataArr[$x]['set']['claim_value']=isset($_POST['claim_value'][$x]) ? $_POST['claim_value'][$x] : '';
-		$dataArr[$x]['where']['reference_number']=isset($_POST['id'][$x]) ? $_POST['id'][$x] : '';
-
-	}
-	//$obj_gstr2->updateMultiple(tablaname,$dataArr);
-	print_r($dataArr);
-	if($obj_gstr2->updateMultiple($obj_gstr2->getTableName('client_reconcile_purchase_invoice1'), $dataArr))
-	{
-		echo "updated";
-	}
-	else
-	{
-		echo "not";
-	}
-	
-}
-
-
-?>
-
+           <?php $obj_gstr2->showErrorMessage(); ?>
+			<?php $obj_gstr2->showSuccessMessge(); ?>
+			<?php $obj_gstr2->unsetMessage(); ?>
+			 <div class="clear"></div>
 <form method="post" action="">
-<div  >
+<div >
 <table width="100%" border="0" cellspacing="0" cellpadding="4" class="table table-striped  tablecontent" >
             <thead>
                 <tr>
-                	<th><input type="checkbox" name="checkbox[]" value="" id="checkbox"></th>
+                	<th><input type="checkbox" value="" id="select_all"></th>
                     <th class="active">Date</th>
                     <th class="active">Invoice Id</th>
                     <th class="active">Vendor</th>
@@ -107,63 +86,139 @@ if(isset($_POST['sub']) && $_POST['sub']=="Save ITC Values")
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($claim_data as $data) {?>
+                <?php 
+                if(!empty($claim_data))
+                {
+                foreach ($claim_data as $data) {?>
  
 	   <tr>
-    <td><?php echo '<input type="checkbox" name="checkbox[]" value="" id="checkbox">';?></td>
+    <td><?php echo '<input type="checkbox" class="checkbox" name="checkbox[]" value='.$data->id.' id="checkbox">';?></td>
     <td><?php echo $data->invoice_date ?></td>
     <td><?php echo $data->reference_number ?></td>
     <td><?php echo $data->company_name ?></td>
     <td><?php echo $data->gstin_number ?></td>
     <td><?php echo $data->taxable_subtotal ?></td> 
      <td>
-     <select class="categorey_claim" name="category[]">
-      <option value='inp' id="categorey_claim" class="categorey_claim" data-id=<?php echo $data->id ?>>Input</option>
-      <option value="cg" id="categorey_claim" class="categorey_claim"  data-id=<?php echo $data->id ?>>Capital Good</option>
-      <option value="is" id="categorey_claim" class="categorey_claim"  data-id=<?php echo $data->id ?>>Input Services</option>
-      <option value="ine" id="categorey_claim" class="categorey_claim"  data-id=<?php echo $data->id ?>>Ineligble</option>
+     <select class="categorey_claim" name="category[]" >
+      <option value='inp' <?php if (!empty($data->category) && $data->category == 'inp')  echo 'selected = "selected"'; ?> id="categorey_claim"  data-id=<?php echo $data->id ?>>Input</option>
+      <option value="cg" <?php if (!empty($data->category) && $data->category == 'cg')  echo 'selected = "selected"'; ?> id="categorey_claim"   data-id=<?php echo $data->id ?>>Capital Good</option>
+      <option value="is" <?php if (!empty($data->category) && $data->category == 'is')  echo 'selected = "selected"'; ?> id="categorey_claim"   data-id=<?php echo $data->id ?>>Input Services</option>
+      <option value="ine" <?php if (!empty($data->category) && $data->category == 'ine')  echo 'selected = "selected"'; ?> id="categorey_claim" data-id=<?php echo $data->id ?>>Ineligble</option>
     </select>
      </td>
-    <td><input type="number" name="claim_rate[]" id="claim_rate" data-bind=<?php echo $data->taxable_subtotal ?> class="claim_rate" value="0.00" min="0" max="100" step="0.01"></td> 
-    <td><input name="claim_value[]" type="text" id="claim_value" class="claim_value" value="0.00"></td>
+    <td><input type="number" name="claim_rate[]" id="claim_rate" data-bind=<?php echo $data->taxable_subtotal ?> class="claim_rate" value=<?php echo $data->claim_rate ?> min="0" max="100" step="0.01"></td> 
+    <td><div name="claim_value[]" id="claim_value" class="claim_value"></div></td>
     <input type="hidden" name=id[] value=<?php echo $data->reference_number ?>>      
      </tr>
                <?php
+                }
                 }
                ?>
             </tbody>
         </table>
 </div>
-<input type="submit" name="sub" value="Save ITC Values" class="btn btn-default">
+
+<div id="txtPopup" style="display:none">
+<table width="100%" border="0" cellspacing="0" cellpadding="4" class="table table-striped  tablecontent" >
+
+            <tbody>
+                
+ 			<thead>
+                <tr>
+
+                    <th class="active">Category</td>
+                    <th class="active">Rate(%)</td>
+               
+                </tr>
+            </thead>
+	   <tr>
+
+     <td>
+     <select class="categorey_claim_all" name="category[]" >
+      <option value='inp' id="categorey_claim">Input</option>
+      <option value="cg"  class="categorey_claim"  data-id=<?php echo $data->id ?>>Capital Good</option>
+      <option value="is" id="categorey_claim"  data-id=<?php echo $data->id ?>>Input Services</option>
+      <option value="ine"  id="categorey_claim"   data-id=<?php echo $data->id ?>>Ineligble</option>
+    </select>
+     </td>
+    <td><input type="number" name="claim_rate[]" id="claim_rate_all" class="claim_rate_all"  min="0" max="100" step="0.01"></td> 
+     </tr>
+            </tbody>
+        </table>
+</div>
+<input type="submit" name="sub"  value="Save ITC Values" class="btn btn-primary">
 </form>
+
 
  <script>
 	$(document).ready(function () {
+		$('#select_all').change(function() {
+    var checkboxes = $(this).closest('form').find(':checkbox');
+    if($(this).is(':checked')) {
+    	 $("#txtPopup").show();
+        checkboxes.prop('checked', true);
+    } else {
+    	 $("#txtPopup").hide();
+        checkboxes.prop('checked', false);
+    }
+    
+
+});
+
+			$(".claim_rate").each(function() {
+				var taxval=$(this).val();
+					$(this).val(taxval);
+					var x = parseFloat($(this).val())*parseFloat($(this).attr('data-bind'))/100;
+					$(this).closest('tr').find('.claim_value').html(x);
+					
+			});
+
 		$('.categorey_claim').on('change', function () {
 			var Category=$('option:selected', this).val();
-     
-
-/*	$(this).closest('tr').find('.claim_value').val($('option:selected', this).attr('data-bind'));		 */
-			//$('#loading').show();
-/*			$.ajax({
-                data: {invoiceId:$(this).attr('data-id'),returnmonth:<?php echo $returnmonth ?>,status:$(this).attr('data-bind'),case:'additional'},
-                dataType: 'json',
-                type: 'post',
-                url: "<?php echo PROJECT_URL; ?>/?ajax=return_reconcile_purchase_invoice",
-                success: function(response){
-                $('#loading').hide();
-                }
-            });*/
-
+ 
 		});
 
+			$('.categorey_claim_all').on('change', function () {
+			var cat=$('option:selected', this).val();
+						$(".claim_rate").each(function() {
+				if($(this).closest('tr').find('.checkbox').is(':checked')) {
+						$(this).closest('tr').find('.categorey_claim').val(cat);
+				}
+ 
+		});
+			});
+          
+		$('.claim_rate_all').on('input', function () {
+			
+			var taxval=$(this).val();
+			$(".claim_rate").each(function() {
+				if($(this).closest('tr').find('.checkbox').is(':checked')) {
+					$(this).val(taxval);
+					var x = parseFloat($(this).val())*parseFloat($(this).attr('data-bind'))/100;
+					$(this).closest('tr').find('.claim_value').html(x);
+					
 
-		$('.claim_rate').on('focusout', function () {
+
+				}
+			});
+		/*	var Available=(taxval*claimRate)/100;
+			$(this).closest('tr').find('.claim_value').val(Available);*/
+			
+		});
+		
+		$('.claim_rate').on('input', function () {
 			var claimRate=$(this).closest('tr').find('.claim_rate').val();
 			$(this).closest('tr').find('.claim_rate').val();
 			var taxval=$(this).attr('data-bind');
 			var Available=(taxval*claimRate)/100;
-			$(this).closest('tr').find('.claim_value').val(Available);
+			$(this).closest('tr').find('.claim_value').html(Available);
 			});
 	});
+</script>
+<script>
+    $(document).ready(function () {
+        $('#returnmonth').on('change', function () {
+            window.location.href = "<?php echo PROJECT_URL; ?>/?page=return_gstr2_claim_itc&returnmonth=" + $(this).val();
+        });
+    });
 </script>

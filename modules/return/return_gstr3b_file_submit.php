@@ -422,7 +422,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_value_supplye" value="<?php echo $returndata[0]->integrated_tax_value_supplye; ?>"
+								 <input type="text" disabled maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="integrated_tax_value_supplye" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -435,7 +435,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_value_supplye" value="<?php echo $returndata[0]->central_tax_value_supplye; ?>"
+								 <input type="text" disabled maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_value_supplye" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -448,7 +448,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" name="state_tax_value_supplye" value="<?php echo $returndata[0]->state_tax_value_supplye; ?>"
+								 <input type="text" disabled name="state_tax_value_supplye" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -461,7 +461,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplye" value="<?php echo $returndata[0]->cess_tax_value_supplye; ?>"
+								 <input type="text" maxlength="15" disabled onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplye" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 								 

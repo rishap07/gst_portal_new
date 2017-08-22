@@ -39,9 +39,10 @@ else
     <div class="col-md-11 col-sm-12 col-xs-12 mobpadlr">
         <div class="col-md-12 col-sm-12 col-xs-12 heading">
             <div class="tab col-md-12 col-sm-12 col-xs-12">
-                <a href="<?php echo PROJECT_URL . '/?page=return_summary&returnmonth=' . $returnmonth ?>" class="active">
-                    View GSTR1 Summary
+                <a href="<?php echo PROJECT_URL . '/?page=return_get_summary&returnmonth=' . $returnmonth ?>">
+                    GSTR1 SUMMARY
                 </a>
+                
                 <a href="<?php echo PROJECT_URL . '/?page=return_view_invoices&returnmonth=' . $returnmonth ?>" >
                     View My Invoice
                 </a>
@@ -52,8 +53,8 @@ else
                 <a href="<?php echo PROJECT_URL . '/?page=return_filling_summary&returnmonth=' . $returnmonth ?>">
                     File GSTr-1
                 </a>
-                <a href="<?php echo PROJECT_URL . '/?page=return_get_summary&returnmonth=' . $returnmonth ?>">
-                    GSTR1 SUMMARY
+                <a href="<?php echo PROJECT_URL . '/?page=return_summary&returnmonth=' . $returnmonth ?>" class="active">
+                    View GSTR1 Summary
                 </a>
             </div>
             <div id="London" class="tabcontent">

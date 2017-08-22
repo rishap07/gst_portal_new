@@ -56,14 +56,9 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'Upload TO GSTN') {
                 </form>
             </div>
             <div class="col-md-12 col-sm-12 col-xs-12 tablistnav padleft0">
-                <ul>
-                    <li><a href="<?php echo PROJECT_URL . '/?page=return_gstr2&returnmonth=' . $returnmonth ?>"  >View GSTR2 Summary</a></li>
-                    <li><a href="<?php echo PROJECT_URL . '/?page=return_purchase_all&returnmonth=' . $returnmonth ?>" > View My Data</a></li>
-                    <li><a href="<?php echo PROJECT_URL . '/?page=return_vendor_invoices&returnmonth=' . $returnmonth ?>">Download GSTR-2A</a></li>
-                    <li><a href="<?php echo PROJECT_URL . '/?page=return_gstr2_reconcile&returnmonth=' . $returnmonth ?>">GSTR-2 Reconcile</a></li>
-                    <li><a href="<?php echo PROJECT_URL . '/?page=return_gstr2_upload_invoices&returnmonth=' . $returnmonth ?>" class="active">Upload To GSTN</a></li>                                
-                    <li><a href="<?php echo PROJECT_URL . '/?page=return_gstr2_file&returnmonth=' . $returnmonth ?>">GSTR-2 Filing</a></li>
-                </ul>
+<?php
+                              include(PROJECT_ROOT."/modules/return/include/tab.php");
+               ?>
             </div>
             <div class="clearfix"></div>
             <?php $obj_gstr2->showErrorMessage(); ?>
