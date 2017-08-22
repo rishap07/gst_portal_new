@@ -58,7 +58,8 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
 		$obj_client->setError("No item found.");
         $obj_client->redirect(PROJECT_URL."?page=client_item_list");
 	}
-	$dataArr = $obj_client->get_results("select cm.item_id,cm.item_name, cm.item_category, cm.unit_price, cm.item_description, cm.item_unit, cm.status, CONCAT(UCASE(LEFT(m.item_name,1)),LCASE(SUBSTRING(m.item_name,2))) as category_name, m.hsn_code, u.unit_name, u.unit_code from ".$obj_client->getTableName('client_master_item')." as cm, ".$obj_client->getTableName('item')." as m, ".$obj_client->getTableName('unit')." as u WHERE cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.is_deleted='0' and cm.item_id = '".$obj_client->sanitize($_GET['id'])."'");
+	
+	$dataArr = $obj_client->get_results("select cm.is_applicable, cm.item_id,cm.item_name, cm.item_category, cm.unit_price, cm.item_description, cm.item_unit, cm.status, CONCAT(UCASE(LEFT(m.item_name,1)),LCASE(SUBSTRING(m.item_name,2))) as category_name, m.hsn_code, u.unit_name, u.unit_code from ".$obj_client->getTableName('client_master_item')." as cm, ".$obj_client->getTableName('item')." as m, ".$obj_client->getTableName('unit')." as u WHERE cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.is_deleted='0' and cm.item_id = '".$obj_client->sanitize($_GET['id'])."'");
 }
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
@@ -77,12 +78,12 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
 				<div class="row">
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label for="exampleInputITEM">Item<span class="starred">*</span></label>
+						<label for="exampleInputITEM">Item <span class="starred">*</span></label>
 						<input type="text" placeholder="Item name" name='item_name' id="item_name" data-bind="content" class="required form-control" value='<?php if(isset($_POST['item_name'])){ echo $_POST['item_name']; } else if(isset($dataArr[0]->item_name)){ echo $dataArr[0]->item_name; } ?>' />
 					</div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label for="exampleInputHSN/SAC Category">HSN/SAC Category<span class="starred">*</span></label>
+						<label for="exampleInputHSN/SAC Category">HSN/SAC Category <span class="starred">*</span></label>
 						<input type="text" placeholder="Enter 3 character to search" name='item_category_name' id="item_category_name" value="<?php if(isset($dataArr[0]->category_name)){ echo $dataArr[0]->category_name; } ?>" data-bind="content" class="required form-control" />
 						<input type="hidden" name='item_category' id="item_category" value="<?php if(isset($dataArr[0]->item_category)){ echo $dataArr[0]->item_category; } ?>" class="required" />
 					</div>
@@ -93,14 +94,21 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
 						<div class="readonly-section" id="item_hsn_code"><?php if(isset($dataArr[0]->hsn_code)){ echo $dataArr[0]->hsn_code; } else { echo "HSN/SAC Code"; } ?></div>						
 					</div>
 					<div class="clear"></div>
-
+                     <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>Applicable Taxes <span class="starred">*</span></label>
+						<select name="is_applicable" class="required form-control">
+							<option value="0" <?php if(isset($_POST['is_applicable']) && $_POST['is_applicable']==='0'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->is_applicable) && $dataArr[0]->is_applicable==='0'){ echo 'selected="selected"'; } ?>>Applicable</option>
+							<option value="1" <?php if(isset($_POST['is_applicable']) && $_POST['is_applicable']==='1'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->is_applicable) && $dataArr[0]->is_applicable==='1'){ echo 'selected="selected"'; } ?>>Non-GST</option>
+							<option value="2" <?php if(isset($_POST['is_applicable']) && $_POST['is_applicable']==='2'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->is_applicable) && $dataArr[0]->is_applicable==='2'){ echo 'selected="selected"'; } ?>>Exempted</option>
+						</select>
+                    </div>
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Unit Price(Rs.)</label>
+						<label>Unit Price (Rs.)</label>
 						<input type="text" placeholder="Item Unit Price" name='unit_price' id="unit_price" class="requred itemUnitPrice form-control" data-bind="decimal" value='<?php if(isset($_POST['unit_price'])) { echo $_POST['unit_price']; } else if(isset($dataArr[0]->unit_price)){ echo $dataArr[0]->unit_price; } ?>'/>
 					</div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Item Unit<span class="starred">*</span></label>
+						<label>Item Unit <span class="starred">*</span></label>
 						<select name="item_unit" id="item_unit" class="required form-control" data-bind="numnzero">
 							<?php $dataUnitArrs = $obj_client->getUnit("unit_id,unit_name,unit_code,(case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "is_deleted='0' AND status='1'"); ?>
 							<?php if(!empty($dataUnitArrs)) { ?>
@@ -111,7 +119,7 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
 							<?php } ?>
 						</select>
 					</div>
-
+                       <div class="clear"></div>
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Status<span class="starred">*</span></label>
 						<select name="status" id="status" class="required form-control">
@@ -119,8 +127,7 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
 							<option value="0" <?php if(isset($_POST['status']) && $_POST['status'] === '0'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->status) && $dataArr[0]->status === '0') { echo 'selected="selected"'; } ?>>Inactive</option>
 						</select>
 					</div>
-					<div class="clear"></div>
-
+					
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label for="itemDescription">Description</label>
 						<textarea placeholder="Item Description" name='item_description' id="item_description" data-bind="content" class="form-control"><?php if(isset($_POST['item_description'])) { echo $_POST['item_description']; } else if(isset($dataArr[0]->item_description)){ echo $dataArr[0]->item_description; } ?></textarea>

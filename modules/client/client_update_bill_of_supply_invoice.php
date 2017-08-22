@@ -29,16 +29,7 @@
 													cii.item_unit_price, 
 													cii.subtotal, 
 													cii.discount, 
-													cii.advance_amount, 
 													cii.taxable_subtotal, 
-													cii.cgst_rate, 
-													cii.cgst_amount, 
-													cii.sgst_rate, 
-													cii.sgst_amount, 
-													cii.igst_rate, 
-													cii.igst_amount, 
-													cii.cess_rate, 
-													cii.cess_amount, 
 													cii.total 
 													from 
 												" . $obj_client->getTableName('client_invoice') ." as ci INNER JOIN " . $obj_client->getTableName('client_invoice_item') ." as cii ON ci.invoice_id = cii.invoice_id where ci.invoice_id = ".$invid." AND ci.invoice_type = 'billofsupplyinvoice' AND ci.added_by = '".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."' AND cii.added_by = '".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."' AND ci.is_deleted='0' AND cii.is_deleted='0'");
@@ -327,10 +318,10 @@
 							<th class="active">HSN/SAC Code<br/>(GST)</th>
 							<th class="active">Qty</th>
 							<th class="active">Unit</th>
-							<th class="active">Rate <br/><span style="font-family: open_sans; font-size:11px;">per item</span></th>
-							<th class="active">Total</th>
-							<th class="active">Discount</th>
-							<th class="active">Net Total<br/>value</th>
+							<th class="active">Rate (<i class="fa fa-inr"></i>)<br/><span style="font-family: open_sans; font-size:11px;">per item</span></th>
+							<th class="active">Total (<i class="fa fa-inr"></i>)</th>
+							<th class="active">Discount(%)</th>
+							<th class="active">Net Total<br/>value (<i class="fa fa-inr"></i>)</th>
 							<th class="active" style="border-bottom:1px solid #dddddd;"></th>
 						</tr>
 

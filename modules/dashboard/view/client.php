@@ -16,10 +16,11 @@ $dataInvs = $db_obj->get_results('select * from ' . $db_obj->getTableName('clien
 $dataTotalinvoices = $db_obj->get_results("select COUNT(invoice_id) as invoicecount,month(invoice_date) as month from " . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice'  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and invoice_type <> 'deliverychallaninvoice' and financial_year ='" . $year . "'
  GROUP by month(invoice_date) desc limit 0,5 ");
 /* code for total month sale */
-$sql="select count(invoice_id) as monthcount, sum(invoice_total_value) as totalsale,month(invoice_date) as month from " . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and (invoice_type <> 'deliverychallaninvoice' and invoice_type<>'creditnote' and invoice_type<>'refundvoucherinvoice') and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "'
+ $sql="select count(invoice_id) as monthcount, sum(invoice_total_value) as totalsale,month(invoice_date) as month from " . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and (invoice_type <> 'deliverychallaninvoice' and invoice_type<>'creditnote' and invoice_type<>'refundvoucherinvoice') and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "'
 
   GROUP by month(invoice_date) desc limit 0,5 ";
-$dataTotalMonthSales = $db_obj->get_results($sql); $sql="select count(invoice_id) as monthcount, sum(invoice_total_value) as totalsale,month(invoice_date) as month from " . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and (invoice_type='creditnote' or invoice_type='refundvoucherinvoice') and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "'
+$dataTotalMonthSales = $db_obj->get_results($sql);
+$sql="select count(invoice_id) as monthcount, sum(invoice_total_value) as totalsale,month(invoice_date) as month from " . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and (invoice_type='creditnote' or invoice_type='refundvoucherinvoice') and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "'
 
   GROUP by month(invoice_date) desc limit 0,5 ";
   $dataTotalMonthSales_cr_rv = $db_obj->get_results($sql);
@@ -49,15 +50,25 @@ $query="select COUNT(invoice_id) as invoicecount,month(invoice_date) as month fr
 
 $dataTotalinvoices = $db_obj->get_results($query);
 /* code for total month sale */
-$query="select count(invoice_id) as monthcount, sum(invoice_total_value) as totalsale,month(invoice_date) as month from " . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice'  and invoice_type <> 'deliverychallaninvoice' and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "'";
+$query="select count(invoice_id) as monthcount, sum(invoice_total_value) as totalsale,month(invoice_date) as month from " . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and (invoice_type <> 'deliverychallaninvoice' and invoice_type<>'creditnote' and invoice_type<>'refundvoucherinvoice') and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "'";
    if ($from_date != '') {
         $query.="and invoice_date >= '" . $from_date . " 00:00:00'";
     }
     if ($to_date != '') {
         $query.="and invoice_date <= '" . $to_date . " 23:59:59'";
     }
-	$query.="GROUP by month(invoice_date)";
+	$query.="GROUP by month(invoice_date) desc limit 0,5";
  $dataTotalMonthSales = $db_obj->get_results($query);
+$query="select count(invoice_id) as monthcount, sum(invoice_total_value) as totalsale,month(invoice_date) as month from " . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and (invoice_type='creditnote' or invoice_type='refundvoucherinvoice') and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "'";
+   if ($from_date != '') {
+        $query.="and invoice_date >= '" . $from_date . " 00:00:00'";
+    }
+    if ($to_date != '') {
+        $query.="and invoice_date <= '" . $to_date . " 23:59:59'";
+    }
+	
+  $query.="GROUP by month(invoice_date) desc limit 0,5";
+  $dataTotalMonthSales_cr_rv = $db_obj->get_results($query);
     /* code for current month totalsale */
   //  $dataTotalMonths = $db_obj->get_results('select COUNT(invoice_id) as numcount, sum(invoice_total_value) as sum from ' . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and invoice_type <> 'deliverychallaninvoice' and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0' and financial_year ='" . $year . "' and invoice_date between '" . $from_date . "' and '" . $to_date . "'");
     $query = 'select COUNT(invoice_id) as numcount, sum(invoice_total_value) as sum from ' . $db_obj->getTableName('client_invoice') . " WHERE invoice_nature='salesinvoice' and (invoice_type <> 'deliverychallaninvoice' and invoice_type<>'creditnote' and invoice_type<>'refundvoucherinvoice')  and added_by='" . $_SESSION["user_detail"]["user_id"] . "' and is_canceled='0' and is_deleted='0'";
@@ -147,13 +158,30 @@ $data_month_sale[0] = array("Month", "Total Sale");
 if (count($dataTotalMonthSales) > 0) {
     foreach ($dataTotalMonthSales as $dataTotalMonthSale) {
 
-        array_push($data_month_sale, array($start_year . "/" . $dataTotalMonthSale->month, round($dataTotalMonthSale->totalsale)));
+      //  array_push($data_month_sale, array($start_year . "/" . $dataTotalMonthSale->month, round($dataTotalMonthSale->totalsale)));
    }
  
 
 }
 
-//print_r($data);
+  for($i=0;$i < sizeof($dataTotalMonthSales); $i++) {
+	  if((!empty($dataTotalMonthSales[$i]->totalsale)) && (!empty($dataTotalMonthSales_cr_rv[$i]->totalsale)))
+	  {
+		$sale=0;
+		//var_dump($dataTotalMonthSales[$i]->totalsale);
+        $sale =round($dataTotalMonthSales[$i]->totalsale-$dataTotalMonthSales_cr_rv[$i]->totalsale);	
+      	   
+        array_push($data_month_sale, array($start_year . "/" . $dataTotalMonthSales[$i]->month,$sale ));                       
+	  }elseif(empty($dataTotalMonthSales_cr_rv))
+	  {
+		   array_push($data_month_sale, array($start_year . "/" . $dataTotalMonthSales[$i]->month,round($dataTotalMonthSales[$i]->totalsale)));   
+	  }else{
+		array_push($data_month_sale, array($start_year . "/" . $dataTotalMonthSales[$i]->month,round($dataTotalMonthSales[$i]->totalsale)));   
+
+	  }
+  }
+
+
 //$data[1] = array("2017/06",20);
 //$data[2] = array("2017/07",10);
 $data_month_sale = json_encode($data_month_sale);
@@ -193,24 +221,7 @@ $data_month_sale = json_encode($data_month_sale);
                 }
 				
                 ?>
-                <?php
-                /*
-                  $year_totalsale=0;
-
-                  if($dataTotalYears[0]->numcount >0)
-                  {
-                  foreach($dataTotalYears as $dataTotalYear)
-                  {
-                  $year_totalsale=$dataTotalYear->sum;
-                  }
-                  }
-
-                  else
-                  {
-                  $year_totalsale=0;
-                  }
-                 */
-                ?>
+               
                 <?php
                 /* current month total sale */
                 $currentmonth_total_sale=0;

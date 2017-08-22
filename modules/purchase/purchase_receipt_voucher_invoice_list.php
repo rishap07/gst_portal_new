@@ -411,6 +411,32 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 				});
 			}
 		});
+		
+		$(".formboxcontainer").on("click", ".revokeAll", function () {
+
+            var selectedCheckboxes = new Array();
+            $('.purchaseInvoice:checkbox:checked').each(function () {
+                selectedCheckboxes.push($(this).val());
+            });
+
+            if (selectedCheckboxes.length > 0) {
+
+                $.ajax({
+                    data: {purchaseInvoiceIds: selectedCheckboxes, action: "revokeSelectedPurchaseInvoice"},
+                    dataType: 'json',
+                    type: 'post',
+                    url: "<?php echo PROJECT_URL; ?>/?ajax=purchase_invoice_cancel",
+                    success: function (response) {
+
+                        if (response.status == "success") {
+                            window.location.reload();
+                        } else {
+                            jAlert(response.message);
+                        }
+                    }
+                });
+            }
+        });
 
 		$("#mainTable").on("click", ".purchaseInvoice", function(){
 

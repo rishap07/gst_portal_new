@@ -394,7 +394,7 @@ if(!empty($jstr1_array)) {
                             <td align="center">'.$iamt.'</td>
                             <td align="center">'.$rsn.'</td>
                             <td align="center">'.$ntty.'</td>
-                            <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn"><i class="fa fa-trash"></i></a></td>
+                            <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn"  idt = '.$idt.' inum = '.$inum.' nt_num = '.$nt_num.' nt_dt = '.$nt_dt.' type="CDNUR"><i class="fa fa-trash"></i></a></td>
                         </tr>';
                     }
                 }
@@ -572,13 +572,20 @@ echo $response;
                 var idt = $(this).attr('idt');
                 arrValues = [ctin,inum,idt];
             }
-             if(type == 'CDNR') {
+            if(type == 'CDNR') {
                 var ctin = $(this).attr('ctin');
                 var inum = $(this).attr('inum');
                 var idt = $(this).attr('idt');
                 var nt_num = $(this).attr('nt_num');
                 var nt_dt = $(this).attr('nt_dt');
                 arrValues = [ctin,inum,idt,nt_num,nt_dt];
+            }
+            if(type == 'CDNUR') {
+                var inum = $(this).attr('inum');
+                var idt = $(this).attr('idt');
+                var nt_num = $(this).attr('nt_num');
+                var nt_dt = $(this).attr('nt_dt');
+                arrValues = [inum,idt,nt_num,nt_dt];
             }
             if(type == 'AT') {
                 var sply_ty = $(this).attr('sply_ty');
@@ -603,7 +610,7 @@ echo $response;
     function delete_item_invoice(type,returnmonth,arrValues) {
         if(type!= '' && arrValues != '') {
             $.ajax({
-                url: "<?php echo PROJECT_URL; ?>/?ajax=api_gstr1_delete_item_invoice",
+                url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_delete_item_invoice",
                 type: "post",
                 data: {type:type,returnmonth:returnmonth,arrValues: arrValues},
                 success: function (response) {

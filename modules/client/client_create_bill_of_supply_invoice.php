@@ -247,10 +247,10 @@
 							<th class="active">HSN/SAC Code<br/>(GST)</th>
 							<th class="active">Qty</th>
 							<th class="active">Unit</th>
-							<th class="active">Rate <br/><span style="font-family: open_sans; font-size:11px;">per item</span></th>
-							<th class="active">Total</th>
-							<th class="active">Discount</th>
-							<th class="active">Net Total<br/>value</th>
+							<th class="active">Rate (<i class="fa fa-inr"></i>)<br/><span style="font-family: open_sans; font-size:11px;">per item</span></th>
+							<th class="active">Total (<i class="fa fa-inr"></i>)</th>
+							<th class="active">Discount(%)</th>
+							<th class="active">Net Total<br/>value (<i class="fa fa-inr"></i>)</th>
 							<th class="active" style="border-bottom:1px solid #dddddd;"></th>
 						</tr>
 

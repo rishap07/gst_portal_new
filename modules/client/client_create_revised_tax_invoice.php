@@ -299,10 +299,10 @@
 							<th rowspan="2" class="active">HSN/SAC Code<br/>(GST)</th>
 							<th rowspan="2" class="active">Qty</th>
 							<th rowspan="2" class="active">Unit</th>
-							<th rowspan="2" class="active">Rate <br/><span style="font-family: open_sans; font-size:11px;">per item</span></th>
-							<th rowspan="2" class="active">Total</th>
+							<th rowspan="2" class="active">Rate (<i class="fa fa-inr"></i>)<br/><span style="font-family: open_sans; font-size:11px;">per item</span></th>
+							<th rowspan="2" class="active">Total (<i class="fa fa-inr"></i>)</th>
 							<th rowspan="2" class="active">Discount<br/>(%)</th>
-							<th rowspan="2" class="active">Taxable<br/>value</th>
+							<th rowspan="2" class="active">Taxable<br/>value (<i class="fa fa-inr"></i>)</th>
 							<th colspan="2" class="active" style="border-bottom:1px solid #dddddd;">CGST</th>
 							<th colspan="2" class="active" style="border-bottom:1px solid #dddddd;">SGST/UTGST</th>
 							<th colspan="2" class="active" style="border-bottom:1px solid #dddddd;">IGST</th>
@@ -312,13 +312,13 @@
 
 						<tr>
 							<th class="active">Rate(%)</th>
-							<th class="active">Amount</th>
+							<th class="active">Amount (<i class="fa fa-inr"></i>)</th>
 							<th class="active">Rate(%)</th>
-							<th class="active">Amount</th>
+							<th class="active">Amount (<i class="fa fa-inr"></i>)</th>
 							<th class="active">Rate(%)</th>
-							<th class="active">Amount</th>
+							<th class="active">Amount (<i class="fa fa-inr"></i>)</th>
 							<th class="active">Rate(%)</th>
-							<th class="active">Amount</th>
+							<th class="active">Amount (<i class="fa fa-inr"></i>)</th>
 							<th class="active"></th>
 						</tr>
 

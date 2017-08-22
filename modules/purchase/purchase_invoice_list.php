@@ -1,6 +1,13 @@
 <?php
 $obj_purchase = new purchase();
 
+if(!$obj_purchase->can_read('client_invoice')) {
+
+	$obj_purchase->setError($obj_purchase->getValMsg('can_read'));
+	$obj_purchase->redirect(PROJECT_URL."/?page=dashboard");
+	exit();
+}
+
 if( isset($_GET['action']) && $_GET['action'] == 'downloadPurchaseInvoice' && isset($_GET['id']) && $obj_purchase->validateId($_GET['id'])) {
 
 	$htmlResponse = $obj_purchase->generatePurchaseInvoiceHtml($_GET['id']);
@@ -100,7 +107,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
 	<div class="col-md-12 col-sm-12 col-xs-12">
 
-		<div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>View Purchase View Invoice</h1></div>
+		<div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Purchase Invoice</h1></div>
 		<div class="formboxcontainer padleft0 mobinvoicecol" style="padding-top:0px;">
 
 			<?php $obj_purchase->showErrorMessage(); ?>
@@ -111,12 +118,13 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 
 				<!--INVOICE LEFT TABLE START HERE-->
 				<div class="fixed-left-col col-sm-12 col-xs-12" style="padding-right:0px; padding-left:0px;">
-				
+
 					<div class="invoiceheaderfixed">
 						<div class="col-md-8">
-							<a href='javascript:void(0)' class="btn btn-warning pull-left checkAll">Check All</a>
-							<a href='javascript:void(0)' class="btn btn-danger pull-left cancelAll"><i class="fa fa-times" aria-hidden="true"></i> Cancel</a>
-						</div>
+                            <a href='javascript:void(0)' class="btn btn-warning pull-left checkAll">Check All</a>
+                            <a href='javascript:void(0)' class="btn btn-danger pull-left cancelAll" data-toggle="tooltip" title="Cancel All"><i class="fa fa-times" aria-hidden="true"></i></a>
+							<a href='javascript:void(0)' class="btn btn-success pull-left revokeAll" data-toggle="tooltip" title="Revoke All"><i class="fa fa-undo" aria-hidden="true"></i></a>
+                        </div>
 
 						<div class="col-md-4">
 							<a href='<?php echo PROJECT_URL;?>/?page=purchase_invoice_create' class="btn btn-success pull-right"><i class="fa fa-plus" aria-hidden="true"></i> New</a>
@@ -349,7 +357,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                                                     <td rowspan="2">Rate<br>(<i class="fa fa-inr"></i>)</td>
                                                     <td rowspan="2">Total<br>(<i class="fa fa-inr"></i>)</td>
                                                     <td rowspan="2">Discount(%)</td>
-                                                    <td rowspan="2" class="advancecol" <?php if ($invoiceData[0]->advance_adjustment == 1) { echo 'style="display:table-cell;"'; } ?>>Advance</td>
+                                                    <td rowspan="2" class="advancecol" <?php if ($invoiceData[0]->advance_adjustment == 1) { echo 'style="display:table-cell;"'; } ?>>Advance<br>(<i class="fa fa-inr"></i>)</td>
                                                     <td rowspan="2">Taxable Value<br>(<i class="fa fa-inr"></i>)</td>
                                                     <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">CGST</td>
                                                     <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">SGST</td>
@@ -419,7 +427,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 													   Total Invoice Value (In Words): <?php echo ucwords($invoice_total_value_words); ?>
 													</td>
 												</tr>
-												
+
 												<?php if ($invoiceData[0]->supply_type === "reversecharge") { ?>
 
 													<?php if($invoiceData[0]->supplier_billing_state === $invoiceData[0]->supply_place) { ?>
@@ -437,7 +445,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 														</tr>
 
 													<?php } else { ?>
-													
+
 														<tr class="lightgreen">
 															<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="10"'; } else { echo 'colspan="9"'; } ?> align="right" class="fontbold textsmall">Amount of Tax Subject to Reverse Charge</td>
 															<td>-</td>
@@ -493,12 +501,12 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 		});
 
 		$(".formboxcontainer").on("click", ".cancelAll", function(){
-			
+
 			var selectedCheckboxes = new Array();
 			$('.purchaseInvoice:checkbox:checked').each(function () {
 				selectedCheckboxes.push($(this).val());
 			});
-			
+
 			if(selectedCheckboxes.length > 0) {
 
 				$.ajax({
@@ -517,6 +525,32 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 				});
 			}
 		});
+
+		$(".formboxcontainer").on("click", ".revokeAll", function () {
+
+            var selectedCheckboxes = new Array();
+            $('.purchaseInvoice:checkbox:checked').each(function () {
+                selectedCheckboxes.push($(this).val());
+            });
+
+            if (selectedCheckboxes.length > 0) {
+
+                $.ajax({
+                    data: {purchaseInvoiceIds: selectedCheckboxes, action: "revokeSelectedPurchaseInvoice"},
+                    dataType: 'json',
+                    type: 'post',
+                    url: "<?php echo PROJECT_URL; ?>/?ajax=purchase_invoice_cancel",
+                    success: function (response) {
+
+                        if (response.status == "success") {
+                            window.location.reload();
+                        } else {
+                            jAlert(response.message);
+                        }
+                    }
+                });
+            }
+        });
 
 		$("#mainTable").on("click", ".purchaseInvoice", function(){
 

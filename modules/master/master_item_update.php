@@ -77,9 +77,9 @@ if(isset($_GET['id'])){
                            
                             <label>Applicable Taxes<span class="starred">*</span></label>
                             <select name="applicable" class="required form-control">
-                                <option value="0" <?php if(isset($_POST['item_type']) && $_POST['item_type']==='0'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->item_type) && $dataArr[0]->item_type==='0'){ echo 'selected="selected"'; } ?>>Applicable</option>
-                                <option value="1" <?php if(isset($_POST['item_type']) && $_POST['item_type']==='1'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->item_type) && $dataArr[0]->item_type==='1'){ echo 'selected="selected"'; } ?>>Non-GST</option>
-                                <option value="2" <?php if(isset($_POST['item_type']) && $_POST['item_type']==='2'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->item_type) && $dataArr[0]->item_type==='2'){ echo 'selected="selected"'; } ?>>Exempted</option>
+                                <option value="0" <?php if(isset($_POST['applicable']) && $_POST['applicable']==='0'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->applicable) && $dataArr[0]->applicable==='0'){ echo 'selected="selected"'; } ?>>Applicable</option>
+                                <option value="1" <?php if(isset($_POST['applicable']) && $_POST['applicable']==='1'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->applicable) && $dataArr[0]->applicable==='1'){ echo 'selected="selected"'; } ?>>Non-GST</option>
+                                <option value="2" <?php if(isset($_POST['applicable']) && $_POST['applicable']==='2'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->applicable) && $dataArr[0]->applicable==='2'){ echo 'selected="selected"'; } ?>>Exempted</option>
                             </select>
                         </div>
 						 <div class="col-md-4 col-sm-4 col-xs-12 form-group">

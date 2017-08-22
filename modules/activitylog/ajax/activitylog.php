@@ -15,7 +15,7 @@ extract($_POST);
 
 //Columns to fetch from database
 $aColumns = array('u.username','u.first_name','u.user_group', 'g.module_name', 'g.msg','g.ip','g.dateoflog','g.userid');
-$aSearchColumns = array('g.userid', 'u.first_name','u.username','g.module_name');
+$aSearchColumns = array('u.first_name','u.username','g.module_name');
 $sIndexColumn = "g.id";
  // $sql="select * from " . $db_obj->getTableName('notification') . " as n INNER join " . $db_obj->getTableName('user_notification') . " as u on u.notification_id=n.notification_id  where n.status='1' and  u.user_id='".$_SESSION["user_detail"]["user_id"]."' order by u.notification_id desc";
 $spTable='';				
@@ -32,10 +32,14 @@ if(!empty($dataCurrentArr))
 {
 	foreach($dataCurrentArr as $user)
 	{
-		$userid = $userid.$user->user_id.',';
+		$id= "'".$user->user_id."'";
+		$userid = $userid.$id.",";
 	}
-	   $userid  = substr($userid,0,-1);
-	   $spTable = "".$db_obj->getTableName('admin_log')." as g inner join ".$db_obj->getTableName('user')." as u on g.userid=u.user_id  where is_deleted='0' and (u.user_group='4' OR u.user_group='3')  OR g.userid='".$_SESSION["user_detail"]["user_id"]."' and g.userid in('".$userid."')";
+	   $id="'".$_SESSION["user_detail"]["user_id"]."'";
+	   $userid = $userid.$id.",";
+	   $userid  = substr($userid,0,-2);
+	    $userid  = ltrim($userid,"'");
+	   $spTable = "".$db_obj->getTableName('admin_log')." as g inner join ".$db_obj->getTableName('user')." as u on g.userid=u.user_id  where is_deleted='0' and (user_group='3' or user_group='4') AND   g.userid in('".$userid."')";
 
 }	
 else
@@ -50,7 +54,7 @@ $spTable = "".$db_obj->getTableName('admin_log')." as g inner join ".$db_obj->ge
 }
 if($_SESSION["user_detail"]["user_group"]==1)
 {
- $spTable = "".$db_obj->getTableName('admin_log')." as g inner join ".$db_obj->getTableName('user')." as u on g.userid=u.user_id  where u.added_by='".$_SESSION["user_detail"]["user_id"]."' or is_deleted='0' and (u.user_group='4' OR u.user_group='3' or user_group='2' or user_group='1') OR g.userid='".$_SESSION["user_detail"]["user_id"]."'";
+ $spTable = "".$db_obj->getTableName('admin_log')." as g inner join ".$db_obj->getTableName('user')." as u on g.userid=u.user_id  where u.added_by='".$_SESSION["user_detail"]["user_id"]."' or is_deleted='0' and (u.user_group='4' OR u.user_group='3' or user_group='2' or user_group='1')";
 }
 
 /*

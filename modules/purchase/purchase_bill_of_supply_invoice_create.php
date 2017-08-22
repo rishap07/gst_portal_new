@@ -1,44 +1,44 @@
 <?php
-    $obj_client = new client();
+    $obj_purchase = new purchase();
 
-	if(!$obj_client->can_read('client_invoice')) {
+	if(!$obj_purchase->can_read('client_invoice')) {
 
-		$obj_client->setError($obj_client->getValMsg('can_read'));
-		$obj_client->redirect(PROJECT_URL."/?page=dashboard");
+		$obj_purchase->setError($obj_purchase->getValMsg('can_read'));
+		$obj_purchase->redirect(PROJECT_URL."/?page=dashboard");
 		exit();
 	}
 
-	if(!$obj_client->can_create('client_invoice')) {
+	if(!$obj_purchase->can_create('client_invoice')) {
 		
-		$obj_client->setError($obj_client->getValMsg('can_create'));
-		$obj_client->redirect(PROJECT_URL."/?page=client_bill_of_supply_invoice_list");
+		$obj_purchase->setError($obj_purchase->getValMsg('can_create'));
+		$obj_purchase->redirect(PROJECT_URL."/?page=purchase_bill_of_supply_invoice_list");
 		exit();
 	}
 
-    $dataCurrentUserArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
-    $billInvoiceNumber = $obj_client->generateBillInvoiceNumber( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
+    $dataCurrentUserArr = $obj_purchase->getUserDetailsById( $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) );
+    $billPurchaseInvoiceNumber = $obj_purchase->generatePurchaseBillInvoiceNumber( $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) );
 ?>
 <!--========================admincontainer start=========================-->
 <form name="create-invoice" id="create-invoice" method="POST">
 	<div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
 		<div class="col-md-12 col-sm-12 col-xs-12">
 
-			<div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Bill of Supply</h1></div>
+			<div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Purchase Bill of Supply</h1></div>
 
 			<div class="clear"></div>
 
 			<div class="whitebg formboxcontainer">
 
 				 <div class="errorValidationContainer">
-					<?php $obj_client->showErrorMessage(); ?>
-					<?php $obj_client->showSuccessMessge(); ?>
-					<?php $obj_client->unsetMessage(); ?>
+					<?php $obj_purchase->showErrorMessage(); ?>
+					<?php $obj_purchase->showSuccessMessge(); ?>
+					<?php $obj_purchase->unsetMessage(); ?>
 				</div>
-
-				 <div class="row">
+				
+				<div class="row">
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Invoice Serial Number <span class="starred">*</span></label>
-						<input type="text" placeholder="Invoice Serial Number" readonly="true" class="form-control required" value="<?php echo $billInvoiceNumber; ?>" name="invoice_serial_number" id="invoice_serial_number" />
+						<input type="text" placeholder="Invoice Serial Number" readonly="true" class="form-control required" value="<?php echo $billPurchaseInvoiceNumber; ?>" name="invoice_serial_number" id="invoice_serial_number" />
 					</div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
@@ -48,30 +48,30 @@
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Reference Number <span class="starred">*</span></label>
-						<input type="text" placeholder="Invoice Reference Number" class="required form-control" data-bind="content" value="<?php echo $billInvoiceNumber; ?>" name="invoice_reference_number" id="invoice_reference_number" />
+						<input type="text" placeholder="Invoice Reference Number" class="required form-control" data-bind="content" value="<?php echo $billPurchaseInvoiceNumber; ?>" name="invoice_reference_number" id="invoice_reference_number" />
 					</div>
-				 </div>
+				</div>
 
 				 <div class="row">
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Supplier Name <span class="starred">*</span></label>
-						<input type="text" placeholder="Cyfuture India Pvt. Ltd" data-bind="content" readonly="true" class="form-control required" name="company_name" id="company_name" value="<?php if(isset($dataCurrentUserArr['data']->kyc->name)) { echo $dataCurrentUserArr['data']->kyc->name; } ?>" />
+						<label>Recipient Name <span class="starred">*</span></label>
+						<input type="text" placeholder="Cyfuture India Pvt. Ltd" data-vendor-type="<?php if(isset($dataCurrentUserArr['data']->kyc->vendor_type)) { echo $dataCurrentUserArr['data']->kyc->vendor_type; } ?>" data-bind="content" readonly="true" class="form-control required" name="company_name" id="company_name" value="<?php if(isset($dataCurrentUserArr['data']->kyc->name)) { echo $dataCurrentUserArr['data']->kyc->name; } ?>" />
 					</div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Supplier Address <span class="starred">*</span></label>
+						<label>Recipient Address <span class="starred">*</span></label>					
 						<textarea placeholder="IT Park Rd, Sitapura Industrial Area, Sitapura" data-bind="content" readonly="true" class="form-control required" name="company_address" id="company_address"><?php if(isset($dataCurrentUserArr['data']->kyc->full_address)) { echo $dataCurrentUserArr['data']->kyc->full_address; } ?></textarea>
 					</div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Supplier State <span class="starred">*</span></label>
-						<input type="text" placeholder="Compant State" data-bind="content" readonly="true" class="form-control required" name="company_state" id="company_state" value="<?php if(isset($dataCurrentUserArr['data']->kyc->state_name)) { echo $dataCurrentUserArr['data']->kyc->state_name; } ?>" />
+						<label>Recipient State <span class="starred">*</span></label>
+						<input type="text" placeholder="Compant State" data-state-id="<?php if(isset($dataCurrentUserArr['data']->kyc->state_id)) { echo $dataCurrentUserArr['data']->kyc->state_id; } ?>" data-state-code="<?php if(isset($dataCurrentUserArr['data']->kyc->state_code)) { echo $dataCurrentUserArr['data']->kyc->state_code; } ?>" data-country-id="<?php if(isset($dataCurrentUserArr['data']->kyc->country_id)) { echo $dataCurrentUserArr['data']->kyc->country_id; } ?>" data-country-code="<?php if(isset($dataCurrentUserArr['data']->kyc->country_code)) { echo $dataCurrentUserArr['data']->kyc->country_code; } ?>" data-bind="content" readonly="true" class="form-control required" name="company_state" id="company_state" value="<?php if(isset($dataCurrentUserArr['data']->kyc->state_name)) { echo $dataCurrentUserArr['data']->kyc->state_name; } ?>" />
 					</div>
-				 </div>
+				</div>
 
 				 <div class="row">
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Supplier GSTIN <span class="starred">*</span></label>
+						<label>Recipient GSTIN <span class="starred">*</span></label>
 						<input type="text" placeholder="BYRAJ14N3KKT" name="company_gstin_number" data-bind="gstin" readonly="true" class="form-control required" id="company_gstin_number" value="<?php if(isset($dataCurrentUserArr['data']->kyc->gstin_number)) { echo $dataCurrentUserArr['data']->kyc->gstin_number; } ?>" />
 					</div>
 				 </div>
@@ -80,28 +80,28 @@
 
 					<div class="col-md-6">
 						<div class="greyborder inovicedeatil">
-							<div class="formtitle">Recipient Detail</div>
+							<div class="formtitle">Supplier Detail</div>
 
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Contact Name</label> <span class="starred">*</span></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Contact Name" data-bind="content" class="required form-control" name="billing_name" id="billing_name" /></div>
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Contact Name" data-bind="content" class="required form-control" name="supplier_billing_name" id="supplier_billing_name" /></div>
 							</div>
-							
+
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Business Name</label></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Business Name" data-bind="content" class="form-control" name="billing_company_name" id="billing_company_name" /></div>
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Business Name" data-bind="content" class="form-control" name="supplier_billing_company_name" id="supplier_billing_company_name" /></div>
 							</div>
 
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Address</label> <span class="starred">*</span></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><textarea placeholder="Address" data-bind="content" class="form-control required" name="billing_address" id="billing_address"></textarea></div>
+								<div class="col-md-8 col-sm-3 col-xs-12"><textarea placeholder="Address" data-bind="content" class="form-control required" name="supplier_billing_address" id="supplier_billing_address"></textarea></div>
 							</div>
 
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>State</label> <span class="starred">*</span></div>
 								<div class="col-md-8 col-sm-3 col-xs-12">
-									<select name='billing_state' id='billing_state' class='required form-control'>
-										<?php $dataBStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+									<select name='supplier_billing_state' id='supplier_billing_state' class='required form-control'>
+										<?php $dataBStateArrs = $obj_purchase->get_results("select * from ".$obj_purchase->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 										<?php if(!empty($dataBStateArrs)) { ?>
 											<option value=''>Select State</option>
 											<?php foreach($dataBStateArrs as $dataBStateArr) { ?>
@@ -109,15 +109,15 @@
 											<?php } ?>
 										<?php } ?>
 									</select>
-									<input type="hidden" name='billing_state_code' id='billing_state_code' />
+									<input type="hidden" name='supplier_billing_state_code' id='supplier_billing_state_code' />
 								</div>
 							</div>
-							
+
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Country</label> <span class="starred">*</span></div>
 								<div class="col-md-8 col-sm-3 col-xs-12">
-									<select name='billing_country' id='billing_country' class='required form-control'>
-										<?php $dataBCountryArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('country')." order by country_name asc"); ?>
+									<select name='supplier_billing_country' id='supplier_billing_country' class='required form-control'>
+										<?php $dataBCountryArrs = $obj_purchase->get_results("select * from ".$obj_purchase->getTableName('country')." where status='1' and is_deleted='0' order by country_name asc"); ?>
 										<?php if(!empty($dataBCountryArrs)) { ?>
 											<option value=''>Select Country</option>
 											<?php foreach($dataBCountryArrs as $dataBCountryArr) { ?>
@@ -125,15 +125,15 @@
 											<?php } ?>
 										<?php } ?>
 									</select>
-									<input type="hidden" name='billing_country_code' id='billing_country_code' />
+									<input type="hidden" name='supplier_billing_country_code' id='supplier_billing_country_code' />
 								</div>
 							</div>
 
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Vendor Type</label> <span class="starred">*</span></div>
 								<div class="col-md-8 col-sm-3 col-xs-12">
-									<select name='billing_vendor_type' id='billing_vendor_type' class='required form-control'>
-										<?php $dataVendorBArrs = $obj_client->get_results("select * from " . $obj_client->getTableName('vendor_type') . " where status='1' and is_deleted='0' order by vendor_name asc"); ?>
+									<select name='supplier_billing_vendor_type' id='supplier_billing_vendor_type' class='required form-control'>
+										<?php $dataVendorBArrs = $obj_purchase->get_results("select * from " . $obj_purchase->getTableName('vendor_type') . " where status='1' and is_deleted='0' order by vendor_name asc"); ?>
 										<?php if (!empty($dataVendorBArrs)) { ?>
 											<option value=''>Select Vendor Type</option>
 											<?php foreach ($dataVendorBArrs as $dataVendorBArr) { ?>
@@ -146,36 +146,35 @@
 
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>GSTIN/UIN</label></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="GSTIN/UIN" name='billing_gstin_number' class="form-control" data-bind="gstin" id='billing_gstin_number' /></div>
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="GSTIN/UIN" name='supplier_billing_gstin_number' class="form-control" data-bind="gstin" id='supplier_billing_gstin_number' /></div>
 							</div>
-
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="greyborder inovicedeatil">
-							<div class="formtitle">Address Of Delivery / Shipping Detail <small class="pull-right">Same as billing <input name="same_as_billing" id="same_as_billing" value="1" type="checkbox"></small></div>
+							<div class="formtitle">Address Of Recipient / Shipping Detail <small class="pull-right">Same as billing <input name="same_as_billing" id="same_as_billing" value="1" type="checkbox"></small></div>
 
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Contact Name</label> <span class="starred">*</span></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Contact Name" data-bind="content" class="required form-control" name="shipping_name" id="shipping_name" /></div>
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Contact Name" data-bind="content" class="required form-control" name="recipient_shipping_name" id="recipient_shipping_name" /></div>
 							</div>
 							
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Business Name</label></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Business Name" data-bind="content" class="form-control" name="shipping_company_name" id="shipping_company_name" /></div>
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Business Name" data-bind="content" class="form-control" name="recipient_shipping_company_name" id="recipient_shipping_company_name" /></div>
 							</div>
 
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Address</label> <span class="starred">*</span></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><textarea placeholder="Address" data-bind="content" class="required form-control" name="shipping_address" id="shipping_address"></textarea></div>
+								<div class="col-md-8 col-sm-3 col-xs-12"><textarea placeholder="Address" data-bind="content" class="required form-control" name="recipient_shipping_address" id="recipient_shipping_address"></textarea></div>
 							</div>
 
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>State</label> <span class="starred">*</span></div>
 								<div class="col-md-8 col-sm-3 col-xs-12">
-									<select name='shipping_state' id='shipping_state' class='required form-control'>
-										<?php $dataSStateArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+									<select name='recipient_shipping_state' id='recipient_shipping_state' class='required form-control'>
+										<?php $dataSStateArrs = $obj_purchase->get_results("select * from ".$obj_purchase->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 										<?php if(!empty($dataSStateArrs)) { ?>
 											<option value=''>Select State</option>
 											<?php foreach($dataSStateArrs as $dataSStateArr) { ?>
@@ -183,15 +182,15 @@
 											<?php } ?>
 										<?php } ?>
 									</select>
-									<input type="hidden" name='shipping_state_code' id='shipping_state_code' />
+									<input type="hidden" name='recipient_shipping_state_code' id='recipient_shipping_state_code' />
 								</div>
 							</div>
-							
+
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Country</label> <span class="starred">*</span></div>
 								<div class="col-md-8 col-sm-3 col-xs-12">
-									<select name='shipping_country' id='shipping_country' class='required form-control'>
-										<?php $dataSCountryArrs = $obj_client->get_results("select * from ".$obj_client->getTableName('country')." order by country_name asc"); ?>
+									<select name='recipient_shipping_country' id='recipient_shipping_country' class='required form-control'>
+										<?php $dataSCountryArrs = $obj_purchase->get_results("select * from ".$obj_purchase->getTableName('country')." where status='1' and is_deleted='0' order by country_name asc"); ?>
 										<?php if(!empty($dataSCountryArrs)) { ?>
 											<option value=''>Select Country</option>
 											<?php foreach($dataSCountryArrs as $dataSCountryArr) { ?>
@@ -199,15 +198,15 @@
 											<?php } ?>
 										<?php } ?>
 									</select>
-									<input type="hidden" name='shipping_country_code' id='shipping_country_code' />
+									<input type="hidden" name='recipient_shipping_country_code' id='recipient_shipping_country_code' />
 								</div>
 							</div>
 
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Vendor Type</label> <span class="starred">*</span></div>
 								<div class="col-md-8 col-sm-3 col-xs-12">
-									<select name='shipping_vendor_type' id='shipping_vendor_type' class='required form-control'>
-										<?php $dataVendorSArrs = $obj_client->get_results("select * from " . $obj_client->getTableName('vendor_type') . " where status='1' and is_deleted='0' order by vendor_name asc"); ?>
+									<select name='recipient_shipping_vendor_type' id='recipient_shipping_vendor_type' class='required form-control'>
+										<?php $dataVendorSArrs = $obj_purchase->get_results("select * from " . $obj_purchase->getTableName('vendor_type') . " where status='1' and is_deleted='0' order by vendor_name asc"); ?>
 										<?php if (!empty($dataVendorSArrs)) { ?>
 											<option value=''>Select Vendor Type</option>
 											<?php foreach ($dataVendorSArrs as $dataVendorSArr) { ?>
@@ -220,9 +219,8 @@
 
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>GSTIN</label></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="GSTIN" class="form-control" name='shipping_gstin_number' data-bind="gstin" id='shipping_gstin_number' /></div>
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="GSTIN" class="form-control" name='recipient_shipping_gstin_number' data-bind="gstin" id='recipient_shipping_gstin_number' /></div>
 							</div>
-
 						</div>
 					</div>
 
@@ -247,10 +245,10 @@
 							<th class="active">HSN/SAC Code<br/>(GST)</th>
 							<th class="active">Qty</th>
 							<th class="active">Unit</th>
-							<th class="active">Rate <br/><span style="font-family: open_sans; font-size:11px;">per item</span></th>
-							<th class="active">Total</th>
+							<th class="active">Rate (<i class="fa fa-inr"></i>)<br/><span style="font-family: open_sans; font-size:11px;">per item</span></th>
+							<th class="active">Total (<i class="fa fa-inr"></i>)</th>
 							<th class="active">Discount</th>
-							<th class="active">Net Total<br/>value</th>
+							<th class="active">Net Total<br/>value (<i class="fa fa-inr"></i>)</th>
 							<th class="active" style="border-bottom:1px solid #dddddd;"></th>
 						</tr>
 
@@ -270,7 +268,7 @@
 							</td>
 							<td>
 								<select name="invoice_unit[]" id="invoice_tr_1_unit" class="required inptxt" style="width:100px;">
-									<?php $masterUnitArrs = $obj_client->getMasterUnits("unit_id,unit_name,unit_code,(case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "is_deleted='0' AND status='1'"); ?>
+									<?php $masterUnitArrs = $obj_purchase->getMasterUnits("unit_id,unit_name,unit_code,(case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "is_deleted='0' AND status='1'"); ?>
 									<?php if(!empty($masterUnitArrs)) { ?>
 										<option value=''>Select Unit</option>
 										<?php foreach($masterUnitArrs as $masterUnitArr) { ?>
@@ -393,7 +391,7 @@
 							<div class='form-group'>
 								<label for="item_unit">Unit <span class="starred">*</span></label>
 								<select name="item_unit" id="item_unit" class="required form-control" data-bind="numnzero">
-									<?php $dataUnitArrs = $obj_client->getMasterUnits("unit_id,unit_name,unit_code,(case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "is_deleted='0' AND status='1'"); ?>
+									<?php $dataUnitArrs = $obj_purchase->getMasterUnits("unit_id,unit_name,unit_code,(case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "is_deleted='0' AND status='1'"); ?>
 									<?php if(!empty($dataUnitArrs)) { ?>
 										<option value=''>Select Unit</option>
 										<?php foreach($dataUnitArrs as $dataUnit) { ?>
@@ -457,13 +455,12 @@
 </div>
 
 <script type="text/javascript">
-
     $(document).ready(function () {
 
 		/* Get HSN/SAC Code */
         $( "#item_category_name" ).autocomplete({
             minLength: 3,
-            source: "<?php echo PROJECT_URL; ?>/?ajax=client_hsnsac_code",
+            source: "<?php echo PROJECT_URL; ?>/?ajax=purchase_hsnsac_code",
             select: function( event, ui ) {
 				$("#item_category").val(ui.item.item_id);
 				$("#item_hsn_code").val(ui.item.hsn_code);
@@ -495,7 +492,7 @@
         });
 		/* end of validate add item form */
 
-        /* submit add new item form */
+		/* submit add new item form */
         $("#add-item-form").submit(function(event){
 
             event.preventDefault();
@@ -504,7 +501,7 @@
                 data: {itemData:$("#add-item-form").serialize(), action:"addItem"},
                 dataType: 'json',
                 type: 'post',
-                url: "<?php echo PROJECT_URL; ?>/?ajax=client_add_item",
+                url: "<?php echo PROJECT_URL; ?>/?ajax=purchase_add_item",
                 success: function(response){
 
                     if(response.status == "success") {
@@ -529,205 +526,173 @@
 			maxDate: '0'
         });
 
-		/* select2 js for billing state */
-        $("#billing_state").select2();
+				/* select2 js for billing state */
+        $("#supplier_billing_state").select2();
 		
 		/* select2 js for billing country */
-        $("#billing_country").select2();
+        $("#supplier_billing_country").select2();
 		
 		/* select2 js for billing vendor type */
-        $("#billing_vendor_type").select2();
+        $("#supplier_billing_vendor_type").select2();
 
-        /* select2 js for shipping state */
-        $("#shipping_state").select2();
+		/* select2 js for shipping state */
+        $("#recipient_shipping_state").select2();
 		
 		/* select2 js for shipping country */
-        $("#shipping_country").select2();
+        $("#recipient_shipping_country").select2();
 
 		/* select2 js for shipping vendor type */
-        $("#shipping_vendor_type").select2();
+        $("#recipient_shipping_vendor_type").select2();
 
-		/* Get Billing Receivers */
-        $( "#billing_name" ).autocomplete({
+		/* Get Billing Supplier */
+        $( "#supplier_billing_name" ).autocomplete({
             minLength: 1,
-            source: "<?php echo PROJECT_URL; ?>/?ajax=client_get_receiver",
+            source: "<?php echo PROJECT_URL; ?>/?ajax=purchase_get_supplier",
             select: function( event, ui ) {
 
-				$("#billing_company_name").val(ui.item.company_name);
-				$("#billing_address").val(ui.item.address);
-				$("#billing_state").val(ui.item.state_id);
-				$("#billing_state_code").val(ui.item.state_code);
-				$("#billing_country").val(ui.item.country_id);
-				$("#billing_country_code").val(ui.item.country_code);
-				$("#billing_vendor_type").val(ui.item.vendor_type);
-				$("#billing_gstin_number").val(ui.item.gstid);
-				$("#billing_state").select2();
-				$("#billing_country").select2();
-				$("#billing_vendor_type").select2();
+				$("#supplier_billing_company_name").val(ui.item.company_name);
+                $("#supplier_billing_address").val(ui.item.address);
+                $("#supplier_billing_state").val(ui.item.state_id);
+                $("#supplier_billing_state_code").val(ui.item.state_code);
+				$("#supplier_billing_country").val(ui.item.country_id);
+                $("#supplier_billing_country_code").val(ui.item.country_code);
+                $("#supplier_billing_vendor_type").val(ui.item.vendor_type);
+				$("#supplier_billing_gstin_number").val(ui.item.gstid);
+                $("#supplier_billing_state").select2();
+				$("#supplier_billing_country").select2();
+				$("#supplier_billing_vendor_type").select2();
 
 				/* calculate row invoice and invoice total on state change */
                 rowInvoiceCalculationOnStateChnage();
             }
         });
-        /* End of Get Billing Receivers */
+        /* End of Get Billing Supplier */
 
-		/* Get Billing Receivers By Business Name */
-        $( "#billing_company_name" ).autocomplete({
+		/* Get Billing Supplier By Business Name */
+        $( "#supplier_billing_company_name" ).autocomplete({
             minLength: 1,
-            source: "<?php echo PROJECT_URL; ?>/?ajax=client_get_receiver_by_business_name",
+            source: "<?php echo PROJECT_URL; ?>/?ajax=purchase_get_supplier_by_business_name",
             select: function( event, ui ) {
 
-				$("#billing_name").val(ui.item.name);
-                $("#billing_address").val(ui.item.address);
-                $("#billing_state").val(ui.item.state_id);
-                $("#billing_state_code").val(ui.item.state_code);
-				$("#billing_country").val(ui.item.country_id);
-				$("#billing_country_code").val(ui.item.country_code);
-				$("#billing_vendor_type").val(ui.item.vendor_type);
-				$("#billing_gstin_number").val(ui.item.gstid);
-				$("#billing_state").select2();
-				$("#billing_country").select2();
-				$("#billing_vendor_type").select2();
+				$("#supplier_billing_name").val(ui.item.name);
+                $("#supplier_billing_address").val(ui.item.address);
+                $("#supplier_billing_state").val(ui.item.state_id);
+                $("#supplier_billing_state_code").val(ui.item.state_code);
+				$("#supplier_billing_country").val(ui.item.country_id);
+                $("#supplier_billing_country_code").val(ui.item.country_code);
+                $("#supplier_billing_vendor_type").val(ui.item.vendor_type);
+				$("#supplier_billing_gstin_number").val(ui.item.gstid);
+				$("#supplier_billing_state").select2();
+				$("#supplier_billing_country").select2();
+				$("#supplier_billing_vendor_type").select2();
 
 				/* calculate row invoice and invoice total on state change */
                 rowInvoiceCalculationOnStateChnage();
             }
         });
-        /* End of Get Billing Receivers By Business Name */
+        /* End of Get Billing Supplier By Business Name */
 
-		/* Get Shipping Receivers */
-        $( "#shipping_name" ).autocomplete({
-            minLength: 1,
-            source: "<?php echo PROJECT_URL; ?>/?ajax=client_get_receiver",
-            select: function( event, ui ) {
-
-				$("#shipping_company_name").val(ui.item.company_name);
-                $("#shipping_address").val(ui.item.address);
-                $("#shipping_state").val(ui.item.state_id);
-                $("#shipping_state_code").val(ui.item.state_code);
-				$("#shipping_country").val(ui.item.country_id);
-				$("#shipping_country_code").val(ui.item.country_code);
-				$("#shipping_vendor_type").val(ui.item.vendor_type);
-				$("#shipping_gstin_number").val(ui.item.gstid);
-				$("#shipping_state").select2();
-				$("#shipping_country").select2();
-				$("#shipping_vendor_type").select2();
-
-                /* calculate row invoice and invoice total on state change */
-                rowInvoiceCalculationOnStateChnage();
-            }
-        });
-        /* End of Get Shipping Receivers */
-
-		/* Get Shipping Receivers By Business Name */
-        $( "#shipping_company_name" ).autocomplete({
-            minLength: 1,
-            source: "<?php echo PROJECT_URL; ?>/?ajax=client_get_receiver_by_business_name",
-            select: function( event, ui ) {
-
-				$("#shipping_name").val(ui.item.name);
-                $("#shipping_address").val(ui.item.address);
-                $("#shipping_state").val(ui.item.state_id);
-                $("#shipping_state_code").val(ui.item.state_code);
-				$("#shipping_country").val(ui.item.country_id);
-				$("#shipping_country_code").val(ui.item.country_code);
-				$("#shipping_vendor_type").val(ui.item.vendor_type);
-				$("#shipping_gstin_number").val(ui.item.gstid);
-				$("#shipping_state").select2();
-				$("#shipping_country").select2();
-				$("#shipping_vendor_type").select2();
-
-                /* calculate row invoice and invoice total on state change */
-                rowInvoiceCalculationOnStateChnage();
-            }
-        });
-        /* End of Get Shipping Receivers By Business Name */
-
-		/* If shipping address is same as billing address */
+        /* recipient shipping address is same as recipient address */
         $("#same_as_billing").change(function(){
 
             if($(this).is(":checked")) {
 
-                $("#shipping_name").val($("#billing_name").val());
-				$("#shipping_company_name").val($("#billing_company_name").val());
-                $("#shipping_address").val($("#billing_address").val());
-                $("#shipping_state").val($("#billing_state").val());
-                $("#shipping_state_code").val($("#billing_state_code").val());
-				$("#shipping_country").val($("#billing_country").val());
-				$("#shipping_country_code").val($("#billing_country_code").val());
-				$("#shipping_vendor_type").val($("#billing_vendor_type").val());
-				$("#shipping_gstin_number").val($("#billing_gstin_number").val());
+                $("#recipient_shipping_name").val($("#company_name").val());
+				$("#recipient_shipping_company_name").val($("#company_name").val());
+                $("#recipient_shipping_address").val($("#company_address").val());
+				$("#recipient_shipping_state").val($("#company_state").attr("data-state-id"));
+                $("#recipient_shipping_state_code").val($("#company_state").attr("data-state-code"));
+				$("#recipient_shipping_country").val($("#company_state").attr("data-country-id"));
+                $("#recipient_shipping_country_code").val($("#company_state").attr("data-country-code"));
+				$("#recipient_shipping_vendor_type").val($("#company_name").attr("data-vendor-type"));
+                $("#recipient_shipping_gstin_number").val($("#company_gstin_number").val());
 
-                $("#shipping_name").prop("readonly", true);
-				$("#shipping_company_name").prop("readonly", true);
-                $("#shipping_address").prop("readonly", true);
-                $('#shipping_state').attr('disabled', true);
-				$('#shipping_country').attr('disabled', true);
-				$('#shipping_vendor_type').attr('disabled', true);
-                $("#shipping_gstin_number").prop("readonly", true);
-				$("#shipping_state").select2();
-				$("#shipping_country").select2();
-				$("#shipping_vendor_type").select2();
+                $("#recipient_shipping_name").prop("readonly", true);
+				$("#recipient_shipping_company_name").prop("readonly", true);
+                $("#recipient_shipping_address").prop("readonly", true);
+                $('#recipient_shipping_state').attr('disabled', true);
+				$('#recipient_shipping_country').attr('disabled', true);
+				$('#recipient_shipping_vendor_type').attr('disabled', true);
+                $("#recipient_shipping_gstin_number").prop("readonly", true);
 
+                $("#recipient_shipping_state").select2();
+				$("#recipient_shipping_country").select2();
+				$("#recipient_shipping_vendor_type").select2();
+
+				if($("#place_of_supply").val() == '') {
+					$("#place_of_supply").val($("#company_state").attr("data-state-id"));
+					$("#place_of_supply").select2();
+				}
             } else {
 
-                $("#shipping_name").prop("readonly", false);
-				$("#shipping_company_name").prop("readonly", false);
-                $("#shipping_address").prop("readonly", false);
-                $('#shipping_state').attr('disabled', false);
-				$('#shipping_country').attr('disabled', false);
-				$('#shipping_vendor_type').attr('disabled', false);
-                $("#shipping_gstin_number").prop("readonly", false);
-				$("#shipping_state").select2();
-				$("#shipping_country").select2();
-				$("#shipping_vendor_type").select2();
+                $("#recipient_shipping_name").prop("readonly", false);
+				$("#recipient_shipping_company_name").prop("readonly", false);
+                $("#recipient_shipping_address").prop("readonly", false);
+                $('#recipient_shipping_state').attr('disabled', false);
+				$('#recipient_shipping_country').attr('disabled', false);
+				$('#recipient_shipping_vendor_type').attr('disabled', false);
+                $("#recipient_shipping_gstin_number").prop("readonly", false);
+				
+				$("#recipient_shipping_state").select2();
+				$("#recipient_shipping_country").select2();
+				$("#recipient_shipping_vendor_type").select2();
             }
 
             /* calculate row invoice and invoice total on state change */
             rowInvoiceCalculationOnStateChnage();
         });
-        /* If shipping address is same as billing address */
+        /* end of recipient shipping address is same as recipient address */
 
-		/* Billing state code */
-        $("#billing_state").change(function () {
+		/* supplier billing state code */
+        $("#supplier_billing_state").change(function () {
 
-            var statecode = $(this).find(':selected').attr("data-code");
-			var stateid = $(this).find(':selected').val();
-            if(typeof(statecode) === "undefined") {
-                $("#billing_state_code").val("");
-            } else {
-                $("#billing_state_code").val(statecode);
-            }
+			var statecode = $(this).find(':selected').attr("data-code");
+			if(typeof(statecode) === "undefined") {
+				$("#supplier_billing_state_code").val("");
+			} else {
+				$("#supplier_billing_state_code").val(statecode);
+			}
+			
+			/* calculate row invoice and invoice total on receiver state change */
+            rowInvoiceCalculationOnStateChnage();
         });
 
-		/* on chnage billing country */
-		$("#billing_country").on("change", function(){
+		/* on chnage supplier billing country */
+		$("#supplier_billing_country").on("change", function(){
 
-			$("#billing_country_code").val($("#billing_country option:selected").attr("data-code"));
+			$("#supplier_billing_country_code").val($("#supplier_billing_country option:selected").attr("data-code"));
 
-			if($("#billing_country option:selected").attr("data-code") != "IN") {
-				$("#billing_state").val($("#billing_state option[data-code=OI]").val());
-				$("#billing_state_code").val("OI");
-				$("#billing_state").select2();
+			if($("#supplier_billing_country option:selected").attr("data-code") != "IN") {
+				$("#supplier_billing_state").val($("#supplier_billing_state option[data-code=OI]").val());
+				$("#supplier_billing_state_code").val("OI");
+				$("#supplier_billing_state").select2();
 			} else {
-				$("#billing_state").val('');
-				$("#billing_state_code").val('');
-				$("#billing_state").select2();
+				$("#supplier_billing_state").val('');
+				$("#supplier_billing_state_code").val('');
+				$("#supplier_billing_state").select2();
 			}
+			
+			/* calculate row invoice and invoice total on receiver state change */
+            rowInvoiceCalculationOnStateChnage();
 		});
-		/* end of on chnage billing country */
+		/* end of on chnage supplier billing country */
 
-        /* on chnage shipping state */
-        $("#create-invoice").on("change", "#shipping_state", function(){
+		/* on chnage shipping state */
+        $("#create-invoice").on("change", "#recipient_shipping_state", function(){
 
             /* update state code */
             var statecode = $(this).find(':selected').attr("data-code");
 			var stateid = $(this).find(':selected').val();
             if(typeof(statecode) === "undefined") {
-				$("#shipping_state_code").val("");
+				$("#recipient_shipping_state_code").val("");
             } else {
 
-				$("#shipping_state_code").val(statecode);
+				$("#recipient_shipping_state_code").val(statecode);
+
+				if($("#place_of_supply").val() == '') {
+					$("#place_of_supply").val(stateid);
+					$("#place_of_supply").select2();
+				}
             }
             /* end of update state code */
 
@@ -736,22 +701,22 @@
         });
         /* end of on chnage shipping state */
 
-		/* on chnage shipping country */
-		$("#shipping_country").on("change", function(){
+		/* on chnage recipient shipping country */
+		$("#recipient_shipping_country").on("change", function(){
 
-			$("#shipping_country_code").val($("#shipping_country option:selected").attr("data-code"));
+			$("#recipient_shipping_country_code").val($("#recipient_shipping_country option:selected").attr("data-code"));
 
-			if($("#shipping_country option:selected").attr("data-code") != "IN") {
-				$("#shipping_state").val($("#shipping_state option[data-code=OI]").val());
-				$("#shipping_state_code").val("OI");
-				$("#shipping_state").select2();
+			if($("#recipient_shipping_country option:selected").attr("data-code") != "IN") {
+				$("#recipient_shipping_state").val($("#recipient_shipping_state option[data-code=OI]").val());
+				$("#recipient_shipping_state_code").val("OI");
+				$("#recipient_shipping_state").select2();
 			} else {
-				$("#shipping_state").val('');
-				$("#shipping_state_code").val('');
-				$("#shipping_state").select2();
+				$("#recipient_shipping_state").val('');
+				$("#recipient_shipping_state_code").val('');
+				$("#recipient_shipping_state").select2();
 			}
 		});
-		/* end of on chnage shipping country */
+		/* end of on chnage recipient shipping country */
 
         /* on quantity chnage of item */
         $(".invoicetable").on("input", ".invoiceQuantity", function(){
@@ -779,7 +744,7 @@
             rowInvoiceCalculation(currentTrItemId, rowid);
         });
         /* end of on discount chnage of item */
-
+		
 		/* validate invoice discount allow only numbers or decimals */
         $(".invoicetable").on("keypress input paste", ".invoiceDiscount", function (event) {
 			return validateInvoiceDiscount(event, this);
@@ -799,20 +764,19 @@
 
             $( "#invoice_tr_"+rowid+"_itemname" ).autocomplete({
                 minLength: 1,
-                source: "<?php echo PROJECT_URL; ?>/?ajax=client_get_item",
+                source: "<?php echo PROJECT_URL; ?>/?ajax=purchase_get_item",
                 select: function( event, ui ) {
 
                     /* add selectable choice  */
                     $("#invoice_td_"+rowid+"_itemname").html('<p id="name_selection_'+rowid+'_choice" class="name_selection_choice" title="'+ui.item.value+'"><span id="name_selection_'+rowid+'_choice_remove" data-selectable-id="'+rowid+'" class="name_selection_choice_remove" role="presentation">×</span>'+ui.item.value+'</p>');
-
-                    $("#invoice_tr_"+rowid+"_itemid").val(ui.item.item_id);
-                    $("#invoice_tr_"+rowid+"_hsncode").val(ui.item.hsn_code);
-                    $("#invoice_tr_"+rowid+"_quantity").val(1);
-                    $("#invoice_tr_"+rowid+"_unit").val(ui.item.unit_code);
-                    $("#invoice_tr_"+rowid+"_rate").val(ui.item.unit_price);
-                    $("#invoice_tr_"+rowid+"_total").val(ui.item.unit_price);
-                    $("#invoice_tr_"+rowid+"_discount").val(0);
-                    $("#invoice_tr_"+rowid+"_taxablevalue").val(ui.item.unit_price);
+					$("#invoice_tr_"+rowid+"_itemid").val(ui.item.item_id);
+					$("#invoice_tr_"+rowid+"_hsncode").val(ui.item.hsn_code);
+					$("#invoice_tr_"+rowid+"_quantity").val(1);
+					$("#invoice_tr_"+rowid+"_unit").val(ui.item.unit_code);
+					$("#invoice_tr_"+rowid+"_rate").val(ui.item.unit_price);
+					$("#invoice_tr_"+rowid+"_total").val(ui.item.unit_price);
+					$("#invoice_tr_"+rowid+"_discount").val(0);
+					$("#invoice_tr_"+rowid+"_taxablevalue").val(ui.item.unit_price);
 
                     /* current row invoice calculation */
                     rowInvoiceCalculation(ui.item.item_id, rowid);
@@ -837,7 +801,6 @@
             $("#invoice_tr_"+parentTrId+"_rate").val("");
             $("#invoice_tr_"+parentTrId+"_total").val("");
             $("#invoice_tr_"+parentTrId+"_discount").val(0);
-			$("#invoice_tr_"+parentTrId+"_advancevalue").val(0);
             $("#invoice_tr_"+parentTrId+"_taxablevalue").val("");
 
             /* call function of total invoice */
@@ -861,7 +824,7 @@
 
 				newtr += '<td>';
 					newtr += '<select name="invoice_unit[]" id="invoice_tr_'+nexttrid+'_unit" class="required inptxt" style="width:100px;">';
-						<?php $unitArrs = $obj_client->getMasterUnits("unit_id,unit_name,unit_code,(case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "is_deleted='0' AND status='1'"); ?>
+						<?php $unitArrs = $obj_purchase->getMasterUnits("unit_id,unit_name,unit_code,(case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "is_deleted='0' AND status='1'"); ?>
 						<?php if(!empty($unitArrs)) { ?>
 							newtr += '<option value="">Select Unit</option>';
 							<?php foreach($unitArrs as $unitArr) { ?>
@@ -940,10 +903,10 @@
 
 				$("#loading").show();
 				$.ajax({
-					data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewBillInvoice"},
+					data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewPurchaseBillInvoice"},
 					dataType: 'json',
 					type: 'post',
-					url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_bill_of_supply_invoice",
+					url: "<?php echo PROJECT_URL; ?>/?ajax=purchase_bill_of_supply_invoice_save",
 					success: function(response){
 
 						$("#loading").hide();
@@ -956,7 +919,7 @@
 							
 							$(".errorValidationContainer").html("");
 							$(".errorValidationContainer").hide();
-							window.location.href = '<?php echo PROJECT_URL; ?>/?page=client_create_bill_of_supply_invoice';
+							window.location.href = '<?php echo PROJECT_URL; ?>/?page=purchase_bill_of_supply_invoice_create';
 						}
 					}
 				});
@@ -977,10 +940,10 @@
 
 			$("#loading").show();
 			$.ajax({
-                data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewBillInvoice"},
+                data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewPurchaseBillInvoice"},
                 dataType: 'json',
                 type: 'post',
-                url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_bill_of_supply_invoice",
+                url: "<?php echo PROJECT_URL; ?>/?ajax=purchase_bill_of_supply_invoice_save",
                 success: function(response){
 
 					$("#loading").hide();
@@ -993,7 +956,7 @@
 
                         $(".errorValidationContainer").html("");
                         $(".errorValidationContainer").hide();
-                        window.location.href = '<?php echo PROJECT_URL; ?>/?page=client_bill_of_supply_invoice_list';
+                        window.location.href = '<?php echo PROJECT_URL; ?>/?page=purchase_bill_of_supply_invoice_list';
                     }
                 }
             });
@@ -1083,13 +1046,13 @@
                 data: {totalInvoiceValue:totalFinalInvoiceValue, action:"numberToWords"},
                 dataType: 'json',
                 type: 'post',
-                url: "<?php echo PROJECT_URL; ?>/?ajax=client_convert_number_to_words",
+                url: "<?php echo PROJECT_URL; ?>/?ajax=purchase_convert_number_to_words",
                 success: function(response){
 
                     if(response.status == "success") {
                         $( ".totalamountwords .totalpricewords" ).text(response.invoicevalue);
                     } else {
-                        $( ".totalamountwords .totalpricewords" ).text("<?php echo $obj_client->getValMsg('failed'); ?>");
+                        $( ".totalamountwords .totalpricewords" ).text("<?php echo $obj_purchase->getValMsg('failed'); ?>");
                     }
                 }
             });

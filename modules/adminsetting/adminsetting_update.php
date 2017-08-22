@@ -80,23 +80,19 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
                         }
                         ?></textarea>
 						
-                        <script>
- CKEDITOR.replace( 'tollfree_setting' );
-</script>
+                        
                     </div>
 					  <div class="col-md-6 col-sm-6 col-xs-12 form-group">
 
                         <label>LiveChat<span class="starred">*</span></label>
-                         <textarea name="text" placeholder="TollFree Setting text"   name="livechat_setting" id="livechat_setting" class="required form-control"><?php
+                         <textarea  placeholder="LiveChat Setting text"   name="livechat_setting" id="livechat_setting" class="required form-control"><?php
                         if (isset($_POST['livechat_setting'])) {
                             echo $_POST['livechat_setting'];
                         } else if (isset($dataCurrentArr[0]->livechat_setting)) {
                             echo $dataCurrentArr[0]->livechat_setting;
                         }
                         ?></textarea>
-						 <script>
- CKEDITOR.replace( 'livechat_setting' );
-</script>
+						
  
                         
                     </div>

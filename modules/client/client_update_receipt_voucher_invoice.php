@@ -24,12 +24,6 @@
 													cii.item_id, 
 													cii.item_name, 
 													cii.item_hsncode, 
-													cii.item_quantity, 
-													cii.item_unit, 
-													cii.item_unit_price, 
-													cii.subtotal, 
-													cii.discount, 
-													cii.advance_amount, 
 													cii.taxable_subtotal, 
 													cii.cgst_rate, 
 													cii.cgst_amount, 
@@ -360,7 +354,7 @@
 							<th rowspan="2" class="active">S.No</th>
 							<th rowspan="2" class="active">Description<br/> of Goods/Services</th>
 							<th rowspan="2" class="active">HSN/SAC Code<br/>(GST)</th>
-							<th rowspan="2" class="active">Advance<br/>value</th>
+							<th rowspan="2" class="active">Advance<br/>value (<i class="fa fa-inr"></i>)</th>
 							<th colspan="2" class="active" style="border-bottom:1px solid #dddddd;">CGST</th>
 							<th colspan="2" class="active" style="border-bottom:1px solid #dddddd;">SGST/UTGST</th>
 							<th colspan="2" class="active" style="border-bottom:1px solid #dddddd;">IGST</th>
@@ -370,13 +364,13 @@
 
 						<tr>
 							<th class="active">Rate(%)</th>
-							<th class="active">Amount</th>
+							<th class="active">Amount (<i class="fa fa-inr"></i>)</th>
 							<th class="active">Rate(%)</th>
-							<th class="active">Amount</th>
+							<th class="active">Amount (<i class="fa fa-inr"></i>)</th>
 							<th class="active">Rate(%)</th>
-							<th class="active">Amount</th>
+							<th class="active">Amount (<i class="fa fa-inr"></i>)</th>
 							<th class="active">Rate(%)</th>
-							<th class="active">Amount</th>
+							<th class="active">Amount (<i class="fa fa-inr"></i>)</th>
 							<th class="active"></th>
 						</tr>
 

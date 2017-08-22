@@ -42,7 +42,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
     }
 }
 ?>
-
+<script src="http://cdn.ckeditor.com/4.5.5/standard/ckeditor.js"></script>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
@@ -83,19 +83,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
 
 
                     </div>
-                    <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-
-                        <label>Message<span class="starred">*</span></label>
-                         <textarea placeholder="Enter notification message" maxlength="255"  name="notification_message" id="notification_message" class="required form-control"><?php
-                        if (isset($_POST['notification_message'])) {
-                            echo $_POST['notification_message'];
-                        } else if (isset($dataCurrentArr[0]->notification_message)) {
-                            echo $dataCurrentArr[0]->notification_message;
-                        }
-                        ?></textarea>
-						
-                        
-                    </div>
+                   
                     <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                         <label>Vendor Type<span class="starred">*</span></label>
                         <select name='vendor_type' id='vendor_type' class='required form-control'>
@@ -119,7 +107,24 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
     <?php } ?>
 <?php } ?>
                         </select>
-                    </div> <div class="clear"></div>
+                    </div> <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                        <label>Status<span class="starred">*</span></label>
+                        <select name='notification_status' id='notification_status' class='required form-control'>
+
+                            <option value='1' <?php
+                            if (isset($dataCurrentArr[0]->status) && $dataCurrentArr[0]->status == 1) {
+                                echo "selected='selected'";
+                            }
+                            ?>>Active</option>
+                            <option value='0' <?php
+                            if (isset($dataCurrentArr[0]->status) && $dataCurrentArr[0]->status == 0) {
+                                echo "selected='selected'";
+                            }
+                            ?>>InActive</option>
+
+                        </select></div><div class="clear"> </div>
+                   
+                    <div class="clear"></div>
 
 
                     <div class="col-md-4 col-sm-4 col-xs-12 form-group">
@@ -146,25 +151,21 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
 ?>" class="required form-control" 
                                />
                     </div> 
-					 <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-                        <label>Status<span class="starred">*</span></label>
-                        <select name='notification_status' id='notification_status' class='required form-control'>
+					
+                    <div class="clear"></div>
+					 <div class="col-md-12 col-sm-12 col-xs-12 form-group">
 
-                            <option value='1' <?php
-                            if (isset($dataCurrentArr[0]->status) && $dataCurrentArr[0]->status == 1) {
-                                echo "selected='selected'";
-                            }
-                            ?>>Active</option>
-                            <option value='0' <?php
-                            if (isset($dataCurrentArr[0]->status) && $dataCurrentArr[0]->status == 0) {
-                                echo "selected='selected'";
-                            }
-                            ?>>InActive</option>
-
-                        </select></div><div class="clear"> </div>
-                   
-                   
-                  
+                        <label>Message<span class="starred">*</span></label>
+                         <textarea placeholder="Enter notification message" maxlength="255"  name="notification_message" id="notification_message" class="required form-control"><?php
+                        if (isset($_POST['notification_message'])) {
+                            echo $_POST['notification_message'];
+                        } else if (isset($dataCurrentArr[0]->notification_message)) {
+                            echo $dataCurrentArr[0]->notification_message;
+                        }
+                        ?></textarea>
+						
+                      
+                    </div>  <div class="clear"></div>
                  <div class="adminformbxsubmit" style="width:100%;">
 
 
