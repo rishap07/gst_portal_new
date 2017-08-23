@@ -567,6 +567,7 @@ final class client extends validation {
 		$dataArray = array();
 		$indexArray = array();
 		$itemArray = array();
+		$arrayCounter = 0;
 
 		if ($_FILES['item_xlsx']['name'] != '' && $_FILES['item_xlsx']['error'] == 0) {
 
@@ -669,12 +670,19 @@ final class client extends validation {
 
 				if ($errorflag === false) {
 
-					$invoiceArray[$rowKey]['item_name'] = $dataArray['item_name'];
-					$invoiceArray[$rowKey]['item_category'] = $dataArray['item_category'];
-					$invoiceArray[$rowKey]['unit_price'] = $dataArray['unit_price'];
-					$invoiceArray[$rowKey]['item_unit'] = $dataArray['item_unit'];
-					$invoiceArray[$rowKey]['status'] = $dataArray['status'];
-					$invoiceArray[$rowKey]['item_description'] = $dataArray['item_description'];
+					$checkClientItem = $this->get_row("select * from ".$this->tableNames['client_master_item']." where 1=1 AND item_name = '".$dataArray['item_name']."' AND item_category = '".$dataArray['item_category']."' AND is_deleted='0'");
+					if(count($checkClientItem) == 0) {
+
+						$itemArray[$arrayCounter]['item_name'] = $dataArray['item_name'];
+						$itemArray[$arrayCounter]['item_category'] = $dataArray['item_category'];
+						$itemArray[$arrayCounter]['unit_price'] = $dataArray['unit_price'];
+						$itemArray[$arrayCounter]['item_unit'] = $dataArray['item_unit'];
+						$itemArray[$arrayCounter]['status'] = $dataArray['status'];
+						$itemArray[$arrayCounter]['item_description'] = $dataArray['item_description'];
+						$itemArray[$arrayCounter]['added_by'] = $dataArray['added_by'];
+						$itemArray[$arrayCounter]['added_date'] = $dataArray['added_date'];
+						$arrayCounter++;
+					}
 				}
             }
 
@@ -688,23 +696,13 @@ final class client extends validation {
 				return json_encode($resultArray);
 			} else {
 
-				$processedInvoiceItemArray = array();
-                foreach ($invoiceArray as $itemArr) {
-                    $itemArr['added_by'] = $_SESSION['user_detail']['user_id'];
-                    $itemArr['added_date'] = date('Y-m-d H:i:s');
+				if ($this->insertMultiple($this->tableNames['client_master_item'], $itemArray)) {
+					$iteminsertid = $this->getInsertID();
+					$this->logMsg("Client Master Items Added. ID : " . $iteminsertid . ".", "client_item_excel_upload");
+				}
 
-                    array_push($processedInvoiceItemArray, $itemArr);
-                }
-				
-				if ($this->insertMultiple($this->tableNames['client_master_item'], $processedInvoiceItemArray)) {
-
-                    $iteminsertid = $this->getInsertID();
-                    $this->logMsg("New item Added. ID : " . $iteminsertid . ".","item_master");
-                }
-
-
-                $this->setSuccess($this->validationMessage['itemadded']);
-                return true;
+				$this->setSuccess($this->validationMessage['itemadded']);
+				return true;
             }
         }
     }
@@ -1140,13 +1138,12 @@ final class client extends validation {
                 $supply_place = isset($data['F']) ? $data['F'] : '';
                 if ($supply_place != '') {
 
-                    $supply_state_data = $this->getStateDetailByStateCode($supply_place);
+                    $supply_state_data = $this->getStateDetailByStateNameCode($supply_place);
                     if ($supply_state_data['status'] === "success") {
                         $dataArray['supply_place'] = $supply_state_data['data']->state_id;
                     } else {
                         $errorflag = true;
                         array_push($currentItemError, "Invalid Place Of Supply.");
-                        $dataArray['supply_place'] = 'Invalid Place Of Supply.';
                     }
                 } else {
 					$errorflag = true;
@@ -1182,7 +1179,7 @@ final class client extends validation {
 				$billing_state = isset($data['L']) ? $data['L'] : '';
                 if ($billing_state != '') {
 
-                    $billing_state_data = $this->getStateDetailByStateCode($billing_state);
+                    $billing_state_data = $this->getStateDetailByStateNameCode($billing_state);
                     if ($billing_state_data['status'] === "success") {
 						$dataArray['billing_state'] = $billing_state_data['data']->state_id;
 						$dataArray['billing_state_name'] = $billing_state_data['data']->state_name;
@@ -1234,7 +1231,7 @@ final class client extends validation {
 				$shipping_state = isset($data['S']) ? $data['S'] : '';
                 if ($shipping_state != '') {
 
-                    $shipping_state_data = $this->getStateDetailByStateCode($shipping_state);
+                    $shipping_state_data = $this->getStateDetailByStateNameCode($shipping_state);
                     if ($shipping_state_data['status'] === "success") {
 						$dataArray['shipping_state'] = $shipping_state_data['data']->state_id;
 						$dataArray['shipping_state_name'] = $shipping_state_data['data']->state_name;
@@ -1669,7 +1666,7 @@ final class client extends validation {
 					$errorflag = true;
 					array_push($currentItemError, "Invalid Invoice Type.");
                 }
-				
+
 				$supply_meant = isset($data['C']) ? $data['C'] : '';
 				if ($supply_meant != '' && strtoupper($supply_meant) === 'WITH PAYMENT') {
                     $dataArray['export_supply_meant'] = "withpayment";
@@ -2198,7 +2195,7 @@ final class client extends validation {
 				$billing_state = isset($data['F']) ? $data['F'] : '';
 				if ($billing_state != '') {
 
-					$billing_state_data = $this->getStateDetailByStateCode($billing_state);
+					$billing_state_data = $this->getStateDetailByStateNameCode($billing_state);
 					if ($billing_state_data['status'] === "success") {
 						$dataArray['billing_state'] = $billing_state_data['data']->state_id;
 						$dataArray['billing_state_name'] = $billing_state_data['data']->state_name;
@@ -2250,7 +2247,7 @@ final class client extends validation {
 				$shipping_state = isset($data['M']) ? $data['M'] : '';
 				if ($shipping_state != '') {
 
-					$shipping_state_data = $this->getStateDetailByStateCode($shipping_state);
+					$shipping_state_data = $this->getStateDetailByStateNameCode($shipping_state);
 					if ($shipping_state_data['status'] === "success") {
 						$dataArray['shipping_state'] = $shipping_state_data['data']->state_id;
 						$dataArray['shipping_state_name'] = $shipping_state_data['data']->state_name;
@@ -2601,13 +2598,12 @@ final class client extends validation {
                 $supply_place = isset($data['D']) ? $data['D'] : '';
 				if ($supply_place != '') {
 
-					$supply_state_data = $this->getStateDetailByStateCode($supply_place);
+					$supply_state_data = $this->getStateDetailByStateNameCode($supply_place);
 					if ($supply_state_data['status'] === "success") {
 						$dataArray['supply_place'] = $supply_state_data['data']->state_id;
 					} else {
 						$errorflag = true;
 						array_push($currentItemError, "Invalid Place Of Supply.");
-						$dataArray['supply_place'] = 'Invalid Place Of Supply.';
 					}
 				} else {
 					$errorflag = true;
@@ -2621,7 +2617,7 @@ final class client extends validation {
 				$billing_state = isset($data['H']) ? $data['H'] : '';
 				if ($billing_state != '') {
 
-					$billing_state_data = $this->getStateDetailByStateCode($billing_state);
+					$billing_state_data = $this->getStateDetailByStateNameCode($billing_state);
 					if ($billing_state_data['status'] === "success") {
 						$dataArray['billing_state'] = $billing_state_data['data']->state_id;
 						$dataArray['billing_state_name'] = $billing_state_data['data']->state_name;
@@ -2673,7 +2669,7 @@ final class client extends validation {
 				$shipping_state = isset($data['O']) ? $data['O'] : '';
 				if ($shipping_state != '') {
 
-					$shipping_state_data = $this->getStateDetailByStateCode($shipping_state);
+					$shipping_state_data = $this->getStateDetailByStateNameCode($shipping_state);
 					if ($shipping_state_data['status'] === "success") {
 						$dataArray['shipping_state'] = $shipping_state_data['data']->state_id;
 						$dataArray['shipping_state_name'] = $shipping_state_data['data']->state_name;
@@ -3071,13 +3067,12 @@ final class client extends validation {
 				$supply_place = isset($data['F']) ? $data['F'] : '';
 				if ($supply_place != '') {
 
-					$supply_state_data = $this->getStateDetailByStateCode($supply_place);
+					$supply_state_data = $this->getStateDetailByStateNameCode($supply_place);
 					if ($supply_state_data['status'] === "success") {
 						$dataArray['supply_place'] = $supply_state_data['data']->state_id;
 					} else {
 						$errorflag = true;
 						array_push($currentItemError, "Invalid Place Of Supply.");
-						$dataArray['supply_place'] = 'Invalid Place Of Supply.';
 					}
 				} else {
 					$errorflag = true;
@@ -3091,7 +3086,7 @@ final class client extends validation {
 				$billing_state = isset($data['J']) ? $data['J'] : '';
 				if ($billing_state != '') {
 
-					$billing_state_data = $this->getStateDetailByStateCode($billing_state);
+					$billing_state_data = $this->getStateDetailByStateNameCode($billing_state);
 					if ($billing_state_data['status'] === "success") {
 						$dataArray['billing_state'] = $billing_state_data['data']->state_id;
 						$dataArray['billing_state_name'] = $billing_state_data['data']->state_name;
@@ -3143,7 +3138,7 @@ final class client extends validation {
 				$shipping_state = isset($data['Q']) ? $data['Q'] : '';
 				if ($shipping_state != '') {
 
-					$shipping_state_data = $this->getStateDetailByStateCode($shipping_state);
+					$shipping_state_data = $this->getStateDetailByStateNameCode($shipping_state);
 					if ($shipping_state_data['status'] === "success") {
 						$dataArray['shipping_state'] = $shipping_state_data['data']->state_id;
 						$dataArray['shipping_state_name'] = $shipping_state_data['data']->state_name;
@@ -3547,13 +3542,12 @@ final class client extends validation {
 				$supply_place = isset($data['D']) ? $data['D'] : '';
 				if ($supply_place != '') {
 
-					$supply_state_data = $this->getStateDetailByStateCode($supply_place);
+					$supply_state_data = $this->getStateDetailByStateNameCode($supply_place);
 					if ($supply_state_data['status'] === "success") {
 						$dataArray['supply_place'] = $supply_state_data['data']->state_id;
 					} else {
 						$errorflag = true;
 						array_push($currentItemError, "Invalid Place Of Supply.");
-						$dataArray['supply_place'] = 'Invalid Place Of Supply.';
 					}
 				} else {
 					$errorflag = true;
@@ -3567,7 +3561,7 @@ final class client extends validation {
 				$billing_state = isset($data['H']) ? $data['H'] : '';
 				if ($billing_state != '') {
 
-					$billing_state_data = $this->getStateDetailByStateCode($billing_state);
+					$billing_state_data = $this->getStateDetailByStateNameCode($billing_state);
 					if ($billing_state_data['status'] === "success") {
 						$dataArray['billing_state'] = $billing_state_data['data']->state_id;
 						$dataArray['billing_state_name'] = $billing_state_data['data']->state_name;

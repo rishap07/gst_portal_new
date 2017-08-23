@@ -414,12 +414,12 @@ final class gstr extends validation {
         }
         else {
             $msg = "Sorry! Unable to process";
-            if(isset($retDta_sum->error)) {
+            /*if(isset($retDta_sum->error)) {
                 $this->array_key_search('message', $retDta_sum->error);
                 $msg = $this->error_msg;;
             }
 
-            $this->setError($msg);
+            $this->setError($msg);*/
             return false;
         }
 
@@ -467,7 +467,7 @@ final class gstr extends validation {
         $url = 'http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/gstr1';
         $result_data = $this->hitPulUrl($url, $data_string, $header);
         $datasave = json_decode($result_data);
-       // $this->pr($datasave);
+        $this->pr($datasave);
         if(isset($datasave->status_cd) && $datasave->status_cd=='1' && $msg == '')
         {
             $retData=$datasave->data;
@@ -477,7 +477,7 @@ final class gstr extends validation {
             $ref = json_decode($decodejson);
 
             $refId = $ref->reference_id;
-            //sleep(5);
+            sleep(5);
             
             //Start code for create header
             $header2_array = array(
@@ -495,7 +495,7 @@ final class gstr extends validation {
             $result_data1 = $this->hitGetUrl($url2, '', $header2);
             
             $retDta = json_decode($result_data1);
-           //$this->pr($retDta);
+           $this->pr($retDta);
             if(isset($retDta->status_cd) && $retDta->status_cd=='1' && $msg == '')
             {
                 $retRek=$retDta->rek;
@@ -506,7 +506,7 @@ final class gstr extends validation {
                 ;
                 if(!empty($decodejson1) && $msg == '') {
                     $jstr1_status = json_decode($decodejson1,true);
-                    //$this->pr($jstr1_status);
+                    $this->pr($jstr1_status);
                     
                     if(isset($jstr1_status['status_cd']) && $jstr1_status['status_cd']=='P' && $msg == '') {
 

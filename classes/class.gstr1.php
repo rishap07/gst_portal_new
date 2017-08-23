@@ -346,11 +346,9 @@ final class gstr1 extends validation {
         // }
         /***** End Code For TXPD Payload ********** */
 
-       /* 
-       //$this->pr($cdnur_data);
-        $this->pr($dataArr);
-        $this->pr($data_ids);        
-        die;*/ 
+/*        
+        $this->pr($dataArr);       
+        die; */
         
         $temp_id = '';
         $x = 0;
@@ -390,12 +388,14 @@ final class gstr1 extends validation {
                 $response = $obj_gst->returnDeleteItems($dataArr,$returnmonth);
                 
                 $flag = 0;
-                $this->pr($deletePayload);
+                //$this->pr($deletePayload);
                 if (!empty($response['error'] == 0)) {
                     $inum = isset($data['inum'])?$data['inum']:'';
                     $this->setSuccess("Your Invoice : ".$inum." has been deleted from GSTN.");
                     if (!empty($data_ids)) {
-                        $this->query("UPDATE ".$this->getTableName('client_invoice')." SET is_gstr1_uploaded='0' WHERE invoice_id = ".$data_ids."");  
+                        foreach ($data_ids as $key => $data_id) {
+                            $this->query("UPDATE ".$this->getTableName('client_invoice')." SET is_gstr1_uploaded='0' WHERE invoice_id = ".$data_id."");  
+                        }
                     } 
                     else {
                         $this->setError('file not deleted from database.');
@@ -405,8 +405,7 @@ final class gstr1 extends validation {
                 else {
                     $this->setError($response['message']);
                     return false; 
-                }
-                    
+                } 
                 
             }
             else {
@@ -434,6 +433,17 @@ final class gstr1 extends validation {
                 $dataArr['b2b'][0]['inv'][0]['idt'] = $idt;
                 $data_ids = $this->gstB2BDeleteQuery($user_id, $ctin,$inum,$idt);
             }
+            if($type == 'B2CL') {
+                $pos = isset($data['pos'])?$data['pos']:'';
+                $inum = isset($data['inum'])?$data['inum']:'';
+                $idt = isset($data['idt'])?$data['idt']:'';
+
+                $dataArr['b2cl'][0]['pos'] = $pos;
+                $dataArr['b2cl'][0]['inv'][0]['flag'] = 'D';
+                $dataArr['b2cl'][0]['inv'][0]['inum'] = $inum;
+                $dataArr['b2cl'][0]['inv'][0]['idt'] = $idt;
+                $data_ids = $this->gstB2CLDeleteQuery($user_id, $pos,$inum,$idt);
+            }
             if($type == 'CDNR') {
                 $ctin = isset($data['ctin'])?$data['ctin']:'';
                 $inum = isset($data['inum'])?$data['inum']:'';
@@ -455,7 +465,6 @@ final class gstr1 extends validation {
                 $nt_num = isset($data['nt_num'])?$data['nt_num']:'';
                 $nt_dt = isset($data['nt_dt'])?$data['nt_dt']:'';
 
-                
                 $dataArr['cdnur'][0]['typ'] = "B2CL";
                 $dataArr['cdnur'][0]['flag'] = 'D';
                 $dataArr['cdnur'][0]['nt_num'] = $nt_num;
@@ -475,38 +484,79 @@ final class gstr1 extends validation {
                 $dataArr['exp'][0]['inv'][0]['idt'] = $idt;
                 $data_ids = $this->gstEXPDeleteQuery($user_id,$inum,$idt,$exp_typ);
             }
-            if($type == 'B2CS') {
-                $sply_ty = isset($data['sply_ty'])?$data['sply_ty']:'';
-                $typ = isset($data['typ'])?$data['typ']:'';
-                $pos = isset($data['pos'])?$data['pos']:'';
+            if($type == 'HSN') {
+                $hsn_sc = isset($data['hsn_sc'])?$data['hsn_sc']:'';
                 $chksum = isset($data['chksum'])?$data['chksum']:'';
-                $rt = isset($data['rt'])?$data['rt']:'';
-
-                $dataArr['b2cs'][0]['flag'] = 'D';
-                $dataArr['b2cs'][0]['rt'] = $rt;
-                $dataArr['b2cs'][0]['sply_ty'] = $sply_ty;
-                $dataArr['b2cs'][0]['typ'] = $typ;
-                $dataArr['b2cs'][0]['pos'] = $pos;
-                $dataArr['b2cs'][0]['chksum'] = $chksum;
-               
-                $data_ids = $this->gstB2CSDeleteQuery($user_id, $returnmonth,$sply_ty,$pos,$typ,$rt);
+                $dataArr['hsn']['flag'] = 'D';
+                $dataArr['hsn']['data'][0]['hsn_sc'] = $hsn_sc;
+                $dataArr['hsn']['chksum'] = $chksum;
             }
+            if($type == 'B2CS') {
+                $json = isset($data['json'])?$data['json']:'';
+                $jstr1_array = json_decode($json,true);
+                if(isset($jstr1_array['b2cs'])) {
+                    $i=0;
+                    foreach ($jstr1_array['b2cs'] as $key1 => $jstr1_value) {
+                        $rt = isset($jstr1_value['rt'])?$jstr1_value['rt']:0;
+                        $pos = isset($jstr1_value['pos'])?$jstr1_value['pos']:0;
+                        $typ = isset($jstr1_value['typ'])?$jstr1_value['typ']:0;
+                        $sply_ty = isset($jstr1_value['sply_ty'])?$jstr1_value['sply_ty']:0;
+                        $chksum = isset($jstr1_value['chksum'])?$jstr1_value['chksum']:'';
+
+                        $dataArr['b2cs'][$i]['flag'] = 'D';
+                        $dataArr['b2cs'][$i]['rt'] = $rt;
+                        $dataArr['b2cs'][$i]['sply_ty'] = $sply_ty;
+                        $dataArr['b2cs'][$i]['typ'] = $typ;
+                        $dataArr['b2cs'][$i]['pos'] = $pos;
+                        $dataArr['b2cs'][$i]['chksum'] = $chksum;
+                        $i++;
+                    }   
+                }
+                $data_ids = $this->gstB2CSDeleteQuery($user_id, $returnmonth);
+            }
+            
             if($type == 'AT') {
-                $sply_ty = isset($data['sply_ty'])?$data['sply_ty']:'';
-                $chksum = isset($data['chksum'])?$data['chksum']:'';
-                $pos = isset($data['pos'])?$data['pos']:'';
+                $json = isset($data['json'])?$data['json']:'';
+                $jstr1_array = json_decode($json,true);
+                if(isset($jstr1_array['at'])) {
+                    $i=0;
+                    foreach ($jstr1_array['at'] as $key1 => $jstr1_value) {
+                        $pos = isset($jstr1_value['pos'])?$jstr1_value['pos']:0;
+                        $chksum = isset($jstr1_value['chksum'])?$jstr1_value['chksum']:'';
+                        $sply_ty = isset($jstr1_value['sply_ty'])?$jstr1_value['sply_ty']:'';
+                        
+                        $dataArr['at'][$i]['sply_ty'] = $sply_ty;
+                        $dataArr['at'][$i]['pos'] = $pos;
+                        $dataArr['at'][$i]['flag'] = 'D';
+                        $dataArr['at'][$i]['chksum'] = $chksum; 
+                        $i++;
+                    }   
+                }
+                $data_ids = $this->gstAtDeleteQuery($user_id, $returnmonth);
+            }
+            if($type == 'TXPD') {
+                $json = isset($data['json'])?$data['json']:'';
+                $jstr1_array = json_decode($json,true);
+                if(isset($jstr1_array['txpd'])) {
+                    $i=0;
+                    foreach ($jstr1_array['txpd'] as $key1 => $jstr1_value) {
+                        $pos = isset($jstr1_value['pos'])?$jstr1_value['pos']:0;
+                        $sply_ty = isset($jstr1_value['sply_ty'])?$jstr1_value['sply_ty']:'';
+                        $chksum = isset($jstr1_value['chksum'])?$jstr1_value['chksum']:'';
 
-                $dataArr['at'][0]['sply_ty'] = $sply_ty;
-                $dataArr['at'][0]['pos'] = strlen($pos) == '1' ? '0' . $pos : $pos;
-                $dataArr['at'][0]['flag'] = 'D';
-                $dataArr['at'][0]['chksum'] = $chksum;
+                        $dataArr['txpd'][$i]['flag'] = 'D';
+                        $dataArr['txpd'][$i]['pos'] = $pos;
+                        $dataArr['txpd'][$i]['sply_ty'] = $sply_ty;
+                        $dataArr['txpd'][$i]['chksum'] = $chksum;
 
-                $data_ids = $this->gstAtDeleteQuery($user_id, $returnmonth,$sply_ty,$pos);
+                        $i++;
+                    }   
+                }
             }
         }
-        
         $response['data_ids'] = $data_ids;
         $response['data_arr'] = $dataArr;
+        //$this->pr($response);die;
         return $response;
     }
 
@@ -516,7 +566,19 @@ final class gstr1 extends validation {
         $data = $this->get_results($query);
         $ids =  array();
         if(!empty($data)) {
-            $ids = $data[0]->invoice_id;
+            $ids[] = $data[0]->invoice_id;
+        }
+        return $ids; 
+    }
+
+    public function gstB2CLDeleteQuery($user_id, $pos,$inum,$idt) {
+        $idt=  date('Y-m-d', strtotime($idt));
+        $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id  where  a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$idt."%' and a.billing_gstin_number='' and a.invoice_total_value>'250000' and a.supply_place!=a.company_state and a.invoice_type='taxinvoice' and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' and a.reference_number ='".$inum."' and a.supply_place='".$pos."'  group by a.reference_number, b.consolidate_rate order by a.supply_place";
+        $data = $this->get_results($query);
+        //$this->pr($data);
+        $ids =  array();
+        if(!empty($data)) {
+            $ids[] = $data[0]->invoice_id;
         }
         return $ids; 
     }
@@ -524,11 +586,11 @@ final class gstr1 extends validation {
     public function gstCDNRDeleteQuery($user_id,$ctin,$inum,$idt,$nt_num,$nt_dt) {
         $idt=  date('Y-m-d', strtotime($idt));
         $nt_dt=  date('Y-m-d', strtotime($nt_dt));
-        $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('client_invoice')." c  on a.corresponding_document_number=c.invoice_id where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$user_id."'  and a.corresponding_document_date like '%".$idt."%'  and a.billing_gstin_number!='' and (a.invoice_type='creditnote' or a.invoice_type='debitnote') and a.is_canceled='0' and a.is_deleted='0' and c.reference_number ='".$inum."' and a.billing_gstin_number='".$ctin."' and a.reference_number ='".$nt_num."' and a.invoice_date like '%".$nt_dt."%'  ";
+        echo $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('client_invoice')." c  on a.corresponding_document_number=c.invoice_id where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$user_id."'  and a.corresponding_document_date like '%".$idt."%'  and a.billing_gstin_number!='' and (a.invoice_type='creditnote' or a.invoice_type='debitnote') and a.is_canceled='0' and a.is_deleted='0' and c.reference_number ='".$inum."' and a.billing_gstin_number='".$ctin."' and a.reference_number ='".$nt_num."' and a.invoice_date like '%".$nt_dt."%'  ";
         $data = $this->get_results($query);
         $ids =  array();
         if(!empty($data)) {
-            $ids = $data[0]->invoice_id;
+            $ids[] = $data[0]->invoice_id;
         }
         return $ids;
     }
@@ -540,7 +602,7 @@ final class gstr1 extends validation {
         $data = $this->get_results($query);
         $ids =  array();
         if(!empty($data)) {
-            $ids = $data[0]->invoice_id;
+            $ids[] = $data[0]->invoice_id;
         }
         return $ids;
     }
@@ -557,39 +619,37 @@ final class gstr1 extends validation {
         $data = $this->get_results($query);
         $ids =  array();
         if(!empty($data)) {
-            $ids = $data[0]->invoice_id;
+            $ids[] = $data[0]->invoice_id;
         }
         return $ids;
     }
 
-    public function gstAtDeleteQuery($user_id,$returnmonth,$sply_ty,$pos) {
-        // $query = "select a.export_bill_number,a.invoice_type,a.export_bill_date,a.export_bill_port_code,a.invoice_id,a.export_supply_meant,a.company_state,a.billing_gstin_number,a.reference_number,a.invoice_date,a.invoice_total_value,b.item_name,a.supply_place,a.invoice_type,b.taxable_subtotal,b.igst_rate,b.cgst_rate,b.sgst_rate, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and (a.invoice_type='exportinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice') and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' and a.export_bill_number !='' and a.export_bill_date != '' and a.export_bill_port_code != '' and a.supply_place ='".$pos."' ";
-
-        // if($sply_ty == 'INTER') {
-        //     $query .= 'and a.company_state != a.supply_place';
-        // }
-        // if($sply_ty == 'INTRA') {
-        //     $query .= 'and a.company_state == a.supply_place';
-        // }
-        
-        // $query .= ' group by a.invoice_id,b.igst_rate order by a.export_supply_meant';
-        //echo $query;
-        return $this->get_results($query); 
+    public function gstAtDeleteQuery($user_id,$returnmonth) {
+      $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a  inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id where  a.status='1' and a.is_gstr1_uploaded='1'  and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.invoice_type='receiptvoucherinvoice' and a.is_canceled='0' and a.is_deleted='0' group by a.supply_place ,b.consolidate_rate order by a.supply_place ";
+        $datas = $this->get_results($query);
+        $ids =  array();
+       
+        if(!empty($datas)) {
+            foreach ($datas as $key => $data) {
+                $ids[] = $data->invoice_id;
+            }
+            
+        }
+        return $ids; 
     }
 
-    public function gstB2CSDeleteQuery($user_id,$returnmonth,$sply_ty,$pos,$typ,$rt) {
-        /*$query = "select a.invoice_id,a.invoice_type,a.company_state,a.billing_gstin_number,a.reference_number,a.invoice_date,a.invoice_total_value,a.supply_place,a.invoice_type,a.supply_type,b.igst_rate,b.cgst_rate,b.sgst_rate,b.taxable_subtotal, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number='' and (a.supply_place=a.company_state  or (a.supply_place!=a.company_state and a.invoice_total_value<='250000')) and a.invoice_type='taxinvoice' and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0'  and a.supply_place ='".$pos."' ";
-
-        if($sply_ty == 'INTER') {
-            $query .= 'and a.company_state != a.supply_place';
+    public function gstB2CSDeleteQuery($user_id,$returnmonth) {
+        $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number='' and (a.supply_place=a.company_state or (a.supply_place!=a.company_state and a.invoice_total_value<='250000')) and a.invoice_type='taxinvoice' and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' ";
+        $datas = $this->get_results($query);
+        $ids =  array();
+       
+        if(!empty($datas)) {
+            foreach ($datas as $key => $data) {
+                $ids[] = $data->invoice_id;
+            }
+            
         }
-        if($sply_ty == 'INTRA') {
-            $query .= 'and a.company_state == a.supply_place';
-        }
-        
-        $query .= ' group by a.reference_number, b.igst_rate order by a.supply_place ';*/
-        //echo $query;
-        return $this->get_results($query);
+        return $ids; 
     }
 
     public function gstB2BPayload($user_id, $returnmonth) {
@@ -896,7 +956,6 @@ final class gstr1 extends validation {
             $y = 0;
             $a = 1;
             foreach ($dataInvHsn as $dataIn) {
-
                 $dataArr['hsn']['data'][$y]['num'] = (int) $a;
                 $dataArr['hsn']['data'][$y]['hsn_sc'] = $dataIn->item_hsncode;
                 $dataArr['hsn']['data'][$y]['desc'] = $dataIn->item_name;
@@ -1393,7 +1452,7 @@ final class gstr1 extends validation {
             $dataArr['status'] = 1;
 
             if ($this->insert(TAB_PREFIX . 'return', $dataArr)) {
-				$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . "Initiated GSTR1 filling for financial month ".$fmonth,"gstr1");
+				$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . "Initiated GSTR1 filling for financial month ".$this->sanitize($_GET['returnmonth']),"gstr1");
 			
                 //$this->setSuccess('GSTR2 Saved Successfully');
                 return true;

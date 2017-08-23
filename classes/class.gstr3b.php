@@ -892,11 +892,12 @@ exit;
                 $obj_mpdf = new mPDF();
                 $obj_mpdf->SetHeader('GSTR 3B File');
                 $obj_mpdf->WriteHTML($htmlResponse);
-                $datetime=date('YmdHis');
+                $datetime=date('Y-m-d-His');
                
-                $taxInvoicePdf = 'gstr3bfile-' . $_SESSION['user_detail']['username'] . '_' .$datetime. '.pdf';
+               $taxInvoicePdf = 'gstr3bfile-' . $_SESSION['user_detail']['user_id'] . '_' .$datetime. '.pdf';
+			   $filepath ="/upload/gstr3b-file/".$taxInvoicePdf;
                 ob_clean();
-                //$proof_photograph = $this->imageUploads($taxInvoicePdf, 'plan-invoice', 'upload','.pdf');
+                //$proof_photograph = $this->gstr3bUploads($taxInvoicePdf, 'plan-invoice', 'upload','.pdf');
                 $pic = $taxInvoicePdf;
              
 				  ob_clean();
@@ -907,7 +908,25 @@ exit;
 				  }
 				  else if($_GET['action'] == 'emailInvoice')
 				  {
-					   return $htmlResponse;
+					  //$obj_mpdf->Output($taxInvoicePdf, PROJECT_URL ."/upload/gstr3b-file/");
+					  $dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
+				$sendmail = $dataCurrentUserArr['data']->kyc->email;
+				$name = $dataCurrentUserArr['data']->kyc->name;
+				$userid = $_SESSION["user_detail"]["user_id"];
+					  $obj_mpdf->Output("upload/gstr3b-file/".$taxInvoicePdf);
+					  $mpdfHtml = $this->gstr3bemail($name,$returnmonth);
+					 // return $mpdfHtml;
+					  
+				 if ($this->sendMail('Email GSTR-3Bfile', 'User ID : ' . $userid . ' email GSTR-3B', $sendmail, 'noreply@gstkeeper.com', '', 'rishap07@gmail.com,sheetalprasad95@gmail.com', $filepath, 'GSTR-3B return month '.$returnmonth.'',$mpdfHtml )) {
+
+						$this->setSuccess('Kindly check your email');
+						$this->redirect(PROJECT_URL . "?page=return_gstr3b_file&returnmonth=" . $returnmonth);
+                       // return true;
+                    } else {
+                        $this->setError('Try again some issue in sending in email.');
+							$this->redirect(PROJECT_URL . "?page=return_gstr3b_file&returnmonth=" . $returnmonth);
+                       // return false;
+                    }
 				  }
 				  else
 				  {
@@ -916,6 +935,14 @@ exit;
 			 
 					$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " in User has been updated");
 				   
+   }
+   
+   private function gstr3bemail($name,$returnmonth)
+   {
+	   $mpdfHtml ='';
+	 $mpdfHtml .='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> <title>gst</title> </head> <body> <div style="width:720px; margin:auto; border:solid #CCC 1px;"> <table cellpadding="0" cellspacing="0" width="100%" > <tbody> <tr> <td height="auto"><table width="720" cellpadding="0" cellspacing="0" bgcolor="#fff" style="font-family:Arial, Helvetica, sans-serif;margin:0px auto;"> <tbody> <tr> <td width="30"></td> <td><table width="100%" cellpadding="0" cellspacing="0"> <tbody> <tr> <td align="left" valign="middle" height="80"><a target="_blank" href="https://www.gstkeeper.com/"><img src="https://gstkeeper.com/newsletter/4july2017/gst-logo.png" alt="" border="0"></a></td> <td align="right" valign="middle" style="font-size:18px;color:#cf3502;font-family:Arial, Helvetica, sans-serif;" height="80px"> <span><img src="https://gstkeeper.com/newsletter/6july2017/phone-icon.jpg" alt=""></span>1-800-212-2022<br> <span><img src="https://gstkeeper.com/newsletter/6july2017/mail-icon.jpg" alt=""></span><a href="mailto:contact@gstkeeper.com" style="font-size:14px;color:#cf3502;text-decoration:none;"> contact@gstkeeper.com</a></td> </tr> </tbody> </table></td> <td width="30"></td> </tr> <tr> <td width="30"></td> <td><table width="100%" cellpadding="0" cellspacing="0"> <tbody> <tr> <td align="center" valign="middle"><img src="https://www.gstkeeper.com/newsletter/7july-planpurchase/images/banner.jpg" width="700" height="132" /></td> </tr> </tbody> </table></td> <td width="30"></td> </tr> <tr> <td width="30" ></td> <td><table width="100%" cellpadding="0" cellspacing="0"> <tbody> <tr> <td height="157" align="center" valign="top"><table width="100%" cellpadding="0px" cellspacing="0" > <tbody> <tr> <td width="13"></td> <td width="350" style="font-size:15px;color:#090909;font-family:Arial, Helvetica, sans-serif; padding-top:10px; "><strong>Hi '.$name.'! </strong></td> <td width="20"></td> </tr> <tr> <td colspan="3" height="10"></td> </tr> <tr> <td width="13"></td> <td height="110" align="justify" valign="top" style="font-size:13px;color:#191919;font-family:Arial, Helvetica, sans-serif; line-height:18px; ">';
+	 $mpdfHtml .='<p>Please find the attachment enclosed here along with GSTR 3B return month '.$returnmonth.' file.</p><p><strong>Thanks!</strong><BR /> The GST Keeper Team </p></td> <td width="20"></td> </tr> </tbody> </table></td> </tr> </tbody> </table></td> </tr> <!--<tr> <td align="center" height="29"><img src="http://cdn.go4hosting.in/mailer/12-oct/resources-img.jpg" alt="" /></td> </tr>--> <tr> <td colspan="3" height="15"></td> </tr> <tr> <td width="30"></td> <td><table width="98%" align="right" cellpadding="0" cellspacing="0" style="background-color:#f1f1f1; height:80px; padding:10px;"> <tbody> <tr> <td width="47%"><a href="http://www.cyfuture.com/" target="_blank"><img src="https://gstkeeper.com/newsletter/4july2017/cyfuture-logo.png" alt="" border="0" /></a></td> <td width="53%" align="right"><table width="100%" cellpadding="0" cellspacing="0"> <tbody> <tr> <td width="20" height="50"></td> <td valign="middle" style="font-size:14px;color:#333;font-family:Arial, Helvetica, sans-serif;"><strong><i>Connect with us</i></strong></td> <td valign="middle" width="50" align="center"><a target="_blank" href="https://www.facebook.com/GST-Keeper-632910016898628/"><img src="https://gstkeeper.com/newsletter/4july2017/fb-icon.png" alt="" border="0" /></a></td> <td valign="middle" width="40" align="left"><a target="_blank" href="https://plus.google.com/101841021110541536034"><img src="https://gstkeeper.com/newsletter/4july2017/g+-icon.png" alt="" border="0" /></a></td> <td valign="middle" width="40" align="left"><a target="_blank" href="https://twitter.com/GstKeeper"><img src="https://gstkeeper.com/newsletter/4july2017/twit-icon.png" alt="" border="0" /></a></td> <td valign="middle" width="40" align="left"><a target="_blank" href="https://www.youtube.com/channel/UCsDdNFR8kJ3YVWpEvBrFeSA"><img src="https://gstkeeper.com/newsletter/4july2017/utube-icon.png" alt="" border="0" /></a></td> <td valign="middle" width="40" align="left"><a target="_blank" href="https://www.linkedin.com/company/gst-keeper"><img src="https://gstkeeper.com/newsletter/4july2017/in-icon.jpg" alt="" border="0" /></a></td> </tr> </tbody> </table></td> </tr> </tbody> </table></td> <td width="30"></td> </tr> <tr> <td width="30"></td> <td height="76" valign="middle"><table width="100%" cellpadding="0" cellspacing="0"> <tbody> <tr> <td width="20"></td> <td align="center"><font style="font-size:14px;color:#444;font-family:Arial, Helvetica, sans-serif;">Cyfuture ( India ) Pvt. Ltd.</font><br> <font style="font-size:12px;color:#444;font-family:Arial, Helvetica, sans-serif;">Plot No. 197-198 Noida Special Economic Zone (NSEZ) Phase II, Noida 201 305</font><br> <font style="font-size:12px;color:#444;font-family:Arial, Helvetica, sans-serif;">E-mail: <a style="text-decoration:none;color:#3194d5;" href="mailto:contact@gstkeeper.com">contact@gstkeeper.com</a></font><br></td> <td width="15" align="left">&nbsp;</td> </tr> </tbody> </table></td> </tbody> </table></td> </tr> </tbody> </table> </div> </body> </html>';
+	 return $mpdfHtml;
    }
    private function getPlaceOfSupplyUnregistered()
    {    $dataArr = array();
