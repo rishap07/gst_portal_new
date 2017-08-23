@@ -70,19 +70,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'emailInvoice' && isset($_GET['
 
     $htmlResponse = $obj_return->generategstr3bHtml($_GET['id'],$_GET['returnmonth']);
     
-    $dataCurrentUserArr = $obj_return->getUserDetailsById($obj_return->sanitize($_SESSION['user_detail']['user_id']));
-    $sendmail = $dataCurrentUserArr['data']->kyc->email;
-	$userid = $_SESSION["user_detail"]["user_id"];
-	 if ($obj_return->sendMail('Email GSTR-3Bfile', 'User ID : ' . $userid . ' email GSTR-3B', $sendmail, 'noreply@gstkeeper.com', '', 'rishap07@gmail.com,sheetalprasad95@gmail.com', '', 'GSTR-3Bfile',$htmlResponse )) {
-
-						$obj_return->setSuccess('Kindly check your email');
-						$obj_return->redirect(PROJECT_URL . "?page=return_gstr3b_file&returnmonth=" . $returnmonth);
-                       // return true;
-                    } else {
-                        $obj_return->setError('Try again some issue in sending in email.');
-							$obj_return->redirect(PROJECT_URL . "?page=return_gstr3b_file&returnmonth=" . $returnmonth);
-                       // return false;
-                    }
+    
    
 }
 
@@ -317,7 +305,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
                                   <li><a href="<?php echo PROJECT_URL; ?>/?page=return_gstr3b_file&action=downloadExcelInvoice&id=<?php echo $returndata[0]->return_id; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Excel"><i class="fa fa-file-excel-o" aria-hidden="true"></i></div></a></li>
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=return_gstr3b_file&action=downloadInvoice&id=<?php echo $returndata[0]->return_id; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=return_gstr3b_file&action=printInvoice&id=<?php echo $returndata[0]->return_id; ?>&returnmonth=<?php echo $returnmonth; ?>" target="_blank"><div data-toggle="tooltip" data-placement="bottom" title="PRINT"><i class="fa fa-print" aria-hidden="true"></i></div></a></li>
-                                   <!--  <li><a href="<?php echo PROJECT_URL; ?>/?page=return_gstr3b_file&action=emailInvoice&id=<?php echo $returndata[0]->return_id; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></div></a></li>-->
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=return_gstr3b_file&action=emailInvoice&id=<?php echo $returndata[0]->return_id; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></div></a></li>
                                 <!--<li><a href="#"><div data-toggle="tooltip" data-placement="bottom" title="Attached File"><i class="fa fa-paperclip" aria-hidden="true"></i></div></a></li>-->
                          </ul>
 							</div><?php } ?>

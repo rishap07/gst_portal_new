@@ -20,27 +20,33 @@ if ($_REQUEST['returnmonth'] != '') {
 
 $response = $obj_api->returnSummary($returnmonth);
 ?>
+<?php 
+$responseB2CS = $obj_api->returnSummary($returnmonth,'B2CS');
+$responseAT = $obj_api->returnSummary($returnmonth,'AT');
+$responseTXPD = $obj_api->returnSummary($returnmonth,'TXPD');
+?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr">
   <div class="col-md-11 col-sm-12 col-xs-12 mobpadlr">
     <div class="col-md-12 col-sm-12 col-xs-12 heading">
         <div class="tab col-md-12 col-sm-12 col-xs-12">
-            <a href="<?php echo PROJECT_URL . '/?page=return_get_summary&returnmonth=' . $returnmonth ?>" class="active">
-                GSTR1 SUMMARY
-            </a> 
-           
+            <a href="<?php echo PROJECT_URL . '/?page=return_summary&returnmonth=' . $returnmonth ?>" >
+                View GSTR1 Summary
+            </a>   
             <a href="<?php echo PROJECT_URL . '/?page=return_view_invoices&returnmonth=' . $returnmonth ?>">
                 View My Invoice
             </a>
             <a href="<?php echo PROJECT_URL . '/?page=return_upload_invoices&returnmonth=' . $returnmonth ?>"  >
                 Upload To GSTN
             </a>
+            <a href="<?php echo PROJECT_URL . '/?page=return_get_summary&returnmonth=' . $returnmonth ?>" class="active">
+                GSTR1 SUMMARY
+            </a> 
+            
             </a>
             <a href="<?php echo PROJECT_URL . '/?page=return_filling_summary&returnmonth=' . $returnmonth ?>">
                 File GSTr-1
             </a>
-            <a href="<?php echo PROJECT_URL . '/?page=return_summary&returnmonth=' . $returnmonth ?>" >
-                View GSTR1 Summary
-            </a>              
+                      
         </div>
         <div id="get_summary" class="tabcontent">
             <div class="col-md-12 col-sm-12 col-xs-12">
@@ -95,6 +101,23 @@ $response = $obj_api->returnSummary($returnmonth);
             document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_get_summary&returnmonth=<?php echo $returnmonth; ?>';
             document.form2.submit();            
         });
+
+        $('.gstr1ViewDeleteBtn').on('click', function () {
+
+            var type = $(this).attr('type');
+            var returnmonth = "<?php echo $returnmonth;?>";
+            var arrValues = [];
+            if(type == 'B2CS') {
+                var arrValues = ['<?php echo $responseB2CS;?>'];  
+            }
+            if(type == 'AT') {
+                var arrValues = ['<?php echo $responseAT;?>'];  
+            } 
+            if(type == 'TXPD') {
+                var arrValues = ['<?php echo $responseTXPD;?>'];  
+            }     
+            delete_item_invoice(type,returnmonth,arrValues);          
+        });
     });
 
     /******* To get Summary of GSTR1 ********/
@@ -104,7 +127,7 @@ $response = $obj_api->returnSummary($returnmonth);
         $.ajax({
             url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_json",
             type: "post",
-           data: {json: json,returnmonth:returnmonth},
+            data: {json: json,returnmonth:returnmonth},
             success: function (response) {
                $('#display_json').html(response);
 
@@ -114,4 +137,25 @@ $response = $obj_api->returnSummary($returnmonth);
         });
     }
     /******* To get Summary of GSTR1 ********/
+
+     /******* To delele invoice of GSTR1 ********/
+    function delete_item_invoice(type,returnmonth,arrValues) {
+        if(type!= '' && arrValues != '') {
+            $.ajax({
+                url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_delete_item_invoice",
+                type: "post",
+                data: {type:type,returnmonth:returnmonth,arrValues: arrValues},
+                success: function (response) {
+                   location.reload();
+                },
+                error: function() {
+                }
+            });
+        }
+        else {
+            alert(type+ ' Invoice empty');
+        }
+        
+    }
+    /******* To delele invoice of GSTR1 ********/
 </script>

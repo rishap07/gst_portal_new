@@ -29,6 +29,7 @@ if(!empty($jstr1_array)) {
                         <th style="text-align:right">Total SGST ( <i class="fa fa-inr"></i> )</th>
                         <th style="text-align:right">Total value ( <i class="fa fa-inr"></i> )</th>
                         <th style="text-align:right"></th>
+                        <th style="text-align:right"></th>
                     </tr>';
                     if(isset($jstr1_array['sec_sum'])) {
                        
@@ -56,6 +57,20 @@ if(!empty($jstr1_array)) {
                                     <td align="right">'.$ttl_sgst.'</td>
                                     <td align="right">'.$ttl_val.'</td>
                                     <td align="right"><a href="'.PROJECT_URL.'?page=return_get_summary_view&type='.$jstr1_value['sec_nm'].'&returnmonth='.$returnmonth.'">view</a></td>
+                                    <td align="right">';
+                                    if($invoice_number>0) {
+                                        if($jstr1_value['sec_nm'] == 'B2CS') {
+                                            $response .= '<a href="javascript:;" class="gstr1ViewDeleteBtn" type="B2CS"><i class="fa fa-trash"></i></a>';
+                                        }
+                                        if($jstr1_value['sec_nm'] == 'AT') {
+                                            $response .= '<a href="javascript:;" class="gstr1ViewDeleteBtn" type="AT"><i class="fa fa-trash"></i></a>';
+                                        }
+                                        if($jstr1_value['sec_nm'] == 'TXPD') {
+                                            $response .= '<a href="javascript:;" class="gstr1ViewDeleteBtn" type="TXPD"><i class="fa fa-trash"></i></a>';
+                                        }
+                                    }
+                                   
+                                    $response .= '</td>
                                 </tr>';
                             }
                             
@@ -118,6 +133,9 @@ function aasort (&$array, $key) {
     }
     $array=$ret;
 }
+?>
+
+
 
 
 

@@ -73,7 +73,7 @@ $dataCurrentArr = $obj_client->getUserDetailsById($obj_client->sanitize($_SESSIO
 						<a href="<?php echo PROJECT_URL."/upload/item-excel.zip"; ?>"><b>Download Sample</b></a>
 					</div>
 
-					<div class="clear"></div>
+					<div class="clear height20"></div>
 
 					<div class="adminformbxsubmit" style="width:100%;">
 						<div class="tc">

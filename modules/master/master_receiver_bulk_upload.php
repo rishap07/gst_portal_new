@@ -3,11 +3,6 @@ $obj_master = new master();
 $excelError = false;
 $returnMessage = '';
 
-if (!isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '') {
-    $obj_master->redirect(PROJECT_URL);
-    exit();
-}
-
 if (!$obj_master->can_read('master_receiver')) {
 
     $obj_master->setError($obj_master->getValMsg('can_read'));

@@ -53,6 +53,7 @@ if(isset($_GET['id'])) {
 	<div class="col-md-12 col-sm-12 col-xs-12">
 
 		<div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Receiver/Customer</h1></div>
+		
 		<?php $obj_master->showErrorMessage(); ?>
 		<?php $obj_master->showSuccessMessge(); ?>
 		<?php $obj_master->unsetMessage(); ?>
@@ -60,7 +61,7 @@ if(isset($_GET['id'])) {
 		<div class="whitebg formboxcontainer">
 
 			<form method="post" enctype="multipart/form-data" id='form'>
-			<h2 class="greyheading"><?php echo isset($_GET['id']) ? 'Edit Receiver/Customer' : 'Add New Receiver/Customer'; ?></h2>
+				<h2 class="greyheading"><?php echo isset($_GET['id']) ? 'Edit Receiver/Customer' : 'Add New Receiver/Customer'; ?></h2>
 				<div class="row">
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
@@ -74,8 +75,8 @@ if(isset($_GET['id'])) {
 					</div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Email <span class="starred">*</span></label>
-						<input type="text" placeholder="Email"  name='email' class="form-control required" data-bind="email" value='<?php if(isset($_POST['email'])){ echo $_POST['email']; } else if(isset($dataArr[0]->email)){ echo $dataArr[0]->email; } ?>'/>
+						<label>Email</label>
+						<input type="text" placeholder="Email"  name='email' class="form-control" data-bind="email" value='<?php if(isset($_POST['email'])){ echo $_POST['email']; } else if(isset($dataArr[0]->email)){ echo $dataArr[0]->email; } ?>'/>
 					</div>
 					<div class="clear"></div>
 
@@ -217,5 +218,4 @@ if(isset($_GET['id'])) {
             return false;
         });
     });
-</script>
-    
+</script>  

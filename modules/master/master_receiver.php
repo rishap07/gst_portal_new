@@ -7,46 +7,41 @@
 		exit();
 	}
 ?>
-<style>
-    .bulkupload{
-        margin-right: 10px !important;
-    }
-</style>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
-    <div class="col-md-12 col-sm-12 col-xs-12">   
+	<div class="col-md-12 col-sm-12 col-xs-12">   
 		<h1>Receiver/Customer</h1>
-        <div class="whitebg formboxcontainer">
-        <div>
-            <a class='btn btn-default btn-success btnwidth addnew' href='<?php echo PROJECT_URL;?>/?page=master_receiver_update'>Add New</a>
-        </div>
-        <div>
-            <a class='btn btn-default btn-success btnwidth addnew bulkupload' href='<?php echo PROJECT_URL;?>/?page=master_receiver_bulk_update'>Bulk Upload</a>
-        </div>    
-        <div class="clear height10"></div>
-         <?php $obj_master->showErrorMessage(); ?>
-            <?php $obj_master->showSuccessMessge(); ?>
-            <?php $obj_master->unsetMessage(); ?>
-        <h2 class="greyheading">Receiver/Customer Listing</h2>
-        <div class="adminformbx">
-        
-            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable">
-                <thead>
-                    <tr>
-                        <th align='left' width="72">#</th>
-                        <th align='left'>GSTIN</th>
-                        <th align='left'>Name</th>
-                        <th align='left'>Address</th>
-						<th align='left'>City</th>
-                        <th align='left'>State</th>
-                        <th align='left'>Country</th>
-                        <th align='left'>Status</th>
-                        <th width="72">Action</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-    </div>
-</div>
+		<div class="whitebg formboxcontainer">
+			<div class="pull-right">
+				<a class='btn btn-default btn-success btnwidth' href='<?php echo PROJECT_URL;?>/?page=master_receiver_update'>Add New</a>
+				<a class='btn btn-default btn-success btnwidth bulkupload' href='<?php echo PROJECT_URL;?>/?page=master_receiver_bulk_upload'>Bulk Upload</a>
+			</div>
+			<div class="clear height10"></div>
+			
+			<?php $obj_master->showErrorMessage(); ?>
+			<?php $obj_master->showSuccessMessge(); ?>
+			<?php $obj_master->unsetMessage(); ?>
+			
+			<h2 class="greyheading">Receiver/Customer Listing</h2>
+			<div class="adminformbx">
+
+				<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable">
+					<thead>
+						<tr>
+							<th align='left' width="72">#</th>
+							<th align='left'>GSTIN</th>
+							<th align='left'>Name</th>
+							<th align='left'>Address</th>
+							<th align='left'>City</th>
+							<th align='left'>State</th>
+							<th align='left'>Country</th>
+							<th align='left'>Status</th>
+							<th width="72">Action</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</div>
 </div>
 <div class="clear height80"></div>
 <script type="text/javascript">

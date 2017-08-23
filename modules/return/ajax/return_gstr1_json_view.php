@@ -38,7 +38,6 @@ if(!empty($jstr1_array)) {
                 <th style="text-align:center">Updby </th>
                 <th style="text-align:center">Rchrg</th>
                 <th></th>
-                
             </tr>';
             foreach ($jstr1_array['b2b'] as $key1 => $inv_value) {
                 if(isset($inv_value['inv'])) {
@@ -52,8 +51,6 @@ if(!empty($jstr1_array)) {
                         $idt = isset($jstr1_value['idt'])?$jstr1_value['idt']:'';
                         $rchrg = isset($jstr1_value['rchrg'])?$jstr1_value['rchrg']:'';
                         $inum = isset($jstr1_value['inum'])?$jstr1_value['inum']:'';
-
-
 
                         if(!empty($itms)) {
                             $i=1;
@@ -83,8 +80,6 @@ if(!empty($jstr1_array)) {
                                 </tr>';
                             }
                         }
-
-
                     }
                 }
             }
@@ -107,7 +102,6 @@ if(!empty($jstr1_array)) {
                         <th style="text-align:center">Rate</th>
                         <th style="text-align:center">Tax Value  ( <i class="fa fa-inr"></i> )</th>
                         <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th>
-                        <th></th>
                     </tr>';
                     if(isset($jstr1_array['b2cs'])) {
                         foreach ($jstr1_array['b2cs'] as $key1 => $jstr1_value) {
@@ -129,7 +123,6 @@ if(!empty($jstr1_array)) {
                                 <td align="center">'.$rt.'</td>
                                 <td align="center">'.$txval.'</td>
                                 <td align="center">'.$iamt.'</td>
-                                <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" sply_ty = '.$sply_ty.' pos = '.$pos.' iamt = '.$iamt.' typ = '.$typ.' rt = '.$rt.' chksum = '.$chksum.' type="B2CS" ><i class="fa fa-trash"></i></a></td>
                             </tr>';
                         }   
                     }
@@ -185,7 +178,7 @@ if(!empty($jstr1_array)) {
                                             <td align="center">'.$rt.'</td>
                                             <td align="center">'.$txval.'</td>
                                             <td align="center">'.$iamt.'</td>
-                                            <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn"><i class="fa fa-trash"></i></a></td>
+                                            <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" pos = '.$pos.' idt = '.$idt.' inum = '.$inum.' type="B2CL"><i class="fa fa-trash"></i></a></td>
                                         </tr>';
                                     }
                                 }
@@ -200,6 +193,7 @@ if(!empty($jstr1_array)) {
     }
 
     if($type == 'HSN') {
+       // echo '<pre>';print_r($jstr1_array);
         $response .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
                     <thead>
                     <tr>
@@ -218,6 +212,7 @@ if(!empty($jstr1_array)) {
                     </tr>';
                     if(isset($jstr1_array['hsn']['data'])) {
                         $hsn = $jstr1_array['hsn']['data'];
+                        $chksum = $jstr1_array['hsn']['chksum'];
                         
                         foreach ($hsn as $key1 => $jstr1_value) {
                             $num = isset($jstr1_value['num'])?$jstr1_value['num']:0;
@@ -243,7 +238,7 @@ if(!empty($jstr1_array)) {
                                 <td align="center">'.$camt.'</td>
                                 <td align="center">'.$iamt.'</td>
                                 <td align="center">'.$desc.'</td>
-                                <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn"><i class="fa fa-trash"></i></a></td>
+                                <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" hsn_sc = '.$hsn_sc.'  type="HSN" chksum = '.$chksum.' ><i class="fa fa-trash"></i></a></td>
                             </tr>';
                         }   
                     }
@@ -253,7 +248,7 @@ if(!empty($jstr1_array)) {
     }
     
     if($type == 'CDNR') {
-        echo '<pre>';print_r($jstr1_array);
+        // /echo '<pre>';print_r($jstr1_array);
         $response .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
             <thead>
             <tr>
@@ -410,6 +405,7 @@ if(!empty($jstr1_array)) {
     }
 
     if($type == 'TXPD') {
+        //echo '<pre>';print_r($jstr1_array);
         $response .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
                     <thead>
                     <tr>
@@ -420,7 +416,6 @@ if(!empty($jstr1_array)) {
                         <th style="text-align:center">Rate</th>
                         <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th>
                         <th style="text-align:center">Ad Amt ( <i class="fa fa-inr"></i> )</th>
-                        <th></th>
                     </tr>';
                     if(isset($jstr1_array['txpd'])) {
                         foreach ($jstr1_array['txpd'] as $key1 => $jstr1_value) {
@@ -442,7 +437,6 @@ if(!empty($jstr1_array)) {
                                         <td align="center">'.$rt.'</td>
                                         <td align="center">'.$iamt.'</td>
                                         <td align="center">'.$ad_amt.'</td>
-                                        <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn"><i class="fa fa-trash"></i></a></td>
                                     </tr>';
                                 }
                             }   
@@ -464,7 +458,6 @@ if(!empty($jstr1_array)) {
                         <th style="text-align:center">Rate</th>
                         <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th>
                         <th style="text-align:center">Ad Amt ( <i class="fa fa-inr"></i> )</th>
-                        <th></th>
                     </tr>';
                     if(isset($jstr1_array['at'])) {
                         foreach ($jstr1_array['at'] as $key1 => $jstr1_value) {
@@ -487,7 +480,6 @@ if(!empty($jstr1_array)) {
                                         <td align="center">'.$rt.'</td>
                                         <td align="center">'.$iamt.'</td>
                                         <td align="center">'.$ad_amt.'</td>
-                                        <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" sply_ty = '.$sply_ty.' pos = '.$pos.' chksum = '.$chksum.' type="AT" ><i class="fa fa-trash"></i></a></td>
                                     </tr>';
                                 }
                             }   
@@ -575,6 +567,12 @@ echo $response;
                 var idt = $(this).attr('idt');
                 arrValues = [ctin,inum,idt];
             }
+            if(type == 'B2CL') {
+                var pos = $(this).attr('pos');
+                var inum = $(this).attr('inum');
+                var idt = $(this).attr('idt');
+                arrValues = [pos,inum,idt];
+            }
             if(type == 'CDNR') {
                 var ctin = $(this).attr('ctin');
                 var inum = $(this).attr('inum');
@@ -590,28 +588,17 @@ echo $response;
                 var nt_dt = $(this).attr('nt_dt');
                 arrValues = [inum,idt,nt_num,nt_dt];
             }
-            
             if(type == 'EXP') {
                 var inum = $(this).attr('inum');
                 var idt = $(this).attr('idt');
                 var exp_typ = $(this).attr('exp_typ');
                 arrValues = [inum,idt,exp_typ];
             }
-            if(type == 'AT') {
-                var sply_ty = $(this).attr('sply_ty');
-                var pos = $(this).attr('pos');
+            if(type == 'HSN') {
+                var hsn_sc = $(this).attr('hsn_sc');
                 var chksum = $(this).attr('chksum');
-                arrValues = [sply_ty,pos,chksum];
-            }
-            if(type == 'B2CS') {
-                var chksum = $(this).attr('chksum');
-                var sply_ty = $(this).attr('sply_ty');
-                var pos = $(this).attr('pos');
-                var typ = $(this).attr('typ');
-                var rt = $(this).attr('rt');
-                arrValues = [sply_ty,pos,typ,rt,chksum];
-            }
-                        
+                arrValues = [hsn_sc,chksum];
+            }                        
             delete_item_invoice(type,returnmonth,arrValues);          
         });
     });
@@ -624,7 +611,7 @@ echo $response;
                 type: "post",
                 data: {type:type,returnmonth:returnmonth,arrValues: arrValues},
                 success: function (response) {
-                   // location.reload();
+                   location.reload();
                 },
                 error: function() {
                 }
