@@ -591,8 +591,8 @@ final class client extends validation {
 					$flag = false;
 					continue;
 				}
-
-                $currentItemError = array();
+				
+				$currentItemError = array();
                 $dataArray['item_name'] = isset($data['A']) ? $data['A'] : '';
 				$item_hsnsac_code  = isset($data['B']) ? $data['B'] : '';
 
@@ -653,16 +653,16 @@ final class client extends validation {
 				
 				$dataArray['item_description'] = isset($data['G']) ? $data['G'] : '';
 
-				$invoiceErrors = $this->validateClientInvoiceExcel($dataArray);
-				if ($invoiceErrors !== true || !empty($currentItemError)) {
+				$itemErrors = $this->validateClientItemExcel($dataArray);
+				if ($itemErrors !== true || !empty($currentItemError)) {
 
 					$errorflag = true;
-					if ($invoiceErrors === true) {
-						$invoiceErrors = array();
+					if ($itemErrors === true) {
+						$itemErrors = array();
 					}
-					$invoiceErrors = array_merge($invoiceErrors, $currentItemError);
-					$invoiceErrors = implode(", ", $invoiceErrors);
-					$objPHPExcel->getActiveSheet()->SetCellValue('H' . $rowKey, $invoiceErrors);
+					$itemErrors = array_merge($itemErrors, $currentItemError);
+					$itemErrors = implode(", ", $itemErrors);
+					$objPHPExcel->getActiveSheet()->SetCellValue('H' . $rowKey, $itemErrors);
 				}
 
 				$dataArray['added_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);

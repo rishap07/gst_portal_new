@@ -1460,6 +1460,21 @@ class common extends db {
             return "PRV-000000000001";
         }
     }
+	
+	public function generatePurchaseRFInvoiceNumber($clientId) {
+
+        $currentFinancialYear = $this->generateFinancialYear();
+        $query = "select purchase_invoice_id  from " . $this->tableNames['client_purchase_invoice'] . " where 1=1 AND invoice_type = 'refundvoucherinvoice' AND financial_year = '" . $currentFinancialYear . "' AND added_by=" . $clientId;
+        $invoices = $this->get_results($query);
+
+        if (!empty($invoices)) {
+
+            $nextInvoice = count($invoices) + 1;
+            return "PRF-" . str_pad($nextInvoice, 12, "0", STR_PAD_LEFT);
+        } else {
+            return "PRF-000000000001";
+        }
+    }
 
     function convert_number_to_words($number) {
 

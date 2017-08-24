@@ -293,12 +293,12 @@ final class gstr1 extends validation {
         /***** End Code For CDNUR Payload ********** */
 
         /***** Start Code For HSN Summary Payload ********** */
-        $hsn_data = $this->gstHSNPayload($user_id, $returnmonth);
+       /* $hsn_data = $this->gstHSNPayload($user_id, $returnmonth);
         if (!empty($hsn_data)) {
             //$data_ids[] = $hsn_ids = $hsn_data['hsn_ids'];
             $hsn_arr = $hsn_data['hsn_arr'];
             $dataArr = array_merge($dataArr, $hsn_arr);
-        }
+        }*/
         /***** END Code For HSN Summary Payload ********** */
 
         /***** Start Code For AT Payload ********** */
@@ -346,8 +346,8 @@ final class gstr1 extends validation {
         // }
         /***** End Code For TXPD Payload ********** */
 
-/*        
-        $this->pr($dataArr);       
+        
+        /*$this->pr($dataArr);       
         die; */
         
         $temp_id = '';
@@ -371,7 +371,7 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function gstDeleteItemPayload($returnmonth,$type,$data) {
+    public function gstDeleteItemPayload($returnmonth,$type,$data,$all='') {
         $obj_gst = new gstr();
         $user_id = $_SESSION['user_detail']['user_id'];
         $dataArr = $this->gstPayloadHeader($user_id, $returnmonth);
@@ -379,7 +379,7 @@ final class gstr1 extends validation {
         $is_gross_turnover_check = $obj_gst->is_gross_turnover_check($_SESSION['user_detail']['user_id']);
         if (!empty($is_gross_turnover_check)) {
 
-            $deletePayload = $this->gstDeletePayload($user_id, $returnmonth,$type,$data);
+            $deletePayload = $this->gstDeletePayload($user_id, $returnmonth,$type,$data,$all);
 
             if(!empty($deletePayload)) {
                 $deletePayloadArr = $deletePayload['data_arr'];
@@ -419,30 +419,86 @@ final class gstr1 extends validation {
         return false;
     }
 
-    public function gstDeletePayload($user_id, $returnmonth,$type,$data) {
+    public function gstDeletePayload($user_id, $returnmonth,$type,$data,$all) {
         $response = $data_ids = $dataArr = array();
         if(!empty($data)) {
+            /*echo $all;
+            die;*/
             if($type == 'B2B') {
                 $ctin = isset($data['ctin'])?$data['ctin']:'';
                 $inum = isset($data['inum'])?$data['inum']:'';
                 $idt = isset($data['idt'])?$data['idt']:'';
+                $json = isset($data['json'])?$data['json']:'';
+                if($all == 'all') {
+                    $jstr1_array = json_decode($json,true);
+                    if(isset($jstr1_array['b2b'])) {
+                        $i=0;
+                        foreach ($jstr1_array['b2b'] as $key1 => $inv_value) {
+                            if(isset($inv_value['inv'])) {
+                                $ctin = isset($inv_value['ctin'])?$inv_value['ctin']:'';
+                                $j=0;
+                                foreach ($inv_value['inv'] as $key2 => $jstr1_value) {
+                                    $pos = isset($jstr1_value['pos'])?$jstr1_value['pos']:0;
+                                    $idt = isset($jstr1_value['idt'])?$jstr1_value['idt']:'';
+                                    $inum = isset($jstr1_value['inum'])?$jstr1_value['inum']:'';
 
-                $dataArr['b2b'][0]['ctin'] = $ctin;
-                $dataArr['b2b'][0]['inv'][0]['flag'] = 'D';
-                $dataArr['b2b'][0]['inv'][0]['inum'] = $inum;
-                $dataArr['b2b'][0]['inv'][0]['idt'] = $idt;
-                $data_ids = $this->gstB2BDeleteQuery($user_id, $ctin,$inum,$idt);
+                                    $dataArr['b2b'][$i]['ctin'] = $ctin;
+                                    $dataArr['b2b'][$i]['inv'][$j]['flag'] = 'D';
+                                    $dataArr['b2b'][$i]['inv'][$j]['inum'] = $inum;
+                                    $dataArr['b2b'][$i]['inv'][$j]['idt'] = $idt;
+                                    $j++;
+                                }
+                            }
+                            $i++;
+                        }  
+                    }
+                    
+                }
+                else {
+                    $dataArr['b2b'][0]['ctin'] = $ctin;
+                    $dataArr['b2b'][0]['inv'][0]['flag'] = 'D';
+                    $dataArr['b2b'][0]['inv'][0]['inum'] = $inum;
+                    $dataArr['b2b'][0]['inv'][0]['idt'] = $idt;
+                }
+                $data_ids = $this->gstB2BDeleteQuery($user_id,$returnmonth, $ctin,$inum,$idt,$all);
             }
             if($type == 'B2CL') {
                 $pos = isset($data['pos'])?$data['pos']:'';
                 $inum = isset($data['inum'])?$data['inum']:'';
                 $idt = isset($data['idt'])?$data['idt']:'';
+                $json = isset($data['json'])?$data['json']:'';
+                if($all == 'all') {
+                    $jstr1_array = json_decode($json,true);
+                    if(isset($jstr1_array['b2cl'])) {
+                        $i=0;
+                        foreach ($jstr1_array['b2cl'] as $key1 => $inv_value) {
+                            if(isset($inv_value['inv'])) {
+                                $j=0;
+                                foreach ($inv_value['inv'] as $key2 => $jstr1_value) {
+                                    $pos = isset($inv_value['pos'])?$inv_value['pos']:0;
+                                    $idt = isset($jstr1_value['idt'])?$jstr1_value['idt']:'';
+                                    $inum = isset($jstr1_value['inum'])?$jstr1_value['inum']:'';
+                                    
+                                    $dataArr['b2cl'][$i]['pos'] = $pos;
+                                    $dataArr['b2cl'][$i]['inv'][$j]['flag'] = 'D';
+                                    $dataArr['b2cl'][$i]['inv'][$j]['inum'] = $inum;
+                                    $dataArr['b2cl'][$i]['inv'][$j]['idt'] = $idt;
+                                    $j++;
+                                }
+                            }
+                            $i++;
+                        }  
+                    }
+                    
+                }
+                else {
 
-                $dataArr['b2cl'][0]['pos'] = $pos;
-                $dataArr['b2cl'][0]['inv'][0]['flag'] = 'D';
-                $dataArr['b2cl'][0]['inv'][0]['inum'] = $inum;
-                $dataArr['b2cl'][0]['inv'][0]['idt'] = $idt;
-                $data_ids = $this->gstB2CLDeleteQuery($user_id, $pos,$inum,$idt);
+                    $dataArr['b2cl'][0]['pos'] = $pos;
+                    $dataArr['b2cl'][0]['inv'][0]['flag'] = 'D';
+                    $dataArr['b2cl'][0]['inv'][0]['inum'] = $inum;
+                    $dataArr['b2cl'][0]['inv'][0]['idt'] = $idt;
+                }
+                $data_ids = $this->gstB2CLDeleteQuery($user_id, $returnmonth,$returnmonth,$pos,$inum,$idt,$all);
             }
             if($type == 'CDNR') {
                 $ctin = isset($data['ctin'])?$data['ctin']:'';
@@ -450,183 +506,342 @@ final class gstr1 extends validation {
                 $idt = isset($data['idt'])?$data['idt']:'';
                 $nt_num = isset($data['nt_num'])?$data['nt_num']:'';
                 $nt_dt = isset($data['nt_dt'])?$data['nt_dt']:'';
+                $json = isset($data['json'])?$data['json']:'';
+                if($all == 'all') {
+                    $jstr1_array = json_decode($json,true);
+                    if(isset($jstr1_array['cdnr'])) {
+                        $i=0;
+                        foreach ($jstr1_array['cdnr'] as $key1 => $inv_value) {
+                            $cfs = isset($inv_value['cfs'])?$inv_value['cfs']:'';
+                            $nt = isset($inv_value['nt'])?$inv_value['nt']:array();
+                            $ctin = isset($inv_value['ctin'])?$inv_value['ctin']:'';
+                            if(isset($nt) && !empty($nt)) {
+                                $j=0;
+                                foreach ($nt as $key2 => $jstr1_value) {
+                                   
+                                    $nt_num = isset($jstr1_value['nt_num'])?$jstr1_value['nt_num']:'';
+                                    $inum = isset($jstr1_value['inum'])?$jstr1_value['inum']:'';
+                                    
+                                    $idt = isset($jstr1_value['idt'])?$jstr1_value['idt']:'';
+                                    $nt_dt = isset($jstr1_value['nt_dt'])?$jstr1_value['nt_dt']:'';
 
-                $dataArr['cdnr'][0]['ctin'] = $ctin;
-                $dataArr['cdnr'][0]['nt'][0]['flag'] = 'D';
-                $dataArr['cdnr'][0]['nt'][0]['nt_num'] = $nt_num;
-                $dataArr['cdnr'][0]['nt'][0]['nt_dt'] = $nt_dt;
-                $dataArr['cdnr'][0]['nt'][0]['inum'] = $inum;
-                $dataArr['cdnr'][0]['nt'][0]['idt'] = $idt;
-                $data_ids = $this->gstCDNRDeleteQuery($user_id, $ctin,$inum,$idt,$nt_num,$nt_dt);
+                                    $dataArr['cdnr'][$i]['ctin'] = $ctin;
+                                    $dataArr['cdnr'][$i]['nt'][$j]['flag'] = 'D';
+                                    $dataArr['cdnr'][$i]['nt'][$j]['nt_num'] = $nt_num;
+                                    $dataArr['cdnr'][$i]['nt'][$j]['nt_dt'] = $nt_dt;
+                                    $dataArr['cdnr'][$i]['nt'][$j]['inum'] = $inum;
+                                    $dataArr['cdnr'][$i]['nt'][$j]['idt'] = $idt;
+
+                                    $j++;
+
+                                }
+                            }
+                            $i++;
+                        }  
+                    }
+                    
+                }
+                else {
+
+                    $dataArr['cdnr'][0]['ctin'] = $ctin;
+                    $dataArr['cdnr'][0]['nt'][0]['flag'] = 'D';
+                    $dataArr['cdnr'][0]['nt'][0]['nt_num'] = $nt_num;
+                    $dataArr['cdnr'][0]['nt'][0]['nt_dt'] = $nt_dt;
+                    $dataArr['cdnr'][0]['nt'][0]['inum'] = $inum;
+                    $dataArr['cdnr'][0]['nt'][0]['idt'] = $idt;
+                }
+                $data_ids = $this->gstCDNRDeleteQuery($user_id, $returnmonth,$ctin,$inum,$idt,$nt_num,$nt_dt,$all);
             }
             if($type == 'CDNUR') {
                 $inum = isset($data['inum'])?$data['inum']:'';
                 $idt = isset($data['idt'])?$data['idt']:'';
                 $nt_num = isset($data['nt_num'])?$data['nt_num']:'';
                 $nt_dt = isset($data['nt_dt'])?$data['nt_dt']:'';
+                $typ = isset($data['typ'])?$data['typ']:'';
+                $json = isset($data['json'])?$data['json']:'';
+                if($all == 'all') {
+                    $jstr1_array = json_decode($json,true);
+                    if(isset($jstr1_array['cdnur'])) {
+                        $i=0;
+                        foreach ($jstr1_array['cdnur'] as $key1 => $jstr1_value) {
+                   
+                            $nt_num = isset($jstr1_value['nt_num'])?$jstr1_value['nt_num']:'';
+                            $inum = isset($jstr1_value['inum'])?$jstr1_value['inum']:'';
+                            
+                            $idt = isset($jstr1_value['idt'])?$jstr1_value['idt']:'';
+                            $nt_dt = isset($jstr1_value['nt_dt'])?$jstr1_value['nt_dt']:'';
+                            $typ = isset($jstr1_value['typ'])?$jstr1_value['typ']:'';
 
-                $dataArr['cdnur'][0]['typ'] = "B2CL";
-                $dataArr['cdnur'][0]['flag'] = 'D';
-                $dataArr['cdnur'][0]['nt_num'] = $nt_num;
-                $dataArr['cdnur'][0]['nt_dt'] = $nt_dt;
-                $dataArr['cdnur'][0]['inum'] = $inum;
-                $dataArr['cdnur'][0]['idt'] = $idt;
-                $data_ids = $this->gstCDNURDeleteQuery($user_id, $inum,$idt,$nt_num,$nt_dt);
+                            $dataArr['cdnur'][$i]['typ'] = $typ;
+                            $dataArr['cdnur'][$i]['flag'] = 'D';
+                            $dataArr['cdnur'][$i]['nt_num'] = $nt_num;
+                            $dataArr['cdnur'][$i]['nt_dt'] = $nt_dt;
+                            $dataArr['cdnur'][$i]['inum'] = $inum;
+                            $dataArr['cdnur'][$i]['idt'] = $idt;
+                            $i++;
+
+                        }
+                    }
+                    
+                }
+                else {
+
+                    $dataArr['cdnur'][0]['typ'] = $typ;
+                    $dataArr['cdnur'][0]['flag'] = 'D';
+                    $dataArr['cdnur'][0]['nt_num'] = $nt_num;
+                    $dataArr['cdnur'][0]['nt_dt'] = $nt_dt;
+                    $dataArr['cdnur'][0]['inum'] = $inum;
+                    $dataArr['cdnur'][0]['idt'] = $idt;
+                }
+                $data_ids = $this->gstCDNURDeleteQuery($user_id, $returnmonth,$inum,$idt,$nt_num,$nt_dt,$all);
             }
             if($type == 'EXP') {
+                
                 $inum = isset($data['inum'])?$data['inum']:'';
                 $idt = isset($data['idt'])?$data['idt']:'';
                 $exp_typ = isset($data['exp_typ'])?$data['exp_typ']:'';
+                $json = isset($data['json'])?$data['json']:'';
+                if($all == 'all') {
+                    $jstr1_array = json_decode($json,true);
+                    if(isset($jstr1_array['exp'])) {
+                        $i=0;
+                        foreach ($jstr1_array['exp'] as $key1 => $inv_value) {
+                            if(isset($inv_value['inv'])) {
+                                $exp_typ = isset($inv_value['exp_typ'])?$inv_value['exp_typ']:'';
+                                $j=0;
+                                foreach ($inv_value['inv'] as $key2 => $jstr1_value) {
+                                    $idt = isset($jstr1_value['idt'])?$jstr1_value['idt']:'';
+                                    $inum = isset($jstr1_value['inum'])?$jstr1_value['inum']:'';
 
-                $dataArr['exp'][0]['exp_typ'] = $exp_typ;
-                $dataArr['exp'][0]['inv'][0]['flag'] = 'D';
-                $dataArr['exp'][0]['inv'][0]['inum'] = $inum;
-                $dataArr['exp'][0]['inv'][0]['idt'] = $idt;
-                $data_ids = $this->gstEXPDeleteQuery($user_id,$inum,$idt,$exp_typ);
+                                    $dataArr['exp'][$i]['exp_typ'] = $exp_typ;
+                                    $dataArr['exp'][$i]['inv'][$j]['flag'] = 'D';
+                                    $dataArr['exp'][$i]['inv'][$j]['inum'] = $inum;
+                                    $dataArr['exp'][$i]['inv'][$j]['idt'] = $idt;
+                                   
+                                    $j++;
+                                }
+                            }
+                            $i++;
+                        }    
+                    }
+                    
+                }
+                else {
+                    $dataArr['exp'][0]['exp_typ'] = $exp_typ;
+                    $dataArr['exp'][0]['inv'][0]['flag'] = 'D';
+                    $dataArr['exp'][0]['inv'][0]['inum'] = $inum;
+                    $dataArr['exp'][0]['inv'][0]['idt'] = $idt;
+
+                }
+                $data_ids = $this->gstEXPDeleteQuery($user_id,$returnmonth,$inum,$idt,$exp_typ,$all);
             }
             if($type == 'HSN') {
                 $hsn_sc = isset($data['hsn_sc'])?$data['hsn_sc']:'';
                 $chksum = isset($data['chksum'])?$data['chksum']:'';
-                $dataArr['hsn']['flag'] = 'D';
-                $dataArr['hsn']['data'][0]['hsn_sc'] = $hsn_sc;
-                $dataArr['hsn']['chksum'] = $chksum;
-            }
-            if($type == 'B2CS') {
+                
                 $json = isset($data['json'])?$data['json']:'';
-                $jstr1_array = json_decode($json,true);
-                if(isset($jstr1_array['b2cs'])) {
-                    $i=0;
-                    foreach ($jstr1_array['b2cs'] as $key1 => $jstr1_value) {
-                        $rt = isset($jstr1_value['rt'])?$jstr1_value['rt']:0;
-                        $pos = isset($jstr1_value['pos'])?$jstr1_value['pos']:0;
-                        $typ = isset($jstr1_value['typ'])?$jstr1_value['typ']:0;
-                        $sply_ty = isset($jstr1_value['sply_ty'])?$jstr1_value['sply_ty']:0;
-                        $chksum = isset($jstr1_value['chksum'])?$jstr1_value['chksum']:'';
+                if($all == 'all') {
+                    $jstr1_array = json_decode($json,true);
+                    if(isset($jstr1_array['hsn']['data'])) {
+                        $hsn = $jstr1_array['hsn']['data'];
+                        $chksum = $jstr1_array['hsn']['chksum'];
+                        $i=0;
+                        foreach ($hsn as $key1 => $jstr1_value) {
+                            $hsn_sc = isset($jstr1_value['hsn_sc'])?$jstr1_value['hsn_sc']:'';
 
-                        $dataArr['b2cs'][$i]['flag'] = 'D';
-                        $dataArr['b2cs'][$i]['rt'] = $rt;
-                        $dataArr['b2cs'][$i]['sply_ty'] = $sply_ty;
-                        $dataArr['b2cs'][$i]['typ'] = $typ;
-                        $dataArr['b2cs'][$i]['pos'] = $pos;
-                        $dataArr['b2cs'][$i]['chksum'] = $chksum;
-                        $i++;
-                    }   
+                            $dataArr['hsn']['flag'] = 'D';
+                            $dataArr['hsn']['data'][$i]['hsn_sc'] = $hsn_sc;
+                            $dataArr['hsn']['chksum'] = $chksum;
+                            $i++;
+                        }   
+                    }
+                    
                 }
-                $data_ids = $this->gstB2CSDeleteQuery($user_id, $returnmonth);
+                else {
+                    $dataArr['hsn']['flag'] = 'D';
+                    $dataArr['hsn']['data'][0]['hsn_sc'] = $hsn_sc;
+                    $dataArr['hsn']['chksum'] = $chksum;
+                }
+            }
+            if($all == 'all') {
+                if($type == 'B2CS') {
+                    $json = isset($data['json'])?$data['json']:'';
+                    $jstr1_array = json_decode($json,true);
+                    if(isset($jstr1_array['b2cs'])) {
+                        $i=0;
+                        foreach ($jstr1_array['b2cs'] as $key1 => $jstr1_value) {
+                            $rt = isset($jstr1_value['rt'])?$jstr1_value['rt']:0;
+                            $pos = isset($jstr1_value['pos'])?$jstr1_value['pos']:0;
+                            $typ = isset($jstr1_value['typ'])?$jstr1_value['typ']:0;
+                            $sply_ty = isset($jstr1_value['sply_ty'])?$jstr1_value['sply_ty']:0;
+                            $chksum = isset($jstr1_value['chksum'])?$jstr1_value['chksum']:'';
+
+                            $dataArr['b2cs'][$i]['flag'] = 'D';
+                            $dataArr['b2cs'][$i]['rt'] = $rt;
+                            $dataArr['b2cs'][$i]['sply_ty'] = $sply_ty;
+                            $dataArr['b2cs'][$i]['typ'] = $typ;
+                            $dataArr['b2cs'][$i]['pos'] = $pos;
+                            $dataArr['b2cs'][$i]['chksum'] = $chksum;
+                            $i++;
+                        }   
+                    }
+                    $data_ids = $this->gstB2CSDeleteQuery($user_id, $returnmonth);
+                }
+                
+                if($type == 'AT') {
+                    $json = isset($data['json'])?$data['json']:'';
+                    $jstr1_array = json_decode($json,true);
+                    if(isset($jstr1_array['at'])) {
+                        $i=0;
+                        foreach ($jstr1_array['at'] as $key1 => $jstr1_value) {
+                            $pos = isset($jstr1_value['pos'])?$jstr1_value['pos']:0;
+                            $chksum = isset($jstr1_value['chksum'])?$jstr1_value['chksum']:'';
+                            $sply_ty = isset($jstr1_value['sply_ty'])?$jstr1_value['sply_ty']:'';
+                            
+                            $dataArr['at'][$i]['sply_ty'] = $sply_ty;
+                            $dataArr['at'][$i]['pos'] = $pos;
+                            $dataArr['at'][$i]['flag'] = 'D';
+                            $dataArr['at'][$i]['chksum'] = $chksum; 
+                            $i++;
+                        }   
+                    }
+                    $data_ids = $this->gstAtDeleteQuery($user_id, $returnmonth);
+                }
+                if($type == 'TXPD') {
+                    $json = isset($data['json'])?$data['json']:'';
+                    $jstr1_array = json_decode($json,true);
+                    if(isset($jstr1_array['txpd'])) {
+                        $i=0;
+                        foreach ($jstr1_array['txpd'] as $key1 => $jstr1_value) {
+                            $pos = isset($jstr1_value['pos'])?$jstr1_value['pos']:0;
+                            $sply_ty = isset($jstr1_value['sply_ty'])?$jstr1_value['sply_ty']:'';
+                            $chksum = isset($jstr1_value['chksum'])?$jstr1_value['chksum']:'';
+
+                            $dataArr['txpd'][$i]['flag'] = 'D';
+                            $dataArr['txpd'][$i]['pos'] = $pos;
+                            $dataArr['txpd'][$i]['sply_ty'] = $sply_ty;
+                            $dataArr['txpd'][$i]['chksum'] = $chksum;
+
+                            $i++;
+                        }   
+                    }
+                } 
             }
             
-            if($type == 'AT') {
-                $json = isset($data['json'])?$data['json']:'';
-                $jstr1_array = json_decode($json,true);
-                if(isset($jstr1_array['at'])) {
-                    $i=0;
-                    foreach ($jstr1_array['at'] as $key1 => $jstr1_value) {
-                        $pos = isset($jstr1_value['pos'])?$jstr1_value['pos']:0;
-                        $chksum = isset($jstr1_value['chksum'])?$jstr1_value['chksum']:'';
-                        $sply_ty = isset($jstr1_value['sply_ty'])?$jstr1_value['sply_ty']:'';
-                        
-                        $dataArr['at'][$i]['sply_ty'] = $sply_ty;
-                        $dataArr['at'][$i]['pos'] = $pos;
-                        $dataArr['at'][$i]['flag'] = 'D';
-                        $dataArr['at'][$i]['chksum'] = $chksum; 
-                        $i++;
-                    }   
-                }
-                $data_ids = $this->gstAtDeleteQuery($user_id, $returnmonth);
-            }
-            if($type == 'TXPD') {
-                $json = isset($data['json'])?$data['json']:'';
-                $jstr1_array = json_decode($json,true);
-                if(isset($jstr1_array['txpd'])) {
-                    $i=0;
-                    foreach ($jstr1_array['txpd'] as $key1 => $jstr1_value) {
-                        $pos = isset($jstr1_value['pos'])?$jstr1_value['pos']:0;
-                        $sply_ty = isset($jstr1_value['sply_ty'])?$jstr1_value['sply_ty']:'';
-                        $chksum = isset($jstr1_value['chksum'])?$jstr1_value['chksum']:'';
-
-                        $dataArr['txpd'][$i]['flag'] = 'D';
-                        $dataArr['txpd'][$i]['pos'] = $pos;
-                        $dataArr['txpd'][$i]['sply_ty'] = $sply_ty;
-                        $dataArr['txpd'][$i]['chksum'] = $chksum;
-
-                        $i++;
-                    }   
-                }
-            }
         }
         $response['data_ids'] = $data_ids;
         $response['data_arr'] = $dataArr;
-        //$this->pr($response);die;
+      /* echo $all;
+        $this->pr($response);die;*/
         return $response;
     }
 
-    public function gstB2BDeleteQuery($user_id,$ctin,$inum,$idt) {
-        $idt=  date('Y-m-d', strtotime($idt));
-        $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a  where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$idt."%'  and a.billing_gstin_number!='' and a.invoice_type='taxinvoice' and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' and a.reference_number ='".$inum."' and a.billing_gstin_number='".$ctin."'  ";
-        $data = $this->get_results($query);
+    public function gstB2BDeleteQuery($user_id,$returnmonth,$ctin='',$inum='',$idt='',$all='') {
+        if(!empty($all)) {
+            $datas = $this->getB2BInvoices($user_id, $returnmonth,'1');
+        }
+        else {
+            $idt=  date('Y-m-d', strtotime($idt));
+            $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a  where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$idt."%'  and a.billing_gstin_number!='' and a.invoice_type='taxinvoice' and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' and a.reference_number ='".$inum."' and a.billing_gstin_number='".$ctin."'  ";
+            $datas = $this->get_results($query);
+        }
         $ids =  array();
-        if(!empty($data)) {
-            $ids[] = $data[0]->invoice_id;
+        if(!empty($datas)) {
+            foreach ($datas as $key => $data) {
+                $ids[] = $data->invoice_id;
+            }
+            
         }
         return $ids; 
     }
 
-    public function gstB2CLDeleteQuery($user_id, $pos,$inum,$idt) {
-        $idt=  date('Y-m-d', strtotime($idt));
-        $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id  where  a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$idt."%' and a.billing_gstin_number='' and a.invoice_total_value>'250000' and a.supply_place!=a.company_state and a.invoice_type='taxinvoice' and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' and a.reference_number ='".$inum."' and a.supply_place='".$pos."'  group by a.reference_number, b.consolidate_rate order by a.supply_place";
-        $data = $this->get_results($query);
+    public function gstB2CLDeleteQuery($user_id, $returnmonth,$pos='',$inum='',$idt='',$all='') {
+        if(!empty($all)) {
+            $datas = $this->getB2CLInvoices($user_id, $returnmonth,'1');
+        }
+        else {
+            $idt=  date('Y-m-d', strtotime($idt));
+            $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id  where  a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$idt."%' and a.billing_gstin_number='' and a.invoice_total_value>'250000' and a.supply_place!=a.company_state and a.invoice_type='taxinvoice' and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' and a.reference_number ='".$inum."' and a.supply_place='".$pos."'  group by a.reference_number, b.consolidate_rate order by a.supply_place";
+            $datas = $this->get_results($query);
+        }
         //$this->pr($data);
         $ids =  array();
-        if(!empty($data)) {
-            $ids[] = $data[0]->invoice_id;
+        if(!empty($datas)) {
+            foreach ($datas as $key => $data) {
+                $ids[] = $data->invoice_id;
+            }
+            
         }
         return $ids; 
     }
 
-    public function gstCDNRDeleteQuery($user_id,$ctin,$inum,$idt,$nt_num,$nt_dt) {
-        $idt=  date('Y-m-d', strtotime($idt));
-        $nt_dt=  date('Y-m-d', strtotime($nt_dt));
-        echo $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('client_invoice')." c  on a.corresponding_document_number=c.invoice_id where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$user_id."'  and a.corresponding_document_date like '%".$idt."%'  and a.billing_gstin_number!='' and (a.invoice_type='creditnote' or a.invoice_type='debitnote') and a.is_canceled='0' and a.is_deleted='0' and c.reference_number ='".$inum."' and a.billing_gstin_number='".$ctin."' and a.reference_number ='".$nt_num."' and a.invoice_date like '%".$nt_dt."%'  ";
-        $data = $this->get_results($query);
+    public function gstCDNRDeleteQuery($user_id,$returnmonth,$ctin='',$inum='',$idt='',$nt_num='',$nt_dt='',$all='') {
+        if(!empty($all)) {
+            $datas = $this->getCDNRInvoices($user_id, $returnmonth,'1');
+        }
+        else {
+            $idt=  date('Y-m-d', strtotime($idt));
+            $nt_dt=  date('Y-m-d', strtotime($nt_dt));
+            $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('client_invoice')." c  on a.corresponding_document_number=c.invoice_id where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$user_id."'  and a.corresponding_document_date like '%".$idt."%'  and a.billing_gstin_number!='' and (a.invoice_type='creditnote' or a.invoice_type='debitnote' or a.invoice_type='refundvoucherinvoice') and a.is_canceled='0' and a.is_deleted='0' and c.reference_number ='".$inum."' and a.billing_gstin_number='".$ctin."' and a.reference_number ='".$nt_num."' and a.invoice_date like '%".$nt_dt."%'  ";
+            $datas = $this->get_results($query);
+        }
         $ids =  array();
-        if(!empty($data)) {
-            $ids[] = $data[0]->invoice_id;
+        if(!empty($datas)) {
+            foreach ($datas as $key => $data) {
+                $ids[] = $data->invoice_id;
+            }
+            
         }
         return $ids;
     }
     
-    public function gstCDNURDeleteQuery($user_id, $inum,$idt,$nt_num,$nt_dt) {
-        $idt=  date('Y-m-d', strtotime($idt));
-        $nt_dt=  date('Y-m-d', strtotime($nt_dt));
-        $query =  "select a.invoice_id from gst_client_invoice a inner join gst_client_invoice_item b on a.invoice_id=b.invoice_id inner join gst_client_invoice c on a.corresponding_document_number=c.invoice_id where a.status='1' and a.added_by='".$user_id."' and a.is_gstr1_uploaded='1' and a.invoice_date like '%".$idt."%' and a.supply_place!=a.company_state and a.invoice_corresponding_type='taxinvoice' and a.billing_gstin_number='' and a.invoice_total_value >'250000' and (a.invoice_type='creditnote' or a.invoice_type='debitnote') and a.is_canceled='0' and a.is_deleted='0' and c.reference_number ='".$inum."' and a.reference_number ='".$nt_num."' and a.invoice_date like '%".$nt_dt."%' ";
-        $data = $this->get_results($query);
+    public function gstCDNURDeleteQuery($user_id, $returnmonth,$inum='',$idt='',$nt_num='',$nt_dt='',$all='') {
+        if(!empty($all)) {
+            $datas = $this->getCDNURInvoices($user_id, $returnmonth,'1');
+        }
+        else {
+            $idt=  date('Y-m-d', strtotime($idt));
+            $nt_dt=  date('Y-m-d', strtotime($nt_dt));
+            $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('client_invoice')." c on a.corresponding_document_number=c.invoice_id where a.status='1' and a.added_by='".$user_id."' and a.is_gstr1_uploaded='1' and a.invoice_date like '%".$idt."%' and a.supply_place!=a.company_state and a.invoice_corresponding_type='taxinvoice' and a.billing_gstin_number='' and a.invoice_total_value >'250000'  and (a.invoice_type='creditnote' or a.invoice_type='debitnote' or a.invoice_type='refundvoucherinvoice' ) and (c.invoice_type='exportinvoice' or c.invoice_type='sezunitinvoice' or c.invoice_type='deemedexportinvoice' or c.invoice_type='taxinvoice') and a.is_canceled='0' and a.is_deleted='0' and c.reference_number ='".$inum."' and a.reference_number ='".$nt_num."' and a.invoice_date like '%".$nt_dt."%' group by a.reference_number, b.consolidate_rate order by a.supply_place";
+            $datas = $this->get_results($query);
+        }
         $ids =  array();
-        if(!empty($data)) {
-            $ids[] = $data[0]->invoice_id;
+        if(!empty($datas)) {
+            foreach ($datas as $key => $data) {
+                $ids[] = $data->invoice_id;
+            }
+            
         }
         return $ids;
     }
 
-    public function gstEXPDeleteQuery($user_id,$inum,$idt,$exp_typ) {
-        $idt=  date('Y-m-d', strtotime($idt));
-        if($exp_typ == 'WPAY') {
-            $exp_typ = 'withpayment';
+    public function gstEXPDeleteQuery($user_id,$returnmonth,$inum='',$idt='',$exp_typ='',$all='') {
+        if(!empty($all)) {
+            $datas = $this->getEXPInvoices($user_id, $returnmonth,'1');
         }
         else {
-            $exp_typ = 'withoutpayment';
+           $idt=  date('Y-m-d', strtotime($idt));
+            if($exp_typ == 'WPAY') {
+                $exp_typ = 'withpayment';
+            }
+            else {
+                $exp_typ = 'withoutpayment';
+            }
+            $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$idt."%' and (a.invoice_type='exportinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice') and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' and a.export_bill_number !='' and a.export_bill_date != '' and a.export_bill_port_code != '' and a.reference_number ='".$inum."' and a.export_supply_meant ='".$exp_typ."'";
+            $datas = $this->get_results($query); 
         }
-        $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$idt."%' and (a.invoice_type='exportinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice') and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' and a.export_bill_number !='' and a.export_bill_date != '' and a.export_bill_port_code != '' and a.reference_number ='".$inum."' and a.export_supply_meant ='".$exp_typ."'";
-        $data = $this->get_results($query);
         $ids =  array();
-        if(!empty($data)) {
-            $ids[] = $data[0]->invoice_id;
+        if(!empty($datas)) {
+            foreach ($datas as $key => $data) {
+                $ids[] = $data->invoice_id;
+            }
+            
         }
         return $ids;
     }
 
     public function gstAtDeleteQuery($user_id,$returnmonth) {
-      $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a  inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id where  a.status='1' and a.is_gstr1_uploaded='1'  and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.invoice_type='receiptvoucherinvoice' and a.is_canceled='0' and a.is_deleted='0' group by a.supply_place ,b.consolidate_rate order by a.supply_place ";
-        $datas = $this->get_results($query);
+        $datas = $this->getATInvoices($user_id, $returnmonth,'1');
         $ids =  array();
        
         if(!empty($datas)) {
@@ -639,8 +854,7 @@ final class gstr1 extends validation {
     }
 
     public function gstB2CSDeleteQuery($user_id,$returnmonth) {
-        $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number='' and (a.supply_place=a.company_state or (a.supply_place!=a.company_state and a.invoice_total_value<='250000')) and a.invoice_type='taxinvoice' and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' ";
-        $datas = $this->get_results($query);
+        $datas = $this->getB2CSInvoices($user_id, $returnmonth,'1');
         $ids =  array();
        
         if(!empty($datas)) {
@@ -854,7 +1068,11 @@ final class gstr1 extends validation {
                 $nt_type = '';
                 if ($dataIn->invoice_type == 'creditnote') {
                     $nt_type = 'C';
-                } else {
+                }
+                elseif ($dataIn->invoice_type == 'refundvoucherinvoice') {
+                    $nt_type = 'R';
+                } 
+                else {
                     $nt_type = 'D';
                 }
                 $dataArr['cdnr'][$x]['nt'][$y]['ntty'] = $nt_type;
@@ -894,6 +1112,7 @@ final class gstr1 extends validation {
     public function gstCDNURPayload($user_id, $returnmonth) {
         $dataArr = $response = $cdnur_array = $cdnur_ids = array();
         $dataInvCDNUR = $this->getCDNURInvoices($user_id, $returnmonth);
+       // $this->pr($dataInvCDNUR);
         if (isset($dataInvCDNUR) && !empty($dataInvCDNUR)) {
 
             $x = 0;
@@ -911,10 +1130,26 @@ final class gstr1 extends validation {
                 $nt_type = '';
                 if ($dataIn->invoice_type == 'creditnote') {
                     $nt_type = 'C';
-                } else {
+                } 
+                elseif ($dataIn->invoice_type == 'refundvoucherinvoice') {
+                    $nt_type = 'R';
+                }
+                else {
                     $nt_type = 'D';
                 }
-                $dataArr['cdnur'][$x]['typ'] = "B2CL";
+                $type = '';
+                if ($dataIn->original_type == 'taxinvoice') {
+                    $type = "B2CL";
+                } 
+                else {
+                    if ($dataIn->export_supply_meant == 'withpayment') {
+                        $type = "EXPWP";
+                    }
+                    else {
+                        $type = "EXPWOP";
+                    }
+                }
+                $dataArr['cdnur'][$x]['typ'] = $type;
                 $dataArr['cdnur'][$x]['ntty'] = $nt_type;
                 $dataArr['cdnur'][$x]['nt_num'] = $dataIn->reference_number;
                 $dataArr['cdnur'][$x]['nt_dt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
@@ -927,12 +1162,7 @@ final class gstr1 extends validation {
                 $rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
                 $dataArr['cdnur'][$x]['itms'][$y]['itm_det']['rt'] = (float) $rt;
                 $dataArr['cdnur'][$x]['itms'][$y]['itm_det']['txval'] = (float) $dataIn->taxable_subtotal;
-                if ($dataIn->company_state != $dataIn->supply_place) {
-                    $dataArr['cdnur'][$x]['itms'][$y]['itm_det']['iamt'] = (float) $dataIn->igst_amount;
-                } else {
-                    $dataArr['cdnur'][$x]['itms'][$y]['itm_det']['samt'] = (float) $dataIn->sgst_amount;
-                    $dataArr['cdnur'][$x]['itms'][$y]['itm_det']['camt'] = (float) $dataIn->cgst_amount;
-                }
+                $dataArr['cdnur'][$x]['itms'][$y]['itm_det']['iamt'] = (float) $dataIn->igst_amount;
                 $dataArr['cdnur'][$x]['itms'][$y]['itm_det']['csamt'] = (float) $dataIn->cess_amount;
                 $y++;
                 $temp_number = $dataIn->reference_number;
@@ -943,7 +1173,8 @@ final class gstr1 extends validation {
                 $cdnur_ids = array_unique(array_column($cdnur_array, 'invoice_id'));
             }
         }
-        //$this->pr($dataArr);
+        /*$this->pr($dataArr);
+        die;*/
         $response['cdnur_ids'] = $cdnur_ids;
         $response['cdnur_arr'] = $dataArr;
         return $response;
@@ -1366,9 +1597,16 @@ final class gstr1 extends validation {
                         $dataArr1['inv'][$y]['inum'] = $dataIn->reference_number;
                         $dataArr1['inv'][$y]['idt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
                         $dataArr1['inv'][$y]['val'] = (float) $dataIn->invoice_total_value;
-                        $dataArr1['inv'][$y]['sbpcode'] = $dataIn->export_bill_port_code;
-                        $dataArr1['inv'][$y]['sbnum'] = (int)$dataIn->export_bill_number;
-                        $dataArr1['inv'][$y]['sbdt'] = $dataIn->export_bill_date > 0 ? date('d-m-Y', strtotime($dataIn->export_bill_date)) : '';
+                        if(!empty($dataIn->export_bill_port_code)) {
+                            $dataArr1['inv'][$y]['sbpcode'] = $dataIn->export_bill_port_code;
+                        }
+                        if(!empty($dataIn->export_bill_number)) {
+                            $dataArr1['inv'][$y]['sbnum'] = (int)$dataIn->export_bill_number;
+                        }
+                        if(!empty($dataIn->export_bill_date)) {
+                            $dataArr1['inv'][$y]['sbdt'] = $dataIn->export_bill_date > 0 ? date('d-m-Y', strtotime($dataIn->export_bill_date)) : '';
+                        }
+                        
                         $dataArr1['inv'][$y]['itms'][$z]['txval'] = (float) $dataIn->taxable_subtotal;
                         $dataArr1['inv'][$y]['itms'][$z]['rt'] = (float) $rt;
                         $dataArr1['inv'][$y]['itms'][$z]['iamt'] = (float) $dataIn->igst_amount;
@@ -1392,9 +1630,15 @@ final class gstr1 extends validation {
                         $dataArr2['inv'][$y]['inum'] = $dataIn->reference_number;
                         $dataArr2['inv'][$y]['idt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
                         $dataArr2['inv'][$y]['val'] = (float) $dataIn->invoice_total_value;
-                        $dataArr2['inv'][$y]['sbpcode'] = $dataIn->export_bill_port_code;
-                        $dataArr2['inv'][$y]['sbnum'] = (int)$dataIn->export_bill_number;
-                        $dataArr2['inv'][$y]['sbdt'] = $dataIn->export_bill_date > 0 ? date('d-m-Y', strtotime($dataIn->export_bill_date)) : '';
+                        if(!empty($dataIn->export_bill_port_code)) {
+                            $dataArr2['inv'][$y]['sbpcode'] = $dataIn->export_bill_port_code;
+                        }
+                        if(!empty($dataIn->export_bill_number)) {
+                            $dataArr2['inv'][$y]['sbnum'] = (int)$dataIn->export_bill_number;
+                        }
+                        if(!empty($dataIn->export_bill_date)) {
+                            $dataArr2['inv'][$y]['sbdt'] = $dataIn->export_bill_date > 0 ? date('d-m-Y', strtotime($dataIn->export_bill_date)) : '';
+                        }
                         $dataArr2['inv'][$y]['itms'][$z]['txval'] = (float) $dataIn->taxable_subtotal;
                         $dataArr2['inv'][$y]['itms'][$z]['rt'] = (float) $rt;
                         //$dataArr2['inv'][$y]['itms'][$z]['iamt'] = (float) $dataIn->igst_amount;

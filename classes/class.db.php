@@ -273,7 +273,7 @@ class db {
                     $query .= '), ';
                 }
                 $query = rtrim($query, ', ');
-               // echo $query; die();
+                //echo $query; die();
                 $this->query($query);
                 if ($this->link->error) {
                     $this->log_db_errors($this->link->error, $query);
@@ -414,7 +414,7 @@ class db {
                 $condition .= is_array($setdata['where']) ? $this->createConditionFromArray($setdata['where']) : ' WHERE ' . $setdata['where'];
             }
             $query .= $condition;
-//            echo $query;
+           // echo $query."<br>";
 //            die;
             $result = $this->query($query);
             if (!$result) {

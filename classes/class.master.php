@@ -528,376 +528,35 @@ final class master extends validation {
         return true;
     }
 
-    final public function add_bulk_Receiver() {
-        $flag = true;
-        $errorflag = false;
-        $dataArray = array();
-        $indexArray = array();
-        $invoiceArray = array();
-        $invoiceItemArray = array();
+	final public function updateReceiver() {
 
-        if ($_FILES['invoice_xlsx']['name'] != '' && $_FILES['invoice_xlsx']['error'] == 0) {
+        $dataArr = $this->getReceiverData();
 
-
-            $invoice_excel = $this->imageUploads($_FILES['invoice_xlsx'], 'master-docs', 'upload', $this->allowExcelExt);
-            if ($invoice_excel == FALSE) {
-                return false;
-            }
-
-            $invoice_excel_dir_path = PROJECT_ROOT . UPLOAD_DIR . "/master-docs/" . $invoice_excel;
-            $invoice_excel_url_path = PROJECT_URL . UPLOAD_DIR . "/master-docs/" . $invoice_excel;
-
-            $objPHPExcel = PHPExcel_IOFactory::load($invoice_excel_dir_path);
-            $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
-            $sheetData = array_map('array_filter', $sheetData);
-            $sheetData = array_filter($sheetData);
-
-//            print_r($sheetData);
-//            die();
-            foreach ($sheetData as $rowKey => $data) {
-
-                if ($flag) {
-                    $indexArray = $data;
-                    $flag = false;
-                    continue;
-                }
-
-                //die('ohk');
-                $currentItemError = array();
-                $dataArray['name'] = isset($data['A']) ? $data['A'] : '';
-                $dataArray['company_name'] = isset($data['B']) ? $data['B'] : '';
-                $dataArray['email'] = isset($data['C']) ? $data['C'] : '';
-                $dataArray['address'] = isset($data['D']) ? $data['D'] : '';
-                $dataArray['city'] = isset($data['E']) ? $data['E'] : '';
-                $receiver_state = isset($data['F']) ? $data['F'] : '';
-
-                if ($receiver_state != '') {
-
-                    $receiver_state_data = $this->getStateDetailByStateCode($receiver_state);
-                    if ($receiver_state_data['status'] === "success") {
-                        $dataArray['state'] = $receiver_state_data['data']->state_id;
-                        $statetin = $receiver_state_data['data']->state_tin;
-                    } else {
-
-                        $errorflag = true;
-                        array_push($currentItemError, "Invalid  state code.");
-                        $dataArray['state'] = 'Invalid State';
-                        $statetin = '';
-                    }
-                } else {
-                    $dataArray['state'] = $receiver_state;
-                }
-                $receiver_country = isset($data['G']) ? $data['G'] : '';
-                if ($receiver_country != '') {
-
-                    $receiver_country_data = $this->getCountryDetailByCountryCode($receiver_country);
-
-                    if ($receiver_country_data['status'] === "success") {
-                        $dataArray['country'] = $receiver_country_data['data']->id;
-                    } else {
-
-                        $errorflag = true;
-                        array_push($currentItemError, "Invalid  country code.");
-                        $dataArray['country'] = 'Invalid Country';
-                    }
-                } else {
-                    $dataArray['country'] = $receiver_country;
-                }
-
-                $dataArray['zipcode'] = isset($data['H']) ? $data['H'] : '';
-                $dataArray['phone'] = isset($data['I']) ? $data['I'] : '';
-                $dataArray['fax'] = isset($data['J']) ? $data['J'] : '';
-                $dataArray['pannumber'] = isset($data['K']) ? $data['K'] : '';
-                $gstno = isset($data['L']) ? $data['L'] : '';
-                if ($gstno != '') {
-                    $gstdigits = substr($gstno, 0, 2);
-                    if ($statetin != '') {
-                        if ($gstdigits == $statetin) {
-                            $dataArray['gstid'] = $gstno;
-                        } else {
-                            array_push($currentItemError, "Invalid  Gstin Number plz match state.");
-                            $dataArray['gstid'] = '';
-                        }
-                    }
-                } else {
-                    $dataArray['gstid'] = $gstno;
-                }
-
-                $dataArray['website'] = isset($data['M']) ? $data['M'] : '';
-                $dataArray['remarks'] = isset($data['N']) ? $data['N'] : '';
-                $dataArray['status'] = isset($data['O']) ? $data['O'] : '';
-                $vender_type = isset($data['P']) ? $data['P'] : '';
-
-                if ($vender_type != '') {
-
-                    $vender_detail_data = $this->getVenderDetailByVendername($vender_type);
-
-                    if ($vender_detail_data['status'] === "success") {
-                        $dataArray['vendor_type'] = $vender_detail_data['data']->vendor_id;
-                    } else {
-
-                        $errorflag = true;
-                        array_push($currentItemError, "Invalid vender type.");
-                        $dataArray['vendor_type'] = 'Invalid vender';
-                    }
-                } else {
-                    $dataArray['vendor_type'] = $vender_type;
-                }
-//               print_r($dataArray);
-//                die();
-
-                $invoiceErrors = $this->validateClientInvoiceExcel($dataArray);
-
-                if ($invoiceErrors !== true || !empty($currentItemError)) {
-
-                    $errorflag = true;
-                    if ($invoiceErrors === true) {
-                        $invoiceErrors = array();
-                    }
-                    $invoiceErrors = array_merge($invoiceErrors, $currentItemError);
-                    $invoiceErrors = implode(", ", $invoiceErrors);
-                    $objPHPExcel->getActiveSheet()->SetCellValue('Q' . $rowKey, $invoiceErrors);
-                }
-
-                $invoiceArray[$rowKey]['name'] = $dataArray['name'];
-                $invoiceArray[$rowKey]['company_name'] = $dataArray['company_name'];
-                $invoiceArray[$rowKey]['email'] = $dataArray['email'];
-                $invoiceArray[$rowKey]['address'] = $dataArray['address'];
-                $invoiceArray[$rowKey]['city'] = $dataArray['city'];
-                $invoiceArray[$rowKey]['state'] = $dataArray['state'];
-                $invoiceArray[$rowKey]['country'] = $dataArray['country'];
-                $invoiceArray[$rowKey]['zipcode'] = $dataArray['zipcode'];
-                $invoiceArray[$rowKey]['phone'] = $dataArray['phone'];
-                $invoiceArray[$rowKey]['fax'] = $dataArray['fax'];
-                $invoiceArray[$rowKey]['pannumber'] = $dataArray['pannumber'];
-                $invoiceArray[$rowKey]['gstid'] = $dataArray['gstid'];
-                $invoiceArray[$rowKey]['website'] = $dataArray['website'];
-                $invoiceArray[$rowKey]['remarks'] = $dataArray['remarks'];
-                $invoiceArray[$rowKey]['status'] = $dataArray['status'];
-                $invoiceArray[$rowKey]['vendor_type'] = $dataArray['vendor_type'];
-            }
-
-            if ($errorflag === true) {
-
-                $objPHPExcel->getActiveSheet()->SetCellValue('Q1', "Error Information");
-                $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-                $objWriter->save($invoice_excel_dir_path);
-                $this->setError($this->validationMessage['excelerror']);
-
-                $resultArray = array("status" => "error", "excelurl" => $invoice_excel_url_path);
-//                print_r($resultArray);
-//                die();
-                return json_encode($resultArray);
-            } else {
-//                 print_r($invoiceArray);
-//                die();
-                $processedInvoiceItemArray = array();
-                foreach ($invoiceArray as $itemArr) {
-                    $itemArr['added_by'] = $_SESSION['user_detail']['user_id'];
-                    $itemArr['added_date'] = date('Y-m-d H:i:s');
-
-                    array_push($processedInvoiceItemArray, $itemArr);
-                }
-//                print_r($processedInvoiceItemArray);
-//                die();
-                if ($this->insertMultiple($this->tableNames['receiver'], $processedInvoiceItemArray)) {
-
-                    $iteminsertid = $this->getInsertID();
-                    $this->logMsg("New Receiver Added. ID : " . $iteminsertid . ".","master_receiver");
-                }
-
-
-                $this->setSuccess($this->validationMessage['receiveradded']);
-                return true;
-            }
+        if (empty($dataArr)) {
+            $this->setError($this->validationMessage['mandatory']);
+            return false;
         }
+
+        if (!$this->validateReceiver($dataArr)) {
+            return false;
+        }
+
+        $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
+        $dataArr['update_date'] = date('Y-m-d H:i:s');
+
+        if (!$this->update($this->tableNames['receiver'], $dataArr, array('receiver_id' => $this->sanitize($_GET['id'])))) {
+            $this->setError($this->validationMessage['failed']);
+            return false;
+        }
+
+        $this->logMsg("Receiver ID : " . $_GET['id'] . " in Receiver Master has been updated","master_receiver");
+        $this->setSuccess($this->validationMessage['update']);
+        return true;
     }
 
-    final public function add_bulk_Supplier() {
-        $flag = true;
-        $errorflag = false;
-        $dataArray = array();
-        $indexArray = array();
-        $invoiceArray = array();
-        $invoiceItemArray = array();
-
-        if ($_FILES['invoice_xlsx']['name'] != '' && $_FILES['invoice_xlsx']['error'] == 0) {
-
-
-            $invoice_excel = $this->imageUploads($_FILES['invoice_xlsx'], 'master-docs', 'upload', $this->allowExcelExt);
-            if ($invoice_excel == FALSE) {
-                return false;
-            }
-
-            $invoice_excel_dir_path = PROJECT_ROOT . UPLOAD_DIR . "/master-docs/" . $invoice_excel;
-            $invoice_excel_url_path = PROJECT_URL . UPLOAD_DIR . "/master-docs/" . $invoice_excel;
-
-            $objPHPExcel = PHPExcel_IOFactory::load($invoice_excel_dir_path);
-            $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
-            $sheetData = array_map('array_filter', $sheetData);
-            $sheetData = array_filter($sheetData);
-
-//            print_r($sheetData);
-//            die();
-            foreach ($sheetData as $rowKey => $data) {
-
-                if ($flag) {
-                    $indexArray = $data;
-                    $flag = false;
-                    continue;
-                }
-
-                //die('ohk');
-                $currentItemError = array();
-                $dataArray['name'] = isset($data['A']) ? $data['A'] : '';
-                $dataArray['company_name'] = isset($data['B']) ? $data['B'] : '';
-                $dataArray['email'] = isset($data['C']) ? $data['C'] : '';
-                $dataArray['address'] = isset($data['D']) ? $data['D'] : '';
-                $dataArray['city'] = isset($data['E']) ? $data['E'] : '';
-                $receiver_state = isset($data['F']) ? $data['F'] : '';
-
-                if ($receiver_state != '') {
-
-                    $receiver_state_data = $this->getStateDetailByStateCode($receiver_state);
-                    if ($receiver_state_data['status'] === "success") {
-                        $dataArray['state'] = $receiver_state_data['data']->state_id;
-                        $statetin = $receiver_state_data['data']->state_tin;
-                    } else {
-
-                        $errorflag = true;
-                        array_push($currentItemError, "Invalid  state code.");
-                        $dataArray['state'] = 'Invalid State';
-                    }
-                }
-                else
-                {
-                  $dataArray['state'] = $receiver_state;  
-                }
-                
-                $receiver_country = isset($data['G']) ? $data['G'] : '';
-                if ($receiver_country != '') {
-
-                    $receiver_country_data = $this->getCountryDetailByCountryCode($receiver_country);
-
-                    if ($receiver_country_data['status'] === "success") {
-                        $dataArray['country'] = $receiver_country_data['data']->id;
-                    } else {
-
-                        $errorflag = true;
-                        array_push($currentItemError, "Invalid  country code.");
-                        $dataArray['country'] = 'Invalid Country';
-                    }
-                }
-                else
-                {
-                  $dataArray['country'] = $receiver_country;  
-                }
-
-                $dataArray['zipcode'] = isset($data['H']) ? $data['H'] : '';
-                $dataArray['phone'] = isset($data['I']) ? $data['I'] : '';
-                $dataArray['fax'] = isset($data['J']) ? $data['J'] : '';
-                $dataArray['pannumber'] = isset($data['K']) ? $data['K'] : '';
-                $gstno = isset($data['L']) ? $data['L'] : '';
-                if ($gstno != '') {
-                    $gstdigits = substr($gstno, 0, 2);
-                    if ($statetin != '') {
-                        if ($gstdigits == $statetin) {
-                            $dataArray['gstid'] = $gstno;
-                        } else {
-                             array_push($currentItemError, "Invalid  Gstin Number plz match state.");
-                            $dataArray['gstid'] = '';
-                        }
-                    }
-                } else {
-                    $dataArray['gstid'] = $gstno;
-                }
-                $dataArray['website'] = isset($data['M']) ? $data['M'] : '';
-                $dataArray['remarks'] = isset($data['N']) ? $data['N'] : '';
-                $dataArray['status'] = isset($data['O']) ? $data['O'] : '';
-                $vender_type = isset($data['P']) ? $data['P'] : '';
-
-                if ($vender_type != '') {
-
-                    $vender_detail_data = $this->getVenderDetailByVendername($vender_type);
-
-                    if ($vender_detail_data['status'] === "success") {
-                        $dataArray['vendor_type'] = $vender_detail_data['data']->vendor_id;
-                    } else {
-
-                        $errorflag = true;
-                        array_push($currentItemError, "Invalid vender type.");
-                        $dataArray['vendor_type'] = 'Invalid vender';
-                    }
-                } else {
-                    $dataArray['vendor_type'] = $vender_type;
-                }
-//               print_r($dataArray);
-//                die();
-                $invoiceErrors = $this->validateClientInvoiceExcel($dataArray);
-//                print_r($invoiceErrors);
-//                die();
-                if ($invoiceErrors !== true || !empty($currentItemError)) {
-
-                    $errorflag = true;
-                    if ($invoiceErrors === true) {
-                        $invoiceErrors = array();
-                    }
-                    $invoiceErrors = array_merge($invoiceErrors, $currentItemError);
-                    $invoiceErrors = implode(", ", $invoiceErrors);
-                    $objPHPExcel->getActiveSheet()->SetCellValue('Q' . $rowKey, $invoiceErrors);
-                }
-
-                $invoiceArray[$rowKey]['name'] = $dataArray['name'];
-                $invoiceArray[$rowKey]['company_name'] = $dataArray['company_name'];
-                $invoiceArray[$rowKey]['email'] = $dataArray['email'];
-                $invoiceArray[$rowKey]['address'] = $dataArray['address'];
-                $invoiceArray[$rowKey]['city'] = $dataArray['city'];
-                $invoiceArray[$rowKey]['state'] = $dataArray['state'];
-                $invoiceArray[$rowKey]['country'] = $dataArray['country'];
-                $invoiceArray[$rowKey]['zipcode'] = $dataArray['zipcode'];
-                $invoiceArray[$rowKey]['phone'] = $dataArray['phone'];
-                $invoiceArray[$rowKey]['fax'] = $dataArray['fax'];
-                $invoiceArray[$rowKey]['pannumber'] = $dataArray['pannumber'];
-                $invoiceArray[$rowKey]['gstid'] = $dataArray['gstid'];
-                $invoiceArray[$rowKey]['website'] = $dataArray['website'];
-                $invoiceArray[$rowKey]['remarks'] = $dataArray['remarks'];
-                $invoiceArray[$rowKey]['status'] = $dataArray['status'];
-                $invoiceArray[$rowKey]['vendor_type'] = $dataArray['vendor_type'];
-            }
-
-            if ($errorflag === true) {
-
-                $objPHPExcel->getActiveSheet()->SetCellValue('Q1', "Error Information");
-                $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-                $objWriter->save($invoice_excel_dir_path);
-                $this->setError($this->validationMessage['excelerror']);
-
-                $resultArray = array("status" => "error", "excelurl" => $invoice_excel_url_path);
-                return json_encode($resultArray);
-            } else {
-//                 print_r($invoiceArray);
-//                die();
-                $processedInvoiceItemArray = array();
-                foreach ($invoiceArray as $itemArr) {
-                    $itemArr['added_by'] = $_SESSION['user_detail']['user_id'];
-                    $itemArr['added_date'] = date('Y-m-d H:i:s');
-
-                    array_push($processedInvoiceItemArray, $itemArr);
-                }
-//                print_r($processedInvoiceItemArray);
-//                die();
-                if ($this->insertMultiple($this->tableNames['supplier'], $processedInvoiceItemArray)) {
-
-                    $iteminsertid = $this->getInsertID();
-                    $this->logMsg("New Supplier Added. ID : " . $iteminsertid . ".","master_supplier");
-                }
-
-
-                $this->setSuccess($this->validationMessage['supplieradded']);
-                return true;
-            }
-        }
-    }
+    /*
+     * End : Receiver Add/Update/Delete Related All function
+    */
 
     private function getReceiverData() {
 
@@ -927,13 +586,13 @@ final class master extends validation {
     private function validateReceiver($dataArr) {
 
         $rules = array(
-            'name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Contact Name',
-            'company_name' => 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Business Name',
-            'email' => 'required||email|#|lable_name:Email Address',
-            'address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Address',
-            'city' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:City',
-            'state' => 'required|#|lable_name:State',
-            'country' => 'required|#|lable_name:Country'
+			'name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Contact Name',
+			'company_name' => 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Business Name',
+			'email' => 'email|#|lable_name:Email Address',
+			'address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Address',
+			'city' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:City',
+			'state' => 'required|#|lable_name:State',
+			'country' => 'required|#|lable_name:Country'
         );
 
         if (array_key_exists("zipcode", $dataArr)) {
@@ -974,16 +633,198 @@ final class master extends validation {
         return true;
     }
 
-    public function validateClientInvoiceExcel($dataArr) {
+    final public function uploadMasterReceiver() {
 
-        $rules = array(
-            'name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Contact Name',
-            'company_name' => 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Business Name',
-            'email' => 'required||email|#|lable_name:Email Address',
-            'address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Address',
-            'city' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:City',
-            'state' => 'required|#|lable_name:State',
-            'country' => 'required|#|lable_name:Country'
+		$flag = true;
+		$errorflag = false;
+		$dataArray = array();
+		$indexArray = array();
+		$receiverArray = array();
+		$arrayCounter = 0;
+
+		if ($_FILES['receiver_xlsx']['name'] != '' && $_FILES['receiver_xlsx']['error'] == 0) {
+
+			$receiver_excel = $this->imageUploads($_FILES['receiver_xlsx'], 'master-docs', 'upload', $this->allowExcelExt);
+			if ($receiver_excel == FALSE) {
+				return false;
+			}
+
+			$receiver_excel_dir_path = PROJECT_ROOT . UPLOAD_DIR . "/master-docs/" . $receiver_excel;
+			$receiver_excel_url_path = PROJECT_URL . UPLOAD_DIR . "/master-docs/" . $receiver_excel;
+
+			$objPHPExcel = PHPExcel_IOFactory::load($receiver_excel_dir_path);
+			$sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+			$sheetData = array_map('array_filter', $sheetData);
+			$sheetData = array_filter($sheetData);
+			
+			foreach ($sheetData as $rowKey => $data) {
+
+                if ($flag) {
+					$indexArray = $data;
+					$flag = false;
+					continue;
+				}
+
+				$currentItemError = array();
+                $dataArray['name'] = isset($data['A']) ? $data['A'] : '';
+                $dataArray['company_name'] = isset($data['B']) ? $data['B'] : '';
+                $dataArray['email'] = isset($data['C']) ? $data['C'] : '';
+                $dataArray['address'] = isset($data['D']) ? $data['D'] : '';
+                $dataArray['city'] = isset($data['E']) ? $data['E'] : '';
+
+				$receiver_state = isset($data['F']) ? $data['F'] : '';
+                if ($receiver_state != '') {
+
+                    $receiver_state_data = $this->getStateDetailByStateNameCode($receiver_state);
+                    if ($receiver_state_data['status'] === "success") {
+                        $dataArray['state'] = $receiver_state_data['data']->state_id;
+                    } else {
+                        $errorflag = true;
+                        array_push($currentItemError, "Invalid Receiver State.");
+                    }
+                } else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Receiver State.");
+                }
+
+                $dataArray['zipcode'] = isset($data['G']) ? $data['G'] : '';
+				
+				$receiver_country = isset($data['H']) ? $data['H'] : '';
+				if ($receiver_country != '') {
+
+                    $receiver_country_data = $this->getCountryDetailByCountryCode($receiver_country);
+                    if ($receiver_country_data['status'] === "success") {
+						$dataArray['country'] = $receiver_country_data['data']->id;
+                    } else {
+                        $errorflag = true;
+                        array_push($currentItemError, "Invalid Receiver Country.");
+                    }
+                } else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Receiver Country.");
+                }
+
+                $dataArray['phone'] = isset($data['I']) ? $data['I'] : '';
+                $dataArray['fax'] = isset($data['J']) ? $data['J'] : '';
+                $dataArray['pannumber'] = isset($data['K']) ? $data['K'] : '';
+				$dataArray['gstid'] = isset($data['L']) ? $data['L'] : '';
+				$dataArray['website'] = isset($data['M']) ? $data['M'] : '';
+				$dataArray['remarks'] = isset($data['N']) ? $data['N'] : '';
+				
+				$receiver_vendor_type = isset($data['O']) ? $data['O'] : '';
+				if ($receiver_vendor_type != '') {
+
+					$dataVendorNameArrs = $this->get_row("select vendor_id, vendor_name from ".$this->tableNames['vendor_type']." where 1=1 AND UPPER(vendor_name) = '".strtoupper($receiver_vendor_type)."' AND status='1' AND is_deleted='0'");
+                    if (!empty($dataVendorNameArrs) && isset($dataVendorNameArrs->vendor_id)) {
+						$dataArray['vendor_type'] = $dataVendorNameArrs->vendor_id;
+                    } else {
+                        $errorflag = true;
+                        array_push($currentItemError, "Invalid Receiver Vendor Type.");
+                    }
+                } else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Receiver Vendor Type.");
+                }
+
+				$receiver_status = isset($data['P']) ? $data['P'] : '';
+				if ($receiver_status != '' && strtoupper($receiver_status) == 'ACTIVE') {
+					$dataArray['status'] = '1';
+				} else {
+					$dataArray['status'] = '0';
+				}
+
+				$receiverErrors = $this->validateReceiverMasterExcel($dataArray);
+				if ($receiverErrors !== true || !empty($currentItemError)) {
+
+					$errorflag = true;
+					if ($receiverErrors === true) {
+						$receiverErrors = array();
+					}
+					$receiverErrors = array_merge($receiverErrors, $currentItemError);
+					$receiverErrors = implode(", ", $receiverErrors);
+					$objPHPExcel->getActiveSheet()->SetCellValue('Q' . $rowKey, $receiverErrors);
+				}
+				
+				$dataArray['added_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);
+				$dataArray['added_date'] = date('Y-m-d H:i:s');
+
+				if ($errorflag === false) {
+
+					$checkReceiverMaster = $this->get_row("select * from ".$this->tableNames['receiver']." 
+															where 1=1 
+															AND name = '".$dataArray['name']."' 
+															AND company_name = '".$dataArray['company_name']."' 
+															AND email = '".$dataArray['email']."' 
+															AND address = '".$dataArray['address']."' 
+															AND city = '".$dataArray['city']."' 
+															AND state = '".$dataArray['state']."' 
+															AND zipcode = '".$dataArray['zipcode']."' 
+															AND country = '".$dataArray['country']."' 
+															AND phone = '".$dataArray['phone']."' 
+															AND fax = '".$dataArray['fax']."' 
+															AND pannumber = '".$dataArray['pannumber']."' 
+															AND gstid = '".$dataArray['gstid']."' 
+															AND website = '".$dataArray['website']."' 
+															AND remarks = '".$dataArray['remarks']."' 
+															AND vendor_type = '".$dataArray['vendor_type']."' 
+															AND is_deleted='0'
+														  ");
+					if(count($checkReceiverMaster) == 0) {
+
+						$receiverArray[$arrayCounter]['name'] = $dataArray['name'];
+						$receiverArray[$arrayCounter]['company_name'] = $dataArray['company_name'];
+						$receiverArray[$arrayCounter]['email'] = $dataArray['email'];
+						$receiverArray[$arrayCounter]['address'] = $dataArray['address'];
+						$receiverArray[$arrayCounter]['city'] = $dataArray['city'];
+						$receiverArray[$arrayCounter]['state'] = $dataArray['state'];
+						$receiverArray[$arrayCounter]['zipcode'] = $dataArray['zipcode'];
+						$receiverArray[$arrayCounter]['country'] = $dataArray['country'];
+						$receiverArray[$arrayCounter]['phone'] = $dataArray['phone'];
+						$receiverArray[$arrayCounter]['fax'] = $dataArray['fax'];
+						$receiverArray[$arrayCounter]['pannumber'] = $dataArray['pannumber'];
+						$receiverArray[$arrayCounter]['gstid'] = $dataArray['gstid'];
+						$receiverArray[$arrayCounter]['website'] = $dataArray['website'];
+						$receiverArray[$arrayCounter]['remarks'] = $dataArray['remarks'];
+						$receiverArray[$arrayCounter]['vendor_type'] = $dataArray['vendor_type'];
+						$receiverArray[$arrayCounter]['status'] = $dataArray['status'];
+						$receiverArray[$arrayCounter]['added_by'] = $dataArray['added_by'];
+						$receiverArray[$arrayCounter]['added_date'] = $dataArray['added_date'];
+						$arrayCounter++;
+					}
+				}
+            }
+
+			if ($errorflag === true) {
+
+				$objPHPExcel->getActiveSheet()->SetCellValue('Q1', "Error Information");
+				$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
+				$objWriter->save($receiver_excel_dir_path);
+				$this->setError($this->validationMessage['excelerror']);
+				$resultArray = array("status" => "error", "excelurl" => $receiver_excel_url_path);
+				return json_encode($resultArray);
+			} else {
+
+				if ($this->insertMultiple($this->tableNames['receiver'], $receiverArray)) {
+					$iteminsertid = $this->getInsertID();
+					$this->logMsg("Client Master Receivers Added. ID : " . $iteminsertid . ".", "master_receiver_excel_upload");
+				}
+
+				$this->setSuccess($this->validationMessage['receiveradded']);
+				return true;
+            }
+        }
+    }
+
+	public function validateReceiverMasterExcel($dataArr) {
+
+		$rules = array(
+			'name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Contact Name',
+			'company_name' => 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Business Name',
+			'email' => 'email|#|lable_name:Email Address',
+			'address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Address',
+			'city' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:City',
+			'state' => 'required|#|lable_name:State',
+			'country' => 'required|#|lable_name:Country'
         );
 
         if (array_key_exists("zipcode", $dataArr)) {
@@ -1014,7 +855,6 @@ final class master extends validation {
             $rules['remarks'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Remarks';
         }
 
-
         $valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
             cms_validate::$errors = array();
@@ -1025,36 +865,237 @@ final class master extends validation {
         return true;
     }
 
-    final public function updateReceiver() {
+	final public function uploadMasterSupplier() {
 
-        $dataArr = $this->getReceiverData();
+		$flag = true;
+		$errorflag = false;
+		$dataArray = array();
+		$indexArray = array();
+		$supplierArray = array();
+		$arrayCounter = 0;
 
-        if (empty($dataArr)) {
-            $this->setError($this->validationMessage['mandatory']);
-            return false;
+		if ($_FILES['supplier_xlsx']['name'] != '' && $_FILES['supplier_xlsx']['error'] == 0) {
+
+			$supplier_excel = $this->imageUploads($_FILES['supplier_xlsx'], 'master-docs', 'upload', $this->allowExcelExt);
+			if ($supplier_excel == FALSE) {
+				return false;
+			}
+
+			$supplier_excel_dir_path = PROJECT_ROOT . UPLOAD_DIR . "/master-docs/" . $supplier_excel;
+			$supplier_excel_url_path = PROJECT_URL . UPLOAD_DIR . "/master-docs/" . $supplier_excel;
+
+			$objPHPExcel = PHPExcel_IOFactory::load($supplier_excel_dir_path);
+			$sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+			$sheetData = array_map('array_filter', $sheetData);
+			$sheetData = array_filter($sheetData);
+			
+			foreach ($sheetData as $rowKey => $data) {
+
+                if ($flag) {
+					$indexArray = $data;
+					$flag = false;
+					continue;
+				}
+
+				$currentItemError = array();
+                $dataArray['name'] = isset($data['A']) ? $data['A'] : '';
+                $dataArray['company_name'] = isset($data['B']) ? $data['B'] : '';
+                $dataArray['email'] = isset($data['C']) ? $data['C'] : '';
+                $dataArray['address'] = isset($data['D']) ? $data['D'] : '';
+                $dataArray['city'] = isset($data['E']) ? $data['E'] : '';
+
+				$supplier_state = isset($data['F']) ? $data['F'] : '';
+                if ($supplier_state != '') {
+
+                    $supplier_state_data = $this->getStateDetailByStateNameCode($supplier_state);
+                    if ($supplier_state_data['status'] === "success") {
+                        $dataArray['state'] = $supplier_state_data['data']->state_id;
+                    } else {
+                        $errorflag = true;
+                        array_push($currentItemError, "Invalid Supplier State.");
+                    }
+                } else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Supplier State.");
+                }
+
+                $dataArray['zipcode'] = isset($data['G']) ? $data['G'] : '';
+				
+				$supplier_country = isset($data['H']) ? $data['H'] : '';
+				if ($supplier_country != '') {
+
+                    $supplier_country_data = $this->getCountryDetailByCountryCode($supplier_country);
+                    if ($supplier_country_data['status'] === "success") {
+						$dataArray['country'] = $supplier_country_data['data']->id;
+                    } else {
+                        $errorflag = true;
+                        array_push($currentItemError, "Invalid Supplier Country.");
+                    }
+                } else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Supplier Country.");
+                }
+
+                $dataArray['phone'] = isset($data['I']) ? $data['I'] : '';
+                $dataArray['fax'] = isset($data['J']) ? $data['J'] : '';
+                $dataArray['pannumber'] = isset($data['K']) ? $data['K'] : '';
+				$dataArray['gstid'] = isset($data['L']) ? $data['L'] : '';
+				$dataArray['website'] = isset($data['M']) ? $data['M'] : '';
+				$dataArray['remarks'] = isset($data['N']) ? $data['N'] : '';
+				
+				$supplier_vendor_type = isset($data['O']) ? $data['O'] : '';
+				if ($supplier_vendor_type != '') {
+
+					$dataVendorNameArrs = $this->get_row("select vendor_id, vendor_name from ".$this->tableNames['vendor_type']." where 1=1 AND UPPER(vendor_name) = '".strtoupper($supplier_vendor_type)."' AND status='1' AND is_deleted='0'");
+                    if (!empty($dataVendorNameArrs) && isset($dataVendorNameArrs->vendor_id)) {
+						$dataArray['vendor_type'] = $dataVendorNameArrs->vendor_id;
+                    } else {
+                        $errorflag = true;
+                        array_push($currentItemError, "Invalid Supplier Vendor Type.");
+                    }
+                } else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Supplier Vendor Type.");
+                }
+
+				$supplier_status = isset($data['P']) ? $data['P'] : '';
+				if ($supplier_status != '' && strtoupper($supplier_status) == 'ACTIVE') {
+					$dataArray['status'] = '1';
+				} else {
+					$dataArray['status'] = '0';
+				}
+
+				$supplierErrors = $this->validateSupplierMasterExcel($dataArray);
+				if ($supplierErrors !== true || !empty($currentItemError)) {
+
+					$errorflag = true;
+					if ($supplierErrors === true) {
+						$supplierErrors = array();
+					}
+					$supplierErrors = array_merge($supplierErrors, $currentItemError);
+					$supplierErrors = implode(", ", $supplierErrors);
+					$objPHPExcel->getActiveSheet()->SetCellValue('Q' . $rowKey, $supplierErrors);
+				}
+				
+				$dataArray['added_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);
+				$dataArray['added_date'] = date('Y-m-d H:i:s');
+
+				if ($errorflag === false) {
+
+					$checkSupplierMaster = $this->get_row("select * from ".$this->tableNames['supplier']." 
+															where 1=1 
+															AND name = '".$dataArray['name']."' 
+															AND company_name = '".$dataArray['company_name']."' 
+															AND email = '".$dataArray['email']."' 
+															AND address = '".$dataArray['address']."' 
+															AND city = '".$dataArray['city']."' 
+															AND state = '".$dataArray['state']."' 
+															AND zipcode = '".$dataArray['zipcode']."' 
+															AND country = '".$dataArray['country']."' 
+															AND phone = '".$dataArray['phone']."' 
+															AND fax = '".$dataArray['fax']."' 
+															AND pannumber = '".$dataArray['pannumber']."' 
+															AND gstid = '".$dataArray['gstid']."' 
+															AND website = '".$dataArray['website']."' 
+															AND remarks = '".$dataArray['remarks']."' 
+															AND vendor_type = '".$dataArray['vendor_type']."' 
+															AND is_deleted='0'
+														  ");
+					if(count($checkSupplierMaster) == 0) {
+
+						$supplierArray[$arrayCounter]['name'] = $dataArray['name'];
+						$supplierArray[$arrayCounter]['company_name'] = $dataArray['company_name'];
+						$supplierArray[$arrayCounter]['email'] = $dataArray['email'];
+						$supplierArray[$arrayCounter]['address'] = $dataArray['address'];
+						$supplierArray[$arrayCounter]['city'] = $dataArray['city'];
+						$supplierArray[$arrayCounter]['state'] = $dataArray['state'];
+						$supplierArray[$arrayCounter]['zipcode'] = $dataArray['zipcode'];
+						$supplierArray[$arrayCounter]['country'] = $dataArray['country'];
+						$supplierArray[$arrayCounter]['phone'] = $dataArray['phone'];
+						$supplierArray[$arrayCounter]['fax'] = $dataArray['fax'];
+						$supplierArray[$arrayCounter]['pannumber'] = $dataArray['pannumber'];
+						$supplierArray[$arrayCounter]['gstid'] = $dataArray['gstid'];
+						$supplierArray[$arrayCounter]['website'] = $dataArray['website'];
+						$supplierArray[$arrayCounter]['remarks'] = $dataArray['remarks'];
+						$supplierArray[$arrayCounter]['vendor_type'] = $dataArray['vendor_type'];
+						$supplierArray[$arrayCounter]['status'] = $dataArray['status'];
+						$supplierArray[$arrayCounter]['added_by'] = $dataArray['added_by'];
+						$supplierArray[$arrayCounter]['added_date'] = $dataArray['added_date'];
+						$arrayCounter++;
+					}
+				}
+            }
+
+			if ($errorflag === true) {
+
+				$objPHPExcel->getActiveSheet()->SetCellValue('Q1', "Error Information");
+				$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
+				$objWriter->save($supplier_excel_dir_path);
+				$this->setError($this->validationMessage['excelerror']);
+				$resultArray = array("status" => "error", "excelurl" => $supplier_excel_url_path);
+				return json_encode($resultArray);
+			} else {
+
+				if ($this->insertMultiple($this->tableNames['supplier'], $supplierArray)) {
+					$iteminsertid = $this->getInsertID();
+					$this->logMsg("Client Master Suppliers Added. ID : " . $iteminsertid . ".", "master_supplier_excel_upload");
+				}
+
+				$this->setSuccess($this->validationMessage['supplieradded']);
+				return true;
+            }
+        }
+    }
+	
+	final public function validateSupplierMasterExcel($dataArr) {
+
+		$rules = array(
+			'name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Contact Name',
+			'company_name' => 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Business Name',
+			'email' => 'email|#|lable_name:Email Address',
+			'address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Address',
+			'city' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:City',
+			'state' => 'required|#|lable_name:State',
+			'country' => 'required|#|lable_name:Country'
+        );
+
+        if (array_key_exists("zipcode", $dataArr)) {
+            $rules['zipcode'] = 'required||numeric|#|lable_name:Zipcode';
         }
 
-        if (!$this->validateReceiver($dataArr)) {
-            return false;
+        if (array_key_exists("phone", $dataArr)) {
+            $rules['phone'] = 'pattern:/^[' . $this->validateType['mobilenumber'] . ']+$/|#|lable_name:Phone Number';
         }
 
-        $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
-        $dataArr['update_date'] = date('Y-m-d H:i:s');
-
-        if (!$this->update($this->tableNames['receiver'], $dataArr, array('receiver_id' => $this->sanitize($_GET['id'])))) {
-            $this->setError($this->validationMessage['failed']);
-            return false;
+        if (array_key_exists("fax", $dataArr)) {
+            $rules['fax'] = 'numeric|#|lable_name:Fax';
         }
 
-        $this->logMsg("Receiver ID : " . $_GET['id'] . " in Receiver Master has been updated","master_receiver");
-        $this->setSuccess($this->validationMessage['update']);
+        if (array_key_exists("pannumber", $dataArr)) {
+            $rules['pannumber'] = 'pattern:/^' . $this->validateType['pancard'] . '*$/|#|lable_name:PAN Number';
+        }
+
+        if (array_key_exists("gstid", $dataArr)) {
+            $rules['gstid'] = 'pattern:/^' . $this->validateType['gstinnumber'] . '+$/||min:15||max:15|#|lable_name:GSTIN';
+        }
+
+        if (array_key_exists("website", $dataArr)) {
+            $rules['website'] = 'url|#|lable_name:Website';
+        }
+
+        if (array_key_exists("remarks", $dataArr)) {
+            $rules['remarks'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Remarks';
+        }
+
+        $valid = $this->vali_obj->validate($dataArr, $rules);
+        if ($valid->hasErrors()) {
+            cms_validate::$errors = array();
+            $err_arr = $valid->allErrors();
+            $valid->clearMessages();
+            return $err_arr;
+        }
         return true;
     }
-
-    /*
-     * End : Receiver Add/Update/Delete Related All function
-     */
-
 
     /*
      * Start : Supplier Add/Update/Delete Related All function
