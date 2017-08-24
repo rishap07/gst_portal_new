@@ -1,6 +1,11 @@
 <?php
 $obj_gst1 = new gstr1();
+$obj_api =  new gstr();
+
+
 $type= isset($_POST['type'])?$_POST['type']:'';
+$deleteType= isset($_POST['deleteType'])?$_POST['deleteType']:'';
+
 $arrValues= isset($_POST['arrValues'])?$_POST['arrValues']:'';
 $returnmonth= isset($_POST['returnmonth'])?$_POST['returnmonth']:'';
 $response = array();
@@ -55,12 +60,14 @@ if(!empty($type) && !empty($arrValues)) {
 		$idt= isset($_POST['arrValues'][1])?$_POST['arrValues'][1]:'';
 		$nt_num= isset($_POST['arrValues'][2])?$_POST['arrValues'][2]:'';
 		$nt_dt= isset($_POST['arrValues'][3])?$_POST['arrValues'][3]:'';
+		$typ= isset($_POST['arrValues'][4])?$_POST['arrValues'][4]:'';
 		if(!empty($inum)  && !empty($idt)) {
 			// delete CDNUR invoice
 			$data['inum'] = $inum;
 			$data['idt'] = $idt;
 			$data['nt_num'] = $nt_num;
 			$data['nt_dt'] = $nt_dt;
+			$data['typ'] = $typ;
 			$response = $obj_gst1->gstDeleteItemPayload($returnmonth,$type,$data);
 		}
 	}
@@ -84,25 +91,13 @@ if(!empty($type) && !empty($arrValues)) {
 			// delete HSN invoice
 			$data['hsn_sc'] = $hsn_sc;
 			$data['chksum'] = $chksum;
-			echo "fg";
 			$response = $obj_gst1->gstDeleteItemPayload($returnmonth,$type,$data);
-			 $obj_gst1->pr($response);
 		}
 	}
-
-	if($type == 'AT') {
-		$data['json'] = isset($_POST['arrValues'][0])?$_POST['arrValues'][0]:'';
-		$response = $obj_gst1->gstDeleteItemPayload($returnmonth,$type,$data);
-	}
-
-	if($type == 'B2CS') {
-		$data['json'] = isset($_POST['arrValues'][0])?$_POST['arrValues'][0]:'';
-		$response = $obj_gst1->gstDeleteItemPayload($returnmonth,$type,$data);
-	}
-	if($type == 'TXPD') {
-		$data['json'] = isset($_POST['arrValues'][0])?$_POST['arrValues'][0]:'';
-		$response = $obj_gst1->gstDeleteItemPayload($returnmonth,$type,$data);
-	}
 }
- /*$obj_gst1->pr($response);
- die;*/
+if(!empty($type) && empty($arrValues) && !empty($deleteType)) {
+	$data['json'] =  $obj_api->returnSummary($returnmonth,$type);
+	$response = $obj_gst1->gstDeleteItemPayload($returnmonth,$type,$data,$deleteType);
+}
+ //$obj_gst1->pr($response);
+ //die;

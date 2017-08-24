@@ -392,7 +392,7 @@ if(!empty($jstr1_array)) {
                             <td align="center">'.$iamt.'</td>
                             <td align="center">'.$rsn.'</td>
                             <td align="center">'.$ntty.'</td>
-                            <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn"  idt = '.$idt.' inum = '.$inum.' nt_num = '.$nt_num.' nt_dt = '.$nt_dt.' type="CDNUR"><i class="fa fa-trash"></i></a></td>
+                            <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn"  idt = '.$idt.' inum = '.$inum.' nt_num = '.$nt_num.' nt_dt = '.$nt_dt.' type="CDNUR" typ= '.$typ.'><i class="fa fa-trash"></i></a></td>
                         </tr>';
                     }
                 }
@@ -560,6 +560,7 @@ echo $response;
         $('.gstr1ViewDeleteBtn').on('click', function () {
             var type = $(this).attr('type');
             var returnmonth = "<?php echo $returnmonth;?>";
+
             var arrValues = [];
             if(type == 'B2B') {
                 var ctin = $(this).attr('ctin');
@@ -586,7 +587,8 @@ echo $response;
                 var idt = $(this).attr('idt');
                 var nt_num = $(this).attr('nt_num');
                 var nt_dt = $(this).attr('nt_dt');
-                arrValues = [inum,idt,nt_num,nt_dt];
+                var typ = $(this).attr('typ');
+                arrValues = [inum,idt,nt_num,nt_dt,typ];
             }
             if(type == 'EXP') {
                 var inum = $(this).attr('inum');

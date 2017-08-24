@@ -1,10 +1,10 @@
 <?php
 $obj_master = new master();
-
 if (!$obj_master->can_read('master_supplier')) {
-	$obj_master->setError($obj_master->getValMsg('can_read'));
-	$obj_master->redirect(PROJECT_URL . "/?page=dashboard");
-	exit();
+
+    $obj_master->setError($obj_master->getValMsg('can_read'));
+    $obj_master->redirect(PROJECT_URL . "/?page=dashboard");
+    exit();
 }
 
 if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
@@ -70,8 +70,8 @@ if (isset($_GET['id'])) {
 					</div>
 					
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Email <span class="starred">*</span></label>
-						<input type="text" placeholder="Email"  name='email' class="form-control required" data-bind="email" value='<?php if(isset($_POST['email'])){ echo $_POST['email']; } else if(isset($dataArr[0]->email)){ echo $dataArr[0]->email; } ?>'/>
+						<label>Email</label>
+						<input type="text" placeholder="Email"  name='email' class="form-control" data-bind="email" value='<?php if(isset($_POST['email'])){ echo $_POST['email']; } else if(isset($dataArr[0]->email)){ echo $dataArr[0]->email; } ?>'/>
 					</div>
 					<div class="clear"></div>
 
@@ -86,25 +86,6 @@ if (isset($_GET['id'])) {
 					</div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Zipcode <span class="starred">*</span></label>
-						<input type="text" placeholder="Zipcode" name='zipcode' class='form-control required' data-bind="number" value='<?php if(isset($_POST['zipcode'])){ echo $_POST['zipcode']; } else if(isset($dataArr[0]->zipcode)){ echo $dataArr[0]->zipcode; } ?>'/>
-					</div>
-					<div class="clear"></div>
-
-					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Country <span class="starred">*</span></label>
-						<select name='country' id='country' class='required form-control'>
-							<?php $dataSCountryArrs = $obj_master->get_results("select * from ".$obj_master->getTableName('country')." order by country_name asc"); ?>
-							<?php if(!empty($dataSCountryArrs)) { ?>
-								<option value=''>Select Country</option>
-								<?php foreach($dataSCountryArrs as $dataSCountryArr) { ?>
-									<option value='<?php echo $dataSCountryArr->id; ?>' data-code="<?php echo $dataSCountryArr->country_code; ?>" <?php if(isset($_POST['country']) && $_POST['country'] === $dataSCountryArr->id){ echo 'selected="selected"'; } else if(isset($dataArr[0]->country) && $dataSCountryArr->id == $dataArr[0]->country){ echo 'selected="selected"'; } ?>><?php echo $dataSCountryArr->country_name . " (" . $dataSCountryArr->country_code . ")"; ?></option>
-								<?php } ?>
-							<?php } ?>
-						</select>
-					</div>
-
-					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>State <span class="starred">*</span></label>
 						<select name='state' id='state' class='form-control required'>
 						<?php $dataStateArrs = $obj_master->get_results("select * from ".$obj_master->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
@@ -116,6 +97,25 @@ if (isset($_GET['id'])) {
 						<?php } else { ?>
 								<option value=''>No State Found</option>
 						<?php } ?>
+						</select>
+					</div>
+					<div class="clear"></div>
+					
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>Zipcode <span class="starred">*</span></label>
+						<input type="text" placeholder="Zipcode" name='zipcode' class='form-control required' data-bind="number" value='<?php if(isset($_POST['zipcode'])){ echo $_POST['zipcode']; } else if(isset($dataArr[0]->zipcode)){ echo $dataArr[0]->zipcode; } ?>'/>
+					</div>
+
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>Country <span class="starred">*</span></label>
+						<select name='country' id='country' class='required form-control'>
+							<?php $dataSCountryArrs = $obj_master->get_results("select * from ".$obj_master->getTableName('country')." order by country_name asc"); ?>
+							<?php if(!empty($dataSCountryArrs)) { ?>
+								<option value=''>Select Country</option>
+								<?php foreach($dataSCountryArrs as $dataSCountryArr) { ?>
+									<option value='<?php echo $dataSCountryArr->id; ?>' data-code="<?php echo $dataSCountryArr->country_code; ?>" <?php if(isset($_POST['country']) && $_POST['country'] === $dataSCountryArr->id){ echo 'selected="selected"'; } else if(isset($dataArr[0]->country) && $dataSCountryArr->id == $dataArr[0]->country){ echo 'selected="selected"'; } ?>><?php echo $dataSCountryArr->country_name . " (" . $dataSCountryArr->country_code . ")"; ?></option>
+								<?php } ?>
+							<?php } ?>
 						</select>
 					</div>
 
@@ -152,7 +152,7 @@ if (isset($_GET['id'])) {
 					</div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Vendor Type<span class="starred">*</span></label>
+						<label>Vendor Type <span class="starred">*</span></label>
 						<select name='vendor_type' id='vendor_type' class='required form-control'>
 							<?php $dataVendorArrs = $obj_master->get_results("select * from " . $obj_master->getTableName('vendor_type') . " where status='1' and is_deleted='0' order by vendor_name asc"); ?>
 							<?php if (!empty($dataVendorArrs)) { ?>

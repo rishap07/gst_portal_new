@@ -1,57 +1,48 @@
 <?php
-$obj_master = new master();
-if(!$obj_master->can_read('master_supplier')) {
+	$obj_master = new master();
 
-    $obj_master->setError($obj_master->getValMsg('can_read'));
-    $obj_master->redirect(PROJECT_URL."/?page=dashboard");
-    exit();
-}
+	if(!$obj_master->can_read('master_supplier')) {
+		$obj_master->setError($obj_master->getValMsg('can_read'));
+		$obj_master->redirect(PROJECT_URL."/?page=dashboard");
+		exit();
+	}
 ?>
-<style>
-    .bulkupload{
-        margin-right: 10px !important;
-    }
-</style>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
-    <div class="col-md-12 col-sm-12 col-xs-12">
-
-        <h1>Supplier/Seller</h1>
-        <div class="whitebg formboxcontainer">
-        <div>
-            <a class='btn btn-default btn-success btnwidth addnew' href='<?php echo PROJECT_URL;?>/?page=master_supplier_update'>Add New</a>
-        </div>
-            <div>
-            <a class='btn btn-default btn-success btnwidth addnew bulkupload' href='<?php echo PROJECT_URL;?>/?page=master_supplier_bulk_update'>Bulk Upload</a>
-        </div>  
-         <div class="clear height10"></div>
-        <?php $obj_master->showErrorMessage(); ?>
-            <?php $obj_master->showSuccessMessge(); ?>
-            <?php $obj_master->unsetMessage(); ?>
-        <h2 class="greyheading">Supplier/Seller Listing</h2>
-        <div class="adminformbx">
-           
+	<div class="col-md-12 col-sm-12 col-xs-12">
+		<h1>Supplier/Seller</h1>
+		<div class="whitebg formboxcontainer">
+			<div class="pull-right">
+				<a class='btn btn-default btn-success btnwidth' href='<?php echo PROJECT_URL;?>/?page=master_supplier_update'>Add New</a>
+				<a class='btn btn-default btn-success btnwidth bulkupload' href='<?php echo PROJECT_URL;?>/?page=master_supplier_bulk_upload'>Bulk Upload</a>
+			</div>
+			<div class="clear height10"></div>
 		
-            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable">
-                <thead>
-                    <tr>
-						<th align='left' width="72">#</th>
-						<th align='left'>GSTIN</th>
-						<th align='left'>Name</th>
-						<th align='left'>Address</th>
-						<th align='left'>City</th>
-						<th align='left'>State</th>
-						<th align='left'>Country</th>
-						<th align='left'>Status</th>
-						<th width="72">Action</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-    </div>
+			<?php $obj_master->showErrorMessage(); ?>
+			<?php $obj_master->showSuccessMessge(); ?>
+			<?php $obj_master->unsetMessage(); ?>
+			<h2 class="greyheading">Supplier/Seller Listing</h2>
+		
+			<div class="adminformbx">
+				<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable">
+					<thead>
+						<tr>
+							<th align='left' width="72">#</th>
+							<th align='left'>GSTIN</th>
+							<th align='left'>Name</th>
+							<th align='left'>Address</th>
+							<th align='left'>City</th>
+							<th align='left'>State</th>
+							<th align='left'>Country</th>
+							<th align='left'>Status</th>
+							<th width="72">Action</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</div>
 </div>
-</div>
-<div class="clear height80">
-</div>
+<div class="clear height80"></div>
 <script>
     
 	$(document).ready(function () {

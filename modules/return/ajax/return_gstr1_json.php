@@ -59,7 +59,8 @@ if(!empty($jstr1_array)) {
                                     <td align="right"><a href="'.PROJECT_URL.'?page=return_get_summary_view&type='.$jstr1_value['sec_nm'].'&returnmonth='.$returnmonth.'">view</a></td>
                                     <td align="right">';
                                     if($invoice_number>0) {
-                                        if($jstr1_value['sec_nm'] == 'B2CS') {
+                                        $response .= '<a href="javascript:;" class="gstr1ViewDeleteBtn" type="'.$jstr1_value['sec_nm'].'" deleteall="all"><i class="fa fa-trash"></i></a>';
+                                       /* if($jstr1_value['sec_nm'] == 'B2CS') {
                                             $response .= '<a href="javascript:;" class="gstr1ViewDeleteBtn" type="B2CS"><i class="fa fa-trash"></i></a>';
                                         }
                                         if($jstr1_value['sec_nm'] == 'AT') {
@@ -67,7 +68,7 @@ if(!empty($jstr1_array)) {
                                         }
                                         if($jstr1_value['sec_nm'] == 'TXPD') {
                                             $response .= '<a href="javascript:;" class="gstr1ViewDeleteBtn" type="TXPD"><i class="fa fa-trash"></i></a>';
-                                        }
+                                        }*/
                                     }
                                    
                                     $response .= '</td>

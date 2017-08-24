@@ -225,6 +225,28 @@ if(!empty($dataInvPurchase))
 
         <div class="col-md-12 col-sm-12 col-xs-12"> <p class="hr--text"><span class="text--uppercase">GST Returns</span></p></div>
            <!--GSTR STEP END HERE--->   
+		       <!--GSTR STEP END HERE--->   
+         <div class="col-md-12 col-sm-12 col-xs-12 whitebg gstr-box">
+            <div class="lightyellow roundbtn"><span>GST-Transition Form</span>  | <span>Monthly Filing</span></div>
+            <div class="clearfix"></div>
+            <div class="gstr-step-row">
+                <div class="row">
+                    <div class="col-md-8 col-sm-8 modpadlr">
+                        <div class="rowsteps">
+                            
+                        </div>
+
+                      
+                       
+                    </div>
+                    <div class="col-md-4 col-sm-4" style="background:#fde7e0; margin-top:20px; border-radius:3px; padding:15px">
+                        <div class="gstrrgtbox">Fill GST-Transition<br/><span>To work on GST Transition Form</span></div>
+                        <a href="<?php echo PROJECT_URL;?>/?page=transition_gstr_file" class="btn btn-orange" style="width:100%;">Start Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
          <div class="col-md-12 col-sm-12 col-xs-12 whitebg gstr-box">
             <div class="lightyellow roundbtn"><span>GSTR-3B File</span>  | <span>Monthly Return Filing</span></div>
             <div class="clearfix"></div>
@@ -250,7 +272,7 @@ if(!empty($dataInvPurchase))
                 </div>
             </div>
         </div>
-
+		 
    <?php
    if($dataArr['data']->kyc->vendor_type==2)
 {

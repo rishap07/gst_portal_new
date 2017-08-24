@@ -8,28 +8,28 @@ if(!$obj_purchase->can_read('client_invoice')) {
 	exit();
 }
 
-if (isset($_GET['action']) && $_GET['action'] == 'downloadPurchaseRVInvoice' && isset($_GET['id']) && $obj_purchase->validateId($_GET['id'])) {
+if (isset($_GET['action']) && $_GET['action'] == 'downloadPurchaseRFInvoice' && isset($_GET['id']) && $obj_purchase->validateId($_GET['id'])) {
 
-    $htmlResponse = $obj_purchase->generatePurchaseRVInvoiceHtml($_GET['id']);
+    $htmlResponse = $obj_purchase->generatePurchaseRFInvoiceHtml($_GET['id']);
     if ($htmlResponse === false) {
 
         $obj_purchase->setError("No invoice found.");
-        $obj_purchase->redirect(PROJECT_URL . "?page=purchase_receipt_voucher_invoice_list");
+        $obj_purchase->redirect(PROJECT_URL . "?page=purchase_refund_voucher_invoice_list");
         exit();
     }
 
     $obj_mpdf = new mPDF();
-    $obj_mpdf->SetHeader('Receipt Voucher Invoice');
+    $obj_mpdf->SetHeader('Refund Voucher Invoice');
     $obj_mpdf->WriteHTML($htmlResponse);
 
-    $taxInvoicePdf = 'receipt-voucher-invoice-' . $_GET['id'] . '.pdf';
+    $taxInvoicePdf = 'refund-voucher-invoice-' . $_GET['id'] . '.pdf';
     ob_clean();
     $obj_mpdf->Output($taxInvoicePdf, 'D');
 }
 
-if (isset($_GET['action']) && $_GET['action'] == 'emailPurchaseRVInvoice' && isset($_GET['id']) && $obj_purchase->validateId($_GET['id'])) {
+if (isset($_GET['action']) && $_GET['action'] == 'emailPurchaseRFInvoice' && isset($_GET['id']) && $obj_purchase->validateId($_GET['id'])) {
 
-    $htmlResponse = $obj_purchase->generatePurchaseRVInvoiceHtml($_GET['id']);
+    $htmlResponse = $obj_purchase->generatePurchaseRFInvoiceHtml($_GET['id']);
 
     $dataCurrentUserArr = $obj_purchase->getUserDetailsById($obj_purchase->sanitize($_SESSION['user_detail']['user_id']));
     $sendmail = $dataCurrentUserArr['data']->kyc->email;
@@ -50,7 +50,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'emailPurchaseRVInvoice' && iss
     );
 
     $mail->CharSet = "UTF-8";
-    $mail->Subject = 'GST Receipt Voucher Invoice-' . $_GET['id'];
+    $mail->Subject = 'GST Refund Voucher Invoice-' . $_GET['id'];
     $mail->SetFrom('noreply.Gstkeeper@gstkeeper.com', 'GST Keeper');
     $mail->MsgHTML($message);
     $mail->AddAddress($sendmail);
@@ -60,31 +60,31 @@ if (isset($_GET['action']) && $_GET['action'] == 'emailPurchaseRVInvoice' && iss
 
         $obj_purchase->setSuccess("Mail Sent Successfully.");
         $mail->ClearAllRecipients();
-        $obj_purchase->redirect(PROJECT_URL . "?page=purchase_receipt_voucher_invoice_list");
+        $obj_purchase->redirect(PROJECT_URL . "?page=purchase_refund_voucher_invoice_list");
     } else {
 
         $obj_purchase->setError($mail->ErrorInfo);
         $mail->ClearAllRecipients();
-        $obj_purchase->redirect(PROJECT_URL . "?page=purchase_receipt_voucher_invoice_list");
+        $obj_purchase->redirect(PROJECT_URL . "?page=purchase_refund_voucher_invoice_list");
     }
 }
 
-if (isset($_GET['action']) && $_GET['action'] == 'printPurchaseRVInvoice' && isset($_GET['id']) && $obj_purchase->validateId($_GET['id'])) {
+if (isset($_GET['action']) && $_GET['action'] == 'printPurchaseRFInvoice' && isset($_GET['id']) && $obj_purchase->validateId($_GET['id'])) {
 
-    $htmlResponse = $obj_purchase->generatePurchaseRVInvoiceHtml($_GET['id']);
+    $htmlResponse = $obj_purchase->generatePurchaseRFInvoiceHtml($_GET['id']);
 
     if ($htmlResponse === false) {
 
         $obj_purchase->setError("No invoice found.");
-        $obj_purchase->redirect(PROJECT_URL . "?page=purchase_receipt_voucher_invoice_list");
+        $obj_purchase->redirect(PROJECT_URL . "?page=purchase_refund_voucher_invoice_list");
         exit();
     }
 
     $obj_mpdf = new mPDF();
-    $obj_mpdf->SetHeader('Receipt Voucher Invoice');
+    $obj_mpdf->SetHeader('Refund Voucher Invoice');
     $obj_mpdf->WriteHTML($htmlResponse);
 
-    $taxInvoicePdf = 'receipt-voucher-invoice-' . $_GET['id'] . '.pdf';
+    $taxInvoicePdf = 'refund-voucher-invoice-' . $_GET['id'] . '.pdf';
     ob_clean();
     $obj_mpdf->Output($taxInvoicePdf, 'I');
 }
@@ -99,7 +99,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
-        <div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Receipt Voucher Invoices</h1></div>
+        <div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Refund Voucher Invoices</h1></div>
         <div class="formboxcontainer padleft0 mobinvoicecol" style="padding-top:0px;">
 
             <?php $obj_purchase->showErrorMessage(); ?>
@@ -110,15 +110,16 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 
                 <!--INVOICE LEFT TABLE START HERE-->
                 <div class="fixed-left-col col-sm-12 col-xs-12" style="padding-right:0px; padding-left:0px;">
+
                     <div class="invoiceheaderfixed">
-                        <div class="col-md-8">
+						<div class="col-md-8">
 							<a href='javascript:void(0)' class="btn btn-warning pull-left checkAll">Check All</a>
 							<a href='javascript:void(0)' class="btn btn-danger pull-left cancelAll" data-toggle="tooltip" title="Cancel All"><i class="fa fa-times" aria-hidden="true"></i></a>
 							<a href='javascript:void(0)' class="btn btn-success pull-left revokeAll" data-toggle="tooltip" title="Revoke All"><i class="fa fa-undo" aria-hidden="true"></i></a>
                         </div>
 
                         <div class="col-md-4">
-                            <a href='<?php echo PROJECT_URL; ?>/?page=purchase_receipt_voucher_invoice_create' class="btn btn-success pull-right"><i class="fa fa-plus" aria-hidden="true"></i> New</a>
+                            <a href='<?php echo PROJECT_URL; ?>/?page=purchase_refund_voucher_invoice_create' class="btn btn-success pull-right"><i class="fa fa-plus" aria-hidden="true"></i> New</a>
                         </div>
                     </div>
 
@@ -130,7 +131,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 
                 <?php
                 /* code for display invoice according to invoice id pass in query string */
-                if (isset($_GET['action']) && $_GET['action'] == 'viewPurchaseRVInvoice' && isset($_GET['id']) && $obj_purchase->validateId($_GET['id'])) {
+                if (isset($_GET['action']) && $_GET['action'] == 'viewPurchaseRFInvoice' && isset($_GET['id']) && $obj_purchase->validateId($_GET['id'])) {
 
                     $invid = $obj_purchase->sanitize($_GET['id']);
                     $invoiceData = $obj_purchase->get_results("select 
@@ -157,12 +158,13 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 												cii.cess_amount, 
 												cii.total 
 												from 
-											" . $obj_purchase->getTableName('client_purchase_invoice') . " as ci INNER JOIN " . $obj_purchase->getTableName('client_purchase_invoice_item') . " as cii ON ci.purchase_invoice_id = cii.purchase_invoice_id where ci.purchase_invoice_id = " . $invid . " AND ci.invoice_type = 'receiptvoucherinvoice' AND ci.added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND cii.added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND ci.is_deleted='0' AND cii.is_deleted='0'");
+											" . $obj_purchase->getTableName('client_purchase_invoice') . " as ci INNER JOIN " . $obj_purchase->getTableName('client_purchase_invoice_item') . " as cii ON ci.purchase_invoice_id = cii.purchase_invoice_id where ci.purchase_invoice_id = " . $invid . " AND ci.invoice_type = 'refundvoucherinvoice' AND ci.added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND cii.added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND ci.is_deleted='0' AND cii.is_deleted='0'");
                 } else {
 
 					$invoiceData = $obj_purchase->get_results("select 
 												ci.*, 
 												cii.purchase_invoice_item_id, 
+												cii.item_id, 
 												cii.item_id, 
 												cii.item_name, 
 												cii.item_hsncode, 
@@ -183,7 +185,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 												cii.cess_amount, 
 												cii.total 
 												from 
-											" . $obj_purchase->getTableName('client_purchase_invoice') . " as ci INNER JOIN " . $obj_purchase->getTableName('client_purchase_invoice_item') . " as cii ON ci.purchase_invoice_id = cii.purchase_invoice_id where ci.purchase_invoice_id = (SELECT purchase_invoice_id FROM ".$obj_purchase->getTableName('client_purchase_invoice')." Where invoice_type = 'receiptvoucherinvoice' AND added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND is_deleted='0' Order by purchase_invoice_id desc limit 0,1) AND ci.invoice_type = 'receiptvoucherinvoice' AND ci.added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND cii.added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND ci.is_deleted='0' AND cii.is_deleted='0'");
+											" . $obj_purchase->getTableName('client_purchase_invoice') . " as ci INNER JOIN " . $obj_purchase->getTableName('client_purchase_invoice_item') . " as cii ON ci.purchase_invoice_id = cii.purchase_invoice_id where ci.purchase_invoice_id = (SELECT purchase_invoice_id FROM ".$obj_purchase->getTableName('client_purchase_invoice')." Where invoice_type = 'refundvoucherinvoice' AND added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND is_deleted='0' Order by purchase_invoice_id desc limit 0,1) AND ci.invoice_type = 'refundvoucherinvoice' AND ci.added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND cii.added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND ci.is_deleted='0' AND cii.is_deleted='0'");
 				}
                 /* Invoice display query code end here */
                 ?>
@@ -197,10 +199,11 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                         <!---INVOICE TOP ICON START HERE-->
                         <div class="inovicergttop">
                             <ul class="iconlist">
-                                <li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_receipt_voucher_invoice_update&action=editPurchaseRVInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Edit"><i class="fa fa-pencil" aria-hidden="true"></i></div></a></li>
-                                <li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_receipt_voucher_invoice_list&action=downloadPurchaseRVInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
-                                <li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_receipt_voucher_invoice_list&action=printPurchaseRVInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>" target="_blank"><div data-toggle="tooltip" data-placement="bottom" title="PRINT"><i class="fa fa-print" aria-hidden="true"></i></div></a></li>
-                                <li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_receipt_voucher_invoice_list&action=emailPurchaseRVInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></div></a></li>
+
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_refund_voucher_invoice_update&action=editPurchaseRFInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Edit"><i class="fa fa-pencil" aria-hidden="true"></i></div></a></li>
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_refund_voucher_invoice_list&action=downloadPurchaseRFInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_refund_voucher_invoice_list&action=printPurchaseRFInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>" target="_blank"><div data-toggle="tooltip" data-placement="bottom" title="PRINT"><i class="fa fa-print" aria-hidden="true"></i></div></a></li>
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_refund_voucher_invoice_list&action=emailPurchaseRFInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></div></a></li>
 							</ul>
                         </div>
 
@@ -228,7 +231,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 													<td>
                                                         <b>Invoice #</b>: <?php echo $invoiceData[0]->serial_number; ?><br>
                                                         <b>Reference #</b>: <?php echo $invoiceData[0]->reference_number; ?><br>
-                                                        <b>Type:</b> Receipt Voucher<br>
+                                                        <b>Type:</b> Refund Voucher<br>
                                                         <b>Nature:</b> <?php echo "Purchase Invoice"; ?><br>
                                                         <b>Invoice Date:</b> <?php echo $invoiceData[0]->invoice_date; ?>
                                                     </td>
@@ -239,19 +242,27 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 
                                     <?php $supply_place_data = $obj_purchase->getStateDetailByStateId($invoiceData[0]->supply_place); ?>
 
-									<tr class="information">
-										<td colspan="2">
-											<table>
-												<tr>													
+                                    <tr class="information">
+                                        <td colspan="2">
+                                            <table>
+                                                <tr>
 													<td>
                                                         <?php echo $invoiceData[0]->company_name; ?><br>
                                                         <?php echo $invoiceData[0]->company_address; ?><br>
                                                         <b>GSTIN:</b> <?php echo $invoiceData[0]->company_gstin_number; ?>
                                                     </td>
 
-                                                    <td>                                                        
+                                                    <td>
 														<?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php echo $supply_place_data['data']->state_name; ?><br> <?php } ?>
-														<b>Reverse Charge:</b> <?php if ($invoiceData[0]->is_tax_payable == 1) { echo "Yes" . "<br>"; } else { echo "No" . "<br>"; } ?>
+                                                        <b>Reverse Charge:</b> <?php if ($invoiceData[0]->is_tax_payable == 1) { echo "Yes" . "<br>"; } else { echo "No" . "<br>"; } ?>
+														<?php $dataReceiptVoucherRow = $obj_purchase->get_row("select * from ".$obj_purchase->getTableName('client_purchase_invoice')." where purchase_invoice_id = '".$invoiceData[0]->refund_voucher_receipt."' AND invoice_type = 'receiptvoucherinvoice' AND is_deleted='0' AND added_by = ".$obj_purchase->sanitize($_SESSION['user_detail']['user_id'])); ?>
+
+                                                        <?php if(!empty($dataReceiptVoucherRow)) { ?>
+                                                            <b>Receipt Voucher Serial:</b> <?php echo $dataReceiptVoucherRow->serial_number; ?><br>
+                                                            <b>Receipt Voucher Reference:</b> <?php echo $dataReceiptVoucherRow->reference_number; ?><br>
+                                                            <b>Receipt Voucher Date:</b> <?php echo $dataReceiptVoucherRow->invoice_date; ?><br>
+														<?php } ?>
+
 														<?php if ($invoiceData[0]->is_canceled == 1) { ?> <b>Canceled Invoice:</b> <?php echo "Canceled"; ?> <?php } ?>
                                                   	</td>
                                                 </tr>
@@ -260,10 +271,9 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                                     </tr>
 
                                     <tr class="information">
-										<td colspan="2">
-											<table>
+                                        <td colspan="2">
+                                            <table>
 												<tr>
-												
 													<td>
                                                         <b>Supplier Detail</b><br>
                                                         <?php echo html_entity_decode($invoiceData[0]->supplier_billing_name); ?><br>
@@ -289,8 +299,8 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                                                     </td>
 												</tr>
 											</table>
-										</td>
-									</tr>
+                                        </td>
+                                    </tr>
 
                                     <tr>
                                         <td colspan="2">
@@ -300,11 +310,11 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                                                     <td rowspan="2">S.No</td>
                                                     <td rowspan="2">Goods/Services</td>
                                                     <td rowspan="2">HSN/SAC Code</td>
-                                                    <td rowspan="2">Advance Value<br>(<i class="fa fa-inr"></i>)</td>
-													<td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">CGST</td>
-                                                    <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">SGST</td>
-                                                    <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">IGST</td>
-                                                    <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">CESS</td>
+                                                    <td rowspan="2">Refund Value<br>(<i class="fa fa-inr"></i>)</td>
+                                                    <td colspan="2" style="border-bottom:1px solid #808080;">CGST</td>
+                                                    <td colspan="2" style="border-bottom:1px solid #808080;">SGST</td>
+                                                    <td colspan="2" style="border-bottom:1px solid #808080;">IGST</td>
+                                                    <td colspan="2" style="border-bottom:1px solid #808080;">CESS</td>
                                                 </tr>
 
                                                 <tr class="heading">
@@ -342,7 +352,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                                                 <tr class="total">
                                                     <td colspan="12">Total Invoice Value (In Figure): <i class="fa fa-inr"></i><?php echo $invoiceData[0]->invoice_total_value; ?></td>
                                                 </tr>
-
+												
 												<?php $invoice_total_value_words = $obj_purchase->convert_number_to_words($invoiceData[0]->invoice_total_value); ?>
                                                 <tr class="total">
                                                 	<td colspan="12">Total Invoice Value (In Words): <?php echo ucwords($invoice_total_value_words); ?></td>
@@ -373,7 +383,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
     </div>
 </div>
 <script>
-	$(document).ready(function () {
+    $(document).ready(function () {
 
         $(".formboxcontainer").on("click", ".checkAll", function(){
 
@@ -519,7 +529,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                     "bDestroy": true,
                     "searching": false,
                     "bLengthChange": false,
-                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=purchase_receipt_voucher_invoice_list",
+                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=purchase_refund_voucher_invoice_list",
                     "fnServerParams": function (aoData) {
                     },
                     "iDisplayLength": 6

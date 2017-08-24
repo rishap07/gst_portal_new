@@ -21,9 +21,7 @@ if ($_REQUEST['returnmonth'] != '') {
 $response = $obj_api->returnSummary($returnmonth);
 ?>
 <?php 
-$responseB2CS = $obj_api->returnSummary($returnmonth,'B2CS');
-$responseAT = $obj_api->returnSummary($returnmonth,'AT');
-$responseTXPD = $obj_api->returnSummary($returnmonth,'TXPD');
+
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr">
   <div class="col-md-11 col-sm-12 col-xs-12 mobpadlr">
@@ -86,6 +84,7 @@ $responseTXPD = $obj_api->returnSummary($returnmonth,'TXPD');
                         <?php $obj_gstr1->showErrorMessage(); ?>
                         <?php $obj_gstr1->showSuccessMessge(); ?>
                         <?php $obj_gstr1->unsetMessage(); ?>
+                        
                         <div id="display_json"></div>
                     </div>
                 </div>
@@ -103,20 +102,10 @@ $responseTXPD = $obj_api->returnSummary($returnmonth,'TXPD');
         });
 
         $('.gstr1ViewDeleteBtn').on('click', function () {
-
+            $("#loading").show();
             var type = $(this).attr('type');
             var returnmonth = "<?php echo $returnmonth;?>";
-            var arrValues = [];
-            if(type == 'B2CS') {
-                var arrValues = ['<?php echo $responseB2CS;?>'];  
-            }
-            if(type == 'AT') {
-                var arrValues = ['<?php echo $responseAT;?>'];  
-            } 
-            if(type == 'TXPD') {
-                var arrValues = ['<?php echo $responseTXPD;?>'];  
-            }     
-            delete_item_invoice(type,returnmonth,arrValues);          
+            delete_item_invoice(type,returnmonth);          
         });
     });
 
@@ -139,14 +128,15 @@ $responseTXPD = $obj_api->returnSummary($returnmonth,'TXPD');
     /******* To get Summary of GSTR1 ********/
 
      /******* To delele invoice of GSTR1 ********/
-    function delete_item_invoice(type,returnmonth,arrValues) {
-        if(type!= '' && arrValues != '') {
+    function delete_item_invoice(type,returnmonth) {
+        if(type!= '') {
             $.ajax({
                 url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_delete_item_invoice",
                 type: "post",
-                data: {type:type,returnmonth:returnmonth,arrValues: arrValues},
+                data: {type:type,returnmonth:returnmonth,deleteType:'all'},
                 success: function (response) {
-                   location.reload();
+                    $("#loading").hide();
+                  location.reload();
                 },
                 error: function() {
                 }

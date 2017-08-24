@@ -195,7 +195,6 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 					}
 					/* Invoice display query code end here */
 				?>
-
 				<!--INVOICE LEFT TABLE END HERE-->
 
 				<!--INVOICE PRINT RIGHT  START HERE-->
@@ -218,10 +217,10 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 								<li><a href="<?php echo PROJECT_URL;?>/?page=purchase_invoice_list&action=emailPurchaseInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id ; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></div></a></li>
 							</ul>
 						</div>
-						
+
 						<!---INVOICE div print START HERE-->
 						<div id="taxinvoice_print">
-						
+
 							<!---INVOICE TOP ICON START HERE-->
 							<div class="height20"></div>
 							<div class="clearfix"></div>

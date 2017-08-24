@@ -91,25 +91,6 @@ if(isset($_GET['id'])) {
 					</div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Zipcode <span class="starred">*</span></label>
-						<input type="text" placeholder="Zipcode" name='zipcode' class='form-control required' data-bind="number" value='<?php if(isset($_POST['zipcode'])){ echo $_POST['zipcode']; } else if(isset($dataArr[0]->zipcode)){ echo $dataArr[0]->zipcode; } ?>'/>
-					</div>
-					<div class="clear"></div>
-
-					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Country <span class="starred">*</span></label>
-						<select name='country' id='country' class='required form-control'>
-							<?php $dataSCountryArrs = $obj_master->get_results("select * from ".$obj_master->getTableName('country')." order by country_name asc"); ?>
-							<?php if(!empty($dataSCountryArrs)) { ?>
-								<option value=''>Select Country</option>
-								<?php foreach($dataSCountryArrs as $dataSCountryArr) { ?>
-									<option value='<?php echo $dataSCountryArr->id; ?>' data-code="<?php echo $dataSCountryArr->country_code; ?>" <?php if(isset($_POST['country']) && $_POST['country'] === $dataSCountryArr->id){ echo 'selected="selected"'; } else if(isset($dataArr[0]->country) && $dataSCountryArr->id == $dataArr[0]->country){ echo 'selected="selected"'; } ?>><?php echo $dataSCountryArr->country_name . " (" . $dataSCountryArr->country_code . ")"; ?></option>
-								<?php } ?>
-							<?php } ?>
-						</select>
-					</div>
-
-					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>State <span class="starred">*</span></label>
 						<select name='state' id='state' class='form-control required'>
 							<?php $dataStateArrs = $obj_master->get_results("select * from ".$obj_master->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
@@ -120,6 +101,25 @@ if(isset($_GET['id'])) {
 								<?php } ?>
 							<?php } else { ?>
 								<option value=''>No State Found</option>
+							<?php } ?>
+						</select>
+					</div>
+					<div class="clear"></div>
+
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>Zipcode <span class="starred">*</span></label>
+						<input type="text" placeholder="Zipcode" name='zipcode' class='form-control required' data-bind="number" value='<?php if(isset($_POST['zipcode'])){ echo $_POST['zipcode']; } else if(isset($dataArr[0]->zipcode)){ echo $dataArr[0]->zipcode; } ?>'/>
+					</div>
+
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>Country <span class="starred">*</span></label>
+						<select name='country' id='country' class='required form-control'>
+							<?php $dataSCountryArrs = $obj_master->get_results("select * from ".$obj_master->getTableName('country')." order by country_name asc"); ?>
+							<?php if(!empty($dataSCountryArrs)) { ?>
+								<option value=''>Select Country</option>
+								<?php foreach($dataSCountryArrs as $dataSCountryArr) { ?>
+									<option value='<?php echo $dataSCountryArr->id; ?>' data-code="<?php echo $dataSCountryArr->country_code; ?>" <?php if(isset($_POST['country']) && $_POST['country'] === $dataSCountryArr->id){ echo 'selected="selected"'; } else if(isset($dataArr[0]->country) && $dataSCountryArr->id == $dataArr[0]->country){ echo 'selected="selected"'; } ?>><?php echo $dataSCountryArr->country_name . " (" . $dataSCountryArr->country_code . ")"; ?></option>
+								<?php } ?>
 							<?php } ?>
 						</select>
 					</div>
@@ -157,7 +157,7 @@ if(isset($_GET['id'])) {
 					</div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Vendor Type<span class="starred">*</span></label>
+						<label>Vendor Type <span class="starred">*</span></label>
 						<select name='vendor_type' id='vendor_type' class='required form-control'>
 							<?php $dataVendorArrs = $obj_master->get_results("select * from " . $obj_master->getTableName('vendor_type') . " where status='1' and is_deleted='0' order by vendor_name asc"); ?>
 							<?php if (!empty($dataVendorArrs)) { ?>
@@ -171,14 +171,14 @@ if(isset($_GET['id'])) {
 					<div class="clear"></div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Status<span class="starred">*</span></label>
+						<label>Status <span class="starred">*</span></label>
 						<select name="status" class="form-control">
 							<option value="1" <?php if(isset($_POST['status']) && $_POST['status'] === '1'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->status) && $dataArr[0]->status === '1'){ echo 'selected="selected"'; } ?>>Active</option>
 							<option value="0" <?php if(isset($_POST['status']) && $_POST['status'] === '0'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->status) && $dataArr[0]->status === '0'){ echo 'selected="selected"'; } ?>>In-Active</option>
 						</select>
 					</div>
 					<div class="clear height30"></div>
-					
+
 					<div class="adminformbxsubmit" style="width:100%;"> 
 						<div class="tc">
 							<input type='submit' class="btn btn-success" name='submit' value='<?php echo isset($_GET['id']) ? 'update' : 'submit'; ?>' id='submit'>

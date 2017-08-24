@@ -3,17 +3,17 @@ $obj_master = new master();
 $excelError = false;
 $returnMessage = '';
 
-if (!$obj_master->can_read('master_receiver')) {
+if (!$obj_master->can_read('master_supplier')) {
 
     $obj_master->setError($obj_master->getValMsg('can_read'));
     $obj_master->redirect(PROJECT_URL . "/?page=dashboard");
     exit();
 }
 
-if (!$obj_master->can_create('master_receiver')) {
+if (!$obj_master->can_create('master_supplier')) {
 
 	$obj_master->setError($obj_master->getValMsg('can_create'));
-	$obj_master->redirect(PROJECT_URL . "/?page=master_receiver");
+	$obj_master->redirect(PROJECT_URL . "/?page=master_supplier");
 	exit();
 }
 
@@ -24,9 +24,9 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
         $obj_master->setError('Invalid access to files');
     } else {
 
-        $uploadInvoice = $obj_master->uploadMasterReceiver();
+        $uploadInvoice = $obj_master->uploadMasterSupplier();
 		if($uploadInvoice === true){
-            $obj_master->redirect(PROJECT_URL."?page=master_receiver");
+            $obj_master->redirect(PROJECT_URL."?page=master_supplier");
         } else {
 
 			$excelError = true;
@@ -40,10 +40,8 @@ $dataCurrentArr = $obj_master->getUserDetailsById($obj_master->sanitize($_SESSIO
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
 	<div class="col-md-12 col-sm-12 col-xs-12">
-	
-		<div class="col-md-12 col-sm-12 col-xs-12 heading"><h1> Upload Receiver/Customer</h1></div>
+		<div class="col-md-12 col-sm-12 col-xs-12 heading"><h1> Upload Supplier/Seller</h1></div>
 		<div class="whitebg formboxcontainer">
-
 			<?php $obj_master->showErrorMessage(); ?>
 			<?php $obj_master->showSuccessMessge(); ?>
 			<?php $obj_master->unsetMessage(); ?>
@@ -58,19 +56,19 @@ $dataCurrentArr = $obj_master->getUserDetailsById($obj_master->sanitize($_SESSIO
 			?>
 			<div class="clear"></div>
 			
-			<form name="upload-receiver" id="upload-receiver" method="POST" enctype="multipart/form-data">
+			<form name="upload-supplier" id="upload-supplier" method="POST" enctype="multipart/form-data">
 				<div class="row">
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Upload Excel File <span class="starred">*</span></label>
 						<div class="clear"></div>
-						<input type="file" name="receiver_xlsx" id="receiver_xlsx" class="required form-control" />
+						<input type="file" name="supplier_xlsx" id="supplier_xlsx" class="required form-control" />
 					</div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Download Sample Excel File</label>
 						<div class="clear"></div>
-						<a href="<?php echo PROJECT_URL."/upload/receiver-excel.zip"; ?>"><b>Download Sample</b></a>
+						<a href="<?php echo PROJECT_URL."/upload/supplier-excel.zip"; ?>"><b>Download Sample</b></a>
 					</div>
 
 					<div class="clear height20"></div>
@@ -78,7 +76,7 @@ $dataCurrentArr = $obj_master->getUserDetailsById($obj_master->sanitize($_SESSIO
 					<div class="adminformbxsubmit" style="width:100%;">
 						<div class="tc">
 							<input type='submit' class="btn btn-success" name='submit' value='submit' id='submit'>
-							<input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href='<?php echo PROJECT_URL . "/?page=master_receiver"; ?>';" class="btn btn-danger" />
+							<input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href='<?php echo PROJECT_URL . "/?page=master_supplier"; ?>';" class="btn btn-danger" />
 						</div>
 					</div>
 
@@ -93,7 +91,7 @@ $dataCurrentArr = $obj_master->getUserDetailsById($obj_master->sanitize($_SESSIO
     $(document).ready(function () {
         $('#submit').click(function () {
             var mesg = {};
-            if (vali.validate(mesg, 'upload-receiver')) {
+            if (vali.validate(mesg, 'upload-supplier')) {
                 return true;
             }
             return false;
