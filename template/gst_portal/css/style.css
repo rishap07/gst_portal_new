@@ -111,7 +111,6 @@ input[type='submit'] {text-transform:capitalize;}
 .adminloginbx p{font-size:17px;color:#666; padding:15px 0 20px 0; text-align:center;}
 .admintxt{float:left;width:100%;position:relative;border:1px solid #e0e0e0; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px;  -O-border-radius:5px; color:#333;margin-bottom:20px;}
 .admintxt .fa{position:absolute;color:#b7b7b7;font-size:24px;left:20px;top:13px;}
-.admintxt input[type=text],.admintxt input[type=password]{width:360px;background:#fff; font-family: opensans_light;  color:#333;font-size:17px;border:none;padding:10px 0px 10px 55px; background:none;}
 .admintxt:hover { border:1px solid #e44a16;}
 .rememberbx{width:100%;float:left;margin-bottom:5px;}
 .rememberbx input[type=checkbox]{float:left;margin-right:10px;}
@@ -122,7 +121,10 @@ input[type='submit'] {text-transform:capitalize;}
 .btnsubmit:hover{background:#e44a16; color:#FFF;}
 .registercontent { display: none;}
 .registercontent .admintxt { width:47%; float:left; margin:0 5px 15px 5px;}
+.admintxt input[type=text],.admintxt input[type=password]{width:360px;background:#fff; font-family: opensans_light;  color:#333;font-size:17px;border:none;padding:10px 0px 10px 55px; background:none;}
 .registercontent .admintxt input[type="text"], .registercontent .admintxt input[type="password"] { width:75%;}
+.admintxt select {width:360px;background:#fff; font-family: opensans_light;  color:#333;font-size:17px;border:none;padding:10px 0px 10px 55px; background:none;}
+.registercontent .admintxt select { width:98%;}
 
 /*-----------------------------LOGIN CSS END HERE-----------------------------------*/
 

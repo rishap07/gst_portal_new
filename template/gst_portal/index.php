@@ -133,7 +133,7 @@ if (isset($_POST['register_me']) && $_POST['register_me'] == 'REGISTER') {
 					</form>
 				</div>
 
-				<div class="registercontent"  style="<?php if (isset($_POST['register_me']) && $_POST['register_me'] == 'REGISTER') { echo "display:block"; } else if (isset($_POST['login_me']) && $_POST['login_me'] == 'LOGIN') { echo "display:none"; } ?>">
+				<div class="registercontent" style="<?php if (isset($_POST['register_me']) && $_POST['register_me'] == 'REGISTER') { echo "display:block"; } else if (isset($_POST['login_me']) && $_POST['login_me'] == 'LOGIN') { echo "display:none"; } ?>">
 
 					<div class="clear"></div>
 					<?php if (isset($_POST['register_me']) && $_POST['register_me'] == 'REGISTER') { ?>
@@ -180,6 +180,24 @@ if (isset($_POST['register_me']) && $_POST['register_me'] == 'REGISTER') {
 						<div class="admintxt">
 							<input id="confirmpassword" name="confirmpassword" type="password" placeholder="Confirm Password" class="required" />
 							<strong class="fa fa-key" aria-hidden="true"></strong>
+						</div>
+
+						<div class="admintxt">
+							<input id="city" name="city" type="text" placeholder="City" class="required" />
+							<strong class="fa fa-location-arrow" aria-hidden="true"></strong>
+						</div>
+
+						<div class="admintxt">
+							<select name='state' id='state' class='required'>
+								<?php $dataBStateArrs = $obj_login->get_results("select * from ".$obj_login->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
+								<?php if(!empty($dataBStateArrs)) { ?>
+									<option value=''>Select State</option>
+									<?php foreach($dataBStateArrs as $dataBStateArr) { ?>
+										<option value='<?php echo $dataBStateArr->state_id; ?>'><?php echo $dataBStateArr->state_name; ?></option>
+									<?php } ?>
+								<?php } ?>
+							</select>
+							<strong class="fa fa-location-arrow" aria-hidden="true"></strong>
 						</div>
 
 						<div class="admintxt">

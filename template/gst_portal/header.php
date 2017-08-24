@@ -129,7 +129,9 @@
                 <div class="arrow-up"></div>
                     <div class="txtnotfication">Notifications</div>
                    
-						<?php echo $message; ?>
+						<?php echo html_entity_decode($message); 
+						
+						?>
 					<div class="clear"></div>
                     <div class="btnseeall"><a href="<?php echo PROJECT_URL; ?>/?page=notification" class="btn">See All</a></div>
                 </div>
