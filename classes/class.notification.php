@@ -41,6 +41,11 @@ final class notification extends validation {
 		 
        
 	}
+	public  function strip_tags_content($text) {
+
+    return preg_replace('@<(\w+)\b.*?>.*?</\1>@si', '', $text);
+
+ }
 	public function showNotificationData()
 	{
 		$dataArr = array();

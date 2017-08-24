@@ -59,9 +59,9 @@ if(isset($_POST['receiptVoucherId']) && isset($_POST['action']) && $_POST['actio
 													LEFT JOIN " . $obj_purchase->getTableName('country') . " as bc ON crv.supplier_billing_country = bc.id 
 													LEFT JOIN " . $obj_purchase->getTableName('country') . " as sc ON crv.recipient_shipping_country = sc.id 
 													LEFT JOIN " . $obj_purchase->getTableName('vendor_type') . " as bv ON crv.supplier_billing_vendor_type = bv.vendor_id 
-													LEFT JOIN " . $obj_purchase->getTableName('vendor_type') . " as sv ON crv.recipient_shipping_vendor_name = sv.vendor_id 
+													LEFT JOIN " . $obj_purchase->getTableName('vendor_type') . " as sv ON crv.recipient_shipping_vendor_type = sv.vendor_id 
 													where 1=1 AND crv.purchase_invoice_id = '".$receiptVoucherId."' AND crv.invoice_type = 'receiptvoucherinvoice' AND crv.is_deleted = '0' AND crv.status = '1' AND crv.financial_year = '".$currentFinancialYear."' AND crv.added_by = ". $obj_purchase->sanitize($_SESSION['user_detail']['user_id']));
-													
+
 	if(count($receiptVoucherData) > 0) {
 
 		$result['purchase_invoice_id'] = $receiptVoucherData[0]->purchase_invoice_id;
@@ -73,32 +73,32 @@ if(isset($_POST['receiptVoucherId']) && isset($_POST['action']) && $_POST['actio
 		$result['supply_state_name'] = $receiptVoucherData[0]->supply_state_name;
 		$result['supply_state_code'] = $receiptVoucherData[0]->supply_state_code;
 		$result['supply_state_tin'] = $receiptVoucherData[0]->supply_state_tin;
-		$result['supplier_billing_state'] = html_entity_decode($receiptVoucherData[0]->supplier_billing_state);
-		$result['billing_company_name'] = html_entity_decode($receiptVoucherData[0]->billing_company_name);
-		$result['billing_address'] = html_entity_decode($receiptVoucherData[0]->billing_address);
-		$result['billing_state'] = $receiptVoucherData[0]->billing_state;
-		$result['billing_state_name'] = html_entity_decode($receiptVoucherData[0]->billing_state_name);
-		$result['billing_state_code'] = $receiptVoucherData[0]->billing_state_code;
-		$result['billing_state_tin'] = $receiptVoucherData[0]->billing_state_tin;
-		$result['billing_country'] = $receiptVoucherData[0]->billing_country;
-		$result['billing_country_code'] = $receiptVoucherData[0]->billing_country_code;
-		$result['billing_country_name'] = html_entity_decode($receiptVoucherData[0]->billing_country_name);
-		$result['billing_vendor_type'] = $receiptVoucherData[0]->billing_vendor_type;
-		$result['billing_vendor_name'] = html_entity_decode($receiptVoucherData[0]->billing_vendor_name);
-		$result['billing_gstin_number'] = $receiptVoucherData[0]->billing_gstin_number;
-		$result['shipping_name'] = html_entity_decode($receiptVoucherData[0]->shipping_name);
-		$result['shipping_company_name'] = html_entity_decode($receiptVoucherData[0]->shipping_company_name);
-		$result['shipping_address'] = html_entity_decode($receiptVoucherData[0]->shipping_address);
-		$result['shipping_state'] = $receiptVoucherData[0]->shipping_state;
-		$result['shipping_state_name'] = html_entity_decode($receiptVoucherData[0]->shipping_state_name);
-		$result['shipping_state_code'] = $receiptVoucherData[0]->shipping_state_code;
-		$result['shipping_state_tin'] = $receiptVoucherData[0]->shipping_state_tin;
-		$result['shipping_country'] = $receiptVoucherData[0]->shipping_country;
-		$result['shipping_country_code'] = $receiptVoucherData[0]->shipping_country_code;
-		$result['shipping_country_name'] = html_entity_decode($receiptVoucherData[0]->shipping_country_name);
-		$result['shipping_vendor_type'] = $receiptVoucherData[0]->shipping_vendor_type;
-		$result['shipping_vendor_name'] = html_entity_decode($receiptVoucherData[0]->shipping_vendor_name);
-		$result['shipping_gstin_number'] = $receiptVoucherData[0]->shipping_gstin_number;
+		$result['supplier_billing_name'] = html_entity_decode($receiptVoucherData[0]->supplier_billing_name);
+		$result['supplier_billing_company_name'] = html_entity_decode($receiptVoucherData[0]->supplier_billing_company_name);
+		$result['supplier_billing_address'] = html_entity_decode($receiptVoucherData[0]->supplier_billing_address);
+		$result['supplier_billing_state'] = $receiptVoucherData[0]->supplier_billing_state;
+		$result['supplier_billing_state_name'] = html_entity_decode($receiptVoucherData[0]->supplier_billing_state_name);
+		$result['supplier_billing_state_code'] = $receiptVoucherData[0]->supplier_billing_state_code;
+		$result['supplier_billing_state_tin'] = $receiptVoucherData[0]->supplier_billing_state_tin;
+		$result['supplier_billing_country'] = $receiptVoucherData[0]->supplier_billing_country;
+		$result['supplier_billing_country_code'] = $receiptVoucherData[0]->supplier_billing_country_code;
+		$result['supplier_billing_country_name'] = html_entity_decode($receiptVoucherData[0]->supplier_billing_country_name);
+		$result['supplier_billing_vendor_type'] = $receiptVoucherData[0]->supplier_billing_vendor_type;
+		$result['supplier_billing_vendor_name'] = html_entity_decode($receiptVoucherData[0]->supplier_billing_vendor_name);
+		$result['supplier_billing_gstin_number'] = $receiptVoucherData[0]->supplier_billing_gstin_number;
+		$result['recipient_shipping_name'] = html_entity_decode($receiptVoucherData[0]->recipient_shipping_name);
+		$result['recipient_shipping_company_name'] = html_entity_decode($receiptVoucherData[0]->recipient_shipping_company_name);
+		$result['recipient_shipping_address'] = html_entity_decode($receiptVoucherData[0]->recipient_shipping_address);
+		$result['recipient_shipping_state'] = $receiptVoucherData[0]->recipient_shipping_state;		
+		$result['recipient_shipping_state_name'] = $receiptVoucherData[0]->recipient_shipping_state_name;
+		$result['recipient_shipping_state_code'] = $receiptVoucherData[0]->recipient_shipping_state_code;
+		$result['recipient_shipping_state_tin'] = $receiptVoucherData[0]->recipient_shipping_state_tin;
+		$result['recipient_shipping_country'] = $receiptVoucherData[0]->recipient_shipping_country;
+		$result['recipient_shipping_country_code'] = $receiptVoucherData[0]->recipient_shipping_country_code;
+		$result['recipient_shipping_country_name'] = html_entity_decode($receiptVoucherData[0]->recipient_shipping_country_name);
+		$result['recipient_shipping_vendor_type'] = $receiptVoucherData[0]->recipient_shipping_vendor_type;
+		$result['recipient_shipping_vendor_name'] = html_entity_decode($receiptVoucherData[0]->recipient_shipping_vendor_name);
+		$result['recipient_shipping_gstin_number'] = $receiptVoucherData[0]->recipient_shipping_gstin_number;
 		$result['invoice_total_value'] = $receiptVoucherData[0]->invoice_total_value;
 		$result['is_canceled'] = $receiptVoucherData[0]->is_canceled;
 

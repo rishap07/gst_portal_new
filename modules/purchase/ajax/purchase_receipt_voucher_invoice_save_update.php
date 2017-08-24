@@ -240,7 +240,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 			if ($obj_purchase->update($obj_purchase->getTableName('client_purchase_invoice'), $dataArr, $dataConditionArray)) {
 
 				$updatedid = $obj_purchase->sanitize(base64_decode($params['purchase_invoice_id']));
-				$obj_purchase->logMsg("Receipt Voucher Invoice Updated. ID : " . $updatedid . ".");
+				$obj_purchase->logMsg("Purchase Receipt Voucher Invoice Updated. ID : " . $updatedid . ".");
 
 				$processedInvoiceItemArray = array();
 				foreach($invoiceItemArray as $itemArr) {

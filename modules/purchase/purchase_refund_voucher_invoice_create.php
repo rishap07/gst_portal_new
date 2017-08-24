@@ -544,7 +544,7 @@
 					}
 
 					/* call function of total invoice */
-					totalInvoiceValueCalculation();
+					rowInvoiceCalculationOnStateChnage();
 				}
 			});
 			/* end of get receipt voucher details */
@@ -601,7 +601,7 @@
             return validateDecimalValue(event, this);
         });
         /* end of validate invoice decimal values allow only numbers or decimals */
-
+		
 		/* validate invoice tax decimal values allow only numbers or decimals */
         $(".invoicetable").on("keypress input paste", ".validateTaxValue", function (event) {
             return validateTaxValue(event, this);
@@ -614,7 +614,7 @@
 			var mesg = {};
             if (vali.validate(mesg, 'create-invoice')) {
                 return true;
-            }           
+            }
             return false;
         });
 		/* end of validate invoice form */
@@ -638,10 +638,10 @@
 
 				$("#loading").show();
 				$.ajax({
-					data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewRFInvoice"},
+					data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewPurchaseRFInvoice"},
 					dataType: 'json',
 					type: 'post',
-					url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_refund_voucher_invoice",
+					url: "<?php echo PROJECT_URL; ?>/?ajax=purchase_refund_voucher_invoice_save",
 					success: function(response){
 
 						$("#loading").hide();
@@ -654,7 +654,7 @@
 							
 							$(".errorValidationContainer").html("");
 							$(".errorValidationContainer").hide();
-							window.location.href = '<?php echo PROJECT_URL; ?>/?page=client_create_refund_voucher_invoice';
+							window.location.href = '<?php echo PROJECT_URL; ?>/?page=purchase_refund_voucher_invoice_create';
 						}
 					}
 				});
@@ -675,10 +675,10 @@
 
 			$("#loading").show();
 			$.ajax({
-                data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewRFInvoice"},
+                data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewPurchaseRFInvoice"},
                 dataType: 'json',
                 type: 'post',
-                url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_refund_voucher_invoice",
+                url: "<?php echo PROJECT_URL; ?>/?ajax=purchase_refund_voucher_invoice_save",
                 success: function(response){
 
 					$("#loading").hide();
@@ -691,16 +691,33 @@
 
                         $(".errorValidationContainer").html("");
                         $(".errorValidationContainer").hide();
-                        window.location.href = '<?php echo PROJECT_URL; ?>/?page=client_refund_voucher_invoice_list';
+                        window.location.href = '<?php echo PROJECT_URL; ?>/?page=purchase_refund_voucher_invoice_list';
                     }
                 }
             });
         });
         /* end of save new item */
 
+		/* calculate row invoice on state change function */
+        function rowInvoiceCalculationOnStateChnage() {
+
+            $( "tr.invoice_tr" ).each(function( index ) {
+
+                var rowid = $(this).attr("data-row-id");
+
+				if($("#invoice_tr_"+rowid+"_itemid").val() != '' && $("#invoice_tr_"+rowid+"_itemid").val() > 0) {
+
+                    var itemid = $("#invoice_tr_"+rowid+"_itemid").val();
+                    rowInvoiceCalculation(itemid, rowid);
+                }
+            });
+        }
+        /* end of calculate row invoice on state change function */
+
 		/* calculate row invoice function */
         function rowInvoiceCalculation(itemid, rowid) {
 
+			var supplierStateId = $("#supplier_billing_state").val();
 			var receiverStateId = $("#place_of_supply").val();
 
 			/* calculation */
@@ -717,7 +734,7 @@
 			} else {
 				var currentSGSTRate = parseFloat($("#invoice_tr_"+rowid+"_sgstrate").val());
 			}
-			
+
 			if($.trim($("#invoice_tr_"+rowid+"_igstrate").val()).length == 0 || $.trim($("#invoice_tr_"+rowid+"_igstrate").val()).length == '' || $.trim($("#invoice_tr_"+rowid+"_igstrate").val()) == '.') {
 				var currentIGSTRate = 0.00;
 			} else {
@@ -731,7 +748,7 @@
 			}
 
 			/* end of get all tax rates */
-			
+
 			if ($.trim($("#invoice_tr_" + rowid + "_taxablevalue").val()).length == 0 || $.trim($("#invoice_tr_" + rowid + "_taxablevalue").val()).length == '' || $.trim($("#invoice_tr_" + rowid + "_taxablevalue").val()) == '.') {
 				var currentTrTaxableValue = 0.00;
 			} else {
@@ -785,7 +802,7 @@
 			totalInvoiceValueCalculation();
         }
         /* end of calculate row invoice function */
-		
+
 		/* calculate total invoice value function */
         function totalInvoiceValueCalculation() {
 			
@@ -819,13 +836,13 @@
                 data: {totalInvoiceValue:totalFinalInvoiceValue, action:"numberToWords"},
                 dataType: 'json',
                 type: 'post',
-                url: "<?php echo PROJECT_URL; ?>/?ajax=client_convert_number_to_words",
+                url: "<?php echo PROJECT_URL; ?>/?ajax=purchase_convert_number_to_words",
                 success: function(response){
 
                     if(response.status == "success") {
                         $( ".totalamountwords .totalpricewords" ).text(response.invoicevalue);
                     } else {
-                        $( ".totalamountwords .totalpricewords" ).text("<?php echo $obj_client->getValMsg('failed'); ?>");
+                        $( ".totalamountwords .totalpricewords" ).text("<?php echo $obj_purchase->getValMsg('failed'); ?>");
                     }
                 }
             });

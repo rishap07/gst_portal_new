@@ -114,6 +114,8 @@ class login extends validation {
         $dataArr['companyname'] = isset($_POST['companyname']) ? $_POST['companyname'] : '';
         $dataArr['firstname'] = isset($_POST['firstname']) ? $_POST['firstname'] : '';
         $dataArr['lastname'] = isset($_POST['lastname']) ? $_POST['lastname'] : '';
+		$dataArr['city'] = isset($_POST['city']) ? $_POST['city'] : '';
+		$dataArr['state'] = isset($_POST['state']) ? $_POST['state'] : '';
         $dataArr['gstin_number'] = isset($_POST['gstin_number']) ? $_POST['gstin_number'] : '';
         $dataArr['coupon'] = isset($_POST['coupon']) ? $_POST['coupon'] : '';
 
@@ -163,7 +165,8 @@ class login extends validation {
         $dataInsertArray['gstin_number'] = $dataArr['gstin_number'];
         $dataInsertArray['subscriber_code'] = $this->generateSubscriberRandomCode(6, $this->tableNames['user'], "subscriber_code");
         $dataInsertArray['coupon'] = $dataArr['coupon'];
-
+		$dataInsertArray['city'] = $dataArr['city'];
+		$dataInsertArray['state'] = $dataArr['state'];
         $dataInsertArray['password'] = $this->password_encrypt($dataArr['password']); /* encrypt password */
         $dataInsertArray['added_by'] = '22';
         $dataInsertArray['added_date'] = date('Y-m-d H:i:s');
@@ -669,6 +672,8 @@ Please click the link below to verify your account:<br><br>
             'companyname' => 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Company Name',
             'emailaddress' => 'required||email|#|lable_name:Email',
             'mobilenumber' => 'required||pattern:/^' . $this->validateType['mobilenumber'] . '+$/|#|lable_name:Mobile Number',
+			'city' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:City',
+			'state' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:State',
             'password' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||min:8||max:20|#|lable_name:Password'
         );
 

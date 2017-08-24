@@ -491,7 +491,7 @@ composition taxable persons and UIN holders</div>
                                 
                                 <tbody>
 								<?php
-							 $sql = "select  *,count(returnid) as totalinvoice from ".TAB_PREFIX."place_of_supply where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and type='0'   order by id desc limit 0,1";
+							 $sql = "select  *,count(returnid) as totalinvoice from ".TAB_PREFIX."client_return_gstr3b_pos where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and type='0'   order by id desc limit 0,1";
                              $editflag=0;
                             $return_a = $obj_return->get_results($sql);
 							if($return_a[0]->totalinvoice > 0 )
@@ -672,7 +672,7 @@ composition taxable persons and UIN holders</div>
 						  <table  class="table  tablecontent tablecontent2 bordernone" id="table2">
 						  
 							<?php
-							 $sql = "select  *,count(returnid) as totalinvoice from ".TAB_PREFIX."place_of_supply where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and type='1'   order by id desc limit 0,1";
+							 $sql = "select  *,count(returnid) as totalinvoice from ".TAB_PREFIX."client_return_gstr3b_pos where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and type='1'   order by id desc limit 0,1";
                              $editflag=0;
                             $return_a = $obj_return->get_results($sql);
 							if($return_a[0]->totalinvoice > 0 )
@@ -824,7 +824,7 @@ composition taxable persons and UIN holders</div>
 									  <tbody>
                                  
 								   <?php
-							 $sql = "select  *,count(returnid) as totalinvoice from ".TAB_PREFIX."place_of_supply where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and type='2'   order by id desc limit 0,1";
+							 $sql = "select  *,count(returnid) as totalinvoice from ".TAB_PREFIX."client_return_gstr3b_pos where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and type='2'   order by id desc limit 0,1";
                              $editflag=0;
                             $return_a = $obj_return->get_results($sql);
 							if($return_a[0]->totalinvoice > 0 )

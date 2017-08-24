@@ -1,26 +1,26 @@
 <?php
-    $obj_client = new client();
+    $obj_purchase = new purchase();
 
-	if(!$obj_client->can_read('client_invoice')) {
+	if(!$obj_purchase->can_read('client_invoice')) {
 
-		$obj_client->setError($obj_client->getValMsg('can_read'));
-		$obj_client->redirect(PROJECT_URL."/?page=dashboard");
+		$obj_purchase->setError($obj_purchase->getValMsg('can_read'));
+		$obj_purchase->redirect(PROJECT_URL."/?page=dashboard");
 		exit();
 	}
 
-	if(!$obj_client->can_update('client_invoice')) {
+	if(!$obj_purchase->can_update('client_invoice')) {
 
-		$obj_client->setError($obj_client->getValMsg('can_update'));
-		$obj_client->redirect(PROJECT_URL."/?page=client_refund_voucher_invoice_list");
+		$obj_purchase->setError($obj_purchase->getValMsg('can_update'));
+		$obj_purchase->redirect(PROJECT_URL."/?page=purchase_refund_voucher_invoice_list");
 		exit();
 	}
 
-	if( isset($_GET['action']) && $_GET['action'] == 'editRFInvoice' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
+	if( isset($_GET['action']) && $_GET['action'] == 'editPurchaseRFInvoice' && isset($_GET['id']) && $obj_purchase->validateId($_GET['id'])) {
 
-		$invid = $obj_client->sanitize($_GET['id']);
-		$invoiceData = $obj_client->get_results("select 
+		$invid = $obj_purchase->sanitize($_GET['id']);
+		$invoiceData = $obj_purchase->get_results("select 
 													ci.*, 
-													cii.invoice_item_id, 
+													cii.purchase_invoice_item_id, 
 													cii.item_id, 
 													cii.item_name, 
 													cii.item_hsncode, 
@@ -36,18 +36,18 @@
 													cii.cess_amount, 
 													cii.total 
 													from 
-												" . $obj_client->getTableName('client_invoice') . " as ci INNER JOIN " . $obj_client->getTableName('client_invoice_item') . " as cii ON ci.invoice_id = cii.invoice_id where ci.invoice_id = " . $invid . " AND ci.invoice_type = 'refundvoucherinvoice' AND ci.added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND cii.added_by = '" . $obj_client->sanitize($_SESSION['user_detail']['user_id']) . "' AND ci.is_deleted='0' AND cii.is_deleted='0'");
+												" . $obj_purchase->getTableName('client_purchase_invoice') . " as ci INNER JOIN " . $obj_purchase->getTableName('client_purchase_invoice_item') . " as cii ON ci.purchase_invoice_id = cii.purchase_invoice_id where ci.purchase_invoice_id = " . $invid . " AND ci.invoice_type = 'refundvoucherinvoice' AND ci.added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND cii.added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND ci.is_deleted='0' AND cii.is_deleted='0'");
 		
 		if (empty($invoiceData)) {
-			$obj_client->setError("No invoice found.");
-			$obj_client->redirect(PROJECT_URL."?page=client_receipt_voucher_invoice_list");
+			$obj_purchase->setError("No invoice found.");
+			$obj_purchase->redirect(PROJECT_URL."?page=purchase_refund_voucher_invoice_list");
 		}
 	} else {
-		$obj_client->redirect(PROJECT_URL."?page=client_receipt_voucher_invoice_list");
+		$obj_purchase->redirect(PROJECT_URL."?page=purchase_refund_voucher_invoice_list");
 	}
 
-    $dataCurrentUserArr = $obj_client->getUserDetailsById( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
-	$currentFinancialYear = $obj_client->generateFinancialYear();
+    $dataCurrentUserArr = $obj_purchase->getUserDetailsById( $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) );
+	$currentFinancialYear = $obj_purchase->generateFinancialYear();
 ?>
 <!--========================admincontainer start=========================-->
 <form name="create-invoice" id="create-invoice" method="POST">
@@ -61,16 +61,16 @@
 			<div class="whitebg formboxcontainer">
 
 				<div class="errorValidationContainer">
-					<?php $obj_client->showErrorMessage(); ?>
-					<?php $obj_client->showSuccessMessge(); ?>
-					<?php $obj_client->unsetMessage(); ?>
+					<?php $obj_purchase->showErrorMessage(); ?>
+					<?php $obj_purchase->showSuccessMessge(); ?>
+					<?php $obj_purchase->unsetMessage(); ?>
 				</div>
 
 				 <div class="row">
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Refund Voucher <span class="starred">*</span></label>
 						<input type="text" placeholder="Invoice Serial Number" readonly="true" class="form-control required" value="<?php echo $invoiceData[0]->serial_number; ?>" name="invoice_serial_number" id="invoice_serial_number" />
-                        <input type="hidden" class="required" value="<?php echo base64_encode($invoiceData[0]->invoice_id); ?>" name="invoice_id" />
+                        <input type="hidden" class="required" value="<?php echo base64_encode($invoiceData[0]->purchase_invoice_id); ?>" name="purchase_invoice_id" />
 					</div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
@@ -86,28 +86,28 @@
 
 				 <div class="row">
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Supplier Name <span class="starred">*</span></label>
-						<input type="text" placeholder="Cyfuture India Pvt. Ltd" data-bind="content" readonly="true" class="form-control required" name="company_name" id="company_name" value="<?php echo $invoiceData[0]->company_name; ?>" />
+						<label>Recipient Name <span class="starred">*</span></label>
+						<input type="text" placeholder="Cyfuture India Pvt. Ltd" data-vendor-type="<?php if(isset($dataCurrentUserArr['data']->kyc->vendor_type)) { echo $dataCurrentUserArr['data']->kyc->vendor_type; } ?>" data-bind="content" readonly="true" class="form-control required" name="company_name" id="company_name" value="<?php echo $invoiceData[0]->company_name; ?>" />
 					</div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Supplier Address <span class="starred">*</span></label>
+						<label>Recipient Address <span class="starred">*</span></label>
 						<textarea placeholder="IT Park Rd, Sitapura Industrial Area, Sitapura" data-bind="content" readonly="true" class="form-control required" name="company_address" id="company_address"><?php echo $invoiceData[0]->company_address; ?></textarea>
 					</div>
-
-					<?php $company_state_data = $obj_client->getStateDetailByStateId($invoiceData[0]->company_state); ?>
+					
+					<?php $company_state_data = $obj_purchase->getStateDetailByStateId($invoiceData[0]->company_state); ?>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Supplier State <span class="starred">*</span></label>
+						<label>Recipient State <span class="starred">*</span></label>
 						<input type="text" placeholder="Compant State" data-bind="content" readonly="true" class="form-control required" name="company_state_name" id="company_state_name" value="<?php echo $company_state_data['data']->state_name; ?>" />
-						<input type="hidden" class="required" name="company_state" id="company_state" value="<?php echo $invoiceData[0]->company_state; ?>" />
+						<input type="hidden" readonly="true" class="required" class="required" data-state-id="<?php if(isset($company_state_data['data']->state_id)) { echo $company_state_data['data']->state_id; } ?>" data-state-code="<?php if(isset($company_state_data['data']->state_code)) { echo $company_state_data['data']->state_code; } ?>" data-country-id="<?php if(isset($dataCurrentUserArr['data']->kyc->country_id)) { echo $dataCurrentUserArr['data']->kyc->country_id; } ?>" data-country-code="<?php if(isset($dataCurrentUserArr['data']->kyc->country_code)) { echo $dataCurrentUserArr['data']->kyc->country_code; } ?>" name="company_state" id="company_state" value="<?php echo $invoiceData[0]->company_state; ?>" />
 					</div>
 				 </div>
 
 				 <div class="row">
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Supplier GSTIN <span class="starred">*</span></label>
-						<input type="text" placeholder="BYRAJ14N3KKT" name="company_gstin_number" data-bind="gstin" readonly="true" class="form-control required" id="company_gstin_number" value="<?php echo $invoiceData[0]->gstin_number; ?>" />
+						<label>Recipient GSTIN <span class="starred">*</span></label>
+						<input type="text" placeholder="BYRAJ14N3KKT" name="company_gstin_number" data-bind="gstin" readonly="true" class="form-control required" id="company_gstin_number" value="<?php echo $invoiceData[0]->company_gstin_number; ?>" />
 					</div>
 				 </div>
 
@@ -118,7 +118,7 @@
 						<label class="radio-inline"><input type="radio" name="tax_reverse_charge" value="0" <?php if($invoiceData[0]->is_tax_payable === "0") { echo 'checked="checked"'; } ?> />No</label>
                     </div>
 
-					<?php $supply_place_data = $obj_client->getStateDetailByStateId($invoiceData[0]->supply_place); ?>
+					<?php $supply_place_data = $obj_purchase->getStateDetailByStateId($invoiceData[0]->supply_place); ?>
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group placeofsupply">
 						<label>Place Of Supply <span class="starred">*</span></label>
 						<input type="text" placeholder="Supply State" data-bind="content" readonly="true" class="form-control required" name="place_of_supply_state" id="place_of_supply_state" value="<?php echo $supply_place_data['data']->state_name; ?>" />
@@ -131,14 +131,14 @@
 						<label>Receipt Voucher Number <span class="starred">*</span></label>
 						<select name='receipt_voucher_number' id='receipt_voucher_number' class="required form-control">
 							<option value=''>Select Receipt Voucher</option>								
-							<?php $dataReceiptVoucherArrs = $obj_client->get_results("select invoice_id, serial_number, reference_number, invoice_date, supply_place, is_canceled from ".$obj_client->getTableName('client_invoice')." where status='1' and invoice_type = 'receiptvoucherinvoice' AND is_deleted='0' AND financial_year = '".$currentFinancialYear."' AND added_by = ".$obj_client->sanitize($_SESSION['user_detail']['user_id'])." order by serial_number asc"); ?>
+							<?php $dataReceiptVoucherArrs = $obj_purchase->get_results("select purchase_invoice_id, serial_number, reference_number, invoice_date, supply_place, is_canceled from ".$obj_purchase->getTableName('client_purchase_invoice')." where status='1' and invoice_type = 'receiptvoucherinvoice' AND is_deleted='0' AND financial_year = '".$currentFinancialYear."' AND added_by = ".$obj_purchase->sanitize($_SESSION['user_detail']['user_id'])." order by serial_number asc"); ?>
 							<?php if(!empty($dataReceiptVoucherArrs)) { ?>
 								<?php foreach($dataReceiptVoucherArrs as $dataReceiptVoucherArr) { ?>
 
-									<?php if($invoiceData[0]->refund_voucher_receipt === $dataReceiptVoucherArr->invoice_id) { ?>
-										<option value='<?php echo $dataReceiptVoucherArr->invoice_id; ?>' data-reference="<?php echo $dataReceiptVoucherArr->reference_number; ?>" data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>" selected="selected"><?php echo $dataReceiptVoucherArr->serial_number; ?></option>
+									<?php if($invoiceData[0]->refund_voucher_receipt === $dataReceiptVoucherArr->purchase_invoice_id) { ?>
+										<option value='<?php echo $dataReceiptVoucherArr->purchase_invoice_id; ?>' data-reference="<?php echo $dataReceiptVoucherArr->reference_number; ?>" data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>" selected="selected"><?php echo $dataReceiptVoucherArr->serial_number; ?></option>
 									<?php } else { ?>
-										<option value='<?php echo $dataReceiptVoucherArr->invoice_id; ?>' data-reference="<?php echo $dataReceiptVoucherArr->reference_number; ?>" data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>"><?php echo $dataReceiptVoucherArr->serial_number; ?></option>
+										<option value='<?php echo $dataReceiptVoucherArr->purchase_invoice_id; ?>' data-reference="<?php echo $dataReceiptVoucherArr->reference_number; ?>" data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>"><?php echo $dataReceiptVoucherArr->serial_number; ?></option>
 									<?php } ?>
 
 								<?php } ?>
@@ -156,49 +156,49 @@
 
 					<div class="col-md-6">
 						<div class="greyborder inovicedeatil">
-							<div class="formtitle">Recipient Detail</div>
+							<div class="formtitle">Supplier Detail</div>
 
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Contact Name</label> <span class="starred">*</span></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Contact Name" data-bind="content" readonly="true" class="required form-control" name="billing_name" id="billing_name" value="<?php echo $invoiceData[0]->billing_name; ?>" /></div>
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Contact Name" data-bind="content" readonly="true" class="required form-control" name="supplier_billing_name" id="supplier_billing_name" value="<?php echo $invoiceData[0]->supplier_billing_name; ?>" /></div>
 							</div>
-							
+
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Business Name</label></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Business Name" data-bind="content" readonly="true" class="form-control" name="billing_company_name" id="billing_company_name" value="<?php echo $invoiceData[0]->billing_company_name; ?>" /></div>
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Business Name" data-bind="content" readonly="true" class="form-control" name="supplier_billing_company_name" id="supplier_billing_company_name" value="<?php echo $invoiceData[0]->supplier_billing_company_name; ?>" /></div>
 							</div>
 
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Address</label> <span class="starred">*</span></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><textarea placeholder="Address" data-bind="content" readonly="true" class="form-control required" name="billing_address" id="billing_address"><?php echo $invoiceData[0]->billing_address; ?></textarea></div>
+								<div class="col-md-8 col-sm-3 col-xs-12"><textarea placeholder="Address" data-bind="content" class="form-control required" readonly="true" name="supplier_billing_address" id="supplier_billing_address"><?php echo $invoiceData[0]->supplier_billing_address; ?></textarea></div>
 							</div>
 
-							<?php $billing_state_data = $obj_client->getStateDetailByStateId($invoiceData[0]->billing_state); ?>
+							<?php $supplier_billing_state_data = $obj_purchase->getStateDetailByStateId($invoiceData[0]->supplier_billing_state); ?>
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>State</label> <span class="starred">*</span></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="State" data-bind="content" readonly="true" class="form-control required" name="billing_state_name" id="billing_state_name" value="<?php echo $billing_state_data['data']->state_name; ?>" /></div>
-								<input type="hidden" class="required" name='billing_state' id='billing_state' value="<?php echo $invoiceData[0]->billing_state; ?>" />
-								<input type="hidden" class="required" name='billing_state_code' id='billing_state_code' value="<?php echo $billing_state_data['data']->state_code; ?>" />
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="State" data-bind="content" readonly="true" class="form-control required" name="supplier_billing_state_name" id="supplier_billing_state_name" value="<?php echo $supplier_billing_state_data['data']->state_name; ?>" /></div>
+								<input type="hidden" class="required" name='supplier_billing_state' id='supplier_billing_state' value="<?php echo $invoiceData[0]->supplier_billing_state; ?>" />
+								<input type="hidden" class="required" name='supplier_billing_state_code' id='supplier_billing_state_code' value="<?php echo $supplier_billing_state_data['data']->state_code; ?>" />
 							</div>
 
-							<?php $billing_country_data = $obj_client->getCountryDetailByCountryId($invoiceData[0]->billing_country); ?>
+							<?php $supplier_billing_country_data = $obj_purchase->getCountryDetailByCountryId($invoiceData[0]->supplier_billing_country); ?>
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Country</label> <span class="starred">*</span></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Country" data-bind="content" readonly="true" class="form-control required" name="billing_country_name" id="billing_country_name" value="<?php echo $billing_country_data['data']->country_name; ?>" /></div>
-								<input type="hidden" class="required" name='billing_country' id='billing_country' value="<?php echo $invoiceData[0]->billing_country; ?>" />
-								<input type="hidden" class="required" name='billing_country_code' id='billing_country_code' value="<?php echo $billing_country_data['data']->country_code; ?>" />
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Country" data-bind="content" readonly="true" class="form-control required" name="supplier_billing_country_name" id="supplier_billing_country_name" value="<?php echo $supplier_billing_country_data['data']->country_name; ?>" /></div>
+								<input type="hidden" class="required" name='supplier_billing_country' id='supplier_billing_country' value="<?php echo $invoiceData[0]->supplier_billing_country; ?>" />
+								<input type="hidden" class="required" name='supplier_billing_country_code' id='supplier_billing_country_code' value="<?php echo $supplier_billing_country_data['data']->country_code; ?>" />
 							</div>
 
-							<?php $billing_vendor_data = $obj_client->getVendorDetailByVendorId($invoiceData[0]->billing_vendor_type); ?>
+							<?php $supplier_billing_vendor_data = $obj_purchase->getVendorDetailByVendorId($invoiceData[0]->supplier_billing_vendor_type); ?>
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Vendor Type</label> <span class="starred">*</span></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Vendor Type" data-bind="content" readonly="true" class="form-control required" name="billing_vendor_type_name" id="billing_vendor_type_name" value="<?php echo $billing_vendor_data['data']->vendor_name; ?>" /></div>
-								<input type="hidden" class="required" name='billing_vendor_type' id='billing_vendor_type' value="<?php echo $invoiceData[0]->billing_vendor_type; ?>" />
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Vendor Type" data-bind="content" readonly="true" class="form-control required" name="supplier_billing_vendor_type_name" id="supplier_billing_vendor_type_name" value="<?php echo $supplier_billing_vendor_data['data']->vendor_name; ?>" /></div>
+								<input type="hidden" class="required" name='supplier_billing_vendor_type' id='supplier_billing_vendor_type' value="<?php echo $invoiceData[0]->supplier_billing_vendor_type; ?>" />
 							</div>
 
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>GSTIN/UIN</label></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="GSTIN/UIN" name='billing_gstin_number' readonly="true" class="form-control" data-bind="gstin" id='billing_gstin_number' value="<?php echo $invoiceData[0]->billing_gstin_number; ?>" /></div>
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="GSTIN/UIN" class="form-control" readonly="true" name='supplier_billing_gstin_number' data-bind="gstin" id='supplier_billing_gstin_number' value="<?php echo $invoiceData[0]->supplier_billing_gstin_number; ?>" /></div>
 							</div>
 
 						</div>
@@ -206,49 +206,49 @@
 
 					<div class="col-md-6">
 						<div class="greyborder inovicedeatil">
-							<div class="formtitle">Address Of Delivery / Shipping Detail</div>
+							<div class="formtitle">Address Of Recipient / Shipping Detail</div>
 
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Contact Name</label> <span class="starred">*</span></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Contact Name" data-bind="content" readonly="true" class="required form-control" name="shipping_name" id="shipping_name" value="<?php echo $invoiceData[0]->shipping_name; ?>" /></div>
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Contact Name" data-bind="content" readonly="true" class="required form-control" name="recipient_shipping_name" id="recipient_shipping_name" value="<?php echo $invoiceData[0]->recipient_shipping_name; ?>" /></div>
 							</div>
-							
+
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Business Name</label></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Business Name" data-bind="content" readonly="true" class="form-control" name="shipping_company_name" id="shipping_company_name" value="<?php echo $invoiceData[0]->shipping_company_name; ?>" /></div>
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Business Name" data-bind="content" readonly="true" class="form-control" name="recipient_shipping_company_name" id="recipient_shipping_company_name" value="<?php echo $invoiceData[0]->recipient_shipping_company_name; ?>" /></div>
 							</div>
 
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Address</label> <span class="starred">*</span></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><textarea placeholder="Address" data-bind="content" readonly="true" class="required form-control" name="shipping_address" id="shipping_address"><?php echo $invoiceData[0]->shipping_address; ?></textarea></div>
-							</div>
-
-							<?php $shipping_state_data = $obj_client->getStateDetailByStateId($invoiceData[0]->shipping_state); ?>
-							<div class="row form-group">
-								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>State</label> <span class="starred">*</span></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="State" data-bind="content" readonly="true" class="form-control required" name="shipping_state_name" id="shipping_state_name" value="<?php echo $shipping_state_data['data']->state_name; ?>" /></div>
-								<input type="hidden" class="required" name='shipping_state' id='shipping_state' value="<?php echo $invoiceData[0]->shipping_state; ?>" />
-								<input type="hidden" class="required" name='shipping_state_code' id='shipping_state_code' value="<?php echo $shipping_state_data['data']->state_code; ?>" />
+								<div class="col-md-8 col-sm-3 col-xs-12"><textarea placeholder="Address" data-bind="content" class="required form-control" readonly="true" name="recipient_shipping_address" id="recipient_shipping_address"><?php echo $invoiceData[0]->recipient_shipping_address; ?></textarea></div>
 							</div>
 							
-							<?php $shipping_country_data = $obj_client->getCountryDetailByCountryId($invoiceData[0]->shipping_country); ?>
+							<?php $recipient_shipping_state_data = $obj_purchase->getStateDetailByStateId($invoiceData[0]->recipient_shipping_state); ?>
+							<div class="row form-group">
+								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>State</label> <span class="starred">*</span></div>
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="State" data-bind="content" readonly="true" class="form-control required" name="recipient_shipping_state_name" id="recipient_shipping_state_name" value="<?php echo $recipient_shipping_state_data['data']->state_name; ?>" /></div>
+								<input type="hidden" class="required" name='recipient_shipping_state' id='recipient_shipping_state' value="<?php echo $invoiceData[0]->recipient_shipping_state; ?>" />
+								<input type="hidden" class="required" name='recipient_shipping_state_code' id='recipient_shipping_state_code' value="<?php echo $recipient_shipping_state_data['data']->state_code; ?>" />
+							</div>
+							
+							<?php $recipient_shipping_country_data = $obj_purchase->getCountryDetailByCountryId($invoiceData[0]->recipient_shipping_country); ?>
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Country</label> <span class="starred">*</span></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Country" data-bind="content" readonly="true" class="form-control required" name="shipping_country_name" id="shipping_country_name" value="<?php echo $shipping_country_data['data']->country_name; ?>" /></div>
-								<input type="hidden" class="required" name='shipping_country' id='shipping_country' value="<?php echo $invoiceData[0]->shipping_country; ?>" />
-								<input type="hidden" class="required" name='shipping_country_code' id='shipping_country_code' value="<?php echo $shipping_country_data['data']->country_code; ?>" />
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Country" data-bind="content" readonly="true" class="form-control required" name="recipient_shipping_country_name" id="recipient_shipping_country_name" value="<?php echo $recipient_shipping_country_data['data']->country_name; ?>" /></div>
+								<input type="hidden" class="required" name='recipient_shipping_country' id='recipient_shipping_country' value="<?php echo $invoiceData[0]->recipient_shipping_country; ?>" />
+								<input type="hidden" class="required" name='recipient_shipping_country_code' id='recipient_shipping_country_code' value="<?php echo $recipient_shipping_country_data['data']->country_code; ?>" />
 							</div>
 
-							<?php $shipping_vendor_data = $obj_client->getVendorDetailByVendorId($invoiceData[0]->shipping_vendor_type); ?>
+							<?php $recipient_shipping_vendor_data = $obj_purchase->getVendorDetailByVendorId($invoiceData[0]->recipient_shipping_vendor_type); ?>
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Vendor Type</label> <span class="starred">*</span></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Vendor Type" data-bind="content" readonly="true" class="form-control required" name="shipping_vendor_type_name" id="shipping_vendor_type_name" value="<?php echo $shipping_vendor_data['data']->vendor_name; ?>" /></div>
-								<input type="hidden" class="required" name='shipping_vendor_type' id='shipping_vendor_type' value="<?php echo $invoiceData[0]->shipping_vendor_type; ?>" />
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Vendor Type" data-bind="content" readonly="true" class="form-control required" name="recipient_shipping_vendor_type_name" id="recipient_shipping_vendor_type_name" value="<?php echo $recipient_shipping_vendor_data['data']->vendor_name; ?>" /></div>
+								<input type="hidden" class="required" name='recipient_shipping_vendor_type' id='recipient_shipping_vendor_type' value="<?php echo $invoiceData[0]->recipient_shipping_vendor_type; ?>" />
 							</div>
 
 							<div class="row form-group">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>GSTIN</label></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="GSTIN" class="form-control" name='shipping_gstin_number' data-bind="gstin" readonly="true" id='shipping_gstin_number' value="<?php echo $invoiceData[0]->shipping_gstin_number; ?>" /></div>
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="GSTIN" class="form-control" readonly="true" name='recipient_shipping_gstin_number' data-bind="gstin" id='recipient_shipping_gstin_number' value="<?php echo $invoiceData[0]->recipient_shipping_gstin_number; ?>" /></div>
 							</div>
 
 						</div>
@@ -263,7 +263,7 @@
 						<label>Description</label>
 						<textarea placeholder="Enter Description" class="form-control" name="description" id="description" data-bind="content"><?php echo $invoiceData[0]->description; ?></textarea>
 					</div>
-				</div>
+				 </div>
 
 				 <div class="clear height40"></div>
 
@@ -319,7 +319,7 @@
                                     </div>
 								</td>
 
-								<?php if($invoiceData[0]->company_state == $invoiceData[0]->supply_place) { ?>
+								<?php if($invoiceData[0]->supplier_billing_state == $invoiceData[0]->supply_place) { ?>
 								
 									<td>
 										<input type="text" id="invoice_tr_<?php echo $counter; ?>_cgstrate" name="invoice_cgstrate[]" class="inptxt validateTaxValue invcgstrate" value="<?php echo $invData->cgst_rate; ?>" data-bind="valtax" placeholder="0.00" style="width:75px;" />
@@ -393,7 +393,7 @@
 							<td colspan="13" align="right" class="lightyellow totalamount">Total Invoice Value <span>(In Figure)</span><div class="totalprice"><i class="fa fa-inr"></i><span class="invoicetotalprice"><?php echo $invoiceData[0]->invoice_total_value; ?></span></div></td>
 						</tr>
 
-                        <?php $invoice_total_value_words = $obj_client->convert_number_to_words($invoiceData[0]->invoice_total_value); ?>
+                        <?php $invoice_total_value_words = $obj_purchase->convert_number_to_words($invoiceData[0]->invoice_total_value); ?>
 						<tr>
 							<td colspan="13" align="right" class="lightpink fontbold totalamountwords" style="font-size:13px;">Total Invoice Value <small>(In Words):</small> <span class="totalpricewords"><?php echo ucwords($invoice_total_value_words); ?></span></td>
 						</tr>
@@ -469,7 +469,7 @@
 							<div class='form-group'>
 								<label for="item_unit">Unit <span class="starred">*</span></label>
 								<select name="item_unit" id="item_unit" class="required form-control" data-bind="numnzero">
-									<?php $dataUnitArrs = $obj_client->getMasterUnits("unit_id,unit_name,unit_code,(case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "is_deleted='0' AND status='1'"); ?>
+									<?php $dataUnitArrs = $obj_purchase->getMasterUnits("unit_id,unit_name,unit_code,(case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "is_deleted='0' AND status='1'"); ?>
 									<?php if(!empty($dataUnitArrs)) { ?>
 										<option value=''>Select Unit</option>
 										<?php foreach($dataUnitArrs as $dataUnit) { ?>
@@ -534,9 +534,9 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-
-		/* Supplier State OR Company State */
-        var supplierStateId = '<?php echo $dataCurrentUserArr['data']->kyc->state_id; ?>';
+		
+		/* calculate row invoice and invoice total on state change */
+		rowInvoiceCalculationOnStateChnage();
 
 		/* set receipt voucher date  */
 		var getreceiptvoucherdate = $("#receipt_voucher_number").find(':selected').attr("data-date");
@@ -545,7 +545,7 @@
 		/* Get HSN/SAC Code */
         $( "#item_category_name" ).autocomplete({
             minLength: 3,
-            source: "<?php echo PROJECT_URL; ?>/?ajax=client_hsnsac_code",
+            source: "<?php echo PROJECT_URL; ?>/?ajax=purchase_hsnsac_code",
             select: function( event, ui ) {
 				$("#item_category").val(ui.item.item_id);
 				$("#item_hsn_code").val(ui.item.hsn_code);
@@ -577,7 +577,7 @@
         });
 		/* end of validate add item form */
 
-        /* submit add new item form */
+		/* submit add new item form */
         $("#add-item-form").submit(function(event){
 
             event.preventDefault();
@@ -586,7 +586,7 @@
                 data: {itemData:$("#add-item-form").serialize(), action:"addItem"},
                 dataType: 'json',
                 type: 'post',
-                url: "<?php echo PROJECT_URL; ?>/?ajax=client_add_item",
+                url: "<?php echo PROJECT_URL; ?>/?ajax=purchase_add_item",
                 success: function(response){
 
                     if(response.status == "success") {
@@ -623,30 +623,30 @@
 				$("#receipt_voucher_date").val("");
 				$("#place_of_supply_state").val("");
 				$("#place_of_supply").val("");
-				$("#billing_name").val("");
-				$("#billing_company_name").val("");
-				$("#billing_address").val("");
-				$("#billing_state").val("");
-				$("#billing_state_code").val("");
-				$("#billing_state_name").val("");
-				$("#billing_country_name").val("");
-				$("#billing_country").val("");
-				$("#billing_country_code").val("");
-				$("#billing_vendor_type_name").val("");
-				$("#billing_vendor_type").val("");
-				$("#billing_gstin_number").val("");
-				$("#shipping_name").val("");
-				$("#shipping_company_name").val("");
-				$("#shipping_address").val("");
-				$("#shipping_state_name").val("");
-				$("#shipping_state").val("");
-				$("#shipping_state_code").val("");
-				$("#shipping_country_name").val("");
-				$("#shipping_country").val("");
-				$("#shipping_country_code").val("");
-				$("#shipping_vendor_type_name").val("");
-				$("#shipping_vendor_type").val("");
-				$("#shipping_gstin_number").val("");
+				$("#supplier_billing_name").val("");
+				$("#supplier_billing_company_name").val("");
+				$("#supplier_billing_address").val("");
+				$("#supplier_billing_state").val("");
+				$("#supplier_billing_state_code").val("");
+				$("#supplier_billing_state_name").val("");
+				$("#supplier_billing_country_name").val("");
+				$("#supplier_billing_country").val("");
+				$("#supplier_billing_country_code").val("");
+				$("#supplier_billing_vendor_type_name").val("");
+				$("#supplier_billing_vendor_type").val("");
+				$("#supplier_billing_gstin_number").val("");
+				$("#recipient_shipping_name").val("");
+				$("#recipient_shipping_company_name").val("");
+				$("#recipient_shipping_address").val("");
+				$("#recipient_shipping_state_name").val("");
+				$("#recipient_shipping_state").val("");
+				$("#recipient_shipping_state_code").val("");
+				$("#recipient_shipping_country_name").val("");
+				$("#recipient_shipping_country").val("");
+				$("#recipient_shipping_country_code").val("");
+				$("#recipient_shipping_vendor_type_name").val("");
+				$("#recipient_shipping_vendor_type").val("");
+				$("#recipient_shipping_gstin_number").val("");
 				$(".invoice_tr").remove();
 				return false;
             } else {
@@ -658,7 +658,7 @@
 				data: {receiptVoucherId:$(this).find(':selected').val(), action:"getReceiptVoucher"},
 				dataType: 'json',
 				type: 'post',
-				url: "<?php echo PROJECT_URL; ?>/?ajax=client_get_receipt_voucher_detail",
+				url: "<?php echo PROJECT_URL; ?>/?ajax=purchase_get_receipt_voucher_detail",
 				success: function(response){
 
 					$(".invoice_tr").remove();
@@ -666,37 +666,37 @@
 
 						$("#place_of_supply_state").val(response.supply_state_name);
 						$("#place_of_supply").val(response.supply_place);
-						$("#billing_name").val(response.billing_name);
-						$("#billing_company_name").val(response.billing_company_name);
-						$("#billing_address").val(response.billing_address);
-						$("#billing_state").val(response.billing_state);
-						$("#billing_state_code").val(response.billing_state_code);
-						$("#billing_state_name").val(response.billing_state_name);
-						$("#billing_country_name").val(response.billing_country_name);
-						$("#billing_country").val(response.billing_country);
-						$("#billing_country_code").val(response.billing_country_code);
-						$("#billing_vendor_type_name").val(response.billing_vendor_name);
-						$("#billing_vendor_type").val(response.billing_vendor_type);
-						$("#billing_gstin_number").val(response.billing_gstin_number);
-						$("#shipping_name").val(response.shipping_name);
-						$("#shipping_company_name").val(response.shipping_company_name);
-						$("#shipping_address").val(response.shipping_address);
-						$("#shipping_state_name").val(response.shipping_state_name);
-						$("#shipping_state").val(response.shipping_state);
-						$("#shipping_state_code").val(response.shipping_state_code);
-						$("#shipping_country_name").val(response.shipping_country_name);
-						$("#shipping_country").val(response.shipping_country);
-						$("#shipping_country_code").val(response.shipping_country_code);
-						$("#shipping_vendor_type_name").val(response.shipping_vendor_name);
-						$("#shipping_vendor_type").val(response.shipping_vendor_type);
-						$("#shipping_gstin_number").val(response.shipping_gstin_number);
+						$("#supplier_billing_name").val(response.supplier_billing_name);
+						$("#supplier_billing_company_name").val(response.supplier_billing_company_name);
+						$("#supplier_billing_address").val(response.supplier_billing_address);
+						$("#supplier_billing_state").val(response.supplier_billing_state);
+						$("#supplier_billing_state_code").val(response.supplier_billing_state_code);
+						$("#supplier_billing_state_name").val(response.supplier_billing_state_name);
+						$("#supplier_billing_country_name").val(response.supplier_billing_country_name);
+						$("#supplier_billing_country").val(response.supplier_billing_country);
+						$("#supplier_billing_country_code").val(response.supplier_billing_country_code);
+						$("#supplier_billing_vendor_type_name").val(response.supplier_billing_vendor_name);
+						$("#supplier_billing_vendor_type").val(response.supplier_billing_vendor_type);
+						$("#supplier_billing_gstin_number").val(response.supplier_billing_gstin_number);
+						$("#recipient_shipping_name").val(response.recipient_shipping_name);
+						$("#recipient_shipping_company_name").val(response.recipient_shipping_company_name);
+						$("#recipient_shipping_address").val(response.recipient_shipping_address);
+						$("#recipient_shipping_state_name").val(response.recipient_shipping_state_name);
+						$("#recipient_shipping_state").val(response.recipient_shipping_state);
+						$("#recipient_shipping_state_code").val(response.recipient_shipping_state_code);
+						$("#recipient_shipping_country_name").val(response.recipient_shipping_country_name);
+						$("#recipient_shipping_country").val(response.recipient_shipping_country);
+						$("#recipient_shipping_country_code").val(response.recipient_shipping_country_code);
+						$("#recipient_shipping_vendor_type_name").val(response.recipient_shipping_vendor_name);
+						$("#recipient_shipping_vendor_type").val(response.recipient_shipping_vendor_type);
+						$("#recipient_shipping_gstin_number").val(response.recipient_shipping_gstin_number);
 						$(".gst-refund-vouchers").after(response.rv_items);
                     } else {
 						alert(response.status);
 					}
 
 					/* call function of total invoice */
-					totalInvoiceValueCalculation();
+					rowInvoiceCalculationOnStateChnage();
 				}
 			});
 			/* end of get receipt voucher details */
@@ -738,7 +738,7 @@
             rowInvoiceCalculation(currentTrItemId, rowid);
         });
         /* end of on igst rate chnage of item */
-
+		
 		/* on cess rate chnage of item */
         $(".invoicetable").on("input", ".invcessrate", function(){
 
@@ -753,7 +753,7 @@
             return validateDecimalValue(event, this);
         });
         /* end of validate invoice decimal values allow only numbers or decimals */
-
+		
 		/* validate invoice tax decimal values allow only numbers or decimals */
         $(".invoicetable").on("keypress input paste", ".validateTaxValue", function (event) {
             return validateTaxValue(event, this);
@@ -766,7 +766,7 @@
 			var mesg = {};
             if (vali.validate(mesg, 'create-invoice')) {
                 return true;
-            }           
+            }
             return false;
         });
 		/* end of validate invoice form */
@@ -790,10 +790,10 @@
 
 				$("#loading").show();
 				$.ajax({
-					data: {invoiceData:$("#create-invoice").serialize(), action:"saveUpdateRFInvoice"},
+					data: {invoiceData:$("#create-invoice").serialize(), action:"saveUpdatePurchaseRFInvoice"},
 					dataType: 'json',
 					type: 'post',
-					url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_update_refund_voucher_invoice",
+					url: "<?php echo PROJECT_URL; ?>/?ajax=purchase_refund_voucher_invoice_save_update",
 					success: function(response){
 
 						$("#loading").hide();
@@ -806,7 +806,7 @@
 							
 							$(".errorValidationContainer").html("");
 							$(".errorValidationContainer").hide();
-							window.location.href = '<?php echo PROJECT_URL; ?>/?page=client_create_refund_voucher_invoice';
+							window.location.href = '<?php echo PROJECT_URL; ?>/?page=purchase_refund_voucher_invoice_create';
 						}
 					}
 				});
@@ -827,10 +827,10 @@
 
 			$("#loading").show();
 			$.ajax({
-                data: {invoiceData:$("#create-invoice").serialize(), action:"saveUpdateRFInvoice"},
+                data: {invoiceData:$("#create-invoice").serialize(), action:"saveUpdatePurchaseRFInvoice"},
                 dataType: 'json',
                 type: 'post',
-                url: "<?php echo PROJECT_URL; ?>/?ajax=client_save_update_refund_voucher_invoice",
+                url: "<?php echo PROJECT_URL; ?>/?ajax=purchase_refund_voucher_invoice_save_update",
                 success: function(response){
 
 					$("#loading").hide();
@@ -843,16 +843,33 @@
 
                         $(".errorValidationContainer").html("");
                         $(".errorValidationContainer").hide();
-                        window.location.href = '<?php echo PROJECT_URL; ?>/?page=client_refund_voucher_invoice_list';
+                        window.location.href = '<?php echo PROJECT_URL; ?>/?page=purchase_refund_voucher_invoice_list';
                     }
                 }
             });
         });
         /* end of save new item */
+		
+		/* calculate row invoice on state change function */
+        function rowInvoiceCalculationOnStateChnage() {
+
+            $( "tr.invoice_tr" ).each(function( index ) {
+
+                var rowid = $(this).attr("data-row-id");
+
+				if($("#invoice_tr_"+rowid+"_itemid").val() != '' && $("#invoice_tr_"+rowid+"_itemid").val() > 0) {
+
+                    var itemid = $("#invoice_tr_"+rowid+"_itemid").val();
+                    rowInvoiceCalculation(itemid, rowid);
+                }
+            });
+        }
+        /* end of calculate row invoice on state change function */
 
 		/* calculate row invoice function */
         function rowInvoiceCalculation(itemid, rowid) {
 
+			var supplierStateId = $("#supplier_billing_state").val();
 			var receiverStateId = $("#place_of_supply").val();
 
 			/* calculation */
@@ -869,7 +886,7 @@
 			} else {
 				var currentSGSTRate = parseFloat($("#invoice_tr_"+rowid+"_sgstrate").val());
 			}
-			
+
 			if($.trim($("#invoice_tr_"+rowid+"_igstrate").val()).length == 0 || $.trim($("#invoice_tr_"+rowid+"_igstrate").val()).length == '' || $.trim($("#invoice_tr_"+rowid+"_igstrate").val()) == '.') {
 				var currentIGSTRate = 0.00;
 			} else {
@@ -883,6 +900,7 @@
 			}
 
 			/* end of get all tax rates */
+
 			if ($.trim($("#invoice_tr_" + rowid + "_taxablevalue").val()).length == 0 || $.trim($("#invoice_tr_" + rowid + "_taxablevalue").val()).length == '' || $.trim($("#invoice_tr_" + rowid + "_taxablevalue").val()) == '.') {
 				var currentTrTaxableValue = 0.00;
 			} else {
@@ -890,7 +908,7 @@
 			}
 
 			if(supplierStateId === receiverStateId) {
-				
+
 				$("#invoice_tr_"+rowid+"_igstrate").val(0.00);
 				$("#invoice_tr_"+rowid+"_igstamount").val(0.00);
 
@@ -939,9 +957,9 @@
 
 		/* calculate total invoice value function */
         function totalInvoiceValueCalculation() {
-
+			
             var totalInvoiceValue = 0.00;
-
+			
 			$( "tr.invoice_tr" ).each(function( index ) {
 
                 var rowid = $(this).attr("data-row-id");
@@ -970,13 +988,13 @@
                 data: {totalInvoiceValue:totalFinalInvoiceValue, action:"numberToWords"},
                 dataType: 'json',
                 type: 'post',
-                url: "<?php echo PROJECT_URL; ?>/?ajax=client_convert_number_to_words",
+                url: "<?php echo PROJECT_URL; ?>/?ajax=purchase_convert_number_to_words",
                 success: function(response){
 
                     if(response.status == "success") {
                         $( ".totalamountwords .totalpricewords" ).text(response.invoicevalue);
                     } else {
-                        $( ".totalamountwords .totalpricewords" ).text("<?php echo $obj_client->getValMsg('failed'); ?>");
+                        $( ".totalamountwords .totalpricewords" ).text("<?php echo $obj_purchase->getValMsg('failed'); ?>");
                     }
                 }
             });

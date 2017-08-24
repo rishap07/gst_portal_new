@@ -55,6 +55,7 @@ class validation extends upload {
             'email'=>TAB_PREFIX.'email',
             'coupon'=>TAB_PREFIX.'coupon',
             'client_return_gstr3b'=>TAB_PREFIX.'client_return_gstr3b',
+			'client_return_gstr3b_pos'=>TAB_PREFIX.'client_return_gstr3b_pos',
 			'client_upload_gstr2'=>TAB_PREFIX.'client_upload_gstr2',
             'user_gstr1'=>TAB_PREFIX.'user_gstr1',
 			'notification'=>TAB_PREFIX.'notification',

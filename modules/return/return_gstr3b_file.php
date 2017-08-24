@@ -19,33 +19,26 @@ if ($_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
 }
 if(isset($_POST['submit']) && $_POST['submit']=='submit') {
- $flag = $obj_return->checkVerifyUser();
-  if($flag=='notverify')
-  {
-	  
-  }
-  else{
-    if($obj_return->saveGstr3b()){
-        //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
+    $flag = $obj_return->checkVerifyUser();
+    if($flag=='verify')
+    {
+        if($obj_return->saveGstr3b()){
+            //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
+        } 
     }
-  }
 }
 if(isset($_POST['finalsubmit']) && $_POST['finalsubmit']=='final submit') {
  
   $flag = $obj_return->checkVerifyUser();
-  if($flag=='notverify')
-{
-						  
-} else{
- 				  
-    if($obj_return->finalSaveGstr3b()){
-        //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
-    }
-}
+  if($flag=='verify')
+    {
+    	if($obj_return->finalSaveGstr3b()){
+            //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
+        }					  
+    } 
 }
 if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
- 
-			
+	
     if($obj_return->deleteSaveGstr3b()){
         //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
     }
@@ -205,7 +198,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
 		
-	$supply_composition="SELECT i.billing_state as state, COUNT(i.invoice_id) as numcount,sum(igst_amount) as igst_amount,sum(item.taxable_subtotal) as totaltaxable_value FROM gst_client_invoice as i inner join gst_client_invoice_item as item on item.invoice_id = i.invoice_id inner join gst_vendor_type as v on v.vendor_id = i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0' and v.vendor_id='2' and i.status='1' GROUP by i.billing_state";
+	 $supply_composition="SELECT i.billing_state as state, COUNT(i.invoice_id) as numcount,sum(igst_amount) as igst_amount,sum(item.taxable_subtotal) as totaltaxable_value FROM gst_client_invoice as i inner join gst_client_invoice_item as item on item.invoice_id = i.invoice_id inner join gst_vendor_type as v on v.vendor_id = i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0' and v.vendor_id='2' and i.status='1' GROUP by i.billing_state";
 	 $supply_composition_data = $obj_return->get_results($supply_composition);
         $total = 0;
         if (!empty($supply_composition_data)) {
@@ -710,7 +703,7 @@ composition taxable persons and UIN holders</div>
 								<?php  
 								
 							// $sql = "select  *,count(returnid) as totalinvoice from gst_place_of_supply where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and type='0'   order by id desc limit 0,1";
-							$sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from ".TAB_PREFIX."place_of_supply as s INNER join ".TAB_PREFIX."client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='0'";
+							$sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from ".TAB_PREFIX."client_return_gstr3b_pos as s INNER join ".TAB_PREFIX."client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='0'";
                              $editflag=0;
                             $return_a = $obj_return->get_results($sql);
 							if($return_a[0]->totalinvoice > 0 )
@@ -1001,7 +994,7 @@ composition taxable persons and UIN holders</div>
 						  
 							<?php
 							// $sql = "select  *,count(returnid) as totalinvoice from gst_place_of_supply where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and type='1'   order by id desc limit 0,1";
-							 $sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from ".TAB_PREFIX."place_of_supply as s INNER join ".TAB_PREFIX."client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='1'";
+							 $sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from ".TAB_PREFIX."client_return_gstr3b_pos as s INNER join ".TAB_PREFIX."client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='1'";
                         
                              $editflag=0;
                             $return_a = $obj_return->get_results($sql);
@@ -1129,7 +1122,7 @@ composition taxable persons and UIN holders</div>
 								 {
 									 ?>
 								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="total_taxable_value_taxable_person[]"
- class="form-control" value="<?php if(isset($supplycomposition[0]->totaltaxable_value)) { echo $supplycomposition[0]->totaltaxable_value; } else { echo ''; } ?>"  placeholder="" /> 
+ class="form-control" value="<?php if(isset($supplycomposition->totaltaxable_value)) { echo $supplycomposition->totaltaxable_value; } else { echo ''; } ?>"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 	
                                   <td>
@@ -1142,7 +1135,7 @@ composition taxable persons and UIN holders</div>
 								 {
 									 ?>
 								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="amount_of_integrated_tax_taxable_person[]"
- class="form-control" value="<?php if(isset($supplycomposition[0]->igst_amount)) { echo $supplycomposition[0]->igst_amount; } else { echo ''; } ?>"  placeholder="" /> 
+ class="form-control" value="<?php if(isset($supplycomposition->igst_amount)) { echo $supplycomposition->igst_amount; } else { echo ''; } ?>"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
                                  <?php								 
@@ -1242,7 +1235,7 @@ composition taxable persons and UIN holders</div>
                                  
 								   <?php
 							 //$sql = "select  *,count(returnid) as totalinvoice from gst_place_of_supply where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and type='2'   order by id desc limit 0,1";
-							 $sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from ".TAB_PREFIX."place_of_supply as s INNER join ".TAB_PREFIX."client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='2'";
+							 $sql="select *,final_submit,count(returnid) as totalinvoice,final_submit from ".TAB_PREFIX."client_return_gstr3b_pos as s INNER join ".TAB_PREFIX."client_return_gstr3b as client3b on client3b.financial_month=s.financial_month and s.added_by='".$_SESSION["user_detail"]["user_id"]."' and s.financial_month like '%".$returnmonth."%' and type='2'";
                         
                              $editflag=0;
                             $return_a = $obj_return->get_results($sql);

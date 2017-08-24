@@ -106,7 +106,7 @@ final class gstr1 extends validation {
                 $payload = $this->gstCreatePayload($_SESSION['user_detail']['user_id'], $fmonth);
                 $dataArr = $payload['data_arr'];
                 $data_ids = $payload['data_ids'];
-                $response = $obj_gst->returnSave($dataArr, $fmonth);
+                $response = $obj_gst->returnSave($dataArr, $fmonth,'gstr1');
                 
                 if (!empty($response['error'] == 0)) {
                     $flag = 1;
@@ -385,7 +385,7 @@ final class gstr1 extends validation {
                 $deletePayloadArr = $deletePayload['data_arr'];
                 $data_ids = $deletePayload['data_ids'];
                 $dataArr = array_merge($dataArr, $deletePayloadArr);
-                $response = $obj_gst->returnDeleteItems($dataArr,$returnmonth);
+                $response = $obj_gst->returnDeleteItems($dataArr,$returnmonth,'gstr1');
                 
                 $flag = 0;
                 //$this->pr($deletePayload);

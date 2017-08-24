@@ -42,7 +42,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
     }
 }
 ?>
-<script src="http://cdn.ckeditor.com/4.5.5/standard/ckeditor.js"></script>
+<script src="<?php echo PROJECT_URL;?>/editor/ckeditor/ckeditor.js"></script>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
@@ -163,7 +163,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
                             echo $dataCurrentArr[0]->notification_message;
                         }
                         ?></textarea>
-						
+						 
                       
                     </div>  <div class="clear"></div>
                  <div class="adminformbxsubmit" style="width:100%;">
@@ -194,7 +194,12 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
 
 
 <!--========================sidemenu over=========================-->
-
+<script>
+    CKEDITOR.replace('notification_message', {
+        filebrowserUploadUrl: "<?php echo PROJECT_URL; ?>/editor/ckeditor/ckupload.php",
+        filebrowserBrowseUrl: "<?php echo PROJECT_URL; ?>/editor/ckeditor/browse.php?type=Images"
+    });
+</script>
 <script>
     $(document).ready(function () {
         $('#submit').click(function () {

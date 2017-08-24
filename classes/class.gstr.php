@@ -239,7 +239,7 @@ final class gstr extends validation {
             
     }
     
-    public function returnSave($dataArr,$returnmonth) {
+    public function returnSave($dataArr,$returnmonth,$jstr) {
         $this->authenticateToken();
         $msg = $return_encode = '';
         $error = 1;
@@ -252,7 +252,7 @@ final class gstr extends validation {
         $encodejson=base64_encode(openssl_encrypt(base64_encode($json_data),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
         $hmac = base64_encode(hash_hmac('sha256', base64_encode($json_data), $_SESSION['decrypt_sess_key'], true));
         
-        $response = $this->gstCommonRetunSave($encodejson,$hmac,$returnmonth);      
+        $response = $this->gstCommonRetunSave($encodejson,$hmac,$returnmonth,$jstr);      
         return $response;
     }
 
@@ -425,7 +425,7 @@ final class gstr extends validation {
 
     }
 
-    public function returnDeleteItems($deleteData,$returnmonth) {
+    public function returnDeleteItems($deleteData, $returnmonth, $jstr) {
         $this->authenticateToken();
         $action = 'RETSAVE';
         $deleteData = json_encode($deleteData);
@@ -433,12 +433,12 @@ final class gstr extends validation {
         $encodejson=base64_encode(openssl_encrypt(base64_encode($deleteData),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
 
         $hmac = base64_encode(hash_hmac('sha256', base64_encode($deleteData), $_SESSION['decrypt_sess_key'], true));
-        $response = $this->gstCommonRetunSave($encodejson,$hmac,$returnmonth); 
+        $response = $this->gstCommonRetunSave($encodejson,$hmac,$returnmonth,$jstr); 
         return $response;
 
     }
 
-    public function gstCommonRetunSave($encodejson,$hmac,$returnmonth) {
+    public function gstCommonRetunSave($encodejson,$hmac,$returnmonth,$jstr) {
         $error =1;
         $msg = '';
         $api_return_period = $this->getRetrunPeriodFormat($returnmonth);
@@ -464,7 +464,9 @@ final class gstr extends validation {
         );
         $header = $this->header($header_array);
         //End code for create header
-        $url = 'http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/gstr1';
+
+        $url = 'http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr;
+        
         $result_data = $this->hitPulUrl($url, $data_string, $header);
         $datasave = json_decode($result_data);
         $this->pr($datasave);

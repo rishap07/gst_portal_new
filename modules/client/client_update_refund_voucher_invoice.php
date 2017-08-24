@@ -696,7 +696,7 @@
 					}
 
 					/* call function of total invoice */
-					totalInvoiceValueCalculation();
+					rowInvoiceCalculationOnStateChnage();
 				}
 			});
 			/* end of get receipt voucher details */
@@ -936,6 +936,22 @@
 			totalInvoiceValueCalculation();
         }
         /* end of calculate row invoice function */
+		
+		/* calculate row invoice on state change function */
+        function rowInvoiceCalculationOnStateChnage() {
+
+            $( "tr.invoice_tr" ).each(function( index ) {
+
+                var rowid = $(this).attr("data-row-id");
+				
+				if($("#invoice_tr_"+rowid+"_itemid").val() != '' && $("#invoice_tr_"+rowid+"_itemid").val() > 0) {
+
+                    var itemid = $("#invoice_tr_"+rowid+"_itemid").val();
+                    rowInvoiceCalculation(itemid, rowid);
+                }
+            });
+        }
+        /* end of calculate row invoice on state change function */
 
 		/* calculate total invoice value function */
         function totalInvoiceValueCalculation() {

@@ -128,7 +128,7 @@ if((isset($_GET["id"])) && (!empty($_GET["id"])))
     </tr>
      <tr>
         <td>Message</td>
-        <td><?php echo $rResult[0]->notification_message ?></td>
+        <td><?php echo html_entity_decode($rResult[0]->notification_message); ?></td>
     </tr> 
    
 </table>
