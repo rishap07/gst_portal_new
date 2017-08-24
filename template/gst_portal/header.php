@@ -82,6 +82,10 @@
 						  }
 						  //Check total user notification
 						  $count=$obj_notification->totalNotification(); 
+						  if($count==1)
+						  {
+							  $count=$obj_notification->totalNotificationShow();
+						  }
 						  $notification_status=$obj_notification->checkNotificationStatus();
 						  
 
@@ -286,7 +290,7 @@
 						<span class="collapse in hidden-xs">Sales Invoices <span class="navrgtarrow"><i class="fa fa-chevron-right" aria-hidden="true"></i></span></span></a>
 						<ul class="nav nav-stacked collapse left-submenu" id="item5">
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_upload_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Upload Invoices</a></li><?php } ?>
-							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Tax Invoices</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Tax Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Tax Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=client_create_export_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Tax Export Invoice</a></li><?php } ?>
 
@@ -314,15 +318,19 @@
 						<a href="#" data-target="#itemPurchase" data-toggle="collapse"><i class="fa fa-list"></i> 
 						<span class="collapse in hidden-xs">Purchase Invoices <span class="navrgtarrow"><i class="fa fa-chevron-right" aria-hidden="true"></i></span></span></a>
 						<ul class="nav nav-stacked collapse left-submenu" id="itemPurchase">
-							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Tax Invoices</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_upload_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Upload Invoices</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Tax Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_invoice_create'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Tax Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_import_invoice_create'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Import Tax Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_bill_of_supply_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Bill Of Supply Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_bill_of_supply_invoice_create'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Bill Of Supply Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_receipt_voucher_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Receipt Voucher Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_receipt_voucher_invoice_create'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Receipt Voucher Invoice</a></li><?php } ?>
 						</ul>
 					</li>
 				 <?php } ?>
 				 
 
-				
 					<?php if ($db_obj->can_read('client_invoice')) { ?>
 						<li><a href="<?php echo PROJECT_URL . '/?page=return_client'; ?>"><i class="fa fa-refresh"></i> <span class="collapse in hidden-xs">Return</span></a></li>
 					<?php } ?>

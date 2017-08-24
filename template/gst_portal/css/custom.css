@@ -148,6 +148,13 @@ table.dataTable tbody tr.even {
     position: relative;
     z-index: 999999;
 }
+#itemPurchase {
+    float: left;
+    height: 200px;
+    overflow-y: scroll;
+    position: relative;
+    z-index: 999999;
+}
 .bulk-upload-btn {
 	margin-right:10px;
 }
