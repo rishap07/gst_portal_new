@@ -67,9 +67,6 @@ final class client extends validation {
         $dataArr['state_id'] = isset($_POST['state']) ? $_POST['state'] : '';
 		$dataArr['city'] = isset($_POST['city']) ? $_POST['city'] : '';
 		$dataArr['zipcode'] = isset($_POST['zipcode']) ? $_POST['zipcode'] : '';
-		$dataArr['gross_turnover'] = isset($_POST['gross_turnover']) ? $_POST['gross_turnover'] : '';
-		$dataArr['isd_number'] = isset($_POST['isd_number']) ? $_POST['isd_number'] : '';
-		$dataArr['cur_gross_turnover'] = isset($_POST['cur_gross_turnover']) ? $_POST['cur_gross_turnover'] : '';
 
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
@@ -242,9 +239,6 @@ final class client extends validation {
         $dataArr['state_id'] = isset($_POST['state']) ? $_POST['state'] : '';
 		$dataArr['city'] = isset($_POST['city']) ? $_POST['city'] : '';
 		$dataArr['zipcode'] = isset($_POST['zipcode']) ? $_POST['zipcode'] : '';
-		$dataArr['gross_turnover'] = isset($_POST['gross_turnover']) ? $_POST['gross_turnover'] : '';
-		$dataArr['isd_number'] = isset($_POST['isd_number']) ? $_POST['isd_number'] : '';
-		$dataArr['cur_gross_turnover'] = isset($_POST['cur_gross_turnover']) ? $_POST['cur_gross_turnover'] : '';
 
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
@@ -297,8 +291,7 @@ final class client extends validation {
 
 						$x509 = new File_X509();
 						$cert = $x509->loadX509($cert_content);
-						/*echo '';print_r($cert);
-						die;*/
+
 						if(!empty($cert)) {
 							
 							if(!empty($x509->validateDate())) {
@@ -340,7 +333,6 @@ final class client extends validation {
             $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
             $dataArr['updated_date'] = date('Y-m-d H:i:s');
             $dataConditionArray['added_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);
-            //$this->pr($dataArr);die;
 			if ($this->update($this->tableNames['client_kyc'], $dataArr, $dataConditionArray)) {
                 $this->setSuccess($this->validationMessage['kycupdated']);
                 $this->logMsg("User KYC ID : " . $_SESSION['user_detail']['user_id'] . " has been updated.","client_kycupdate");
@@ -365,7 +357,7 @@ final class client extends validation {
             }
         }
     }
-	
+
 	/**** Start Code to check digital signature valid or not ***/
 	final private function validateDigital($data) {
 
@@ -425,12 +417,6 @@ final class client extends validation {
 
         if (array_key_exists("address_proof", $dataArr)) {
             $rules['address_proof'] = 'image|#|lable_name:Address Proof';
-        }
-        if( array_key_exists("gross_turnover",$dataArr) ) {
-            $rules['gross_turnover'] = 'required||numeric||min:1|#|lable_name:Gross Turnover';
-        }
-        if( array_key_exists("cur_gross_turnover",$dataArr) ) {
-            $rules['cur_gross_turnover'] = 'required||numeric||min:1|#|lable_name:Cur Gross Turnover';
         }
 
         $valid = $this->vali_obj->validate($dataArr, $rules);

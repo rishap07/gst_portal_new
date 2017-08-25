@@ -29,6 +29,18 @@ final class transition extends validation {
 		$dataArr = array();
 		$data = array();
 		$data['5a_registration_no']='';
+		if(!empty($_POST['5a_registration_no'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['5a_registration_no'] as $selected){
+			 
+             $data['5a_registration_no'] = $data['5a_registration_no'].$selected.',';
+			
+			} 
+			$data['5a_registration_no'] = rtrim($data['5a_registration_no'],",");
+			}
+			
+		
+		
 		$data['5a_taxperiod_last_return']='';
 		$data['5a_dateoffilling_return']='';
 		$data['5a_balance_cenvat_credit']='';
@@ -67,16 +79,98 @@ final class transition extends validation {
 		$data['6b_totaleligible_vat']='';
 		$data['6b_totalvat_creditavailed']='';
 		$data['6b_totalvat_creditunavailed']='';
+		$data['6binvoice_document_no']='';
+		$data['6binvoice_document_date']='';
+		$data['6bsupplier_registration_no']='';
+		$data['6breceipients_registration_no']='';
+		$data['6b_value']='';
+		$data['6b_taxpaid_vat']='';
+		$data['6b_totaleligible_vat']='';
+		$data['6b_totalvat_creditavailed']='';
+		$data['6b_totalvat_creditunavailed']='';
+		$data['7a1_hsncode']='';
+		$data['7a1_unit']='';
+		$data['7a1_qty']='';
+		$data['7a1_value']='';
+		$data['7a1_eligible_duties']='';
+		$data['7b_nameof_supplier']='';
+		$data['7b_invoice_number']='';
+		$data['7b_invoice_date']='';
+		$data['7b_description']='';
+		$data['7b_quantity']='';
+		$data['7b_uqc']='';
+		$data['7b_value']='';
+		$data['7b_eligible_duties']='';
+		$data['7b_vat']='';
+		$data['7b_dateonwhich_receipients']='';
+		$data['7c1_description']='';
+		$data['7c1_unit']='';
+		$data['7c1_qty']='';
+		$data['7c1_value']='';
+		$data['7c1_vat']='';
+		$data['7c1_totalinput_taxcredit']='';
+		$data['7c1_totalinput_taxcredit_exempt']='';
+		$data['7c1_totalinput_taxcredit_admissible']='';
+		$data['7d_description']='';
+		$data['7d_unit']='';
+		$data['7d_qty']='';
+		$data['7d_value']='';
+		$data['7d_vatentry_taxpad']='';
+		$data['8registration_no']='';
+		$data['8taxperiod_lastreturn']='';
+		$data['8dateoffilling_return']='';
+		$data['8balanceeligible_cenvat_credit']='';
+		$data['8gstnof_receiver']='';
+		$data['8distributionno']='';
+		$data['8distributiondate']='';
+		$data['8itcofcentral']='';
+		$data['9a1challan_no']='';
+		$data['9a1challan_date']='';
+		$data['9a1typeof_goods']='';
+		$data['9a1_hsn']='';
+		$data['9a1_description']='';
+		$data['9a1_unit']='';
+		$data['9a1_quantity']='';
+		$data['9a1_value']='';
+		$data['9b1challan_no']='';
+		$data['9b1challan_date']='';
+		$data['9b1typeof_goods']='';
+		$data['9b1_hsn']='';
+		$data['9b1_description']='';
+		$data['9b1_unit']='';
+		$data['9b1_quantity']='';
+		$data['9b1_value']='';
+		$data['11aregistration_no']='';
+		$data['11aservicetax_no']='';
+		$data['11ainvoice_documentno']='';
+		$data['11ainvoice_document_date']='';
+		$data['11atax_paid']='';
+		$data['11avatpaid_sgst']='';
+		$data['12a_document_no']='';
+		$data['12a_document_date']='';
+		$data['12a_gstinno_receipient']='';
+		$data['12a_name_receipient']='';
+		$data['12a_hsn']='';
+		$data['12a_description']='';
+		$data['12a_unit']='';
+		$data['12a_quantity']='';
+		$data['12a_value']='';
+		$data['b5bhiform_applicable_vat_rate']='';
+		$data['5a_taxperiod_last_return']='';
+		$data['10a_gstn']='';
+		$data['10a_description']='';
+		$data['10a_unit']='';
+		$data['10a_quantity']='';
+		$data['10a_value']='';
+		$data['10a_inputtax']='';
+		$data['10b_gstn']='';
+		$data['10b_description']='';
+		$data['10b_unit']='';
+		$data['10b_quantity']='';
+		$data['10b_value']='';
+		$data['10b_inputtax']='';		
 				
-		 if(!empty($_POST['5a_registration_no'])){
-// Loop to store and display values of individual checked checkbox.
-			foreach($_POST['5a_registration_no'] as $selected){
-			 
-             $data['5a_registration_no'] = $data['5a_registration_no'].$selected.',';
-			
-			} 
-			$data['5a_registration_no'] = rtrim($data['5a_registration_no'],",");
-			}
+		 
 			 if(!empty($_POST['5a_taxperiod_last_return'])){
 // Loop to store and display values of individual checked checkbox.
 			foreach($_POST['5a_taxperiod_last_return'] as $selected){
@@ -1125,15 +1219,15 @@ final class transition extends validation {
 			$data['11ainvoice_document_date'] = rtrim($data['11ainvoice_document_date'], ",");
 			
 			}	
-			if(!empty($_POST['11atax_period'])){
+			if(!empty($_POST['11atax_paid'])){
 // Loop to store and display values of individual checked checkbox.
-			foreach($_POST['11atax_period'] as $selected){
+			foreach($_POST['11atax_paid'] as $selected){
 			 
-             $data['11atax_period'] = $data['11atax_period'].$selected.',';
+             $data['11atax_paid'] = $data['11atax_paid'].$selected.',';
 			
 			}	
 			
-			$data['11atax_period'] = rtrim($data['11atax_period'], ",");
+			$data['11atax_paid'] = rtrim($data['11atax_paid'], ",");
 			
 			}	
 			if(!empty($_POST['11avatpaid_sgst'])){
@@ -1247,8 +1341,147 @@ final class transition extends validation {
 			
 			}
 			//end here code for 12 a
+			
+			//10a code start here
+			if(!empty($_POST['10a_gstn'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['10a_gstn'] as $selected){
+			 
+             $data['10a_gstn'] = $data['10a_gstn'].$selected.',';
+			
+			}	
+			
+			$data['10a_gstn'] = rtrim($data['10a_gstn'], ",");
+			
+			}
+			if(!empty($_POST['10a_description'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['10a_description'] as $selected){
+			 
+             $data['10a_description'] = $data['10a_description'].$selected.',';
+			
+			}	
+			
+			$data['10a_description'] = rtrim($data['10a_description'], ",");
+			
+			}
+			if(!empty($_POST['10a_unit'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['10a_unit'] as $selected){
+			 
+             $data['10a_unit'] = $data['10a_unit'].$selected.',';
+			
+			}	
+			
+			$data['10a_unit'] = rtrim($data['10a_unit'], ",");
+			
+			}
+			if(!empty($_POST['10a_quantity'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['10a_quantity'] as $selected){
+			 
+             $data['10a_quantity'] = $data['10a_quantity'].$selected.',';
+			
+			}	
+			
+			$data['10a_quantity'] = rtrim($data['10a_quantity'], ",");
+			
+			}
+			if(!empty($_POST['10a_value'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['10a_value'] as $selected){
+			 
+             $data['10a_value'] = $data['10a_value'].$selected.',';
+			
+			}	
+			
+			$data['10a_value'] = rtrim($data['10a_value'], ",");
+			
+			}
+			if(!empty($_POST['10a_inputtax'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['10a_inputtax'] as $selected){
+			 
+             $data['10a_inputtax'] = $data['10a_inputtax'].$selected.',';
+			
+			}	
+			
+			$data['10a_inputtax'] = rtrim($data['10a_inputtax'], ",");
+			
+			}
+			
+			//end here
+			//start code for 10b
+			if(!empty($_POST['10b_gstn'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['10b_gstn'] as $selected){
+			 
+             $data['10b_gstn'] = $data['10b_gstn'].$selected.',';
+			
+			}	
+			
+			$data['10b_gstn'] = rtrim($data['10b_gstn'], ",");
+			
+			}
+			if(!empty($_POST['10b_description'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['10b_description'] as $selected){
+			 
+             $data['10b_description'] = $data['10b_description'].$selected.',';
+			
+			}	
+			
+			$data['10b_description'] = rtrim($data['10b_description'], ",");
+			
+			}
+			if(!empty($_POST['10b_unit'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['10b_unit'] as $selected){
+			 
+             $data['10b_unit'] = $data['10b_unit'].$selected.',';
+			
+			}	
+			
+			$data['10b_unit'] = rtrim($data['10b_unit'], ",");
+			
+			}
+			if(!empty($_POST['10b_quantity'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['10b_quantity'] as $selected){
+			 
+             $data['10b_quantity'] = $data['10b_quantity'].$selected.',';
+			
+			}	
+			
+			$data['10b_quantity'] = rtrim($data['10b_quantity'], ",");
+			
+			}
+			if(!empty($_POST['10b_value'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['10b_value'] as $selected){
+			 
+             $data['10b_value'] = $data['10b_value'].$selected.',';
+			
+			}	
+			
+			$data['10b_value'] = rtrim($data['10b_value'], ",");
+			
+			}
+			if(!empty($_POST['10b_inputtax'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['10b_inputtax'] as $selected){
+			 
+             $data['10b_inputtax'] = $data['10b_inputtax'].$selected.',';
+			
+			}	
+			
+			$data['10b_inputtax'] = rtrim($data['10b_inputtax'], ",");
+			
+			}
+			
+			//end here
 			//9b1 code end here
-			$data5a[]=array("a5_taxperiod_last_return"=>$dataArr['5a_taxperiod_last_return'],"a5_taxperiod_last_return"=>$data['5a_taxperiod_last_return'],"a5_dateoffilling_return"=>$data["5a_dateoffilling_return"],"a5_balance_cenvat_credit"=>$data["5a_balance_cenvat_credit"],"a5_cenvat_credit_admissible"=>$data["5a_cenvat_credit_admissible"],"b5bcform_tin_issuer"=>$data["5bcform_tin_issuer"],"b5bcform_nameof_issuer"=>$data["5bcform_nameof_issuer"],"b5bcform_no_of_item"=>$data["5bcform_no_of_item"],"b5bcform_amount"=>$data["5bcform_amount"],"b5bcform_applicable_vat_rate"=>$data["5bcform_applicable_vat_rate"],"b5bfform_tin_issuer"=>$data["5bfform_tin_issuer"],"b5bfform_nameof_issuer"=>$data["5bfform_nameof_issuer"],"b5bfform_no_of_form"=>$data["5bfform_no_of_form"],"b5bfform_amount"=>$data["5bfform_amount"],"b5bfform_applicable_vat_rate"=>$data["5bfform_applicable_vat_rate"],"b5bhiform_tin_issuer"=>$data["5bhiform_tin_issuer"],"b5bhiform_nameof_issuer"=>$data["5bhiform_nameof_issuer"],"b5bhiform_no_of_form"=>$data["5bhiform_no_of_form"],"b5bhiform_amount"=>$data["5bhiform_amount"],"b5bhiform_applicable_vat_rate"=>$data["b5bhiform_applicable_vat_rate"],"a6ainvoice_document_no"=>$data['6ainvoice_document_no'],"a6ainvoice_document_date"=>$data['6ainvoice_document_date'],"a6asupplier_registration_no"=>$data['6asupplier_registration_no'],"a6arecipients_registration_no"=>$data['6arecipients_registration_no'],"a6a_value"=>$data['6a_value'],"a6a_sad"=>$data['6a_sad'],"a6a_totaleligible_cenvat"=>$data['6a_totaleligible_cenvat'],"a6a_totalcenvat_credit"=>$data['6a_totalcenvat_credit'],"a6a_totalcenvat_credit_unavailed"=>$data['6a_totalcenvat_credit_unavailed'],"b6binvoice_document_no"=>$data['6binvoice_document_no'],"b6binvoice_document_date"=>$data['6binvoice_document_date'],"b6bsupplier_registration_no"=>$data['6bsupplier_registration_no'],"b6breceipients_registration_no"=>$data['6breceipients_registration_no'],"b6b_value"=>$data['6b_value'],"b6b_taxpaid_vat"=>$data['6b_taxpaid_vat'],"b6b_totaleligible_vat"=>$data['6b_totaleligible_vat'],"b6b_totalvat_creditavailed"=>$data['6b_totalvat_creditavailed'],"b6b_totalvat_creditavailed"=>$data['6b_totalvat_creditavailed']);
+			$data5a[]=array("a5_registration_no"=>$data['5a_registration_no'],"a5_taxperiod_last_return"=>$data['5a_taxperiod_last_return'],"a5_taxperiod_last_return"=>$data['5a_taxperiod_last_return'],"a5_dateoffilling_return"=>$data["5a_dateoffilling_return"],"a5_balance_cenvat_credit"=>$data["5a_balance_cenvat_credit"],"a5_cenvat_credit_admissible"=>$data["5a_cenvat_credit_admissible"],"b5bcform_tin_issuer"=>$data["5bcform_tin_issuer"],"b5bcform_nameof_issuer"=>$data["5bcform_nameof_issuer"],"b5bcform_no_of_item"=>$data["5bcform_no_of_item"],"b5bcform_amount"=>$data["5bcform_amount"],"b5bcform_applicable_vat_rate"=>$data["5bcform_applicable_vat_rate"],"b5bfform_tin_issuer"=>$data["5bfform_tin_issuer"],"b5bfform_nameof_issuer"=>$data["5bfform_nameof_issuer"],"b5bfform_no_of_form"=>$data["5bfform_no_of_form"],"b5bfform_amount"=>$data["5bfform_amount"],"b5bfform_applicable_vat_rate"=>$data["5bfform_applicable_vat_rate"],"b5bhiform_tin_issuer"=>$data["5bhiform_tin_issuer"],"b5bhiform_nameof_issuer"=>$data["5bhiform_nameof_issuer"],"b5bhiform_no_of_form"=>$data["5bhiform_no_of_form"],"b5bhiform_amount"=>$data["5bhiform_amount"],"b5bhiform_applicable_vat_rate"=>$data["b5bhiform_applicable_vat_rate"],"a6ainvoice_document_no"=>$data['6ainvoice_document_no'],"a6ainvoice_document_date"=>$data['6ainvoice_document_date'],"a6asupplier_registration_no"=>$data['6asupplier_registration_no'],"a6arecipients_registration_no"=>$data['6arecipients_registration_no'],"a6a_value"=>$data['6a_value'],"a6a_sad"=>$data['6a_sad'],"a6a_totaleligible_cenvat"=>$data['6a_totaleligible_cenvat'],"a6a_totalcenvat_credit"=>$data['6a_totalcenvat_credit'],"a6a_totalcenvat_credit_unavailed"=>$data['6a_totalcenvat_credit_unavailed'],"b6binvoice_document_no"=>$data['6binvoice_document_no'],"b6binvoice_document_date"=>$data['6binvoice_document_date'],"b6bsupplier_registration_no"=>$data['6bsupplier_registration_no'],"b6breceipients_registration_no"=>$data['6breceipients_registration_no'],"b6b_value"=>$data['6b_value'],"b6b_taxpaid_vat"=>$data['6b_taxpaid_vat'],"b6b_totaleligible_vat"=>$data['6b_totaleligible_vat'],"b6b_totalvat_creditavailed"=>$data['6b_totalvat_creditavailed'],"b6b_totalvat_creditavailed"=>$data['6b_totalvat_creditavailed'],"a7a1_hsncode"=>$data['7a1_hsncode'],"a7a1_unit"=>$data['7a1_unit'],"a7a1_qty"=>$data['7a1_qty'],"a7a1_value"=>$data['7a1_value'],"a7a1_eligible_duties"=>$data['7a1_eligible_duties'],"b7b_nameof_supplier"=>$data['7b_nameof_supplier'],"b7b_invoice_number"=>$data['7b_invoice_number'],"b7b_invoice_date"=>$data['7b_invoice_date'],"b7b_description"=>$data['7b_description'],"b7b_quantity"=>$data['7b_quantity'],"b7b_uqc"=>$data['7b_uqc'],"b7b_value"=>$data['7b_value'],"b7b_eligible_duties"=>$data['7b_eligible_duties'],"b7b_vat"=>$data['7b_vat'],"b7b_dateonwhich_receipients"=>$data['7b_dateonwhich_receipients'],"c7c1_description"=>$data['7c1_description'],"c7c1_unit"=>$data['7c1_unit'],"c7c1_qty"=>$data['7c1_qty'],"c7c1_value"=>$data['7c1_value'],"c7c1_vat"=>$data['7c1_vat'],"c7c1_totalinput_taxcredit"=>$data['7c1_totalinput_taxcredit'],"c7c1_totalinput_taxcredit_exempt"=>$data['7c1_totalinput_taxcredit_exempt'],"c7c1_totalinput_taxcredit_admissible"=>$data['7c1_totalinput_taxcredit_admissible'],"d7d_description"=>$data['7d_description'],"d7d_unit"=>$data['7d_unit'],"d7d_qty"=>$data['7d_qty'],"d7d_value"=>$data['7d_value'],"d7d_vatentry_taxpad"=>$data['7d_vatentry_taxpad'],"a8registration_no"=>$data['8registration_no'],"a8taxperiod_lastreturn"=>$data['8taxperiod_lastreturn'],"a8dateoffilling_return"=>$data['8dateoffilling_return'],"a8balanceeligible_cenvat_credit"=>$data['8balanceeligible_cenvat_credit'],"a8gstnof_receiver"=>$data['8gstnof_receiver'],"a8distributionno"=>$data['8distributionno'],"a8distributiondate"=>$data['8distributiondate'],"a8itcofcentral"=>$data['8itcofcentral'],"a9a1challan_no"=>$data['9a1challan_no'],"a9a1challan_date"=>$data['9a1challan_date'],"a9a1typeof_goods"=>$data['9a1typeof_goods'],"a9a1_hsn"=>$data['9a1_hsn'],"a9a1_description"=>$data['9a1_description'],"a9a1_unit"=>$data['9a1_unit'],"a9a1_quantity"=>$data['9a1_quantity'],"a9a1_value"=>$data['9a1_value'],"b9b1challan_no"=>$data['9b1challan_no'],"b9b1challan_date"=>$data['9b1challan_date'],"b9b1typeof_goods"=>$data['9b1typeof_goods'],"b9b1_hsn"=>$data['9b1_hsn'],"b9b1_description"=>$data['9b1_description'],"b9b1_unit"=>$data['9b1_unit'],"b9b1_quantity"=>$data['9b1_quantity'],"b9b1_value"=>$data['9b1_value'],"a11aregistration_no"=>$data['11aregistration_no'],"a11aservicetax_no"=>$data['11aservicetax_no'],"a11ainvoice_documentno"=>$data['11ainvoice_documentno'],"a11ainvoice_document_date"=>$data['11ainvoice_document_date'],"a11atax_paid"=>$data['11atax_paid'],"a11avatpaid_sgst"=>$data['11avatpaid_sgst'],"a12a_document_no"=>$data['12a_document_no'],"a12a_document_no"=>$data['12a_document_no'],"a12a_document_date"=>$data['12a_document_date'],"a12a_name_receipient"=>$data['12a_name_receipient'],"a12a_hsn"=>$data['12a_hsn'],"a12a_description"=>$data['12a_description'],"a12a_unit"=>$data['12a_unit'],"a12a_quantity"=>$data['12a_quantity'],"a12a_value"=>$data['12a_value'],"a10a_gstn"=>$data['10a_gstn'],"a10a_description"=>$data['10a_description'],"a10a_unit"=>$data['10a_unit'],"a10a_quantity"=>$data['10a_quantity'],"a10a_value"=>$data['10a_value'],"a10a_inputtax"=>$data['10a_inputtax'],"b10b_gstn"=>$data['10b_gstn'],"b10b_description"=>$data['10b_description'],"b10b_unit"=>$data['10b_unit'],"b10b_quantity"=>$data['10b_quantity'],"b10b_value"=>$data['10b_value'],"b10b_inputtax"=>$data['10b_inputtax']);
 			//$data5b[]=array("5a_taxperiod_last_return"=>$dataArr['5a_taxperiod_last_return'],"5a_taxperiod_last_return"=>$data['5a_taxperiod_last_return'],"5a_dateoffilling_return"=>$data["5a_dateoffilling_return"],"5a_balance_cenvat_credit"=>$data["5a_balance_cenvat_credit"],"5a_cenvat_credit_admissible"=>$data["5a_cenvat_credit_admissible"]);
 			
 

@@ -299,13 +299,12 @@ final class users extends validation {
     public function saveUserThemeSetting() {
 
         $dataArr['theme_style'] = isset($_POST['theme_style']) ? $_POST['theme_style'] : 'theme-color.css';
+		$dataArr['gross_turnover'] = isset($_POST['gross_turnover']) ? $_POST['gross_turnover'] : '';
+		$dataArr['cur_gross_turnover'] = isset($_POST['cur_gross_turnover']) ? $_POST['cur_gross_turnover'] : '';
+		$dataArr['isd_number'] = isset($_POST['isd_number']) ? $_POST['isd_number'] : '';
 
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
-            return false;
-        }
-
-        if (!$this->validateThemeSetting($dataArr)) {
             return false;
         }
 
@@ -319,13 +318,32 @@ final class users extends validation {
             }
         }
 
+		if (!$this->validateThemeSetting($dataArr)) {
+            return false;
+        }
+		
+		$dataInsertArray['theme_style'] = $dataArr['theme_style'];
+		if( array_key_exists("theme_logo",$dataArr) ) {
+			$dataInsertArray['theme_logo'] = $dataArr['theme_logo'];
+		}
+
+		/* update kyc turnover data */
+		$dataInsertKYCArray['gross_turnover'] = $dataArr['gross_turnover'];
+		$dataInsertKYCArray['cur_gross_turnover'] = $dataArr['cur_gross_turnover'];
+		$dataInsertKYCArray['isd_number'] = $dataArr['isd_number'];
+		$dataInsertKYCArray['updated_by'] = $_SESSION['user_detail']['user_id'];
+		$dataInsertKYCArray['updated_date'] = date('Y-m-d H:i:s');
+		$dataConditionKYCArray['added_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);
+		$this->update($this->tableNames['client_kyc'], $dataInsertKYCArray, $dataConditionKYCArray);
+		/* end of update kyc turnover data */
+
         if ($this->checkUserThemeSettingExist($_SESSION['user_detail']['user_id'])) {
 
-            $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
-            $dataArr['updated_date'] = date('Y-m-d H:i:s');
+            $dataInsertArray['updated_by'] = $_SESSION['user_detail']['user_id'];
+            $dataInsertArray['updated_date'] = date('Y-m-d H:i:s');
 
             $dataConditionArray['added_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);
-            if ($this->update($this->tableNames['user_theme_setting'], $dataArr, $dataConditionArray)) {
+            if ($this->update($this->tableNames['user_theme_setting'], $dataInsertArray, $dataConditionArray)) {
 
                 $this->setSuccess($this->validationMessage['themesettingsaved']);
                 $this->logMsg("Theme Setting ID : " . $_SESSION['user_detail']['user_id'] . " in theme setting has been updated.","user_themesetting");
@@ -337,10 +355,10 @@ final class users extends validation {
             }
         } else {
 
-            $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
-            $dataArr['added_date'] = date('Y-m-d H:i:s');
+            $dataInsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
+            $dataInsertArray['added_date'] = date('Y-m-d H:i:s');
 
-            if ($this->insert($this->tableNames['user_theme_setting'], $dataArr)) {
+            if ($this->insert($this->tableNames['user_theme_setting'], $dataInsertArray)) {
 
                 $this->setSuccess($this->validationMessage['themesettingsaved']);
                 $insertid = $this->getInsertID();
@@ -361,6 +379,18 @@ final class users extends validation {
             $rules['theme_logo'] = 'image|#|lable_name:Theme Logo';
         }
 
+		if( array_key_exists("gross_turnover",$dataArr) ) {
+			$rules['gross_turnover'] = 'required||numeric||decimalzero|#|lable_name:Gross Turnover';
+		}
+
+		if( array_key_exists("cur_gross_turnover",$dataArr) ) {
+			$rules['cur_gross_turnover'] = 'required||numeric||decimalzero|#|lable_name:Current Gross Turnover';
+		}
+
+		if( array_key_exists("isd_number",$dataArr) ) {
+			$rules['isd_number'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:ISD Number';
+		}
+		
         $valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
             $err_arr = $valid->allErrors();
