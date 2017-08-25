@@ -263,7 +263,6 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 										<td colspan="2">
 											<table>
 												<tr>
-												
 													<td>
                                                         <b>Supplier Detail</b><br>
                                                         <?php echo html_entity_decode($invoiceData[0]->supplier_billing_name); ?><br>

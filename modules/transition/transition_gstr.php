@@ -66,19 +66,37 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
  
        $returndata1 = $obj_return->get_results($sql);
 	
-		$sql = "select  * from gst_transition";
- 
-        $returndata1 = $obj_return->get_results($sql);
-		
+		if($returndata1[0]->totalinvoice > 0)
+		{
 		$arr = $returndata1[0]->gstr_transition_data;
 		$arr1= base64_decode($arr);
 		$transition_arr = json_decode($arr1);
+		$a5_taxperiod_last_return='';
+		$a5_registration_no='';
+		$a5_taxperiod_last_return='';
+		$a5_dateoffilling_return='';
+		$a5_balance_cenvat_credit='';
+		$a5_cenvat_credit_admissible='';
+		$b5bcform_tin_issuer='';
+		$b5bcform_nameof_issuer='';
+		$b5bcform_no_of_item='';
+		$b5bcform_amount='';
+		$b5bcform_applicable_vat_rate='';
 		foreach($transition_arr as $item)
 		{
 			//echo $item->a5_taxperiod_last_return;
 			//var_dump($item);
-		}
+			$a5_taxperiod_last_return=$item->a5_taxperiod_last_return;
+			$a5_registration_no=$item->a5_registration_no;
+			$a5_taxperiod_last_return=$item->a5_taxperiod_last_return;
+			$a5_dateoffilling_return=$item->a5_dateoffilling_return;
+			$a5_balance_cenvat_credit=$item->a5_balance_cenvat_credit;
+			$a5_cenvat_credit_admissible=$item->a5_cenvat_credit_admissible;
+			
+	
 		
+		}
+		}
 		 
 	
 		 
@@ -253,6 +271,19 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                 </thead>
                                 
                                 <tbody>
+								<?php
+								$a5_taxperiod_last_return=(explode(",",$a5_taxperiod_last_return));
+								$a5_registration_no=$item->(explode(",",$a5_registration_no));
+								$a5_dateoffilling_return=(explode(",",$a5_dateoffilling_return));
+								$a5_balance_cenvat_credit=(explode(",",$a5_balance_cenvat_credit));
+								$a5_cenvat_credit_admissible=(explode(",",$a5_cenvat_credit_admissible));
+			
+								   
+						
+							  for($i=0;$i < sizeof($a5_taxperiod_last_return); $i++) {
+                              						  
+             
+                           ?>
                                 <tr>
                                 <td class="lftheading" >1.</td>
                                  <td>
@@ -264,7 +295,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5a_registration_no[]" 
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5a_registration_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -2267,7 +2298,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 						   <div class="greyheading">10.Details of goods held in stock as agent of behalf of the principal under section 142(14) of the SGST Act</div>
 						  <div class="greyheading">a.Details of goods held as agent on behalf of the principal</div>
 					     <div class="tableresponsive">
-						 <table  class="table  tablecontent tablecontent2 bordernone">
+						 <table  class="table  tablecontent tablecontent2 bordernone" id="table10a">
                                 <thead>
                                 <tr>
                                 <th>Sr.no.</th>
@@ -2287,101 +2318,96 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                 <tr>                     
                                 
 								 
-								
-								  <td>
+								<td></td>
+								   <td>
 								 <?php
 								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_value_supplya" value="<?php if(isset($nature_of_supply_a_TotData[0]->sgst_amount)) { echo $nature_of_supply_a_TotData[0]->sgst_amount; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10a_gstn[]" 
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> <td>
+								 <?php
+								 if($returndata[0]->totalinvoice > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10a_description[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> <td>
+								 <?php
+								 if($returndata[0]->totalinvoice > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10a_unit[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> <td>
+								 <?php
+								 if($returndata[0]->totalinvoice > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10a_quantity[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> <td>
+								 <?php
+								 if($returndata[0]->totalinvoice > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10a_value[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> <td>
+								 <?php
+								 if($returndata[0]->totalinvoice > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10a_inputtax[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
-								  <td>
-								 <?php
-								 if($returndata[0]->totalinvoice > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplya" value="<?php if(isset($nature_of_supply_a_TotData[0]->cess_amount)) { echo $nature_of_supply_a_TotData[0]->cess_amount; } else { echo ''; } ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								 if($returndata[0]->totalinvoice > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplya" value="<?php if(isset($nature_of_supply_a_TotData[0]->cess_amount)) { echo $nature_of_supply_a_TotData[0]->cess_amount; } else { echo ''; } ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								 if($returndata[0]->totalinvoice > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplya" value="<?php if(isset($nature_of_supply_a_TotData[0]->cess_amount)) { echo $nature_of_supply_a_TotData[0]->cess_amount; } else { echo ''; } ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								 if($returndata[0]->totalinvoice > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplya" value="<?php if(isset($nature_of_supply_a_TotData[0]->cess_amount)) { echo $nature_of_supply_a_TotData[0]->cess_amount; } else { echo ''; } ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								 if($returndata[0]->totalinvoice > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplya" value="<?php if(isset($nature_of_supply_a_TotData[0]->cess_amount)) { echo $nature_of_supply_a_TotData[0]->cess_amount; } else { echo ''; } ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								 if($returndata[0]->totalinvoice > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplya" value="<?php if(isset($nature_of_supply_a_TotData[0]->cess_amount)) { echo $nature_of_supply_a_TotData[0]->cess_amount; } else { echo ''; } ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>
+								 <td> <td>
+									 <a class="addMoreInvoice add-table10a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+										</td>  </td>
                                                       
-                                </tr><tr><td></td><td>Total</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>				                    
+                                </tr>	                    
                                 </tbody>
                             </table>
                           </div>
 						  <div class="greyheading">b.Details of goods held by the agent</div>
 					     <div class="tableresponsive">
-						 <table  class="table  tablecontent tablecontent2 bordernone">
+						 <table  class="table  tablecontent tablecontent2 bordernone" id="table10b" >
                                 <thead>
                                 <tr>
                                 <th>Sr.no.</th>
@@ -2402,19 +2428,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                 
 								 
 								
-								  <td>
-								 <?php
-								 if($returndata[0]->totalinvoice > 0)
-								 {
-									 ?>
-									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_value_supplya" value="<?php if(isset($nature_of_supply_a_TotData[0]->sgst_amount)) { echo $nature_of_supply_a_TotData[0]->sgst_amount; } else { echo ''; } ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>
+								 <td></td>
 								  <td>
 								 <?php
 								 if($returndata[0]->totalinvoice > 0)
@@ -2424,7 +2438,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplya" value="<?php if(isset($nature_of_supply_a_TotData[0]->cess_amount)) { echo $nature_of_supply_a_TotData[0]->cess_amount; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10b_gstn[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2436,7 +2450,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplya" value="<?php if(isset($nature_of_supply_a_TotData[0]->cess_amount)) { echo $nature_of_supply_a_TotData[0]->cess_amount; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10b_description[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2448,7 +2462,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplya" value="<?php if(isset($nature_of_supply_a_TotData[0]->cess_amount)) { echo $nature_of_supply_a_TotData[0]->cess_amount; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10b_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2460,7 +2474,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplya" value="<?php if(isset($nature_of_supply_a_TotData[0]->cess_amount)) { echo $nature_of_supply_a_TotData[0]->cess_amount; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10b_quantity[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2472,7 +2486,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplya" value="<?php if(isset($nature_of_supply_a_TotData[0]->cess_amount)) { echo $nature_of_supply_a_TotData[0]->cess_amount; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10b_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2484,12 +2498,19 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplya" value="<?php if(isset($nature_of_supply_a_TotData[0]->cess_amount)) { echo $nature_of_supply_a_TotData[0]->cess_amount; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10b_inputtax[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
-                                                      
-                                </tr><tr><td></td><td>Total</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>				                    
+                                     <td>
+									 <a class="addMoreInvoice add-table10b"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+										</td>                    
+                                </tr>			                    
                                 </tbody>
                             </table>
                           </div>
@@ -3140,6 +3161,46 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
         
     }); 
 </script>
+<script type="text/javascript">
+    $(document).ready(function(){
+		
+        $(".add-table10a").click(function(){
+       
+			
+		    
+            var markup = "<tr><td></td><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='10a_gstn[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='10a_description[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='10a_unit[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='10a_quantity[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='10a_value[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='10a_inputtax[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+          // $("table tbody").append(markup);
+		   $('#table10a').append(markup);
+        });
+		$('body').delegate('.del','click',function(){
+			$(this).closest('tr').remove();
+		});
+        
+		 
+        
+    }); 
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+		
+        $(".add-table10b").click(function(){
+       
+			
+		    
+            var markup = "<tr><td></td><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='10b_gstn[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='10b_description[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='10b_unit[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='10b_quantity[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='10b_value[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='10b_inputtax[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+          // $("table tbody").append(markup);
+		   $('#table10b').append(markup);
+        });
+		$('body').delegate('.del','click',function(){
+			$(this).closest('tr').remove();
+		});
+        
+		 
+        
+    }); 
+</script>
+
+
 <script type="text/javascript">
     $(document).ready(function(){
 		
