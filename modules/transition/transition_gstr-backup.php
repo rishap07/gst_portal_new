@@ -58,23 +58,14 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 
 
        
-	  // $sql = "select  *,count(return_id) as totalinvoice from ".TAB_PREFIX."client_return_gstr3b where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by return_id desc limit 0,1";
-       $sql = "select  *,count(id) as totalinvoice from gst_transition where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
+	   $sql = "select  *,count(return_id) as totalinvoice from ".TAB_PREFIX."client_return_gstr3b where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by return_id desc limit 0,1";
+ 
        $returndata = $obj_return->get_results($sql);
+		
 	   $sql = "select  *,count(id) as totalinvoice from gst_transition where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
  
        $returndata1 = $obj_return->get_results($sql);
-	    $sql = "select * from " . TAB_PREFIX . "client_kyc where added_by='" . $_SESSION['user_detail']['user_id'] . "' order by id desc limit 0,1";
-	   $clientdata = $obj_return->get_results($sql);
-	   $client_gstin_number;
-	   $client_name;
-	   
-	   if(count($clientdata) > 0 )
-	   {
-		   $client_gstin_number = $clientdata[0]->gstin_number;
-		   $client_name = $clientdata[0]->name;
-		   
-	   }
+	
 		if($returndata1[0]->totalinvoice > 0)
 		{
 		$arr = $returndata1[0]->gstr_transition_data;
@@ -225,18 +216,6 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 		$a12a_unit='';
 		$a12a_quantity='';
 		$a12a_value='';
-		$a10a_gstn='';
-		$a10a_description='';
-		$a10a_unit='';
-		$a10a_quantity='';
-		$a10a_value='';
-		$a10a_inputtax='';
-		$b10b_gstn='';
-		$b10b_description='';
-		$b10b_unit='';
-		$b10b_quantity='';
-		$b10b_value='';
-		$b10b_inputtax='';
 		
 
 		
@@ -389,30 +368,36 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 		$a12a_unit=$item->a12a_unit;
 		$a12a_quantity=$item->a12a_quantity;
 		$a12a_value=$item->a12a_value;
-		$a10a_gstn=$item->a10a_gstn;
-		$a10a_description=$item->a10a_description;
-		$a10a_unit=$item->a10a_unit;
-		$a10a_quantity=$item->a10a_quantity;
-		$a10a_value=$item->a10a_value;
-		$a10a_inputtax=$item->a10a_inputtax;
-		$b10b_gstn=$item->b10b_gstn;
-		$b10b_description=$item->b10b_description;
-		$b10b_unit=$item->b10b_unit;
-		$b10b_quantity=$item->b10b_quantity;
-		$b10b_value=$item->b10b_value;
-		$b10b_inputtax=$item->b10b_inputtax;
 		}
 		}
 		 
 	
 		 
 		
-	  
+	  $supply_unregistered="SELECT i.billing_state as state, COUNT(i.invoice_id) as numcount,sum(igst_amount) as igst_amount,sum(item.taxable_subtotal) as totaltaxable_value FROM gst_client_invoice as i inner join gst_client_invoice_item as item on item.invoice_id = i.invoice_id inner join gst_vendor_type as v on v.vendor_id = i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0' and billing_gstin_number='' and (v.vendor_id<>'2' and v.vendor_id<>'4') and i.status='1' GROUP by i.billing_state";
+	 $supply_unregistered_data = $obj_return->get_results($supply_unregistered);
+        $total = 0;
+        if (!empty($supply_unregistered_data)) {
+         // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
+         }
+		
+	$supply_composition="SELECT i.billing_state as state, COUNT(i.invoice_id) as numcount,sum(igst_amount) as igst_amount,sum(item.taxable_subtotal) as totaltaxable_value FROM gst_client_invoice as i inner join gst_client_invoice_item as item on item.invoice_id = i.invoice_id inner join gst_vendor_type as v on v.vendor_id = i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0' and v.vendor_id='2' and i.status='1' GROUP by i.billing_state";
+	 $supply_composition_data = $obj_return->get_results($supply_composition);
+        $total = 0;
+        if (!empty($supply_composition_data)) {
+         // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
+         }
+	 $supply_uin_holder="SELECT i.billing_state as state, COUNT(i.invoice_id) as numcount,sum(igst_amount) as igst_amount,sum(item.taxable_subtotal) as totaltaxable_value FROM gst_client_invoice as i inner join gst_client_invoice_item as item on item.invoice_id = i.invoice_id inner join gst_vendor_type as v on v.vendor_id = i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0' and v.vendor_id='4' and i.status='1' GROUP by i.billing_state";
+	 $supply_uin_holder_data = $obj_return->get_results($supply_uin_holder);
+        $total = 0;
+        if (!empty($supply_uin_holder_data)) {
+         // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
+         }
 	   ?>
        <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
        			<div class="col-md-12 col-sm-12 col-xs-12">
                
-                	<div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>GST-Transition Form</h1></div>
+                	<div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>GSTR-3B</h1></div>
                     <div class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav"><a href="#">Home</a>
 					<i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GSTR-3B Filing</span> </div>
                      <div class="whitebg formboxcontainer">
@@ -446,10 +431,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 				} }
 				else{
 				 if($returndata[0]->final_submit == 1){
-		    echo "<div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>GST-Transition month of  ".$returnmonth." already submitted </div>";
+		    echo "<div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>GSTR3B month of return ".$returnmonth." already submitted </div>";
 					
 				} }?>
-				<div class="tab" style="display:none;">
+				<div class="tab">
                 <a href="<?php echo PROJECT_URL . '/?page=transaction_gstr&returnmonth='.$returnmonth ?>" class="active">
                     Prepare GSTR-3B 
                 </a>
@@ -489,7 +474,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 							if($returndata[0]->final_submit == 1)
 							{
 								?>
-							<div class="inovicergttop" style="display:none;">
+							<div class="inovicergttop">
                             <ul class="iconlist">
 
                                 
@@ -505,35 +490,35 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                      	 <div class="col-md-12 col-sm-12 col-xs-12 form-group">
 
                             <label>1.GSTIN-<span class="starred"></span></label>
-							 <label><?php echo $client_gstin_number; ?></label>
+							 <label></label>
 						     </div>
 							 
 							    <div class="col-md-12 col-sm-12 col-xs-12 form-group">
 
                             <label>2.LegalName of the registered person-<span class="starred"></span></label>
-							 <label><?php echo $client_name; ?></label>
+							 <label></label>
 						 
 							   </div>
 							    <div class="col-md-4 col-sm-4 col-xs-12 form-group">
 
                             <label>3.TradeName of any-<span class="starred"></span></label>
-							 <input type="text" maxlength="100" id="trader_name"  name="trader_name" value="<?php if(isset($returndata1[0]->trader_name)) { echo $returndata1[0]->trader_name; } else { echo ''; } ?>"
+							 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="total_tax_value_supplya" value="<?php if(isset($nature_of_supply_a_TotData[0]->taxable_subtotal)) { echo $nature_of_supply_a_TotData[0]->taxable_subtotal; } else { echo ''; } ?>"
  class="form-control"  placeholder="" /> 
 						    
 							   </div><div class="clear"></div>
 							    
-                            <label>4.Wheather all the return required under existing law for the period of six month immediately preceding appoint date have been furnished<span class="starred"></span></label>
+                            <label>Wheather all the return required under existing law for the period of six month immediately preceding appoint date have been furnished<span class="starred"></span></label>
 							 <div class="col-md-2 col-sm-2 col-xs-12 form-group">
 
-							 <select name='transition_status' id='transition_status' class='required form-control'>
+							 <select name='coupon_status' id='coupon_status' class='required form-control'>
                         
 						   <option value='1' <?php
-                                    if (isset($returndata1[0]->transition_status) && $returndata1[0]->transition_status == 1) {
+                                    if (isset($dataCurrentArr[0]->status) && $dataCurrentArr[0]->status == 1) {
                                         echo "selected='selected'";
                                     }
                                     ?>>Active</option>
 									 <option value='0' <?php
-                                    if (isset($returndata1[0]->transition_status) && $returndata1[0]->transition_status==0) {
+                                    if (isset($dataCurrentArr[0]->status) && $dataCurrentArr[0]->status==0) {
                                         echo "selected='selected'";
                                     }
                                     ?>>InActive</option>
@@ -577,10 +562,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                 <td class="lftheading" >1.</td>
                                  <td>
 								 <?php
-								 if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a5_registration_no[$i])) { echo $a5_registration_no[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -590,10 +575,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a5_taxperiod_last_return[$i])) { echo $a5_taxperiod_last_return[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->integrated_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -603,10 +588,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a5_dateoffilling_return[$i])) { echo $a5_dateoffilling_return[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -616,10 +601,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a5_balance_cenvat_credit[$i])) { echo $a5_balance_cenvat_credit[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -628,10 +613,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a5_cenvat_credit_admissible[$i])) { echo $a5_cenvat_credit_admissible[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -656,7 +641,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                 <td class="lftheading" >1.</td>
                                  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
@@ -669,7 +654,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->integrated_tax_value_supplya; ?><span class="starred"></span></label>
@@ -682,7 +667,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
@@ -695,7 +680,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
@@ -707,7 +692,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -774,10 +759,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								<tr>
 								 <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b5bcform_tin_issuer[$i])) { echo $b5bcform_tin_issuer[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -787,10 +772,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b5bcform_nameof_issuer[$i])) { echo $b5bcform_nameof_issuer[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->integrated_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -800,10 +785,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b5bcform_no_of_item[$i])) { echo $b5bcform_no_of_item[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -813,10 +798,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b5bcform_amount[$i])) { echo $b5bcform_amount[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -826,10 +811,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b5bcform_applicable_vat_rate[$i])) { echo $b5bcform_applicable_vat_rate[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -853,7 +838,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                               <tr>
 								 <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
@@ -866,7 +851,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->integrated_tax_value_supplya; ?><span class="starred"></span></label>
@@ -879,7 +864,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
@@ -892,7 +877,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
@@ -905,7 +890,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -951,10 +936,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								<tr>
 								 <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b5bfform_tin_issuer[$i])) { echo $b5bfform_tin_issuer[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -964,10 +949,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b5bfform_nameof_issuer[$i])) { echo $b5bfform_nameof_issuer[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->integrated_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -977,10 +962,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b5bfform_no_of_form[$i])) { echo $b5bfform_no_of_form[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -990,10 +975,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b5bfform_amount[$i])) { echo $b5bfform_amount[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1003,10 +988,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b5bfform_applicable_vat_rate[$i])) { echo $b5bfform_applicable_vat_rate[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1029,7 +1014,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								<tr>
 								 <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1042,7 +1027,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->integrated_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1055,7 +1040,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1068,7 +1053,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1081,7 +1066,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1123,10 +1108,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								<tr>
                                  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b5bhiform_tin_issuer[$i])) { echo $b5bhiform_tin_issuer[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1136,10 +1121,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b5bhiform_nameof_issuer[$i])) { echo $b5bhiform_nameof_issuer[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->integrated_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1149,10 +1134,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b5bhiform_no_of_form[$i])) { echo $b5bhiform_no_of_form[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1162,10 +1147,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b5bhiform_amount[$i])) { echo $b5bhiform_amount[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1175,10 +1160,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b5bhiform_applicable_vat_rate[$i])) { echo $b5bhiform_applicable_vat_rate[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1199,7 +1184,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                               <tr>
                                  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1212,7 +1197,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->integrated_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1225,7 +1210,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1238,7 +1223,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1251,7 +1236,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1330,10 +1315,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                 <tr>
                                <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c5cform_registration_no[$i])) { echo $c5cform_registration_no[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1342,10 +1327,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c5cform_balanceof_itc_val[$i])) { echo $c5cform_balanceof_itc_val[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->integrated_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1355,10 +1340,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c5cform_cform_turnover_form_pending[$i])) { echo $c5cform_cform_turnover_form_pending[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1368,10 +1353,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c5cform_cform_taxpayable[$i])) { echo $c5cform_cform_taxpayable[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1381,10 +1366,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c5cform_fform_turnover_form_pending[$i])) { echo $c5cform_fform_turnover_form_pending[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1393,10 +1378,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c5cform_fform_taxpayable[$i])) { echo $c5cform_fform_taxpayable[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1405,10 +1390,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c5cform_itcreversal_relatable[$i])) { echo $c5cform_itcreversal_relatable[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1417,10 +1402,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c5cform_hiform_turnover_form_pending[$i])) { echo $c5cform_hiform_turnover_form_pending[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1429,10 +1414,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c5cform_hiform_taxpayable[$i])) { echo $c5cform_hiform_taxpayable[$i]; } else { echo ''; }?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1441,10 +1426,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c5cform_hiform_transitionitc2[$i])) { echo $c5cform_hiform_transitionitc2[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1469,7 +1454,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								    <tr>
                                <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1481,7 +1466,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->integrated_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1494,7 +1479,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1507,7 +1492,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1520,7 +1505,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1532,7 +1517,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1544,7 +1529,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1556,7 +1541,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1568,7 +1553,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1580,7 +1565,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1659,10 +1644,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                               <td></td>
                                  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a6ainvoice_document_no[$i])) { echo $a6ainvoice_document_no[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1672,10 +1657,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a6ainvoice_document_date[$i])) { echo $a6ainvoice_document_date[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->integrated_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1684,10 +1669,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a6asupplier_registration_no[$i])) { echo $a6asupplier_registration_no[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1697,10 +1682,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a6arecipients_registration_no[$i])) { echo $a6arecipients_registration_no[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1710,10 +1695,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a6a_value[$i])) { echo $a6a_value[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1722,10 +1707,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a6a_ed_cvd[$i])) { echo $a6a_ed_cvd[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1733,10 +1718,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a6a_sad[$i])) { echo $a6a_sad[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1745,10 +1730,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a6a_totaleligible_cenvat[$i])) { echo $a6a_totaleligible_cenvat[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1756,10 +1741,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a6a_totalcenvat_credit[$i])) { echo $a6a_totalcenvat_credit[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1768,34 +1753,30 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a6a_totalcenvat_credit_unavailed[$i])) { echo $a6a_totalcenvat_credit_unavailed[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
 								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a6a_totalcenvat_credit_unavailed[$i])) { echo $a6a_totalcenvat_credit_unavailed[$i]; } else { echo ''; } ?>" name="6a_totalcenvat_credit_unavailed[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
-                                      <?php if($i==0){
-									 ?>
-                                    <td>
+                                     <td>
 									 <a class="addMoreInvoice add-table6a"  href="javascript:void(0)">
 									<div class="tooltip2">
 										<i class="fa fa-plus-circle addicon"></i>
 										<span class="tooltiptext">Add More</span>
 									</div>
 								</a>
-								 </td><?php } else { ?>
-                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
-								 <?php } ?>	                  
+										</td>                  
 								</tr> <?php } } else { ?>
 								 <tr>
                               <td></td>
                                  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1808,7 +1789,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->integrated_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1820,7 +1801,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1833,7 +1814,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1846,7 +1827,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1858,7 +1839,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1869,7 +1850,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1881,7 +1862,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1892,7 +1873,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1904,7 +1885,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -1982,10 +1963,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b6binvoice_document_no[$i])) { echo $b6binvoice_document_no[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->integrated_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -1994,10 +1975,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b6binvoice_document_date[$i])) { echo $b6binvoice_document_date[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2007,10 +1988,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b6bsupplier_registration_no[$i])) { echo $b6bsupplier_registration_no[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2020,10 +2001,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b6breceipients_registration_no[$i])) { echo $b6breceipients_registration_no[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2032,10 +2013,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b6b_value[$i])) { echo $b6b_value[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2044,10 +2025,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b6b_taxpaid_vat[$i])) { echo $b6b_taxpaid_vat[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2056,10 +2037,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b6b_totaleligible_vat[$i])) { echo $b6b_taxpaid_vat[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2068,10 +2049,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b6b_totalvat_creditavailed[$i])) { echo $b6b_totalvat_creditavailed[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2080,10 +2061,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b6b_totalvat_creditunavailed[$i])) { echo $b6b_totalvat_creditunavailed[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2092,8 +2073,6 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td>
 								
-                                     <?php if($i==0){
-									 ?>
                                     <td>
 									 <a class="addMoreInvoice add-table6b"  href="javascript:void(0)">
 									<div class="tooltip2">
@@ -2101,16 +2080,14 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 										<span class="tooltiptext">Add More</span>
 									</div>
 								</a>
-								 </td><?php } else { ?>
-                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
-								 <?php } ?>	 							 
+								 </td> 							 
 								</tr><?php } } else { ?>
 								 <tr>
                               <td></td>
                                  
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->integrated_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2122,7 +2099,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2135,7 +2112,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2148,7 +2125,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2160,7 +2137,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2172,7 +2149,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2184,7 +2161,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2196,7 +2173,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2208,7 +2185,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2277,10 +2254,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <td></td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a7a1_hsncode[$i])) { echo $a7a1_hsncode[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2289,10 +2266,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a7a1_unit[$i])) { echo $a7a1_unit[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2301,10 +2278,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a7a1_qty[$i])) { echo $a7a1_qty[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2313,10 +2290,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a7a1_value[$i])) { echo $a7a1_value[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2325,10 +2302,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a7a1_eligible_duties[$i])) { echo $a7a1_eligible_duties[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2336,18 +2313,14 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
-                                      <?php if($i==0){
-									 ?>
-                                    <td>
+                                     <td>
 									 <a class="addMoreInvoice add-table7a1"  href="javascript:void(0)">
 									<div class="tooltip2">
 										<i class="fa fa-plus-circle addicon"></i>
 										<span class="tooltiptext">Add More</span>
 									</div>
 								</a>
-								 </td><?php } else { ?>
-                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
-								 <?php } ?>	                     
+										</td>                     
                                 </tr>
 								<?php } } else { ?>
 								<tr>                                           
@@ -2355,7 +2328,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <td></td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2367,7 +2340,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2379,7 +2352,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2391,7 +2364,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2403,7 +2376,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2446,10 +2419,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <td></td>
 								   <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a7a2_hsncode[$i])) { echo $a7a2_hsncode[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2458,10 +2431,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a7a2_unit[$i])) { echo $a7a2_unit[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2469,10 +2442,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a7a2_qty[$i])) { echo $a7a2_qty[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2481,10 +2454,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a7a2_value[$i])) { echo $a7a2_value[$i]; } else { echo ''; }; ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2493,10 +2466,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a7a2_eligible_duties[$i])) { echo $a7a2_eligible_duties[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2504,8 +2477,6 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
-                                     <?php if($i==0){
-									 ?>
                                     <td>
 									 <a class="addMoreInvoice add-table7a2"  href="javascript:void(0)">
 									<div class="tooltip2">
@@ -2513,15 +2484,13 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 										<span class="tooltiptext">Add More</span>
 									</div>
 								</a>
-								 </td><?php } else { ?>
-                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
-								 <?php } ?>	                  
+										</td>                  
 								</tr><?php } } else { ?>
 								<tr>
 								 <td></td>
 								   <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2533,7 +2502,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2544,7 +2513,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2556,7 +2525,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2568,7 +2537,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2611,10 +2580,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <td></td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a7a3_hsncode[$i])) { echo $a7a3_hsncode[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2622,10 +2591,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a7a3_unit[$i])) { echo $a7a3_unit[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2634,10 +2603,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a7a3_qty[$i])) { echo $a7a3_qty[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2646,10 +2615,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a7a3_value[$i])) { echo $a7a3_value[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2658,10 +2627,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a7a3_eligible_duties[$i])) { echo $a7a3_eligible_duties[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2669,24 +2638,20 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
-                                    <?php if($i==0){
-									 ?>
-                                    <td>
+                                   <td>
 									 <a class="addMoreInvoice add-table7a3"  href="javascript:void(0)">
 									<div class="tooltip2">
 										<i class="fa fa-plus-circle addicon"></i>
 										<span class="tooltiptext">Add More</span>
 									</div>
 								</a>
-								 </td><?php } else { ?>
-                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
-								 <?php } ?>	                  
+										</td>                     
 								</tr> <?php } } else { ?>
 								  <tr>                                             
 								 <td></td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2697,7 +2662,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2709,7 +2674,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2721,7 +2686,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2733,7 +2698,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2804,10 +2769,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                               
                                  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b7b_nameof_supplier[$i])) { echo $b7b_nameof_supplier[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2817,10 +2782,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b7b_invoice_number[$i])) { echo $b7b_invoice_number[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->integrated_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2830,10 +2795,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b7b_invoice_date[$i])) { echo $b7b_invoice_date[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2843,10 +2808,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b7b_description[$i])) { echo $b7b_description[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2856,10 +2821,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b7b_quantity[$i])) { echo $b7b_quantity[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2868,10 +2833,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b7b_uqc[$i])) { echo $b7b_uqc[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2880,10 +2845,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b7b_value[$i])) { echo $b7b_value[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2892,10 +2857,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b7b_eligible_duties[$i])) { echo $b7b_eligible_duties[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2903,10 +2868,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b7b_vat[$i])) { echo $b7b_vat[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2915,10 +2880,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($b7b_dateonwhich_receipients[$i])) { echo $b7b_dateonwhich_receipients[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -2926,24 +2891,20 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
-                                    <?php if($i==0){
-									 ?>
-                                    <td>
+                                   <td>
 									 <a class="addMoreInvoice add-table7b"  href="javascript:void(0)">
 									<div class="tooltip2">
 										<i class="fa fa-plus-circle addicon"></i>
 										<span class="tooltiptext">Add More</span>
 									</div>
 								</a>
-								 </td><?php } else { ?>
-                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
-								 <?php } ?>	                    
+										</td>                      
 								</tr><?php } } else { ?>
 								 <tr>
                               
                                  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2956,7 +2917,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->integrated_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2969,7 +2930,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2982,7 +2943,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
@@ -2995,7 +2956,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3007,7 +2968,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3019,7 +2980,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3031,7 +2992,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3042,7 +3003,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3054,7 +3015,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3126,10 +3087,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								  
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c7c1_description[$i])) { echo $c7c1_description[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3138,10 +3099,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c7c1_unit[$i])) { echo $c7c1_unit[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3151,10 +3112,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c7c1_qty[$i])) { echo $c7c1_qty[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3163,10 +3124,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c7c1_value[$i])) { echo $c7c1_value[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3175,10 +3136,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c7c1_vat[$i])) { echo $c7c1_vat[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3187,10 +3148,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c7c1_totalinput_taxcredit[$i])) { echo $c7c1_totalinput_taxcredit[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3199,10 +3160,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c7c1_totalinput_taxcredit_exempt[$i])) { echo $c7c1_totalinput_taxcredit_exempt[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3211,10 +3172,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c7c1_totalinput_taxcredit_admissible[$i])) { echo $c7c1_totalinput_taxcredit_admissible[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3222,8 +3183,6 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
-                                    <?php if($i==0){
-									 ?>
                                     <td>
 									 <a class="addMoreInvoice add-table7c1"  href="javascript:void(0)">
 									<div class="tooltip2">
@@ -3231,15 +3190,13 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 										<span class="tooltiptext">Add More</span>
 									</div>
 								</a>
-								 </td><?php } else { ?>
-                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
-								 <?php } ?>	                 
+										</td>                     
 								</tr><?php } } else { ?>
 								<tr>                              
 								  
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3251,7 +3208,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3264,7 +3221,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3276,7 +3233,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3288,7 +3245,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3300,7 +3257,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3312,7 +3269,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3324,7 +3281,7 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3369,10 +3326,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                           <tr>                      				  
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c7c2_description[$i])) { echo $c7c2_description[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3382,10 +3339,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c7c2_unit[$i])) { echo $c7c2_unit[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3395,10 +3352,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c7c2_qty[$i])) { echo $c7c2_qty[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3407,10 +3364,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c7c2_value[$i])) { echo $c7c2_value[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3419,10 +3376,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c7c2_vat[$i])) { echo $c7c2_vat[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3431,10 +3388,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c7c2_totalinput_taxcredit[$i])) { echo $c7c2_totalinput_taxcredit[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3443,10 +3400,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c7c2_totalinput_taxcredit_exempt[$i])) { echo $c7c2_totalinput_taxcredit_exempt[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3455,10 +3412,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($c7c2_totalinput_taxcredit_admissible[$i])) { echo $c7c2_totalinput_taxcredit_admissible[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3466,23 +3423,19 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
-                                   <?php if($i==0){
-									 ?>
-                                    <td>
+                                  <td>
 									 <a class="addMoreInvoice add-table7c2"  href="javascript:void(0)">
 									<div class="tooltip2">
 										<i class="fa fa-plus-circle addicon"></i>
 										<span class="tooltiptext">Add More</span>
 									</div>
 								</a>
-								 </td><?php } else { ?>
-                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
-								 <?php } ?>	                  
+										</td>                     
 								</tr><?php } } else { ?>
 								<tr>                      				  
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3495,7 +3448,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3508,7 +3461,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3520,7 +3473,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3532,7 +3485,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3544,7 +3497,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3556,7 +3509,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3568,7 +3521,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3632,10 +3585,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                 							 
 								   <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($d7d_description[$i])) { echo $d7d_description[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3644,10 +3597,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($d7d_unit[$i])) { echo $d7d_unit[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3656,10 +3609,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($d7d_qty[$i])) { echo $d7d_qty[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3668,10 +3621,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($d7d_value[$i])) { echo $d7d_value[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3680,10 +3633,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($d7d_vatentry_taxpad[$i])) { echo $d7d_vatentry_taxpad[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3691,24 +3644,20 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
-                                       <?php if($i==0){
-									 ?>
-                                    <td>
+                                      <td>
 									 <a class="addMoreInvoice add-table7d"  href="javascript:void(0)">
 									<div class="tooltip2">
 										<i class="fa fa-plus-circle addicon"></i>
 										<span class="tooltiptext">Add More</span>
 									</div>
 								</a>
-								 </td><?php } else { ?>
-                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
-								 <?php } ?>	             
+										</td>                 
 								</tr><?php } } else { ?>
 								 <tr>    
                                 							 
 								   <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3720,7 +3669,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3732,7 +3681,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3744,7 +3693,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3756,7 +3705,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3827,10 +3776,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a8registration_no[$i])) { echo $a8registration_no[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3840,10 +3789,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a8taxperiod_lastreturn[$i])) { echo $a8taxperiod_lastreturn[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3853,10 +3802,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a8dateoffilling_return[$i])) { echo $a8dateoffilling_return[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3865,10 +3814,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a8balanceeligible_cenvat_credit[$i])) { echo $a8balanceeligible_cenvat_credit[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3877,10 +3826,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a8gstnof_receiver[$i])) { echo $a8gstnof_receiver[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3889,10 +3838,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a8distributionno[$i])) { echo $a8distributionno[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3901,10 +3850,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a8distributiondate[$i])) { echo $a8distributiondate[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -3913,18 +3862,16 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a8itcofcentral[$i])) { echo $a8itcofcentral[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
 								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a8itcofcentral[$i])) { echo $a8itcofcentral[$i]; } else { echo ''; } ?>" name="8itcofcentral[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
-                                     <?php if($i==0){
-									 ?>
                                     <td>
 									 <a class="addMoreInvoice add-table8"  href="javascript:void(0)">
 									<div class="tooltip2">
@@ -3932,16 +3879,14 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 										<span class="tooltiptext">Add More</span>
 									</div>
 								</a>
-								 </td><?php } else { ?>
-                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
-								 <?php } ?>	                
+										</td>                   
 								</tr><?php } } else { ?>
 								<tr>
                                      <td></td>                     
 								 
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3954,7 +3899,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3967,7 +3912,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3979,7 +3924,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -3991,7 +3936,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4003,7 +3948,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4015,7 +3960,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4027,7 +3972,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4096,10 +4041,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								  
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a9a1challan_no[$i])) { echo $a9a1challan_no[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -4109,10 +4054,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a9a1challan_date[$i])) { echo $a9a1challan_date[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -4122,10 +4067,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a9a1typeof_goods[$i])) { echo $a9a1typeof_goods[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -4133,10 +4078,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a9a1_hsn[$i])) { echo $a9a1_hsn[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -4144,10 +4089,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a9a1_description[$i])) { echo $a9a1_description[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -4156,10 +4101,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a9a1_unit[$i])) { echo $a9a1_unit[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -4168,10 +4113,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a9a1_quantity[$i])) { echo $a9a1_quantity[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -4179,10 +4124,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a9a1_value[$i])) { echo $a9a1_value[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -4190,18 +4135,14 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
-                                   <?php if($i==0){
-									 ?>
-                                    <td>
+                                   <td>
 									 <a class="addMoreInvoice add-table9a"  href="javascript:void(0)">
 									<div class="tooltip2">
 										<i class="fa fa-plus-circle addicon"></i>
 										<span class="tooltiptext">Add More</span>
 									</div>
 								</a>
-								 </td><?php } else { ?>
-                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
-								 <?php } ?>	                     
+										</td>                       
 								</tr><?php } } else { ?>
 								 <tr>
                               
@@ -4209,7 +4150,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								  
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4222,7 +4163,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4235,7 +4176,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4246,7 +4187,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4257,7 +4198,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4269,7 +4210,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4281,7 +4222,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4292,7 +4233,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4359,122 +4300,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <td></td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($b9b1challan_no[$i])) { echo $b9b1challan_no[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1challan_no[$i])) { echo $b9b1challan_no[$i]; } else { echo ''; } ?>" name="9b1challan_no[]"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>
-								  <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($b9b1challan_date[$i])) { echo $b9b1challan_date[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1challan_date[$i])) { echo $b9b1challan_date[$i]; } else { echo ''; } ?>" name="9b1challan_date[]"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>
-								  <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($b9b1typeof_goods[$i])) { echo $b9b1typeof_goods[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1typeof_goods[$i])) { echo $b9b1typeof_goods[$i]; } else { echo ''; } ?>" name="9b1typeof_goods[]"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($b9b1_hsn[$i])) { echo $b9b1_hsn[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_hsn[$i])) { echo $b9b1_hsn[$i]; } else { echo ''; } ?>" name="9b1_hsn[]"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($b9b1_description[$i])) { echo $b9b1_description[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_description[$i])) { echo $b9b1_description[$i]; } else { echo ''; } ?>" name="9b1_description[]"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($b9b1_unit[$i])) { echo $b9b1_unit[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_unit[$i])) { echo $b9b1_unit[$i]; } else { echo ''; } ?>" name="9b1_unit[]"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($b9b1_quantity[$i])) { echo $b9b1_quantity[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_quantity[$i])) { echo $b9b1_quantity[$i]; } else { echo ''; } ?>" name="9b1_quantity[]"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($b9b1_value[$i])) { echo $b9b1_value[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_value[$i])) { echo $b9b1_value[$i]; } else { echo ''; } ?>" name="9b1_value[]"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>
-                                  <?php if($i==0){
-									 ?>
-                                    <td>
-									 <a class="addMoreInvoice add-table9b"  href="javascript:void(0)">
-									<div class="tooltip2">
-										<i class="fa fa-plus-circle addicon"></i>
-										<span class="tooltiptext">Add More</span>
-									</div>
-								</a>
-								 </td><?php } else { ?>
-                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
-								 <?php } ?>	                      
-								</tr><?php } } else { ?>
-								 <tr>
-                                                             
-								 <td></td>
-								  <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4487,7 +4313,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4500,7 +4326,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4512,7 +4338,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4524,7 +4350,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4536,7 +4362,19 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_unit[$i])) { echo $b9b1_unit[$i]; } else { echo ''; } ?>" name="9b1_unit[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> <td>
+								 <?php
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4548,7 +4386,106 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_value[$i])) { echo $b9b1_value[$i]; } else { echo ''; } ?>" name="9b1_value[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                  <td>
+									 <a class="addMoreInvoice add-table9b"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+										</td>                        
+								</tr><?php } } else { ?>
+								 <tr>
+                                                             
+								 <td></td>
+								  <td>
+								 <?php
+								 if($returndata[0]->totalinvoice > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->central_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1challan_no[$i])) { echo $b9b1challan_no[$i]; } else { echo ''; } ?>" name="9b1challan_no[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								  <td>
+								 <?php
+								 if($returndata[0]->totalinvoice > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1challan_date[$i])) { echo $b9b1challan_date[$i]; } else { echo ''; } ?>" name="9b1challan_date[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								  <td>
+								 <?php
+								 if($returndata[0]->totalinvoice > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1typeof_goods[$i])) { echo $b9b1typeof_goods[$i]; } else { echo ''; } ?>" name="9b1typeof_goods[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> <td>
+								 <?php
+								 if($returndata[0]->totalinvoice > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_hsn[$i])) { echo $b9b1_hsn[$i]; } else { echo ''; } ?>" name="9b1_hsn[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> <td>
+								 <?php
+								 if($returndata[0]->totalinvoice > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_description[$i])) { echo $b9b1_description[$i]; } else { echo ''; } ?>" name="9b1_description[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> <td>
+								 <?php
+								 if($returndata[0]->totalinvoice > 0)
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_quantity[$i])) { echo $b9b1_quantity[$i]; } else { echo ''; } ?>" name="9b1_quantity[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> <td>
+								 <?php
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4560,7 +4497,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4603,123 +4540,14 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                 </thead>
                                 
                                 <tbody>
-								<?php
-								if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
-								{
-								$a10a_gstn=(explode(",",$a10a_gstn));
-								$a10a_description=(explode(",",$a10a_description));
-								$a10a_unit=(explode(",",$a10a_unit));
-								$a10a_quantity=(explode(",",$a10a_quantity));
-								$a10a_value=(explode(",",$a10a_value));
-								$a10a_inputtax=(explode(",",$a10a_inputtax));
-		
-			
-								   
-						
-							  for($i=0;$i < sizeof($a10a_gstn); $i++) {
-								 
-                           ?>
-			
-		
 								 
                                 <tr>                     
-                           
+                                
 								 
 								<td></td>
 								   <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($a10a_gstn[$i])) { echo $a10a_gstn[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a10a_gstn[$i])) { echo $a10a_gstn[$i]; } else { echo ''; }?>" name="10a_gstn[]" 
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($a10a_description[$i])) { echo $a10a_description[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a10a_description[$i])) { echo $a10a_description[$i]; } else { echo ''; } ?>" name="10a_description[]"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($a10a_unit[$i])) { echo $a10a_unit[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a10a_unit[$i])) { echo $a10a_unit[$i]; } else { echo ''; } ?>" name="10a_unit[]"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($a10a_quantity[$i])) { echo $a10a_quantity[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10a_quantity[]" value="<?php if(isset($a10a_quantity[$i])) { echo $a10a_quantity[$i]; } else { echo ''; } ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($a5_registration_no[$i])) { echo $a5_registration_no[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10a_value[]" value="<?php if(isset($a10a_value[$i])) { echo $a10a_value[$i]; } else { echo ''; } ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($a10a_inputtax[$i])) { echo $a10a_inputtax[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10a_inputtax[]" value="<?php if(isset($a10a_inputtax[$i])) { echo $a10a_inputtax[$i]; } else { echo ''; } ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>
-								 <?php if($i==0){
-									 ?>
-                                    <td>
-									 <a class="addMoreInvoice add-table10a"  href="javascript:void(0)">
-									<div class="tooltip2">
-										<i class="fa fa-plus-circle addicon"></i>
-										<span class="tooltiptext">Add More</span>
-									</div>
-								</a>
-								 </td><?php } else { ?>
-                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
-								 <?php } ?>	
-                                                      
-								</tr> <?php } } else { ?>
-								 <tr>                     
-                           
-								 
-								<td></td>
-								   <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4731,7 +4559,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4743,7 +4571,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4755,7 +4583,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4767,7 +4595,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4779,7 +4607,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4799,8 +4627,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								</a>
 										</td>  </td>
                                                       
-                                </tr>	   
-								<?php } ?>								
+                                </tr>	                    
                                 </tbody>
                             </table>
                           </div>
@@ -4822,21 +4649,6 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                 </thead>
                                 
                                 <tbody>
-								<?php
-								if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
-								{
-								$b10b_gstn=(explode(",",$b10b_gstn));
-								$b10b_description=(explode(",",$b10b_description));
-								$b10b_unit=(explode(",",$b10b_unit));
-								$b10b_quantity=(explode(",",$b10b_quantity));
-								$b10b_value=(explode(",",$b10b_value));
-								$b10b_inputtax=(explode(",",$b10b_inputtax));
-									
-														   
-						
-							  for($i=0;$i < sizeof($b10b_gstn); $i++) {
-								 
-                           ?>
 								 
                                 <tr>                     
                                 
@@ -4845,98 +4657,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <td></td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($b10b_gstn[$i])) { echo $b10b_gstn[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10b_gstn[]" value="<?php  if(isset($b10b_gstn[$i])) { echo $b10b_gstn[$i]; } else { echo ''; } ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($b10b_description[$i])) { echo $b10b_description[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b10b_description[$i])) { echo $b10b_description[$i]; } else { echo ''; } ?>" name="10b_description[]"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($b10b_unit[$i])) { echo $b10b_unit[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b10b_unit[$i])) { echo $b10b_unit[$i]; } else { echo ''; } ?>" name="10b_unit[]"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($b10b_quantity[$i])) { echo $b10b_quantity[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b10b_quantity[$i])) { echo $b10b_quantity[$i]; } else { echo ''; } ?>" name="10b_quantity[]"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($b10b_value[$i])) { echo $b10b_value[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b10b_value[$i])) { echo $b10b_value[$i]; } else { echo ''; } ?>" name="10b_value[]"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td> <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
-								 {
-									 ?>
-									 <label><?php if(isset($b10b_inputtax[$i])) { echo $b10b_inputtax[$i]; } else { echo ''; } ?><span class="starred"></span></label>
-								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10b_inputtax[]" value="<?php if(isset($b10b_inputtax[$i])) { echo $b10b_inputtax[$i]; } else { echo ''; } ?>"
- class="form-control"  placeholder="" /> 
-								 <?php } ?>
-                                 </td>
-                                      <?php if($i==0){
-									 ?>
-                                    <td>
-									 <a class="addMoreInvoice add-table10b"  href="javascript:void(0)">
-									<div class="tooltip2">
-										<i class="fa fa-plus-circle addicon"></i>
-										<span class="tooltiptext">Add More</span>
-									</div>
-								</a>
-								 </td><?php } else { ?>
-                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
-								 <?php } ?>	                 
-								</tr><?php } } else { ?>
-								 <tr>                     
-                                
-								 
-								
-								 <td></td>
-								  <td>
-								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4948,7 +4669,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4960,7 +4681,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4972,7 +4693,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4984,7 +4705,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -4996,7 +4717,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -5015,8 +4736,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 									</div>
 								</a>
 										</td>                    
-                                </tr>
-								<?php } ?>			                    
+                                </tr>			                    
                                 </tbody>
                             </table>
                           </div>
@@ -5057,10 +4777,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a11aregistration_no[$i])) { echo $a11aregistration_no[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -5070,10 +4790,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a11aservicetax_no[$i])) { echo $a11aservicetax_no[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -5082,21 +4802,21 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a11ainvoice_documentno[$i])) { echo $a11ainvoice_documentno[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a11ainvoice_documentno[$i])) { echo $a11ainvoice_documentno[$i]; } else { echo ''; } ?>" name="11ainvoice_documentno[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a11ainvoice_documentno[$i])) { echo $a11ainvoice_documentno[$i]; } else { echo ''; } ?>" name="11ainvoice_document_no[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a11ainvoice_document_date[$i])) { echo $a11ainvoice_document_date[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -5105,22 +4825,22 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a11atax_paid[$i])) { echo $a11atax_paid[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a11atax_paid[$i])) { echo $a11atax_paid[$i]; } else { echo ''; } ?>" name="11atax_paid[]"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a11atax_paid[$i])) { echo $a11atax_paid[$i]; } else { echo ''; } ?>" name="11tax_paid[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a11avatpaid_sgst[$i])) { echo $a11avatpaid_sgst[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -5128,18 +4848,14 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
-                                  <?php if($i==0){
-									 ?>
-                                    <td>
+                                 <td>
 									 <a class="addMoreInvoice add-table11a"  href="javascript:void(0)">
 									<div class="tooltip2">
 										<i class="fa fa-plus-circle addicon"></i>
 										<span class="tooltiptext">Add More</span>
 									</div>
 								</a>
-								 </td><?php } else { ?>
-                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
-								 <?php } ?>	                      
+										</td>                      
 								</tr><?php } } else { ?>
 								<tr>  <td></td>                   
                                 
@@ -5147,7 +4863,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
@@ -5160,7 +4876,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -5172,18 +4888,18 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="11ainvoice_documentno[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="11ainvoice_document_no[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -5195,19 +4911,19 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="11atax_paid[]"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="11tax_paid[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -5273,10 +4989,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                 <td></td>
 								 <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a12a_document_no[$i])) { echo $a12a_document_no[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -5286,10 +5002,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td><td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a12a_document_date[$i])) { echo $a12a_document_date[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -5300,10 +5016,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a12a_gstinno_receipient[$i])) { echo $a12a_gstinno_receipient[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -5312,10 +5028,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a12a_name_receipient[$i])) { echo $a12a_name_receipient[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -5324,22 +5040,22 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a12a_hsn[$i])) { echo $a12a_hsn[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a12a_hsn[$i])) { echo $a12a_hsn[$i]; } else { echo ''; } ?>" name="12a_hsn[]"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a12a_hsn[$i])) { echo $a12a_hsn[$i]; } else { echo ''; } ?>" name="12ahsn[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a12a_description[$i])) { echo $a12a_description[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -5348,22 +5064,22 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a12a_unit[$i])) { echo $a12a_unit[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a12a_unit[$i])) { echo $a12a_unit[$i]; } else { echo ''; } ?>" name="12a_unit[]"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a12a_unit[$i])) { echo $a12a_unit[$i]; } else { echo ''; } ?>" name="12_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a12a_quantity[$i])) { echo $a12a_quantity[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
@@ -5372,35 +5088,31 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
-									 <label><?php if(isset($a12a_value[$i])) { echo $a12a_value[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a12a_value[$i])) { echo $a12a_value[$i]; } else { echo ''; } ?>" name="12a_value[]"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a12a_document_no[$i])) { echo $a12a_document_no[$i]; } else { echo ''; } ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
-                                 <?php if($i==0){
-									 ?>
-                                    <td>
+                                 <td>
 									 <a class="addMoreInvoice add-table12a"  href="javascript:void(0)">
 									<div class="tooltip2">
 										<i class="fa fa-plus-circle addicon"></i>
 										<span class="tooltiptext">Add More</span>
 									</div>
 								</a>
-								 </td><?php } else { ?>
-                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
-								 <?php } ?>	                  
+										</td>                      
 								</tr><?php } } else { ?>
 								 <tr>                     
                                 <td></td>
 								 <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
@@ -5412,7 +5124,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td><td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
@@ -5426,7 +5138,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->state_tax_value_supplya; ?><span class="starred"></span></label>
@@ -5438,7 +5150,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                  </td>
 								  <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -5450,7 +5162,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -5462,7 +5174,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -5474,7 +5186,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -5486,7 +5198,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -5498,7 +5210,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } ?>
                                  </td> <td>
 								 <?php
-								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 if($returndata[0]->totalinvoice > 0)
 								 {
 									 ?>
 									 <label><?php echo $returndata[0]->cess_tax_value_supplya; ?><span class="starred"></span></label>
@@ -5527,7 +5239,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                          <div class="tableresponsive">
                            
 							<?php
-							 if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+							if($returndata[0]->totalinvoice > 0)
 							{
 								if($returndata[0]->final_submit == 0)
 							{
@@ -5546,16 +5258,6 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 							else
 							{
 								?>
-								<div>
-								<?php if($returndata[0]->terms_condition==1) {
-									?>
-								<input type="checkbox" class='form' value="1" checked name="accept" />
-								<?php } else { ?>
-								<input type="checkbox" class='form' value="1"  name="accept" />
-								<?php } ?>
-								
-								I here by solemnly affirm and declare that the information given herein above is true and correct to the best of my knowledge and belief and nothing has been concealed thereform
-								</div>
 								  <div class="adminformbxsubmit" style="width:100%;"> 
                             <div class="tc">
                                 <input type='submit' class="btn btn-success" name='submit' value='submit' id='submit'>
@@ -5916,7 +5618,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
        
 			
 		    
-            var markup = "<tr><td></td><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='11aregistration_no[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='11aservicetax_no[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='11ainvoice_documentno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='11ainvoice_document_date[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='11atax_paid[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='11avatpaid_sgst[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+            var markup = "<tr><td></td><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='11aregistration_no[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='11aservicetax_no[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='11ainvoice_document_no[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='11ainvoice_document_date[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='11atax_paid[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='11avatpaid_sgst[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table11a').append(markup);
         });

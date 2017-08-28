@@ -101,8 +101,9 @@ $response = $obj_api->returnSummary($returnmonth);
             document.form2.submit();            
         });
 
-        $('.gstr1ViewDeleteBtn').on('click', function () {
-            $("#loading").show();
+        $('body #mainTable1').delegate('.gstr1ViewDeleteBtn','click', function () {
+            alert('delete');
+            //$("#loading").show();
             var type = $(this).attr('type');
             var returnmonth = "<?php echo $returnmonth;?>";
             delete_item_invoice(type,returnmonth);          
@@ -136,7 +137,7 @@ $response = $obj_api->returnSummary($returnmonth);
                 data: {type:type,returnmonth:returnmonth,deleteType:'all'},
                 success: function (response) {
                     $("#loading").hide();
-                  location.reload();
+                  //location.reload();
                 },
                 error: function() {
                 }

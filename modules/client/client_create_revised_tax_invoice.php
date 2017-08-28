@@ -11,7 +11,7 @@
 	if(!$obj_client->can_create('client_invoice')) {
 		
 		$obj_client->setError($obj_client->getValMsg('can_create'));
-		$obj_client->redirect(PROJECT_URL."/?page=client_invoice_list");
+		$obj_client->redirect(PROJECT_URL."/?page=client_revised_tax_invoice_list");
 		exit();
 	}
 	

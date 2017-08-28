@@ -1,13 +1,4 @@
-<style>
-table {
-    border-collapse: collapse;
-}
 
-table, td, th {
-    /* border: 1px solid black; */
-    padding: 10px;
-}
-</style>
 <?php
 
 $db_obj = new validation();
@@ -119,16 +110,16 @@ if((isset($_GET["id"])) && (!empty($_GET["id"])))
         if(!empty($rResult))
         {
         ?>
-        <table style="width:80% ">
+        <table style="width:100% " class="invoice-itemtable dataTable no-footer">
 
 
     <tr>
-        <td>Title</td>
-        <td><?php echo $rResult[0]->notification_name ?></td>
+        <td style="font-size:14px;"><strong>Title</strong></td>
+        <td style="font-size:14px;"><?php echo $rResult[0]->notification_name ?></td>
     </tr>
      <tr>
-        <td>Message</td>
-        <td><?php echo html_entity_decode($rResult[0]->notification_message); ?></td>
+        <td style="font-size:14px;"><strong>Message</strong></td><br>
+        <td style="font-size:14px;"><?php echo html_entity_decode($rResult[0]->notification_message); ?></td>
     </tr> 
    
 </table>

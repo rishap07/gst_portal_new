@@ -65,6 +65,12 @@ $dataCurrentUserArr = $obj_user->getUserDetailsById( $obj_user->sanitize($_SESSI
 						<input type="text" name="isd_number" class="form-control" id="isd_number" placeholder="Enter ISD Number" data-bind="content" value="<?php if(isset($_POST['isd_number'])) { echo $_POST['isd_number']; } else if(isset($dataCurrentUserArr['data']->kyc->isd_number)) { echo $dataCurrentUserArr['data']->kyc->isd_number; } ?>" />
 					</div>
 					<div class="clear"></div>
+					
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>GSTIN Username <span class="starred">*</span></label>
+						<input type="text" name="gstin_username" class="form-control required" id="gstin_username" placeholder="Enter GSTIN Username" data-bind="content" value="<?php if(isset($_POST['gstin_username'])) { echo $_POST['gstin_username']; } else if(isset($dataCurrentUserArr['data']->kyc->gstin_username)) { echo $dataCurrentUserArr['data']->kyc->gstin_username; } ?>" />
+					</div>
+					<div class="clear"></div>
 
                     <div class="adminformbxsubmit" style="width:100%;">
                         <div class="tc">

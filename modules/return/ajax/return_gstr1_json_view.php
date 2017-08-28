@@ -10,15 +10,18 @@ $jstr1_array = array();
 $getSummary= isset($_POST['json'])?$_POST['json']:'';
 $type= isset($_POST['type'])?$_POST['type']:'';
 $returnmonth= isset($_POST['returnmonth'])?$_POST['returnmonth']:'';
+$jstr= isset($_POST['jstr'])?$_POST['jstr']:'';
+$response_b2b = isset($_POST['response_b2b'])?$_POST['response_b2b']:'';
+$response_cdn = isset($_POST['response_cdn'])?$_POST['response_cdn']:'';
 
 $jstr1_array = json_decode($getSummary,true);
 $response = '';
 
 //echo $getSummary;
-//echo '<pre>'; print_r($_POST);
+//echo '<pre>'; print_r($jstr1_array);
 if(!empty($jstr1_array)) {
 
-    if($type == 'B2B') {         
+    if($type == 'B2B' && empty($jstr)) {         
         if(isset($jstr1_array['b2b'])) {
             $response .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
             <thead>
@@ -254,7 +257,9 @@ if(!empty($jstr1_array)) {
             <tr>
                 <th>Num</th>
                 <th style="text-align:center">Inum</th> 
+                <th style="text-align:center">Ctin </th>
                 <th style="text-align:center">Item </th>
+                
                 <th style="text-align:center">Nt num</th>    
                 <th style="text-align:center">Nt date</th>
                 <th style="text-align:center">Pgst</th>
@@ -301,6 +306,7 @@ if(!empty($jstr1_array)) {
                                 $response .='<tr>
                                     <td align="right">'.$num.'</td>
                                     <td align="center">'.$inum.'</td>
+                                    <td align="right">'.$ctin.'</td>
                                     <td align="center">'.$i++.'</td>
                                     <td align="center">'.$nt_num.'</td>
                                     <td align="center">'.$nt_dt.'</td>
@@ -549,6 +555,166 @@ if(!empty($jstr1_array)) {
                 </thead>
             </table>';
     }
+
+}
+elseif(empty($jstr1_array) && !empty($jstr) &&  $jstr == 'gstr2b') {
+
+    $jstrb2b_array = json_decode($response_b2b,true);
+    $jstrcdn_array = json_decode($response_cdn,true);
+
+    if(isset($jstrb2b_array['b2b'])) {
+        $response .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
+        <thead>
+        <tr>
+            <th>Number</th>
+            <th style="text-align:center">Invoice number</th> 
+            <th style="text-align:center">Ctin</th> 
+            <th style="text-align:center">Pos </th> 
+            <th style="text-align:center">Item </th>
+            <th style="text-align:center">Invoice type</th>    
+            <th style="text-align:center">Invoice date</th>
+            <th style="text-align:center">Value ( <i class="fa fa-inr"></i> )</th>
+            <th style="text-align:center">Csamt ( <i class="fa fa-inr"></i> )</th>
+            <th style="text-align:center">Rate</th>
+            <th style="text-align:center">Tax value ( <i class="fa fa-inr"></i> )</th>
+            <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th>                
+            <th style="text-align:center">Updby </th>
+            <th style="text-align:center">Rchrg</th>            
+        </tr>';
+
+        foreach ($jstrb2b_array['b2b'] as $key1 => $inv_value) {
+            if(isset($inv_value['inv'])) {
+                $ctin = isset($inv_value['ctin'])?$inv_value['ctin']:'';
+                foreach ($inv_value['inv'] as $key2 => $jstr1_value) {
+                    $val = isset($jstr1_value['val'])?$jstr1_value['val']:0;
+                    $itms = isset($jstr1_value['itms'])?$jstr1_value['itms']:array();
+                    $inv_typ = isset($jstr1_value['inv_typ'])?$jstr1_value['inv_typ']:'';
+                    $pos = isset($jstr1_value['pos'])?$jstr1_value['pos']:0;
+                    $updby = isset($jstr1_value['updby'])?$jstr1_value['updby']:'';
+                    $idt = isset($jstr1_value['idt'])?$jstr1_value['idt']:'';
+                    $rchrg = isset($jstr1_value['rchrg'])?$jstr1_value['rchrg']:'';
+                    $inum = isset($jstr1_value['inum'])?$jstr1_value['inum']:'';
+
+                    if(!empty($itms)) {
+                        $i=1;
+                        foreach ($itms as $key3 => $value) {
+                            $num = isset($value['num'])?$value['num']:0;
+                            $csamt = isset($value['itm_det']['csamt'])?$value['itm_det']['csamt']:0;
+                            $rt = isset($value['itm_det']['rt'])?$value['itm_det']['rt']:0;
+                            $txval = isset($value['itm_det']['txval'])?$value['itm_det']['txval']:0;
+                            $iamt = isset($value['itm_det']['iamt'])?$value['itm_det']['iamt']:0;
+
+                            $response .='<tr>
+                                <td align="right">'.$num.'</td>
+                                <td align="center">'.$inum.'</td>
+                                <td align="center">'.$ctin.'</td>
+                                <td align="center">'.$pos.'</td>
+                                <td align="center">'.$i++.'</td>
+                                <td align="center">'.$inv_typ.'</td>
+                                <td align="center">'.$idt.'</td>
+                                <td align="center">'.$val.'</td>
+                                <td align="center">'.$csamt.'</td>
+                                <td align="center">'.$rt.'</td>
+                                <td align="center">'.$txval.'</td>
+                                <td align="center">'.$iamt.'</td>
+                                <td align="center">'.$updby.'</td>
+                                <td align="center">'.$rchrg.'</td>
+                                
+                            </tr>';
+                        }
+                    }
+                }
+            }
+        }
+
+        $response .= '
+            </thead>
+        </table>';
+    }
+    if(!empty($jstrcdn_array)) {
+        $response .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
+            <thead>
+            <tr>
+                <th>Num</th>
+                <th style="text-align:center">Inum</th> 
+                <th style="text-align:center">Ctin </th>
+                <th style="text-align:center">Item </th>
+                
+                <th style="text-align:center">Nt num</th>    
+                <th style="text-align:center">Nt date</th>
+                <th style="text-align:center">Pgst</th>
+                <th style="text-align:center">Idt</th>
+                <th style="text-align:center">Val ( <i class="fa fa-inr"></i> )</th>
+                <th style="text-align:center">Csamt ( <i class="fa fa-inr"></i> )</th>
+                <th style="text-align:center">Rate</th>
+                <th style="text-align:center">Txval ( <i class="fa fa-inr"></i> )</th>
+                <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th>  
+                <th style="text-align:center">Rsn </th>              
+                <th style="text-align:center">Updby </th>
+                <th style="text-align:center">Ntty</th>
+                
+            </tr>';
+            foreach ($jstrcdn_array['cdn'] as $key1 => $inv_value) {
+                $cfs = isset($inv_value['cfs'])?$inv_value['cfs']:'';
+                $nt = isset($inv_value['nt'])?$inv_value['nt']:array();
+                $ctin = isset($inv_value['ctin'])?$inv_value['ctin']:'';
+                if(isset($nt) && !empty($nt)) {
+                    foreach ($nt as $key2 => $jstr1_value) {
+                       
+                        $val = isset($jstr1_value['val'])?$jstr1_value['val']:0;
+                        $itms = isset($jstr1_value['itms'])?$jstr1_value['itms']:array();
+                        $updby = isset($jstr1_value['updby'])?$jstr1_value['updby']:'';
+                        $nt_num = isset($jstr1_value['nt_num'])?$jstr1_value['nt_num']:'';
+                        $inum = isset($jstr1_value['inum'])?$jstr1_value['inum']:'';
+                        $rsn = isset($jstr1_value['rsn'])?$jstr1_value['rsn']:0;
+                        
+                        $idt = isset($jstr1_value['idt'])?$jstr1_value['idt']:'';
+                        $nt_dt = isset($jstr1_value['nt_dt'])?$jstr1_value['nt_dt']:'';
+                        $p_gst = isset($jstr1_value['p_gst'])?$jstr1_value['p_gst']:'';
+                        $ntty = isset($jstr1_value['ntty'])?$jstr1_value['ntty']:'';
+
+
+                        if(!empty($itms)) {
+                            $i=1;
+                            foreach ($itms as $key3 => $value) {
+                                $num = isset($value['num'])?$value['num']:0;
+                                $csamt = isset($value['itm_det']['csamt'])?$value['itm_det']['csamt']:0;
+                                $rt = isset($value['itm_det']['rt'])?$value['itm_det']['rt']:0;
+                                $txval = isset($value['itm_det']['txval'])?$value['itm_det']['txval']:0;
+                                $iamt = isset($value['itm_det']['iamt'])?$value['itm_det']['iamt']:0;
+
+                                $response .='<tr>
+                                    <td align="right">'.$num.'</td>
+                                    <td align="center">'.$inum.'</td>
+                                    <td align="right">'.$ctin.'</td>
+                                    <td align="center">'.$i++.'</td>
+                                    <td align="center">'.$nt_num.'</td>
+                                    <td align="center">'.$nt_dt.'</td>
+                                    <td align="center">'.$p_gst.'</td>
+                                    <td align="center">'.$idt.'</td>
+                                    <td align="center">'.$val.'</td>
+                                    <td align="center">'.$csamt.'</td>
+                                    <td align="center">'.$rt.'</td>
+                                    <td align="center">'.$txval.'</td>
+                                    <td align="center">'.$iamt.'</td>
+                                    <td align="center">'.$rsn.'</td>
+                                    <td align="center">'.$updby.'</td>
+                                    <td align="center">'.$ntty.'</td>
+                                </tr>';
+                            }
+                        }
+
+
+                    }
+                }
+            }
+            $response .= '
+                </thead>
+            </table>';
+    }
+    else {
+        echo 'No Record found';
+    }
 }
 else {
     echo 'No Record found';
@@ -613,7 +779,7 @@ echo $response;
                 type: "post",
                 data: {type:type,returnmonth:returnmonth,arrValues: arrValues},
                 success: function (response) {
-                   location.reload();
+                   //location.reload();
                 },
                 error: function() {
                 }
