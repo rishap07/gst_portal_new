@@ -293,12 +293,12 @@ final class gstr1 extends validation {
         /***** End Code For CDNUR Payload ********** */
 
         /***** Start Code For HSN Summary Payload ********** */
-       /* $hsn_data = $this->gstHSNPayload($user_id, $returnmonth);
+        $hsn_data = $this->gstHSNPayload($user_id, $returnmonth);
         if (!empty($hsn_data)) {
             //$data_ids[] = $hsn_ids = $hsn_data['hsn_ids'];
             $hsn_arr = $hsn_data['hsn_arr'];
             $dataArr = array_merge($dataArr, $hsn_arr);
-        }*/
+        }
         /***** END Code For HSN Summary Payload ********** */
 
         /***** Start Code For AT Payload ********** */
@@ -311,12 +311,12 @@ final class gstr1 extends validation {
         /***** End Code For AT Payload ********** */
 
         /***** Start Code For NIL Payload ********** */
-       /* $nil_data = $this->getNILPayload($user_id, $returnmonth);
+        $nil_data = $this->getNILPayload($user_id, $returnmonth);
         if (!empty($nil_data)) {
             //$data_ids[] = $nil_ids = $nil_data['nil_ids'];
             $nil_arr = $nil_data['nil_arr'];
             $dataArr = array_merge($dataArr, $nil_arr);
-        }*/
+        }
         /***** End Code For NIL Payload ********** */
 
         /***** Start Code For Doc Issue Payload ********** */
@@ -347,8 +347,8 @@ final class gstr1 extends validation {
         /***** End Code For TXPD Payload ********** */
 
         
-        /*$this->pr($dataArr);       
-        die; */
+       // $this->pr($dataArr);       
+        //die; 
         
         $temp_id = '';
         $x = 0;
@@ -375,45 +375,51 @@ final class gstr1 extends validation {
         $obj_gst = new gstr();
         $user_id = $_SESSION['user_detail']['user_id'];
         $dataArr = $this->gstPayloadHeader($user_id, $returnmonth);
+        $is_username_check = $obj_gst->is_username_exists($_SESSION['user_detail']['user_id']);
+        if (!empty($is_username_check)) {
+            $is_gross_turnover_check = $obj_gst->is_gross_turnover_check($_SESSION['user_detail']['user_id']);
+            if (!empty($is_gross_turnover_check)) {
 
-        $is_gross_turnover_check = $obj_gst->is_gross_turnover_check($_SESSION['user_detail']['user_id']);
-        if (!empty($is_gross_turnover_check)) {
+                $deletePayload = $this->gstDeletePayload($user_id, $returnmonth,$type,$data,$all);
 
-            $deletePayload = $this->gstDeletePayload($user_id, $returnmonth,$type,$data,$all);
-
-            if(!empty($deletePayload)) {
-                $deletePayloadArr = $deletePayload['data_arr'];
-                $data_ids = $deletePayload['data_ids'];
-                $dataArr = array_merge($dataArr, $deletePayloadArr);
-                $response = $obj_gst->returnDeleteItems($dataArr,$returnmonth,'gstr1');
-                
-                $flag = 0;
-                //$this->pr($deletePayload);
-                if (!empty($response['error'] == 0)) {
-                    $inum = isset($data['inum'])?$data['inum']:'';
-                    $this->setSuccess("Your Invoice : ".$inum." has been deleted from GSTN.");
-                    if (!empty($data_ids)) {
-                        foreach ($data_ids as $key => $data_id) {
-                            $this->query("UPDATE ".$this->getTableName('client_invoice')." SET is_gstr1_uploaded='0' WHERE invoice_id = ".$data_id."");  
-                        }
-                    } 
-                    else {
-                        $this->setError('file not deleted from database.');
-                        return false; 
+                if(!empty($deletePayload)) {
+                    $deletePayloadArr = $deletePayload['data_arr'];
+                    $data_ids = $deletePayload['data_ids'];
+                    $dataArr = array_merge($dataArr, $deletePayloadArr);
+                    $response = $obj_gst->returnDeleteItems($dataArr,$returnmonth,'gstr1');
+                    
+                    $flag = 0;
+                    //$this->pr($deletePayload);
+                    if (!empty($response['error'] == 0)) {
+                        $inum = isset($data['inum'])?$data['inum']:'';
+                        $this->setSuccess("Your Invoice : ".$inum." has been deleted from GSTN.");
+                        //if (!empty($data_ids)) {
+                            foreach ($data_ids as $key => $data_id) {
+                                $this->query("UPDATE ".$this->getTableName('client_invoice')." SET is_gstr1_uploaded='0' WHERE invoice_id = ".$data_id."");  
+                            }
+                        /*} 
+                        else {
+                            $this->setError('file not deleted from database.');
+                            return false; 
+                        }*/
                     }
+                    else {
+                        $this->setError($response['message']);
+                        return false; 
+                    } 
+                    
                 }
                 else {
-                    $this->setError($response['message']);
+                    $this->setError('Sorry! Something went wrong.');
                     return false; 
-                } 
-                
+                }
+            } else {
+                $this->setError('Sorry! Please update your gross turnover');
+                return false;
             }
-            else {
-                $this->setError('Sorry! Something went wrong.');
-                return false; 
-            }
-        } else {
-            $this->setError('Sorry! Please update your gross turnover');
+        }
+        else {
+            $this->setError('Sorry! Please update your gstin username');
             return false;
         }
         return false;
@@ -731,8 +737,8 @@ final class gstr1 extends validation {
         }
         $response['data_ids'] = $data_ids;
         $response['data_arr'] = $dataArr;
-      /* echo $all;
-        $this->pr($response);die;*/
+       //echo $all;
+        //$this->pr($response);die;
         return $response;
     }
 

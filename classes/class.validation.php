@@ -377,7 +377,7 @@ class validation extends upload {
             $queryCDNR .=  " and a.is_gstr1_uploaded='0' ";
         }
         $queryCDNR .= " and a.status='1' and a.billing_gstin_number!='' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and (a.invoice_type='creditnote' or a.invoice_type='debitnote' or a.invoice_type='refundvoucherinvoice' ) and a.is_canceled='0' and a.is_deleted='0' group by a.reference_number order by a.supply_place ";
-        //echo $queryCDNR.'<br/>';
+       //echo $queryCDNR.'<br/>';
         return $this->get_results($queryCDNR);
     }
 

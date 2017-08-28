@@ -858,8 +858,8 @@ class common extends db {
     }
 
     public function getClientKYCDetailsById($user_id = '') {
-        
-		$query = "select ck.name, ck.email, ck.phone_number, ck.date_of_birth, ck.gstin_number, ck.pan_card_number, ck.uid_number, ck.identity_proof, ck.proof_photograph, ck.business_type, ck.business_area, ck.vendor_type, ck.address_proof, ck.registered_address, ck.city, ck.zipcode, ck.registration_type, ck.digital_certificate_status, ck.digital_certificate, ck.state_id, s.state_name, s.state_code, s.state_tin, ck.country_id, ck.added_by as kyc_added_by, ck.updated_by as kyc_updated_by, ck.gross_turnover, ck.cur_gross_turnover, ck.isd_number, c.country_code, c.country_name, CONCAT(ck.registered_address,', ',ck.city,', ',s.state_name,', ',ck.zipcode,', ',c.country_name) as full_address from " . $this->tableNames['client_kyc'] . " as ck left join " . $this->tableNames['state'] . " as s on ck.state_id = s.state_id left join " . $this->tableNames['country'] . " as c on ck.country_id = c.id where 1=1 AND ck.added_by = " . $user_id;
+
+		$query = "select ck.name, ck.email, ck.phone_number, ck.date_of_birth, ck.gstin_number, ck.pan_card_number, ck.uid_number, ck.identity_proof, ck.proof_photograph, ck.business_type, ck.business_area, ck.vendor_type, ck.address_proof, ck.registered_address, ck.city, ck.zipcode, ck.registration_type, ck.digital_certificate_status, ck.digital_certificate, ck.state_id, s.state_name, s.state_code, s.state_tin, ck.country_id, ck.added_by as kyc_added_by, ck.updated_by as kyc_updated_by, ck.gross_turnover, ck.cur_gross_turnover, ck.isd_number, ck.gstin_username, c.country_code, c.country_name, CONCAT(ck.registered_address,', ',ck.city,', ',s.state_name,', ',ck.zipcode,', ',c.country_name) as full_address from " . $this->tableNames['client_kyc'] . " as ck left join " . $this->tableNames['state'] . " as s on ck.state_id = s.state_id left join " . $this->tableNames['country'] . " as c on ck.country_id = c.id where 1=1 AND ck.added_by = " . $user_id;
 		$data = $this->get_row($query);
 		$dataArr = array();
         if (!empty($data)) {
@@ -1382,23 +1382,7 @@ class common extends db {
             return "IDC-000000000001";
         }
     }
-    /* generate special tax invoice number for client */
 
-    public function generateSTInvoiceNumber($clientId) {
-
-        $currentFinancialYear = $this->generateFinancialYear();
-        $query = "select invoice_id  from " . $this->tableNames['client_st_invoice'] . " where 1=1 AND financial_year = '" . $currentFinancialYear . "' AND added_by=" . $clientId;
-        $invoices = $this->get_results($query);
-
-        if (!empty($invoices)) {
-
-            $nextInvoice = count($invoices) + 1;
-            return "IST-" . str_pad($nextInvoice, 12, "0", STR_PAD_LEFT);
-        } else {
-            return "IST-000000000001";
-        }
-    }
-	
 	/* check purchase reference number exist */
 	public function checkPurchaseReferenceNumberExist($referenceNumber, $clientId, $purchase_invoice_id = '') {
 
@@ -1473,6 +1457,21 @@ class common extends db {
             return "PRF-" . str_pad($nextInvoice, 12, "0", STR_PAD_LEFT);
         } else {
             return "PRF-000000000001";
+        }
+    }
+	
+	public function generatePurchaseRTInvoiceNumber($clientId) {
+
+        $currentFinancialYear = $this->generateFinancialYear();
+        $query = "select purchase_invoice_id  from " . $this->tableNames['client_purchase_invoice'] . " where 1=1 AND invoice_type IN('revisedtaxinvoice','creditnote','debitnote') AND financial_year = '" . $currentFinancialYear . "' AND added_by=" . $clientId;
+        $invoices = $this->get_results($query);
+
+        if (!empty($invoices)) {
+
+            $nextInvoice = count($invoices) + 1;
+            return "PRT-" . str_pad($nextInvoice, 12, "0", STR_PAD_LEFT);
+        } else {
+            return "PRT-000000000001";
         }
     }
 

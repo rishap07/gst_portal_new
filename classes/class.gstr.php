@@ -247,7 +247,7 @@ final class gstr extends validation {
         
         $json_data = json_encode($dataArr);
 
-        echo $json_data;
+        //echo $json_data;
 
         $encodejson=base64_encode(openssl_encrypt(base64_encode($json_data),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
         $hmac = base64_encode(hash_hmac('sha256', base64_encode($json_data), $_SESSION['decrypt_sess_key'], true));
@@ -357,7 +357,7 @@ final class gstr extends validation {
         return $response;
     }
 
-    public function returnSummary($returnmonth,$type='') {
+    public function returnSummary($returnmonth,$type='',$jstr='gstr1') {
         $this->authenticateToken();
         //$this->pr($_SESSION);
         $gstin = $this->gstin();
@@ -375,27 +375,31 @@ final class gstr extends validation {
         );
             
         $header2 = $this->header($header2_array);
+        //$this->pr($header2);
         //End code for create header
 
         if($type=='') {
-             $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/gstr1?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=RETSUM';
+             $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=RETSUM';
         }
         else {
-            $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/gstr1?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type;
+            $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type;
         }
 
         if($type=='B2B') {
-            //$getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/gstr1?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type.'&action_required=Y&ctin=33GSPTN4901G1ZD&from_time=';
-            $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/gstr1?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type;
+            //$getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type.'&action_required=Y&ctin=33GSPTN4901G1ZD&from_time=';
+            $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type;
         }
         if($type=='HSN') {
-            $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/gstr1?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=HSNSUM';
+            $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=HSNSUM';
         }
         if($type=='CDNR') {
-            $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/gstr1?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type.'&action_required=Y&from_time='.$api_return_period;
+            $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type.'&action_required=Y&from_time='.$api_return_period;
         }
         if($type=='TXPD') {
-            $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/gstr1?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=TXP';
+            $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=TXP';
+        }
+        if($type=='CDN') {
+            $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=CDN';
         }
         
        //echo $getReturnUrl;
@@ -410,6 +414,7 @@ final class gstr extends validation {
             $apiEk1_sum = openssl_decrypt(base64_decode($retRek_sum),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
             $decodejson_sum = base64_decode(openssl_decrypt(base64_decode($retData_sum),"aes-256-ecb",$apiEk1_sum, OPENSSL_RAW_DATA));
             $return_encode = $decodejson_sum;
+            //echo  $return_encode;
             return $return_encode;
         }
         else {
@@ -464,12 +469,13 @@ final class gstr extends validation {
         );
         $header = $this->header($header_array);
         //End code for create header
+       // $this->pr($header);
 
         $url = 'http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr;
         
         $result_data = $this->hitPulUrl($url, $data_string, $header);
         $datasave = json_decode($result_data);
-        $this->pr($datasave);
+        //$this->pr($datasave);
         if(isset($datasave->status_cd) && $datasave->status_cd=='1' && $msg == '')
         {
             $retData=$datasave->data;
@@ -492,12 +498,13 @@ final class gstr extends validation {
             );
             
             $header2 = $this->header($header2_array);
+            //$this->pr($header2);
             //End code for create header
             $url2 = 'http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns?action=RETSTATUS&gstin='.$gstin. '&ret_period='.$api_return_period.'&ref_id='.$refId.'';
             $result_data1 = $this->hitGetUrl($url2, '', $header2);
             
             $retDta = json_decode($result_data1);
-           $this->pr($retDta);
+            $this->pr($retDta);
             if(isset($retDta->status_cd) && $retDta->status_cd=='1' && $msg == '')
             {
                 $retRek=$retDta->rek;
@@ -629,19 +636,27 @@ final class gstr extends validation {
     }
 
     public function username() {
-        $username = 'Cyfuture.TN.TP.1';//'Karthiheyini.TN.1';
+        $username = 'Cyfuture.TN.TP.1';//'Cyfuture.TN.TP.1';//'Karthiheyini.TN.1';
+        if(isset($_SESSION['user_detail']['user_id'])) {
+            $clientKyc = $this->get_results("select `gstin_username` as username from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by = ".$_SESSION['user_detail']['user_id']." ");
+            if(!empty($clientKyc)) {
+                $username = $clientKyc[0]->username;
+
+            }
+        }
+
         return $username;
     }
 
     public function gstin() {
-        $gstin = '33GSPTN3941G1Z7';//'33GSPTN3941G1Z7';
-        /*if(isset($_SESSION['user_detail']['user_id'])) {
+        $gstin = '';//'33GSPTN3941G1Z7';
+        if(isset($_SESSION['user_detail']['user_id'])) {
             $clientKyc = $this->get_results("select `gstin_number` as gstin from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by = ".$_SESSION['user_detail']['user_id']." ");
             if(!empty($clientKyc)) {
                 $gstin = $clientKyc[0]->gstin;
 
             }
-        }*/
+        }
         return $gstin;
     }
 
@@ -673,9 +688,17 @@ final class gstr extends validation {
 
     public function is_gross_turnover_check($user_id=0) {
         $is_checked = '';
-        $clientKyc = $this->get_results("select `id` from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by = ".$user_id." ");
+        $clientKyc = $this->get_results("select `gross_turnover` from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by = ".$user_id." ");
         if(!empty($clientKyc)) {
-            $is_checked = $clientKyc[0]->id;
+            $is_checked = $clientKyc[0]->gross_turnover;
+        }
+        return $is_checked;
+    }
+    public function is_username_exists($user_id=0) {
+        $is_checked = '';
+        $clientKyc = $this->get_results("select `gstin_username` from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by = ".$user_id." ");
+        if(!empty($clientKyc)) {
+            $is_checked = $clientKyc[0]->gstin_username;
         }
         return $is_checked;
     }

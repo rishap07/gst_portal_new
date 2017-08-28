@@ -302,6 +302,7 @@ final class users extends validation {
 		$dataArr['gross_turnover'] = isset($_POST['gross_turnover']) ? $_POST['gross_turnover'] : '';
 		$dataArr['cur_gross_turnover'] = isset($_POST['cur_gross_turnover']) ? $_POST['cur_gross_turnover'] : '';
 		$dataArr['isd_number'] = isset($_POST['isd_number']) ? $_POST['isd_number'] : '';
+		$dataArr['gstin_username'] = isset($_POST['gstin_username']) ? $_POST['gstin_username'] : '';
 
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
@@ -331,6 +332,7 @@ final class users extends validation {
 		$dataInsertKYCArray['gross_turnover'] = $dataArr['gross_turnover'];
 		$dataInsertKYCArray['cur_gross_turnover'] = $dataArr['cur_gross_turnover'];
 		$dataInsertKYCArray['isd_number'] = $dataArr['isd_number'];
+		$dataInsertKYCArray['gstin_username'] = $dataArr['gstin_username'];
 		$dataInsertKYCArray['updated_by'] = $_SESSION['user_detail']['user_id'];
 		$dataInsertKYCArray['updated_date'] = date('Y-m-d H:i:s');
 		$dataConditionKYCArray['added_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);
@@ -390,7 +392,11 @@ final class users extends validation {
 		if( array_key_exists("isd_number",$dataArr) ) {
 			$rules['isd_number'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:ISD Number';
 		}
-		
+
+		if( array_key_exists("gstin_username",$dataArr) ) {
+			$rules['gstin_username'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:ISD Number';
+		}
+
         $valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
             $err_arr = $valid->allErrors();
