@@ -129,8 +129,8 @@
                 <div class="arrow-up"></div>
                     <div class="txtnotfication">Notifications</div>
                    
-						<?php echo html_entity_decode($message); 
-						
+						<?php //echo html_entity_decode($message); 
+						echo html_entity_decode($message);
 						?>
 					<div class="clear"></div>
                     <div class="btnseeall"><a href="<?php echo PROJECT_URL; ?>/?page=notification" class="btn">See All</a></div>
@@ -324,18 +324,26 @@
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Tax Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_invoice_create'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Tax Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_import_invoice_create'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Import Tax Invoice</a></li><?php } ?>
+							
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_bill_of_supply_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Bill Of Supply Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_bill_of_supply_invoice_create'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Bill Of Supply Invoice</a></li><?php } ?>
+							
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_receipt_voucher_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Receipt Voucher Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_receipt_voucher_invoice_create'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Receipt Voucher Invoice</a></li><?php } ?>
+							
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_refund_voucher_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Refund Voucher Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_refund_voucher_invoice_create'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Refund Voucher Invoice</a></li><?php } ?>
+							
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_revised_tax_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Revised Tax Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_revised_tax_invoice_create'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Revised Tax Invoice</a></li><?php } ?>
 						</ul>
 					</li>
 				 <?php } ?>
-				 
 
-					<?php if ($db_obj->can_read('client_invoice')) { ?>
-						<li><a href="<?php echo PROJECT_URL . '/?page=return_client'; ?>"><i class="fa fa-refresh"></i> <span class="collapse in hidden-xs">Return</span></a></li>
-					<?php } ?>
+				<?php if ($db_obj->can_read('client_invoice')) { ?>
+					<li><a href="<?php echo PROJECT_URL . '/?page=return_client'; ?>"><i class="fa fa-refresh"></i> <span class="collapse in hidden-xs">Return</span></a></li>
+				<?php } ?>
+
 				 <?php if ($db_obj->can_read('activitylog')) { ?>
 					<li>
 						<a href="#" data-target="#itemActivity" data-toggle="collapse"><i class="fa fa-list"></i> 
