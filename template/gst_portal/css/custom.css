@@ -158,3 +158,9 @@ table.dataTable tbody tr.even {
 .bulk-upload-btn {
 	margin-right:10px;
 }
+.tablecontent tr th {
+	text-align:center !important;
+}
+.list-primary.pull-left {
+    width: 70%;
+}
