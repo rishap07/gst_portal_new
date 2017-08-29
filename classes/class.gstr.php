@@ -402,7 +402,7 @@ final class gstr extends validation {
             $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=CDN';
         }
         
-       //echo $getReturnUrl;
+        //echo $getReturnUrl;
 
         $result_data_sum = $this->hitGetUrl($getReturnUrl, '', $header2);
         $retDta_sum = json_decode($result_data_sum);

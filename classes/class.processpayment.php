@@ -360,7 +360,7 @@ The GST Keeper Team </p></td>
         $mpdfHtml .= '<tr>';
         $mpdfHtml .= '<td style="font-size:45px;line-height:45px;color:#333;padding:5px;vertical-align:top;padding-bottom:20px;">';
 
-        $mpdfHtml .= '<img src="' . PROJECT_URL . '/image/gst-k-logo.png" style="width:100%;max-width:300px;">';
+        $mpdfHtml .= '<img src="image/gst-k-logo.png" style="width:100%;max-width:300px;">';
 
         $mpdfHtml .= '</td>';
 

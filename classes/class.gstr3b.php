@@ -1566,8 +1566,7 @@ final class gstr3b extends validation {
 			 <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
 									<thead><tr><th align="left">Nature of Supplies</th><th align="left">Total Taxable value</th>
 		    <th align="left">Integrated Tax</th><th align="left">Central Tax</th>
-		    <th align="left">State/UT Tax</th><th align="left">Cess</th></tr></thead>';
-		                                
+		    <th align="left">State/UT Tax</th><th align="left">Cess</th></tr></thead>';		                                
 		    $mpdfHtml .= '<tbody><tr><td class="lftheading" style="font-size: 13px; background: #fdede8;color: #333;
 		    border-bottom: 1px solid #f4d4ca;" width="40%">(a) Outward taxable supplies (other than zero rated, nil rated and exempted)</td><td>
 			<label>'.$returndata[0]->total_tax_value_supplya.'<span class="starred"></span></label>

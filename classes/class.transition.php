@@ -12,18 +12,7 @@ final class transition extends validation {
         parent::__construct();
     }
     
-   public function deleteGstrTransition()
-   {
-		$return_id =   isset($_POST['returnid']) ? $_POST['returnid'] : '';
-		$userid = $_SESSION['user_detail']['user_id'];
-		 if($this->update(TAB_PREFIX.'client_return_gstr3b', array('is_deleted' => 1), array('return_id' => $return_id)))
-		 {
-		 $this->setSuccess('GSTR3B Data clear successfully');
-		   $this->logMsg("GSTR3B ClearData Financial month :".$this->sanitize($_GET['returnmonth']),"gstr_3b");
   
-		 return true;
-		 }
-   }
     public function gstTransitionData()
 	{
 		$dataArr = array();
@@ -62,7 +51,7 @@ final class transition extends validation {
 		$data['5bhiform_applicable_vat_rate']='';
 		//code s5cform
 		$data['5cform_registration_no']='';
-		$data['5cform_balanceof_itc_val']='';
+		$data['5cform_balanceof_itc_vat']='';
 		$data['5cform_cform_turnover_form_pending']='';
 		$data['5cform_cform_taxpayable']='';
 		$data['5cform_fform_turnover_form_pending']='';
@@ -80,7 +69,7 @@ final class transition extends validation {
 		$data['6a_ed_cvd']='';
 		$data['6a_sad']='';
 		$data['6a_totaleligible_cenvat']='';
-		$data['6a_totalcenvat_credit']='';
+		$data['6a_totalcenvat_credit1']='';
 		$data['6a_totalcenvat_credit_unavailed']='';
 		$data['6binvoice_document_no']='';
 		$data['6binvoice_document_date']='';
@@ -382,6 +371,7 @@ final class transition extends validation {
 			$data['5bhiform_nameof_issuer'] = rtrim($data['5bhiform_nameof_issuer'], ",");
 			
 			}
+			
 			if(!empty($_POST['5bhiform_no_of_form'])){
 // Loop to store and display values of individual checked checkbox.
 			foreach($_POST['5bhiform_no_of_form'] as $selected){
@@ -427,6 +417,7 @@ final class transition extends validation {
 			$data['6ainvoice_document_no'] = rtrim($data['6ainvoice_document_no'], ",");
 			
 			}
+			
 			if(!empty($_POST['6ainvoice_document_date'])){
 // Loop to store and display values of individual checked checkbox.
 			foreach($_POST['6ainvoice_document_date'] as $selected){
@@ -438,6 +429,18 @@ final class transition extends validation {
 			$data['6ainvoice_document_date'] = rtrim($data['6ainvoice_document_date'], ",");
 			
 			}
+			if(!empty($_POST['6asupplier_registration_no'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['6asupplier_registration_no'] as $selected){
+			 
+             $data['6asupplier_registration_no'] = $data['6asupplier_registration_no'].$selected.',';
+			
+			}
+			
+			$data['6asupplier_registration_no'] = rtrim($data['6asupplier_registration_no'], ",");
+			
+			}
+			
 			if(!empty($_POST['6ainvoice_registration_no'])){
 // Loop to store and display values of individual checked checkbox.
 			foreach($_POST['6ainvoice_registration_no'] as $selected){
@@ -504,17 +507,18 @@ final class transition extends validation {
 			$data['6a_totaleligible_cenvat'] = rtrim($data['6a_totaleligible_cenvat'], ",");
 			
 			}
-			if(!empty($_POST['6a_totaleligible_credit'])){
+			if(!empty($_POST['6a_totalcenvat_credit1'])){
 // Loop to store and display values of individual checked checkbox.
-			foreach($_POST['6a_totalcenvat_credit'] as $selected){
+			foreach($_POST['6a_totalcenvat_credit1'] as $selected){
 			 
-             $data['6a_totalcenvat_credit'] = $data['6a_totalcenvat_credit'].$selected.',';
+             $data['6a_totalcenvat_credit1'] = $data['6a_totalcenvat_credit1'].$selected.',';
 			
 			}
 			
-			$data['6a_totalcenvat_credit'] = rtrim($data['6a_totalcenvat_credit'], ",");
+			$data['6a_totalcenvat_credit1'] = rtrim($data['6a_totalcenvat_credit1'], ",");
 			
 			}
+		
 			if(!empty($_POST['6a_totalcenvat_credit_unavailed'])){
 // Loop to store and display values of individual checked checkbox.
 			foreach($_POST['6a_totalcenvat_credit_unavailed'] as $selected){
@@ -1130,6 +1134,7 @@ final class transition extends validation {
 			$data['9b1challan_no'] = rtrim($data['9b1challan_no'], ",");
 			
 			}
+			
 			if(!empty($_POST['9b1challan_date'])){
 // Loop to store and display values of individual checked checkbox.
 			foreach($_POST['9b1challan_date'] as $selected){
@@ -1163,15 +1168,15 @@ final class transition extends validation {
 			$data['9b1_hsn'] = rtrim($data['9b1_hsn'], ",");
 			
 			}
-			if(!empty($_POST['9b1_hsn'])){
+			if(!empty($_POST['9b1_description'])){
 // Loop to store and display values of individual checked checkbox.
-			foreach($_POST['9b1_hsn'] as $selected){
+			foreach($_POST['9b1_description'] as $selected){
 			 
-             $data['9b1_hsn'] = $data['9b1_hsn'].$selected.',';
+             $data['9b1_description'] = $data['9b1_description'].$selected.',';
 			
 			}	
 			
-			$data['9b1_hsn'] = rtrim($data['9b1_hsn'], ",");
+			$data['9b1_description'] = rtrim($data['9b1_description'], ",");
 			
 			}
 			if(!empty($_POST['9b1_unit'])){
@@ -1525,15 +1530,15 @@ final class transition extends validation {
 			$data['5cform_registration_no'] = rtrim($data['5cform_registration_no'], ",");
 			
 			}
-			if(!empty($_POST['5cform_balanceof_itc_val'])){
+			if(!empty($_POST['5cform_balanceof_itc_vat'])){
 // Loop to store and display values of individual checked checkbox.
-			foreach($_POST['5cform_balanceof_itc_val'] as $selected){
+			foreach($_POST['5cform_balanceof_itc_vat'] as $selected){
 			 
-             $data['5cform_balanceof_itc_val'] = $data['5cform_balanceof_itc_val'].$selected.',';
+             $data['5cform_balanceof_itc_vat'] = $data['5cform_balanceof_itc_vat'].$selected.',';
 			
 			}	
 			
-			$data['5cform_balanceof_itc_val'] = rtrim($data['5cform_balanceof_itc_val'], ",");
+			$data['5cform_balanceof_itc_vat'] = rtrim($data['5cform_balanceof_itc_vat'], ",");
 			
 			}
 			if(!empty($_POST['5cform_cform_turnover_form_pending'])){
@@ -1547,6 +1552,18 @@ final class transition extends validation {
 			$data['5cform_cform_turnover_form_pending'] = rtrim($data['5cform_cform_turnover_form_pending'], ",");
 			
 			}
+			if(!empty($_POST['5cform_fform_turnover_form_pending'])){
+// Loop to store and display values of individual checked checkbox.
+			foreach($_POST['5cform_fform_turnover_form_pending'] as $selected){
+			 
+             $data['5cform_fform_turnover_form_pending'] = $data['5cform_fform_turnover_form_pending'].$selected.',';
+			
+			}	
+			
+			$data['5cform_fform_turnover_form_pending'] = rtrim($data['5cform_fform_turnover_form_pending'], ",");
+			
+			}
+			
 			if(!empty($_POST['5cform_cform_taxpayable'])){
 // Loop to store and display values of individual checked checkbox.
 			foreach($_POST['5cform_cform_taxpayable'] as $selected){
@@ -1569,7 +1586,7 @@ final class transition extends validation {
 			$data['5cform_cform_turnover_form_pending'] = rtrim($data['5cform_cform_turnover_form_pending'], ",");
 			
 			}
-			if(!empty($_POST['5cform_fform_taxpayable_'])){
+			if(!empty($_POST['5cform_fform_taxpayable'])){
 // Loop to store and display values of individual checked checkbox.
 			foreach($_POST['5cform_fform_taxpayable'] as $selected){
 			 
@@ -1580,7 +1597,8 @@ final class transition extends validation {
 			$data['5cform_fform_taxpayable'] = rtrim($data['5cform_fform_taxpayable'], ",");
 			
 			}
-			if(!empty($_POST['5cform_fform_taxpayable'])){
+			
+			if(!empty($_POST['5cform_itcreversal_relatable'])){
 // Loop to store and display values of individual checked checkbox.
 			foreach($_POST['5cform_itcreversal_relatable'] as $selected){
 			 
@@ -1835,7 +1853,7 @@ final class transition extends validation {
 		
 			//end here
 			//9b1 code end here
-			$data5a[]=array("a5_registration_no"=>$data['5a_registration_no'],"a5_taxperiod_last_return"=>$data['5a_taxperiod_last_return'],"a5_taxperiod_last_return"=>$data['5a_taxperiod_last_return'],"a5_dateoffilling_return"=>$data["5a_dateoffilling_return"],"a5_balance_cenvat_credit"=>$data["5a_balance_cenvat_credit"],"a5_cenvat_credit_admissible"=>$data["5a_cenvat_credit_admissible"],"b5bcform_tin_issuer"=>$data["5bcform_tin_issuer"],"b5bcform_nameof_issuer"=>$data["5bcform_nameof_issuer"],"b5bcform_no_of_item"=>$data["5bcform_no_of_item"],"b5bcform_amount"=>$data["5bcform_amount"],"b5bcform_applicable_vat_rate"=>$data["5bcform_applicable_vat_rate"],"b5bfform_tin_issuer"=>$data["5bfform_tin_issuer"],"b5bfform_nameof_issuer"=>$data["5bfform_nameof_issuer"],"b5bfform_no_of_form"=>$data["5bfform_no_of_form"],"b5bfform_amount"=>$data["5bfform_amount"],"b5bfform_applicable_vat_rate"=>$data["5bfform_applicable_vat_rate"],"b5bhiform_tin_issuer"=>$data["5bhiform_tin_issuer"],"b5bhiform_nameof_issuer"=>$data["5bhiform_nameof_issuer"],"b5bhiform_no_of_form"=>$data["5bhiform_no_of_form"],"b5bhiform_amount"=>$data["5bhiform_amount"],"b5bhiform_applicable_vat_rate"=>$data["b5bhiform_applicable_vat_rate"],"a6ainvoice_document_no"=>$data['6ainvoice_document_no'],"a6ainvoice_document_date"=>$data['6ainvoice_document_date'],"a6asupplier_registration_no"=>$data['6asupplier_registration_no'],"a6arecipients_registration_no"=>$data['6arecipients_registration_no'],"a6a_value"=>$data['6a_value'],"a6a_ed_cvd"=>$data['6a_ed_cvd'],"a6a_sad"=>$data['6a_sad'],"a6a_totaleligible_cenvat"=>$data['6a_totaleligible_cenvat'],"a6a_totalcenvat_credit"=>$data['6a_totalcenvat_credit'],"a6a_totalcenvat_credit_unavailed"=>$data['6a_totalcenvat_credit_unavailed'],"b6binvoice_document_no"=>$data['6binvoice_document_no'],"b6binvoice_document_date"=>$data['6binvoice_document_date'],"b6bsupplier_registration_no"=>$data['6bsupplier_registration_no'],"b6breceipients_registration_no"=>$data['6breceipients_registration_no'],"b6b_value"=>$data['6b_value'],"b6b_taxpaid_vat"=>$data['6b_taxpaid_vat'],"b6b_totaleligible_vat"=>$data['6b_totaleligible_vat'],"b6b_totalvat_creditavailed"=>$data['6b_totalvat_creditavailed'],"b6b_totalvat_creditunavailed"=>$data['6b_totalvat_creditunavailed'],"b6b_totalvat_creditavailed"=>$data['6b_totalvat_creditavailed'],"a7a1_hsncode"=>$data['7a1_hsncode'],"a7a1_unit"=>$data['7a1_unit'],"a7a1_qty"=>$data['7a1_qty'],"a7a1_value"=>$data['7a1_value'],"a7a1_eligible_duties"=>$data['7a1_eligible_duties'],"b7b_nameof_supplier"=>$data['7b_nameof_supplier'],"b7b_invoice_number"=>$data['7b_invoice_number'],"b7b_invoice_date"=>$data['7b_invoice_date'],"b7b_description"=>$data['7b_description'],"b7b_quantity"=>$data['7b_quantity'],"b7b_uqc"=>$data['7b_uqc'],"b7b_value"=>$data['7b_value'],"b7b_eligible_duties"=>$data['7b_eligible_duties'],"b7b_vat"=>$data['7b_vat'],"b7b_dateonwhich_receipients"=>$data['7b_dateonwhich_receipients'],"c7c1_description"=>$data['7c1_description'],"c7c1_unit"=>$data['7c1_unit'],"c7c1_qty"=>$data['7c1_qty'],"c7c1_value"=>$data['7c1_value'],"c7c1_vat"=>$data['7c1_vat'],"c7c1_totalinput_taxcredit"=>$data['7c1_totalinput_taxcredit'],"c7c1_totalinput_taxcredit_exempt"=>$data['7c1_totalinput_taxcredit_exempt'],"c7c1_totalinput_taxcredit_admissible"=>$data['7c1_totalinput_taxcredit_admissible'],"d7d_description"=>$data['7d_description'],"d7d_unit"=>$data['7d_unit'],"d7d_qty"=>$data['7d_qty'],"d7d_value"=>$data['7d_value'],"d7d_vatentry_taxpad"=>$data['7d_vatentry_taxpad'],"a8registration_no"=>$data['8registration_no'],"a8taxperiod_lastreturn"=>$data['8taxperiod_lastreturn'],"a8dateoffilling_return"=>$data['8dateoffilling_return'],"a8balanceeligible_cenvat_credit"=>$data['8balanceeligible_cenvat_credit'],"a8gstnof_receiver"=>$data['8gstnof_receiver'],"a8distributionno"=>$data['8distributionno'],"a8distributiondate"=>$data['8distributiondate'],"a8itcofcentral"=>$data['8itcofcentral'],"a9a1challan_no"=>$data['9a1challan_no'],"a9a1challan_date"=>$data['9a1challan_date'],"a9a1typeof_goods"=>$data['9a1typeof_goods'],"a9a1_hsn"=>$data['9a1_hsn'],"a9a1_description"=>$data['9a1_description'],"a9a1_unit"=>$data['9a1_unit'],"a9a1_quantity"=>$data['9a1_quantity'],"a9a1_value"=>$data['9a1_value'],"b9b1challan_no"=>$data['9b1challan_no'],"b9b1challan_date"=>$data['9b1challan_date'],"b9b1typeof_goods"=>$data['9b1typeof_goods'],"b9b1_hsn"=>$data['9b1_hsn'],"b9b1_description"=>$data['9b1_description'],"b9b1_unit"=>$data['9b1_unit'],"b9b1_quantity"=>$data['9b1_quantity'],"b9b1_value"=>$data['9b1_value'],"a11aregistration_no"=>$data['11aregistration_no'],"a11aservicetax_no"=>$data['11aservicetax_no'],"a11ainvoice_documentno"=>$data['11ainvoice_documentno'],"a11ainvoice_document_date"=>$data['11ainvoice_document_date'],"a11atax_paid"=>$data['11atax_paid'],"a11avatpaid_sgst"=>$data['11avatpaid_sgst'],"a12a_document_no"=>$data['12a_document_no'],"a12a_document_no"=>$data['12a_document_no'],"a12a_document_date"=>$data['12a_document_date'],"a12a_gstinno_receipient"=>$data['12a_gstinno_receipient'],"a12a_name_receipient"=>$data['12a_name_receipient'],"a12a_hsn"=>$data['12a_hsn'],"a12a_description"=>$data['12a_description'],"a12a_unit"=>$data['12a_unit'],"a12a_quantity"=>$data['12a_quantity'],"a12a_value"=>$data['12a_value'],"a10a_gstn"=>$data['10a_gstn'],"a10a_description"=>$data['10a_description'],"a10a_unit"=>$data['10a_unit'],"a10a_quantity"=>$data['10a_quantity'],"a10a_value"=>$data['10a_value'],"a10a_inputtax"=>$data['10a_inputtax'],"b10b_gstn"=>$data['10b_gstn'],"b10b_description"=>$data['10b_description'],"b10b_unit"=>$data['10b_unit'],"b10b_quantity"=>$data['10b_quantity'],"b10b_value"=>$data['10b_value'],"b10b_inputtax"=>$data['10b_inputtax'],"c5cform_registration_no"=>$data['5cform_registration_no'],"c5cform_balanceof_itc_val"=>$data['5cform_balanceof_itc_val'],"c5cform_cform_turnover_form_pending"=>$data['5cform_cform_turnover_form_pending'],"c5cform_cform_taxpayable"=>$data['5cform_cform_taxpayable'],"c5cform_fform_turnover_form_pending"=>$data['5cform_fform_turnover_form_pending'],"c5cform_fform_taxpayable"=>$data['5cform_fform_taxpayable'],"c5cform_itcreversal_relatable"=>$data['5cform_itcreversal_relatable'],"c5cform_hiform_turnover_form_pending"=>$data['5cform_hiform_turnover_form_pending'],"c5cform_hiform_taxpayable"=>$data['5cform_hiform_taxpayable'],"c5cform_hiform_transitionitc2"=>$data['5cform_hiform_transitionitc2'],"a7a1_hsncode"=>$data['7a1_hsncode'],"a7a1_hsncode"=>$data['7a1_hsncode'],"a7a1_qty"=>$data['7a1_qty'],"a7a1_value"=>$data['7a1_value'],"a7a1_eligible_duties"=>$data['7a1_eligible_duties'],"a7a2_hsncode"=>$data['7a2_hsncode'],"a7a2_unit"=>$data['7a2_unit'],"a7a3_unit"=>$data['7a3_unit'],"a7a2_qty"=>$data['7a2_qty'],"a7a2_value"=>$data['7a2_value'],"a7a2_eligible_duties"=>$data['7a2_eligible_duties'],"a7a3_hsncode"=>$data['7a3_hsncode'],"a7a3_qty"=>$data['7a3_qty'],"a7a3_value"=>$data['7a3_value'],"a7a3_eligible_duties"=>$data['7a3_eligible_duties'],"c7c2_description"=>$data['7c2_description'],"c7c2_unit"=>$data['7c2_unit'],"c7c2_qty"=>$data['7c2_qty'],"c7c2_value"=>$data['7c2_value'],"c7c2_vat"=>$data['7c2_vat'],"c7c2_totalinput_taxcredit"=>$data['7c2_totalinput_taxcredit'],"c7c2_totalinput_taxcredit_exempt"=>$data['7c2_totalinput_taxcredit_exempt'],"c7c2_totalinput_taxcredit_admissible"=>$data['7c2_totalinput_taxcredit_admissible'],"trader_name"=>$data["trader_name"],"transition_status_name"=>$data["transition_status"]);
+			$data5a[]=array("a5_registration_no"=>$data['5a_registration_no'],"a5_taxperiod_last_return"=>$data['5a_taxperiod_last_return'],"a5_taxperiod_last_return"=>$data['5a_taxperiod_last_return'],"a5_dateoffilling_return"=>$data["5a_dateoffilling_return"],"a5_balance_cenvat_credit"=>$data["5a_balance_cenvat_credit"],"a5_cenvat_credit_admissible"=>$data["5a_cenvat_credit_admissible"],"b5bcform_tin_issuer"=>$data["5bcform_tin_issuer"],"b5bcform_nameof_issuer"=>$data["5bcform_nameof_issuer"],"b5bcform_no_of_item"=>$data["5bcform_no_of_item"],"b5bcform_amount"=>$data["5bcform_amount"],"b5bcform_applicable_vat_rate"=>$data["5bcform_applicable_vat_rate"],"b5bfform_tin_issuer"=>$data["5bfform_tin_issuer"],"b5bfform_nameof_issuer"=>$data["5bfform_nameof_issuer"],"b5bfform_no_of_form"=>$data["5bfform_no_of_form"],"b5bfform_amount"=>$data["5bfform_amount"],"b5bfform_applicable_vat_rate"=>$data["5bfform_applicable_vat_rate"],"b5bhiform_tin_issuer"=>$data["5bhiform_tin_issuer"],"b5bhiform_nameof_issuer"=>$data["5bhiform_nameof_issuer"],"b5bhiform_no_of_form"=>$data["5bhiform_no_of_form"],"b5bhiform_amount"=>$data["5bhiform_amount"],"b5bhiform_applicable_vat_rate"=>$data["5bhiform_applicable_vat_rate"],"a6ainvoice_document_no"=>$data['6ainvoice_document_no'],"a6ainvoice_document_date"=>$data['6ainvoice_document_date'],"a6asupplier_registration_no"=>$data['6asupplier_registration_no'],"a6arecipients_registration_no"=>$data['6arecipients_registration_no'],"a6a_value"=>$data['6a_value'],"a6a_ed_cvd"=>$data['6a_ed_cvd'],"a6a_sad"=>$data['6a_sad'],"a6a_totaleligible_cenvat"=>$data['6a_totaleligible_cenvat'],"a6a_totalcenvat_credit"=>$data['6a_totalcenvat_credit1'],"a6a_totalcenvat_credit_unavailed"=>$data['6a_totalcenvat_credit_unavailed'],"b6binvoice_document_no"=>$data['6binvoice_document_no'],"b6binvoice_document_date"=>$data['6binvoice_document_date'],"b6bsupplier_registration_no"=>$data['6bsupplier_registration_no'],"b6breceipients_registration_no"=>$data['6breceipients_registration_no'],"b6b_value"=>$data['6b_value'],"b6b_taxpaid_vat"=>$data['6b_taxpaid_vat'],"b6b_totaleligible_vat"=>$data['6b_totaleligible_vat'],"b6b_totalvat_creditavailed"=>$data['6b_totalvat_creditavailed'],"b6b_totalvat_creditunavailed"=>$data['6b_totalvat_creditunavailed'],"b6b_totalvat_creditavailed"=>$data['6b_totalvat_creditavailed'],"a7a1_hsncode"=>$data['7a1_hsncode'],"a7a1_unit"=>$data['7a1_unit'],"a7a1_qty"=>$data['7a1_qty'],"a7a1_value"=>$data['7a1_value'],"a7a1_eligible_duties"=>$data['7a1_eligible_duties'],"b7b_nameof_supplier"=>$data['7b_nameof_supplier'],"b7b_invoice_number"=>$data['7b_invoice_number'],"b7b_invoice_date"=>$data['7b_invoice_date'],"b7b_description"=>$data['7b_description'],"b7b_quantity"=>$data['7b_quantity'],"b7b_uqc"=>$data['7b_uqc'],"b7b_value"=>$data['7b_value'],"b7b_eligible_duties"=>$data['7b_eligible_duties'],"b7b_vat"=>$data['7b_vat'],"b7b_dateonwhich_receipients"=>$data['7b_dateonwhich_receipients'],"c7c1_description"=>$data['7c1_description'],"c7c1_unit"=>$data['7c1_unit'],"c7c1_qty"=>$data['7c1_qty'],"c7c1_value"=>$data['7c1_value'],"c7c1_vat"=>$data['7c1_vat'],"c7c1_totalinput_taxcredit"=>$data['7c1_totalinput_taxcredit'],"c7c1_totalinput_taxcredit_exempt"=>$data['7c1_totalinput_taxcredit_exempt'],"c7c1_totalinput_taxcredit_admissible"=>$data['7c1_totalinput_taxcredit_admissible'],"d7d_description"=>$data['7d_description'],"d7d_unit"=>$data['7d_unit'],"d7d_qty"=>$data['7d_qty'],"d7d_value"=>$data['7d_value'],"d7d_vatentry_taxpad"=>$data['7d_vatentry_taxpad'],"a8registration_no"=>$data['8registration_no'],"a8taxperiod_lastreturn"=>$data['8taxperiod_lastreturn'],"a8dateoffilling_return"=>$data['8dateoffilling_return'],"a8balanceeligible_cenvat_credit"=>$data['8balanceeligible_cenvat_credit'],"a8gstnof_receiver"=>$data['8gstnof_receiver'],"a8distributionno"=>$data['8distributionno'],"a8distributiondate"=>$data['8distributiondate'],"a8itcofcentral"=>$data['8itcofcentral'],"a9a1challan_no"=>$data['9a1challan_no'],"a9a1challan_date"=>$data['9a1challan_date'],"a9a1typeof_goods"=>$data['9a1typeof_goods'],"a9a1_hsn"=>$data['9a1_hsn'],"a9a1_description"=>$data['9a1_description'],"a9a1_unit"=>$data['9a1_unit'],"a9a1_quantity"=>$data['9a1_quantity'],"a9a1_value"=>$data['9a1_value'],"b9b1challan_no"=>$data['9b1challan_no'],"b9b1challan_date"=>$data['9b1challan_date'],"b9b1typeof_goods"=>$data['9b1typeof_goods'],"b9b1_hsn"=>$data['9b1_hsn'],"b9b1_description"=>$data['9b1_description'],"b9b1_unit"=>$data['9b1_unit'],"b9b1_quantity"=>$data['9b1_quantity'],"b9b1_value"=>$data['9b1_value'],"a11aregistration_no"=>$data['11aregistration_no'],"a11aservicetax_no"=>$data['11aservicetax_no'],"a11ainvoice_documentno"=>$data['11ainvoice_documentno'],"a11ainvoice_document_date"=>$data['11ainvoice_document_date'],"a11atax_paid"=>$data['11atax_paid'],"a11avatpaid_sgst"=>$data['11avatpaid_sgst'],"a12a_document_no"=>$data['12a_document_no'],"a12a_document_no"=>$data['12a_document_no'],"a12a_document_date"=>$data['12a_document_date'],"a12a_gstinno_receipient"=>$data['12a_gstinno_receipient'],"a12a_name_receipient"=>$data['12a_name_receipient'],"a12a_hsn"=>$data['12a_hsn'],"a12a_description"=>$data['12a_description'],"a12a_unit"=>$data['12a_unit'],"a12a_quantity"=>$data['12a_quantity'],"a12a_value"=>$data['12a_value'],"a10a_gstn"=>$data['10a_gstn'],"a10a_description"=>$data['10a_description'],"a10a_unit"=>$data['10a_unit'],"a10a_quantity"=>$data['10a_quantity'],"a10a_value"=>$data['10a_value'],"a10a_inputtax"=>$data['10a_inputtax'],"b10b_gstn"=>$data['10b_gstn'],"b10b_description"=>$data['10b_description'],"b10b_unit"=>$data['10b_unit'],"b10b_quantity"=>$data['10b_quantity'],"b10b_value"=>$data['10b_value'],"b10b_inputtax"=>$data['10b_inputtax'],"c5cform_registration_no"=>$data['5cform_registration_no'],"c5cform_balanceof_itc_val"=>$data['5cform_balanceof_itc_vat'],"c5cform_cform_turnover_form_pending"=>$data['5cform_cform_turnover_form_pending'],"c5cform_cform_taxpayable"=>$data['5cform_cform_taxpayable'],"c5cform_fform_turnover_form_pending"=>$data['5cform_fform_turnover_form_pending'],"c5cform_fform_taxpayable"=>$data['5cform_fform_taxpayable'],"c5cform_itcreversal_relatable"=>$data['5cform_itcreversal_relatable'],"c5cform_hiform_turnover_form_pending"=>$data['5cform_hiform_turnover_form_pending'],"c5cform_hiform_taxpayable"=>$data['5cform_hiform_taxpayable'],"c5cform_hiform_transitionitc2"=>$data['5cform_hiform_transitionitc2'],"a7a1_hsncode"=>$data['7a1_hsncode'],"a7a1_hsncode"=>$data['7a1_hsncode'],"a7a1_qty"=>$data['7a1_qty'],"a7a1_value"=>$data['7a1_value'],"a7a1_eligible_duties"=>$data['7a1_eligible_duties'],"a7a2_hsncode"=>$data['7a2_hsncode'],"a7a2_unit"=>$data['7a2_unit'],"a7a3_unit"=>$data['7a3_unit'],"a7a2_qty"=>$data['7a2_qty'],"a7a2_value"=>$data['7a2_value'],"a7a2_eligible_duties"=>$data['7a2_eligible_duties'],"a7a3_hsncode"=>$data['7a3_hsncode'],"a7a3_qty"=>$data['7a3_qty'],"a7a3_value"=>$data['7a3_value'],"a7a3_eligible_duties"=>$data['7a3_eligible_duties'],"c7c2_description"=>$data['7c2_description'],"c7c2_unit"=>$data['7c2_unit'],"c7c2_qty"=>$data['7c2_qty'],"c7c2_value"=>$data['7c2_value'],"c7c2_vat"=>$data['7c2_vat'],"c7c2_totalinput_taxcredit"=>$data['7c2_totalinput_taxcredit'],"c7c2_totalinput_taxcredit_exempt"=>$data['7c2_totalinput_taxcredit_exempt'],"c7c2_totalinput_taxcredit_admissible"=>$data['7c2_totalinput_taxcredit_admissible'],"trader_name"=>$data["trader_name"],"transition_status_name"=>$data["transition_status"]);
 			//$data5b[]=array("5a_taxperiod_last_return"=>$dataArr['5a_taxperiod_last_return'],"5a_taxperiod_last_return"=>$data['5a_taxperiod_last_return'],"5a_dateoffilling_return"=>$data["5a_dateoffilling_return"],"5a_balance_cenvat_credit"=>$data["5a_balance_cenvat_credit"],"5a_cenvat_credit_admissible"=>$data["5a_cenvat_credit_admissible"]);
 			
 
@@ -1849,7 +1867,7 @@ final class transition extends validation {
 	}
     public function saveGstrTransition()
     {
-		$data = $this->get_results("select * from gst_transition where added_by='".$_SESSION['user_detail']['user_id']."' and financial_month='".$this->sanitize($_GET['returnmonth'])."'");
+		$data = $this->get_results("select * from gst_transition_form where added_by='".$_SESSION['user_detail']['user_id']."' and financial_month='".$this->sanitize($_GET['returnmonth'])."'");
 		$dataArr = $this->gstTransitionData();
 		 $dataArr['trader_name'] = isset($_POST['trader_name']) ? $_POST['trader_name'] : ''; 
 	     $dataArr['transition_status'] = isset($_POST['transition_status']) ? $_POST['transition_status'] : '';
@@ -1879,7 +1897,7 @@ final class transition extends validation {
 			$dataArr['financial_month']=$this->sanitize($_GET['returnmonth']);
 			$dataArr['added_by']=$this->sanitize($_SESSION["user_detail"]["user_id"]);
 			
-			if ($this->insert('gst_transition', $dataArr)) {
+			if ($this->insert('gst_transition_form', $dataArr)) {
 				//$this->getPlaceOfSupplyUnregistered();
 				//$this->getPlaceOfSupplyComposition();
 				//$this->getPlaceOfSupplyUinHolder();
@@ -1897,12 +1915,12 @@ final class transition extends validation {
 		else
 		{
 			
-			if ($this->update('gst_transition', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
+			if ($this->update('gst_transition_form', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
 				//$this->getPlaceOfSupplyUnregistered();
 				//$this->getPlaceOfSupplyComposition();
 				//$this->getPlaceOfSupplyUinHolder();
 		                      
-				$this->setSuccess('GST transition month of return'.$returnmonth."updated Successfully");
+				$this->setSuccess('GST transition month of '.$returnmonth."updated Successfully");
 				//$this->logMsg("GSTR3B updated financial month : " . $returnmonth,"gstr_3b");
 				return true;
 			}
@@ -1915,15 +1933,1540 @@ final class transition extends validation {
 	   
    }
   
-  
+   public function generategst_transitionHtml($returnid,$returnmonth)
+	{
+	    
+	       $htmlResponse = $this->generategst_transitionPdf($_SESSION['user_detail']['user_id'],$returnid,$returnmonth);
+	        if ($htmlResponse === false) {
+
+	            $obj_client->setError("No Plan Pdf found.");
+	            return false;
+	        }
+	        $obj_mpdf = new mPDF();
+	        $obj_mpdf->SetHeader('GST-Transition Form');
+	        $obj_mpdf->WriteHTML($htmlResponse);
+	        $datetime=date('Y-m-d-His');
+	       
+	       $taxInvoicePdf = 'gsttransitionform-' . $_SESSION['user_detail']['user_id'] . '_' .$datetime. '.pdf';
+		   $filepath ="/upload/transition-form/".$taxInvoicePdf;
+	        ob_clean();
+	        //$proof_photograph = $this->gstr3bUploads($taxInvoicePdf, 'plan-invoice', 'upload','.pdf');
+	        $pic = $taxInvoicePdf;
+	     
+			  ob_clean();
+			  if($_GET['action'] == 'printInvoice')
+			  {
+				  
+			 $obj_mpdf->Output($taxInvoicePdf, 'I');
+			  }
+			  else if($_GET['action'] == 'emailInvoice')
+			  {
+				  //$obj_mpdf->Output($taxInvoicePdf, PROJECT_URL ."/upload/gstr3b-file/");
+				  $dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
+			$sendmail = $dataCurrentUserArr['data']->kyc->email;
+			$name = $dataCurrentUserArr['data']->kyc->name;
+			$userid = $_SESSION["user_detail"]["user_id"];
+				  $obj_mpdf->Output("upload/gstr3b-file/".$taxInvoicePdf);
+				  $mpdfHtml = $this->gstr3bemail($name,$returnmonth);
+				 // return $mpdfHtml;
+				  
+			 if ($this->sendMail('Email GSTR-3Bfile', 'User ID : ' . $userid . ' email GSTR-3B', $sendmail, 'noreply@gstkeeper.com', '', 'rishap07@gmail.com,sheetalprasad95@gmail.com', $filepath, 'GSTR-3B return month '.$returnmonth.'',$mpdfHtml )) {
+
+					$this->setSuccess('Kindly check your email');
+					$this->redirect(PROJECT_URL . "?page=return_gstr3b_file&returnmonth=" . $returnmonth);
+	               // return true;
+	            } else {
+	                $this->setError('Try again some issue in sending in email.');
+						$this->redirect(PROJECT_URL . "?page=return_gstr3b_file&returnmonth=" . $returnmonth);
+	               // return false;
+	            }
+			  }
+			  else
+			  {
+				  $obj_mpdf->Output($taxInvoicePdf, 'D');
+			  }
+		 
+				$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " in User has been updated");
+			   
+	}
+	private function generategst_transitionPdf($invid,$returnid,$returnmonth) {
+		$sql = "select  *,count(id) as totalinvoice from gst_transition_form where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
+       $returndata = $this->get_results($sql);
+	   $sql = "select  *,count(id) as totalinvoice from gst_transition_form where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
+ 
+       $returndata1 = $this->get_results($sql);
+	    $sql = "select * from " . TAB_PREFIX . "client_kyc where added_by='" . $_SESSION['user_detail']['user_id'] . "' order by id desc limit 0,1";
+	   $clientdata = $this->get_results($sql);
+	   $client_gstin_number;
+	   $client_name;
+	   
+	   if(count($clientdata) > 0 )
+	   {
+		   $client_gstin_number = $clientdata[0]->gstin_number;
+		   $client_name = $clientdata[0]->name;
+		   
+	   }
+		if($returndata1[0]->totalinvoice > 0)
+		{
+		$arr = $returndata1[0]->gstr_transition_data;
+		$arr1= base64_decode($arr);
+		 $transition_arr = json_decode($arr1);
+		
+		$a5_taxperiod_last_return='';
+		$a5_registration_no='';
+		$a5_taxperiod_last_return='';
+		$a5_dateoffilling_return='';
+		$a5_balance_cenvat_credit='';
+		$a5_cenvat_credit_admissible='';
+		$b5bcform_tin_issuer='';
+		$b5bcform_nameof_issuer='';
+		$b5bcform_no_of_item='';
+		$b5bcform_amount='';
+		$b5bcform_applicable_vat_rate='';
+		$b5bfform_tin_issuer='';
+		$b5bfform_nameof_issuer='';
+		$b5bfform_no_of_form='';
+		$b5bfform_amount='';
+		$b5bfform_applicable_vat_rate='';
+		$b5bhiform_tin_issuer='';
+		$b5bhiform_nameof_issuer='';
+		$b5bhiform_no_of_form='';
+		$b5bhiform_amount='';
+		$b5bhiform_applicable_vat_rate='';
+		$c5cform_registration_no='';
+		$c5cform_balanceof_itc_val='';
+		$c5cform_cform_turnover_form_pending='';
+		$c5cform_cform_taxpayable='';
+		$c5cform_fform_turnover_form_pending='';
+		$c5cform_fform_taxpayable='';
+		$c5cform_itcreversal_relatable='';
+		$c5cform_hiform_turnover_form_pending='';
+		$c5cform_hiform_taxpayable='';
+		$c5cform_hiform_transitionitc2='';
+		$a6ainvoice_document_no='';
+		$a6ainvoice_document_date='';
+		$a6asupplier_registration_no='';
+		$a6arecipients_registration_no='';
+		$a6a_value='';
+		$a6a_ed_cvd='';
+		$a6a_sad='';
+		$a6a_totaleligible_cenvat='';
+		$a6a_totalcenvat_credit='';
+		$a6a_totalcenvat_credit_unavailed='';
+		$b6binvoice_document_no='';
+		$b6binvoice_document_date='';
+		$b6bsupplier_registration_no='';
+		$b6breceipients_registration_no='';
+		$b6b_value='';
+		$b6b_taxpaid_vat='';
+		$b6b_totaleligible_vat='';
+		$b6b_totalvat_creditavailed='';
+		$b6b_totalvat_creditunavailed='';
+		$a7a1_hsncode='';
+		$a7a1_unit='';
+		$a7a1_qty='';
+		$a7a1_value='';
+		$a7a1_eligible_duties='';
+		$a7a2_hsncode='';
+		$a7a2_unit='';
+		$a7a2_qty='';
+		$a7a2_value='';
+		$a7a2_eligible_duties='';
+		$a7a3_hsncode='';
+		$a7a3_unit='';
+		$a7a3_qty='';
+		$a7a3_value='';
+		$a7a3_eligible_duties='';
+		$b7b_nameof_supplier='';
+		$b7b_invoice_number='';
+		$b7b_invoice_date='';
+		$b7b_description='';
+		$b7b_quantity='';
+		$b7b_uqc='';
+		$b7b_value='';
+		$b7b_eligible_duties='';
+		$b7b_vat='';
+		$b7b_dateonwhich_receipients='';
+		$c7c1_description='';
+		$c7c1_unit='';
+		$c7c1_qty='';
+		$c7c1_value='';
+		$c7c1_vat='';
+		$c7c1_totalinput_taxcredit='';
+		$c7c1_totalinput_taxcredit_exempt='';
+		$c7c1_totalinput_taxcredit_admissible='';
+		$d7d_description='';
+		$d7d_unit='';
+		$d7d_qty='';
+		$d7d_value='';
+		$d7d_vatentry_taxpad='';
+		$b7b_nameof_supplier='';
+		$b7b_invoice_number='';
+		$b7b_invoice_date='';
+		$b7b_description='';
+		$b7b_quantity='';
+		$b7b_uqc='';
+		$b7b_value='';
+		$b7b_eligible_duties='';
+		$b7b_vat='';
+		$b7b_dateonwhich_receipients='';
+		$c7c2_description='';
+		$c7c2_unit='';
+		$c7c2_qty='';
+		$c7c2_value='';
+		$c7c2_vat='';
+		$c7c2_totalinput_taxcredit='';
+		$c7c2_totalinput_taxcredit_exempt='';
+		$c7c2_totalinput_taxcredit_admissible='';
+		$a8registration_no='';
+		$a8taxperiod_lastreturn='';
+		$a8dateoffilling_return='';
+		$a8balanceeligible_cenvat_credit='';
+		$a8gstnof_receiver='';
+		$a8distributionno='';
+		$a8distributiondate='';
+		$a8itcofcentral='';
+		$a9a1challan_no='';
+		$a9a1challan_date='';
+		$a9a1typeof_goods='';
+		$a9a1_hsn='';
+		$a9a1_description='';
+		$a9a1_unit='';
+		$a9a1_quantity='';
+		$a9a1_value='';
+		$b9b1challan_no='';
+		$b9b1challan_date='';
+		$b9b1typeof_goods='';
+		$b9b1_hsn='';
+		$b9b1_description='';
+		$b9b1_unit='';
+		$b9b1_quantity='';
+		$b9b1_value='';
+		$a11aregistration_no='';
+		$a11aservicetax_no='';
+		$a11ainvoice_documentno='';
+		$a11ainvoice_document_date='';
+		$a11atax_paid='';
+		$a11avatpaid_sgst='';
+		$a12a_document_no='';
+		$a12a_document_date='';
+		$a12a_gstinno_receipient='';
+		$a12a_name_receipient='';
+		$a12a_hsn='';
+		$a12a_description='';
+		$a12a_unit='';
+		$a12a_quantity='';
+		$a12a_value='';
+		$a10a_gstn='';
+		$a10a_description='';
+		$a10a_unit='';
+		$a10a_quantity='';
+		$a10a_value='';
+		$a10a_inputtax='';
+		$b10b_gstn='';
+		$b10b_description='';
+		$b10b_unit='';
+		$b10b_quantity='';
+		$b10b_value='';
+		$b10b_inputtax='';
+		
+
+		
+		foreach($transition_arr as $item)
+		{
+			//echo $item->a5_taxperiod_last_return;
+			//var_dump($item);
+			$a5_taxperiod_last_return=$item->a5_taxperiod_last_return;
+			$a5_registration_no=$item->a5_registration_no;
+			$a5_taxperiod_last_return=$item->a5_taxperiod_last_return;
+			$a5_dateoffilling_return=$item->a5_dateoffilling_return;
+			$a5_balance_cenvat_credit=$item->a5_balance_cenvat_credit;
+			$a5_cenvat_credit_admissible=$item->a5_cenvat_credit_admissible;
+			$b5bcform_tin_issuer=$item->b5bcform_tin_issuer;
+			$b5bcform_nameof_issuer=$item->b5bcform_nameof_issuer;
+			$b5bcform_no_of_item=$item->b5bcform_no_of_item;
+			$b5bcform_amount=$item->b5bcform_amount;
+			$b5bcform_applicable_vat_rate=$item->b5bcform_applicable_vat_rate;
+		    $b5bfform_tin_issuer=$item->b5bfform_tin_issuer;
+			$b5bfform_nameof_issuer=$item->b5bfform_nameof_issuer;
+			$b5bfform_no_of_form=$item->b5bfform_no_of_form;
+			$b5bfform_amount=$item->b5bfform_amount;
+			$b5bfform_applicable_vat_rate=$item->b5bfform_applicable_vat_rate;
+			$b5bhiform_tin_issuer=$item->b5bhiform_tin_issuer;
+			$b5bhiform_nameof_issuer=$item->b5bhiform_nameof_issuer;
+			$b5bhiform_no_of_form=$item->b5bhiform_no_of_form;
+			$b5bhiform_amount=$item->b5bhiform_amount;
+			$b5bhiform_applicable_vat_rate=$item->b5bhiform_applicable_vat_rate;
+			$c5cform_registration_no=$item->c5cform_registration_no;
+			$c5cform_balanceof_itc_val=$item->c5cform_balanceof_itc_val;
+			$c5cform_cform_turnover_form_pending=$item->c5cform_cform_turnover_form_pending;
+			$c5cform_cform_taxpayable=$item->c5cform_cform_taxpayable;
+			$c5cform_fform_turnover_form_pending=$item->c5cform_fform_turnover_form_pending;
+			$c5cform_fform_taxpayable=$item->c5cform_fform_taxpayable;
+			$c5cform_itcreversal_relatable=$item->c5cform_itcreversal_relatable;
+			$c5cform_hiform_turnover_form_pending=$item->c5cform_hiform_turnover_form_pending;
+			$c5cform_hiform_taxpayable=$item->c5cform_hiform_taxpayable;
+			$c5cform_hiform_transitionitc2=$item->c5cform_cform_taxpayable;
+			$a6ainvoice_document_no=$item->a6ainvoice_document_no;
+			$a6ainvoice_document_date=$item->a6ainvoice_document_date;
+		    $a6asupplier_registration_no=$item->a6asupplier_registration_no;
+			$a6arecipients_registration_no=$item->a6arecipients_registration_no;
+				$a6a_value=$item->a6a_value;
+				$a6a_ed_cvd=$item->a6a_ed_cvd;
+				$a6a_sad=$item->a6a_sad;
+				$a6a_totaleligible_cenvat=$item->a6a_totaleligible_cenvat;
+				$a6a_totalcenvat_credit=$item->a6a_totalcenvat_credit;
+				$a6a_totalcenvat_credit_unavailed=$item->a6a_totalcenvat_credit_unavailed;
+				$b6binvoice_document_no=$item->b6binvoice_document_no;
+				$b6binvoice_document_date=$item->b6binvoice_document_date;
+				$b6bsupplier_registration_no=$item->b6bsupplier_registration_no;
+				$b6breceipients_registration_no=$item->b6breceipients_registration_no;
+				$b6b_value=$item->b6b_value;
+				$b6b_taxpaid_vat=$item->b6b_taxpaid_vat;
+				$b6b_totaleligible_vat=$item->b6b_totaleligible_vat;
+				$b6b_totalvat_creditavailed=$item->b6b_totalvat_creditavailed;
+				$b6b_totalvat_creditunavailed=$item->b6b_totalvat_creditunavailed;			
+			$a7a1_hsncode=$item->a7a1_hsncode;
+			$a7a1_unit=$item->a7a1_unit;
+			$a7a1_qty=$item->a7a1_qty;
+			$a7a1_value=$item->a7a1_value;
+			$a7a1_eligible_duties=$item->a7a1_eligible_duties;
+			$b7b_nameof_supplier=$item->b7b_nameof_supplier;
+			$b7b_invoice_number=$item->b7b_invoice_number;
+			$b7b_invoice_date=$item->b7b_invoice_date;
+			$b7b_description=$item->b7b_description;
+			$b7b_quantity=$item->b7b_quantity;
+			$b7b_uqc=$item->b7b_uqc;
+			$b7b_value=$item->b7b_value;
+			$b7b_eligible_duties=$item->b7b_eligible_duties;
+			$b7b_vat=$item->b7b_vat;
+			$b7b_dateonwhich_receipients=$item->b7b_dateonwhich_receipients;
+			$c7c1_description=$item->c7c1_description;
+			$c7c1_unit=$item->c7c1_unit;
+			$c7c1_qty=$item->c7c1_qty;
+			$c7c1_value=$item->c7c1_value;
+			$c7c1_vat=$item->c7c1_vat;
+			$c7c1_totalinput_taxcredit=$item->c7c1_totalinput_taxcredit;
+			$c7c1_totalinput_taxcredit_exempt=$item->c7c1_totalinput_taxcredit_exempt;
+			$c7c1_totalinput_taxcredit_admissible=$item->c7c1_totalinput_taxcredit_admissible;				
+			$d7d_description=$item->d7d_description;
+			$d7d_unit=$item->d7d_unit;
+			$d7d_qty=$item->d7d_qty;
+			$d7d_value=$item->d7d_value;
+			$d7d_vatentry_taxpad=$item->d7d_vatentry_taxpad;
+			$a7a2_hsncode=$item->a7a2_hsncode;
+			$a7a2_unit=$item->a7a2_unit;
+			$a7a2_qty=$item->a7a2_qty;
+			$a7a2_value=$item->a7a2_value;
+			$a7a2_eligible_duties=$item->a7a2_eligible_duties;
+			$a7a3_hsncode=$item->a7a3_hsncode;
+			$a7a3_unit=$item->a7a3_unit;
+			$a7a3_qty=$item->a7a3_qty;
+			$a7a3_value=$item->a7a3_value;
+			$a7a3_eligible_duties=$item->a7a3_eligible_duties;
+			$b7b_nameof_supplier=$item->b7b_nameof_supplier;
+			$b7b_invoice_number=$item->b7b_invoice_number;
+			$b7b_invoice_date=$item->b7b_invoice_date;
+			$b7b_description=$item->b7b_description;
+			$b7b_quantity=$item->b7b_quantity;
+			$b7b_uqc=$item->b7b_uqc;
+			$b7b_value=$item->b7b_value;
+			$b7b_eligible_duties=$item->b7b_eligible_duties;
+			$b7b_vat=$item->b7b_vat;
+			$b7b_dateonwhich_receipients=$item->b7b_dateonwhich_receipients;
+			$c7c2_description=$item->c7c2_description;
+			$c7c2_unit=$item->c7c2_unit;
+			$c7c2_qty=$item->c7c2_qty;
+			$c7c2_value=$item->c7c2_value;
+			$c7c2_vat=$item->c7c2_vat;
+			$c7c2_totalinput_taxcredit=$item->c7c2_totalinput_taxcredit;
+			$c7c2_totalinput_taxcredit_exempt=$item->c7c2_totalinput_taxcredit_exempt;
+			$c7c2_totalinput_taxcredit_admissible=$item->c7c2_totalinput_taxcredit_admissible;
+			$a8registration_no=$item->a8registration_no;
+			$a8taxperiod_lastreturn=$item->a8taxperiod_lastreturn;
+			$a8dateoffilling_return=$item->a8dateoffilling_return;
+			$a8balanceeligible_cenvat_credit=$item->a8balanceeligible_cenvat_credit;
+			$a8gstnof_receiver=$item->a8gstnof_receiver;
+			$a8distributionno=$item->a8distributionno;
+			$a8distributiondate=$item->a8distributiondate;
+			$a8itcofcentral=$item->a8itcofcentral;
+			$a9a1challan_no=$item->a9a1challan_no;
+			$a9a1challan_date=$item->a9a1challan_date;
+			$a9a1typeof_goods=$item->a9a1typeof_goods;
+			$a9a1_hsn=$item->a9a1_hsn;
+			$a9a1_description=$item->a9a1_description;
+			$a9a1_unit=$item->a9a1_unit;
+			$a9a1_quantity=$item->a9a1_quantity;
+			$a9a1_value=$item->a9a1_value;
+			$b9b1challan_no=$item->b9b1challan_no;
+			$b9b1challan_date=$item->b9b1challan_date;
+			$b9b1typeof_goods=$item->b9b1typeof_goods;
+			$b9b1_hsn=$item->b9b1_hsn;
+			$b9b1_description=$item->b9b1_description;
+			$b9b1_unit=$item->b9b1_unit;
+			$b9b1_quantity=$item->b9b1_quantity;
+			$b9b1_value=$item->b9b1_value;
+			$a11aregistration_no=$item->a11aregistration_no;
+			$a11aservicetax_no=$item->a11aservicetax_no;
+			$a11ainvoice_documentno=$item->a11ainvoice_documentno;
+			$a11ainvoice_document_date=$item->a11ainvoice_document_date;
+			$a11atax_paid=$item->a11atax_paid;
+			$a11avatpaid_sgst=$item->a11avatpaid_sgst;
+			$a12a_document_no=$item->a12a_document_no;
+			$a12a_document_date=$item->a12a_document_date;
+			$a12a_gstinno_receipient=$item->a12a_gstinno_receipient;
+			$a12a_name_receipient=$item->a12a_name_receipient;
+			$a12a_hsn=$item->a12a_hsn;
+			$a12a_description=$item->a12a_description;
+			$a12a_unit=$item->a12a_unit;
+			$a12a_quantity=$item->a12a_quantity;
+			$a12a_value=$item->a12a_value;
+			$a10a_gstn=$item->a10a_gstn;
+			$a10a_description=$item->a10a_description;
+			$a10a_unit=$item->a10a_unit;
+			$a10a_quantity=$item->a10a_quantity;
+			$a10a_value=$item->a10a_value;
+			$a10a_inputtax=$item->a10a_inputtax;
+			$b10b_gstn=$item->b10b_gstn;
+			$b10b_description=$item->b10b_description;
+			$b10b_unit=$item->b10b_unit;
+			$b10b_quantity=$item->b10b_quantity;
+			$b10b_value=$item->b10b_value;
+			$b10b_inputtax=$item->b10b_inputtax;
+		}
+		}
+		  $mpdfHtml .='<html>';
+		  $mpdfHtml .='<body>';
+		    $mpdfHtml .= ' <div style="position: relative;min-height: 1px;padding-right: 0px;padding-left: 0px;" class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
+		   <div style="width: 100%;position: relative;min-height: 1px;padding-right: 15px;padding-left:0px;position: relative;min-height: 1px padding-right: 0px;
+		    padding-left: 15px; font-size:12px !important;" class="col-md-12 col-sm-12 col-xs-12">
+		    <div style="position: relative;min-height: 1px padding-right: 15px;
+		    padding-left: 15px;" class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav"></div>
+		    <div class="whitebg formboxcontainer">
+			<div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+>5.Amount of Tax credit carried forward in the return file under existing laws</div>
+		<br><div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+>5.(A)Amount of cenvat Credit carried forward to electronic credit ledger as central tax</div>';
+$mpdfHtml .='<div class="tableresponsive">
+<table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+ <thead><tr><th>S.No</th><th>Registration(Central Excise and service tax)</th>
+                       <th>Tax Return to which last return filled</th>
+                       <th>DateOfFillingReturnSpecified in Column3</th>
+                       <th>BalacneCenvat Carried forward in the said last return</th>
+                       <th>Cenvat Carried admissible as ITC of central Tax</th>
+                       </tr></thead><tbody>';                                          		   
+                                
+                                
+                                   
+								
+								if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								$a5_taxperiod_last_return=(explode(",",$a5_taxperiod_last_return));
+								$a5_registration_no=(explode(",",$a5_registration_no));
+								$a5_dateoffilling_return=(explode(",",$a5_dateoffilling_return));
+								$a5_balance_cenvat_credit=(explode(",",$a5_balance_cenvat_credit));
+								$a5_cenvat_credit_admissible=(explode(",",$a5_cenvat_credit_admissible));
+			                    $start='';
+								if(sizeof($a5_taxperiod_last_return) > 1)
+								{
+									$start = $a5_taxperiod_last_return;
+									
+								}
+								elseif(sizeof($a5_registration_no) > 1)
+								{
+									 $start = $a5_registration_no;
+								}
+								elseif(sizeof($a5_dateoffilling_return) > 1)
+								{
+									 $start = $a5_dateoffilling_return;
+									
+								}
+								elseif(sizeof($a5_balance_cenvat_credit) > 1)
+								{
+									$start = $a5_balance_cenvat_credit;
+								}
+								elseif(sizeof($a5_cenvat_credit_admissible) > 1)
+								{
+									$start = $a5_cenvat_credit_admissible;
+								}
+								else{
+									$start = $a5_taxperiod_last_return;
+								}
+								
+									
+						 
+							  for($i=0;$i < sizeof($start); $i++) {
+						   $sno =0;
+                     		$sno = $i+1;				   
+                           $mpdfHtml .='<tr> <td class="leftheading" >'.$sno.'</td>';
+						   
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($a5_taxperiod_last_return[$i])?$a5_taxperiod_last_return[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a5_registration_no[$i])?$a5_registration_no[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a5_dateoffilling_return[$i])?$a5_dateoffilling_return[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a5_balance_cenvat_credit[$i])?$a5_balance_cenvat_credit[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a5_cenvat_credit_admissible[$i])?$a5_cenvat_credit_admissible[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='</tr>';
+								}	}							
+						$mpdfHtml .='</tbody></table></div>';
+                          
+                       
+        $mpdfHtml .='<br><div style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading">B. Details of statutory form received for which credit is being carried forward</div><br>
+						 <div class="tableresponsive">
+						 <div style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading">Amount of Tax credit forward to electronic credit</div>
+						
+                          <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+
+                                <thead>
+                                <tr>
+								 <th>S.No.</th>
+                                <th>TIN Issuer</th>
+                                <th>Name Of Issuer</th>
+                                <th>Sr.no. of Form</th>
+                                <th>Amount</th>
+                                <th>Applicable VatRate</th>
+                             
+                                </tr>
+                                </thead>
+                                
+                                <tbody>
+                                <tr>
+                                <td class="lftheading" >CForm</td>
+                                            
+                                </tr>';
+		if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								$b5bcform_tin_issuer=(explode(",",$b5bcform_tin_issuer));
+								$b5bcform_nameof_issuer=(explode(",",$b5bcform_nameof_issuer));
+								$b5bcform_no_of_item=(explode(",",$b5bcform_no_of_item));
+								$b5bcform_amount=(explode(",",$b5bcform_amount));
+								$b5bcform_applicable_vat_rate=(explode(",",$b5bcform_applicable_vat_rate));
+							     $start='';
+								if(sizeof($b5bcform_tin_issuer) > 1)
+								{
+									$start = $b5bcform_tin_issuer;
+									
+								}
+								elseif(sizeof($b5bcform_nameof_issuer) > 1)
+								{
+									 $start = $b5bcform_nameof_issuer;
+								}
+								elseif(sizeof($b5bcform_no_of_item) > 1)
+								{
+									 $start = $b5bcform_no_of_item;
+									
+								}
+								elseif(sizeof($b5bcform_amount) > 1)
+								{
+									$start = $b5bcform_amount;
+								}
+								elseif(sizeof($b5bcform_applicable_vat_rate) > 1)
+								{
+									$start = $b5bcform_applicable_vat_rate;
+								}
+								else{
+									$start = $b5bcform_tin_issuer;
+								}
+								
+						
+							  for($i=0;$i < sizeof($start); $i++) {
+						    $sno =0;
+                     		$sno = $i+1;				   
+                           $mpdfHtml .='<tr> <td class="leftheading" >'.$sno.'</td>';
+						   
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($b5bcform_tin_issuer[$i])?$b5bcform_tin_issuer[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b5bcform_nameof_issuer[$i])?$b5bcform_nameof_issuer[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b5bcform_no_of_item[$i])?$b5bcform_no_of_item[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b5bcform_amount[$i])?$b5bcform_amount[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b5bcform_applicable_vat_rate[$i])?$b5bcform_applicable_vat_rate[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='</tr>';
+								}	}							
+		$mpdfHtml .='</tbody></table></div>';
+		$mpdfHtml .=' <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+
+                     <tr><td class="lftheading" >F-Form</td></tr>';
+                                
+          if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								
+							$b5bfform_tin_issuer=(explode(",",$b5bfform_tin_issuer));
+							$b5bfform_nameof_issuer=(explode(",",$b5bfform_nameof_issuer));
+							$b5bfform_no_of_form=(explode(",",$b5bfform_no_of_form));
+							$b5bfform_amount=(explode(",",$b5bfform_amount));
+							$b5bfform_applicable_vat_rate=(explode(",",$b5bfform_applicable_vat_rate));
+							   $start='';
+								if(sizeof($b5bfform_tin_issuer) > 1)
+								{
+									$start = $b5bfform_tin_issuer;
+									
+								}
+								elseif(sizeof($b5bfform_nameof_issuer) > 1)
+								{
+									 $start = $b5bfform_nameof_issuer;
+								}
+								elseif(sizeof($b5bfform_no_of_form) > 1)
+								{
+									 $start = $b5bfform_no_of_form;
+									
+								}
+								elseif(sizeof($b5bfform_amount) > 1)
+								{
+									$start = $b5bfform_amount;
+								}
+								elseif(sizeof($b5bfform_applicable_vat_rate) > 1)
+								{
+									$start = $b5bfform_applicable_vat_rate;
+								}
+								else{
+									$start = $b5bfform_tin_issuer;
+								}			   
+						
+							  for($i=0;$i < sizeof($start); $i++) {
+								 $mpdfHtml .='<tr> <td class="leftheading" >'.$sno.'</td>';
+						   
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($b5bfform_tin_issuer[$i])?$b5bfform_tin_issuer[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b5bfform_nameof_issuer[$i])?$b5bfform_nameof_issuer[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b5bfform_no_of_form[$i])?$b5bfform_no_of_form[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b5bfform_amount[$i])?$b5bfform_amount[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b5bfform_applicable_vat_rate[$i])?$b5bfform_applicable_vat_rate[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='</tr>';
+								}	}			                          
+		$mpdfHtml .='</table>';	
+        $mpdfHtml .=' <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+
+                     <tr><td class="lftheading" >H/I-Form</td></tr>';
+                                
+          if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								$b5bhiform_tin_issuer=(explode(",",$b5bhiform_tin_issuer));
+								$b5bhiform_nameof_issuer=(explode(",",$b5bhiform_nameof_issuer));
+								$b5bhiform_no_of_form=(explode(",",$b5bhiform_no_of_form));
+								$b5bhiform_amount=(explode(",",$b5bhiform_amount));
+								$b5bhiform_applicable_vat_rate=(explode(",",$b5bhiform_applicable_vat_rate));
+								$start='';
+								if(sizeof($b5bhiform_tin_issuer) > 1)
+								{
+									$start = $b5bhiform_tin_issuer;
+									
+								}
+								elseif(sizeof($b5bhiform_nameof_issuer) > 1)
+								{
+									 $start = $b5bhiform_nameof_issuer;
+								}
+								elseif(sizeof($b5bhiform_no_of_form) > 1)
+								{
+									 $start = $b5bhiform_no_of_form;
+									
+								}
+								elseif(sizeof($b5bhiform_amount) > 1)
+								{
+									$start = $b5bhiform_amount;
+								}
+								elseif(sizeof($b5bhiform_applicable_vat_rate) > 1)
+								{
+									$start = $b5bhiform_applicable_vat_rate;
+								}
+								else{
+									$start = $b5bhiform_tin_issuer;
+								}			 					   
+						
+							  for($i=0;$i < sizeof($b5bhiform_tin_issuer); $i++) {
+								 
+								 $mpdfHtml .='<tr> <td class="leftheading" >'.$sno.'</td>';
+						   
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($b5bhiform_tin_issuer[$i])?$b5bhiform_tin_issuer[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b5bhiform_nameof_issuer[$i])?$b5bhiform_nameof_issuer[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b5bhiform_no_of_form[$i])?$b5bhiform_no_of_form[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b5bhiform_amount[$i])?$b5bhiform_amount[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b5bhiform_applicable_vat_rate[$i])?$b5bhiform_applicable_vat_rate[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='</tr>';
+								}	}			                          
+		$mpdfHtml .='</table><br>';
+$mpdfHtml .='<div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading">C.Amount of tax credit carried forward to electronic credit ledger as state/UT Tax</div>
+					     <div class="tableresponsive">
+						 <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+
+						        <thead>
+                                <tr>
+                                <th>Registration No. in existing law</th>
+                                <th>Balance Of ITC Of vat</th>
+								<th colspan="2" align="center">C-Form</th>
+								<th colspan="2" align="center">F-Form</th>
+                               
+								<th>ITC Reversal relatable to (3) and (5)</th>
+								<th colspan="2" align="center">Hi-Form</th>
+							
+								 <th>Transition ITC 2-(4+6+7+9)</th>
+                                </tr>
+								<tr>
+								<th>&nbsp;</th>
+								<th>&nbsp;</th>
+								 <th>Turnover for which form pending</th>
+                                <th>Difference Tax payable On 3</th>
+                                <th>Turnover which for form pending</th>
+                                <th>Taxpayable on(5)</th>
+								<th>&nbsp;</th>
+								<th>Turnover which form pending</th>
+								<th>Taxpayable on(7)</th>
+								<th>&nbsp;</th>
+								</tr>
+                                </thead>
+                                
+                                <tbody>';	
+if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+									 $c5cform_registration_no=(explode(",",$c5cform_registration_no));
+					                $c5cform_balanceof_itc_val=(explode(",",$c5cform_balanceof_itc_val));
+									$c5cform_cform_turnover_form_pending=(explode(",",$c5cform_cform_turnover_form_pending));
+									$c5cform_cform_taxpayable=(explode(",",$c5cform_cform_taxpayable));
+									$c5cform_fform_turnover_form_pending=(explode(",",$c5cform_fform_turnover_form_pending));
+									$c5cform_fform_taxpayable=(explode(",",$c5cform_fform_taxpayable));
+									$c5cform_itcreversal_relatable=(explode(",",$c5cform_itcreversal_relatable));
+									$c5cform_hiform_turnover_form_pending=(explode(",",$c5cform_hiform_turnover_form_pending));
+									$c5cform_hiform_taxpayable=(explode(",",$c5cform_hiform_taxpayable));
+									$c5cform_hiform_transitionitc2=(explode(",",$c5cform_hiform_transitionitc2));
+								   	$start='';
+								if(sizeof($c5cform_registration_no) > 1)
+								{
+									$start = $c5cform_registration_no;
+									
+								}
+								elseif(sizeof($c5cform_balanceof_itc_val) > 1)
+								{
+									 $start = $c5cform_balanceof_itc_val;
+								}
+								elseif(sizeof($c5cform_cform_turnover_form_pending) > 1)
+								{
+									 $start = $c5cform_cform_turnover_form_pending;
+									
+								}
+								elseif(sizeof($c5cform_cform_taxpayable) > 1)
+								{
+									$start = $c5cform_cform_taxpayable;
+								}
+								elseif(sizeof($c5cform_fform_turnover_form_pending) > 1)
+								{
+									$start = $c5cform_fform_turnover_form_pending;
+								}
+								elseif(sizeof($c5cform_fform_taxpayable) > 1)
+								{
+									$start = $c5cform_fform_taxpayable;
+								}
+								elseif(sizeof($c5cform_itcreversal_relatable) > 1)
+								{
+									$start = $c5cform_itcreversal_relatable;
+								}
+								elseif(sizeof($c5cform_hiform_turnover_form_pending) > 1)
+								{
+									$start = $c5cform_hiform_turnover_form_pending;
+								}
+								elseif(sizeof($c5cform_hiform_taxpayable) > 1)
+								{
+									$start = $c5cform_hiform_taxpayable;
+								}
+								elseif(sizeof($c5cform_hiform_transitionitc2) > 1)
+								{
+									$start = $c5cform_hiform_transitionitc2;
+								}
+								else{
+									$start = $c5cform_registration_no;
+								}				
+							       
+								
+							  for($i=0;$i < sizeof($start); $i++) {
+					      $mpdfHtml .='<tr>';
+						   
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($c5cform_registration_no[$i])?$c5cform_registration_no[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($c5cform_balanceof_itc_val[$i])?$c5cform_balanceof_itc_val[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($c5cform_cform_turnover_form_pending[$i])?$c5cform_cform_turnover_form_pending[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($c5cform_cform_taxpayable[$i])?$c5cform_cform_taxpayable[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($c5cform_fform_turnover_form_pending[$i])?$c5cform_fform_turnover_form_pending[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						    $mpdfHtml .='<td>
+									 <label>'.(!empty($c5cform_fform_taxpayable[$i])?$c5cform_fform_taxpayable[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($c5cform_itcreversal_relatable[$i])?$c5cform_itcreversal_relatable[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						    $mpdfHtml .='<td>
+									 <label>'.(!empty($c5cform_hiform_turnover_form_pending[$i])?$c5cform_hiform_turnover_form_pending[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						    $mpdfHtml .='<td>
+									 <label>'.(!empty($c5cform_hiform_taxpayable[$i])?$c5cform_hiform_taxpayable[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						    $mpdfHtml .='<td>
+									 <label>'.(!empty($c5cform_hiform_transitionitc2[$i])?$c5cform_hiform_transitionitc2[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='</tr>';
+								}}		
+         
+                            
+        $mpdfHtml .= '</tbody></table></div>';	
+        $mpdfHtml .= '<br><div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+ >6.Details of Capital goods for which Unavailed credit has not been carried</div><br>
+<div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+>A.Amount of unavailed cenvat credit in respect of capital goods carried forward to electronic credit ledger as central tax</div>
+					     <div class="tableresponsive">
+						 	<table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+
+					            <thead>
+                                <tr>
+                                <th>Sr.No.</th>
+                                <th>Invoice<br>Documentno.</th>
+								<th>Invoice<br> Document<br> Date</th>
+								<th>Supplier<br> Registration<br> no <br>under<br> existing law</th>
+                               
+								<th>Recipient<br>Registration<br>Under<br> existing law</th>
+								<th colspan="3" align="center" >Details of<br> capital<br> goods<br></th>
+							
+								 <th>Eligible<br>credit under<br> existing law</th>
+								  <th>credit<br> availed under<br> existing law</th>
+								    <th>ITC of centralTax(9-10)</th>
+                                </tr>
+								<tr>
+								<th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th>
+								<th>Value</th><th colspan="2">Duties and taxpad</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th>
+								</tr>
+								<tr>
+								<th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th>
+								<th>&nbsp;</th><th >ED</th><th>SAD</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th>
+								</tr>
+								
+                                </thead>                                
+                                <tbody>';	
+        if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								$a6ainvoice_document_no=(explode(",",$a6ainvoice_document_no));
+			                    $a6ainvoice_document_date=(explode(",",$a6ainvoice_document_date));
+								$a6asupplier_registration_no=(explode(",",$a6asupplier_registration_no));
+								$a6arecipients_registration_no=(explode(",",$a6arecipients_registration_no));
+								$a6a_value=(explode(",",$a6a_value));
+								$a6a_ed_cvd=(explode(",",$a6a_ed_cvd));
+								$a6a_sad=(explode(",",$a6a_sad));
+								$a6a_totaleligible_cenvat=(explode(",",$a6a_totaleligible_cenvat));
+								$a6a_totalcenvat_credit=(explode(",",$a6a_totalcenvat_credit));
+								$a6a_totalcenvat_credit_unavailed=(explode(",",$a6a_totalcenvat_credit_unavailed));
+								$start='';
+								if(sizeof($a6ainvoice_document_date) > 1)
+								{
+									$start = $a6ainvoice_document_date;
+									
+								}
+								elseif(sizeof($a6asupplier_registration_no) > 1)
+								{
+									 $start = $a6asupplier_registration_no;
+								}
+								elseif(sizeof($a6arecipients_registration_no) > 1)
+								{
+									 $start = $a6arecipients_registration_no;
+									
+								}
+								elseif(sizeof($a6a_value) > 1)
+								{
+									$start = $a6a_value;
+								}
+								elseif(sizeof($a6a_ed_cvd) > 1)
+								{
+									$start = $a6a_ed_cvd;
+								}
+								elseif(sizeof($a6a_sad) > 1)
+								{
+									$start = $a6a_sad;
+								}
+								elseif(sizeof($a6a_totaleligible_cenvat) > 1)
+								{
+									$start = $a6a_totaleligible_cenvat;
+								}
+								elseif(sizeof($a6a_totalcenvat_credit) > 1)
+								{
+									$start = $a6a_totalcenvat_credit;
+								}
+								elseif(sizeof($a6a_totalcenvat_credit_unavailed) > 1)
+								{
+									$start = $a6a_totalcenvat_credit_unavailed;
+								}
+								
+								else{
+									$start = $a6ainvoice_document_date;
+								}								   
+						
+							  for($i=0;$i < sizeof($start); $i++) {
+								  $sno =0;
+                     		$sno = $i+1;
+								 $mpdfHtml .='<tr>';
+						    $mpdfHtml .='<td>
+									 <label>'.$sno.'</label>'; 
+						  $mpdfHtml .='</td>';
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($a6ainvoice_document_no[$i])?$a6ainvoice_document_no[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='<td>
+									 <label>'.(!empty($a6ainvoice_document_date[$i])?$a6ainvoice_document_date[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a6asupplier_registration_no[$i])?$a6asupplier_registration_no[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a6arecipients_registration_no[$i])?$a6arecipients_registration_no[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a6a_value[$i])?$a6a_value[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						    $mpdfHtml .='<td>
+									 <label>'.(!empty($a6a_ed_cvd[$i])?$a6a_ed_cvd[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a6a_sad[$i])?$a6a_sad[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						    $mpdfHtml .='<td>
+									 <label>'.(!empty($a6a_totaleligible_cenvat[$i])?$a6a_totaleligible_cenvat[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						    $mpdfHtml .='<td>
+									 <label>'.(!empty($a6a_totalcenvat_credit[$i])?$a6a_totalcenvat_credit[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						    $mpdfHtml .='<td>
+									 <label>'.(!empty($a6a_totalcenvat_credit_unavailed[$i])?$a6a_totalcenvat_credit_unavailed[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='</tr>';
+								}}	
+      
+                            
+        $mpdfHtml .=' </tbody></table></div>';
+$mpdfHtml .= '<br><div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+>B.Amount of unavailed input tax credit carried forward to electronic credit ledger</div>
+					    <div class="tableresponsive">
+							 <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+
+					            <thead>
+                                <tr>
+                                <th>Sr.No.</th>
+                                <th>Invoice<br>Documentno.</th>
+								<th>Invoice<br> Document<br> Date</th>
+								<th>Supplier<br> Registration<br> no <br>under<br> existing law</th>
+                               
+								<th>Recipient<br>Registration<br>Under<br> existing law</th>
+								<th colspan="2" align="center" >Details of<br> capital<br> goods<br>on which credit is not availed</th>
+							
+								 <th>Eligible<br>credit under<br> existing law</th>
+								  <th>credit<br> availed under<br> existing law</th>
+								    <th>ITC of centralTax(9-10)</th>
+                                </tr>
+								<tr>
+								<th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th>
+								<th>Value</th><th colspan="2">Duties and taxpad</th><th>&nbsp;</th><th>&nbsp;</th>
+								</tr>
+								
+								
+                                </thead>
+                                
+                                <tbody>';	
+       if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								
+			                    $b6binvoice_document_no=(explode(",",$b6binvoice_document_no));
+								$b6binvoice_document_date=(explode(",",$b6binvoice_document_date));
+								$b6bsupplier_registration_no=(explode(",",$b6bsupplier_registration_no));
+								$b6breceipients_registration_no=(explode(",",$b6breceipients_registration_no));
+								$b6b_value=(explode(",",$b6b_value));
+								$b6b_taxpaid_vat=(explode(",",$b6b_taxpaid_vat));
+								$b6b_totaleligible_vat=(explode(",",$b6b_totaleligible_vat));
+								$b6b_totalvat_creditavailed=(explode(",",$b6b_totalvat_creditavailed));
+								$b6b_totalvat_creditunavailed=(explode(",",$b6b_totalvat_creditunavailed));
+								   
+						        $start='';
+								if(sizeof($b6binvoice_document_no) > 1)
+								{
+									$start = $b6binvoice_document_no;
+									
+								}
+								elseif(sizeof($b6binvoice_document_date) > 1)
+								{
+									 $start = $b6binvoice_document_date;
+								}
+								elseif(sizeof($b6bsupplier_registration_no) > 1)
+								{
+									 $start = $b6bsupplier_registration_no;
+									
+								}
+								elseif(sizeof($b6breceipients_registration_no) > 1)
+								{
+									$start = $b6breceipients_registration_no;
+								}
+								elseif(sizeof($b6b_value) > 1)
+								{
+									$start = $b6b_value;
+								}
+								elseif(sizeof($b6b_taxpaid_vat) > 1)
+								{
+									$start = $b6b_taxpaid_vat;
+								}
+								elseif(sizeof($b6b_totaleligible_vat) > 1)
+								{
+									$start = $b6b_totaleligible_vat;
+								}
+								elseif(sizeof($b6b_totalvat_creditavailed) > 1)
+								{
+									$start = $b6b_totalvat_creditavailed;
+								}
+								elseif(sizeof($b6b_totalvat_creditunavailed) > 1)
+								{
+									$start = $b6b_totalvat_creditunavailed;
+								}								
+								else{
+									$start = $b6binvoice_document_no;
+								}
+							  for($i=0;$i < sizeof($start); $i++) {
+								 $sno =0;
+                     		$sno = $i+1;
+								 $mpdfHtml .='<tr>';
+						    $mpdfHtml .='<td>
+									 <label>'.$sno.'</label>'; 
+						  $mpdfHtml .='</td>';
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($b6binvoice_document_no[$i])?$b6binvoice_document_no[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='<td>
+									 <label>'.(!empty($b6binvoice_document_date[$i])?$b6binvoice_document_date[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b6bsupplier_registration_no[$i])?$b6bsupplier_registration_no[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b6breceipients_registration_no[$i])?$b6breceipients_registration_no[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b6b_value[$i])?$b6b_value[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						    $mpdfHtml .='<td>
+									 <label>'.(!empty($b6b_taxpaid_vat[$i])?$b6b_taxpaid_vat[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b6b_totaleligible_vat[$i])?$b6b_totaleligible_vat[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						    $mpdfHtml .='<td>
+									 <label>'.(!empty($b6b_totalvat_creditavailed[$i])?$b6b_totalvat_creditavailed[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						    $mpdfHtml .='<td>
+									 <label>'.(!empty($b6b_totalvat_creditunavailed[$i])?$b6b_totalvat_creditunavailed[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   
+						  $mpdfHtml .='</tr>';
+								}}	
+      
+                            
+        $mpdfHtml .=' </tbody></table></div>';
+        $mpdfHtml .='<br><div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+>7.Details of Input held in terms of section </div>
+					     <div class="tableresponsive">
+						 <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+
+                                <thead>
+                                <tr>
+                                <th>Sr.No.</th>
+                                  <th colspan="5">Details of Input held in stock</th>
+                              
+                                </tr>
+								<tr>
+								<th>&nbsp;</th>
+								<th>HSN(at 6 digit level)</th>
+								<th>Unit</th>
+								<th>Qty</th>
+								<th>value</th>
+								<th>Eligible Duties paid on such input</th>
+							     </tr>
+								 <tr><td colspan="6">7A where duties paid invoices are available</td></tr>
+								
+                                </thead>
+                                
+                                <tbody>';   
+        if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								
+								 $a7a1_hsncode=(explode(",",$a7a1_hsncode));
+								$a7a1_unit=(explode(",",$a7a1_unit));
+								$a7a1_qty=(explode(",",$a7a1_qty));
+								$a7a1_value=(explode(",",$a7a1_value));
+								$a7a1_eligible_duties=(explode(",",$a7a1_eligible_duties));
+				                 $start='';
+								if(sizeof($a7a1_hsncode) > 1)
+								{
+									$start = $a7a1_hsncode;
+									
+								}
+								elseif(sizeof($a7a1_unit) > 1)
+								{
+									 $start = $a7a1_unit;
+								}
+								elseif(sizeof($a7a1_qty) > 1)
+								{
+									 $start = $a7a1_qty;
+									
+								}
+								elseif(sizeof($a7a1_value) > 1)
+								{
+									$start = $a7a1_value;
+								}
+								elseif(sizeof($a7a1_eligible_duties) > 1)
+								{
+									$start = $a7a1_eligible_duties;
+								}
+																
+								else{
+									$start = $a7a1_hsncode;
+								}
+								   
+						
+							  for($i=0;$i < sizeof($start); $i++) {
+								   $sno =0;
+                     		$sno = $i+1;
+					       $sno =0;
+							$sno = $i+1;	  
+						   $mpdfHtml .='<tr>';	
+                           $mpdfHtml .='<td>
+									 <label>'.$sno.'</label>'; 
+						  $mpdfHtml .='</td>';					   
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($a7a1_hsncode[$i])?$a7a1_hsncode[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='<td>
+									 <label>'.(!empty($a7a1_unit[$i])?$a7a1_unit[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a7a1_qty[$i])?$a7a1_qty[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a7a1_value[$i])?$a7a1_value[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a7a1_eligible_duties[$i])?$a7a1_eligible_duties[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';					  
+						   
+						  $mpdfHtml .='</tr>';
+								}}	
+		$mpdfHtml .='</tbody></table>';
+        $mpdfHtml .=' <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+					<tr><td colspan="6">Input Contained in finished and semi finished goods</td></tr>';		
+		if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								
+			                    $a7a2_hsncode=(explode(",",$a7a2_hsncode));
+								$a7a2_unit=(explode(",",$a7a2_unit));
+								$a7a2_qty=(explode(",",$a7a2_qty));
+								$a7a2_value=(explode(",",$a7a2_value));
+								$a7a2_eligible_duties=(explode(",",$a7a2_eligible_duties));
+								$start='';
+								if(sizeof($a7a2_hsncode) > 1)
+								{
+									$start = $a7a2_hsncode;
+									
+								}
+								elseif(sizeof($a7a2_unit) > 1)
+								{
+									 $start = $a7a2_unit;
+								}
+								elseif(sizeof($a7a2_qty) > 1)
+								{
+									 $start = $a7a2_qty;
+									
+								}
+								elseif(sizeof($a7a2_value) > 1)
+								{
+									$start = $a7a2_value;
+								}
+								elseif(sizeof($a7a2_eligible_duties) > 1)
+								{
+									$start = $a7a2_eligible_duties;
+								}
+																
+								else{
+									$start = $a7a2_hsncode;
+								}   
+						
+							  for($i=0;$i < sizeof($start); $i++) {
+								$sno =0;
+							$sno = $i+1;	  
+						   $mpdfHtml .='<tr>';	
+                           $mpdfHtml .='<td>
+									 <label>'.$sno.'</label>'; 
+						  $mpdfHtml .='</td>';						   
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($a7a2_hsncode[$i])?$a7a2_hsncode[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='<td>
+									 <label>'.(!empty($a7a2_unit[$i])?$a7a2_unit[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a7a2_qty[$i])?$a7a2_qty[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a7a2_value[$i])?$a7a2_value[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a7a2_eligible_duties[$i])?$a7a2_eligible_duties[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';					  
+						   
+						  $mpdfHtml .='</tr>';
+								}}
+		$mpdfHtml .='</table>';	
+        $mpdfHtml .=' <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+								
+                    <tr><td colspan="6">7B Where duty paid invoices are not available</td></tr>';
+		if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								
+			                    $a7a3_hsncode=(explode(",",$a7a3_hsncode));
+								$a7a3_unit=(explode(",",$a7a3_unit));
+								$a7a3_qty=(explode(",",$a7a3_qty));
+								$a7a3_value=(explode(",",$a7a3_value));
+								$a7a3_eligible_duties=(explode(",",$a7a3_eligible_duties));
+								   
+						        $start='';
+								if(sizeof($a7a3_hsncode) > 1)
+								{
+									$start = $a7a3_hsncode;
+									
+								}
+								elseif(sizeof($a7a3_unit) > 1)
+								{
+									 $start = $a7a3_unit;
+								}
+								elseif(sizeof($a7a3_qty) > 1)
+								{
+									 $start = $a7a3_qty;
+									
+								}
+								elseif(sizeof($a7a3_value) > 1)
+								{
+									$start = $a7a3_value;
+								}
+								elseif(sizeof($a7a3_eligible_duties) > 1)
+								{
+									$start = $a7a3_eligible_duties;
+								}
+																
+								else{
+									$start = $a7a3_hsncode;
+								}   
+							  for($i=0;$i < sizeof($start); $i++) {
+							$sno =0;
+							$sno = $i+1;	  
+						   $mpdfHtml .='<tr>';	
+                           $mpdfHtml .='<td>
+									 <label>'.$sno.'</label>'; 
+						  $mpdfHtml .='</td>';									
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($a7a3_hsncode[$i])?$a7a3_hsncode[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='<td>
+									 <label>'.(!empty($a7a3_unit[$i])?$a7a3_unit[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a7a3_qty[$i])?$a7a3_qty[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a7a3_value[$i])?$a7a3_value[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a7a3_eligible_duties[$i])?$a7a3_eligible_duties[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';					  
+						   
+						  $mpdfHtml .='</tr>';
+								}}
+		
+        $mpdfHtml .='</table></div>';
+        $mpdfHtml .='<div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+>B.Amount of eligible duties and taxes</div>
+					     <div class="tableresponsive">
+						  <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+					            <thead>
+                                <tr>
+                                <th>Name of supplier</th>
+                                <th>Invoice Number</th>
+								<th>Invoice Date</th>
+								<th>Description</th>
+                               	<th>Qty</th>
+								<th>UQC</th>
+							
+								<th>Value</th>
+								 <th>Eligible Duties and taxes</th>
+								  <th>Vat</th>
+								    <th>Date on which entered in receipt book </th>
+                                </tr>						
+																
+                                </thead>
+                                
+                                <tbody>';
+        if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								
+			                    $b7b_nameof_supplier=(explode(",",$b7b_nameof_supplier));
+								$b7b_invoice_number=(explode(",",$b7b_invoice_number));
+								$b7b_invoice_date=(explode(",",$b7b_invoice_date));
+								$b7b_description=(explode(",",$b7b_description));
+								$b7b_quantity=(explode(",",$b7b_quantity));
+								$b7b_uqc=(explode(",",$b7b_uqc));
+								$b7b_value=(explode(",",$b7b_value));
+								$b7b_eligible_duties=(explode(",",$b7b_eligible_duties));
+								$b7b_vat=(explode(",",$b7b_vat));
+								$b7b_dateonwhich_receipients=(explode(",",$b7b_dateonwhich_receipients));
+								 $start='';
+								if(sizeof($b7b_nameof_supplier) > 1)
+								{
+									$start = $b7b_nameof_supplier;
+									
+								}
+								elseif(sizeof($b7b_invoice_number) > 1)
+								{
+									 $start = $b7b_invoice_number;
+								}
+								elseif(sizeof($b7b_invoice_date) > 1)
+								{
+									 $start = $b7b_invoice_date;
+									
+								}
+								elseif(sizeof($b7b_description) > 1)
+								{
+									$start = $b7b_description;
+								}
+								elseif(sizeof($b7b_quantity) > 1)
+								{
+									$start = $b7b_quantity;
+								}
+								elseif(sizeof($b7b_uqc) > 1)
+								{
+									$start = $b7b_uqc;
+								}
+								elseif(sizeof($b7b_value) > 1)
+								{
+									$start = $b7b_value;
+								}
+								elseif(sizeof($b7b_eligible_duties) > 1)
+								{
+									$start = $b7b_eligible_duties;
+								}
+								elseif(sizeof($b7b_vat) > 1)
+								{
+									$start = $b7b_vat;
+								}
+								elseif(sizeof($b7b_dateonwhich_receipients) > 1)
+								{
+									$start = $b7b_dateonwhich_receipients;
+								}			
+																
+								else{
+									$start = $b7b_nameof_supplier;
+								}      
+						
+							  for($i=0;$i < sizeof($start); $i++) {
+								  $sno =0;
+							$sno = $i+1;	  
+						   $mpdfHtml .='<tr>';	                          								
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($b7b_nameof_supplier[$i])?$b7b_nameof_supplier[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='<td>
+									 <label>'.(!empty($b7b_invoice_number[$i])?$b7b_invoice_number[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b7b_invoice_date[$i])?$b7b_invoice_date[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b7b_description[$i])?$b7b_description[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b7b_quantity[$i])?$b7b_quantity[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';	
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($b7b_uqc[$i])?$b7b_uqc[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($b7b_value[$i])?$b7b_value[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';	
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($b7b_eligible_duties[$i])?$b7b_eligible_duties[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';	
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($b7b_vat[$i])?$b7b_vat[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($b7b_dateonwhich_receipients[$i])?$b7b_dateonwhich_receipients[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';						  
+						   
+						  $mpdfHtml .='</tr>';
+								}}
+		
+                            
+        $mpdfHtml .='</tbody></table></div>';
+        $mpdfHtml .='<div style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+ class="greyheading">C.Amount of vat and entry tax paid on input supported by invoices/documents evidencing payment of tax carried forward to electronic credit ledger as SGST/UTGST </div>
+					     <div class="tableresponsive">
+						<table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+
+                                <thead>
+                                <tr>
+                                <th colspan="5" align="center">Details of Input in stock</th>
+                                <th>Totaltax carried claimed under earlier law</th>
+								<th>Total Input tax credit related to exempt sales</th>
+								<th>Total Input tax credit admissible as SGST/UTGST</th>
+                               	</tr><tr>
+								<th>Description</th>
+								<th>Unit</th>
+								<th>Qty</th>
+								<th>Value</th>
+								<th>Vat(and entry) tax pad</th>
+								<th>&nbsp;</th><th>&nbsp;</th>
+								<th></th></tr></thead><tbody> <tr><td>Inputs</td></tr>';
+	                       
+                                
+        if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								
+			                    $c7c1_description=(explode(",",$c7c1_description));
+								$c7c1_unit=(explode(",",$c7c1_unit));
+								$c7c1_qty=(explode(",",$c7c1_qty));
+								$c7c1_value=(explode(",",$c7c1_value));
+								$c7c1_vat=(explode(",",$c7c1_vat));
+								$c7c1_totalinput_taxcredit=(explode(",",$c7c1_totalinput_taxcredit));
+								$c7c1_totalinput_taxcredit_exempt=(explode(",",$c7c1_totalinput_taxcredit_exempt));
+								$c7c1_totalinput_taxcredit_admissible=(explode(",",$c7c1_totalinput_taxcredit_admissible));
+                                 $start='';
+								if(sizeof($c7c1_description) > 1)
+								{
+									$start = $c7c1_description;
+									
+								}
+								elseif(sizeof($c7c1_unit) > 1)
+								{
+									 $start = $c7c1_unit;
+								}
+								elseif(sizeof($c7c1_qty) > 1)
+								{
+									 $start = $c7c1_qty;
+									
+								}
+								elseif(sizeof($c7c1_value) > 1)
+								{
+									$start = $c7c1_value;
+								}
+								elseif(sizeof($c7c1_vat) > 1)
+								{
+									$start = $c7c1_vat;
+								}
+								elseif(sizeof($c7c1_totalinput_taxcredit) > 1)
+								{
+									$start = $c7c1_totalinput_taxcredit;
+								}
+								elseif(sizeof($c7c1_totalinput_taxcredit_exempt) > 1)
+								{
+									$start = $c7c1_totalinput_taxcredit_exempt;
+								}
+								elseif(sizeof($c7c1_totalinput_taxcredit_admissible) > 1)
+								{
+									$start = $c7c1_totalinput_taxcredit_admissible;
+								}				
+																
+								else{
+									$start = $c7c1_description;
+								}      
+								   
+						
+							  for($i=0;$i < sizeof($start); $i++) { 
+                              $sno =0;
+							$sno = $i+1;	  
+						   $mpdfHtml .='<tr>';	                          								
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($c7c1_description[$i])?$c7c1_description[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='<td>
+									 <label>'.(!empty($c7c1_unit[$i])?$c7c1_unit[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($c7c1_qty[$i])?$c7c1_qty[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($c7c1_value[$i])?$c7c1_value[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($c7c1_vat[$i])?$c7c1_vat[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';	
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($c7c1_totalinput_taxcredit[$i])?$c7c1_totalinput_taxcredit[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($c7c1_totalinput_taxcredit_exempt[$i])?$c7c1_totalinput_taxcredit_exempt[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';	
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($c7c1_totalinput_taxcredit_admissible[$i])?$c7c1_totalinput_taxcredit_admissible[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';                        					  
+						   
+						  $mpdfHtml .='</tr>';
+								}}	
+        $mpdfHtml .='</tbody></table>';								
+		$mpdfHtml .='</div></div></div>'; 
+		$mpdfHtml .='</div>';
+		$mpdfHtml .='</body>';
+		$mpdfHtml .='</html>';
+		return $mpdfHtml;
+
+    }
     public function finalSaveGstrTransition()
    {
-		$return_id =   isset($_POST['returnid']) ? $_POST['returnid'] : '';
+		//$return_id =   isset($_POST['returnid']) ? $_POST['returnid'] : '';
+		$fmonth =   $this->sanitize($_GET['returnmonth']);
 		$userid = $_SESSION['user_detail']['user_id'];
-		 if($this->update(TAB_PREFIX.'client_return_gstr3b', array('final_submit' => 1), array('return_id' => $return_id)))
+	
+		 if($this->update('gst_transition_form', array('final_submit' => 1), array('financial_month' => $fmonth)))
 		 {
-		 $this->setSuccess('GSTR3B Submitted Successfully');
-		 $this->logMsg("GSTR3B final submit financial month :".$this->sanitize($_GET['returnmonth']),"gstr_3b");
+		 $this->setSuccess('GST-Transition submitted successfully');
+		 $this->logMsg("GST-Transition form final submit month :".$this->sanitize($_GET['returnmonth']),"gst_transition");
    
 		 return true;
 		 }

@@ -1609,8 +1609,8 @@ final class gstr1 extends validation {
                         if(!empty($dataIn->export_bill_number)) {
                             $dataArr1['inv'][$y]['sbnum'] = (int)$dataIn->export_bill_number;
                         }
-                        if(!empty($dataIn->export_bill_date)) {
-                            $dataArr1['inv'][$y]['sbdt'] = $dataIn->export_bill_date > 0 ? date('d-m-Y', strtotime($dataIn->export_bill_date)) : '';
+                        if($dataIn->export_bill_date!='0000-00-00') {
+                            $dataArr1['inv'][$y]['sbdt'] =  date('d-m-Y', strtotime($dataIn->export_bill_date));
                         }
                         
                         $dataArr1['inv'][$y]['itms'][$z]['txval'] = (float) $dataIn->taxable_subtotal;

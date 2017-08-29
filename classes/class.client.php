@@ -160,7 +160,7 @@ final class client extends validation {
             $dataArr['updated_by'] = $this->sanitize(base64_decode($_POST['clientID']));
             $dataArr['updated_date'] = date('Y-m-d H:i:s');
             $dataConditionArray['added_by'] = $this->sanitize(base64_decode($_POST['clientID']));
-            
+
 			if ($this->update($this->tableNames['client_kyc'], $dataArr, $dataConditionArray)) {
                 $this->setSuccess($this->validationMessage['kycupdated']);
                 $this->logMsg("User KYC ID : " . $this->sanitize(base64_decode($_POST['clientID'])) . " has been updated.","client_kycupdate");
@@ -724,6 +724,7 @@ final class client extends validation {
         $dataArr['email'] = isset($_POST['emailaddress']) ? $_POST['emailaddress'] : '';
         $dataArr['phone_number'] = isset($_POST['phonenumber']) ? $_POST['phonenumber'] : '';
         $dataArr['status'] = isset($_POST['user_status']) ? $_POST['user_status'] : '';
+		$dataArr['allow_return_upload'] = isset($_POST['allow_return_upload']) ? $_POST['allow_return_upload'] : '';
 
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
@@ -782,6 +783,7 @@ final class client extends validation {
         $dataArr['email'] = isset($_POST['emailaddress']) ? $_POST['emailaddress'] : '';
         $dataArr['phone_number'] = isset($_POST['phonenumber']) ? $_POST['phonenumber'] : '';
         $dataArr['status'] = isset($_POST['user_status']) ? $_POST['user_status'] : '';
+		$dataArr['allow_return_upload'] = isset($_POST['allow_return_upload']) ? $_POST['allow_return_upload'] : '';
 
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
@@ -5763,6 +5765,10 @@ final class client extends validation {
 
 		if (array_key_exists("invoice_itemid", $dataArr)) {
             $rules['invoice_itemid'] = 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Invoice Item no. ' . $serialno;
+        }
+
+		if (array_key_exists("invoice_description", $dataArr)) {
+            $rules['invoice_description'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Description of Item no. ' . $serialno;
         }
 
 		if (array_key_exists("invoice_quantity", $dataArr)) {
