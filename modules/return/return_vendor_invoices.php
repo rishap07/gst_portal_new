@@ -1,21 +1,24 @@
 <?php
 	$obj_gstr2 = new gstr2();
-	$dataCurrentUserArr = $obj_gstr2->getUserDetailsById( $obj_gstr2->sanitize($_SESSION['user_detail']['user_id']) );
 	
+	$dataCurrentUserArr = $obj_gstr2->getUserDetailsById( $obj_gstr2->sanitize($_SESSION['user_detail']['user_id']) );
+	$returnmonth= date('Y-m');
+	if(isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
+		$returnmonth= $_REQUEST['returnmonth'];
+	}
 	if(isset($_POST['gstr2Download']) && $_POST['gstr2Download'] === "Download" && isset($_POST['flag']) && strtoupper($_POST['flag']) === "DOWNLOAD") {
 
 		if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
 			$obj_gstr2->setError('Invalid access to files');
 		} else {
-
-			$obj_gstr2->downloadGSTR2();
+			$response = $obj_gstr2->downloadGSTR2();
+			$response_b2b = $response['response_b2b'];
+			$response_cdn = $response['response_cdn'];
+			
 		}
 	}
 
-	$returnmonth= date('Y-m');
-	if(isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
-		$returnmonth= $_REQUEST['returnmonth'];
-	}
+	
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
 	<div class="col-md-12 col-sm-12 col-xs-12">
@@ -54,9 +57,9 @@
 			</div>
 
 			<div class="col-md-12 col-sm-12 col-xs-12 tablistnav padleft0">
-<?php
-                              include(PROJECT_ROOT."/modules/return/include/tab.php");
-               ?>
+			<?php
+        		include(PROJECT_ROOT."/modules/return/include/tab.php");
+            ?>
 			</div>
 			<div class="clear"></div>
 			
@@ -64,7 +67,6 @@
 			<?php $obj_gstr2->showSuccessMessge(); ?>
 			<?php $obj_gstr2->unsetMessage(); ?>
 			<div class="clear"></div>
-
 			<div class="text-right">
 				<?php
 				$dataReturns = $obj_gstr2->get_results("select * from " . TAB_PREFIX . "return where return_month='" . $returnmonth . "' and client_id='" . $_SESSION['user_detail']['user_id'] . "' and status='3' and type='gstr2'");
@@ -84,107 +86,9 @@
 				?>
 				
 			</div>
+			<div id="display_json"></div>
 
-			<div class="invoice-types">
-				<div class="invoice-types__heading">Types</div>
-				<div class="invoice-types__content">
-					<label for="invoice-types__invoice"><input type="radio" id="invoice-types__invoice" name="invoice_type" value="invoice" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='invoice'){ echo 'checked=""';}else{echo 'checked=""';}?>>Invoice</label>
-					<label for="invoice-types__cdn"><input type="radio" id="invoice-types__cdn" name="invoice_type" value="cdn" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='cdn') echo 'checked=""';?>>Credit/Debit Note</label>
-				</div>
-				<div class="clear"></div>
 
-				<table width="100%" border="0" cellspacing="0" cellpadding="0"  class="table table-striped invoice-filter-table" id="mainTable1">
-
-					<thead>
-						<tr>
-							<th align='left'>Total Transactions</th>
-							<th align='left'>Total IGST</th>
-							<th align='left'>Total SGST</th>
-							<th align='left'>Total CGST</th>
-							<th align='left'>Total Cess</th>
-							<th align='left'>Total Amount</th>
-						</tr>
-						<tr>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>
-					</thead>
-				</table>
-			
-				<div class="tableresponsive">
-
-					<table  class="table tablecontent tablecontent2">
-						<thead>
-							<tr>
-								<th>Date</th>
-								<th>Id</th>
-								<th>GSTIN</th>
-								<th class="text-right">TaxableAmt</th>
-								<th class="text-right">TotalTax</th>
-								<th class="text-right">TotalAmount</th>
-								<th class="text-right">Type</th>
-								<th class="text-center">Status</th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php
-								$invCount= 0;
-								$igstTotal= 0;
-								$cgstTotal= 0;
-								$sgstTotal= 0;
-								$cessTotal= 0;
-								$invTotal=0;
-								$flag=0;
-
-								$b2bItemquery = "select i.is_gstr1_uploaded,i.invoice_date,i.invoice_id,i.reference_number,i.invoice_total_value,i.billing_gstin_number,i.billing_name,sum(it.cgst_amount) as cgst_amount,sum(it.sgst_amount) as sgst_amount,sum(it.igst_amount) as igst_amount,sum(it.cess_amount) as cess_amount from " . $obj_gstr2->getTableName('client_invoice') . " i inner join " . $obj_gstr2->getTableName("client_invoice_item") . " it on i.invoice_id=it.invoice_id  where i.invoice_nature='salesinvoice' and i.billing_gstin_number='".$dataCurrentUserArr['data']->kyc->gstin_number."' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and i.is_gstr1_uploaded != '0' AND i.is_gstr2_downloaded = '1' AND i.invoice_date like '%" . $returnmonth . "%' group by i.invoice_id order by i.invoice_date desc";
-								$b2bItemData = $obj_gstr2->get_results($b2bItemquery);
-
-								if(!empty($b2bItemData)) {
-
-									$flag=1;
-									foreach($b2bItemData as $b2bItem)
-									{
-										$totaltax = (isset($b2bItem->igst_amount)) ? $b2bItem->igst_amount : '0' + (isset($b2bItem->cgst_amount)) ? $b2bItem->cgst_amount : '0' + (isset($b2bItem->sgst_amount)) ? $b2bItem->sgst_amount : '0' + (isset($b2bItem->cess_amount)) ? $b2bItem->cess_amount : '0';
-										$type ='';
-										if($b2bItem->billing_gstin_number=='' && $b2bItem->invoice_total_value > 25000)
-										{
-											$type = 'B2CL';
-										}
-										else if($b2bItem->billing_gstin_number=='' && $b2bItem->invoice_total_value <= 25000)
-										{
-											$type = 'B2CS';
-										}
-										else if($b2bItem->billing_gstin_number!='')
-										{
-											$type = 'B2B';
-										}
-										$type = ($b2bItem->billing_gstin_number=='') ? 'B2C' : 'B2B';
-										?>
-										<tr>
-											<td align='left'><?php echo $b2bItem->invoice_date;?></td>
-											<td align='left'><?php echo $b2bItem->reference_number;?></td>
-											<td align='left'><?php echo $b2bItem->billing_gstin_number;?></td>
-											<td style='text-align:right'><?php echo $b2bItem->invoice_total_value;?></td>
-											<td style='text-align:right'><?php echo $totaltax?></td>
-											<td style='text-align:right'><?php echo $b2bItem->invoice_total_value;?></td>
-											<td align='center'><?php echo $type; ?></td>
-											<td align='center'>Downloaded</td>
-										</tr>
-										<?php
-									}
-								} else {
-									echo '<tr><td colspan="10">No Invoices </td></tr>';
-								}
-							?>
-						</tbody>
-					</table>
-
-				</div>
-			</div> 
 
 		</div>
 
@@ -193,9 +97,29 @@
 	<div class="clear"></div>
 </div>
 <script>
+	get_summary();
 	$(document).ready(function () {
 		$('#returnmonth').on('change', function () {
 			window.location.href = "<?php echo PROJECT_URL; ?>/?page=return_vendor_invoices&returnmonth=" + $(this).val();
 		});
 	});
+	  /******* To get Summary of GSTR2 ********/
+    function get_summary() {
+        var response_b2b = '<?php echo $response_b2b;?>';
+        var response_cdn = '<?php echo $response_cdn;?>';
+        var jstr = 'gstr2b'
+        var returnmonth = '<?php echo $returnmonth;?>';
+        $.ajax({
+            url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_json_view",
+            type: "post",
+            data: {response_b2b: response_b2b,response_cdn: response_cdn,returnmonth:returnmonth,jstr:jstr},
+            success: function (response) {
+               $('#display_json').html(response);
+
+            },
+            error: function() {
+            }
+        });
+    }
+    /******* To get Summary of GSTR2 ********/
 </script>

@@ -24,6 +24,7 @@
 													cii.item_id, 
 													cii.item_name, 
 													cii.item_hsncode, 
+													cii.item_description, 
 													cii.item_quantity, 
 													cii.item_unit, 
 													cii.item_unit_price, 
@@ -393,7 +394,7 @@
 
 				<div class="row">
 					<div class="col-md-12 form-group">
-						<label>Description</label>
+						<label>Additional Notes</label>
 						<textarea placeholder="Enter Description" class="form-control" name="description" id="description" data-bind="content"><?php echo $invoiceData[0]->description; ?></textarea>
 					</div>
 				</div>
@@ -406,6 +407,7 @@
 							<th rowspan="2" class="active">S.No</th>
 							<th rowspan="2" class="active">Description<br/> of Goods/Services</th>
 							<th rowspan="2" class="active">HSN/SAC Code<br/>(GST)</th>
+							<th rowspan="2" class="active">Item Description</th>
 							<th rowspan="2" class="active">Qty</th>
 							<th rowspan="2" class="active">Unit</th>
 							<th rowspan="2" class="active">Rate (<i class="fa fa-inr"></i>)<br/><span style="font-family: open_sans; font-size:11px;">per item</span></th>
@@ -453,6 +455,9 @@
 									<input type="text" id="invoice_tr_<?php echo $counter; ?>_hsncode" name="invoice_hsncode[]" readonly="true" class="inptxt" data-bind="content" placeholder="HSN/SAC Code" style="width:120px;" value="<?php echo $invData->item_hsncode; ?>" />
 								</td>
 								<td>
+									<input type="text" id="invoice_tr_<?php echo $counter; ?>_description" name="invoice_description[]" class="inptxt" data-bind="content" placeholder="Enter Description" style="width:120px;" value="<?php echo $invData->item_description; ?>" />
+								</td>
+								<td>
 									<input type="text" id="invoice_tr_<?php echo $counter; ?>_quantity" name="invoice_quantity[]" class="required validateDecimalValue invoiceQuantity inptxt" data-bind="decimal" value="<?php echo $invData->item_quantity; ?>" placeholder="0" style="width:100px;" />
 								</td>
 								<td>
@@ -474,12 +479,12 @@
 								</td>
 								<td>
 									<div class="padrgt0" style="width:100px;">
-										<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_rate" name="invoice_rate[]" class="required validateDecimalValue invoiceRateValue inptxt" data-bind="decimal" value="<?php echo $invData->item_unit_price; ?>" placeholder="0.00" />
+										<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_rate" name="invoice_rate[]" class="required validateDecimalValue invoiceRateValue inptxt" data-bind="decimal" value="<?php echo $invData->item_unit_price; ?>" placeholder="0.00" />
 									</div>
 								</td>
 								<td>
 									<div class="padrgt0" style="width:100px;">
-										<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_total" name="invoice_total[]" readonly="true" class="inptxt" data-bind="decimal" value="<?php echo $invData->subtotal; ?>" placeholder="0.00" />
+										<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_total" name="invoice_total[]" readonly="true" class="inptxt" data-bind="decimal" value="<?php echo $invData->subtotal; ?>" placeholder="0.00" />
 									</div>
 								</td>
 								<td>
@@ -487,12 +492,12 @@
 								</td>
 								<td class="advancecol" <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'style="display:table-cell;"'; } ?>>
 									<div style="width:100px;" class="padrgt0">
-										<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_advancevalue" name="invoice_advancevalue[]" class="validateDecimalValue invoiceAdvanceValue inptxt" value="<?php echo $invData->advance_amount; ?>" data-bind="decimal" placeholder="0.00">
+										<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_advancevalue" name="invoice_advancevalue[]" class="validateDecimalValue invoiceAdvanceValue inptxt" value="<?php echo $invData->advance_amount; ?>" data-bind="decimal" placeholder="0.00">
 									</div>
 								</td>
 								<td>
 									<div style="width:100px;" class="padrgt0">
-										<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="inptxt" value="<?php echo $invData->taxable_subtotal; ?>" data-bind="decimal" placeholder="0.00" />
+										<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="inptxt" value="<?php echo $invData->taxable_subtotal; ?>" data-bind="decimal" placeholder="0.00" />
 									</div>
 								</td>
 								
@@ -503,7 +508,7 @@
 									</td>
 									<td>
 										<div style="width:100px;" class="padrgt0">
-											<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_cgstamount" name="invoice_cgstamount[]" readonly="true" class="inptxt invcgstamount" placeholder="0.00" value="<?php echo $invData->cgst_amount; ?>" />
+											<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_cgstamount" name="invoice_cgstamount[]" readonly="true" class="inptxt invcgstamount" placeholder="0.00" value="<?php echo $invData->cgst_amount; ?>" />
 										</div>
 									</td>
 									<td>
@@ -511,7 +516,7 @@
 									</td>
 									<td>
 										<div style="width:100px;" class="padrgt0">
-											<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_sgstamount" name="invoice_sgstamount[]" readonly="true" class="inptxt invsgstamount" placeholder="0.00" value="<?php echo $invData->sgst_amount; ?>" />
+											<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_sgstamount" name="invoice_sgstamount[]" readonly="true" class="inptxt invsgstamount" placeholder="0.00" value="<?php echo $invData->sgst_amount; ?>" />
 										</div>
 									</td>
 									<td>
@@ -519,7 +524,7 @@
 									</td>
 									<td>
 										<div style="width:100px;" class="padrgt0">
-											<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_igstamount" name="invoice_igstamount[]" readonly="true" class="inptxt invigstamount" value="0.00" placeholder="0.00" />
+											<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_igstamount" name="invoice_igstamount[]" readonly="true" class="inptxt invigstamount" value="0.00" placeholder="0.00" />
 										</div>
 									</td>
 								
@@ -530,7 +535,7 @@
 									</td>
 									<td>
 										<div style="width:100px;" class="padrgt0">
-											<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_cgstamount" name="invoice_cgstamount[]" readonly="true" class="inptxt invcgstamount" placeholder="0.00" value="0.00" />
+											<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_cgstamount" name="invoice_cgstamount[]" readonly="true" class="inptxt invcgstamount" placeholder="0.00" value="0.00" />
 										</div>
 									</td>
 									<td>
@@ -538,7 +543,7 @@
 									</td>
 									<td>
 										<div style="width:100px;" class="padrgt0">
-											<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_sgstamount" name="invoice_sgstamount[]" readonly="true" class="inptxt invsgstamount" placeholder="0.00" value="0.00" />
+											<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_sgstamount" name="invoice_sgstamount[]" readonly="true" class="inptxt invsgstamount" placeholder="0.00" value="0.00" />
 										</div>
 									</td>
 									<td>
@@ -546,7 +551,7 @@
 									</td>
 									<td>
 										<div style="width:100px;" class="padrgt0">
-											<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_igstamount" name="invoice_igstamount[]" readonly="true" class="inptxt invigstamount" value="<?php echo $invData->igst_amount; ?>" placeholder="0.00" />
+											<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_igstamount" name="invoice_igstamount[]" readonly="true" class="inptxt invigstamount" value="<?php echo $invData->igst_amount; ?>" placeholder="0.00" />
 										</div>
 									</td>
 
@@ -557,7 +562,7 @@
 								</td>
 								<td>
 									<div style="width:100px;" class="padrgt0">
-										<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_cessamount" name="invoice_cessamount[]" readonly="true" class="inptxt invcessamount" value="<?php echo $invData->cess_amount; ?>" placeholder="0.00" />
+										<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_cessamount" name="invoice_cessamount[]" readonly="true" class="inptxt invcessamount" value="<?php echo $invData->cess_amount; ?>" placeholder="0.00" />
 									</div>
 								</td>
 
@@ -594,54 +599,69 @@
 							<?php $counter++; ?>
 						<?php } ?>
 
+						<tr class="consolidateTotal">
+							<td colspan="9" align="right" class="lightblue fontbold textsmall">Total Invoice Value</td>
+							<td class="lightblue fontbold textsmall advancecol consolidateAdvanceTotal" <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'style="display:table-cell;"'; } ?> align="center"><span>0.00</span></td>
+							<td class="lightblue fontbold textsmall consolidateTaxableTotal" align="center"><span>0.00</span></td>
+							<td class="lightblue fontbold textsmall" align="center"><span>&nbsp;</span></td>
+							<td class="lightblue fontbold textsmall consolidateCGSTTotal" align="center"><span>0.00</span></td>
+							<td class="lightblue fontbold textsmall" align="center"><span>&nbsp;</span></td>
+							<td class="lightblue fontbold textsmall consolidateSGSTTotal" align="center"><span>0.00</span></td>
+							<td class="lightblue fontbold textsmall" align="center"><span>&nbsp;</span></td>
+							<td class="lightblue fontbold textsmall consolidateIGSTTotal" align="center"><span>0.00</span></td>
+							<td class="lightblue fontbold textsmall" align="center"><span>&nbsp;</span></td>
+							<td class="lightblue fontbold textsmall consolidateCESSTotal" align="center"><span>0.00</span></td>
+							<td class="lightblue fontbold textsmall" align="center"></td>
+						</tr>
+
 						<tr>
-							<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="18"'; } else { echo 'colspan="17"'; } ?> align="right" class="lightyellow totalamount">Total Invoice Value <span>(In Figure)</span><div class="totalprice"><i class="fa fa-inr"></i><span class="invoicetotalprice"><?php echo $invoiceData[0]->invoice_total_value; ?></span></div></td>
+							<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="19"'; } else { echo 'colspan="18"'; } ?> align="right" class="lightyellow totalamount">Total Invoice Value <span>(In Figure)</span><div class="totalprice"><i class="fa fa-inr"></i><span class="invoicetotalprice"><?php echo $invoiceData[0]->invoice_total_value; ?></span></div></td>
 							<td class="lightyellow" align="left"></td>
 						</tr>
-						
+
 						<?php $invoice_total_value_words = $obj_client->convert_number_to_words($invoiceData[0]->invoice_total_value); ?>
 						
 						<tr>
-							<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="18"'; } else { echo 'colspan="17"'; } ?> align="right" class="lightpink fontbold totalamountwords" style="font-size:13px;">Total Invoice Value <small>(In Words):</small> <span class="totalpricewords"><?php echo ucwords($invoice_total_value_words); ?></span></td>
+							<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="19"'; } else { echo 'colspan="18"'; } ?> align="right" class="lightpink fontbold totalamountwords" style="font-size:13px;">Total Invoice Value <small>(In Words):</small> <span class="totalpricewords"><?php echo ucwords($invoice_total_value_words); ?></span></td>
 							<td class="lightpink" align="left"></td>
 						</tr>
 
 						<tr class="rvcamount" <?php if($invoiceData[0]->supply_type === "reversecharge") { echo 'style="display:table-row;"'; } ?>>
-							<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="10"'; } else { echo 'colspan="9"'; } ?> align="right" class="lightgreen fontbold textsmall rvcamountftd">Amount of Tax Subject to Reverse Charge</td>
+							<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="11"'; } else { echo 'colspan="10"'; } ?> align="right" class="lightgreen fontbold textsmall rvcamountftd">Amount of Tax Subject to Reverse Charge</td>
 							<td class="lightgreen fontbold textsmall rvccgst" align="center"><span>-</span></td>
-							<td class="lightgreen fontbold textsmall rvccgstamount" align="left"><i class="fa fa-inr"></i><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall rvccgstamount" align="left"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall rvcsgst" align="center"><span>-</span></td>
-							<td class="lightgreen fontbold textsmall rvcsgstamount" align="left"><i class="fa fa-inr"></i><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall rvcsgstamount" align="left"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall rvcigst" align="center"><span>-</span></td>
-							<td class="lightgreen fontbold textsmall rvcigstamount" align="left"><i class="fa fa-inr"></i><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall rvcigstamount" align="left"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall rvccess" align="center"><span>-</span></td>
-							<td class="lightgreen fontbold textsmall rvccessamount" align="left"><i class="fa fa-inr"></i><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall rvccessamount" align="left"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall" align="left"></td>
 						</tr>
 
 						<tr class="tdsamount" <?php if($invoiceData[0]->supply_type === "tds") { echo 'style="display:table-row;"'; } ?>>
-							<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="10"'; } else { echo 'colspan="9"'; } ?> align="right" class="lightgreen fontbold textsmall tdsamountftd">Amount of Tax Subject to TDS</td>
+							<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="11"'; } else { echo 'colspan="10"'; } ?> align="right" class="lightgreen fontbold textsmall tdsamountftd">Amount of Tax Subject to TDS</td>
 							<td class="lightgreen fontbold textsmall tdscgst" align="center"><span>1%</span></td>
-							<td class="lightgreen fontbold textsmall tdscgstamount" align="left"><i class="fa fa-inr"></i><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall tdscgstamount" align="left"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall tdssgst" align="center"><span>1%</span></td>
-							<td class="lightgreen fontbold textsmall tdssgstamount" align="left"><i class="fa fa-inr"></i><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall tdssgstamount" align="left"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall tdsigst" align="center"><span>2%</span></td>
-							<td class="lightgreen fontbold textsmall tdsigstamount" align="left"><i class="fa fa-inr"></i><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall tdsigstamount" align="left"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall tdscess" align="center"><span>0%</span></td>
-							<td class="lightgreen fontbold textsmall tdscessamount" align="left"><i class="fa fa-inr"></i><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall tdscessamount" align="left"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall" align="left"></td>
 						</tr>
 
 						<tr class="tcsamount" <?php if($invoiceData[0]->supply_type === "tcs") { echo 'style="display:table-row;"'; } ?>>
-							<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="10"'; } else { echo 'colspan="9"'; } ?> align="right" class="lightgreen fontbold textsmall tcsamountftd">Amount of Tax Subject to TCS</td>
+							<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="11"'; } else { echo 'colspan="10"'; } ?> align="right" class="lightgreen fontbold textsmall tcsamountftd">Amount of Tax Subject to TCS</td>
 							<td class="lightgreen fontbold textsmall tcscgst" align="center"><span>1%</span></td>
-							<td class="lightgreen fontbold textsmall tcscgstamount" align="left"><i class="fa fa-inr"></i><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall tcscgstamount" align="left"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall tcssgst" align="center"><span>1%</span></td>
-							<td class="lightgreen fontbold textsmall tcssgstamount" align="left"><i class="fa fa-inr"></i><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall tcssgstamount" align="left"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall tcsigst" align="center"><span>2%</span></td>
-							<td class="lightgreen fontbold textsmall tcsigstamount" align="left"><i class="fa fa-inr"></i><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall tcsigstamount" align="left"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall tcscess" align="center"><span>0%</span></td>
-							<td class="lightgreen fontbold textsmall tcscessamount" align="left"><i class="fa fa-inr"></i><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall tcscessamount" align="left"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall" align="left"></td>
 						</tr>
 
@@ -1145,7 +1165,6 @@
 
 		/* on quantity chnage of item */
         $(".invoicetable").on("input", ".invoiceQuantity", function(){
-
             var rowid = $(this).parent().parent().attr("data-row-id");
             var currentTrItemId = parseInt($("#invoice_tr_"+rowid+"_itemid").val());
             rowInvoiceCalculation(currentTrItemId, rowid);
@@ -1222,11 +1241,11 @@
 				$("#receipt_voucher_number").addClass('required');
 				$("#receipt_voucher_number").select2();
 				$(".advancecol").show();
-				$(".totalamount").attr("colspan", 18);
-				$(".totalamountwords").attr("colspan", 18);
-				$(".rvcamountftd").attr("colspan", 10);
-				$(".tdsamountftd").attr("colspan", 10);
-				$(".tcsamountftd").attr("colspan", 10);
+				$(".totalamount").attr("colspan", 19);
+				$(".totalamountwords").attr("colspan", 19);
+				$(".rvcamountftd").attr("colspan", 11);
+				$(".tdsamountftd").attr("colspan", 11);
+				$(".tcsamountftd").attr("colspan", 11);
 			} else {
 
 				$(".receiptvouchernumber").hide();
@@ -1234,11 +1253,11 @@
 				$("#receipt_voucher_number").removeClass('required');
 				$("#receipt_voucher_number").select2();
 				$(".advancecol").hide();
-				$(".totalamount").attr("colspan", 17);
-				$(".totalamountwords").attr("colspan", 17);
-				$(".rvcamountftd").attr("colspan", 9);
-				$(".tdsamountftd").attr("colspan", 9);
-				$(".tcsamountftd").attr("colspan", 9);
+				$(".totalamount").attr("colspan", 18);
+				$(".totalamountwords").attr("colspan", 18);
+				$(".rvcamountftd").attr("colspan", 10);
+				$(".tdsamountftd").attr("colspan", 10);
+				$(".tcsamountftd").attr("colspan", 10);
 				$(".invoiceAdvanceValue").val(0.00);
 			}
 
@@ -1288,6 +1307,7 @@
                     $("#invoice_td_"+rowid+"_itemname").html('<p id="name_selection_'+rowid+'_choice" class="name_selection_choice" title="'+ui.item.value+'"><span id="name_selection_'+rowid+'_choice_remove" data-selectable-id="'+rowid+'" class="name_selection_choice_remove" role="presentation">×</span>'+ui.item.value+'</p>');
 
                     $("#invoice_tr_"+rowid+"_itemid").val(ui.item.item_id);
+					$("#invoice_tr_"+rowid+"_description").val(ui.item.item_description);
                     $("#invoice_tr_"+rowid+"_hsncode").val(ui.item.hsn_code);
                     $("#invoice_tr_"+rowid+"_quantity").val(1);
                     $("#invoice_tr_"+rowid+"_unit").val(ui.item.unit_code);
@@ -1317,6 +1337,7 @@
             $("#"+parentPId).remove();
             $("#"+parentTdId).html('<input type="text" id="invoice_tr_'+parentTrId+'_itemname" name="invoice_itemname[]" class="inptxt autocompleteitemname required" placeholder="Enter Item" style="width:120px;" />');
             $("#invoice_tr_"+parentTrId+"_itemid").val("");
+			$("#invoice_tr_"+rowid+"_description").val("");
             $("#invoice_tr_"+parentTrId+"_hsncode").val("");
             $("#invoice_tr_"+parentTrId+"_quantity").val(0);
             $("#invoice_tr_"+parentTrId+"_unit").val("");
@@ -1351,7 +1372,8 @@
 				newtr += '<input type="text" id="invoice_tr_'+nexttrid+'_itemname" name="invoice_itemname[]" class="inptxt autocompleteitemname required" placeholder="Enter Item" data-bind="content" style="width:120px;" />';
 				newtr += '</td>';
                 newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_hsncode" name="invoice_hsncode[]" readonly="true" class="inptxt" data-bind="content" placeholder="HSN/SAC Code" style="width:120px;" /></td>';
-                newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_quantity" name="invoice_quantity[]" class="required validateDecimalValue invoiceQuantity inptxt" value="0" placeholder="0" style="width:100px;" /></td>';
+				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_description" name="invoice_description[]" class="inptxt" data-bind="content" placeholder="Enter Description" style="width:120px;" /></td>';
+				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_quantity" name="invoice_quantity[]" class="required validateDecimalValue invoiceQuantity inptxt" value="0" placeholder="0" style="width:100px;" /></td>';
 
 				newtr += '<td>';
 					newtr += '<select name="invoice_unit[]" id="invoice_tr_'+nexttrid+'_unit" class="required inptxt" style="width:100px;">';
@@ -1365,19 +1387,19 @@
 					newtr += '</select>';
 				newtr += '</td>';
 
-				newtr += '<td><div class="padrgt0" style="width:100px;"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_rate" name="invoice_rate[]" class="required validateDecimalValue invoiceRateValue inptxt" data-bind="decimal" placeholder="0.00" /></div></td>';
-                newtr += '<td><div class="padrgt0" style="width:100px;"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_total" name="invoice_total[]" readonly="true" class="inptxt" data-bind="decimal" placeholder="0.00" /></div></td>';
+				newtr += '<td><div class="padrgt0" style="width:100px;"><input type="text" style="width:100%;" id="invoice_tr_'+nexttrid+'_rate" name="invoice_rate[]" class="required validateDecimalValue invoiceRateValue inptxt" data-bind="decimal" placeholder="0.00" /></div></td>';
+                newtr += '<td><div class="padrgt0" style="width:100px;"><input type="text" style="width:100%;" id="invoice_tr_'+nexttrid+'_total" name="invoice_total[]" readonly="true" class="inptxt" data-bind="decimal" placeholder="0.00" /></div></td>';
                 newtr += '<td><input type="text" style="width:100%;" id="invoice_tr_'+nexttrid+'_discount" name="invoice_discount[]" class="inptxt invoiceDiscount" value="0.00" data-bind="decimal" placeholder="0.00" /></td>';
-				newtr += '<td class="advancecol"><div style="width:100px;" class="padrgt0"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_advancevalue" name="invoice_advancevalue[]" class="validateDecimalValue invoiceAdvanceValue inptxt" value="0.00" data-bind="decimal" placeholder="0.00" /></div></td>';
-				newtr += '<td><div style="width:100px;" class="padrgt0"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="inptxt" data-bind="decimal" placeholder="0.00" /></div></td>';
+				newtr += '<td class="advancecol"><div style="width:100px;" class="padrgt0"><input type="text" style="width:100%;" id="invoice_tr_'+nexttrid+'_advancevalue" name="invoice_advancevalue[]" class="validateDecimalValue invoiceAdvanceValue inptxt" value="0.00" data-bind="decimal" placeholder="0.00" /></div></td>';
+				newtr += '<td><div style="width:100px;" class="padrgt0"><input type="text" style="width:100%;" id="invoice_tr_'+nexttrid+'_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="inptxt" data-bind="decimal" placeholder="0.00" /></div></td>';
 				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_cgstrate" name="invoice_cgstrate[]" class="inptxt validateTaxValue invcgstrate" data-bind="valtax" placeholder="0.00" style="width:75px;" /></td>';
-				newtr += '<td><div style="width:100px;" class="padrgt0"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_cgstamount" name="invoice_cgstamount[]" readonly="true" class="inptxt invcgstamount" placeholder="0.00" /></div></td>';
+				newtr += '<td><div style="width:100px;" class="padrgt0"><input type="text" style="width:100%;" id="invoice_tr_'+nexttrid+'_cgstamount" name="invoice_cgstamount[]" readonly="true" class="inptxt invcgstamount" placeholder="0.00" /></div></td>';
 				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_sgstrate" name="invoice_sgstrate[]" class="inptxt validateTaxValue invsgstrate" data-bind="valtax" placeholder="0.00" style="width:75px;" /></td>';
-				newtr += '<td><div style="width:100px;" class="padrgt0"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_sgstamount" name="invoice_sgstamount[]" readonly="true" class="inptxt invsgstamount" placeholder="0.00" /></div></td>';
+				newtr += '<td><div style="width:100px;" class="padrgt0"><input type="text" style="width:100%;" id="invoice_tr_'+nexttrid+'_sgstamount" name="invoice_sgstamount[]" readonly="true" class="inptxt invsgstamount" placeholder="0.00" /></div></td>';
 				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_igstrate" name="invoice_igstrate[]" class="inptxt validateTaxValue invigstrate" data-bind="valtax" placeholder="0.00" style="width:75px;" /></td>';
-				newtr += '<td><div style="width:100px;" class="padrgt0"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_igstamount" name="invoice_igstamount[]" readonly="true" class="inptxt invigstamount" placeholder="0.00" /></div></td>';
+				newtr += '<td><div style="width:100px;" class="padrgt0"><input type="text" style="width:100%;" id="invoice_tr_'+nexttrid+'_igstamount" name="invoice_igstamount[]" readonly="true" class="inptxt invigstamount" placeholder="0.00" /></div></td>';
 				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_cessrate" name="invoice_cessrate[]" class="inptxt validateTaxValue invcessrate" data-bind="valtax" placeholder="0.00" style="width:75px;" /></td>';
-                newtr += '<td><div style="width:100px;" class="padrgt0"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_cessamount" name="invoice_cessamount[]" readonly="true" class="inptxt invcessamount" placeholder="0.00" /></div></td>';
+                newtr += '<td><div style="width:100px;" class="padrgt0"><input type="text" style="width:100%;" id="invoice_tr_'+nexttrid+'_cessamount" name="invoice_cessamount[]" readonly="true" class="inptxt invcessamount" placeholder="0.00" /></div></td>';
                 newtr += '<td nowrap="nowrap" class="icon"><a class="deleteInvoice" data-invoice-id="'+nexttrid+'" href="javascript:void(0)"><div class="tooltip2"><i class="fa fa-trash deleteicon"></i><span class="tooltiptext">Delete</span></div></a></td>';
                 newtr += '</tr>';
 
@@ -1601,7 +1623,7 @@
 									$("#invoice_tr_"+rowid+"_igstrate").val(response.igst_tax_rate);
 								}
 								/* end of calculation */
-								
+
 								rowInvoiceCalculation(itemid, rowid);
 							}
 						});
@@ -1881,7 +1903,99 @@
                     }
                 }
             });
+
+			/* calculate consolidate total */
+			calculationConsolidateTotal();
         }
 		/* end of calculate total invoice value function */
+
+		/* calculate consolidate total function */
+        function calculationConsolidateTotal() {
+
+			/* advance total sum */
+			var invoiceAdvanceTotal = 0.00;
+			$('input[name="invoice_advancevalue[]"]').each(function() {
+
+				if($.trim($(this).val()).length == 0 || $.trim($(this).val()).length == '' || $.trim($(this).val()) == '.') {
+					var invoiceRowAdvanceTotal = 0.00;
+				} else {
+					var invoiceRowAdvanceTotal = $(this).val();
+				}
+				
+				invoiceAdvanceTotal += parseFloat(invoiceRowAdvanceTotal);
+			});
+			$(".consolidateTotal .consolidateAdvanceTotal span").html(invoiceAdvanceTotal.toFixed(2));
+
+			/* taxable total sum */
+			var invoiceTaxableTotal = 0.00;
+			$('input[name="invoice_taxablevalue[]"]').each(function() {
+
+				if($.trim($(this).val()).length == 0 || $.trim($(this).val()).length == '' || $.trim($(this).val()) == '.') {
+					var invoiceRowTaxableTotal = 0.00;
+				} else {
+					var invoiceRowTaxableTotal = $(this).val();
+				}
+				
+				invoiceTaxableTotal += parseFloat(invoiceRowTaxableTotal);
+			});
+			$(".consolidateTotal .consolidateTaxableTotal span").html(invoiceTaxableTotal.toFixed(2));
+			
+			/* CGST total sum */
+			var invoiceCGSTTotal = 0.00;
+			$('input[name="invoice_cgstamount[]"]').each(function() {
+
+				if($.trim($(this).val()).length == 0 || $.trim($(this).val()).length == '' || $.trim($(this).val()) == '.') {
+					var invoiceRowCGSTTotal = 0.00;
+				} else {
+					var invoiceRowCGSTTotal = $(this).val();
+				}
+				
+				invoiceCGSTTotal += parseFloat(invoiceRowCGSTTotal);
+			});
+			$(".consolidateTotal .consolidateCGSTTotal span").html(invoiceCGSTTotal.toFixed(2));
+			
+			/* SGST total sum */
+			var invoiceSGSTTotal = 0.00;
+			$('input[name="invoice_sgstamount[]"]').each(function() {
+
+				if($.trim($(this).val()).length == 0 || $.trim($(this).val()).length == '' || $.trim($(this).val()) == '.') {
+					var invoiceRowSGSTTotal = 0.00;
+				} else {
+					var invoiceRowSGSTTotal = $(this).val();
+				}
+				
+				invoiceSGSTTotal += parseFloat(invoiceRowSGSTTotal);
+			});
+			$(".consolidateTotal .consolidateSGSTTotal span").html(invoiceSGSTTotal.toFixed(2));
+
+			/* IGST total sum */
+			var invoiceIGSTTotal = 0.00;
+			$('input[name="invoice_igstamount[]"]').each(function() {
+
+				if($.trim($(this).val()).length == 0 || $.trim($(this).val()).length == '' || $.trim($(this).val()) == '.') {
+					var invoiceRowIGSTTotal = 0.00;
+				} else {
+					var invoiceRowIGSTTotal = $(this).val();
+				}
+				
+				invoiceIGSTTotal += parseFloat(invoiceRowIGSTTotal);
+			});
+			$(".consolidateTotal .consolidateIGSTTotal span").html(invoiceIGSTTotal.toFixed(2));
+			
+			/* CESS total sum */
+			var invoiceCESSTotal = 0.00;
+			$('input[name="invoice_cessamount[]"]').each(function() {
+
+				if($.trim($(this).val()).length == 0 || $.trim($(this).val()).length == '' || $.trim($(this).val()) == '.') {
+					var invoiceRowCESSTotal = 0.00;
+				} else {
+					var invoiceRowCESSTotal = $(this).val();
+				}
+
+				invoiceCESSTotal += parseFloat(invoiceRowCESSTotal);
+			});
+			$(".consolidateTotal .consolidateCESSTotal span").html(invoiceCESSTotal.toFixed(2));
+		}
+		/* end of calculate consolidate total function */
 	});
 </script>

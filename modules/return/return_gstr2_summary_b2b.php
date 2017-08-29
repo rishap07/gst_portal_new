@@ -7,7 +7,6 @@ if (isset($_POST['returnmonth'])) {
     $obj_gstr2->redirect(PROJECT_URL . "/?page=return_gstr2&returnmonth=" . $returnmonth);
     exit();
 }
-$returnmonth = date('Y-m');
 if (isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
     if ($obj_gstr2->startGstr2()) {
@@ -25,7 +24,6 @@ $time = strtotime($returnmonth . "-01");
 $month = date("M", strtotime("+1 month", $time));
 $response_b2b = $obj_api->returnSummary($returnmonth,'B2B','gstr2a');
 $response_cdn = $obj_api->returnSummary($returnmonth,'CDN','gstr2a');
-
 ?>
 <?php
 

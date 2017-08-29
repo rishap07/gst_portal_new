@@ -190,15 +190,35 @@ if (isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClie
                         <select name='user_status' id='user_status' class='required form-control'>
 
                             <option value='1' <?php
-if (isset($dataArr['data']->status) && $dataArr['data']->status == 1) {
-    echo "selected='selected'";
-}
-?>>Active</option>
-                            <option value='0' <?php
-if (isset($dataArr['data']->status) && $dataArr['data']->status == 0) {
-    echo "selected='selected'";
-}
-?>>Inactive</option>
+						if (isset($dataArr['data']->status) && $dataArr['data']->status == 1) {
+							echo "selected='selected'";
+						}
+						?>>Active</option>
+													<option value='0' <?php
+						if (isset($dataArr['data']->status) && $dataArr['data']->status == 0) {
+							echo "selected='selected'";
+						}
+						?>>Inactive</option>
+
+                        </select>
+                    </div>
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+
+                        <label>Allow Return Upload<span class="starred">*</span></label>
+                        <div class="clear"></div>
+
+                        <select name='allow_return_upload' id='allow_return_upload' class='required form-control'>
+                       
+                            <option value='1' <?php
+						if (isset($dataArr['data']->allow_return_upload) && $dataArr['data']->allow_return_upload == 1) {
+							echo "selected='selected'";
+						}
+						?>>Yes</option>
+													<option value='0' <?php
+						if (isset($dataArr['data']->allow_return_upload) && $dataArr['data']->allow_return_upload == 0) {
+							echo "selected='selected'";
+						}
+						?>>No</option>
 
                         </select>
                     </div>

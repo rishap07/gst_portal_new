@@ -573,11 +573,15 @@ elseif(empty($jstr1_array) && !empty($jstr) &&  $jstr == 'gstr2b') {
             <th style="text-align:center">Item </th>
             <th style="text-align:center">Invoice type</th>    
             <th style="text-align:center">Invoice date</th>
-            <th style="text-align:center">Value ( <i class="fa fa-inr"></i> )</th>
-            <th style="text-align:center">Csamt ( <i class="fa fa-inr"></i> )</th>
-            <th style="text-align:center">Rate</th>
+            
             <th style="text-align:center">Tax value ( <i class="fa fa-inr"></i> )</th>
-            <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th>                
+            <th style="text-align:center">Rate</th>
+            <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th> 
+            <th style="text-align:center">Samt ( <i class="fa fa-inr"></i> )</th> 
+            <th style="text-align:center">Camt ( <i class="fa fa-inr"></i> )</th>                
+            <th style="text-align:center">Csamt ( <i class="fa fa-inr"></i> )</th>
+            <th style="text-align:center">Value ( <i class="fa fa-inr"></i> )</th>
+            
             <th style="text-align:center">Updby </th>
             <th style="text-align:center">Rchrg</th>            
         </tr>';
@@ -603,6 +607,9 @@ elseif(empty($jstr1_array) && !empty($jstr) &&  $jstr == 'gstr2b') {
                             $rt = isset($value['itm_det']['rt'])?$value['itm_det']['rt']:0;
                             $txval = isset($value['itm_det']['txval'])?$value['itm_det']['txval']:0;
                             $iamt = isset($value['itm_det']['iamt'])?$value['itm_det']['iamt']:0;
+                            $samt = isset($value['itm_det']['samt'])?$value['itm_det']['samt']:0;
+                            $camt = isset($value['itm_det']['camt'])?$value['itm_det']['camt']:0;
+
 
                             $response .='<tr>
                                 <td align="right">'.$num.'</td>
@@ -612,11 +619,13 @@ elseif(empty($jstr1_array) && !empty($jstr) &&  $jstr == 'gstr2b') {
                                 <td align="center">'.$i++.'</td>
                                 <td align="center">'.$inv_typ.'</td>
                                 <td align="center">'.$idt.'</td>
-                                <td align="center">'.$val.'</td>
-                                <td align="center">'.$csamt.'</td>
-                                <td align="center">'.$rt.'</td>
                                 <td align="center">'.$txval.'</td>
+                                <td align="center">'.$rt.'</td>
                                 <td align="center">'.$iamt.'</td>
+                                <td align="center">'.$samt.'</td>
+                                <td align="center">'.$camt.'</td>
+                                <td align="center">'.$csamt.'</td>
+                                <td align="center">'.$val.'</td>
                                 <td align="center">'.$updby.'</td>
                                 <td align="center">'.$rchrg.'</td>
                                 
@@ -636,19 +645,21 @@ elseif(empty($jstr1_array) && !empty($jstr) &&  $jstr == 'gstr2b') {
             <thead>
             <tr>
                 <th>Num</th>
-                <th style="text-align:center">Inum</th> 
+                <th style="text-align:center">Credit/Debit Note Number</th>    
+                <th style="text-align:center">Credit/Debit Note  Date</th>
                 <th style="text-align:center">Ctin </th>
+                <th style="text-align:center">Invoice Number</th> 
+                <th style="text-align:center">Invoice Date</th>
                 <th style="text-align:center">Item </th>
-                
-                <th style="text-align:center">Nt num</th>    
-                <th style="text-align:center">Nt date</th>
                 <th style="text-align:center">Pgst</th>
-                <th style="text-align:center">Idt</th>
-                <th style="text-align:center">Val ( <i class="fa fa-inr"></i> )</th>
-                <th style="text-align:center">Csamt ( <i class="fa fa-inr"></i> )</th>
-                <th style="text-align:center">Rate</th>
                 <th style="text-align:center">Txval ( <i class="fa fa-inr"></i> )</th>
+                <th style="text-align:center">Rate</th>
                 <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th>  
+                <th style="text-align:center">Samt ( <i class="fa fa-inr"></i> )</th> 
+                <th style="text-align:center">Camt ( <i class="fa fa-inr"></i> )</th> 
+                <th style="text-align:center">Csamt ( <i class="fa fa-inr"></i> )</th>
+                <th style="text-align:center">Val ( <i class="fa fa-inr"></i> )</th>
+                
                 <th style="text-align:center">Rsn </th>              
                 <th style="text-align:center">Updby </th>
                 <th style="text-align:center">Ntty</th>
@@ -673,7 +684,6 @@ elseif(empty($jstr1_array) && !empty($jstr) &&  $jstr == 'gstr2b') {
                         $p_gst = isset($jstr1_value['p_gst'])?$jstr1_value['p_gst']:'';
                         $ntty = isset($jstr1_value['ntty'])?$jstr1_value['ntty']:'';
 
-
                         if(!empty($itms)) {
                             $i=1;
                             foreach ($itms as $key3 => $value) {
@@ -682,28 +692,31 @@ elseif(empty($jstr1_array) && !empty($jstr) &&  $jstr == 'gstr2b') {
                                 $rt = isset($value['itm_det']['rt'])?$value['itm_det']['rt']:0;
                                 $txval = isset($value['itm_det']['txval'])?$value['itm_det']['txval']:0;
                                 $iamt = isset($value['itm_det']['iamt'])?$value['itm_det']['iamt']:0;
+                                $samt = isset($value['itm_det']['samt'])?$value['itm_det']['samt']:0;
+                                $camt = isset($value['itm_det']['camt'])?$value['itm_det']['camt']:0;
 
                                 $response .='<tr>
                                     <td align="right">'.$num.'</td>
-                                    <td align="center">'.$inum.'</td>
-                                    <td align="right">'.$ctin.'</td>
-                                    <td align="center">'.$i++.'</td>
                                     <td align="center">'.$nt_num.'</td>
                                     <td align="center">'.$nt_dt.'</td>
-                                    <td align="center">'.$p_gst.'</td>
+                                    <td align="right">'.$ctin.'</td>
+                                    <td align="center">'.$inum.'</td>
                                     <td align="center">'.$idt.'</td>
-                                    <td align="center">'.$val.'</td>
-                                    <td align="center">'.$csamt.'</td>
-                                    <td align="center">'.$rt.'</td>
+                                    <td align="center">'.$i++.'</td>
+                                    <td align="center">'.$p_gst.'</td>
                                     <td align="center">'.$txval.'</td>
+                                    <td align="center">'.$rt.'</td>
                                     <td align="center">'.$iamt.'</td>
+                                    <td align="center">'.$samt.'</td>
+                                    <td align="center">'.$camt.'</td>
+                                    <td align="center">'.$csamt.'</td>
+                                    <td align="center">'.$val.'</td>
                                     <td align="center">'.$rsn.'</td>
                                     <td align="center">'.$updby.'</td>
                                     <td align="center">'.$ntty.'</td>
                                 </tr>';
                             }
                         }
-
 
                     }
                 }

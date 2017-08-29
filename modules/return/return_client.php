@@ -241,7 +241,7 @@ if(!empty($dataInvPurchase))
                     </div>
                     <div class="col-md-4 col-sm-4" style="background:#fde7e0; margin-top:20px; border-radius:3px; padding:15px">
                         <div class="gstrrgtbox">Fill GST-Transition<br/><span>To work on GST Transition Form</span></div>
-                        <a href="<?php echo PROJECT_URL;?>/?page=transition_gstr_file" class="btn btn-orange" style="width:100%;">Start Now</a>
+                        <a href="<?php echo PROJECT_URL;?>/?page=transition_gstr&returnmonth=<?php echo $returnmonth;?>" class="btn btn-orange" style="width:100%;">Start Now</a>
                     </div>
                 </div>
             </div>
