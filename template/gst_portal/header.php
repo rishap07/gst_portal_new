@@ -129,8 +129,8 @@
                 <div class="arrow-up"></div>
                     <div class="txtnotfication">Notifications</div>
                    
-						<?php //echo html_entity_decode($message); 
-						echo html_entity_decode($message);
+						<?php echo html_entity_decode($message); 
+						//echo  $obj_notification->strip_tags_content(html_entity_decode($message));
 						?>
 					<div class="clear"></div>
                     <div class="btnseeall"><a href="<?php echo PROJECT_URL; ?>/?page=notification" class="btn">See All</a></div>
@@ -170,6 +170,7 @@
 						<span class="collapse in hidden-xs">Business Users <span class="navrgtarrow"><i class="fa fa-chevron-right" aria-hidden="true"></i></span></span></a>
 						<ul class="nav nav-stacked collapse left-submenu" id="item2">
 							<li><a href="<?php echo PROJECT_URL; ?>/?page=client_list"><i class="fa fa-circle" aria-hidden="true"></i>All Business User</a></li>
+							<?php if ($db_obj->can_read('subscriber_subuser_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=subscriber_subuser_list"><i class="fa fa-circle" aria-hidden="true"></i>All Business SubUser</a></li><?php } ?>
 							<li><a href="<?php echo PROJECT_URL; ?>/?page=client_update"><i class="fa fa-circle" aria-hidden="true"></i>Add Business User</a></li>
 						</ul>
 					</li>

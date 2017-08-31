@@ -183,10 +183,10 @@ input[type='submit'] {text-transform:capitalize;}
 /*=====================manis tiwari css start=========================*/
 .dashleftbox .listcontent { min-height:140px;}
 .dashleftbox .listcontent .inovicelefttable{margin-top:30px;}
+.lightpink { background-color: #f2dede; color:#a94442; border:1px solid #ebccd1;}
 .lightgreen { background:#dff0d8; color:#3c763d; border:1px solid #d6e9c6;}
 .lightblue { background:#d9edf7; color:#31708f; border:1px solid #bce8f1; }
 .lightyellowbg { background:#fcf8e3; color:#8a6d5b; border:1px solid #faebcc;}
-.pinkbg { background-color: #f2dede; color:#a94442; border:1px solid #ebccd1;}
 .pinkbg { background-color: #f2dede; color:#a94442; border:1px solid #ebccd1;}
 .perpalbg { background:#e6e6f9; color:#5e5e9c; border:1px solid #c2c2f1;}
 .dashtopcol { min-height:100px; border-radius:5px; text-align:center; padding:20px 0 0 0; margin:0px 0 20px 0;}

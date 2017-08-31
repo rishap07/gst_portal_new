@@ -74,9 +74,6 @@
 	padding:5px;
 	vertical-align:top;
 }
-.invoice-box table tr td:nth-child(2){
-	text-align:right;
-}
 .invoice-box table tr.top table td{
 	padding-bottom:20px;
 }
@@ -92,12 +89,14 @@
 	background:#eee;
 	border-bottom:1px solid #ddd;
 	font-weight:bold;
+	text-align:center;
 }
 .invoice-box table tr.details td{
 	padding-bottom:20px;
 }
 .invoice-box table tr.item td{
 	border-bottom:1px solid #eee;
+	text-align:center;
 }
 .invoice-box table tr.item.last td{
 	border-bottom:none;
@@ -161,6 +160,9 @@ table.dataTable tbody tr.even {
 .tablecontent tr th {
 	text-align:center !important;
 }
-.list-primary.pull-left {
+#mainTable .list-primary.pull-left {
     width: 70%;
+}
+.fontbold {
+    font-weight: bold;
 }
