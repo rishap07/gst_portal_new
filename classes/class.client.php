@@ -437,7 +437,7 @@ final class client extends validation {
         $dataArr['item_unit'] = isset($_POST['item_unit']) ? $_POST['item_unit'] : '';
 		$dataArr['item_description'] = isset($_POST['item_description']) ? $_POST['item_description'] : '';
         $dataArr['status'] = isset($_POST['status']) ? $_POST['status'] : '';
-		 $dataArr['is_applicable'] = isset($_POST['is_applicable']) ? $_POST['is_applicable'] : '';
+		$dataArr['is_applicable'] = isset($_POST['is_applicable']) ? $_POST['is_applicable'] : '';
 
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
@@ -474,7 +474,7 @@ final class client extends validation {
         $dataArr['item_unit'] = isset($_POST['item_unit']) ? $_POST['item_unit'] : '';
 		$dataArr['item_description'] = isset($_POST['item_description']) ? $_POST['item_description'] : '';
         $dataArr['status'] = isset($_POST['status']) ? $_POST['status'] : '';
-		 $dataArr['is_applicable'] = isset($_POST['is_applicable']) ? $_POST['is_applicable'] : '';
+		$dataArr['is_applicable'] = isset($_POST['is_applicable']) ? $_POST['is_applicable'] : '';
 
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
@@ -3883,12 +3883,16 @@ final class client extends validation {
 
         $currentFinancialYear = $this->generateFinancialYear();
 
+		/* get current user data */
+		$dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
+
         $invoiceData = $this->get_results("select 
 											ci.*, 
 											cii.invoice_item_id, 
 											cii.item_id, 
 											cii.item_name, 
 											cii.item_hsncode, 
+											cii.item_description, 
 											cii.item_quantity, 
 											cii.item_unit, 
 											cii.item_unit_price, 
@@ -3918,7 +3922,7 @@ final class client extends validation {
         $mpdfHtml .= '<div style="margin:auto;font-size:16px;line-height:24px;color:#555;">';
         $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;" cellpadding="0" cellspacing="0">';
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;">';
+        $mpdfHtml .= '<td colspan="2" style="vertical-align:top;">';
         $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;">';
         $mpdfHtml .= '<tr>';
         $mpdfHtml .= '<td style="font-size:45px;line-height:45px;color:#333;padding:5px;vertical-align:top;padding-bottom:20px;">';
@@ -3936,12 +3940,12 @@ final class client extends validation {
 		else if($invoiceData[0]->invoice_type == "deemedexportinvoice") { $invoiceType = "Deemed Export Invoice"; } 
 		else { $invoiceType = "Tax Invoice"; }
 
-		$mpdfHtml .= '<td style="padding:5px;vertical-align:top;text-align:right;padding-bottom:20px;">';
+		$mpdfHtml .= '<td style="vertical-align:top;text-align:right;padding-bottom:20px;">';
         $mpdfHtml .= '<b>Invoice #</b>: ' . $invoiceData[0]->serial_number . '<br>';
         $mpdfHtml .= '<b>Reference #</b>: ' . $invoiceData[0]->reference_number . '<br>';
 		$mpdfHtml .= '<b>Type:</b> ' . $invoiceType . '<br>';
 		$mpdfHtml .= '<b>Nature:</b> Sales Invoice<br>';
-        $mpdfHtml .= '<b>Invoice Date:</b>' . $invoiceData[0]->invoice_date;
+        $mpdfHtml .= '<b>Invoice Date:</b> ' . $invoiceData[0]->invoice_date;
         $mpdfHtml .= '</td>';
         $mpdfHtml .= '</tr>';
         $mpdfHtml .= '</table>';
@@ -3951,23 +3955,29 @@ final class client extends validation {
         $supply_place_data = $this->getStateDetailByStateId($invoiceData[0]->supply_place);
 
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;">';
-        $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;">';
+        $mpdfHtml .= '<td colspan="2" style="vertical-align:top;">';
+        $mpdfHtml .= '<table style="width:100%;line-height:inherit;">';
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;padding-bottom:20px;">';
+        $mpdfHtml .= '<td style="text-align:left;vertical-align:top;padding-bottom:20px;width:48%;padding-right:2%;">';
         $mpdfHtml .= $invoiceData[0]->company_name . '<br>';
         $mpdfHtml .= $invoiceData[0]->company_address . '<br>';
+		if(!empty($invoiceData[0]->company_email)) { $mpdfHtml .= '<b>Email:</b> ' . $invoiceData[0]->company_email . '<br>'; }
+        if(!empty($invoiceData[0]->company_phone_number)) { $mpdfHtml .= '<b>Phone:</b> ' . $invoiceData[0]->company_phone_number . '<br>'; }
         $mpdfHtml .= '<b>GSTIN:</b> ' . $invoiceData[0]->gstin_number;
         $mpdfHtml .= '</td>';
 
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;text-align:right;padding-bottom:20px;">';
+        $mpdfHtml .= '<td style="vertical-align:top;text-align:right;padding-bottom:20px;width:48%;padding-left:2%;">';
 
 		if($invoiceData[0]->invoice_type === "exportinvoice") {
-			
+
 			if($invoiceData[0]->export_supply_meant == "withpayment") { $exportSupplyMeant = "Payment of Integrated Tax"; } 
 			else { $exportSupplyMeant = "Without Payment of Integrated Tax"; }
 			
-			$mpdfHtml .= '<b>Export Supply Meant:</b> ' . $exportSupplyMeant . '<br>';
+			if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) {
+                $mpdfHtml .= '<b>Place Of Supply:</b> ' . $supply_place_data['data']->state_name . '<br>';
+            }
+			
+			$mpdfHtml .= '<b>Supply Meant:</b> ' . $exportSupplyMeant . '<br>';
 
 			if ($invoiceData[0]->is_canceled == 1) { $mpdfHtml .= '<b>Canceled Invoice:</b> Canceled <br>'; }
             if ($invoiceData[0]->advance_adjustment == 1) { $mpdfHtml .= '<b>Advance Adjustment:</b> Yes <br>'; }
@@ -3989,7 +3999,11 @@ final class client extends validation {
             if($invoiceData[0]->export_supply_meant == "withpayment") { $exportSupplyMeant = "Payment of Integrated Tax"; } 
 			else { $exportSupplyMeant = "Without Payment of Integrated Tax"; }
 			
-			$mpdfHtml .= '<b>Export Supply Meant:</b> ' . $exportSupplyMeant . '<br>';
+			$mpdfHtml .= '<b>Supply Meant:</b> ' . $exportSupplyMeant . '<br>';
+			
+			if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) {
+                $mpdfHtml .= '<b>Place Of Supply:</b> ' . $supply_place_data['data']->state_name . '<br>';
+            }
 
 			if ($invoiceData[0]->is_canceled == 1) { $mpdfHtml .= '<b>Canceled Invoice:</b> Canceled <br>'; }
             if ($invoiceData[0]->advance_adjustment == 1) { $mpdfHtml .= '<b>Advance Adjustment:</b> Yes <br>'; }
@@ -4009,9 +4023,9 @@ final class client extends validation {
 			else if($invoiceData[0]->supply_type == "tcs") { $supplyType = "TCS"; } 
 			else { $supplyType = "Normal"; }
 
-			$mpdfHtml .= '<b>Supply Type:</b>' . $supplyType . '<br>';
+			$mpdfHtml .= '<b>Supply Type:</b> ' . $supplyType . '<br>';
 			if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) {
-                $mpdfHtml .= '<b>Place Of Supply:</b>' . $supply_place_data['data']->state_name . '<br>';
+                $mpdfHtml .= '<b>Place Of Supply:</b> ' . $supply_place_data['data']->state_name . '<br>';
             }
 
 			if ($invoiceData[0]->is_canceled == 1) { $mpdfHtml .= '<b>Canceled Invoice:</b> Canceled <br>'; }
@@ -4026,8 +4040,8 @@ final class client extends validation {
             }
 
             if ($invoiceData[0]->supply_type === "tcs") {
-                $mpdfHtml .= '<br><b>Ecommerce GSTIN Number:</b>' . $invoiceData[0]->ecommerce_gstin_number . '<br>';
-                $mpdfHtml .= '<b>Ecommerce Vendor Code:</b>' . $invoiceData[0]->ecommerce_vendor_code;
+                $mpdfHtml .= '<br><b>Ecommerce GSTIN Number:</b> ' . $invoiceData[0]->ecommerce_gstin_number . '<br>';
+                $mpdfHtml .= '<b>Ecommerce Vendor Code:</b> ' . $invoiceData[0]->ecommerce_vendor_code;
             }
 		}
 
@@ -4038,11 +4052,11 @@ final class client extends validation {
         $mpdfHtml .= '</tr>';
 
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;">';
-        $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;">';
+        $mpdfHtml .= '<td colspan="2" style="vertical-align:top;">';
+        $mpdfHtml .= '<table style="width:100%;line-height:inherit;">';
         $mpdfHtml .= '<tr>';
        
-		$mpdfHtml .= '<td style="padding:5px;vertical-align:top;padding-bottom:40px;width:50%;">';
+		$mpdfHtml .= '<td style="vertical-align:top;text-align:left;padding-bottom:40px;width:48%;padding-right:2%;">';
 			$mpdfHtml .= '<b>Recipient Detail</b><br>';
 			$mpdfHtml .= $invoiceData[0]->billing_name . '<br>';
 			if ($invoiceData[0]->billing_company_name) { $mpdfHtml .= $invoiceData[0]->billing_company_name . '<br>'; }
@@ -4050,11 +4064,11 @@ final class client extends validation {
 			
 			$billing_vendor_data = $this->getVendorDetailByVendorId($invoiceData[0]->billing_vendor_type);
 			$mpdfHtml .= $billing_vendor_data['data']->vendor_name . '<br>';
-			
-			if (!empty($invoiceData[0]->billing_gstin_number)) { $mpdfHtml .= '<b>GSTIN:</b>' . $invoiceData[0]->billing_gstin_number; }
+
+			if (!empty($invoiceData[0]->billing_gstin_number)) { $mpdfHtml .= '<b>GSTIN:</b> ' . $invoiceData[0]->billing_gstin_number; }
 		$mpdfHtml .= '</td>';
 
-		$mpdfHtml .= '<td style="padding:5px;vertical-align:top;text-align:right;padding-bottom:40px;width:50%;">';
+		$mpdfHtml .= '<td style="vertical-align:top;text-align:right;padding-bottom:40px;width:48%;padding-left:2%;">';
 			$mpdfHtml .= '<b>Address Of Delivery / Shipping Detail</b><br>';
 			$mpdfHtml .= $invoiceData[0]->shipping_name . '<br>';
 			if ($invoiceData[0]->shipping_company_name) { $mpdfHtml .= $invoiceData[0]->shipping_company_name . '<br>'; }
@@ -4063,53 +4077,53 @@ final class client extends validation {
 			$shipping_vendor_data = $this->getVendorDetailByVendorId($invoiceData[0]->shipping_vendor_type);
 			$mpdfHtml .= $shipping_vendor_data['data']->vendor_name . '<br>';
 			
-			if (!empty($invoiceData[0]->billing_gstin_number)) { $mpdfHtml .= '<b>GSTIN:</b>' . $invoiceData[0]->shipping_gstin_number; }
+			if (!empty($invoiceData[0]->billing_gstin_number)) { $mpdfHtml .= '<b>GSTIN:</b> ' . $invoiceData[0]->shipping_gstin_number; }
 		$mpdfHtml .= '</td>';
 
         $mpdfHtml .= '</tr>';
         $mpdfHtml .= '</table>';
         $mpdfHtml .= '</td>';
         $mpdfHtml .= '</tr>';
+		
+        $mpdfHtml .= '</table>';
 
+        $mpdfHtml .= '<table border="1" style="border-collapse:collapse;width:100%;line-height:inherit;text-align:center;">';
         $mpdfHtml .= '<tr>';
-
-        $mpdfHtml .= '<td colspan="2">';
-
-        $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:center;">';
-        $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">S.No</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Goods/Services</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">HSN/SAC Code</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Qty</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Unit</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Rate (₹)</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Total (₹)</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Discount(%)</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">S.No</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Goods/Services</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">HSN/SAC Code</td>';
+		$mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Item Description</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Qty</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Unit</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Rate (₹)</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Total (₹)</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Discount(%)</td>';
 
         if ($invoiceData[0]->advance_adjustment == 1) {
-            $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Advance (₹)</td>';
+            $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Advance (₹)</td>';
         }
 
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Taxable Value (₹)</td>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">CGST</td>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">SGST</td>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">IGST</td>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">CESS</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Taxable Value (₹)</td>';
+        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">CGST</td>';
+        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">SGST</td>';
+        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">IGST</td>';
+        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">CESS</td>';
         $mpdfHtml .= '</tr>';
 
         $mpdfHtml .= '<tr class="heading">';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">(%)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Amt (₹)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">(%)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Amt (₹)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">(%)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Amt (₹)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">(%)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Amt (₹)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">(%)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Amt (₹)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">(%)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Amt (₹)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">(%)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Amt (₹)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">(%)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Amt (₹)</td>';
         $mpdfHtml .= '</tr>';
 
         $counter = 1;
         $total_taxable_subtotal = 0.00;
+		$total_advance_subtotal = 0.00;
         $total_cgst_amount = 0.00;
         $total_sgst_amount = 0.00;
         $total_igst_amount = 0.00;
@@ -4117,83 +4131,88 @@ final class client extends validation {
         foreach ($invoiceData as $invData) {
 
             $mpdfHtml .= '<tr>';
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $counter;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_name;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_hsncode;
             $mpdfHtml .= '</td>';
+			
+			$mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
+            $mpdfHtml .= $invData->item_description;
+            $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_quantity;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_unit;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_unit_price;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->subtotal;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->discount;
             $mpdfHtml .= '</td>';
 
             if ($invoiceData[0]->advance_adjustment == 1) {
-                $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+                $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
                 $mpdfHtml .= $invData->advance_amount;
                 $mpdfHtml .= '</td>';
             }
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->taxable_subtotal;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->cgst_rate;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->cgst_amount;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->sgst_rate;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->sgst_amount;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->igst_rate;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->igst_amount;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->cess_rate;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->cess_amount;
             $mpdfHtml .= '</td>';
 
             $mpdfHtml .= '</tr>';
 
             $total_taxable_subtotal += $invData->taxable_subtotal;
+			$total_advance_subtotal += $invData->advance_amount;
             $total_cgst_amount += $invData->cgst_amount;
             $total_sgst_amount += $invData->sgst_amount;
             $total_igst_amount += $invData->igst_amount;
@@ -4202,23 +4221,37 @@ final class client extends validation {
             $counter++;
         }
 
-        $mpdfHtml .= '<tr>';
+		$mpdfHtml .= '<tr style="background:#d9edf7;">';
+		$mpdfHtml .= '<td colspan="9" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Total Invoice Value</td>';
+		if($invoiceData[0]->advance_adjustment == 1) { $mpdfHtml .= '<td>'.$total_advance_subtotal.'</td>'; }
+		$mpdfHtml .= '<td>'.$total_taxable_subtotal.'</td>';
+		$mpdfHtml .= '<td>&nbsp;</td>';
+		$mpdfHtml .= '<td>'.$total_cgst_amount.'</td>';
+		$mpdfHtml .= '<td>&nbsp;</td>';
+		$mpdfHtml .= '<td>'.$total_sgst_amount.'</td>';
+		$mpdfHtml .= '<td>&nbsp;</td>';
+		$mpdfHtml .= '<td>'.$total_igst_amount.'</td>';
+		$mpdfHtml .= '<td>&nbsp;</td>';
+		$mpdfHtml .= '<td>'.$total_cess_amount.'</td>';
+		$mpdfHtml .= '</tr>';
+
+        $mpdfHtml .= '<tr style="background:#ffefbf;">';
         if ($invoiceData[0]->advance_adjustment == 1) {
-            $mpdfHtml .= '<td colspan="18" style="padding:5px;vertical-align:top;text-align:right;border-top:2px solid #eee;font-weight:bold;">';
+            $mpdfHtml .= '<td colspan="19" style="padding:5px;vertical-align:top;text-align:right;font-weight:bold;">';
         } else {
-            $mpdfHtml .= '<td colspan="17" style="padding:5px;vertical-align:top;text-align:right;border-top:2px solid #eee;font-weight:bold;">';
+            $mpdfHtml .= '<td colspan="18" style="padding:5px;vertical-align:top;text-align:right;font-weight:bold;">';
         }
-        $mpdfHtml .= 'Total Invoice Value (In Figure): ' . $invoiceData[0]->invoice_total_value;
+        $mpdfHtml .= 'Total Invoice Value (In Figure): ₹' . $invoiceData[0]->invoice_total_value;
         $mpdfHtml .= '</td>';
         $mpdfHtml .= '</tr>';
 
         $invoice_total_value_words = $this->convert_number_to_words($invoiceData[0]->invoice_total_value);
 
-        $mpdfHtml .= '<tr>';
+        $mpdfHtml .= '<tr style="background:#f2dede;">';
         if ($invoiceData[0]->advance_adjustment == 1) {
-            $mpdfHtml .= '<td colspan="18" style="padding:5px;vertical-align:top;text-align:right;border-top:2px solid #eee;font-weight:bold;">';
+            $mpdfHtml .= '<td colspan="19" style="padding:5px;vertical-align:top;text-align:right;font-weight:bold;">';
         } else {
-            $mpdfHtml .= '<td colspan="17" style="padding:5px;vertical-align:top;text-align:right;border-top:2px solid #eee;font-weight:bold;">';
+            $mpdfHtml .= '<td colspan="18" style="padding:5px;vertical-align:top;text-align:right;font-weight:bold;">';
         }
         $mpdfHtml .= 'Total Invoice Value (In Words): ' . ucwords($invoice_total_value_words);
         $mpdfHtml .= '</td>';
@@ -4233,19 +4266,19 @@ final class client extends validation {
                 $mpdfHtml .= '<tr style="background:#e9ffdb;font-size:14px;">';
 
                 if ($invoiceData[0]->advance_adjustment == 1) {
-                    $mpdfHtml .= '<td colspan="10" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Amount of Tax Subject to ' . strtoupper($invoiceData[0]->supply_type) . '</td>';
+                    $mpdfHtml .= '<td colspan="11" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Amount of Tax Subject to ' . strtoupper($invoiceData[0]->supply_type) . '</td>';
                 } else {
-                    $mpdfHtml .= '<td colspan="9" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Amount of Tax Subject to ' . strtoupper($invoiceData[0]->supply_type) . '</td>';
+                    $mpdfHtml .= '<td colspan="10" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Amount of Tax Subject to ' . strtoupper($invoiceData[0]->supply_type) . '</td>';
                 }
 
                 $mpdfHtml .= '<td>1%</td>';
-                $mpdfHtml .= '<td>₹' . round(($tdcsTaxValue), 2) . '</td>';
+                $mpdfHtml .= '<td>' . round(($tdcsTaxValue), 2) . '</td>';
                 $mpdfHtml .= '<td>1%</td>';
-                $mpdfHtml .= '<td>₹' . round(($tdcsTaxValue), 2) . '</td>';
+                $mpdfHtml .= '<td>' . round(($tdcsTaxValue), 2) . '</td>';
                 $mpdfHtml .= '<td>0%</td>';
-                $mpdfHtml .= '<td>₹0.00</td>';
+                $mpdfHtml .= '<td>0.00</td>';
                 $mpdfHtml .= '<td>0%</td>';
-                $mpdfHtml .= '<td>₹0.00</td>';
+                $mpdfHtml .= '<td>0.00</td>';
                 $mpdfHtml .= '</tr>';
             } else {
 
@@ -4254,19 +4287,19 @@ final class client extends validation {
                 $mpdfHtml .= '<tr style="background:#e9ffdb;font-size:14px;">';
 
                 if ($invoiceData[0]->advance_adjustment == 1) {
-                    $mpdfHtml .= '<td colspan="10" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Amount of Tax Subject to ' . strtoupper($invoiceData[0]->supply_type) . '</td>';
+                    $mpdfHtml .= '<td colspan="11" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Amount of Tax Subject to ' . strtoupper($invoiceData[0]->supply_type) . '</td>';
                 } else {
-                    $mpdfHtml .= '<td colspan="9" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Amount of Tax Subject to ' . strtoupper($invoiceData[0]->supply_type) . '</td>';
+                    $mpdfHtml .= '<td colspan="10" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Amount of Tax Subject to ' . strtoupper($invoiceData[0]->supply_type) . '</td>';
                 }
 
                 $mpdfHtml .= '<td>0%</td>';
-                $mpdfHtml .= '<td>₹0.00</td>';
+                $mpdfHtml .= '<td>0.00</td>';
                 $mpdfHtml .= '<td>0%</td>';
-                $mpdfHtml .= '<td>₹0.00</td>';
+                $mpdfHtml .= '<td>0.00</td>';
                 $mpdfHtml .= '<td>2%</td>';
-                $mpdfHtml .= '<td>₹' . $tdcsTaxValue . '</td>';
+                $mpdfHtml .= '<td>' . $tdcsTaxValue . '</td>';
                 $mpdfHtml .= '<td>0%</td>';
-                $mpdfHtml .= '<td>₹0.00</td>';
+                $mpdfHtml .= '<td>0.00</td>';
                 $mpdfHtml .= '</tr>';
             }
         }
@@ -4278,56 +4311,152 @@ final class client extends validation {
                 $mpdfHtml .= '<tr style="background:#e9ffdb;font-size:14px;">';
 
                 if ($invoiceData[0]->advance_adjustment == 1) {
-                    $mpdfHtml .= '<td colspan="10" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Amount of Tax Subject to Reverse Charge</td>';
+                    $mpdfHtml .= '<td colspan="11" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Amount of Tax Subject to Reverse Charge</td>';
                 } else {
-                    $mpdfHtml .= '<td colspan="9" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Amount of Tax Subject to Reverse Charge</td>';
+                    $mpdfHtml .= '<td colspan="10" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Amount of Tax Subject to Reverse Charge</td>';
                 }
 
                 $mpdfHtml .= '<td>-</td>';
-                $mpdfHtml .= '<td>₹' . $total_cgst_amount . '</td>';
+                $mpdfHtml .= '<td>' . $total_cgst_amount . '</td>';
                 $mpdfHtml .= '<td>-</td>';
-                $mpdfHtml .= '<td>₹' . $total_sgst_amount . '</td>';
+                $mpdfHtml .= '<td>' . $total_sgst_amount . '</td>';
                 $mpdfHtml .= '<td>-</td>';
-                $mpdfHtml .= '<td>₹0.00</td>';
+                $mpdfHtml .= '<td>0.00</td>';
                 $mpdfHtml .= '<td>-</td>';
-                $mpdfHtml .= '<td>₹' . $total_cess_amount . '</td>';
+                $mpdfHtml .= '<td>' . $total_cess_amount . '</td>';
                 $mpdfHtml .= '</tr>';
             } else {
 
                 $mpdfHtml .= '<tr style="background:#e9ffdb;font-size:14px;">';
 
                 if ($invoiceData[0]->advance_adjustment == 1) {
-                    $mpdfHtml .= '<td colspan="10" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Amount of Tax Subject to Reverse Charge</td>';
+                    $mpdfHtml .= '<td colspan="11" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Amount of Tax Subject to Reverse Charge</td>';
                 } else {
-                    $mpdfHtml .= '<td colspan="9" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Amount of Tax Subject to Reverse Charge</td>';
+                    $mpdfHtml .= '<td colspan="10" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Amount of Tax Subject to Reverse Charge</td>';
                 }
 
                 $mpdfHtml .= '<td>-</td>';
-                $mpdfHtml .= '<td>₹0.00</td>';
+                $mpdfHtml .= '<td>0.00</td>';
                 $mpdfHtml .= '<td>-</td>';
-                $mpdfHtml .= '<td>₹0.00</td>';
+                $mpdfHtml .= '<td>0.00</td>';
                 $mpdfHtml .= '<td>-</td>';
-                $mpdfHtml .= '<td>₹' . $total_igst_amount . '</td>';
+                $mpdfHtml .= '<td>' . $total_igst_amount . '</td>';
                 $mpdfHtml .= '<td>-</td>';
-                $mpdfHtml .= '<td>₹' . $total_cess_amount . '</td>';
+                $mpdfHtml .= '<td>' . $total_cess_amount . '</td>';
                 $mpdfHtml .= '</tr>';
             }
         }
 
         $mpdfHtml .= '</table>';
 
-        $mpdfHtml .= '</td>';
+		$mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;" cellpadding="0" cellspacing="0">';
 
-        $mpdfHtml .= '</tr>';
-		
-		if(!empty($invoiceData[0]->description)) {
-			$mpdfHtml .= '<tr class="description">';
-				$mpdfHtml .= '<td colspan="2">';
-					$mpdfHtml .= '<p><b>Description:</b> '. $invoiceData[0]->description .'</p>';
+			if(!empty($invoiceData[0]->description)) {
+				$mpdfHtml .= '<tr class="description">';
+					$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
+						$mpdfHtml .= '<p><b>Additional Notes:</b> '. $invoiceData[0]->description .'</p>';
+					$mpdfHtml .= '</td>';
+				$mpdfHtml .= '</tr>';
+			}
+
+			$mpdfHtml .= '<tr>';
+				$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
+					$mpdfHtml .= '<table style="width:100%;line-height:inherit;">';
+						
+						$mpdfHtml .= '<tr>';
+
+							$mpdfHtml .= '<td style="vertical-align:top;width:50%;">';
+								
+								if(
+									!empty($dataCurrentUserArr['data']->kyc->bank_name) || 
+									!empty($dataCurrentUserArr['data']->kyc->account_number) || 
+									!empty($dataCurrentUserArr['data']->kyc->branch_name) || 
+									!empty($dataCurrentUserArr['data']->kyc->ifsc_code)
+								) {
+								
+									$mpdfHtml .= '<b>Bank Details :-</b><br>';
+
+									$mpdfHtml .= '<table width="100%" border="1" style="border-collapse:collapse;width:100%;line-height:inherit;">';
+										$mpdfHtml .= '<tr>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:40%;">';
+												$mpdfHtml .= '<b>Bank Name</b>';
+											$mpdfHtml .= '</td>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:60%;padding-left:5px;">';
+												$mpdfHtml .= $dataCurrentUserArr['data']->kyc->bank_name;
+											$mpdfHtml .= '</td>';
+										
+										$mpdfHtml .= '</tr>';
+
+										$mpdfHtml .= '<tr>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:40%;">';
+												$mpdfHtml .= '<b>Account Number</b>';
+											$mpdfHtml .= '</td>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:60%;padding-left:5px;">';
+												$mpdfHtml .= $dataCurrentUserArr['data']->kyc->account_number;
+											$mpdfHtml .= '</td>';
+
+										$mpdfHtml .= '</tr>';									
+
+										$mpdfHtml .= '<tr>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:40%;">';
+												$mpdfHtml .= '<b>Branch Name</b>';
+											$mpdfHtml .= '</td>';
+											
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:60%;padding-left:5px;">';
+												$mpdfHtml .= $dataCurrentUserArr['data']->kyc->branch_name;
+											$mpdfHtml .= '</td>';
+										
+										$mpdfHtml .= '</tr>';
+
+										$mpdfHtml .= '<tr>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:40%;">';
+												$mpdfHtml .= '<b>IFSC Code</b>';
+											$mpdfHtml .= '</td>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:60%;padding-left:5px;">';
+												$mpdfHtml .= $dataCurrentUserArr['data']->kyc->ifsc_code;
+											$mpdfHtml .= '</td>';
+
+										$mpdfHtml .= '</tr>';
+
+									$mpdfHtml .= '</table>';
+								}
+
+							$mpdfHtml .= '</td>';
+
+							$mpdfHtml .= '<td style="padding-top:50px;vertical-align:top;padding-left:10%;width:40%;">';
+
+								$mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:center;">';
+									$mpdfHtml .= '<tr class="signature">';
+										$mpdfHtml .= '<td style="vertical-align:top;">';
+										$mpdfHtml .= '</td>';
+										$mpdfHtml .= '<td style="vertical-align:top;">';
+											$mpdfHtml .= '<p style="text-align:right;">';
+												$mpdfHtml .= '<hr style="height:2px;">';
+											$mpdfHtml .= '</p>';
+											$mpdfHtml .= '<p style="text-align:center;">';
+												$mpdfHtml .= 'For ' . $dataCurrentUserArr['data']->kyc->name;
+											$mpdfHtml .= '</p>';
+											$mpdfHtml .= '<p style="text-align:center;">';
+												$mpdfHtml .= '<b>(Authorised Signatory)</b>';
+											$mpdfHtml .= '</p>';
+										$mpdfHtml .= '</td>';
+									$mpdfHtml .= '</tr>';
+								$mpdfHtml .= '</table>';
+
+							$mpdfHtml .= '</td>';
+
+						$mpdfHtml .= '</tr>';
+
+					$mpdfHtml .= '</table>';
 				$mpdfHtml .= '</td>';
 			$mpdfHtml .= '</tr>';
-		}
-
 
         $mpdfHtml .= '</table>';
         $mpdfHtml .= '</div>';
@@ -4340,11 +4469,15 @@ final class client extends validation {
 
         $currentFinancialYear = $this->generateFinancialYear();
 
+		/* get current user data */
+		$dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
+
         $invoiceData = $this->get_results("select 
 											ci.*, 
 											cii.invoice_item_id, 
 											cii.item_id, 
 											cii.item_name, 
+											cii.item_description, 
 											cii.item_hsncode, 
 											cii.item_quantity, 
 											cii.item_unit, 
@@ -4366,9 +4499,9 @@ final class client extends validation {
         $mpdfHtml .= '<div style="margin:auto;font-size:16px;line-height:24px;color:#555;">';
         $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;" cellpadding="0" cellspacing="0">';
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;">';
-        $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;">';
-        $mpdfHtml .= '<tr>';
+        $mpdfHtml .= '<td colspan="2" style="vertical-align:top;">';
+		$mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;">';
+		$mpdfHtml .= '<tr>';
         $mpdfHtml .= '<td style="font-size:45px;line-height:45px;color:#333;padding:5px;vertical-align:top;padding-bottom:20px;">';
 
         if (isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") {
@@ -4379,12 +4512,12 @@ final class client extends validation {
 
         $mpdfHtml .= '</td>';
 
-		$mpdfHtml .= '<td style="padding:5px;vertical-align:top;text-align:right;padding-bottom:20px;">';
+		$mpdfHtml .= '<td style="vertical-align:top;text-align:right;padding-bottom:20px;">';
         $mpdfHtml .= '<b>Invoice #</b>: ' . $invoiceData[0]->serial_number . '<br>';
         $mpdfHtml .= '<b>Reference #</b>: ' . $invoiceData[0]->reference_number . '<br>';
 		$mpdfHtml .= '<b>Type:</b> Bill of Supply Invoice<br>';
 		$mpdfHtml .= '<b>Nature:</b> Sales Invoice<br>';
-        $mpdfHtml .= '<b>Invoice Date:</b>' . $invoiceData[0]->invoice_date;
+        $mpdfHtml .= '<b>Invoice Date:</b> ' . $invoiceData[0]->invoice_date;
         $mpdfHtml .= '</td>';
         $mpdfHtml .= '</tr>';
         $mpdfHtml .= '</table>';
@@ -4392,16 +4525,18 @@ final class client extends validation {
         $mpdfHtml .= '</tr>';
 
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;">';
-        $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;">';
+        $mpdfHtml .= '<td colspan="2" style="vertical-align:top;">';
+        $mpdfHtml .= '<table style="width:100%;line-height:inherit;">';
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;padding-bottom:20px;">';
+        $mpdfHtml .= '<td style="text-align:left;vertical-align:top;padding-bottom:20px;width:48%;padding-right:2%;">';
         $mpdfHtml .= $invoiceData[0]->company_name . '<br>';
         $mpdfHtml .= $invoiceData[0]->company_address . '<br>';
+		if(!empty($invoiceData[0]->company_email)) { $mpdfHtml .= '<b>Email:</b> ' . $invoiceData[0]->company_email . '<br>'; }
+        if(!empty($invoiceData[0]->company_phone_number)) { $mpdfHtml .= '<b>Phone:</b> ' . $invoiceData[0]->company_phone_number . '<br>'; }
         $mpdfHtml .= '<b>GSTIN:</b> ' . $invoiceData[0]->gstin_number;
         $mpdfHtml .= '</td>';
 
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;text-align:right;padding-bottom:20px;">';
+        $mpdfHtml .= '<td style="vertical-align:top;text-align:right;padding-bottom:20px;width:48%;padding-left:2%;">';
 		if ($invoiceData[0]->is_canceled == 1) { $mpdfHtml .= '<b>Canceled Invoice:</b> Canceled <br>'; }
         $mpdfHtml .= '</td>';
 
@@ -4411,11 +4546,11 @@ final class client extends validation {
         $mpdfHtml .= '</tr>';
 
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;">';
-        $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;">';
+        $mpdfHtml .= '<td colspan="2" style="vertical-align:top;">';
+        $mpdfHtml .= '<table style="width:100%;line-height:inherit;">';
         $mpdfHtml .= '<tr>';
        
-		$mpdfHtml .= '<td style="padding:5px;vertical-align:top;padding-bottom:40px;width:50%;">';
+		$mpdfHtml .= '<td style="vertical-align:top;text-align:left;padding-bottom:40px;width:48%;padding-right:2%;">';
 			$mpdfHtml .= '<b>Recipient Detail</b><br>';
 			$mpdfHtml .= $invoiceData[0]->billing_name . '<br>';
 			if ($invoiceData[0]->billing_company_name) { $mpdfHtml .= $invoiceData[0]->billing_company_name . '<br>'; }
@@ -4423,11 +4558,11 @@ final class client extends validation {
 			
 			$billing_vendor_data = $this->getVendorDetailByVendorId($invoiceData[0]->billing_vendor_type);
 			$mpdfHtml .= $billing_vendor_data['data']->vendor_name . '<br>';
-			
-			if (!empty($invoiceData[0]->billing_gstin_number)) { $mpdfHtml .= '<b>GSTIN:</b>' . $invoiceData[0]->billing_gstin_number; }
+
+			if (!empty($invoiceData[0]->billing_gstin_number)) { $mpdfHtml .= '<b>GSTIN:</b> ' . $invoiceData[0]->billing_gstin_number; }
 		$mpdfHtml .= '</td>';
 
-		$mpdfHtml .= '<td style="padding:5px;vertical-align:top;text-align:right;padding-bottom:40px;width:50%;">';
+		$mpdfHtml .= '<td style="vertical-align:top;text-align:right;padding-bottom:40px;width:48%;padding-left:2%;">';
 			$mpdfHtml .= '<b>Address Of Delivery / Shipping Detail</b><br>';
 			$mpdfHtml .= $invoiceData[0]->shipping_name . '<br>';
 			if ($invoiceData[0]->shipping_company_name) { $mpdfHtml .= $invoiceData[0]->shipping_company_name . '<br>'; }
@@ -4436,7 +4571,7 @@ final class client extends validation {
 			$shipping_vendor_data = $this->getVendorDetailByVendorId($invoiceData[0]->shipping_vendor_type);
 			$mpdfHtml .= $shipping_vendor_data['data']->vendor_name . '<br>';
 			
-			if (!empty($invoiceData[0]->billing_gstin_number)) { $mpdfHtml .= '<b>GSTIN:</b>' . $invoiceData[0]->shipping_gstin_number; }
+			if (!empty($invoiceData[0]->billing_gstin_number)) { $mpdfHtml .= '<b>GSTIN:</b> ' . $invoiceData[0]->shipping_gstin_number; }
 		$mpdfHtml .= '</td>';
 
         $mpdfHtml .= '</tr>';
@@ -4444,95 +4579,202 @@ final class client extends validation {
         $mpdfHtml .= '</td>';
         $mpdfHtml .= '</tr>';
 
-        $mpdfHtml .= '<tr>';
+		$mpdfHtml .= '</table>';
 
-        $mpdfHtml .= '<td colspan="2">';
-
-        $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:center;">';
+		$mpdfHtml .= '<table border="1" style="border-collapse:collapse;width:100%;line-height:inherit;text-align:center;">';
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">S.No</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Goods/Services</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">HSN/SAC Code</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Qty</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Unit</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Rate (₹)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Total (₹)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Discount(%)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Net Total Value (₹)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">S.No</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Goods/Services</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">HSN/SAC Code</td>';
+		$mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Item Description</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Qty</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Unit</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Rate (₹)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Total (₹)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Discount(%)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Net Total Value (₹)</td>';
         $mpdfHtml .= '</tr>';
 
         $counter = 1;
+		$total_taxable_subtotal = 0.00;
         foreach ($invoiceData as $invData) {
 
             $mpdfHtml .= '<tr>';
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $counter;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_name;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_hsncode;
             $mpdfHtml .= '</td>';
+			
+			$mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
+            $mpdfHtml .= $invData->item_description;
+            $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_quantity;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_unit;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_unit_price;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->subtotal;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->discount;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->taxable_subtotal;
             $mpdfHtml .= '</td>';
 
             $mpdfHtml .= '</tr>';
 
+			$total_taxable_subtotal += $invData->taxable_subtotal;
             $counter++;
         }
+		
+		$mpdfHtml .= '<tr style="background:#d9edf7;">';
+		$mpdfHtml .= '<td colspan="9" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Total Invoice Value</td>';
+		$mpdfHtml .= '<td>'.$total_taxable_subtotal.'</td>';
+		$mpdfHtml .= '</tr>';
 
-        $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="9" style="padding:5px;vertical-align:top;text-align:right;border-top:2px solid #eee;font-weight:bold;">';
-        $mpdfHtml .= 'Total Invoice Value (In Figure): ' . $invoiceData[0]->invoice_total_value;
+        $mpdfHtml .= '<tr style="background:#ffefbf;">';
+        $mpdfHtml .= '<td colspan="10" style="padding:5px;vertical-align:top;text-align:right;border-top:2px solid #eee;font-weight:bold;">';
+        $mpdfHtml .= 'Total Invoice Value (In Figure): ₹' . $invoiceData[0]->invoice_total_value;
         $mpdfHtml .= '</td>';
         $mpdfHtml .= '</tr>';
 
         $invoice_total_value_words = $this->convert_number_to_words($invoiceData[0]->invoice_total_value);
 
-        $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="9" style="padding:5px;vertical-align:top;text-align:right;border-top:2px solid #eee;font-weight:bold;">';
+        $mpdfHtml .= '<tr style="background:#f2dede;">';
+        $mpdfHtml .= '<td colspan="10" style="padding:5px;vertical-align:top;text-align:right;border-top:2px solid #eee;font-weight:bold;">';
         $mpdfHtml .= 'Total Invoice Value (In Words): ' . ucwords($invoice_total_value_words);
         $mpdfHtml .= '</td>';
         $mpdfHtml .= '</tr>';
 
         $mpdfHtml .= '</table>';
 
-        $mpdfHtml .= '</td>';
+		$mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;" cellpadding="0" cellspacing="0">';
 
-        $mpdfHtml .= '</tr>';
-		
-		if(!empty($invoiceData[0]->description)) {
-			$mpdfHtml .= '<tr class="description">';
-				$mpdfHtml .= '<td colspan="2">';
-					$mpdfHtml .= '<p><b>Description:</b> '. $invoiceData[0]->description .'</p>';
+			if(!empty($invoiceData[0]->description)) {
+				$mpdfHtml .= '<tr class="description">';
+					$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
+						$mpdfHtml .= '<p><b>Additional Notes:</b> '. $invoiceData[0]->description .'</p>';
+					$mpdfHtml .= '</td>';
+				$mpdfHtml .= '</tr>';
+			}
+
+			$mpdfHtml .= '<tr>';
+				$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
+					$mpdfHtml .= '<table style="width:100%;line-height:inherit;">';
+						
+						$mpdfHtml .= '<tr>';
+
+							$mpdfHtml .= '<td style="vertical-align:top;width:50%;">';
+								
+								if(
+									!empty($dataCurrentUserArr['data']->kyc->bank_name) || 
+									!empty($dataCurrentUserArr['data']->kyc->account_number) || 
+									!empty($dataCurrentUserArr['data']->kyc->branch_name) || 
+									!empty($dataCurrentUserArr['data']->kyc->ifsc_code)
+								) {
+								
+									$mpdfHtml .= '<b>Bank Details :-</b><br>';
+
+									$mpdfHtml .= '<table width="100%" border="1" style="border-collapse:collapse;width:100%;line-height:inherit;">';
+										$mpdfHtml .= '<tr>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:40%;">';
+												$mpdfHtml .= '<b>Bank Name</b>';
+											$mpdfHtml .= '</td>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:60%;padding-left:5px;">';
+												$mpdfHtml .= $dataCurrentUserArr['data']->kyc->bank_name;
+											$mpdfHtml .= '</td>';
+										
+										$mpdfHtml .= '</tr>';
+
+										$mpdfHtml .= '<tr>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:40%;">';
+												$mpdfHtml .= '<b>Account Number</b>';
+											$mpdfHtml .= '</td>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:60%;padding-left:5px;">';
+												$mpdfHtml .= $dataCurrentUserArr['data']->kyc->account_number;
+											$mpdfHtml .= '</td>';
+
+										$mpdfHtml .= '</tr>';									
+
+										$mpdfHtml .= '<tr>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:40%;">';
+												$mpdfHtml .= '<b>Branch Name</b>';
+											$mpdfHtml .= '</td>';
+											
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:60%;padding-left:5px;">';
+												$mpdfHtml .= $dataCurrentUserArr['data']->kyc->branch_name;
+											$mpdfHtml .= '</td>';
+										
+										$mpdfHtml .= '</tr>';
+
+										$mpdfHtml .= '<tr>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:40%;">';
+												$mpdfHtml .= '<b>IFSC Code</b>';
+											$mpdfHtml .= '</td>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:60%;padding-left:5px;">';
+												$mpdfHtml .= $dataCurrentUserArr['data']->kyc->ifsc_code;
+											$mpdfHtml .= '</td>';
+
+										$mpdfHtml .= '</tr>';
+
+									$mpdfHtml .= '</table>';
+								}
+
+							$mpdfHtml .= '</td>';
+
+							$mpdfHtml .= '<td style="padding-top:50px;vertical-align:top;padding-left:10%;width:40%;">';
+
+								$mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:center;">';
+									$mpdfHtml .= '<tr class="signature">';
+										$mpdfHtml .= '<td style="vertical-align:top;">';
+										$mpdfHtml .= '</td>';
+										$mpdfHtml .= '<td style="vertical-align:top;">';
+											$mpdfHtml .= '<p style="text-align:right;">';
+												$mpdfHtml .= '<hr style="height:2px;">';
+											$mpdfHtml .= '</p>';
+											$mpdfHtml .= '<p style="text-align:center;">';
+												$mpdfHtml .= 'For ' . $dataCurrentUserArr['data']->kyc->name;
+											$mpdfHtml .= '</p>';
+											$mpdfHtml .= '<p style="text-align:center;">';
+												$mpdfHtml .= '<b>(Authorised Signatory)</b>';
+											$mpdfHtml .= '</p>';
+										$mpdfHtml .= '</td>';
+									$mpdfHtml .= '</tr>';
+								$mpdfHtml .= '</table>';
+
+							$mpdfHtml .= '</td>';
+
+						$mpdfHtml .= '</tr>';
+
+					$mpdfHtml .= '</table>';
 				$mpdfHtml .= '</td>';
 			$mpdfHtml .= '</tr>';
-		}
 
         $mpdfHtml .= '</table>';
         $mpdfHtml .= '</div>';
@@ -5818,3 +6060,4 @@ final class client extends validation {
     }
 	/* end of validate client sales invoice items */
 }
+?>

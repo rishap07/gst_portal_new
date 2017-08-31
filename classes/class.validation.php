@@ -64,7 +64,8 @@ class validation extends upload {
 			'place_of_supply'=>TAB_PREFIX.'place_of_supply',
 			'admin_log'=>TAB_PREFIX.'admin_log',
 			'admin_setting'=>TAB_PREFIX.'admin_setting',
-            'email_templates'=>TAB_PREFIX.'email_templates'
+            'email_templates'=>TAB_PREFIX.'email_templates',
+			'mobile_messages'=>TAB_PREFIX.'mobile_messages'
 			
 			
         );
@@ -90,7 +91,7 @@ class validation extends upload {
         "invoicenumber" => "[a-zA-Z\d]+[(-{1})|(a-zA-Z\d)][a-zA-Z\d]",
         "alphanumeric" => "A-Za-z0-9\n\r\&\/\-\(\)\,\.",
         "mobilenumber" => "\d{10}",
-        "content" => "^\\\"<>|",
+        "content" => "^\\\"<>",
         "pincode" => "\d{6}",
         "yearmonth" => "[0-9]{4}-(0[1-9]|1[0-2])",
         "datetime" => "[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]",
@@ -154,7 +155,8 @@ class validation extends upload {
         'receiveradded' => ' Receiver added successfully.',
         'supplieradded' => ' Supplier added successfully.',
         'itemadded' => ' Item added successfully.',
-        'excelerror' => 'There is an error in uploaded excel. Download and check in error information column.'
+        'excelerror' => 'There is an error in uploaded excel. Download and check in error information column.',
+         'gstinservererror' => 'GSTIN Server is down.'
     );
 
     public function getTableName($tablename)
@@ -204,9 +206,7 @@ class validation extends upload {
     
     public function getClient($field = "*",$condition='',$orderby='user_id desc',$limit='',$group_by='')
     {
-       // $query = "select ".$field."  from ".$this->tableNames['user']." where 1=1 ";
-        $query = "select ".$field."  from ".$this->tableNames['user']." u inner join ".$this->tableNames['client_kyc']." k on u.user_id=k.added_by ";
-        //." p join ".$this->tableNames['subscriber_plan_category']." c join ".$this->tableNames['user']." u on p.added_by=u.user_id 
+        $query = "select ".$field."  from ".$this->tableNames['user']." u left join ".$this->tableNames['client_kyc']." k on u.user_id=k.added_by where 1=1 ";
         if($condition !='')
         {
             $query .= " and ".$condition;
@@ -215,7 +215,7 @@ class validation extends upload {
         {
             $query .= " group by ".$group_by;
         }
-        $query .= " order by ".$orderby." ".$limit;    
+         $query .= " order by ".$orderby." ".$limit;    
        
         return $this->get_results($query);
     }
@@ -310,7 +310,7 @@ class validation extends upload {
     }
 
     public function getB2BInvoices($user_id,$returnmonth,$type=''){
-       $queryB2B =  "select a.invoice_id,a.invoice_type,a.company_state,a.billing_gstin_number,a.reference_number,a.invoice_date,a.invoice_total_value,a.supply_place,a.invoice_type,a.supply_type,b.igst_rate,b.cgst_rate,b.sgst_rate,b.consolidate_rate,b.taxable_subtotal, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id where 1 ";
+       $queryB2B =  "select a.export_supply_meant, a.invoice_id,a.invoice_type,a.company_state,a.billing_gstin_number,a.reference_number,a.invoice_date,a.invoice_total_value,a.supply_place,a.invoice_type,a.supply_type,b.igst_rate,b.cgst_rate,b.sgst_rate,b.consolidate_rate,b.taxable_subtotal, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id where 1 ";
         
         if($type != '') {
             if($type != 'all') {
@@ -325,6 +325,7 @@ class validation extends upload {
         $queryB2B .= "and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number!='' and a.invoice_type='taxinvoice' and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0'  group by a.reference_number, b.consolidate_rate";
 
         //echo $queryB2B.'<br/>';
+        
         return $this->get_results($queryB2B);
     }
 
@@ -360,7 +361,7 @@ class validation extends upload {
         }
 
         $queryB2CS .= " and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number='' and (a.supply_place=a.company_state  or (a.supply_place!=a.company_state and a.invoice_total_value<='250000')) and a.invoice_type='taxinvoice' and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' group by a.reference_number, b.consolidate_rate order by a.supply_place ";
-        //echo $queryB2CS.'<br/>';
+       // echo $queryB2CS.'<br/>';
         return $this->get_results($queryB2CS);
     }
 
@@ -399,7 +400,7 @@ class validation extends upload {
             and (a.invoice_type='creditnote' or a.invoice_type='debitnote' or a.invoice_type='refundvoucherinvoice' ) 
             and (c.invoice_type='exportinvoice' or c.invoice_type='sezunitinvoice' or c.invoice_type='deemedexportinvoice' or c.invoice_type='taxinvoice') 
             and a.is_canceled='0' and a.is_deleted='0' group by a.reference_number, b.consolidate_rate order by a.supply_place ";
-        //echo $queryCDNUR;
+       // echo $queryCDNUR;
         return $this->get_results($queryCDNUR);
     }
 
@@ -453,8 +454,8 @@ class validation extends upload {
             $queryHsn .=  " and a.is_gstr1_uploaded='0' ";
         }
 
-        $queryHsn .= " and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and (a.invoice_type='creditnote' or a.invoice_type='debitnote' or a.invoice_type='taxinvoice' or a.invoice_type='receiptvoucherinvoice' or  a.invoice_type='exportinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice' or a.invoice_type='refundvoucherinvoice' ) and a.is_canceled='0' and a.is_deleted='0' group by b.item_hsncode";
-        //echo $queryHsn.'<br/>';
+        $queryHsn .= " and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and (a.invoice_type='creditnote' or a.invoice_type='debitnote' or a.invoice_type='taxinvoice' or  a.invoice_type='exportinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice' ) and a.is_canceled='0' and a.is_deleted='0' group by b.item_hsncode";
+        //echo "<br>HSN<br><br>".$queryHsn.'<br/>';
         return $this->get_results($queryHsn); 
     }
     

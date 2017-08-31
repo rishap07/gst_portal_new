@@ -24,7 +24,10 @@ final class notification extends validation {
 		
 		
 		  $dataArr['notification_name'] = isset($_POST['notification_name']) ? $_POST['notification_name'] : '';
-		    $dataArr['notification_message'] = isset($_POST['notification_message']) ? $_POST['notification_message'] : '';
+		  $dataArr['notification_message'] = isset($_POST['notification_message']) ? $_POST['notification_message'] : '';
+		  $dataArr['notification_message']  = str_replace("<p>"," ",$dataArr['notification_message']);
+		  $dataArr['notification_message']  = str_replace("</p>"," ",$dataArr['notification_message']);
+		  
 		 $dataArr['start_date'] = isset($_POST['start_date']) ? $_POST['start_date'] : '';
 		  $dataArr['end_date'] = isset($_POST['end_date']) ? $_POST['end_date'] : '';
 		 $dataArr['fromtime'] = isset($_POST['fromtime']) ? $_POST['fromtime'] : '';
@@ -41,9 +44,10 @@ final class notification extends validation {
 		 
        
 	}
-	public  function strip_tags_content($text) {
+	public  function strip_tags_content($str) {
 
-    return preg_replace('@<(\w+)\b.*?>.*?</\1>@si', '', $text);
+    $str = preg_replace("#<(.*)/(.*)>#iUs", "", $str);
+	return $str;
 
  }
 	public function showNotificationData()
@@ -122,7 +126,7 @@ final class notification extends validation {
 								 {
 								 }
 								
-								 $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$dataItem->notification_message. "</a></li>";
+								 $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_message)). "</a></li>";
 								 $count = $count+1;
 							  }
 							  if(isset($dataArr['data']->kyc->vendor_type) && $dataArr['data']->kyc->vendor_type==$dataItem->vendor_list)
@@ -132,7 +136,7 @@ final class notification extends validation {
 								 {
 								 }
 						
-							    $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$dataItem->notification_message. "</a></li>";
+							    $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_message)). "</a></li>";
 							
 									 $count = $count+1;
 									

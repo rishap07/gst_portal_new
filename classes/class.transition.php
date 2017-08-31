@@ -1963,21 +1963,21 @@ final class transition extends validation {
 			  {
 				  //$obj_mpdf->Output($taxInvoicePdf, PROJECT_URL ."/upload/gstr3b-file/");
 				  $dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
-			$sendmail = $dataCurrentUserArr['data']->kyc->email;
-			$name = $dataCurrentUserArr['data']->kyc->name;
-			$userid = $_SESSION["user_detail"]["user_id"];
-				  $obj_mpdf->Output("upload/gstr3b-file/".$taxInvoicePdf);
-				  $mpdfHtml = $this->gstr3bemail($name,$returnmonth);
+			      $sendmail = $dataCurrentUserArr['data']->kyc->email;
+			      $name = $dataCurrentUserArr['data']->kyc->name;
+			      $userid = $_SESSION["user_detail"]["user_id"];
+				  $obj_mpdf->Output("upload/transition-form/".$taxInvoicePdf);
+				  $mpdfHtml = $this->gstTransitionEmailMessage($name,$returnmonth);
 				 // return $mpdfHtml;
 				  
-			 if ($this->sendMail('Email GSTR-3Bfile', 'User ID : ' . $userid . ' email GSTR-3B', $sendmail, 'noreply@gstkeeper.com', '', 'rishap07@gmail.com,sheetalprasad95@gmail.com', $filepath, 'GSTR-3B return month '.$returnmonth.'',$mpdfHtml )) {
+			 if ($this->sendMail('Email GST-Transitionfile', 'User ID : ' . $userid . ' email GST-Transition', $sendmail, 'noreply@gstkeeper.com', '', 'rishap07@gmail.com,sheetalprasad95@gmail.com', $filepath, 'GST-Transition form month of '.$returnmonth.'',$mpdfHtml )) {
 
 					$this->setSuccess('Kindly check your email');
-					$this->redirect(PROJECT_URL . "?page=return_gstr3b_file&returnmonth=" . $returnmonth);
+					$this->redirect(PROJECT_URL . "?page=transition_gstr&returnmonth=" . $returnmonth);
 	               // return true;
 	            } else {
 	                $this->setError('Try again some issue in sending in email.');
-						$this->redirect(PROJECT_URL . "?page=return_gstr3b_file&returnmonth=" . $returnmonth);
+						$this->redirect(PROJECT_URL . "?page=transition_gstr&returnmonth=" . $returnmonth);
 	               // return false;
 	            }
 			  }
@@ -1988,6 +1988,13 @@ final class transition extends validation {
 		 
 				$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " in User has been updated");
 			   
+	}
+	private function gstTransitionEmailMessage($name,$returnmonth)
+	{
+		$mpdfHtml ='';
+		$mpdfHtml .='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> <title>gst</title> </head> <body> <div style="width:720px; margin:auto; border:solid #CCC 1px;"> <table cellpadding="0" cellspacing="0" width="100%" > <tbody> <tr> <td height="auto"><table width="720" cellpadding="0" cellspacing="0" bgcolor="#fff" style="font-family:Arial, Helvetica, sans-serif;margin:0px auto;"> <tbody> <tr> <td width="30"></td> <td><table width="100%" cellpadding="0" cellspacing="0"> <tbody> <tr> <td align="left" valign="middle" height="80"><a target="_blank" href="https://www.gstkeeper.com/"><img src="https://gstkeeper.com/newsletter/4july2017/gst-logo.png" alt="" border="0"></a></td> <td align="right" valign="middle" style="font-size:18px;color:#cf3502;font-family:Arial, Helvetica, sans-serif;" height="80px"> <span><img src="https://gstkeeper.com/newsletter/6july2017/phone-icon.jpg" alt=""></span>1-800-212-2022<br> <span><img src="https://gstkeeper.com/newsletter/6july2017/mail-icon.jpg" alt=""></span><a href="mailto:contact@gstkeeper.com" style="font-size:14px;color:#cf3502;text-decoration:none;"> contact@gstkeeper.com</a></td> </tr> </tbody> </table></td> <td width="30"></td> </tr> <tr> <td width="30"></td> <td><table width="100%" cellpadding="0" cellspacing="0"> <tbody> <tr> <td align="center" valign="middle"><img src="https://www.gstkeeper.com/newsletter/7july-planpurchase/images/banner.jpg" width="700" height="132" /></td> </tr> </tbody> </table></td> <td width="30"></td> </tr> <tr> <td width="30" ></td> <td><table width="100%" cellpadding="0" cellspacing="0"> <tbody> <tr> <td height="157" align="center" valign="top"><table width="100%" cellpadding="0px" cellspacing="0" > <tbody> <tr> <td width="13"></td> <td width="350" style="font-size:15px;color:#090909;font-family:Arial, Helvetica, sans-serif; padding-top:10px; "><strong>Hi '.$name.'! </strong></td> <td width="20"></td> </tr> <tr> <td colspan="3" height="10"></td> </tr> <tr> <td width="13"></td> <td height="110" align="justify" valign="top" style="font-size:13px;color:#191919;font-family:Arial, Helvetica, sans-serif; line-height:18px; ">';
+		$mpdfHtml .='<p>Please find the attachment enclosed here along with GST-Transition form month of '.$returnmonth.' file.</p><p><strong>Thanks!</strong><BR /> The GST Keeper Team </p></td> <td width="20"></td> </tr> </tbody> </table></td> </tr> </tbody> </table></td> </tr> <!--<tr> <td align="center" height="29"><img src="http://cdn.go4hosting.in/mailer/12-oct/resources-img.jpg" alt="" /></td> </tr>--> <tr> <td colspan="3" height="15"></td> </tr> <tr> <td width="30"></td> <td><table width="98%" align="right" cellpadding="0" cellspacing="0" style="background-color:#f1f1f1; height:80px; padding:10px;"> <tbody> <tr> <td width="47%"><a href="http://www.cyfuture.com/" target="_blank"><img src="https://gstkeeper.com/newsletter/4july2017/cyfuture-logo.png" alt="" border="0" /></a></td> <td width="53%" align="right"><table width="100%" cellpadding="0" cellspacing="0"> <tbody> <tr> <td width="20" height="50"></td> <td valign="middle" style="font-size:14px;color:#333;font-family:Arial, Helvetica, sans-serif;"><strong><i>Connect with us</i></strong></td> <td valign="middle" width="50" align="center"><a target="_blank" href="https://www.facebook.com/GST-Keeper-632910016898628/"><img src="https://gstkeeper.com/newsletter/4july2017/fb-icon.png" alt="" border="0" /></a></td> <td valign="middle" width="40" align="left"><a target="_blank" href="https://plus.google.com/101841021110541536034"><img src="https://gstkeeper.com/newsletter/4july2017/g+-icon.png" alt="" border="0" /></a></td> <td valign="middle" width="40" align="left"><a target="_blank" href="https://twitter.com/GstKeeper"><img src="https://gstkeeper.com/newsletter/4july2017/twit-icon.png" alt="" border="0" /></a></td> <td valign="middle" width="40" align="left"><a target="_blank" href="https://www.youtube.com/channel/UCsDdNFR8kJ3YVWpEvBrFeSA"><img src="https://gstkeeper.com/newsletter/4july2017/utube-icon.png" alt="" border="0" /></a></td> <td valign="middle" width="40" align="left"><a target="_blank" href="https://www.linkedin.com/company/gst-keeper"><img src="https://gstkeeper.com/newsletter/4july2017/in-icon.jpg" alt="" border="0" /></a></td> </tr> </tbody> </table></td> </tr> </tbody> </table></td> <td width="30"></td> </tr> <tr> <td width="30"></td> <td height="76" valign="middle"><table width="100%" cellpadding="0" cellspacing="0"> <tbody> <tr> <td width="20"></td> <td align="center"><font style="font-size:14px;color:#444;font-family:Arial, Helvetica, sans-serif;">Cyfuture ( India ) Pvt. Ltd.</font><br> <font style="font-size:12px;color:#444;font-family:Arial, Helvetica, sans-serif;">Plot No. 197-198 Noida Special Economic Zone (NSEZ) Phase II, Noida 201 305</font><br> <font style="font-size:12px;color:#444;font-family:Arial, Helvetica, sans-serif;">E-mail: <a style="text-decoration:none;color:#3194d5;" href="mailto:contact@gstkeeper.com">contact@gstkeeper.com</a></font><br></td> <td width="15" align="left">&nbsp;</td> </tr> </tbody> </table></td> </tbody> </table></td> </tr> </tbody> </table> </div> </body> </html>';
+		return $mpdfHtml;
 	}
 	private function generategst_transitionPdf($invid,$returnid,$returnmonth) {
 		$sql = "select  *,count(id) as totalinvoice from gst_transition_form where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
@@ -2335,9 +2342,39 @@ final class transition extends validation {
 			$b10b_inputtax=$item->b10b_inputtax;
 		}
 		}
+		$transition_status='';
+		if($returndata1[0]->transition_status==1)
+		{
+			$transition_status='Active';
+		}else{
+			$transition_status='Inactive';
+		}
 		  $mpdfHtml .='<html>';
 		  $mpdfHtml .='<body>';
-		    $mpdfHtml .= ' <div style="position: relative;min-height: 1px;padding-right: 0px;padding-left: 0px;" class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
+		  $mpdfHtml .='<div class="row">
+                     <div class="col-md-12 col-sm-12 col-xs-12 form-group">
+                      <label>1.GSTIN-<span class="starred"></span></label>
+                       <label style="text-align:right; float:right;"><strong>'.(!empty($client_gstin_number)?$client_gstin_number:'').'</strong></label>
+				    </div>     
+							
+							 
+							    <div class="col-md-12 col-sm-12 col-xs-12 form-group">
+
+                            <label>2.LegalName of the registered person-<span class="starred"></span></label>
+							 <label><strong>'.(!empty($client_name)?$client_name:'').'</strong></label>
+						 
+							   </div>
+							    <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+
+                            <label>3.TradeName of any-<span class="starred"></span></label>
+							 <label><strong>'.(!empty($returndata1[0]->trader_name)?$returndata1[0]->trader_name:'').'</strong></label>
+						    
+							   </div><div class="clear"></div>
+							    
+                            <label>4.Wheather all the return required under existing law for the period of six month immediately preceding appoint date have been furnished : - <strong>'.(!empty($transition_status)?$transition_status:'').'</strong><span class="starred"></span></label>
+							 
+							   </div>';
+		    $mpdfHtml .= '<br><br><div style="position: relative;min-height: 1px;padding-right: 0px;padding-left: 0px;" class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
 		   <div style="width: 100%;position: relative;min-height: 1px;padding-right: 15px;padding-left:0px;position: relative;min-height: 1px padding-right: 0px;
 		    padding-left: 15px; font-size:12px !important;" class="col-md-12 col-sm-12 col-xs-12">
 		    <div style="position: relative;min-height: 1px padding-right: 15px;
@@ -2350,23 +2387,15 @@ final class transition extends validation {
 $mpdfHtml .='<div class="tableresponsive">
 <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
  <thead><tr><th>S.No</th><th>Registration(Central Excise and service tax)</th>
-                       <th>Tax Return to which last return filled</th>
-                       <th>DateOfFillingReturnSpecified in Column3</th>
-                       <th>BalacneCenvat Carried forward in the said last return</th>
-                       <th>Cenvat Carried admissible as ITC of central Tax</th>
-                       </tr></thead><tbody>';                                          		   
-                                
-                                
-                                   
-								
-								if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
-								{
-								$a5_taxperiod_last_return=(explode(",",$a5_taxperiod_last_return));
-								$a5_registration_no=(explode(",",$a5_registration_no));
-								$a5_dateoffilling_return=(explode(",",$a5_dateoffilling_return));
-								$a5_balance_cenvat_credit=(explode(",",$a5_balance_cenvat_credit));
-								$a5_cenvat_credit_admissible=(explode(",",$a5_cenvat_credit_admissible));
-			                    $start='';
+  <th>Tax Return to which last return filled</th> <th>DateOfFillingReturnSpecified in Column3</th><th>BalacneCenvat Carried forward in the said last return</th> <th>Cenvat Carried admissible as ITC of central Tax</th>  </tr></thead><tbody>'; 
+if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+	{
+		$a5_taxperiod_last_return=(explode(",",$a5_taxperiod_last_return));
+		$a5_registration_no=(explode(",",$a5_registration_no));
+		$a5_dateoffilling_return=(explode(",",$a5_dateoffilling_return));
+		$a5_balance_cenvat_credit=(explode(",",$a5_balance_cenvat_credit));
+		$a5_cenvat_credit_admissible=(explode(",",$a5_cenvat_credit_admissible));
+	    $start='';
 								if(sizeof($a5_taxperiod_last_return) > 1)
 								{
 									$start = $a5_taxperiod_last_return;
@@ -2391,9 +2420,9 @@ $mpdfHtml .='<div class="tableresponsive">
 								}
 								else{
 									$start = $a5_taxperiod_last_return;
-								}
+								}						
 								
-									
+															
 						 
 							  for($i=0;$i < sizeof($start); $i++) {
 						   $sno =0;
@@ -2416,15 +2445,13 @@ $mpdfHtml .='<div class="tableresponsive">
 									 <label>'.(!empty($a5_cenvat_credit_admissible[$i])?$a5_cenvat_credit_admissible[$i]:'').'</label>'; 
 						  $mpdfHtml .='</td>';
 						  $mpdfHtml .='</tr>';
-								}	}							
-						$mpdfHtml .='</tbody></table></div>';
-                          
+	}	}							
+		$mpdfHtml .='</tbody></table></div>';                     				
                        
         $mpdfHtml .='<br><div style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading">B. Details of statutory form received for which credit is being carried forward</div><br>
-						 <div class="tableresponsive">
-						 <div style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading">Amount of Tax credit forward to electronic credit</div>
-						
-                          <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+					<div class="tableresponsive">
+					<div style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading">Amount of Tax credit forward to electronic credit</div>
+					<table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
 
                                 <thead>
                                 <tr>
@@ -2434,7 +2461,6 @@ $mpdfHtml .='<div class="tableresponsive">
                                 <th>Sr.no. of Form</th>
                                 <th>Amount</th>
                                 <th>Applicable VatRate</th>
-                             
                                 </tr>
                                 </thead>
                                 
@@ -3449,7 +3475,911 @@ $mpdfHtml .= '<br><div class="greyheading" style="float: left;width: 100%;font-s
 						   
 						  $mpdfHtml .='</tr>';
 								}}	
-        $mpdfHtml .='</tbody></table>';								
+        $mpdfHtml .='</tbody></table>';
+		$mpdfHtml .='<table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+								
+<tr><td colspan="8">Inputs contained in semi-finished and finished goods</td></tr>';
+        if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								
+			                    $c7c2_description=(explode(",",$c7c2_description));
+								$c7c2_unit=(explode(",",$c7c2_unit));
+								$c7c2_qty=(explode(",",$c7c2_qty));
+								$c7c2_value=(explode(",",$c7c2_value));
+								$c7c2_vat=(explode(",",$c7c2_vat));
+								$c7c2_totalinput_taxcredit=(explode(",",$c7c2_totalinput_taxcredit));
+								$c7c2_totalinput_taxcredit_exempt=(explode(",",$c7c2_totalinput_taxcredit_exempt));
+								$c7c2_totalinput_taxcredit_admissible=(explode(",",$c7c2_totalinput_taxcredit_admissible));
+								$start='';
+								if(sizeof($c7c2_description) > 1)
+								{
+									$start = $c7c2_description;
+									
+								}
+								elseif(sizeof($c7c2_unit) > 1)
+								{
+									 $start = $c7c2_unit;
+								}
+								elseif(sizeof($c7c2_qty) > 1)
+								{
+									 $start = $c7c2_qty;
+									
+								}
+								elseif(sizeof($c7c2_value) > 1)
+								{
+									$start = $c7c2_value;
+								}
+								elseif(sizeof($c7c2_totalinput_taxcredit) > 1)
+								{
+									$start = $c7c2_totalinput_taxcredit;
+								}
+								elseif(sizeof($c7c2_totalinput_taxcredit_exempt) > 1)
+								{
+									$start = $c7c2_totalinput_taxcredit_exempt;
+								}
+								elseif(sizeof($c7c1_totalinput_taxcredit_exempt) > 1)
+								{
+									$start = $c7c1_totalinput_taxcredit_exempt;
+								}
+								elseif(sizeof($c7c2_totalinput_taxcredit_admissible) > 1)
+								{
+									$start = $c7c2_totalinput_taxcredit_admissible;
+								}				
+																
+								else{
+									$start = $c7c2_description;
+								}      	  
+								   
+						
+							  for($i=0;$i < sizeof($start); $i++) {	
+                              $sno =0;
+							$sno = $i+1;	  
+						   $mpdfHtml .='<tr>';	                          								
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($c7c2_description[$i])?$c7c2_description[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='<td>
+									 <label>'.(!empty($c7c2_unit[$i])?$c7c2_unit[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($c7c2_qty[$i])?$c7c2_qty[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($c7c2_value[$i])?$c7c2_value[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($c7c2_vat[$i])?$c7c2_vat[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';	
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($c7c2_totalinput_taxcredit[$i])?$c7c2_totalinput_taxcredit[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($c7c2_totalinput_taxcredit_exempt[$i])?$c7c2_totalinput_taxcredit_exempt[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';	
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($c7c2_totalinput_taxcredit_admissible[$i])?$c7c2_totalinput_taxcredit_admissible[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';                        					  
+						   
+						  $mpdfHtml .='</tr>';
+								}}
+        $mpdfHtml .='</tbody></table></div>';
+        $mpdfHtml .='<br><div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+>D.Stock of goods not supported by invoices/document evidencing payment of tax(credit in terms of rules 117(4)) To be there only vat at single point </div>
+					     <div class="tableresponsive">
+						  <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+
+                                <thead>
+                                <tr>
+                                <th colspan="5" align="center">Details of Input in stock</th></tr>
+								<tr>
+								<th>Description</th>
+								<th>Unit</th>
+								<th>Qty</th>
+								<th>Value</th>
+								<th>Vat(and entry) tax pad</th>
+								
+								
+								</tr>
+																
+                                </thead>
+                                <tbody>'; 
+        if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								
+			                    $d7d_description=(explode(",",$d7d_description));
+								$d7d_unit=(explode(",",$d7d_unit));
+								$d7d_qty=(explode(",",$d7d_qty));
+								$d7d_value=(explode(",",$d7d_value));
+								$d7d_vatentry_taxpad=(explode(",",$d7d_vatentry_taxpad));
+								$start='';
+								if(sizeof($d7d_description) > 1)
+								{
+									$start = $d7d_description;
+									
+								}
+								elseif(sizeof($d7d_unit) > 1)
+								{
+									 $start = $d7d_unit;
+								}
+								elseif(sizeof($d7d_qty) > 1)
+								{
+									 $start = $d7d_qty;
+									
+								}
+								elseif(sizeof($d7d_value) > 1)
+								{
+									$start = $d7d_value;
+								}
+								elseif(sizeof($d7d_vatentry_taxpad) > 1)
+								{
+									$start = $d7d_vatentry_taxpad;
+								}														
+								else{
+									$start = $d7d_description;
+								}   
+						
+							  for($i=0;$i < sizeof($start); $i++) {
+								   $sno =0;
+							$sno = $i+1;	  
+						   $mpdfHtml .='<tr>';	                          								
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($d7d_description[$i])?$d7d_description[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='<td>
+									 <label>'.(!empty($d7d_unit[$i])?$d7d_unit[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($d7d_qty[$i])?$d7d_qty[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($d7d_value[$i])?$d7d_value[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($d7d_vatentry_taxpad[$i])?$d7d_vatentry_taxpad[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';                                                 					  
+						   
+						  $mpdfHtml .='</tr>';
+								}}
+		
+                           
+        $mpdfHtml .='</tbody> </table></div>';
+        $mpdfHtml .='<br><div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+>8.Details of transfer of cenvat credit for registered person having centralized registration under existing law</div>
+					 <div class="tableresponsive">
+					<table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+
+                                <thead>
+                                <tr>
+                                <th>Sr.no.</th>
+                                <th>Registration no.<br>under existing law</th>
+								<th>TaxPeriod To<br> which last<br> return file<br> existing law</th>
+								<th>Date Of Filling<br>The return<br>Specified in column no.3</th>
+								<th>Balance eligible<br> cenvat credit<br> carried forward<br> in the said last return</th>
+								<th>GSTN of receiver same pan of ITC of central tax</th>
+								<th colspan="2">Distribution document invoice</th>
+								<th>ITC of central tax transfered</th>
+								</tr>
+								<tr><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th>
+								<th>No.</th><th>Date</th><th>&nbsp;</th>
+								</tr>
+																
+                                </thead>
+                                
+                                <tbody>';
+        if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								
+			                    $a8registration_no=(explode(",",$a8registration_no));
+								$a8taxperiod_lastreturn=(explode(",",$a8taxperiod_lastreturn));
+								$a8dateoffilling_return=(explode(",",$a8dateoffilling_return));
+								$a8balanceeligible_cenvat_credit=(explode(",",$a8balanceeligible_cenvat_credit));
+								$a8gstnof_receiver=(explode(",",$a8gstnof_receiver));
+								$a8distributionno=(explode(",",$a8distributionno));
+								$a8distributiondate=(explode(",",$a8distributiondate));
+								$a8itcofcentral=(explode(",",$a8itcofcentral));
+								$start='';
+								if(sizeof($a8registration_no) > 1)
+								{
+									$start = $a8registration_no;
+									
+								}
+								elseif(sizeof($a8taxperiod_lastreturn) > 1)
+								{
+									 $start = $a8taxperiod_lastreturn;
+								}
+								elseif(sizeof($a8dateoffilling_return) > 1)
+								{
+									 $start = $a8dateoffilling_return;
+									
+								}
+								elseif(sizeof($a8balanceeligible_cenvat_credit) > 1)
+								{
+									$start = $a8balanceeligible_cenvat_credit;
+								}
+								elseif(sizeof($a8gstnof_receiver) > 1)
+								{
+									$start = $a8gstnof_receiver;
+								}
+								elseif(sizeof($a8distributionno) > 1)
+								{
+									$start = $a8distributionno;
+								}
+								elseif(sizeof($a8distributiondate) > 1)
+								{
+									$start = $a8distributiondate;
+								}
+								elseif(sizeof($a8itcofcentral) > 1)
+								{
+									$start = $a8itcofcentral;
+								}
+								
+								else{
+									$start = $a8registration_no;
+								}     
+						
+							  for($i=0;$i < sizeof($start); $i++) {
+								  $sno =0;
+							$sno = $i+1;	  
+						   $mpdfHtml .='<tr>';
+                           $mpdfHtml .='<td>
+									 <label>'.$sno.'</label>'; 
+						  $mpdfHtml .='</td>';						   
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($a8registration_no[$i])?$a8registration_no[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='<td>
+									 <label>'.(!empty($a8taxperiod_lastreturn[$i])?$a8taxperiod_lastreturn[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a8dateoffilling_return[$i])?$a8dateoffilling_return[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a8balanceeligible_cenvat_credit[$i])?$a8balanceeligible_cenvat_credit[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a8gstnof_receiver[$i])?$a8gstnof_receiver[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>'; 
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($a8distributionno[$i])?$a8distributionno[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($a8distributiondate[$i])?$a8distributiondate[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';  
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($a8itcofcentral[$i])?$a8itcofcentral[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';    						  
+						   
+						  $mpdfHtml .='</tr>';
+								} }	
+         
+                            
+        $mpdfHtml .='</tbody></table></div>'; 
+        $mpdfHtml .='<br><div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+>9.Details of goods sent to job worker and held in stock behalf of principal </div>
+						    <br><div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+>a.Details of goods sent as principal to the job worker under section 141 </div>
+					     <div class="tableresponsive">
+						<table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+
+                                <thead>
+                                <tr>
+                                <th>Sr.no.</th>
+                                <th>Challan No.</th>
+								<th>ChallanDate</th>
+								<th>Type of goods/Input/Semi-finished/Finished</th>
+								<th colspan="5" style="text-align: center;">Details of goods with job-worker</th>
+								
+								</tr>
+								<tr><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th>
+								<th>HSN</th><th>Description</th><th>Unit</th><th>Qty</th><th>Value</th>
+								</tr>
+																
+                                </thead>
+                                
+                                <tbody>
+								  <tr><td colspan="9">GSTIN of job worker if is available</td></tr>';
+         if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								
+								 $a9a1challan_no=(explode(",",$a9a1challan_no));
+								$a9a1challan_date=(explode(",",$a9a1challan_date));
+								$a9a1typeof_goods=(explode(",",$a9a1typeof_goods));
+								$a9a1_hsn=(explode(",",$a9a1_hsn));
+								$a9a1_description=(explode(",",$a9a1_description));
+								$a9a1_unit=(explode(",",$a9a1_unit));
+								$a9a1_quantity=(explode(",",$a9a1_quantity));
+								$a9a1_value=(explode(",",$a9a1_value));
+			                   $start='';
+								if(sizeof($a9a1challan_no) > 1)
+								{
+									$start = $a9a1challan_no;
+									
+								}
+								elseif(sizeof($a9a1challan_date) > 1)
+								{
+									 $start = $a9a1challan_date;
+								}
+								elseif(sizeof($a9a1typeof_goods) > 1)
+								{
+									 $start = $a9a1typeof_goods;
+									
+								}
+								elseif(sizeof($a9a1_hsn) > 1)
+								{
+									$start = $a9a1_hsn;
+								}
+								elseif(sizeof($a9a1_description) > 1)
+								{
+									$start = $a9a1_description;
+								}
+								elseif(sizeof($a9a1_unit) > 1)
+								{
+									$start = $a9a1_unit;
+								}
+								elseif(sizeof($a9a1_quantity) > 1)
+								{
+									$start = $a9a1_quantity;
+								}
+								elseif(sizeof($a9a1_value) > 1)
+								{
+									$start = $a9a1_value;
+								}
+								
+								else{
+									$start = $a9a1challan_no;
+								}     
+								   
+						
+							  for($i=0;$i < sizeof($start); $i++) {
+								   $sno =0;
+							$sno = $i+1;	  
+						   $mpdfHtml .='<tr>';
+                           $mpdfHtml .='<td>
+									 <label>'.$sno.'</label>'; 
+						  $mpdfHtml .='</td>';						   
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($a9a1challan_no[$i])?$a9a1challan_no[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='<td>
+									 <label>'.(!empty($a9a1challan_date[$i])?$a9a1challan_date[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a9a1typeof_goods[$i])?$a9a1typeof_goods[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a9a1_hsn[$i])?$a9a1_hsn[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a9a1_description[$i])?$a9a1_description[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>'; 
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($a9a1_unit[$i])?$a9a1_unit[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($a9a1_quantity[$i])?$a9a1_quantity[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';  
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($a9a1_value[$i])?$a9a1_value[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';    						  
+						   
+						  $mpdfHtml .='</tr>';
+								}}
+         
+                            
+        $mpdfHtml .='</tbody></table></div>';  
+        $mpdfHtml .='<br><div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+>b.Details of goods held in stock as job worker on behalf of the principal under section 141 </div>
+					     <div class="tableresponsive">
+						<table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+                                <thead>
+                                <tr>
+                                <th>Sr.no.</th>
+                                <th>Challan No.</th>
+								<th>ChallanDate</th>
+								<th>Type of goods/Input/Semi-finished/Finished</th>
+								<th colspan="5" style="text-align: center;">Details of goods with job-worker</th>
+								
+								</tr>
+								<tr><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th>
+								<th>HSN</th><th>Description</th><th>Unit</th><th>Qty</th><th>Value</th>
+								</tr>
+																
+                                </thead>
+                                
+                                <tbody>
+								  <tr><td colspan="9">GSTIN of manufacturer</td></tr>'; 		
+		 if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								
+			                    $b9b1challan_no=(explode(",",$b9b1challan_no));
+								$b9b1challan_date=(explode(",",$b9b1challan_date));
+								$b9b1typeof_goods=(explode(",",$b9b1typeof_goods));
+								$b9b1_hsn=(explode(",",$b9b1_hsn));
+								$b9b1_description=(explode(",",$b9b1_description));
+								$b9b1_unit=(explode(",",$b9b1_unit));
+								$b9b1_quantity=(explode(",",$b9b1_quantity));
+								$b9b1_value=(explode(",",$b9b1_value));
+								$start='';
+                               if(sizeof($b9b1challan_no) > 1)
+								{
+									 $start = $b9b1challan_no;
+									
+									
+								}
+								elseif(sizeof($b9b1challan_date) > 1)
+								{
+									 $start = $b9b1challan_date;
+									 	
+								}
+								elseif(sizeof($b9b1typeof_goods) > 1)
+								{
+									 $start = $b9b1typeof_goods;
+									 
+									
+								}
+								elseif(sizeof($b9b1_hsn) > 1)
+								{
+									$start = $b9b1_hsn;
+									
+								}
+								elseif(sizeof($b9b1_description) > 1)
+								{
+									$start = $b9b1_description;
+									
+								}
+								elseif(sizeof($b9b1_unit) > 1)
+								{
+									$start = $b9b1_unit;
+									
+								}
+								elseif(sizeof($b9b1_quantity) > 1)
+								{
+									$start = $b9b1_quantity;
+									
+								}
+								elseif(sizeof($b9b1_value) > 1)
+								{
+									$start = $b9b1_value;
+									
+								}
+								
+								else{
+									$start = $b9b1challan_no;
+										
+								}     
+								   
+						
+							  for($i=0;$i < sizeof($start); $i++) {
+								 $sno =0;
+							$sno = $i+1;	  
+						   $mpdfHtml .='<tr>';
+                           $mpdfHtml .='<td>
+									 <label>'.$sno.'</label>'; 
+						  $mpdfHtml .='</td>';						   
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($b9b1challan_no[$i])?$b9b1challan_no[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='<td>
+									 <label>'.(!empty($b9b1challan_date[$i])?$b9b1challan_date[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b9b1typeof_goods[$i])?$b9b1typeof_goods[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b9b1_hsn[$i])?$b9b1_hsn[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b9b1_description[$i])?$b9b1_description[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>'; 
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($b9b1_unit[$i])?$b9b1_unit[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($b9b1_quantity[$i])?$b9b1_quantity[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';  
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($b9b1_value[$i])?$b9b1_value[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';    						  
+						   
+						  $mpdfHtml .='</tr>';
+								} }
+         
+                            
+        $mpdfHtml .='</tbody></table> </div>';
+        $mpdfHtml .='<br><div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+>10.Details of goods held in stock as agent of behalf of the principal under section 142(14) of the SGST Act</div>
+						 <br> <div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+>a.Details of goods held as agent on behalf of the principal</div>
+					     <div class="tableresponsive">
+						 <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+
+                                <thead>
+                                <tr>
+                                <th>Sr.no.</th>
+                                <th>GSTIN of principal</th>
+							
+								<th colspan="5" style="text-align: center;">Details of goods with agent</th>
+								
+								</tr>
+								<tr><th>&nbsp;</th><th>&nbsp;</th>
+								<th>Description</th><th>Unit</th><th>Qty</th><th>Value</th><th>InputTax to be taken</th>
+								</tr>
+																
+                                </thead>
+                                
+                                <tbody>';
+        if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								$a10a_gstn=(explode(",",$a10a_gstn));
+								$a10a_description=(explode(",",$a10a_description));
+								$a10a_unit=(explode(",",$a10a_unit));
+								$a10a_quantity=(explode(",",$a10a_quantity));
+								$a10a_value=(explode(",",$a10a_value));
+								$a10a_inputtax=(explode(",",$a10a_inputtax));
+		                        $start='';
+                               if(sizeof($a10a_gstn) > 1)
+								{
+									$start = $a10a_gstn;
+									
+								}
+								elseif(sizeof($a10a_description) > 1)
+								{
+									 $start = $a10a_description;
+								}
+								elseif(sizeof($a10a_unit) > 1)
+								{
+									 $start = $a10a_unit;
+									
+								}
+								elseif(sizeof($a10a_quantity) > 1)
+								{
+									$start = $a10a_quantity;
+								}
+								elseif(sizeof($a10a_value) > 1)
+								{
+									$start = $a10a_value;
+								}
+								elseif(sizeof($a10a_inputtax) > 1)
+								{
+									$start = $a10a_inputtax;
+								}						
+								
+								else{
+									$start = $a10a_gstn;
+								}     
+			
+								   
+						
+							  for($i=0;$i < sizeof($start); $i++) {
+								   $sno =0;
+							$sno = $i+1;	  
+						   $mpdfHtml .='<tr>';
+                           $mpdfHtml .='<td>
+									 <label>'.$sno.'</label>'; 
+						  $mpdfHtml .='</td>';						   
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($a10a_gstn[$i])?$a10a_gstn[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='<td>
+									 <label>'.(!empty($a10a_description[$i])?$a10a_description[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a10a_unit[$i])?$a10a_unit[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a10a_quantity[$i])?$a10a_quantity[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a5_registration_no[$i])?$a5_registration_no[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>'; 
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($a10a_inputtax[$i])?$a10a_inputtax[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+                            						  
+						   
+						  $mpdfHtml .='</tr>';
+		
+								}}
+                         
+        $mpdfHtml .='</tbody></table> </div>';	
+        $mpdfHtml .='<div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+>b.Details of goods held by the agent</div>
+					     <div class="tableresponsive">
+						<table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+                        <thead>
+                                <tr>
+                                <th>Sr.no.</th>
+                                <th>GSTIN of principal</th>
+							
+								<th colspan="5" style="text-align: center;">Details of goods with agent</th>
+								
+								</tr>
+								<tr><th>&nbsp;</th><th>&nbsp;</th>
+								<th>Description</th><th>Unit</th><th>Qty</th><th>Value</th><th>InputTax to be taken</th>
+								</tr>
+																
+                                </thead>
+                                
+                                <tbody>';
+        if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								$b10b_gstn=(explode(",",$b10b_gstn));
+								$b10b_description=(explode(",",$b10b_description));
+								$b10b_unit=(explode(",",$b10b_unit));
+								$b10b_quantity=(explode(",",$b10b_quantity));
+								$b10b_value=(explode(",",$b10b_value));
+								$b10b_inputtax=(explode(",",$b10b_inputtax));
+								$start='';
+                               if(sizeof($b10b_gstn) > 1)
+								{
+									$start = $b10b_gstn;
+									
+								}
+								elseif(sizeof($b10b_description) > 1)
+								{
+									 $start = $b10b_description;
+								}
+								elseif(sizeof($b10b_unit) > 1)
+								{
+									 $start = $b10b_unit;
+									
+								}
+								elseif(sizeof($b10b_quantity) > 1)
+								{
+									$start = $b10b_quantity;
+								}
+								elseif(sizeof($b10b_value) > 1)
+								{
+									$start = $b10b_value;
+								}
+								elseif(sizeof($b10b_inputtax) > 1)
+								{
+									$start = $b10b_inputtax;
+								}						
+								
+								else{
+									$start = $b10b_description;
+								}     	
+														   
+						
+							  for($i=0;$i < sizeof($start); $i++) {
+							$sno =0;
+							$sno = $i+1;	  
+						   $mpdfHtml .='<tr>';
+                           $mpdfHtml .='<td>
+									 <label>'.$sno.'</label>'; 
+						  $mpdfHtml .='</td>';						   
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($b10b_gstn[$i])?$b10b_gstn[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='<td>
+									 <label>'.(!empty($b10b_description[$i])?$b10b_description[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b10b_unit[$i])?$b10b_unit[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b10b_quantity[$i])?$b10b_quantity[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b10b_value[$i])?$b10b_value[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>'; 
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($b10b_inputtax[$i])?$b10b_inputtax[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+                            						  
+						   
+						  $mpdfHtml .='</tr>';
+		
+                            }}
+        $mpdfHtml .='</tbody></table></div>'; 
+        $mpdfHtml .='<br><div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+>11.Details of credit availed in terms of section 142(11c)</div>
+					 <div class="tableresponsive">
+				    <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+
+                                <thead>
+                                <tr>
+                                <th>Sr.no.</th>
+                                <th>Registration no. of vat</th>
+								 <th>Servicetax registration no.</th>
+								  <th>Invoice Documentno.</th>
+								   <th>Invoice Documentdate</th> <th>Taxpaid</th>
+							<th>Vat paid takes as SGST Credit or servicetax</th>
+								</tr></thead><tbody>';                      
+        if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+							    $a11aregistration_no=(explode(",",$a11aregistration_no));
+								$a11aservicetax_no=(explode(",",$a11aservicetax_no));
+								$a11ainvoice_documentno=(explode(",",$a11ainvoice_documentno));
+								$a11ainvoice_document_date=(explode(",",$a11ainvoice_document_date));
+								$a11atax_paid=(explode(",",$a11atax_paid));
+								$a11avatpaid_sgst=(explode(",",$a11avatpaid_sgst));
+								$start='';
+                               if(sizeof($a11aregistration_no) > 1)
+								{
+									$start = $a11aregistration_no;
+									
+								}
+								elseif(sizeof($a11aservicetax_no) > 1)
+								{
+									 $start = $a11aservicetax_no;
+								}
+								elseif(sizeof($a11ainvoice_documentno) > 1)
+								{
+									 $start = $a11ainvoice_documentno;
+									
+								}
+								elseif(sizeof($a11ainvoice_document_date) > 1)
+								{
+									$start = $a11ainvoice_document_date;
+								}
+								elseif(sizeof($a11atax_paid) > 1)
+								{
+									$start = $a11atax_paid;
+								}
+								elseif(sizeof($a11avatpaid_sgst) > 1)
+								{
+									$start = $a11avatpaid_sgst;
+								}						
+								
+								else{
+									$start = $a11aregistration_no;
+								}     	
+								   
+						
+							  for($i=0;$i < sizeof($start); $i++) {
+						    $sno =0;
+							$sno = $i+1;	  
+						   $mpdfHtml .='<tr>';
+                           $mpdfHtml .='<td>
+									 <label>'.$sno.'</label>'; 
+						  $mpdfHtml .='</td>';						   
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($a11aregistration_no[$i])?$a11aregistration_no[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='<td>
+									 <label>'.(!empty($a11aservicetax_no[$i])?$a11aservicetax_no[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a11ainvoice_documentno[$i])?$a11ainvoice_documentno[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a11ainvoice_document_date[$i])?$a11ainvoice_document_date[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a11atax_paid[$i])?$a11atax_paid[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>'; 
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($a11avatpaid_sgst[$i])?$a11avatpaid_sgst[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+                            						  
+						   
+						  $mpdfHtml .='</tr>';                         
+								}}
+     
+                           
+                         
+        $mpdfHtml .='</tbody></table></div>';
+        $mpdfHtml .='<br><div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+>12.Details of goods sent on approval basis six month prior to the appointment day</div>
+					     <div class="tableresponsive">
+						 <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+
+                                <thead>
+                                <tr>
+                                <th>Sr.no.</th>
+                                <th>documentno.</th>
+								 <th>documentdate</th>
+								  <th>GSTIN no. of receipient</th>
+								   <th>Name & Address of receipient</th> 
+								   <th colspan="5" style="text-align:center;">Details of goods sent on approval basis</th> 
+								
+								</tr><tr><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th>
+								<th>HSN</th><th>Description</th><th>Unit</th><th>Qty</th><th>Value</th>
+								</tr>						
+																
+                                </thead>
+                                
+                                <tbody>';
+        if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								$a12a_document_no=(explode(",",$a12a_document_no));
+								$a12a_document_date=(explode(",",$a12a_document_date));
+								$a12a_gstinno_receipient=(explode(",",$a12a_gstinno_receipient));
+								$a12a_name_receipient=(explode(",",$a12a_name_receipient));
+								$a12a_hsn=(explode(",",$a12a_hsn));
+								$a12a_description=(explode(",",$a12a_description));
+								$a12a_unit=(explode(",",$a12a_unit));
+								$a12a_quantity=(explode(",",$a12a_quantity));
+								$a12a_value=(explode(",",$a12a_value));
+								$start='';
+                               if(sizeof($a12a_document_no) > 1)
+								{
+									$start = $a12a_document_no;
+									
+								}
+								elseif(sizeof($a12a_document_date) > 1)
+								{
+									 $start = $a12a_document_date;
+								}
+								elseif(sizeof($a12a_gstinno_receipient) > 1)
+								{
+									 $start = $a12a_gstinno_receipient;
+									
+								}
+								elseif(sizeof($a12a_name_receipient) > 1)
+								{
+									$start = $a12a_name_receipient;
+								}
+								elseif(sizeof($a12a_hsn) > 1)
+								{
+									$start = $a12a_hsn;
+								}
+								elseif(sizeof($a12a_description) > 1)
+								{
+									$start = $a12a_description;
+								}
+                                elseif(sizeof($a12a_unit) > 1)
+								{
+									$start = $a12a_unit;
+								}
+                               elseif(sizeof($a12a_quantity) > 1)
+								{
+									$start = $a12a_quantity;
+								}
+                               elseif(sizeof($a12a_value) > 1)
+								{
+									$start = $a12a_value;
+								}									
+								
+								else{
+									$start = $a12a_document_no;
+								}							   
+						
+						for($i=0;$i < sizeof($start); $i++) {
+								   $sno =0;
+							$sno = $i+1;	  
+						   $mpdfHtml .='<tr>';
+                           $mpdfHtml .='<td>
+									 <label>'.$sno.'</label>'; 
+						  $mpdfHtml .='</td>';						   
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($a12a_document_no[$i])?$a12a_document_no[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='<td>
+									 <label>'.(!empty($a12a_document_date[$i])?$a12a_document_date[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a12a_gstinno_receipient[$i])?$a12a_gstinno_receipient[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a12a_name_receipient[$i])?$a12a_name_receipient[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a12a_hsn[$i])?$a12a_hsn[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>'; 
+                          $mpdfHtml .='<td>
+									 <label>'.(!empty($a12a_description[$i])?$a12a_description[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='<td>
+									 <label>'.(!empty($a12a_unit[$i])?$a12a_unit[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='<td>
+									 <label>'.(!empty($a12a_quantity[$i])?$a12a_quantity[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='<td>
+									 <label>'.(!empty($a12a_value[$i])?$a12a_value[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+                            						  
+						   
+						  $mpdfHtml .='</tr>';
+								}}
+        
+                            
+        $mpdfHtml .='</tbody></table></div>';
+        $mpdfHtml .='<br><br><div style="font-size:14px;">I here by solemnly affirm and declare that the information given herein above is true and correct to the best of my knowledge and belief and nothing has been concealed thereform</div>';		
+		$mpdfHtml .='<br><br><div style="font-size:14px;">Place<p align="right">Signature<br>Name of Authorised Signatory</p></div>';	
 		$mpdfHtml .='</div></div></div>'; 
 		$mpdfHtml .='</div>';
 		$mpdfHtml .='</body>';

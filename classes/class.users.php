@@ -14,6 +14,129 @@ final class users extends validation {
     public function __construct() {
         parent::__construct();
     }
+	public function is_positive_integer($str) {
+  return (is_numeric($str) && $str > 0 && $str == round($str));
+    }
+    public function addSubUser() {
+
+        $dataArr['first_name'] = isset($_POST['first_name']) ? $_POST['first_name'] : '';
+        $dataArr['last_name'] = isset($_POST['last_name']) ? $_POST['last_name'] : '';
+        $dataArr['company_name'] = isset($_POST['company_name']) ? $_POST['company_name'] : '';
+        $dataArr['username'] = isset($_POST['username']) ? $_POST['username'] : '';
+        $dataArr['password'] = isset($_POST['password']) ? $_POST['password'] : '';
+        $dataArr['email'] = isset($_POST['emailaddress']) ? $_POST['emailaddress'] : '';
+        $dataArr['phone_number'] = isset($_POST['phonenumber']) ? $_POST['phonenumber'] : '';
+        $dataArr['status'] = isset($_POST['user_status']) ? $_POST['user_status'] : '';
+		$dataArr['no_of_client'] = isset($_POST['no_of_client']) ? $_POST['no_of_client'] : '';
+
+        if (empty($dataArr)) {
+            $this->setError($this->validationMessage['mandatory']);
+            return false;
+        }
+
+        if (!$this->validateSubUser($dataArr)) {
+            return false;
+        }
+
+        $dataCurrentArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
+
+        $dataArr['username'] = $dataCurrentArr['data']->subscriber_code . "_" . $dataArr['username'];
+        if ($this->checkUsernameExist($dataArr['username'])) {
+            $this->setError($this->validationMessage['usernameexist']);
+            return false;
+        }
+        $dataArr['password'] = $this->password_encrypt($dataArr['password']); /* encrypt password */
+        $dataArr['user_group'] = 5;
+        $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
+        $dataArr['added_date'] = date('Y-m-d H:i:s');
+
+        if ($this->insert($this->tableNames['user'], $dataArr)) {
+
+            $this->setSuccess($this->validationMessage['useradded']);
+            $insertid = $this->getInsertID();
+            $this->logMsg("New User Added. ID : " . $insertid . ".","addSubuser");
+            return true;
+        } else {
+
+            $this->setError($this->validationMessage['failed']);
+            return false;
+        }
+
+        return true;
+    }
+   
+    public function updateSubUser() {
+
+        $dataArr['first_name'] = isset($_POST['first_name']) ? $_POST['first_name'] : '';
+        $dataArr['last_name'] = isset($_POST['last_name']) ? $_POST['last_name'] : '';
+        $dataArr['company_name'] = isset($_POST['company_name']) ? $_POST['company_name'] : '';
+
+        if (isset($_POST['password']) && $_POST['password'] != '') {
+            $dataArr['password'] = isset($_POST['password']) ? $_POST['password'] : '';
+        }
+
+        $dataArr['email'] = isset($_POST['emailaddress']) ? $_POST['emailaddress'] : '';
+        $dataArr['phone_number'] = isset($_POST['phonenumber']) ? $_POST['phonenumber'] : '';
+        $dataArr['status'] = isset($_POST['user_status']) ? $_POST['user_status'] : '';
+		$dataArr['no_of_client'] = isset($_POST['no_of_client']) ? $_POST['no_of_client'] : '';
+
+        if (empty($dataArr)) {
+            $this->setError($this->validationMessage['mandatory']);
+            return false;
+        }
+
+        if (!$this->validateSubUser($dataArr)) {
+            return false;
+        }
+
+        if (isset($dataArr['password']) && $dataArr['password'] != '') {
+            $dataArr['password'] = $this->password_encrypt($dataArr['password']);
+        } /* encrypt password */
+        $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
+        $dataArr['updated_date'] = date('Y-m-d H:i:s');
+
+        $dataConditionArray['user_id'] = $this->sanitize($_GET['id']);
+        if ($this->update($this->tableNames['user'], $dataArr, $dataConditionArray)) {
+
+            $this->setSuccess($this->validationMessage['useredited']);
+            $this->logMsg("User ID : " . $_GET['id'] . " has been updated","updateSubUser");
+            return true;
+        } else {
+
+            $this->setError($this->validationMessage['failed']);
+            return false;
+        }
+
+        return true;
+    }  
+	 public function validateSubUser($dataArr) {
+
+        $rules = array(
+            'first_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:First Name',
+            'last_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Last Name',
+            'company_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Company Name',
+            'phone_number' => 'required||pattern:/^[' . $this->validateType['mobilenumber'] . ']+$/|#|lable_name:Phone Number',
+            'email' => 'required||email|#|lable_name:Email',
+            'status' => 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Status'
+        );
+
+        if (array_key_exists("username", $dataArr)) {
+            $rules['username'] = 'required||pattern:/^' . $this->validateType['username'] . '+$/|#|lable_name:Username';
+        }
+
+        if (array_key_exists("password", $dataArr)) {
+            $rules['password'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||min:8||max:20|#|lable_name:Password';
+        }
+
+        $valid = $this->vali_obj->validate($dataArr, $rules);
+        if ($valid->hasErrors()) {
+            $err_arr = $valid->allErrors();
+            $this->setError($err_arr);
+            $valid->clearMessages();
+            return false;
+        }
+        return true;
+    }
 
     public function addPlanToSubscriber() {
 
@@ -303,6 +426,10 @@ final class users extends validation {
 		$dataArr['cur_gross_turnover'] = isset($_POST['cur_gross_turnover']) ? $_POST['cur_gross_turnover'] : '';
 		$dataArr['isd_number'] = isset($_POST['isd_number']) ? $_POST['isd_number'] : '';
 		$dataArr['gstin_username'] = isset($_POST['gstin_username']) ? $_POST['gstin_username'] : '';
+		$dataArr['bank_name'] = isset($_POST['bank_name']) ? $_POST['bank_name'] : '';
+		$dataArr['account_number'] = isset($_POST['account_number']) ? $_POST['account_number'] : '';
+		$dataArr['branch_name'] = isset($_POST['branch_name']) ? $_POST['branch_name'] : '';
+		$dataArr['ifsc_code'] = isset($_POST['ifsc_code']) ? $_POST['ifsc_code'] : '';
 
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
@@ -333,6 +460,10 @@ final class users extends validation {
 		$dataInsertKYCArray['cur_gross_turnover'] = $dataArr['cur_gross_turnover'];
 		$dataInsertKYCArray['isd_number'] = $dataArr['isd_number'];
 		$dataInsertKYCArray['gstin_username'] = $dataArr['gstin_username'];
+		$dataInsertKYCArray['bank_name'] = $dataArr['bank_name'];
+		$dataInsertKYCArray['account_number'] = $dataArr['account_number'];
+		$dataInsertKYCArray['branch_name'] = $dataArr['branch_name'];
+		$dataInsertKYCArray['ifsc_code'] = $dataArr['ifsc_code'];
 		$dataInsertKYCArray['updated_by'] = $_SESSION['user_detail']['user_id'];
 		$dataInsertKYCArray['updated_date'] = date('Y-m-d H:i:s');
 		$dataConditionKYCArray['added_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);
@@ -395,6 +526,22 @@ final class users extends validation {
 
 		if( array_key_exists("gstin_username",$dataArr) ) {
 			$rules['gstin_username'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:ISD Number';
+		}
+
+		if( array_key_exists("bank_name",$dataArr) ) {
+			$rules['bank_name'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Bank Name';
+		}
+
+		if( array_key_exists("account_number",$dataArr) ) {
+			$rules['account_number'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Account Number';
+		}
+
+		if( array_key_exists("branch_name",$dataArr) ) {
+			$rules['branch_name'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Branch Name';
+		}
+
+		if( array_key_exists("ifsc_code",$dataArr) ) {
+			$rules['ifsc_code'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:IFSC Code';
 		}
 
         $valid = $this->vali_obj->validate($dataArr, $rules);

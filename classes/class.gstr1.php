@@ -322,7 +322,7 @@ final class gstr1 extends validation {
         /***** Start Code For Doc Issue Payload ********** */
         $doc_data = $this->getDOCISSUEPayload($user_id, $returnmonth);
         if (!empty($doc_data)) {
-            $data_ids[] = $doc_ids = $doc_data['doc_ids'];
+            //$data_ids[] = $doc_ids = $doc_data['doc_ids'];
             $doc_arr = $doc_data['doc_arr'];
             $dataArr = array_merge($dataArr, $doc_arr);
         }
@@ -347,8 +347,8 @@ final class gstr1 extends validation {
         /***** End Code For TXPD Payload ********** */
 
         
-       // $this->pr($dataArr);       
-        //die; 
+       /*$this->pr($dataArr);       
+        die; */
         
         $temp_id = '';
         $x = 0;
@@ -648,6 +648,7 @@ final class gstr1 extends validation {
                 $json = isset($data['json'])?$data['json']:'';
                 if($all == 'all') {
                     $jstr1_array = json_decode($json,true);
+                    $this->pr($jstr1_array);
                     if(isset($jstr1_array['hsn']['data'])) {
                         $hsn = $jstr1_array['hsn']['data'];
                         $chksum = $jstr1_array['hsn']['chksum'];
@@ -737,8 +738,8 @@ final class gstr1 extends validation {
         }
         $response['data_ids'] = $data_ids;
         $response['data_arr'] = $dataArr;
-       //echo $all;
-        //$this->pr($response);die;
+        $this->pr($response);
+        //die;
         return $response;
     }
 
@@ -890,6 +891,7 @@ final class gstr1 extends validation {
                 if ($temp_number != '' && $temp_number != $dataIn->reference_number) {
                     $z = 0;
                     $y++;
+					$a=1;
                 }
                 $dataArr['b2b'][$x]['ctin'] = $dataIn->billing_gstin_number;
                 $dataArr['b2b'][$x]['inv'][$y]['inum'] = $dataIn->reference_number;
@@ -897,11 +899,18 @@ final class gstr1 extends validation {
                 $dataArr['b2b'][$x]['inv'][$y]['val'] = (float) $dataIn->invoice_total_value;
                 $dataArr['b2b'][$x]['inv'][$y]['pos'] = strlen($dataIn->supply_place) == '1' ? '0' . $dataIn->supply_place : $dataIn->supply_place;
                 $in_type = '';
-                if ($dataIn->invoice_type != 'taxinvoice') {
+                if ($dataIn->invoice_type == 'taxinvoice' || $dataIn->invoice_type =='billofsupplyinvoice') {
                     $in_type = 'R';
-                } else if ($dataIn->invoice_type != 'sezunitinvoice') {
-                    $in_type = 'SEWP';
-                } else if ($dataIn->invoice_type != 'deemedexportinvoice') {
+                } else if ($dataIn->invoice_type == 'sezunitinvoice') {
+					if($dataIn->export_supply_meant=='withpayment')
+					{
+						$in_type = 'SEWP';
+					}
+					else
+					{
+						$in_type = 'SEWOP';
+					}
+                } else if ($dataIn->invoice_type == 'deemedexportinvoice') {
                     $in_type = 'DE';
                 }
                 $rever_charge = ($dataIn->supply_type == 'reversecharge') ? 'Y' : 'N';

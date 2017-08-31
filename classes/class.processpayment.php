@@ -1,4 +1,5 @@
 <?php
+
 /*
  * 
  *  Developed By        :   Himanshu Chittora
@@ -7,206 +8,256 @@
  * 
  */
 
-class processpayment extends validation {
-
-    public function __construct() {
+class processpayment extends validation
+{
+    public function __construct()
+    {
         parent::__construct();
     }
+    
+    /* 
+    Main function to proceed for payment.
+    $tablename = Tablename here;
+    $columnname = array of name of unique id and Amount  fields
+    $raturnpage = Page name where user will redirect after payment.
+    */
 
-    /*
-      Main function to proceed for payment.
-      $tablename = Tablename here;
-      $columnname = array of name of unique id and Amount  fields
-      $raturnpage = Page name where user will redirect after payment.
-     */
-
-    function pay_now($tablename, $columnname, $returnpage) {
+	function pay_now($tablename, $columnname, $returnpage) {
 
         if ($_POST && isset($_POST['submit'])) {
-            $get_amount = $this->findAll(TAB_PREFIX . $tablename, $columnname[0] . '=' . $_SESSION['plan_id'], "" . $columnname[1] . " as amount");
+            $get_amount      = $this->findAll(TAB_PREFIX . $tablename, $columnname[0] . '=' . $_SESSION['plan_id'], "" . $columnname[1] . " as amount");
             $get_UserDetails = $this->findAll(TAB_PREFIX . 'user', ' user_id=' . $_SESSION['user_detail']['user_id']);
 
             $cur_date = date('Y-m-d H:i:s');
-            $ref_id = date('siHmdy');
+            $ref_id   = date('siHmdy');
             //Update payment process date
             $this->update(TAB_PREFIX . 'user_subscribed_plan', array('ref_id' => $ref_id), array('id' => $_SESSION['subs_id']));
+			
+			//coupon
+			if(isset($_POST['coupon']) && !empty($_POST['coupon'])) {
 
+				$couponData = $this->get_results("select * from ".TAB_PREFIX . "coupon where name='".$this->sanitize($_POST['coupon'])."'");
+				if(!empty($couponData)) {
+	
+					$client_datas = $this->get_results("select * from ".TAB_PREFIX."user where coupon='".$this->sanitize($_POST['coupon'])."'");
+					if(isset($couponData[0]->coupon_uses) && count($client_datas)<$couponData[0]->coupon_uses)
+					{
+						$this->update(TAB_PREFIX . 'user', array('coupon' => $this->sanitize($_POST['coupon'])), array('user_id' => $_SESSION['user_detail']['user_id']));
+					}
+					else{
+						$this->setError('Coupon Code Expired');
+						return false;
+					}
+				}
+				else
+				{
+					$this->setError('Invalid Coupon Code');
+					return false;
+				}
+			}
+				
             //Insert data in payment log
             $this->insert(TAB_PREFIX . 'payment_log', array(
                 'process_payment_id' => $ref_id,
                 'datetime' => $cur_date,
                 'status' => '0'
             ));
-
-            $get_amount[0]->amount = $get_amount[0]->amount + ($get_amount[0]->amount * 0.18);
-            ?>
-            <form action="<?php echo PROJECT_URL; ?>/go4hosting/keeper_payment.php" name="payment" method="POST" id="payment"> 
+			$price_data = $get_amount[0]->amount;
+			if(!empty($couponData))
+			{
+				if(isset($couponData[0]->type) && $couponData[0]->type=='0')
+				{
+					$get_amount[0]->amount = $price_data - $couponData[0]->coupon_value;
+					$get_amount[0]->amount = $get_amount[0]->amount + ($get_amount[0]->amount*0.18);
+				}
+				else if(isset($couponData[0]->type) && $couponData[0]->type=='1')
+				{
+					$get_amount[0]->amount = $get_amount[0]->amount - round((($price_data*$couponData[0]->coupon_value)/(100+$couponData[0]->coupon_value)), 2, PHP_ROUND_HALF_DOWN);
+					$get_amount[0]->amount = $get_amount[0]->amount + ($get_amount[0]->amount*0.18);
+					$get_amount[0]->amount = round($get_amount[0]->amount, 2, PHP_ROUND_HALF_DOWN);
+					
+				}
+			}
+			else
+			{
+				$get_amount[0]->amount = $get_amount[0]->amount + ($get_amount[0]->amount * 0.18);
+			}
+			?>
+			<form action="<?php echo PROJECT_URL; ?>/go4hosting/keeper_payment.php" name="payment" method="POST" id="payment"> 
                 <input type="hidden" value="0" name="channel"/>
-                <input type="hidden" value="25039" name="account_id"/>
-                <input type="hidden" value="<?php echo $ref_id; ?>" name="reference_no"/>
-                <input type="hidden" value="<?php echo $get_amount[0]->amount; ?>" name="amount"/>
-                <input type="hidden" value="INR" name="currency"/>
-                <input type="hidden" value="INR" name="display_currency"/>
-                <input type="hidden" value="1" name="display_currency_rates"/>
-                <input type="hidden" value="Payment information from GST" name="description"/>
-                <input type="hidden" value="<?php echo PROJECT_URL . "/go4hosting/keeper_response.php"; ?>" name="return_url"/>
-                <input type="hidden" value="LIVE" name="mode"/>
-                <input type="hidden" value="<?php echo $get_UserDetails[0]->username; ?>" name="name"/>
-                <input type="hidden" value="Delhi" name="address"/>
-                <input type="hidden" value="Delhi" name="city"/>
-                <input type="hidden" value="110010" name="postal_code"/>
-                <input type="hidden" value="IND" name="country"/>
-                <input type="hidden" value="<?php echo $get_UserDetails[0]->email; ?>" name="email"/>
-                <input type="hidden" value="<?php echo $get_UserDetails[0]->phone_number; ?>" name="phone"/>
+				<input type="hidden" value="25039" name="account_id"/>
+				<input type="hidden" value="<?php echo $ref_id; ?>" name="reference_no"/>
+				<input type="hidden" value="<?php echo $get_amount[0]->amount; ?>" name="amount"/>
+				<input type="hidden" value="INR" name="currency"/>
+				<input type="hidden" value="INR" name="display_currency"/>
+				<input type="hidden" value="1" name="display_currency_rates"/>
+				<input type="hidden" value="Payment information from GST" name="description"/>
+				<input type="hidden" value="<?php echo PROJECT_URL . "/go4hosting/keeper_response.php"; ?>" name="return_url"/>
+				<input type="hidden" value="LIVE" name="mode"/>
+				<input type="hidden" value="<?php echo $get_UserDetails[0]->username; ?>" name="name"/>
+				<input type="hidden" value="Delhi" name="address"/>
+				<input type="hidden" value="Delhi" name="city"/>
+				<input type="hidden" value="110010" name="postal_code"/>
+				<input type="hidden" value="IND" name="country"/>
+				<input type="hidden" value="<?php echo $get_UserDetails[0]->email; ?>" name="email"/>
+				<input type="hidden" value="<?php echo $get_UserDetails[0]->phone_number; ?>" name="phone"/>
             </form>
 
             <script type="text/javascript">
-                window.onload = func1;
-                function func1() {
-                    document.payment.submit();
-                }
+				window.onload=func1;
+				function func1(){
+					document.payment.submit(); 
+                } 
             </script>
             <?php
+			exit();
         }
     }
-
-    public function payment_method() {
-        $dataArr = array();
-        $dataAr['ref_id'] = isset($_POST['MerchantRefNo']) ? $_POST['MerchantRefNo'] : '';
-        $dataArr['process_payment_id'] = isset($_POST['PaymentID']) ? $_POST['PaymentID'] : '';
-        $dataArr['datetime'] = isset($_POST['DateCreated']) ? $_POST['DateCreated'] : '';
-        $dataArr['response_datetime'] = date('Y-m-d H:i:s');
-        $dataArr['response_data'] = json_encode($_POST);
+    
+    public function payment_method()
+    {
+        $dataArr 						= array();
+        $dataAr['ref_id'] 				= isset($_POST['MerchantRefNo']) ? $_POST['MerchantRefNo'] : '';
+        $dataArr['process_payment_id'] 	= isset($_POST['PaymentID']) ? $_POST['PaymentID'] : '';
+        $dataArr['datetime'] 			= isset($_POST['DateCreated']) ? $_POST['DateCreated'] : '';
+        $dataArr['response_datetime'] 	= date('Y-m-d H:i:s');
+        $dataArr['response_data'] 		= json_encode($_POST);
 
         $this->update(TAB_PREFIX . "payment_log", $dataArr, $dataAr);
-
-        $dataArr['ref_id'] = isset($_POST['MerchantRefNo']) ? $_POST['MerchantRefNo'] : '';
-        $this->insert(TAB_PREFIX . "payment_log_chck", $dataArr);
-
-        $dataArr['ResponseCode'] = isset($_POST['ResponseCode']) ? $_POST['ResponseCode'] : '';
+		
+		$dataArr['ref_id'] = isset($_POST['MerchantRefNo']) ? $_POST['MerchantRefNo'] : '';
+		$this->insert(TAB_PREFIX . "payment_log_chck", $dataArr);
+        
+        $dataArr['ResponseCode'] 	= isset($_POST['ResponseCode']) ? $_POST['ResponseCode'] : '';
         $dataArr['ResponseMessage'] = isset($_POST['ResponseMessage']) ? $_POST['ResponseMessage'] : '';
 
         if ($dataArr['ResponseCode'] == '0') {
-
-            $dataUsPl = $this->get_results("select * from " . TAB_PREFIX . "user_subscribed_plan where ref_id='" . $dataArr['ref_id'] . "' and added_by='" . $_SESSION['user_detail']['user_id'] . "'");
-            $dataPl = $this->get_results("select * from " . TAB_PREFIX . "subscriber_plan where id='" . $dataUsPl[0]->plan_id . "'");
-
-            $dataUpdateArr['no_of_client'] = $dataPl[0]->no_of_client;
-            $dataUpdateArr['payment_status'] = "1";
-            $dataUpdateArr['plan_id'] = $dataPl[0]->id;
+			
+			$dataUsPl = $this->get_results("select * from " . TAB_PREFIX . "user_subscribed_plan where ref_id='" . $dataArr['ref_id'] . "' and added_by='" . $_SESSION['user_detail']['user_id'] . "'");
+			$dataPl = $this->get_results("select * from " . TAB_PREFIX . "subscriber_plan where id='" . $dataUsPl[0]->plan_id . "'");
+            
+            $dataUpdateArr['no_of_client']    = $dataPl[0]->no_of_client;
+            $dataUpdateArr['payment_status']  = "1";
+            $dataUpdateArr['plan_id']         = $dataPl[0]->id;
             $dataUpdateArr['plan_start_date'] = date('Y-m-d H:i:s');
-            $dataUpdateArr['plan_due_date'] = (date('Y') + 1) . "-03-31";
+            $dataUpdateArr['plan_due_date']   = (date('Y')+1) . "-03-31";
 
             $this->update(TAB_PREFIX . "user", $dataUpdateArr, array('user_id' => $_SESSION['user_detail']['user_id']));
             $this->setSuccess('Your payment is successful.');
+            
+			/**********Mail function added by sheetal*********************************/
+            $email = $this->get_results("select state,company_name,gstin_number,email,coupon,first_name,last_name from " . TAB_PREFIX . "user where user_id='" . $_SESSION['user_detail']['user_id']."'");
 
-            /*             * ********Mail function added by sheetal******************************** */
-            $email = $this->get_results("select state,company_name,gstin_number,email,coupon,first_name,last_name from " . TAB_PREFIX . "user where user_id='" . $_SESSION['user_detail']['user_id'] . "'");
+			$companyaddress=array(
+				'name'=>'CYFUTURE INDIA PRIVATE LIMITED',
+				'address'=>'G1-227/228, H1 236-239, Export Promotion Industrial Park (EPIP)',
+				'address1'=>'Sitapura Industrial Area, Jaipur -302 022',
+				'gstin'=>'08AABCC7015R1ZB',
+				'sac'=>'998314'
+			);
+			
+			$useraddress=array(
+				'name'=>$email[0]->first_name." ".$email[0]->last_name,
+				'company_name'=>$email[0]->company_name,
+				'address'=>'',
+				'address1'=>'',
+				'gstin'=>$email[0]->gstin_number,
+				'state' => $email[0]->state
+			);
 
-            $companyaddress = array(
-                'name' => 'CYFUTURE INDIA PRIVATE LIMITED',
-                'address' => 'G1-227/228, H1 236-239, Export Promotion Industrial Park (EPIP)',
-                'address1' => 'Sitapura Industrial Area, Jaipur -302 022',
-                'gstin' => '08AABCC7015R1ZB',
-                'sac' => '998314'
-            );
+			$invoiceDta = $this->get_results("select max(invoice_number) as invoice_number from ".TAB_PREFIX."invoices");
+			if(!empty($invoiceDta) && count($invoiceDta)>0) {
+				$invoiceDta=$invoiceDta[0]->invoice_number+1;
+			} else {
+				$invoiceDta='10000';
+			}
 
-            $useraddress = array(
-                'name' => $email[0]->first_name . " " . $email[0]->last_name,
-                'company_name' => $email[0]->company_name,
-                'address' => '',
-                'address1' => '',
-                'gstin' => $email[0]->gstin_number,
-                'state' => $email[0]->state
-            );
+			$couponData = array();
+			if($email[0]->coupon!='') {
+				$couponData = $this->get_results("select * from ".TAB_PREFIX."coupon where name='".$email[0]->coupon."'");
+			}
 
-            $invoiceDta = $this->get_results("select max(invoice_number) as invoice_number from " . TAB_PREFIX . "invoices");
-            if (!empty($invoiceDta) && count($invoiceDta) > 0) {
-                $invoiceDta = $invoiceDta[0]->invoice_number + 1;
-            } else {
-                $invoiceDta = '10000';
-            }
+			$dataInvoice['invoice_number']=$invoiceDta;
+			$dataInvoice['user_id']=$_SESSION['user_detail']['user_id'];
+			$dataInvoice['invoice_value']=$dataPl[0]->plan_price;
+			$dataInvoice['coupon']=$email[0]->coupon;
+			$dataInvoice['coupon_type']=(isset($couponData[0]->type)) ? $couponData[0]->type : '0';
+			$dataInvoice['coupon_value']=(isset($couponData[0]->coupon_value)) ? $couponData[0]->coupon_value : '0';
+			
+			if($dataInvoice['coupon_type']=='1') {
+				$discount = ($dataPl[0]->plan_price * $dataInvoice['coupon_value']) / (100+$dataInvoice['coupon_value']);
+			} else {
+				$discount = $dataInvoice['coupon_value'];
+			}
+			
+			$dataInvoice['discount']=$discount;
+			$dataInvoice['tax_percentage']='18.00';
+			$plan_price = $dataInvoice['invoice_value'] - $dataInvoice['discount'];
+			$dataInvoice['taxes']=($plan_price * $dataInvoice['tax_percentage']) / 100;
+			$dataInvoice['total']=$plan_price + $dataInvoice['taxes'];
+			$dataInvoice['payment_status']=1;
+			$dataInvoice['invoice_date']=date('Y-m-d H:i:s');
+			$dataInvoice['invoice_paid_date']=date('Y-m-d H:i:s');
+			$this->insert(TAB_PREFIX.'invoices',$dataInvoice);
 
-            $couponData = array();
-            if ($email[0]->coupon != '') {
-                $couponData = $this->get_results("select * from " . TAB_PREFIX . "coupon where name='" . $email[0]->coupon . "'");
-            }
+			$planDetail = $this->get_results("select b.name as cat_name,a.name,a.no_of_client,a.company_no,a.pan_num,a.invoice_num ,a.support,a.period_of_service,a.web_mobile_app,a.cloud_storage_gb,a.gst_expert_help from ".TAB_PREFIX."subscriber_plan a left join ".TAB_PREFIX."subscriber_plan_category b on a.plan_category=b.id where a.id='".$dataUpdateArr['plan_id']."'");
+			if($dataUpdateArr['plan_id']=='22')
+			{
+				$planDetail[0]->no_of_client='Unlimited';
+				$planDetail[0]->company_no='Unlimited';
+			}
+			$htmlResponse = $this->generatePlanPdf($_SESSION['user_detail']['id'], $planDetail, $dataArr['plan_due_date'],$companyaddress,$useraddress,$dataInvoice);
+			
+			if ($htmlResponse === false) {
+				$obj_client->setError("No Plan Pdf found.");
+				return false;
+			}
 
-            $dataInvoice['invoice_number'] = $invoiceDta;
-            $dataInvoice['user_id'] = $_SESSION['user_detail']['user_id'];
-            $dataInvoice['invoice_value'] = $dataPl[0]->plan_price;
-            $dataInvoice['coupon'] = $email[0]->coupon;
-            $dataInvoice['coupon_type'] = (isset($couponData[0]->type)) ? $couponData[0]->type : '0';
-            $dataInvoice['coupon_value'] = (isset($couponData[0]->coupon_value)) ? $couponData[0]->coupon_value : '0';
+			$obj_mpdf = new mPDF();
+			$obj_mpdf->SetHeader('Plan Invoice');
+			$obj_mpdf->WriteHTML($htmlResponse);
+			$datetime=date('YmdHis');
+			//$datetime=date('Y-m-d H:i');
+			//rand(1, 100)
+			$taxInvoicePdf = 'plan-invoice-' . $_SESSION['user_detail']['username'] . '_' .$datetime. '.pdf';
+			ob_clean();
+			//$proof_photograph = $this->imageUploads($taxInvoicePdf, 'plan-invoice', 'upload','.pdf');
+			$pic = $taxInvoicePdf;
+			$path = "/upload/plan-invoice/".$taxInvoicePdf; 
+			$content = $obj_mpdf->Output("upload/plan-invoice/".$taxInvoicePdf);
 
-            if ($dataInvoice['coupon_type'] == '1') {
-                $discount = ($dataPl[0]->plan_price * $dataInvoice['coupon_value']) / (100 + $dataInvoice['coupon_value']);
-            } else {
-                $discount = $dataInvoice['coupon_value'];
-            }
-
-            $dataInvoice['discount'] = $discount;
-            $dataInvoice['tax_percentage'] = '18.00';
-            $plan_price = $dataInvoice['invoice_value'] - $dataInvoice['discount'];
-            $dataInvoice['taxes'] = ($plan_price * $dataInvoice['tax_percentage']) / 100;
-            $dataInvoice['total'] = $plan_price + $dataInvoice['taxes'];
-            $dataInvoice['payment_status'] = 1;
-            $dataInvoice['invoice_date'] = date('Y-m-d H:i:s');
-            $dataInvoice['invoice_paid_date'] = date('Y-m-d H:i:s');
-            $this->insert(TAB_PREFIX . 'invoices', $dataInvoice);
-
-            $planDetail = $this->get_results("select b.name as cat_name,a.name,a.no_of_client,a.company_no,a.pan_num,a.invoice_num ,a.support,a.period_of_service,a.web_mobile_app,a.cloud_storage_gb,a.gst_expert_help from " . TAB_PREFIX . "subscriber_plan a left join " . TAB_PREFIX . "subscriber_plan_category b on a.plan_category=b.id where a.id='" . $dataUpdateArr['plan_id'] . "'");
-            $htmlResponse = $this->generatePlanPdf($_SESSION['user_detail']['id'], $planDetail, $dataArr['plan_due_date'], $companyaddress, $useraddress, $dataInvoice);
-
-            if ($htmlResponse === false) {
-                $obj_client->setError("No Plan Pdf found.");
-                return false;
-            }
-
-            $obj_mpdf = new mPDF();
-            $obj_mpdf->SetHeader('Plan Invoice');
-            $obj_mpdf->WriteHTML($htmlResponse);
-            $datetime = date('YmdHis');
-            //$datetime=date('Y-m-d H:i');
-            //rand(1, 100)
-            $taxInvoicePdf = 'plan-invoice-' . $_SESSION['user_detail']['username'] . '_' . $datetime . '.pdf';
-            ob_clean();
-            //$proof_photograph = $this->imageUploads($taxInvoicePdf, 'plan-invoice', 'upload','.pdf');
-            $pic = $taxInvoicePdf;
-            $path = "/upload/plan-invoice/" . $taxInvoicePdf;
-            $content = $obj_mpdf->Output("upload/plan-invoice/" . $taxInvoicePdf);
-
-            $module = "Request Plan for Purchase";
-            $moduleMsg = $_SESSION['user_detail']['user_id'] . " has purchased plan";
-            $to = $email[0]->email;
-            $from = 'noreply@gstkeeper.com';
-            $cc = '';
-            $bcc = 'rishap.gandhi@cyfuture.com,aditya.kumar@cyfuture.com,sheetal.prasad@cyfuture.com,Manish.sarthak@cyfuture.com,jagat.singh@cyfuture.com';
-            $attachment = $path;
-            $subject = 'Thank you for Purchasing a Plan on GSTKeeper!';
-            $body = $this->getMailBody();
-
-            $this->sendMail($module, $moduleMsg, $to, $from, $cc, $bcc, $attachment, $subject, $body);
-
-            /*             * ********Mail Code End function added by sheetal******************************** */
-
-            $_SESSION['res'] = '1';
-            return true;
+			$module    = "Request Plan for Purchase";
+            $moduleMsg = $_SESSION['user_detail']['user_id']." has purchased plan";
+            $to        = $email[0]->email;
+			$from = 'noreply@gstkeeper.com';
+			$cc='';
+			$bcc  = 'rishap.gandhi@cyfuture.com,aditya.kumar@cyfuture.com,sheetal.prasad@cyfuture.com,Manish.sarthak@cyfuture.com,jagat.singh@cyfuture.com';
+			$attachment=$path;
+            $subject   = 'Thank you for Purchasing a Plan on GSTKeeper!';
+            $body=$this->getMailBody();
+			
+            $this->sendMail($module, $moduleMsg, $to,$from,$cc,$bcc,$attachment,$subject, $body);
+			
+			/**********Mail Code End function added by sheetal*********************************/
+			$_SESSION['res']='1';
+			return true;
+            
         } else {
             $this->update(TAB_PREFIX . "user_subscribed_plan", array(
                 'status' => '0'
-                    ), array(
+            ), array(
                 'ref_id' => $dataArr['ref_id'],
                 'added_by' => $_SESSION['user_detail']['user_id']
             ));
             $this->setError('Your payment is failed try again');
-            $_SESSION['res'] = '2';
+            $_SESSION['res']='2';
             return false;
         }
     }
-
-    public function getMailBody() {
-        return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+	
+	public function getMailBody()
+	{
+		return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
 <html xmlns="http://www.w3.org/1999/xhtml"> 
 <head> 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
@@ -348,9 +399,8 @@ The GST Keeper Team </p></td>
 </div> 
 </body> 
 </html> ';
-    }
-
-    public function generatePlanPdf($invid, $planDetail, $planduedate, $companyaddress, $useraddress, $dataInvoice) {
+	}
+	public function generatePlanPdf($invid, $planDetail, $planduedate, $companyaddress, $useraddress, $dataInvoice) {
         $mpdfHtml = '';
         $mpdfHtml .= '<div style="margin:auto;font-size:16px;line-height:24px;color:#555;">';
         $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;" cellpadding="0" cellspacing="0">';
@@ -513,10 +563,6 @@ The GST Keeper Team </p></td>
             $mpdfHtml .= round(($dataInvoice['tax_percentage']/2), 2, PHP_ROUND_HALF_DOWN);
             $mpdfHtml .= '</td>';
         }
-        
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
-        $mpdfHtml .= round($dataInvoice['tax_percentage'], 2, PHP_ROUND_HALF_DOWN);
-        $mpdfHtml .= '</td>';
 
         $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
         $mpdfHtml .= round($dataInvoice['taxes'], 2, PHP_ROUND_HALF_DOWN);
@@ -561,6 +607,6 @@ The GST Keeper Team </p></td>
         $mpdfHtml .= '</div>';
         return $mpdfHtml;
     }
-
+    
 }
 ?>

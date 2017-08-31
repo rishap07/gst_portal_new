@@ -196,7 +196,7 @@ final class gstr extends validation {
 
         $url=  'http://devapi.gstsystem.co.in/taxpayerapi/v0.2/authenticate';
         $result_data= $this->hitUrl($url,$data_string,$header);
-
+        //$this->pr($result_data);
         $data = json_decode($result_data);
 
         if(empty($this->checkUserGstr1Exists('app_key')) && empty($this->checkUserGstr1Exists('auth_token'))) {
@@ -219,11 +219,10 @@ final class gstr extends validation {
                 $savedata['decrypt_sess_key'] = $session_key;
                 $savedata['added_date'] = $_SESSION['auth_date'];
                 $this->save_user_gstr1($savedata);
-
                 return $data;
             }
             else {
-                $this->setError("Unable to proccess");
+                $this->setError($this->validationMessage['gstinservererror']);
                 return false;
             }
         }
@@ -240,14 +239,16 @@ final class gstr extends validation {
     }
     
     public function returnSave($dataArr,$returnmonth,$jstr) {
-        $this->authenticateToken();
+        if($this->authenticateToken() == false) {
+            return false;
+        }
         $msg = $return_encode = '';
         $error = 1;
         $response = array();
         
         $json_data = json_encode($dataArr);
 
-        //echo $json_data;
+        echo $json_data;
 
         $encodejson=base64_encode(openssl_encrypt(base64_encode($json_data),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
         $hmac = base64_encode(hash_hmac('sha256', base64_encode($json_data), $_SESSION['decrypt_sess_key'], true));
@@ -257,7 +258,9 @@ final class gstr extends validation {
     }
 
     public function returnSubmit($returnmonth) {
-        $this->authenticateToken();
+        if($this->authenticateToken() == false) {
+            return false;
+        }
         $error =1;
         $msg = '';
         $api_return_period = $this->getRetrunPeriodFormat($returnmonth);
@@ -310,7 +313,9 @@ final class gstr extends validation {
     }
 
     public function returnFiling($returnmonth) {
-        $this->authenticateToken();
+        if($this->authenticateToken() == false) {
+            return false;
+        }
         $error =1;
         $msg = '';
         $api_return_period = $this->getRetrunPeriodFormat($returnmonth);
@@ -358,83 +363,92 @@ final class gstr extends validation {
     }
 
     public function returnSummary($returnmonth,$type='',$jstr='gstr1') {
-        $this->authenticateToken();
-        //$this->pr($_SESSION);
-        $gstin = $this->gstin();
-        $username = $this->username();
-        $ctin = $this->ctin();
-        $api_return_period = $this->getRetrunPeriodFormat($returnmonth);
-        //Start code for create header
-        $header2_array = array(
-            'auth-token:' . $_SESSION['auth_token'] . '',
-            'gstin:' . $gstin . '',
-            'ret_period: '.$api_return_period.' ',
-            'username:' . $username . '',
-            'accept:application/json',
-            'action:' . 'RETSTATUS' . ''
-        );
-            
-        $header2 = $this->header($header2_array);
-        //$this->pr($header2);
-        //End code for create header
-
-        if($type=='') {
-             $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=RETSUM';
-        }
-        else {
-            $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type;
-        }
-
-        if($type=='B2B') {
-            //$getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type.'&action_required=Y&ctin=33GSPTN4901G1ZD&from_time=';
-            $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type;
-        }
-        if($type=='HSN') {
-            $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=HSNSUM';
-        }
-        if($type=='CDNR') {
-            $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type.'&action_required=Y&from_time='.$api_return_period;
-        }
-        if($type=='TXPD') {
-            $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=TXP';
-        }
-        if($type=='CDN') {
-            $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=CDN';
-        }
-        
-        //echo $getReturnUrl;
-
-        $result_data_sum = $this->hitGetUrl($getReturnUrl, '', $header2);
-        $retDta_sum = json_decode($result_data_sum);
-        //$this->pr($retDta_sum);
-        if(isset($retDta_sum->status_cd) && $retDta_sum->status_cd=='1')
-        {
-            $retRek_sum = $retDta_sum->rek;
-            $retData_sum = $retDta_sum->data;
-            $apiEk1_sum = openssl_decrypt(base64_decode($retRek_sum),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
-            $decodejson_sum = base64_decode(openssl_decrypt(base64_decode($retData_sum),"aes-256-ecb",$apiEk1_sum, OPENSSL_RAW_DATA));
-            $return_encode = $decodejson_sum;
-            //echo  $return_encode;
-            return $return_encode;
-        }
-        else {
-            $msg = "Sorry! Unable to process";
-            /*if(isset($retDta_sum->error)) {
-                $this->array_key_search('message', $retDta_sum->error);
-                $msg = $this->error_msg;;
-            }
-
-            $this->setError($msg);*/
+        if($this->authenticateToken() == false) {
             return false;
         }
+        if(!empty($_SESSION['auth_token'])) {
+            $gstin = $this->gstin();
+            $username = $this->username();
+            $ctin = $this->ctin();
+            $api_return_period = $this->getRetrunPeriodFormat($returnmonth);
+            //Start code for create header
+            $header2_array = array(
+                'auth-token:' . $_SESSION['auth_token'] . '',
+                'gstin:' . $gstin . '',
+                'ret_period: '.$api_return_period.' ',
+                'username:' . $username . '',
+                'accept:application/json',
+                'action:' . 'RETSTATUS' . ''
+            );
+                
+            $header2 = $this->header($header2_array);
+            //$this->pr($header2);
+            //End code for create header
 
+            if($type=='') {
+                 $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=RETSUM';
+            }
+            else {
+                $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type;
+            }
+
+            if($type=='B2B') {
+                //$getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type.'&action_required=Y&ctin=33GSPTN4901G1ZD&from_time=';
+                $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type;
+            }
+            if($type=='HSN') {
+                $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=HSNSUM';
+            }
+            if($type=='CDNR') {
+                $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type.'&action_required=Y&from_time='.$api_return_period;
+            }
+            if($type=='TXPD') {
+                $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=TXP';
+            }
+            if($type=='CDN') {
+                $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=CDN';
+            }
+            
+            //echo $getReturnUrl;
+
+            $result_data_sum = $this->hitGetUrl($getReturnUrl, '', $header2);
+            $retDta_sum = json_decode($result_data_sum);
+            //$this->pr($retDta_sum);
+            
+            if(isset($retDta_sum->status_cd) && $retDta_sum->status_cd=='1')
+            {
+               $retRek_sum = $retDta_sum->rek;
+                $retData_sum = $retDta_sum->data;
+                $apiEk1_sum = openssl_decrypt(base64_decode($retRek_sum),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
+                $decodejson_sum = base64_decode(openssl_decrypt(base64_decode($retData_sum),"aes-256-ecb",$apiEk1_sum, OPENSSL_RAW_DATA));
+                $return_encode = $decodejson_sum;
+                //echo  $return_encode;
+                return $return_encode;
+            }
+            else {
+                $msg = "Sorry! Unable to process";
+                if(isset($retDta_sum->error)) {
+                    $this->array_key_search('message', $retDta_sum->error);
+                    $msg = $this->error_msg;;
+                }
+
+                $this->setError($msg);
+                return false;
+            }
+        }
+        else {
+            $this->setError($this->validationMessage['gstinservererror']);
+            return false;
+        }
     }
 
     public function returnDeleteItems($deleteData, $returnmonth, $jstr) {
-        $this->authenticateToken();
+       if($this->authenticateToken() == false) {
+            return false;
+        }
         $action = 'RETSAVE';
         $deleteData = json_encode($deleteData);
-        //echo $deleteData;
+        echo $deleteData;
         $encodejson=base64_encode(openssl_encrypt(base64_encode($deleteData),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
 
         $hmac = base64_encode(hash_hmac('sha256', base64_encode($deleteData), $_SESSION['decrypt_sess_key'], true));
@@ -597,6 +611,10 @@ final class gstr extends validation {
                     $this->query("DELETE FROM ".$this->getTableName('user_gstr1')." WHERE user_id = ".$user_id);
                     $this->gstr_session_destroy();
                 }
+            }
+            else {
+                $this->query("DELETE FROM ".$this->getTableName('user_gstr1')." ");
+                $this->gstr_session_destroy();
             }
             
         }

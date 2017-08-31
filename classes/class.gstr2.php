@@ -22,11 +22,18 @@ final class gstr2 extends validation {
         }
         $dataUpdate = $dataUpdate1 = array();
         $response_b2b = $obj_api->returnSummary($gstr2ReturnMonth,'B2B','gstr2a');
+        if($response_b2b ==  false) {
+			return false;
+		}
 		$response_cdn = $obj_api->returnSummary($gstr2ReturnMonth,'CDN','gstr2a');
+		if($response_cdn ==  false) {
+			return false;
+		}
 
-		if(!empty($response_b2b) && !empty($response_cdn)) {
+		if(!empty($response_b2b) || !empty($response_cdn)) {
 			$jstrb2b_array = json_decode($response_b2b,true);
 		    $jstrcdn_array = json_decode($response_cdn,true);
+		    //$this->pr($jstrcdn_array);
 		    if(isset($jstrb2b_array['b2b'])) {
 		    	$x=0;
 		        foreach ($jstrb2b_array['b2b'] as $key1 => $inv_value) {
@@ -67,7 +74,7 @@ final class gstr2 extends validation {
 
 									$dataUpdate[$x][$i]['type'] = 'B2B';
 									$dataUpdate[$x][$i]['reference_number'] = $inum;
-									$dataUpdate[$x][$i]['invoice_date'] = $idt;
+									$dataUpdate[$x][$i]['invoice_date'] = $idt > 0 ? date('Y-m-d', strtotime($idt)) : '';
 
 									$dataUpdate[$x][$i]['invoice_total_value'] = $val;
 									$dataUpdate[$x][$i]['total_taxable_subtotal'] = $txval;
@@ -87,7 +94,8 @@ final class gstr2 extends validation {
 									$dataUpdate[$x][$i]['chksum'] = $chksum;
 
 									$dataUpdate[$x][$i]['nt_num'] = $nt_num;
-									$dataUpdate[$x][$i]['nt_dt'] = $nt_dt;
+
+									$dataUpdate[$x][$i]['nt_dt'] = $nt_dt > 0 ? date('Y-m-d', strtotime($nt_dt)) : '';
 									$dataUpdate[$x][$i]['p_gst'] = $p_gst;
 									$dataUpdate[$x][$i]['ntty'] = $ntty;
 									$dataUpdate[$x][$i]['rsn'] = $rsn;
@@ -113,6 +121,7 @@ final class gstr2 extends validation {
 	                $nt = isset($inv_value['nt'])?$inv_value['nt']:array();
 	                $ctin = isset($inv_value['ctin'])?$inv_value['ctin']:'';
 	                if(isset($nt) && !empty($nt)) {
+	                	$y=0;
 	                    foreach ($nt as $key2 => $jstr1_value) {
 	                       
 	                        $val = isset($jstr1_value['val'])?$jstr1_value['val']:0;
@@ -127,6 +136,10 @@ final class gstr2 extends validation {
 	                        $p_gst = isset($jstr1_value['p_gst'])?$jstr1_value['p_gst']:'';
 	                        $ntty = isset($jstr1_value['ntty'])?$jstr1_value['ntty']:'';
 	                        $rchrg = isset($jstr1_value['rchrg'])?$jstr1_value['rchrg']:'';
+	                        $chksum = isset($jstr1_value['chksum'])?$jstr1_value['chksum']:'';
+	                        $inv_typ = isset($jstr1_value['inv_typ'])?$jstr1_value['inv_typ']:'';
+		                    $pos = isset($jstr1_value['pos'])?$jstr1_value['pos']:0;
+		                    $updby = isset($jstr1_value['updby'])?$jstr1_value['updby']:'';
 
 	                        if(!empty($itms)) {
 	                            $i=0;
@@ -139,138 +152,150 @@ final class gstr2 extends validation {
 	                                $samt = isset($value['itm_det']['samt'])?$value['itm_det']['samt']:0;
 	                                $camt = isset($value['itm_det']['camt'])?$value['itm_det']['camt']:0;
 
-									$dataUpdate1[$x][$i]['type'] = 'CDN';
-									$dataUpdate1[$x][$i]['reference_number'] = $inum;
-									$dataUpdate1[$x][$i]['invoice_date'] = $idt;
+									$dataUpdate1[$y][$i]['type'] = 'CDN';
+									$dataUpdate1[$y][$i]['reference_number'] = $inum;
+									$dataUpdate1[$y][$i]['invoice_date'] = $idt > 0 ? date('Y-m-d', strtotime($idt)) : '';
 
-									$dataUpdate1[$x][$i]['invoice_total_value'] = $val;
-									$dataUpdate1[$x][$i]['total_taxable_subtotal'] = $txval;
-									$dataUpdate1[$x][$i]['company_gstin_number'] = $ctin;
-									$dataUpdate1[$x][$i]['inv_typ'] = $inv_typ;
-									$dataUpdate1[$x][$i]['total_cgst_amount'] = $camt;
-									$dataUpdate1[$x][$i]['total_sgst_amount'] = $samt;
+									$dataUpdate1[$y][$i]['invoice_total_value'] = $val;
+									$dataUpdate1[$y][$i]['total_taxable_subtotal'] = $txval;
+									$dataUpdate1[$y][$i]['company_gstin_number'] = $ctin;
+									$dataUpdate1[$y][$i]['inv_typ'] = $inv_typ;
+									$dataUpdate1[$y][$i]['total_cgst_amount'] = $camt;
+									$dataUpdate1[$y][$i]['total_sgst_amount'] = $samt;
 
-									$dataUpdate1[$x][$i]['total_igst_amount'] = $iamt;
-									$dataUpdate1[$x][$i]['total_cess_amount'] = $csamt;
-									$dataUpdate1[$x][$i]['rchrg'] = $rchrg;
+									$dataUpdate1[$y][$i]['total_igst_amount'] = $iamt;
+									$dataUpdate1[$y][$i]['total_cess_amount'] = $csamt;
+									$dataUpdate1[$y][$i]['rchrg'] = $rchrg;
 
-									$dataUpdate1[$x][$i]['rate'] = $rt;
-									$dataUpdate1[$x][$i]['pos'] = $pos;
-									$dataUpdate1[$x][$i]['itms'] = $num;
-									$dataUpdate1[$x][$i]['rchrg'] = $rchrg;
-									$dataUpdate1[$x][$i]['chksum'] = $chksum;
+									$dataUpdate1[$y][$i]['rate'] = $rt;
+									$dataUpdate1[$y][$i]['pos'] = $pos;
+									$dataUpdate1[$y][$i]['itms'] = $num;
+									$dataUpdate1[$y][$i]['rchrg'] = $rchrg;
+									$dataUpdate1[$y][$i]['chksum'] = $chksum;
 
-									$dataUpdate1[$x][$i]['nt_num'] = $nt_num;
-									$dataUpdate1[$x][$i]['nt_dt'] = $nt_dt;
-									$dataUpdate1[$x][$i]['p_gst'] = $p_gst;
-									$dataUpdate1[$x][$i]['ntty'] = $ntty;
-									$dataUpdate1[$x][$i]['rsn'] = $rsn;
-									$dataUpdate1[$x][$i]['financial_month'] = $gstr2ReturnMonth;
-									$dataUpdate1[$x][$i]['added_by'] = $_SESSION['user_detail']['user_id'];
-									$dataUpdate1[$x][$i]['added_date'] = date('Y-m-d h:i:s');
+									$dataUpdate1[$y][$i]['nt_num'] = $nt_num;
+									$dataUpdate1[$y][$i]['nt_dt'] = $nt_dt > 0 ? date('Y-m-d', strtotime($nt_dt)) : '';
+									$dataUpdate1[$y][$i]['p_gst'] = $p_gst;
+									$dataUpdate1[$y][$i]['ntty'] = $ntty;
+									$dataUpdate1[$y][$i]['rsn'] = $rsn;
+									$dataUpdate1[$y][$i]['financial_month'] = $gstr2ReturnMonth;
+									$dataUpdate1[$y][$i]['added_by'] = $_SESSION['user_detail']['user_id'];
+									$dataUpdate1[$y][$i]['added_date'] = date('Y-m-d h:i:s');
 	                            }
 	                        }
-
+	                        $y++;
 	                    }
 	                }
 	                $x++;
 	            }
 			    $dataUpdate =  array_merge($dataUpdate,$dataUpdate1);
 		    }
-		    
 		    $data =$data1= array();
 		    $y=0;
-		    $errorflag = 0;
 		    $data = array_reduce($dataUpdate, 'array_merge', $data1);
+		    
 		    //$this->pr($data);
 		    if(!empty($data)) {
-		    	$reference_numbers_arr = array_unique(array_column($data, 'reference_number'));
-			    $rates_arr = array_unique(array_column($data, 'rate'));
-			    $reference_numbers = '';
-			    $rates = '';
-			    foreach ($reference_numbers_arr as $key => $value) {
-			    	$reference_numbers .= "'".$value."',";
-			    }	
-			    foreach ($rates_arr as $key => $value) {
-			    	$rates .= "'".$value."',";
-			    }	    
-			    $reference_numbers = rtrim($reference_numbers, ',');
-			    $rates = rtrim($rates, ',');
+			    $results_old = $this->checkUserInvoices($this->sanitize($_SESSION['user_detail']['user_id']),$gstr2ReturnMonth);
+			    //$this->pr($results_old);
+		    	$data_update = $data_insert = array();
+		    	$x=$y=0;
+		    	foreach ($data as $key => $value) {
+		    		$flag = 0;
+	    		 	if(!empty($results_old)) {
+			    		foreach ($results_old as $dkey => $old_value) {
+			    			
+			    			if($value['reference_number'] == $old_value->reference_number &&  (float)$value['rate'] == (float)$old_value->rate && $value['company_gstin_number'] == $old_value->company_gstin_number) {
+			    				$flag=1;
+		    					if(($value['invoice_date'] != $old_value->invoice_date || (float)$value['invoice_total_value'] != (float)$old_value->invoice_total_value || (float)$value['total_taxable_subtotal'] != (float)$old_value->total_taxable_subtotal || $value['inv_typ'] != $old_value->inv_typ ||  (float)$value['total_cgst_amount'] != (float)$old_value->total_cgst_amount || (float)$value['total_sgst_amount'] != (float)$old_value->total_sgst_amount || (float)$value['total_igst_amount'] != (float)$old_value->total_igst_amount || (float)$value['total_cess_amount'] != (float)$old_value->total_cess_amount || $value['type'] != $old_value->type || $value['rchrg'] != $old_value->rchrg || $value['pos'] != $old_value->pos || $value['chksum'] != $old_value->chksum || $value['itms'] != $old_value->itms || $value['nt_num'] != $old_value->nt_num  || $value['nt_dt'] != $old_value->nt_dt || $value['ntty'] != $old_value->ntty || $value['p_gst'] != $old_value->p_gst || $value['rsn'] != $old_value->rsn))
+		    					{
 
-			    $results_update = $this->checkUserInvoices($this->sanitize($_SESSION['user_detail']['user_id']),$gstr2ReturnMonth,$reference_numbers,$rates);
-			    //$this->pr($results);
-			    //die;
+				    				
+				    				$data_update[$x]['set']['invoice_date'] = $value['invoice_date'] > 0 ? date('Y-m-d', strtotime($value['invoice_date'])) : '';
+				             		$data_update[$x]['set']['rate'] = $value['rate'];
+					             	$data_update[$x]['set']['invoice_total_value'] = $value['invoice_total_value'];
+					             	$data_update[$x]['set']['total_taxable_subtotal'] = $value['total_taxable_subtotal'];
+					             	$data_update[$x]['set']['inv_typ'] = $value['inv_typ'];
+					             	$data_update[$x]['set']['company_gstin_number'] = $value['company_gstin_number'];
+					             	$data_update[$x]['set']['total_cgst_amount'] = $value['total_cgst_amount'];
+					             	$data_update[$x]['set']['total_sgst_amount'] = $value['total_sgst_amount'];
+					             	$data_update[$x]['set']['total_igst_amount'] = $value['total_igst_amount'];
+					             	$data_update[$x]['set']['total_cess_amount'] = $value['total_cess_amount'];
+					             	$data_update[$x]['set']['rchrg'] = $value['rchrg'];
+					             	$data_update[$x]['set']['pos'] = $value['pos'];
+					             	$data_update[$x]['set']['chksum'] = $value['chksum'];
+					             	$data_update[$x]['set']['itms'] = $value['itms'];
+					             	$data_update[$x]['set']['nt_num'] = $value['nt_num'];
+					             	$data_update[$x]['set']['nt_dt'] = $value['nt_dt'] > 0 ? date('Y-m-d', strtotime($value['nt_dt'])) : '';
+					             	$data_update[$x]['set']['ntty'] = $value['ntty'];
+					             	$data_update[$x]['set']['p_gst'] = $value['p_gst'];
+					             	$data_update[$x]['set']['rsn'] = $value['rsn'];
+					             	$data_update[$x]['set']['updated_date'] = date('Y-m-d h:i:s');
+			                    	$data_update[$x]['where']['added_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);
+			                    	$data_update[$x]['where']['reference_number'] = $value['reference_number'];
+			                    	$data_update[$x]['where']['financial_month'] = $this->sanitize($gstr2ReturnMonth);
+			                    	$data_update[$x]['where']['rate'] = $value['rate'];
+			                    	$data_update[$x]['where']['company_gstin_number'] = $value['company_gstin_number'];
 
+			                    	$x++;
+			                    }
+			    			}
 
-			    if(!empty($results_update)) {
-			    	$data_update = array();
-			    	// update multiple data to gstr2b//
-			    	foreach ($results_update as $key => $value) {
-			    		$this->pr($data[$key]);
-		             	$data_update[$key]['set']['rate'] = $data[$key]['rate'];
-		             	$data_update[$key]['set']['rate'] = '1';
-		             	$data_update[$key]['set']['rate'] = '1';
+                    	}
+                	}
+                	
+                	if($flag == 0) {
+                		$data_insert[$y] = $value;
+                		$y++;
+                	}
 
-                    	$data_update[$key]['where']['user_id'] = $this->sanitize($_SESSION['user_detail']['user_id']);
-                    	$data_update[$key]['where']['reference_number'] = $value->reference_number;
-                    	$data_update[$key]['where']['financial_month'] = $this->sanitize($gstr2ReturnMonth);
-                    	$data_update[$key]['where']['rate'] = $value->rate;
-                    	$data_update[$key]['where']['type'] = $value->type;
-
-		            }
-		            $this->pr($data_update);
-		            die;
-		            $this->updateMultiple($this->getTableName('client_reconcile_purchase_invoice1'), $data_update);
-			    }
-
-			    else {
-			    	if ($this->insertMultiple($this->getTableName('client_reconcile_purchase_invoice1'), $data)) {
-						$this->setSuccess('GSTR2 Saved Successfully');
+	            }
+        		$flagfailed = 0;
+        		//echo '<br/>insert====> ';$this->pr($data_insert);
+        		if(!empty($data_insert)) {
+        			if (!$this->insertMultiple($this->getTableName('client_reconcile_purchase_invoice1'), $data_insert)) {
+						$flagfailed=1;
+						
 					}
-			    }
-
-			    /*
-			    foreach ($data as $key => $value) {
-			    	$referenceStatus = $this->checkInvoiceGstr2Exist($value['reference_number'], $this->sanitize($_SESSION['user_detail']['user_id']),$gstr2ReturnMonth,$value['rate']);
-					if($referenceStatus == true) {
-						$errorflag = 1;
-					}
-
-			    }
-			    if(empty($errorflag)) {
-			    	if ($this->insertMultiple($this->tableNames['client_reconcile_purchase_invoice1'], $data)) {
-						$this->setSuccess('GSTR2 Saved Successfully');
-					}
-			    }*/
+        		}
+	            	
+        		//echo '<br/>update====> ';$this->pr($data_update);
+        		if(!empty($data_update)) {
+	            	if(!$this->updateMultiple($this->getTableName('client_reconcile_purchase_invoice1'), $data_update))
+	            	{
+	            		$flagfailed=1;
+	            	}
+	            	
+	            }
+	           // die;
+	            if($flagfailed==1)
+	            {
+	            	$this->setError('GSTR2 Download Failed');
+	            	return false;
+	            }
+	            else {
+	            	$this->setSuccess('GSTR2 Download Successfully');
+	            }
+	            
 		     	
 		    }
 	    }
 	    
 		$response['response_b2b'] = $response_b2b;
 		$response['response_cdn'] = $response_cdn;
+
 		return $response;
     }
 
-    public function checkUserInvoices($user_id, $returnmonth = '',$reference_numbers,$rates='') {
-    	$sql = "select * from " . $this->getTableName('client_reconcile_purchase_invoice1') ." where added_by='" . $user_id . "' and financial_month='" . $returnmonth . "' and reference_number in ( " . $reference_numbers . ")  and rate in ( " . $rates . ") ";
+    public function checkUserInvoices($user_id, $returnmonth = '',$type='') {
+    	$sql = "select * from " . $this->getTableName('client_reconcile_purchase_invoice1') ." where 1=1 AND added_by='" . $user_id . "' and financial_month='" . $returnmonth . "' ";
+    	if(!empty($type)) {
+    		$sql .= " and type='" . $type . "' ";
+    	}
+    	echo  $sql;
         $clientdata = $this->get_results($sql);
         return $clientdata ;
 
-    }
-
-    public function checkInvoiceGstr2Exist($referenceNumber, $user_id, $returnmonth = '',$rate='') {
-        
-        if ($referenceNumber != '' && $user_id != '' && $returnmonth != '') {
-        	$query = "select * from " . $this->getTableName('client_reconcile_purchase_invoice1') . " where 1=1 AND reference_number =  '" . $referenceNumber . "' AND financial_month = '" . $returnmonth . "'  AND added_by = '" . $user_id . "'  AND rate = '" . $rate . "' ";
-            $checkReferenceNumber = $this->get_results($query);
-        } 
-
-        if(count($checkReferenceNumber) > 0) {
-            return true;
-        }
-        else {
-        	return false;
-        }
     }
 
     public function startGstr2() {
@@ -356,7 +381,7 @@ final class gstr2 extends validation {
     }
 
     public function claimItc(){
-         $dataQuery = "select re.category,re.claim_rate,re.claim_value, re.id,pur.supplier_billing_gstin_number as gstin_number,re.reference_number,pur.company_name,pur_it.taxable_subtotal,re.invoice_status,re.status,sum(pur_it.cgst_amount) as cgst_amount,sum(pur_it.sgst_amount) as sgst_amount,sum(pur_it.igst_amount) as igst_amount,sum(pur_it.cess_amount) as cess_amount,pur.invoice_total_value,re.invoice_date,re.invoice_status,re.status from ".$this->getTableName('client_reconcile_purchase_invoice1')." re inner join ".$this->getTableName('client_purchase_invoice')." pur on re.reference_number=pur.reference_number inner join ".$this->getTableName('client_purchase_invoice_item')." pur_it on pur.purchase_invoice_id=pur_it.purchase_invoice_id where re.invoice_date like('%".$this->sanitize($_GET['returnmonth'])."%') and re.added_by='".$_SESSION['user_detail']['user_id']."' and ((re.invoice_status='0' and re.status='3')or(re.invoice_status='2' and re.status='1')or(re.invoice_status='2' and re.status='2')or(re.invoice_status='2' and re.status='3')or(re.invoice_status='2' and re.status='4')or(re.invoice_status='3' and re.status='3')) and re.is_uploaded='0' group by pur.reference_number  ";
+        $dataQuery = "select re.category,re.claim_rate,re.claim_value, re.id,pur.supplier_billing_gstin_number as gstin_number,re.reference_number,pur.company_name,pur_it.taxable_subtotal,re.invoice_status,re.status,sum(pur_it.cgst_amount) as cgst_amount,sum(pur_it.sgst_amount) as sgst_amount,sum(pur_it.igst_amount) as igst_amount,sum(pur_it.cess_amount) as cess_amount,pur.invoice_total_value,re.invoice_date,re.invoice_status,re.status from ".$this->getTableName('client_reconcile_purchase_invoice1')." re inner join ".$this->getTableName('client_purchase_invoice')." pur on re.reference_number=pur.reference_number inner join ".$this->getTableName('client_purchase_invoice_item')." pur_it on pur.purchase_invoice_id=pur_it.purchase_invoice_id where re.invoice_date like('%".$this->sanitize($_GET['returnmonth'])."%') and re.added_by='".$_SESSION['user_detail']['user_id']."' and ((re.invoice_status='0' and re.status='3')or(re.invoice_status='2' and re.status='1')or(re.invoice_status='2' and re.status='2')or(re.invoice_status='2' and re.status='3')or(re.invoice_status='2' and re.status='4')or(re.invoice_status='3' and re.status='3')) and re.is_uploaded='0' group by pur.reference_number  ";
         $dataPur = $this->get_results($dataQuery);
         //Sales Data;
         $dataQuery = "select re.category,re.claim_rate,re.claim_value, re.id,pur.billing_gstin_number as gstin_number,re.reference_number,pur.company_name,pur_it.taxable_subtotal,re.invoice_status,re.status,sum(pur_it.cgst_amount) as cgst_amount,sum(pur_it.sgst_amount) as sgst_amount,sum(pur_it.igst_amount) as igst_amount,sum(pur_it.cess_amount) as cess_amount,pur.invoice_total_value,re.invoice_date,re.invoice_status,re.status from ".$this->getTableName('client_reconcile_purchase_invoice1')." re inner join ".$this->getTableName('client_invoice')." pur on re.reference_number=pur.reference_number inner join ".$this->getTableName('client_invoice_item')." pur_it on pur.invoice_id=pur_it.invoice_id where  re.invoice_date like('%".$this->sanitize($_GET['returnmonth'])."%') and re.added_by='".$_SESSION['user_detail']['user_id']."' and ((re.invoice_status='0' and re.status='1')or(re.invoice_status='0' and re.status='2')or(re.invoice_status='0' and re.status='4')or(re.invoice_status='1' and re.status='1')or(re.invoice_status='1' and re.status='2')or(re.invoice_status='1' and re.status='3')or(re.invoice_status='1' and re.status='4')or(re.invoice_status='3' and re.status='1')or(re.invoice_status='3' and re.status='2')or(re.invoice_status='3' and re.status='4')) and re.is_uploaded='0'  group by pur.reference_number ";

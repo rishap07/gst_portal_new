@@ -258,7 +258,9 @@ class db {
      */
 
     public function insertMultiple($tableName, $dataArr = array()) {
+
         if ($tableName != '') {
+
             if (is_array($dataArr) && count($dataArr) > 0) {
                 $query = '';
                 $colNames = array_keys($dataArr[0]);

@@ -59,7 +59,7 @@ final class subscriber extends validation {
     }
 	public function getUserProfilePics($userid)
 	{
-		$sql="select profile_pics from ".TAB_PREFIX."user WHERE (user_group='3' or user_group='4') and user_id='".$_SESSION["user_detail"]["user_id"]."'";
+		$sql="select profile_pics from ".TAB_PREFIX."user WHERE (user_group='3' or user_group='4' or user_group='5') and user_id='".$_SESSION["user_detail"]["user_id"]."'";
 		$dataCurrentArr = $this->get_results($sql);
 		if(!empty($dataCurrentArr))
 		{
@@ -79,7 +79,7 @@ final class subscriber extends validation {
 		$email_flag=0;
 		if(!empty($_POST['phonenumber']))
 		{
-			$sql="select * from ".TAB_PREFIX."user WHERE (user_group='3' or user_group='4') and user_id='".$_SESSION["user_detail"]["user_id"]."'";
+			$sql="select * from ".TAB_PREFIX."user WHERE (user_group='3' or user_group='4' or user_group='5') and user_id='".$_SESSION["user_detail"]["user_id"]."'";
 			$dataCurrentArr = $this->get_results($sql);
 			
 			if($dataCurrentArr[0]->phone_number == $_POST['phonenumber'])
@@ -93,7 +93,7 @@ final class subscriber extends validation {
         }
 		if(!empty($_POST['emailaddress']))
 		{
-			$sql="select * from ".TAB_PREFIX."user WHERE (user_group='3' or user_group='4') and user_id='".$_SESSION["user_detail"]["user_id"]."'";
+			$sql="select * from ".TAB_PREFIX."user WHERE (user_group='3' or user_group='4' or user_group='5') and user_id='".$_SESSION["user_detail"]["user_id"]."'";
 			$dataCurrentArr = $this->get_results($sql);
 			if($dataCurrentArr[0]->email == $_POST['emailaddress'])
 			{
@@ -157,8 +157,13 @@ final class subscriber extends validation {
 			$dataArr['email_verify'] = 0;
 		
 		}
-      
+         if(isset($_GET["id"]) && ($this->sanitize($_GET["id"])!=''))
+	    {
+			$dataConditionArray['user_id'] = $this->sanitize($_GET["id"]);
+		}else{
         $dataConditionArray['user_id'] = $_SESSION['user_detail']['user_id'];
+		}
+		
         if ($this->update($this->tableNames['user'], $dataArr, $dataConditionArray)) {
 			
 			if(!empty($dataArr['profile_pics']))
@@ -166,7 +171,7 @@ final class subscriber extends validation {
 			$_SESSION["user_detail"]["profile_picture"] = $dataArr['profile_pics'];
 			}
 			else{
-				$sql="select * from ".TAB_PREFIX."user WHERE (user_group='3' or user_group='4') and user_id='".$_SESSION["user_detail"]["user_id"]."'";
+				$sql="select * from ".TAB_PREFIX."user WHERE (user_group='3' or user_group='4' or user_group='5') and user_id='".$_SESSION["user_detail"]["user_id"]."'";
 			$dataCurrentArr = $this->get_results($sql);
 			$_SESSION["user_detail"]["profile_picture"] = $dataCurrentArr[0]->profile_pics;
 			}

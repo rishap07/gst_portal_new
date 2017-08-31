@@ -195,9 +195,11 @@ class login extends validation {
                 $_SESSION['user_role'][$userPermission[$x]->role_page]['can_delete'] = $userPermission[$x]->can_delete;
             }
             /* code for send email to user  */
-
+           
             $this->sendRegisteremail("registration", 'register by ' . $userData['data']->name . '', $dataArr['emailaddress'], 'noreply@gstkeeper.com', "lokesh.chotiya@cyfuture.com,rishap.gandhi@cyfuture.com", "New Subscriber Registration", $dataInsertArray['email_code']);
-
+			//$this->sendMobileMessage("registration", 'register by ' . $userData['data']->name . '', $userData['data']->phone_number,"New Subscriber Registration","Thank you for Purchasing a Plan on GSTKeeper!");
+       
+          //  $this->sendMobileMessage
             if (isset($_POST['rememberme']) && $_POST['rememberme'] == 1) {
 
                 if ($this->setRememberMeCookie($userData['data']->user_id)) {
@@ -462,8 +464,20 @@ class login extends validation {
         }
     }
 	
+   public function sendMobileMessage($module, $module_message,$to_send,$subject,$body) { 
+	    $dataInsertArray['module'] = $module;
+        $dataInsertArray['module_message'] = $module_message;
+        $dataInsertArray['to_send'] = $to_send;
+        $dataInsertArray['subject'] = $subject;
+        $dataInsertArray['status'] = '0';
+        $dataInsertArray['body'] = $body;
+		 if ($this->insert($this->tableNames['mobile_messages'], $dataInsertArray)) {
+            return true;
+        } else {
+            return false;
+        }
+	}
    
-
     public function sendRegisteremail($module, $module_message, $to_send, $from_send, $bcc, $subject, $token) {
         $dataInsertArray['module'] = $module;
         $dataInsertArray['module_message'] = $module_message;
