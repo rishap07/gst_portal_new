@@ -395,7 +395,7 @@
 				<div class="row">
 					<div class="col-md-12 form-group">
 						<label>Additional Notes</label>
-						<textarea placeholder="Enter Description" class="form-control" name="description" id="description" data-bind="content"><?php echo $invoiceData[0]->description; ?></textarea>
+						<textarea placeholder="Enter Additional Notes" class="form-control" name="description" id="description" data-bind="content"><?php echo $invoiceData[0]->description; ?></textarea>
 					</div>
 				</div>
 
@@ -441,7 +441,7 @@
 						<?php foreach($invoiceData as $invData) { ?>
 
 							<tr class="invoice_tr" data-row-id="<?php echo $counter; ?>" id="invoice_tr_<?php echo $counter; ?>">
-								<td>
+								<td class="text-center">
 									<span class="serialno" id="invoice_tr_<?php echo $counter; ?>_serialno"><?php echo $counter; ?></span>
 									<input type="hidden" id="invoice_tr_<?php echo $counter; ?>_itemid" name="invoice_itemid[]" value="<?php echo $invData->item_id; ?>" class="required" />
 								</td>
@@ -629,39 +629,39 @@
 						<tr class="rvcamount" <?php if($invoiceData[0]->supply_type === "reversecharge") { echo 'style="display:table-row;"'; } ?>>
 							<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="11"'; } else { echo 'colspan="10"'; } ?> align="right" class="lightgreen fontbold textsmall rvcamountftd">Amount of Tax Subject to Reverse Charge</td>
 							<td class="lightgreen fontbold textsmall rvccgst" align="center"><span>-</span></td>
-							<td class="lightgreen fontbold textsmall rvccgstamount" align="left"><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall rvccgstamount" align="center"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall rvcsgst" align="center"><span>-</span></td>
-							<td class="lightgreen fontbold textsmall rvcsgstamount" align="left"><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall rvcsgstamount" align="center"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall rvcigst" align="center"><span>-</span></td>
-							<td class="lightgreen fontbold textsmall rvcigstamount" align="left"><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall rvcigstamount" align="center"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall rvccess" align="center"><span>-</span></td>
-							<td class="lightgreen fontbold textsmall rvccessamount" align="left"><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall rvccessamount" align="center"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall" align="left"></td>
 						</tr>
 
 						<tr class="tdsamount" <?php if($invoiceData[0]->supply_type === "tds") { echo 'style="display:table-row;"'; } ?>>
 							<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="11"'; } else { echo 'colspan="10"'; } ?> align="right" class="lightgreen fontbold textsmall tdsamountftd">Amount of Tax Subject to TDS</td>
 							<td class="lightgreen fontbold textsmall tdscgst" align="center"><span>1%</span></td>
-							<td class="lightgreen fontbold textsmall tdscgstamount" align="left"><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall tdscgstamount" align="center"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall tdssgst" align="center"><span>1%</span></td>
-							<td class="lightgreen fontbold textsmall tdssgstamount" align="left"><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall tdssgstamount" align="center"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall tdsigst" align="center"><span>2%</span></td>
-							<td class="lightgreen fontbold textsmall tdsigstamount" align="left"><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall tdsigstamount" align="center"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall tdscess" align="center"><span>0%</span></td>
-							<td class="lightgreen fontbold textsmall tdscessamount" align="left"><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall tdscessamount" align="center"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall" align="left"></td>
 						</tr>
 
 						<tr class="tcsamount" <?php if($invoiceData[0]->supply_type === "tcs") { echo 'style="display:table-row;"'; } ?>>
 							<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="11"'; } else { echo 'colspan="10"'; } ?> align="right" class="lightgreen fontbold textsmall tcsamountftd">Amount of Tax Subject to TCS</td>
 							<td class="lightgreen fontbold textsmall tcscgst" align="center"><span>1%</span></td>
-							<td class="lightgreen fontbold textsmall tcscgstamount" align="left"><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall tcscgstamount" align="center"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall tcssgst" align="center"><span>1%</span></td>
-							<td class="lightgreen fontbold textsmall tcssgstamount" align="left"><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall tcssgstamount" align="center"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall tcsigst" align="center"><span>2%</span></td>
-							<td class="lightgreen fontbold textsmall tcsigstamount" align="left"><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall tcsigstamount" align="center"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall tcscess" align="center"><span>0%</span></td>
-							<td class="lightgreen fontbold textsmall tcscessamount" align="left"><span>0.00</span></td>
+							<td class="lightgreen fontbold textsmall tcscessamount" align="center"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall" align="left"></td>
 						</tr>
 
@@ -1307,8 +1307,8 @@
                     $("#invoice_td_"+rowid+"_itemname").html('<p id="name_selection_'+rowid+'_choice" class="name_selection_choice" title="'+ui.item.value+'"><span id="name_selection_'+rowid+'_choice_remove" data-selectable-id="'+rowid+'" class="name_selection_choice_remove" role="presentation">×</span>'+ui.item.value+'</p>');
 
                     $("#invoice_tr_"+rowid+"_itemid").val(ui.item.item_id);
-					$("#invoice_tr_"+rowid+"_description").val(ui.item.item_description);
                     $("#invoice_tr_"+rowid+"_hsncode").val(ui.item.hsn_code);
+					$("#invoice_tr_"+rowid+"_description").val(ui.item.item_description);
                     $("#invoice_tr_"+rowid+"_quantity").val(1);
                     $("#invoice_tr_"+rowid+"_unit").val(ui.item.unit_code);
                     $("#invoice_tr_"+rowid+"_rate").val(ui.item.unit_price);
@@ -1337,8 +1337,8 @@
             $("#"+parentPId).remove();
             $("#"+parentTdId).html('<input type="text" id="invoice_tr_'+parentTrId+'_itemname" name="invoice_itemname[]" class="inptxt autocompleteitemname required" placeholder="Enter Item" style="width:120px;" />');
             $("#invoice_tr_"+parentTrId+"_itemid").val("");
-			$("#invoice_tr_"+rowid+"_description").val("");
             $("#invoice_tr_"+parentTrId+"_hsncode").val("");
+			$("#invoice_tr_"+parentTrId+"_description").val("");
             $("#invoice_tr_"+parentTrId+"_quantity").val(0);
             $("#invoice_tr_"+parentTrId+"_unit").val("");
             $("#invoice_tr_"+parentTrId+"_rate").val("");
@@ -1367,7 +1367,7 @@
             var nexttrid = parseInt($("tr.invoice_tr:last").attr("data-row-id")) + 1;
 
             var newtr = '<tr class="invoice_tr" data-row-id="'+nexttrid+'" id="invoice_tr_'+nexttrid+'">';
-                newtr += '<td><span class="serialno" id="invoice_tr_'+nexttrid+'_serialno">'+(trlength+1)+'</span><input type="hidden" id="invoice_tr_'+nexttrid+'_itemid" name="invoice_itemid[]" class="required" /></td>';
+                newtr += '<td class="text-center"><span class="serialno" id="invoice_tr_'+nexttrid+'_serialno">'+(trlength+1)+'</span><input type="hidden" id="invoice_tr_'+nexttrid+'_itemid" name="invoice_itemid[]" class="required" /></td>';
                 newtr += '<td id="invoice_td_'+nexttrid+'_itemname">';
 				newtr += '<input type="text" id="invoice_tr_'+nexttrid+'_itemname" name="invoice_itemname[]" class="inptxt autocompleteitemname required" placeholder="Enter Item" data-bind="content" style="width:120px;" />';
 				newtr += '</td>';

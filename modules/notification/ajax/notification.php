@@ -126,7 +126,7 @@ foreach($rResult as $aRow) {
   
     $row[] = $temp_x;
     $row[] = utf8_decode($aRow->notification_name);
-    $row[] = utf8_decode($aRow->notification_message);
+    $row[] = utf8_decode(html_entity_decode($aRow->notification_message));
    
     $output['aaData'][] = $row;
     $temp_x++;

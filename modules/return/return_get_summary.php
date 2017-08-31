@@ -1,6 +1,14 @@
 <?php
 $obj_gstr1 = new gstr1();
 $obj_api =  new gstr();
+
+$dataCurrentUserArr = $obj_gstr1->getUserDetailsById( $obj_gstr1->sanitize($_SESSION['user_detail']['user_id']) );
+//$obj_gstr1->pr($dataCurrentUserArr['data']);die;
+if($dataCurrentUserArr['data']->kyc->vendor_type!='1'){
+    $obj_gstr1->setError("Invalid Access to file");
+    $obj_gstr1->redirect(PROJECT_URL . "/?page=dashboard");
+    exit();
+}
 if (!isset($_REQUEST['returnmonth']) || $_REQUEST['returnmonth'] == '') 
 {
   $obj_gstr1->redirect(PROJECT_URL . "/?page=return_client");
@@ -101,9 +109,12 @@ $response = $obj_api->returnSummary($returnmonth);
             document.form2.submit();            
         });
 
-        $('body #mainTable1').delegate('.gstr1ViewDeleteBtn','click', function () {
-            alert('delete');
-            //$("#loading").show();
+        $('body').delegate('.gstr1ViewDeleteBtn','click', function () {
+            if(!confirm("Are you sure you want to delete?"))
+            {
+                return false;
+            }
+            $("#loading").show();
             var type = $(this).attr('type');
             var returnmonth = "<?php echo $returnmonth;?>";
             delete_item_invoice(type,returnmonth);          
@@ -120,7 +131,7 @@ $response = $obj_api->returnSummary($returnmonth);
             data: {json: json,returnmonth:returnmonth},
             success: function (response) {
                $('#display_json').html(response);
-
+               
             },
             error: function() {
             }
@@ -138,6 +149,7 @@ $response = $obj_api->returnSummary($returnmonth);
                 success: function (response) {
                     $("#loading").hide();
                   //location.reload();
+                   //location.reload();
                 },
                 error: function() {
                 }

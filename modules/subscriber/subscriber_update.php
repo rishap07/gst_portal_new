@@ -15,7 +15,7 @@ if(!$obj_client->can_read('subscriber_update')) {
 
 /* get current user data */
 $dataCurrentArr = array();
- $sql="select * from gst_user WHERE (user_group='3' or user_group='4') and user_id='".$_SESSION["user_detail"]["user_id"]."'";
+ $sql="select * from gst_user WHERE (user_group='3' or user_group='4' or user_group='5') and user_id='".$_SESSION["user_detail"]["user_id"]."'";
 $dataCurrentArr = $db_obj->get_results($sql);
  
 if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
@@ -33,10 +33,35 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
 	
 }
 
-      $sql="select * from ".TAB_PREFIX."user WHERE (user_group='3' or user_group='4') and user_id='".$_SESSION["user_detail"]["user_id"]."'";
+    if(isset($_GET["id"]) && ($obj_client->sanitize($_GET["id"])!=''))
+	{
+	  $sql="select * from ".TAB_PREFIX."user WHERE (user_group='3' or user_group='4' or user_group='5') and user_id='".$obj_client->sanitize($_GET["id"])."'";
+	  $dataCurrentArr = $obj_sub->get_results($sql);	
+	
+      if($dataCurrentArr[0]->added_by==$_SESSION["user_detail"]["user_id"])
+	  {		  
+	     
+	  }else{
+		$obj_client->setError('You are not authorize to view this user profile.');
+        $obj_client->redirect(PROJECT_URL . "?page=dashboard");
+	  }
+	}else{
+      $sql="select * from ".TAB_PREFIX."user WHERE (user_group='3' or user_group='4' or user_group='5') and user_id='".$_SESSION["user_detail"]["user_id"]."'";
 	  $dataCurrentArr = $obj_sub->get_results($sql);
-		
+	}
+if (isset($_POST['submit']) && $_POST['submit'] == 'update' && isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClient") {
 
+    if(!$obj_client->can_create('subscriber_update')) {
+        $obj_client->setError($obj_client->getValMsg('can_create'));
+        $obj_client->redirect(PROJECT_URL."/?page=dashboard");
+        exit();
+    }
+	if($obj_sub->updateSubsriber())
+	{
+		$obj_client->redirect(PROJECT_URL."/?page=subscriber_update");
+        exit();
+	}
+}
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
@@ -121,11 +146,7 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
                      
               <div class="clear"></div>
 						 <div class="adminformbxsubmit" style="width:100%;">
-                             
-						 
-						 
-						   
-						<div class="tc">
+                     	<div class="tc">
                             <input type='submit' class="btn btn-success" name='submit' value='<?php if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClient") { echo 'update'; } else { echo 'submit'; } ?>' id='submit'>
                             <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=dashboard"; ?>';" class="btn btn-danger"/>
                         </div>

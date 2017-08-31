@@ -29,10 +29,11 @@ $dataCurrentUserArr = $obj_user->getUserDetailsById( $obj_user->sanitize($_SESSI
 		<?php $obj_user->unsetMessage(); ?>
 
 		<div class="whitebg formboxcontainer">
-            <h2 class="greyheading">Business Setting</h2>
-            <div class="clear"></div>
             <form name="user-theme-setting" id="user-theme-setting" method="POST" enctype="multipart/form-data">
-                <div class="row">
+
+				<div class="row">
+					<h2 class="greyheading">Business Setting</h2>
+					<div class="clear"></div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
                         <label>Upload Logo</label>
@@ -69,6 +70,31 @@ $dataCurrentUserArr = $obj_user->getUserDetailsById( $obj_user->sanitize($_SESSI
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>GSTIN Username <span class="starred">*</span></label>
 						<input type="text" name="gstin_username" class="form-control required" id="gstin_username" placeholder="Enter GSTIN Username" data-bind="content" value="<?php if(isset($_POST['gstin_username'])) { echo $_POST['gstin_username']; } else if(isset($dataCurrentUserArr['data']->kyc->gstin_username)) { echo $dataCurrentUserArr['data']->kyc->gstin_username; } ?>" />
+					</div>
+					<div class="clear"></div>
+					
+					<h2 class="greyheading">Bank Details</h2>
+					<div class="clear"></div>
+
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>Bank Name</label>
+						<input type="text" name="bank_name" class="form-control" id="bank_name" placeholder="Enter Bank Name" data-bind="content" value="<?php if(isset($_POST['bank_name'])) { echo $_POST['bank_name']; } else if(isset($dataCurrentUserArr['data']->kyc->bank_name)) { echo $dataCurrentUserArr['data']->kyc->bank_name; } ?>" />
+					</div>
+
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>Account Number</label>
+						<input type="text" name="account_number" class="form-control" id="account_number" placeholder="Enter Account Number" data-bind="content" value="<?php if(isset($_POST['account_number'])) { echo $_POST['account_number']; } else if(isset($dataCurrentUserArr['data']->kyc->account_number)) { echo $dataCurrentUserArr['data']->kyc->account_number; } ?>" />
+					</div>
+
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>Branch Name</label>
+						<input type="text" name="branch_name" class="form-control" id="branch_name" placeholder="Enter Branch Name" data-bind="content" value="<?php if(isset($_POST['branch_name'])) { echo $_POST['branch_name']; } else if(isset($dataCurrentUserArr['data']->kyc->branch_name)) { echo $dataCurrentUserArr['data']->kyc->branch_name; } ?>" />
+					</div>
+					<div class="clear"></div>
+					
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>IFSC Code</label>
+						<input type="text" name="ifsc_code" class="form-control" id="ifsc_code" placeholder="Enter IFSC Code" data-bind="content" value="<?php if(isset($_POST['ifsc_code'])) { echo $_POST['ifsc_code']; } else if(isset($dataCurrentUserArr['data']->kyc->ifsc_code)) { echo $dataCurrentUserArr['data']->kyc->ifsc_code; } ?>" />
 					</div>
 					<div class="clear"></div>
 

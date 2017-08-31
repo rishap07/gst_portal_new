@@ -19,8 +19,10 @@
         </div>
 		        <div class="border1"></div>
                 <div class="listcontent">
-                    <?php $dataClientArr = $db_obj->getClient("user_id, CONCAT(first_name,' ',last_name) as name, username, u.email, company_name,k.gstin_number, (case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "u.is_deleted='0' AND u.added_by='" . $_SESSION['user_detail']['user_id'] . "'"); ?>
-
+                    <?php $dataClientArr = $db_obj->getClient("user_id,user_group,CONCAT(first_name,' ',last_name) as name, username, u.email, company_name,k.gstin_number, (case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "u.is_deleted='0' AND u.added_by='" . $_SESSION['user_detail']['user_id'] . "'"); 
+					
+					?>
+                     
                     <?php
 
                     if (!empty($dataClientArr)) {
@@ -28,7 +30,9 @@
                     <table class=" table table-bordered table-hover ">
                         <tr>
                             <th>User Name</th>   
+							 <th>User Type</th>
                         <th>Company Name</th>
+						
                         <th> Gstn No.</th>
                         <th>Action</th>
                         </tr>
@@ -36,10 +40,14 @@
                         <?php $dataCurrentArr = $db_obj->getUserDetailsById($dataClient->user_id); ?>
                         <tr>
                             <td><?php echo ucwords($dataClient->name);?>(<?php echo $dataClient->username; ?>)</td>
+							 <td> <?php if($dataClient->user_group==4) { echo 'Client'; } else { echo 'Subuser';}   ?></td> 
                             <td> <?php echo $dataClient->company_name ?></td> 
-                            <td> <?php echo $dataClient->gstin_number ?></td> 
-                            <td>  <?php if ($dataCurrentArr['data']->kyc != '') { ?><span class="pull-right1"><a href="<?php echo PROJECT_URL; ?>?page=client_loginas&id=<?php echo ($dataClient->user_id); ?>" class="txt">Login As Client</a></span><?php } ?> <span class="pull-right"><a href="<?php echo PROJECT_URL; ?>?page=client_kycupdate_by_subscriber&action=updateClientKYC&id=<?php echo ($dataClient->user_id); ?>" class="txt">Update KYC</a></span></td> 
-                        </tr>
+                            <td> <?php if($dataClient->user_group==5) { echo 'NA'; } else { echo $dataClient->gstin_number; } ?></td> 
+							<?php if($dataClient->user_group==5){?>
+						    <td>  <span class="pull-right"><a href="<?php echo PROJECT_URL; ?>?page=subscriber_update&action=editClient&id=<?php echo ($dataClient->user_id); ?>" class="txt">Update Profile</a></span></td> 
+						<?php } else { ?> <td> <?php if ($dataCurrentArr['data']->kyc != '') { ?><span class="pull-right1"><a href="<?php echo PROJECT_URL; ?>?page=client_loginas&id=<?php echo ($dataClient->user_id); ?>" class="txt">Login As Client</a></span><?php } ?> <span class="pull-right"><a href="<?php echo PROJECT_URL; ?>?page=client_kycupdate_by_subscriber&action=updateClientKYC&id=<?php echo ($dataClient->user_id); ?>" class="txt">Update KYC</a></span></td> <?php } ?>
+                        
+						</tr>
                         <?php } ?>
                         
                     </table>

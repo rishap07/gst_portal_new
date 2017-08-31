@@ -4,7 +4,12 @@ if(isset($_SESSION['publisher']['user_id']) && ($_SESSION['publisher']['user_id'
 {
 	//echo $_SESSION['publisher']['user_id'];
 }
+
+						 
+						 
 $obj_transition = new transition();
+ 
+//$obj_login->sendMobileMessage
 $returnmonth = date('Y-m');
 
 if(isset($_POST['returnmonth']))
@@ -54,7 +59,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
 
     if ($htmlResponse === false) {
 
-        $obj_transition->setError("No invoice found.");
+        $obj_transition->setError("No Transition form found.");
         $obj_transition->redirect(PROJECT_URL . "?page=client_invoice_list");
         exit();
     }
@@ -65,13 +70,30 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
 
     
 }
-if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
- 
-			
-    if($obj_transition->deleteSaveGstr3b()){
-        //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
-    }
+if (isset($_GET['action']) && $_GET['action'] == 'emailInvoice' && isset($_GET['id'])) {
+
+    $htmlResponse = $obj_transition->generategst_transitionHtml($_GET['id'],$_GET['returnmonth']);
+    
+    
+   
 }
+if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GET['id'])) {
+
+    $htmlResponse = $obj_transition->generategst_transitionHtml($_GET['id'],$_GET['returnmonth']);
+    if ($htmlResponse === false) {
+
+        $obj_transition->setError("No Transition form found.");
+        $obj_transition->redirect(PROJECT_URL . "?page=trasition_gstr");
+        exit();
+    }
+
+    $obj_mpdf = new mPDF();
+    $obj_mpdf->SetHeader('GST-Transition');
+    $obj_mpdf->WriteHTML($htmlResponse);
+
+  
+}
+
 
 
 
@@ -515,10 +537,10 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                             <ul class="iconlist">
 
                                 
-                                  <li><a href="<?php echo PROJECT_URL; ?>/?page=transition_gstr&action=downloadExcelInvoice&id=<?php echo $returndata[0]->return_id; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Excel"><i class="fa fa-file-excel-o" aria-hidden="true"></i></div></a></li>
-                                <li><a href="<?php echo PROJECT_URL; ?>/?page=transition_gstr&action=downloadInvoice&id=<?php echo $returndata[0]->return_id; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
+                               
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=transition_gstr&action=downloadInvoice&id=<?php echo $returndata[0]->financial_month; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=transition_gstr&action=printInvoice&id=<?php echo $returndata[0]->financial_month; ?>&returnmonth=<?php echo $returnmonth; ?>" target="_blank"><div data-toggle="tooltip" data-placement="bottom" title="PRINT"><i class="fa fa-print" aria-hidden="true"></i></div></a></li>
-                                <li><a href="<?php echo PROJECT_URL; ?>/?page=transition_gstr&action=emailInvoice&id=<?php echo $returndata[0]->return_id; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></div></a></li>
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=transition_gstr&action=emailInvoice&id=<?php echo $returndata[0]->financial_month; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></div></a></li>
                                 <!--<li><a href="#"><div data-toggle="tooltip" data-placement="bottom" title="Attached File"><i class="fa fa-paperclip" aria-hidden="true"></i></div></a></li>-->
                          </ul>
 							</div><?php } ?>
@@ -617,12 +639,20 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								}
 								
 									
-						 
+						       $taxreturn=0;
+							   $dateoffilling_return=0;
+							   $balance_cenvat_credit=0;
+							   $cenvat_credit_admissible=0;
 							  for($i=0;$i < sizeof($start); $i++) {
-								 
+								 $sno =0;
+								 $sno = $i+1;
+								$taxreturn = $a5_taxperiod_last_return[$i] + $taxreturn;
+								$dateoffilling_return =$a5_dateoffilling_return[$i]+$dateoffilling_return;
+								$balance_cenvat_credit =$a5_balance_cenvat_credit[$i] + $balance_cenvat_credit;
+								$cenvat_credit_admissible =$a5_cenvat_credit_admissible[$i] + $cenvat_credit_admissible;
                            ?>
                                 <tr>
-                                <td class="lftheading" >1.</td>
+                                <td class="lftheading" ><?php echo $sno; ?></td>
                                  <td>
 								 <?php
 								 if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
@@ -701,7 +731,13 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
                                <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
 								 <?php } } ?>								 
                                 </tr>
-								<?php } } else { ?>
+								
+								<?php if(($sno==sizeof($start)) && ($returndata[0]->final_submit==1))  
+								{
+									echo '<tr><td></td><td>Total</td><td>'.$taxreturn.'</td><td>'.$dateoffilling_return.'</td><td>'.$balance_cenvat_credit.'</td><td>'.$cenvat_credit_admissible.'</td></tr>';
+									
+								}
+									}  } else { ?>
 								<tr>
                                 <td class="lftheading" >1.</td>
                                  <td>
@@ -843,9 +879,14 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 									$start = $b5bcform_tin_issuer;
 								}
 								
-						
+						      $applicable_vat_rate=0;
+							  $amount=0;
+							  
 							  for($i=0;$i < sizeof($start); $i++) {
-								 
+							  $sno =0;
+							 $sno = $i+1;	
+                             $applicable_vat_rate=	$b5bcform_applicable_vat_rate[$i]+$applicable_vat_rate;
+                             $amount = $b5bcform_amount[$i]+ $amount;							 
                            ?>
 								<tr>
 								 <td>
@@ -926,7 +967,15 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 </td> <?php } else { ?>
 								  <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
 								 <?php } } ?>	
-								</tr><?php } } else {?>
+								</tr><?php
+								
+								if(($sno==sizeof($start)) && ($returndata[0]->final_submit==1))  
+								{
+									
+									echo '<tr><td></td><td>Total</td><td></td><td>'.$amount.'</td><td>'.$applicable_vat_rate.'</td></tr>';
+									
+								}
+								} } else {?>
 
                               <tr>
 								 <td>
@@ -1046,9 +1095,13 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								else{
 									$start = $b5bfform_tin_issuer;
 								}			   
-						
+						      $amount=0;
+							  $applicable_vat_rate=0;
 							  for($i=0;$i < sizeof($start); $i++) {
-								 
+								$sno=0;
+                                $sno = $i+1;
+                              $amount=$b5bfform_amount[$i]+$amount;
+							  $applicable_vat_rate=$b5bfform_applicable_vat_rate[$i]+$applicable_vat_rate;								
                            ?>
 						
 								<tr>
@@ -1131,7 +1184,12 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								 		  <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
 						
 								 <?php } } ?> 
-								</tr> <?php } } else { ?>
+								</tr> <?php 	if(($sno==sizeof($start)) && ($returndata[0]->final_submit==1))  
+								{
+									
+									echo '<tr><td></td><td>Total</td><td></td><td>'.$amount.'</td><td>'.$applicable_vat_rate.'</td></tr>';
+									
+								} } } else { ?>
 								<tr>
 								 <td>
 								 <?php
@@ -1246,9 +1304,13 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 								else{
 									$start = $b5bhiform_tin_issuer;
 								}			 					   
-						
+						       $amount=0;
+							   $applicable_vat_rate=0;
 							  for($i=0;$i < sizeof($b5bhiform_tin_issuer); $i++) {
-								 
+								 $sno=0;
+                                $sno = $i+1;
+                              $amount=$b5bhiform_amount[$i]+$amount;
+							  $applicable_vat_rate=$b5bhiform_applicable_vat_rate[$i]+$applicable_vat_rate;
                            ?>
 								
 								<tr>
@@ -1329,7 +1391,12 @@ if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 									</div>
 								 </a></td><?php } else {?> <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
 								 <?php } } ?>                  
-								</tr> <?php } } else { ?>
+								</tr> <?php  if(($sno==sizeof($start)) && ($returndata[0]->final_submit==1))  
+								{
+									
+									echo '<tr><td></td><td>Total</td><td></td><td>'.$amount.'</td><td>'.$applicable_vat_rate.'</td></tr>';
+									
+								} } } else { ?>
                               <tr>
                                  <td>
 								 <?php
@@ -4291,7 +4358,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
                                 </tbody>
                             </table>
                           </div>
-						   <div class="greyheading">8.Details of transfer of cenvat credit for registered person having centralized registration under existing law</div>
+						 <div class="greyheading">8.Details of transfer of cenvat credit for registered person having centralized registration under existing law</div>
 					     <div class="tableresponsive">
 						 <table  class="table  tablecontent tablecontent2 bordernone" id="table8">
                                 <thead>
@@ -4672,7 +4739,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								   
 						
 							  for($i=0;$i < sizeof($start); $i++) {
-								 
+								
                            ?>
 		
                                 <tr>
@@ -4687,6 +4754,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 									 <label><?php if(isset($a9a1challan_no[$i])) { echo $a9a1challan_no[$i]; } else { echo ''; } ?><span class="starred"></span></label>
 								 <?php } else
 								 {
+									 
 									 ?>
 								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a9a1challan_no[$i])) { echo $a9a1challan_no[$i]; } else { echo ''; } ?>" name="9a1challan_no[]"
  class="form-control"  placeholder="" /> 
@@ -4930,12 +4998,13 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 			                    $b9b1challan_no=(explode(",",$b9b1challan_no));
 								$b9b1challan_date=(explode(",",$b9b1challan_date));
 								$b9b1typeof_goods=(explode(",",$b9b1typeof_goods));
-								$b9b1_hsn=(explode(",",$b9b1_hsn));
+								$b9b1_hsn=(explode(",",$b9b1_hsn));								
 								$b9b1_description=(explode(",",$b9b1_description));
 								$b9b1_unit=(explode(",",$b9b1_unit));
 								$b9b1_quantity=(explode(",",$b9b1_quantity));
 								$b9b1_value=(explode(",",$b9b1_value));
 								$start='';
+								$flag=0;
                                if(sizeof($b9b1challan_no) > 1)
 								{
 									 $start = $b9b1challan_no;
@@ -4982,9 +5051,10 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								else{
 									$start = $b9b1challan_no;
 										
+									
 								}     
 								   
-						
+						 
 							  for($i=0;$i < sizeof($start); $i++) {
 								
 								
@@ -5000,9 +5070,9 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 									 <label><?php if(isset($b9b1challan_no[$i])) { echo $b9b1challan_no[$i]; } else { echo ''; } ?><span class="starred"></span></label>
 								 <?php } else
 								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1challan_no[$i])) { echo $b9b1challan_no[$i]; } else { echo ''; } ?>" name="9b1challan_no[]"
- class="form-control"  placeholder="" /> 
+								?>								 
+								  <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1challan_no[$i])) { echo $b9b1challan_no[$i]; } else { echo ''; } ?>" name="9b1challan_no[]"
+								class="form-control"  placeholder="" />    
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -5012,10 +5082,9 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 									 ?>
 									 <label><?php if(isset($b9b1challan_date[$i])) { echo $b9b1challan_date[$i]; } else { echo ''; } ?><span class="starred"></span></label>
 								 <?php } else
-								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1challan_date[$i])) { echo $b9b1challan_date[$i]; } else { echo ''; } ?>" name="9b1challan_date[]"
- class="form-control"  placeholder="" /> 
+								 { ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1challan_date[$i])) { echo $b9b1challan_date[$i]; } else { echo ''; } ?>" name="9b1challan_date[]"
+								class="form-control"  placeholder="" />  
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -5026,10 +5095,11 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 									 <label><?php if(isset($b9b1typeof_goods[$i])) { echo $b9b1typeof_goods[$i]; } else { echo ''; } ?><span class="starred"></span></label>
 								 <?php } else
 								 {
-									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1typeof_goods[$i])) { echo $b9b1typeof_goods[$i]; } else { echo ''; } ?>" name="9b1typeof_goods[]"
- class="form-control"  placeholder="" /> 
+								 ?>
+								   <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1typeof_goods[$i])) { echo $b9b1typeof_goods[$i]; } else { echo ''; } ?>" name="9b1typeof_goods[]"
+								class="form-control"  placeholder="" />   
 								 <?php } ?>
+								
                                  </td> <td>
 								 <?php
 								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
@@ -5039,8 +5109,8 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_hsn[$i])) { echo $b9b1_hsn[$i]; } else { echo ''; } ?>" name="9b1_hsn[]"
- class="form-control"  placeholder="" /> 
+								  <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_hsn[$i])) { echo $b9b1_hsn[$i]; } else { echo ''; } ?>" name="9b1_hsn[]"
+								class="form-control"  placeholder="" />   
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -5051,8 +5121,8 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_description[$i])) { echo $b9b1_description[$i]; } else { echo ''; } ?>" name="9b1_description[]"
- class="form-control"  placeholder="" /> 
+								   <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_description[$i])) { echo $b9b1_description[$i]; } else { echo ''; } ?>" name="9b1_description[]"
+								class="form-control"  placeholder="" />   
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -5063,8 +5133,8 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_unit[$i])) { echo $b9b1_unit[$i]; } else { echo ''; } ?>" name="9b1_unit[]"
- class="form-control"  placeholder="" /> 
+								  <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_unit[$i])) { echo $b9b1_unit[$i]; } else { echo ''; } ?>" name="9b1_unit[]"
+								class="form-control"  placeholder="" />  
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -5075,8 +5145,8 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_quantity[$i])) { echo $b9b1_quantity[$i]; } else { echo ''; } ?>" name="9b1_quantity[]"
- class="form-control"  placeholder="" /> 
+								  <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_quantity[$i])) { echo $b9b1_quantity[$i]; } else { echo ''; } ?>" name="9b1_quantity[]"
+								class="form-control"  placeholder="" />  
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -5087,8 +5157,8 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_value[$i])) { echo $b9b1_value[$i]; } else { echo ''; } ?>" name="9b1_value[]"
- class="form-control"  placeholder="" /> 
+								  <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_value[$i])) { echo $b9b1_value[$i]; } else { echo ''; } ?>" name="9b1_value[]"
+								class="form-control"  placeholder="" />  
 								 <?php } ?>
                                  </td>
                                    <?php if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 0))
@@ -5105,7 +5175,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 </td><?php } else { ?>
                                <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
 								 <?php } } ?>	                      
-								</tr><?php } } else { ?>
+						 </tr><?php } } else {  ?>
 								 <tr>
                                                              
 								 <td></td>
@@ -5156,7 +5226,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_hsn[$i])) { echo $b9b1_hsn[$i]; } else { echo ''; } ?>" name="9b1_hsn[]"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);"  name="9b1_hsn[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5168,7 +5238,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_description[$i])) { echo $b9b1_description[$i]; } else { echo ''; } ?>" name="9b1_description[]"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="9b1_description[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5180,7 +5250,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_quantity[$i])) { echo $b9b1_quantity[$i]; } else { echo ''; } ?>" name="9b1_quantity[]"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);"  name="9b1_quantity[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5192,7 +5262,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_value[$i])) { echo $b9b1_value[$i]; } else { echo ''; } ?>" name="9b1_value[]"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);"  name="9b1_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>

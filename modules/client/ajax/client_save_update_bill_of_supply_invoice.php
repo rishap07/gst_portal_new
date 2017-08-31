@@ -121,6 +121,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 
 			$dataInvoiceArr = array();
 			$dataInvoiceArr['invoice_itemid'] = isset($params['invoice_itemid'][$i]) ? $params['invoice_itemid'][$i] : '';
+			$dataInvoiceArr['invoice_description'] = isset($params['invoice_description'][$i]) ? $params['invoice_description'][$i] : '';
 			$dataInvoiceArr['invoice_quantity'] = isset($params['invoice_quantity'][$i]) ? $params['invoice_quantity'][$i] : 0.00;
 			$dataInvoiceArr['invoice_unit'] = isset($params['invoice_unit'][$i]) ? $params['invoice_unit'][$i] : '';
 			$dataInvoiceArr['invoice_discount'] = isset($params['invoice_discount'][$i]) ? $params['invoice_discount'][$i] : 0.00;
@@ -150,6 +151,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 				$ItemArray = array(
 								"item_id" => $clientMasterItem->item_id,
 								"item_name" => $clientMasterItem->item_name,
+								"item_description" => $dataInvoiceArr['invoice_description'],
 								"item_hsncode" => $clientMasterItem->hsn_code,
 								"item_quantity" => $invoiceItemQuantity,
 								"item_unit" => $invoiceItemUnit,

@@ -1,6 +1,13 @@
 <?php
 $obj_client = new client();
 $obj_gstr1 = new gstr1();
+$dataCurrentUserArr = $obj_gstr1->getUserDetailsById( $obj_gstr1->sanitize($_SESSION['user_detail']['user_id']) );
+//$obj_gstr1->pr($dataCurrentUserArr['data']);die;
+if($dataCurrentUserArr['data']->kyc->vendor_type!='1'){
+    $obj_gstr1->setError("Invalid Access to file");
+    $obj_gstr1->redirect(PROJECT_URL . "/?page=dashboard");
+    exit();
+}
 if (!isset($_REQUEST['returnmonth']) || $_REQUEST['returnmonth'] == '') {
     $obj_client->redirect(PROJECT_URL . "/?page=return_client");
     exit();

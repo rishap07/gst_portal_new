@@ -5,8 +5,8 @@ if ($_POST && isset($_POST['ResponseCode'])) {
     $obj_pay->redirect(PROJECT_URL . "/?page=payment_response");
     exit();
 }
-if (!isset($process)) {
-    $obj_pay->redirect("https://www.gstkeeper.com/");
+if (!isset($_SESSION['res'])) {
+    $obj_pay->redirect(PROJECT_URL);
 }
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">

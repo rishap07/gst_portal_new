@@ -19,7 +19,7 @@ if(isset($_SESSION['user_detail']['user_group']) && $_SESSION['user_detail']['us
     {
         include(PROJECT_ROOT."/modules/dashboard/view/admin.php");
     }
-    else if($_SESSION['user_detail']['user_group']=='3')
+    else if(($_SESSION['user_detail']['user_group']=='3') || ($_SESSION['user_detail']['user_group']=='5'))
     {
         include(PROJECT_ROOT."/modules/dashboard/view/subscriber.php");
     }

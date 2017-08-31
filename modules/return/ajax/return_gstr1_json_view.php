@@ -18,7 +18,7 @@ $jstr1_array = json_decode($getSummary,true);
 $response = '';
 
 //echo $getSummary;
-//echo '<pre>'; print_r($jstr1_array);
+//echo '<pre>'; print_r($_POST);
 if(!empty($jstr1_array)) {
 
     if($type == 'B2B' && empty($jstr)) {         
@@ -725,18 +725,21 @@ elseif(empty($jstr1_array) && !empty($jstr) &&  $jstr == 'gstr2b') {
                 </thead>
             </table>';
     }
-    else {
-        echo 'No Record found';
-    }
 }
 else {
     echo 'No Record found';
 }
 echo $response;
+
 ?>
 <script type="text/javascript">    
     $(document).ready(function () {
-        $('.gstr1ViewDeleteBtn').on('click', function () {
+        $('body').delegate('.gstr1ViewDeleteBtn','click', function () {
+            if(!confirm("Are you sure you want to delete?"))
+            {
+                return false;
+            }
+            $("#loading").show();
             var type = $(this).attr('type');
             var returnmonth = "<?php echo $returnmonth;?>";
 
@@ -792,6 +795,7 @@ echo $response;
                 type: "post",
                 data: {type:type,returnmonth:returnmonth,arrValues: arrValues},
                 success: function (response) {
+                    $("#loading").hide();
                    //location.reload();
                 },
                 error: function() {

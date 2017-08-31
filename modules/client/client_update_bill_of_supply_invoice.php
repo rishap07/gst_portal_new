@@ -23,6 +23,7 @@
 													cii.invoice_item_id, 
 													cii.item_id, 
 													cii.item_name, 
+													cii.item_description, 
 													cii.item_hsncode, 
 													cii.item_quantity, 
 													cii.item_unit, 
@@ -303,8 +304,8 @@
 
 				<div class="row">
 					<div class="col-md-12 form-group">
-						<label>Description</label>
-						<textarea placeholder="Enter Description" class="form-control" name="description" id="description" data-bind="content"><?php echo $invoiceData[0]->description; ?></textarea>
+						<label>Additional Notes</label>
+						<textarea placeholder="Enter Additional Notes" class="form-control" name="description" id="description" data-bind="content"><?php echo $invoiceData[0]->description; ?></textarea>
 					</div>
 				</div>
 
@@ -316,6 +317,7 @@
 							<th class="active">S.No</th>
 							<th class="active">Description<br/> of Goods/Services</th>
 							<th class="active">HSN/SAC Code<br/>(GST)</th>
+							<th class="active">Item Description</th>
 							<th class="active">Qty</th>
 							<th class="active">Unit</th>
 							<th class="active">Rate (<i class="fa fa-inr"></i>)<br/><span style="font-family: open_sans; font-size:11px;">per item</span></th>
@@ -343,6 +345,9 @@
 									<input type="text" id="invoice_tr_<?php echo $counter; ?>_hsncode" name="invoice_hsncode[]" readonly="true" class="inptxt" data-bind="content" placeholder="HSN/SAC Code" style="width:120px;" value="<?php echo $invData->item_hsncode; ?>" />
 								</td>
 								<td>
+									<input type="text" id="invoice_tr_<?php echo $counter; ?>_description" name="invoice_description[]" class="inptxt" data-bind="content" placeholder="Enter Description" style="width:120px;" value="<?php echo $invData->item_description; ?>" />
+								</td>
+								<td>
 									<input type="text" id="invoice_tr_<?php echo $counter; ?>_quantity" name="invoice_quantity[]" class="required validateDecimalValue invoiceQuantity inptxt" value="<?php echo $invData->item_quantity; ?>" placeholder="0" style="width:100px;" />
 								</td>
 								<td>
@@ -364,12 +369,12 @@
 								</td>
 								<td>
 									<div class="padrgt0" style="width:100px;">
-										<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_rate" name="invoice_rate[]" class="required validateDecimalValue invoiceRateValue inptxt" data-bind="decimal" value="<?php echo $invData->item_unit_price; ?>" placeholder="0.00" />
+										<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_rate" name="invoice_rate[]" class="required validateDecimalValue invoiceRateValue inptxt" data-bind="decimal" value="<?php echo $invData->item_unit_price; ?>" placeholder="0.00" />
 									</div>
 								</td>
 								<td>
 									<div class="padrgt0" style="width:100px;">
-										<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_total" name="invoice_total[]" readonly="true" class="inptxt" value="<?php echo $invData->subtotal; ?>" class="inptxt" placeholder="0.00" />
+										<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_total" name="invoice_total[]" readonly="true" class="inptxt" value="<?php echo $invData->subtotal; ?>" class="inptxt" placeholder="0.00" />
 									</div>
 								</td>
 								<td>
@@ -377,7 +382,7 @@
 								</td>
 								<td>
 									<div style="width:100px;" class="padrgt0">
-										<i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_<?php echo $counter; ?>_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="inptxt" value="<?php echo $invData->taxable_subtotal; ?>" data-bind="decimal" placeholder="0.00" />
+										<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="inptxt" value="<?php echo $invData->taxable_subtotal; ?>" data-bind="decimal" placeholder="0.00" />
 									</div>
 								</td>
 
@@ -409,16 +414,22 @@
 
 							<?php $counter++; ?>
 						<?php } ?>
+						
+						<tr class="consolidateTotal">
+							<td colspan="9" align="right" class="lightblue fontbold textsmall">Total Invoice Value:</td>
+							<td class="lightblue fontbold textsmall consolidateTaxableTotal" align="center"><span>0.00</span></td>
+							<td class="lightblue fontbold textsmall" align="center"></td>
+						</tr>
 
 						<tr>
-							<td colspan="9" align="right" class="lightyellow totalamount">Total Invoice Value <span>(In Figure)</span><div class="totalprice"><i class="fa fa-inr"></i><span class="invoicetotalprice"><?php echo $invoiceData[0]->invoice_total_value; ?></span></div></td>
+							<td colspan="10" align="right" class="lightyellow totalamount">Total Invoice Value <span>(In Figure):</span><div class="totalprice"><i class="fa fa-inr"></i><span class="invoicetotalprice"><?php echo $invoiceData[0]->invoice_total_value; ?></span></div></td>
 							<td class="lightyellow" align="left"></td>
 						</tr>
 
 						<?php $invoice_total_value_words = $obj_client->convert_number_to_words($invoiceData[0]->invoice_total_value); ?>
 
 						<tr>
-							<td colspan="9" align="right" class="lightpink fontbold totalamountwords" style="font-size:13px;">Total Invoice Value <small>(In Words):</small> <span class="totalpricewords"><?php echo ucwords($invoice_total_value_words); ?></span></td>
+							<td colspan="10" align="right" class="lightpink fontbold totalamountwords" style="font-size:13px;">Total Invoice Value <small>(In Words):</small> <span class="totalpricewords"><?php echo ucwords($invoice_total_value_words); ?></span></td>
 							<td class="lightpink" align="left"></td>
 						</tr>
 
@@ -560,6 +571,23 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
+		
+		<?php if($invoiceData[0]->same_as_billing == '1') { ?>
+
+			$("#shipping_name").prop("readonly", true);
+			$("#shipping_company_name").prop("readonly", true);
+			$("#shipping_address").prop("readonly", true);
+			$('#shipping_state').attr('disabled', true);
+			$('#shipping_country').attr('disabled', true);
+			$('#shipping_vendor_type').attr('disabled', true);
+			$("#shipping_gstin_number").prop("readonly", true);
+			$("#shipping_state").select2();
+			$("#shipping_country").select2();
+			$("#shipping_vendor_type").select2();
+		<?php } ?>
+		
+		/* calculate row invoice and invoice total on state change */
+		rowInvoiceCalculationOnStateChnage();
 
 		/* Get HSN/SAC Code */
         $( "#item_category_name" ).autocomplete({
@@ -908,6 +936,7 @@
 
                     $("#invoice_tr_"+rowid+"_itemid").val(ui.item.item_id);
                     $("#invoice_tr_"+rowid+"_hsncode").val(ui.item.hsn_code);
+					$("#invoice_tr_"+rowid+"_description").val(ui.item.item_description);
                     $("#invoice_tr_"+rowid+"_quantity").val(1);
                     $("#invoice_tr_"+rowid+"_unit").val(ui.item.unit_code);
                     $("#invoice_tr_"+rowid+"_rate").val(ui.item.unit_price);
@@ -933,6 +962,7 @@
             $("#"+parentTdId).html('<input type="text" id="invoice_tr_'+parentTrId+'_itemname" name="invoice_itemname[]" class="inptxt autocompleteitemname required" placeholder="Enter Item" style="width:120px;" />');
             $("#invoice_tr_"+parentTrId+"_itemid").val("");
             $("#invoice_tr_"+parentTrId+"_hsncode").val("");
+			$("#invoice_tr_"+parentTrId+"_description").val("");
             $("#invoice_tr_"+parentTrId+"_quantity").val(0);
             $("#invoice_tr_"+parentTrId+"_unit").val("");
             $("#invoice_tr_"+parentTrId+"_rate").val("");
@@ -958,7 +988,8 @@
 				newtr += '<input type="text" id="invoice_tr_'+nexttrid+'_itemname" name="invoice_itemname[]" class="inptxt autocompleteitemname required" placeholder="Enter Item" data-bind="content" style="width:120px;" />';
 				newtr += '</td>';
                 newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_hsncode" name="invoice_hsncode[]" readonly="true" class="inptxt" data-bind="content" placeholder="HSN/SAC Code" style="width:120px;" /></td>';
-                newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_quantity" name="invoice_quantity[]" class="required validateDecimalValue invoiceQuantity inptxt" value="0" placeholder="0" style="width:100px;" /></td>';
+				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_description" name="invoice_description[]" class="inptxt" data-bind="content" placeholder="Enter Description" style="width:120px;" /></td>';
+				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_quantity" name="invoice_quantity[]" class="required validateDecimalValue invoiceQuantity inptxt" value="0" placeholder="0" style="width:100px;" /></td>';
 
 				newtr += '<td>';
 					newtr += '<select name="invoice_unit[]" id="invoice_tr_'+nexttrid+'_unit" class="required inptxt" style="width:100px;">';
@@ -972,11 +1003,11 @@
 					newtr += '</select>';
 				newtr += '</td>';
 
-				newtr += '<td><div class="padrgt0" style="width:100px;"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_rate" name="invoice_rate[]" class="required validateDecimalValue invoiceRateValue inptxt" data-bind="decimal" placeholder="0.00" /></div></td>';
-                newtr += '<td><div class="padrgt0" style="width:100px;"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_total" name="invoice_total[]" readonly="true" class="inptxt" data-bind="decimal" placeholder="0.00" /></div></td>';
+				newtr += '<td><div class="padrgt0" style="width:100px;"><input type="text" style="width:100%;" id="invoice_tr_'+nexttrid+'_rate" name="invoice_rate[]" class="required validateDecimalValue invoiceRateValue inptxt" data-bind="decimal" placeholder="0.00" /></div></td>';
+                newtr += '<td><div class="padrgt0" style="width:100px;"><input type="text" style="width:100%;" id="invoice_tr_'+nexttrid+'_total" name="invoice_total[]" readonly="true" class="inptxt" data-bind="decimal" placeholder="0.00" /></div></td>';
                 newtr += '<td><input type="text" style="width:100%;" id="invoice_tr_'+nexttrid+'_discount" name="invoice_discount[]" class="inptxt invoiceDiscount" value="0.00" data-bind="decimal" placeholder="0.00" /></td>';
-				newtr += '<td class="advancecol"><div style="width:100px;" class="padrgt0"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_advancevalue" name="invoice_advancevalue[]" class="validateDecimalValue invoiceAdvanceValue inptxt" value="0.00" data-bind="decimal" placeholder="0.00" /></div></td>';
-				newtr += '<td><div style="width:100px;" class="padrgt0"><i class="fa fa-inr"></i><input type="text" style="width:90%;" id="invoice_tr_'+nexttrid+'_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="inptxt" data-bind="decimal" placeholder="0.00" /></div></td>';
+				newtr += '<td class="advancecol"><div style="width:100px;" class="padrgt0"><input type="text" style="width:100%;" id="invoice_tr_'+nexttrid+'_advancevalue" name="invoice_advancevalue[]" class="validateDecimalValue invoiceAdvanceValue inptxt" value="0.00" data-bind="decimal" placeholder="0.00" /></div></td>';
+				newtr += '<td><div style="width:100px;" class="padrgt0"><input type="text" style="width:100%;" id="invoice_tr_'+nexttrid+'_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="inptxt" data-bind="decimal" placeholder="0.00" /></div></td>';
                 newtr += '<td nowrap="nowrap" class="icon"><a class="deleteInvoice" data-invoice-id="'+nexttrid+'" href="javascript:void(0)"><div class="tooltip2"><i class="fa fa-trash deleteicon"></i><span class="tooltiptext">Delete</span></div></a></td>';
                 newtr += '</tr>';
 
@@ -1194,7 +1225,29 @@
                     }
                 }
             });
+			
+			/* calculate consolidate total */
+			calculationConsolidateTotal();
         }
         /* end of calculate total invoice value function */
+
+		/* calculate consolidate total function */
+        function calculationConsolidateTotal() {
+
+			/* taxable total sum */
+			var invoiceTaxableTotal = 0.00;
+			$('input[name="invoice_taxablevalue[]"]').each(function() {
+
+				if($.trim($(this).val()).length == 0 || $.trim($(this).val()).length == '' || $.trim($(this).val()) == '.') {
+					var invoiceRowTaxableTotal = 0.00;
+				} else {
+					var invoiceRowTaxableTotal = $(this).val();
+				}
+				
+				invoiceTaxableTotal += parseFloat(invoiceRowTaxableTotal);
+			});
+			$(".consolidateTotal .consolidateTaxableTotal span").html(invoiceTaxableTotal.toFixed(2));
+		}
+		/* end of calculate consolidate total function */
     });
 </script>

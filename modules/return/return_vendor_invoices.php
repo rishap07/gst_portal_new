@@ -11,9 +11,10 @@
 		if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
 			$obj_gstr2->setError('Invalid access to files');
 		} else {
-			$response = $obj_gstr2->downloadGSTR2();
-			$response_b2b = $response['response_b2b'];
-			$response_cdn = $response['response_cdn'];
+			$response1 = $obj_gstr2->downloadGSTR2();
+			$response_b2b = $response1['response_b2b'];
+			$response_cdn = $response1['response_cdn'];
+			//$obj_gstr2->pr($response1);die;
 			
 		}
 	}
@@ -87,6 +88,115 @@
 				
 			</div>
 			<div id="display_json"></div>
+			<?php 
+				$responseCDN = $obj_gstr2->checkUserInvoices($_SESSION['user_detail']['user_id'],$returnmonth,'CDN');
+				$responseB2B = $obj_gstr2->checkUserInvoices($_SESSION['user_detail']['user_id'],$returnmonth,'B2B');
+				$responseTable = '';
+				if(!empty($responseB2B)) {
+					$responseTable .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
+					        <thead>
+					        <tr>
+					            <th>Number</th>
+					            <th style="text-align:center">Invoice number</th> 
+					            <th style="text-align:center">Ctin</th> 
+					            <th style="text-align:center">Pos </th> 
+					            <th style="text-align:center">Item </th>
+					            <th style="text-align:center">Invoice type</th>    
+					            <th style="text-align:center">Invoice date</th>
+					            
+					            <th style="text-align:center">Tax value ( <i class="fa fa-inr"></i> )</th>
+					            <th style="text-align:center">Rate</th>
+					            <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th> 
+					            <th style="text-align:center">Samt ( <i class="fa fa-inr"></i> )</th> 
+					            <th style="text-align:center">Camt ( <i class="fa fa-inr"></i> )</th>                
+					            <th style="text-align:center">Csamt ( <i class="fa fa-inr"></i> )</th>
+					            <th style="text-align:center">Value ( <i class="fa fa-inr"></i> )</th>
+					            
+					            <th style="text-align:center">Rchrg</th>            
+					        </tr>';
+			            $i=0;
+                        foreach ($responseB2B as $key3 => $value) {
+                        	$idt = $value->invoice_date > 0 ? date('d-m-Y', strtotime($value->invoice_date)) : '';
+                    		$responseTable .='<tr>
+                               	<td align="center">'.$value->itms.'</td>
+                                <td align="center">'.$value->reference_number.'</td>
+                                <td align="center">'.$value->company_gstin_number.'</td>
+                                <td align="center">'.$value->pos.'</td>
+                                <td align="center">'.$i++.'</td>
+                                <td align="center">'.$value->inv_typ.'</td>
+                                <td align="center">'.$idt.'</td>
+                                <td align="center">'.$value->total_taxable_subtotal.'</td>
+                                <td align="center">'.$value->rate.'</td>
+                                <td align="center">'.$value->total_igst_amount.'</td>
+                                <td align="center">'.$value->total_sgst_amount.'</td>
+                                <td align="center">'.$value->total_cgst_amount.'</td>
+                                <td align="center">'.$value->total_cess_amount.'</td>
+                                <td align="right">'.$value->invoice_total_value.'</td>
+                                <td align="center">'.$value->rchrg.'</td>
+                            </tr>';
+                          
+                        }
+			            $responseTable .= '
+			                </thead>
+			            </table>';
+				
+			            echo $responseTable;
+				}
+				if(!empty($responseCDN)) {
+					$responseTable .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
+			            <thead>
+			            <tr>
+			                <th>Num</th>
+			                <th style="text-align:center">Credit/Debit Note Number</th>    
+			                <th style="text-align:center">Credit/Debit Note  Date</th>
+			                <th style="text-align:center">Ctin </th>
+			                <th style="text-align:center">Invoice Number</th> 
+			                <th style="text-align:center">Invoice Date</th>
+			                <th style="text-align:center">Item </th>
+			                <th style="text-align:center">Pgst</th>
+			                <th style="text-align:center">Txval ( <i class="fa fa-inr"></i> )</th>
+			                <th style="text-align:center">Rate</th>
+			                <th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th>  
+			                <th style="text-align:center">Samt ( <i class="fa fa-inr"></i> )</th> 
+			                <th style="text-align:center">Camt ( <i class="fa fa-inr"></i> )</th> 
+			                <th style="text-align:center">Csamt ( <i class="fa fa-inr"></i> )</th>
+			                <th style="text-align:center">Val ( <i class="fa fa-inr"></i> )</th>
+			                <th style="text-align:center">Rsn </th>     
+			                <th style="text-align:center">Ntty</th>
+			                
+			            </tr>';
+			            $i=0;
+                        foreach ($responseCDN as $key3 => $value) {
+                        	$idt = $value->invoice_date > 0 ? date('d-m-Y', strtotime($value->invoice_date)) : '';
+                        	$nt_dt = $value->nt_dt > 0 ? date('d-m-Y', strtotime($value->nt_dt)) : '';
+                        		$responseTable .='<tr>
+                        			<td align="center">'.$value->itms.'</td>
+                        			<td align="center">'.$value->nt_num.'</td>
+                        			 <td align="center">'.$value->company_gstin_number.'</td>
+                        			<td align="center">'.$nt_dt.'</td>
+	                                <td align="center">'.$value->reference_number.'</td>
+	                                <td align="center">'.$idt.'</td>
+	                                <td align="center">'.$i++.'</td>
+	                                <td align="center">'.$value->p_gst.'</td>
+	                                <td align="center">'.$value->total_taxable_subtotal.'</td>
+	                                <td align="center">'.$value->rate.'</td>
+	                                <td align="center">'.$value->total_igst_amount.'</td>
+	                                <td align="center">'.$value->total_sgst_amount.'</td>
+	                                <td align="center">'.$value->total_cgst_amount.'</td>
+	                                <td align="center">'.$value->total_cess_amount.'</td>
+	                                <td align="right">'.$value->invoice_total_value.'</td>
+	                                <td align="center">'.$value->rsn.'</td>
+	                                <td align="center">'.$value->ntty.'</td>
+	                            </tr>';	
+                          
+                        }
+			            $responseTable .= '
+			                </thead>
+			            </table>';
+				
+			            echo $responseTable;
+				}
+			?>
 
 
 
@@ -107,7 +217,7 @@
     function get_summary() {
         var response_b2b = '<?php echo $response_b2b;?>';
         var response_cdn = '<?php echo $response_cdn;?>';
-        var jstr = 'gstr2b'
+        var jstr = 'gstr2b';
         var returnmonth = '<?php echo $returnmonth;?>';
         $.ajax({
             url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_json_view",

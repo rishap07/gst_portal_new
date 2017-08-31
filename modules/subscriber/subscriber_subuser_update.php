@@ -1,101 +1,137 @@
 <?php
 $obj_client = new client();
 $obj_plan = new plan();
+$obj_user = new users();
+$totalSubUserRemaining=0;
+/* get current user data */
+	$dataCurrentArr = array();
+	$dataCurrentArr = $obj_client->getUserDetailsById($obj_client->sanitize($_SESSION['user_detail']['user_id']));
+
+    $subscribePlanDetail = $obj_plan->getPlanDetails($dataCurrentArr['data']->plan_id);
+  
+	$totalClientCreated = $obj_client->get_row("select count(user_id) as totalClientCreated from " . $obj_client->getTableName('user') . " where user_group=4 and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	$totalSubUserCreated = $obj_client->get_row("select sum(no_of_client) as totalSubUserCreated from " . $obj_client->getTableName('user') . " where user_group=5 and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	//$totaluser = intval($totalClientCreated->totalClientCreated)+$totalSubUserCreated->totalSubUserCreated+$_POST["no_of_client"];
+	$totalSubUserCreated=$totalSubUserCreated->totalSubUserCreated;
+   	$totalsubuser= intval($subscribePlanDetail['data']->sub_user)-$totalClientCreated->totalClientCreated;
+	$totalSubUserRemaining= $totalsubuser-$totalSubUserCreated;	
 if (!isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '') {
     $obj_client->redirect(PROJECT_URL);
     exit();
 }
 
-if (!$obj_client->can_read('client_list')) {
+if (!$obj_client->can_read('subscriber_subuser_list')) {
 
     $obj_client->setError($obj_client->getValMsg('can_read'));
     $obj_client->redirect(PROJECT_URL . "/?page=dashboard");
     exit();
 }
 
-/* get current user data */
-$dataCurrentArr = array();
-$dataCurrentArr = $obj_client->getUserDetailsById($obj_client->sanitize($_SESSION['user_detail']['user_id']));
-//var_dump($dataCurrentArr);
+
 if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
 
-    if (!$obj_client->can_create('client_list')) {
+    if (!$obj_client->can_create('subscriber_subuser_list')) {
         $obj_client->setError($obj_client->getValMsg('can_create'));
         $obj_client->redirect(PROJECT_URL . "/?page=user_adminlist");
         exit();
     }
 
-    $subscribePlanDetail = $obj_plan->getPlanDetails($dataCurrentArr['data']->plan_id);
     $totalClientCreated = $obj_client->get_row("select count(user_id) as totalClientCreated from " . $obj_client->getTableName('user') . " where user_group=4 and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
-	$totalSubuserClient = $obj_client->get_row("select no_of_client from " . $obj_client->getTableName('user') . " where user_id=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
 	$totalSubUserCreated = $obj_client->get_row("select sum(no_of_client) as totalSubUserCreated from " . $obj_client->getTableName('user') . " where user_group=5 and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
-	$totaluser = intval($totalClientCreated->totalClientCreated)+$totalSubUserCreated->totalSubUserCreated;
-	
+	//$totaluser = intval($totalClientCreated->totalClientCreated)+$totalSubUserCreated->totalSubUserCreated+$_POST["no_of_client"];
+	$totalSubUserCreated=$totalSubUserCreated->totalSubUserCreated+$_POST["no_of_client"];
     $totalClientPan = $obj_client->get_row("select distinct(pan_card_number) as client_pan from " . $obj_client->getTableName('user') . " where added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	if(!$obj_user->is_positive_integer($_POST["no_of_client"])) {
+		$obj_user->setError('Given value for number of GSTN is not acceptable');
+		$obj_user->redirect(PROJECT_URL . "?page=subscriber_subuser_list");
+	}       
+   // $totaluser=intval($subscribePlanDetail['data']->no_of_client)-$totalClientCreated->totalClientCreated;
+	$totalsubuser= intval($subscribePlanDetail['data']->sub_user)-$totalClientCreated->totalClientCreated;
+	$totalSubUserRemaining= $totalsubuser-$totalSubUserCreated;
+	//echo "<br>";
+	//echo $totalsubuser;
 	
-	if($_SESSION["user_detail"]["user_group"]==3)
+	if($totalSubUserCreated > $totalsubuser)
 	{
-		if ($subscribePlanDetail['data']->no_of_client>=0 && ($totaluser >= intval($subscribePlanDetail['data']->no_of_client))) {
+		$obj_client->setError('You have reach maximum subuser creation limit.');
+        $obj_client->redirect(PROJECT_URL . "?page=subscriber_subuser_list");
+	}
+	 
+    
+    if ($subscribePlanDetail['data']->pan_num>=0 && ($totalClientPan->client_pan >= intval($subscribePlanDetail['data']->pan_num))) {
 
-			$obj_client->setError('You have reach maximum client creation limit.');
-			$obj_client->redirect(PROJECT_URL . "?page=client_list");
-		}
-	}
-	if($_SESSION["user_detail"]["user_group"]==5)
-	{
-		
-		if ($totaluser >= intval($totalSubuserClient->no_of_client)) {
-             
-			$obj_client->setError('You have reach maximum client creation limit.');
-			$obj_client->redirect(PROJECT_URL . "?page=client_list");
-		}
-	}
-	if($_SESSION["user_detail"]["user_group"]==3)
-	{
-		if ($subscribePlanDetail['data']->pan_num>=0 && ($totalClientPan->client_pan >= intval($subscribePlanDetail['data']->pan_num))) {
+        $obj_client->setError('You have reach maximum PAN limit.');
+        $obj_client->redirect(PROJECT_URL . "?page=subscriber_subuser_list");
+    }
 
-			$obj_client->setError('You have reach maximum PAN limit.');
-			$obj_client->redirect(PROJECT_URL . "?page=client_list");
-		}
-	}
     if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])) {
-        $obj_client->setError('Invalid access to files');
+        $obj_user->setError('Invalid access to files');
     } else {
-        if ($obj_client->addClientUser()) {
-            $obj_client->redirect(PROJECT_URL . "?page=client_list");
+        if ($obj_user->addSubUser()) {
+            $obj_user->redirect(PROJECT_URL . "?page=subscriber_subuser_list");
         }
     }
 }
 
 if (isset($_POST['submit']) && $_POST['submit'] == 'update' && isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClient") {
 
-    if (!$obj_client->can_update('client_list')) {
+    if (!$obj_client->can_update('subscriber_subuser_list')) {
         $obj_client->setError($obj_client->getValMsg('can_update'));
         $obj_client->redirect(PROJECT_URL . "/?page=user_adminlist");
         exit();
     }
-
+    $totalClientCreated = $obj_client->get_row("select count(user_id) as totalClientCreated from " . $obj_client->getTableName('user') . " where user_group=4 and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	$sql="select sum(no_of_client) as totalSubUserCreated from " . $obj_client->getTableName('user') . " where user_group=5 AND user_id!='".$obj_client->sanitize($_GET["id"])."' and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id'])."";
+	
+	$totalSubUserCreated = $obj_client->get_row($sql);
+	//$totaluser = intval($totalClientCreated->totalClientCreated)+$totalSubUserCreated->totalSubUserCreated+$_POST["no_of_client"];
+	$totalSubUserCreated=$totalSubUserCreated->totalSubUserCreated+$_POST["no_of_client"];
+    $totalClientPan = $obj_client->get_row("select distinct(pan_card_number) as client_pan from " . $obj_client->getTableName('user') . " where added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	if(!$obj_user->is_positive_integer($_POST["no_of_client"])) {
+		$obj_user->setError('Given value for number of GSTN is not acceptable');
+		$obj_user->redirect(PROJECT_URL . "?page=subscriber_subuser_list");
+	}
+	$totalsubuser= intval($subscribePlanDetail['data']->sub_user)-$totalClientCreated->totalClientCreated;
+	$totalSubUserRemaining= $totalsubuser-$totalSubUserCreated;
+	//echo "<br>";
+	//echo $totalsubuser;
+	
+	if($totalSubUserCreated > $totalsubuser)
+	{
+		$obj_client->setError('You have reach maximum subuser creation limit.');
+        $obj_client->redirect(PROJECT_URL . "?page=subscriber_subuser_list");
+	}
     if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])) {
 
-        $obj_client->setError('Invalid access to files');
+        $obj_user->setError('Invalid access to files');
     } else {
 
-        if ($obj_client->updateClientUser()) {
+        if ($obj_user->updateSubUser()) {
 
-            $obj_client->redirect(PROJECT_URL . "?page=client_list");
+            $obj_user->redirect(PROJECT_URL . "?page=subscriber_subuser_list");
         }
     }
 }
 
 $dataArr = array();
 if (isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClient") {
+	  $sql="select * from ".TAB_PREFIX."user WHERE (user_group='3' or user_group='4' or user_group='5') and user_id='".$obj_client->sanitize($_GET["id"])."'";
+	  $dataCurrentArr = $obj_user->get_results($sql);	
+	
+      if($dataCurrentArr[0]->added_by==$_SESSION["user_detail"]["user_id"])
+	  {		  
+	     
+	  }else{
+		$obj_client->setError('You are not authorize to view this user profile.');
+        $obj_client->redirect(PROJECT_URL . "?page=dashboard");
+	  }
     $dataArr = $obj_client->getUserDetailsById($obj_client->sanitize($_GET['id']));
 }
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
-        <div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Business User</h1></div>
+        <div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Business SubUser</h1></div>
         <div class="clear"></div>
         <?php $obj_client->showErrorMessage(); ?>
         <?php $obj_client->showSuccessMessge(); ?>
@@ -109,11 +145,13 @@ if (isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClie
             echo 'Update';
         } else {
             echo 'Add ';
-        } ?>Business User</h2>
-
+        } ?>SubUser</h2>
+  
                 <div class="row">
+                  <div class="col-md-12 col-sm-12 col-xs-12 form-group">
 
-
+                
+				 </div>
                     <div class="col-md-4 col-sm-4 col-xs-12 form-group">
 
                         <label>First Name<span class="starred">*</span></label>
@@ -222,24 +260,13 @@ if (isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClie
                         </select>
                     </div>
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-
-                        <label>Allow Return Upload<span class="starred">*</span></label>
-                        <div class="clear"></div>
-
-                        <select name='allow_return_upload' id='allow_return_upload' class='required form-control'>
-                       
-                            <option value='1' <?php
-						if (isset($dataArr['data']->allow_return_upload) && $dataArr['data']->allow_return_upload == 1) {
-							echo "selected='selected'";
-						}
-						?>>Yes</option>
-													<option value='0' <?php
-						if (isset($dataArr['data']->allow_return_upload) && $dataArr['data']->allow_return_upload == 0) {
-							echo "selected='selected'";
-						}
-						?>>No</option>
-
-                        </select>
+                        
+                        <label>Enter No of Client ( Client Remaining: <?php echo $totalSubUserRemaining?> ) <span class="starred">*</span></label>
+                        <input type="text" name="no_of_client" id="no_of_client" placeholder="Enter number of Client" class="required form-control"  value="<?php if (isset($_POST['no_of_client'])) {
+    echo $_POST['no_of_client'];
+} else if (isset($dataArr['data']->no_of_client)) {
+    echo $dataArr['data']->no_of_client;
+} ?>" />
                     </div>
                     <div class="clear"></div>
                     <div class="adminformbxsubmit" style="width:100%;">
