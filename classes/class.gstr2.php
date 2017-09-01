@@ -275,16 +275,14 @@ final class gstr2 extends validation {
 	            }
 	            else {
 	            	$this->setSuccess('GSTR2 Download Successfully');
+	            	return true;
 	            }
-	            
 		     	
 		    }
 	    }
-	    
-		$response['response_b2b'] = $response_b2b;
-		$response['response_cdn'] = $response_cdn;
-
-		return $response;
+	    else {
+	    	return false;
+	    }
     }
 
     public function checkUserInvoices($user_id, $returnmonth = '',$type='') {
@@ -292,7 +290,7 @@ final class gstr2 extends validation {
     	if(!empty($type)) {
     		$sql .= " and type='" . $type . "' ";
     	}
-    	echo  $sql;
+    	//echo  $sql;
         $clientdata = $this->get_results($sql);
         return $clientdata ;
 

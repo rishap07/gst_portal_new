@@ -196,7 +196,9 @@ final class gstr extends validation {
 
         $url=  'http://devapi.gstsystem.co.in/taxpayerapi/v0.2/authenticate';
         $result_data= $this->hitUrl($url,$data_string,$header);
+        //echo 'app_key: '.$_SESSION['app_key'];
         //$this->pr($result_data);
+        //die;
         $data = json_decode($result_data);
 
         if(empty($this->checkUserGstr1Exists('app_key')) && empty($this->checkUserGstr1Exists('auth_token'))) {
@@ -233,6 +235,18 @@ final class gstr extends validation {
             $_SESSION['auth_token'] =  $this->checkUserGstr1Exists('auth_token');
             $_SESSION['auth_date'] =  $this->checkUserGstr1Exists('added_date');
 
+            
+            if(!$this->gst_is_expired($_SESSION['auth_date']) == false) {
+                $savedata = array();
+                $savedata['otp'] = '575757';
+                $savedata['hexcode'] = $_SESSION['hexcode'];
+                $savedata['app_key'] = $_SESSION['app_key'];
+                $savedata['auth_token'] = $_SESSION['auth_token'];
+                $savedata['decrypt_sess_key'] = $session_key;
+                $savedata['added_date'] = $_SESSION['auth_date'];
+                $this->save_user_gstr1($savedata);
+            }
+
             return $data;
         }   
             
@@ -248,7 +262,8 @@ final class gstr extends validation {
         
         $json_data = json_encode($dataArr);
 
-        echo $json_data;
+       // echo $json_data;
+
 
         $encodejson=base64_encode(openssl_encrypt(base64_encode($json_data),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
         $hmac = base64_encode(hash_hmac('sha256', base64_encode($json_data), $_SESSION['decrypt_sess_key'], true));
@@ -386,7 +401,7 @@ final class gstr extends validation {
             //End code for create header
 
             if($type=='') {
-                 $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=RETSUM';
+                $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=RETSUM';
             }
             else {
                 $getReturnUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type;
@@ -565,6 +580,37 @@ final class gstr extends validation {
         return $response;
     }
 
+    public function gstPayloadDownload($data) {
+        header("Content-type: text/json");
+        header("Content-Disposition: attachment; filename=gstr1.json");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+
+        echo '{
+            "glossary": {
+                "title": "example glossary",
+                "GlossDiv": {
+                    "title": "S",
+                    "GlossList": {
+                        "GlossEntry": {
+                            "ID": "SGML",
+                            "SortAs": "SGML",
+                            "GlossTerm": "Standard Generalized Markup Language",
+                            "Acronym": "SGML",
+                            "Abbrev": "ISO 8879:1986",
+                            "GlossDef": {
+                                "para": "A meta-markup language, used to create markup languages such as DocBook.",
+                                "GlossSeeAlso": ["GML", "XML"]
+                            },
+                            "GlossSee": "markup"
+                        }
+                    }
+                }
+            }
+        }';
+        exit;
+
+    }
 
     public function getRetrunPeriodFormat($returnmonth) {
         $api_return_period = '';
@@ -582,11 +628,7 @@ final class gstr extends validation {
             if(!empty($user_gstr)) {
                 $last_auth_date = $user_gstr[0]->added_date;
                 $user_id = $user_gstr[0]->user_id;
-                $today_date = date('Y-m-d h:i:s');
-                $diff = (strtotime($today_date)-strtotime($last_auth_date));
-                
-                //6000
-                if($diff <= 6000) {
+                if(!$this->gst_is_expired($last_auth_date) == false) {
                     if($type=='otp') {
                         $check = $user_gstr[0]->otp;
                     }
@@ -608,15 +650,16 @@ final class gstr extends validation {
                     
                 }
                 else {
-                    $this->query("DELETE FROM ".$this->getTableName('user_gstr1')." WHERE user_id = ".$user_id);
+                    $this->query("DELETE FROM ".$this->getTableName('client_invoice')." WHERE `user_id` = ".$user_id.""); 
                     $this->gstr_session_destroy();
                 }
+            
             }
             else {
-                $this->query("DELETE FROM ".$this->getTableName('user_gstr1')." ");
+                $this->query("DELETE FROM ".$this->getTableName('client_invoice')." WHERE `user_id` = ".$_SESSION['user_detail']['user_id'].""); 
                 $this->gstr_session_destroy();
             }
-            
+
         }
         return $check;
     }
@@ -628,6 +671,17 @@ final class gstr extends validation {
             unset($_SESSION['auth_token']);
             unset($_SESSION['auth_date']);
             unset($_SESSION['decrypt_sess_key']);
+        }
+    }
+
+    public function gst_is_expired($last_auth_date='') {
+        $today_date = date('Y-m-d h:i:s');
+        $diff = (strtotime($today_date)-strtotime($last_auth_date));
+        if($diff <= 6000) {
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
@@ -748,9 +802,11 @@ final class gstr extends validation {
                 $dataGST1['auth_token'] = $data['auth_token'];
                 $dataGST1['decrypt_sess_key'] = $data['decrypt_sess_key'];
                 $dataGST1['added_date'] = $data['added_date'];
+                $dataGST1['updated_date'] =  date('Y-m-d h:i:s');
 
                 $dataGST1where['user_id'] =  $data['user_id'];
                 $this->update($this->getTableName('user_gstr1'),  $dataGST1, $dataGST1where);
+                //self::save_user_gstr1($dataGST1);
 
             } 
             else {

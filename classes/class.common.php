@@ -30,17 +30,20 @@ class common extends db {
     }
 
     public function checkEmailMobileVerify() {
-        if (isset($_SESSION['user_detail']['user_id']) && $_SESSION['user_detail']['user_id'] != '') {
+
+		if (isset($_SESSION['user_detail']['user_id']) && $_SESSION['user_detail']['user_id'] != '') {
+			
 			$data = $this->get_results("select * from " . TAB_PREFIX . "user where user_id='" . $_SESSION['user_detail']['user_id'] . "'");
-            if ($data[0]->plan_id > 0 && !isset($_SESSION['verify'])) {
-                $_SESSION['verify'] = 1;
+			if ($data[0]->plan_id > 0 && !isset($_SESSION['verify'])) {
+                
+				$_SESSION['verify'] = 1;
                 $link_address = PROJECT_URL . '/?page=client_email_verification';
                 $link_address1 = PROJECT_URL . '/?page=client_sms_verification';
 
-                if ($data[0]->email_verify == '0' && $_REQUEST['page'] != 'client_email_verification') {
+                if ($data[0]->email_verify == '0') {
                     $this->setError("To Verify your email <a href='" . $link_address . "'>click here</a>");
                 }
-                if ($data[0]->mobileno_verify == '0' && $_REQUEST['page'] != 'client_sms_verification') {
+                if ($data[0]->mobileno_verify == '0') {
                     $this->setError("To Verify your contact number <a href='" . $link_address1 . "'>click here</a>");
                 }
             }
@@ -1640,5 +1643,22 @@ class common extends db {
         $query = "select invoice_id from " . TAB_PREFIX . 'client_invoice' . " where invoice_nature='salesinvoice' and billing_gstin_number='" . $dataCurrentUserArr['data']->kyc->gstin_number . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%' and is_gstr1_uploaded != '0' and is_gstr2_downloaded='0'";
         return $this->get_results($query);
     }
+	
+	public function getUserSubscribePlanDetails($planid = '') {
 
+		$data = $this->get_row("select * from " . $this->tableNames['user_subscribed_plan'] ." where added_by = ". $this->sanitize($_SESSION['user_detail']['user_id'])." AND plan_id='".$planid."' AND payment_status='1' order by id DESC LIMIT 0,1");
+        $dataArr = array();
+        if (!empty($data)) {
+            $dataArr['data'] = $data;
+            $dataArr['message'] = $this->validationMessage['planexist'];
+            $dataArr['status'] = 'success';
+        } else {
+            $dataArr['data'] = '';
+            $dataArr['message'] = $this->validationMessage['noplanexist'];
+            $dataArr['status'] = 'error';
+        }
+
+        return $dataArr;
+    }
 }
+?>

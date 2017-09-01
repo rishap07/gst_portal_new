@@ -14,43 +14,42 @@ class processpayment extends validation
     {
         parent::__construct();
     }
-    
+
     /* 
-    Main function to proceed for payment.
-    $tablename = Tablename here;
-    $columnname = array of name of unique id and Amount  fields
-    $raturnpage = Page name where user will redirect after payment.
+		Main function to proceed for payment.
+		$tablename = Tablename here;
+		$columnname = array of name of unique id and Amount  fields
+		$raturnpage = Page name where user will redirect after payment.
     */
 
 	function pay_now($tablename, $columnname, $returnpage) {
+		
+		if ($_POST && isset($_POST['submit'])) {
 
-        if ($_POST && isset($_POST['submit'])) {
-            $get_amount      = $this->findAll(TAB_PREFIX . $tablename, $columnname[0] . '=' . $_SESSION['plan_id'], "" . $columnname[1] . " as amount");
+			$get_amount = $this->findAll(TAB_PREFIX . $tablename, $columnname[0] . '=' . $_SESSION['plan_id'], "" . $columnname[1] . " as amount");
             $get_UserDetails = $this->findAll(TAB_PREFIX . 'user', ' user_id=' . $_SESSION['user_detail']['user_id']);
 
             $cur_date = date('Y-m-d H:i:s');
             $ref_id   = date('siHmdy');
-            //Update payment process date
+
+			//Update payment process date
             $this->update(TAB_PREFIX . 'user_subscribed_plan', array('ref_id' => $ref_id), array('id' => $_SESSION['subs_id']));
-			
+
 			//coupon
 			if(isset($_POST['coupon']) && !empty($_POST['coupon'])) {
 
 				$couponData = $this->get_results("select * from ".TAB_PREFIX . "coupon where name='".$this->sanitize($_POST['coupon'])."'");
 				if(!empty($couponData)) {
-	
+
 					$client_datas = $this->get_results("select * from ".TAB_PREFIX."user where coupon='".$this->sanitize($_POST['coupon'])."'");
-					if(isset($couponData[0]->coupon_uses) && count($client_datas)<$couponData[0]->coupon_uses)
-					{
+					if(isset($couponData[0]->coupon_uses) && count($client_datas)<$couponData[0]->coupon_uses) {
 						$this->update(TAB_PREFIX . 'user', array('coupon' => $this->sanitize($_POST['coupon'])), array('user_id' => $_SESSION['user_detail']['user_id']));
-					}
-					else{
+					} else {
 						$this->setError('Coupon Code Expired');
 						return false;
 					}
-				}
-				else
-				{
+
+				} else {
 					$this->setError('Invalid Coupon Code');
 					return false;
 				}
@@ -62,24 +61,21 @@ class processpayment extends validation
                 'datetime' => $cur_date,
                 'status' => '0'
             ));
+			
 			$price_data = $get_amount[0]->amount;
-			if(!empty($couponData))
-			{
-				if(isset($couponData[0]->type) && $couponData[0]->type=='0')
-				{
+			if(!empty($couponData)) {
+
+				if(isset($couponData[0]->type) && $couponData[0]->type=='0') {
 					$get_amount[0]->amount = $price_data - $couponData[0]->coupon_value;
 					$get_amount[0]->amount = $get_amount[0]->amount + ($get_amount[0]->amount*0.18);
 				}
-				else if(isset($couponData[0]->type) && $couponData[0]->type=='1')
-				{
+
+				else if(isset($couponData[0]->type) && $couponData[0]->type=='1') {
 					$get_amount[0]->amount = $get_amount[0]->amount - round((($price_data*$couponData[0]->coupon_value)/(100+$couponData[0]->coupon_value)), 2, PHP_ROUND_HALF_DOWN);
 					$get_amount[0]->amount = $get_amount[0]->amount + ($get_amount[0]->amount*0.18);
 					$get_amount[0]->amount = round($get_amount[0]->amount, 2, PHP_ROUND_HALF_DOWN);
-					
 				}
-			}
-			else
-			{
+			} else {
 				$get_amount[0]->amount = $get_amount[0]->amount + ($get_amount[0]->amount * 0.18);
 			}
 			?>
@@ -109,33 +105,39 @@ class processpayment extends validation
 					document.payment.submit(); 
                 } 
             </script>
-            <?php
+			<?php
 			exit();
         }
     }
     
-    public function payment_method()
-    {
-        $dataArr 						= array();
-        $dataAr['ref_id'] 				= isset($_POST['MerchantRefNo']) ? $_POST['MerchantRefNo'] : '';
-        $dataArr['process_payment_id'] 	= isset($_POST['PaymentID']) ? $_POST['PaymentID'] : '';
-        $dataArr['datetime'] 			= isset($_POST['DateCreated']) ? $_POST['DateCreated'] : '';
-        $dataArr['response_datetime'] 	= date('Y-m-d H:i:s');
-        $dataArr['response_data'] 		= json_encode($_POST);
+    public function payment_method() {
+
+		$dataArr 						= array();
+		$dataAr['ref_id'] 				= isset($_POST['MerchantRefNo']) ? $_POST['MerchantRefNo'] : '';
+		$dataArr['process_payment_id'] 	= isset($_POST['PaymentID']) ? $_POST['PaymentID'] : '';
+		$dataArr['datetime'] 			= isset($_POST['DateCreated']) ? $_POST['DateCreated'] : '';
+		$dataArr['response_datetime'] 	= date('Y-m-d H:i:s');
+		$dataArr['response_data'] 		= json_encode($_POST);
 
         $this->update(TAB_PREFIX . "payment_log", $dataArr, $dataAr);
-		
 		$dataArr['ref_id'] = isset($_POST['MerchantRefNo']) ? $_POST['MerchantRefNo'] : '';
 		$this->insert(TAB_PREFIX . "payment_log_chck", $dataArr);
-        
+
         $dataArr['ResponseCode'] 	= isset($_POST['ResponseCode']) ? $_POST['ResponseCode'] : '';
         $dataArr['ResponseMessage'] = isset($_POST['ResponseMessage']) ? $_POST['ResponseMessage'] : '';
 
         if ($dataArr['ResponseCode'] == '0') {
-			
-			$dataUsPl = $this->get_results("select * from " . TAB_PREFIX . "user_subscribed_plan where ref_id='" . $dataArr['ref_id'] . "' and added_by='" . $_SESSION['user_detail']['user_id'] . "'");
-			$dataPl = $this->get_results("select * from " . TAB_PREFIX . "subscriber_plan where id='" . $dataUsPl[0]->plan_id . "'");
-            
+
+			$this->update(TAB_PREFIX . "user_subscribed_plan", array(
+                'payment_status' => '1'
+            ), array(
+                'ref_id' => $dataArr['ref_id'],
+                'added_by' => $_SESSION['user_detail']['user_id']
+            ));
+
+			$dataUsPl = $this->get_results("select * from " . TAB_PREFIX . "user_subscribed_plan where ref_id='" . $dataArr['ref_id'] . "' and added_by = '" . $_SESSION['user_detail']['user_id'] . "'");
+			$dataPl = $this->get_results("select * from " . TAB_PREFIX . "subscriber_plan where id = '" . $dataUsPl[0]->plan_id . "'");
+
             $dataUpdateArr['no_of_client']    = $dataPl[0]->no_of_client;
             $dataUpdateArr['payment_status']  = "1";
             $dataUpdateArr['plan_id']         = $dataPl[0]->id;
@@ -144,7 +146,7 @@ class processpayment extends validation
 
             $this->update(TAB_PREFIX . "user", $dataUpdateArr, array('user_id' => $_SESSION['user_detail']['user_id']));
             $this->setSuccess('Your payment is successful.');
-            
+
 			/**********Mail function added by sheetal*********************************/
             $email = $this->get_results("select state,company_name,gstin_number,email,coupon,first_name,last_name from " . TAB_PREFIX . "user where user_id='" . $_SESSION['user_detail']['user_id']."'");
 
@@ -156,7 +158,7 @@ class processpayment extends validation
 				'sac'=>'998314'
 			);
 			
-			$useraddress=array(
+			$useraddress = array(
 				'name'=>$email[0]->first_name." ".$email[0]->last_name,
 				'company_name'=>$email[0]->company_name,
 				'address'=>'',
@@ -177,12 +179,12 @@ class processpayment extends validation
 				$couponData = $this->get_results("select * from ".TAB_PREFIX."coupon where name='".$email[0]->coupon."'");
 			}
 
-			$dataInvoice['invoice_number']=$invoiceDta;
-			$dataInvoice['user_id']=$_SESSION['user_detail']['user_id'];
-			$dataInvoice['invoice_value']=$dataPl[0]->plan_price;
-			$dataInvoice['coupon']=$email[0]->coupon;
-			$dataInvoice['coupon_type']=(isset($couponData[0]->type)) ? $couponData[0]->type : '0';
-			$dataInvoice['coupon_value']=(isset($couponData[0]->coupon_value)) ? $couponData[0]->coupon_value : '0';
+			$dataInvoice['invoice_number'] = $invoiceDta;
+			$dataInvoice['user_id'] = $_SESSION['user_detail']['user_id'];
+			$dataInvoice['invoice_value'] = $dataPl[0]->plan_price;
+			$dataInvoice['coupon'] = $email[0]->coupon;
+			$dataInvoice['coupon_type'] = (isset($couponData[0]->type)) ? $couponData[0]->type : '0';
+			$dataInvoice['coupon_value'] = (isset($couponData[0]->coupon_value)) ? $couponData[0]->coupon_value : '0';
 			
 			if($dataInvoice['coupon_type']=='1') {
 				$discount = ($dataPl[0]->plan_price * $dataInvoice['coupon_value']) / (100+$dataInvoice['coupon_value']);
@@ -190,22 +192,23 @@ class processpayment extends validation
 				$discount = $dataInvoice['coupon_value'];
 			}
 			
-			$dataInvoice['discount']=$discount;
-			$dataInvoice['tax_percentage']='18.00';
+			$dataInvoice['discount'] = $discount;
+			$dataInvoice['tax_percentage'] = '18.00';
 			$plan_price = $dataInvoice['invoice_value'] - $dataInvoice['discount'];
-			$dataInvoice['taxes']=($plan_price * $dataInvoice['tax_percentage']) / 100;
-			$dataInvoice['total']=$plan_price + $dataInvoice['taxes'];
-			$dataInvoice['payment_status']=1;
-			$dataInvoice['invoice_date']=date('Y-m-d H:i:s');
-			$dataInvoice['invoice_paid_date']=date('Y-m-d H:i:s');
+			$dataInvoice['taxes'] = ($plan_price * $dataInvoice['tax_percentage']) / 100;
+			$dataInvoice['total'] = $plan_price + $dataInvoice['taxes'];
+			$dataInvoice['payment_status'] = 1;
+			$dataInvoice['invoice_date'] = date('Y-m-d H:i:s');
+			$dataInvoice['invoice_paid_date'] = date('Y-m-d H:i:s');
 			$this->insert(TAB_PREFIX.'invoices',$dataInvoice);
 
-			$planDetail = $this->get_results("select b.name as cat_name,a.name,a.no_of_client,a.company_no,a.pan_num,a.invoice_num ,a.support,a.period_of_service,a.web_mobile_app,a.cloud_storage_gb,a.gst_expert_help from ".TAB_PREFIX."subscriber_plan a left join ".TAB_PREFIX."subscriber_plan_category b on a.plan_category=b.id where a.id='".$dataUpdateArr['plan_id']."'");
-			if($dataUpdateArr['plan_id']=='22')
-			{
-				$planDetail[0]->no_of_client='Unlimited';
-				$planDetail[0]->company_no='Unlimited';
+			$planDetail = $this->get_results("select b.name as cat_name,a.name,a.no_of_client,a.company_no,a.pan_num,a.sub_user,a.invoice_num ,a.support,a.period_of_service,a.web_mobile_app,a.cloud_storage_gb,a.gst_expert_help from ".TAB_PREFIX."subscriber_plan a left join ".TAB_PREFIX."subscriber_plan_category b on a.plan_category=b.id where a.id='".$dataUpdateArr['plan_id']."'");
+			if($dataUpdateArr['plan_id'] == '22') {
+				$planDetail[0]->no_of_client = 'Unlimited';
+				$planDetail[0]->company_no = 'Unlimited';
+				$planDetail[0]->sub_user = 'Unlimited';
 			}
+
 			$htmlResponse = $this->generatePlanPdf($_SESSION['user_detail']['id'], $planDetail, $dataArr['plan_due_date'],$companyaddress,$useraddress,$dataInvoice);
 			
 			if ($htmlResponse === false) {
@@ -217,11 +220,9 @@ class processpayment extends validation
 			$obj_mpdf->SetHeader('Plan Invoice');
 			$obj_mpdf->WriteHTML($htmlResponse);
 			$datetime=date('YmdHis');
-			//$datetime=date('Y-m-d H:i');
-			//rand(1, 100)
 			$taxInvoicePdf = 'plan-invoice-' . $_SESSION['user_detail']['username'] . '_' .$datetime. '.pdf';
+			
 			ob_clean();
-			//$proof_photograph = $this->imageUploads($taxInvoicePdf, 'plan-invoice', 'upload','.pdf');
 			$pic = $taxInvoicePdf;
 			$path = "/upload/plan-invoice/".$taxInvoicePdf; 
 			$content = $obj_mpdf->Output("upload/plan-invoice/".$taxInvoicePdf);
@@ -243,12 +244,14 @@ class processpayment extends validation
 			return true;
             
         } else {
-            $this->update(TAB_PREFIX . "user_subscribed_plan", array(
+
+			$this->update(TAB_PREFIX . "user_subscribed_plan", array(
                 'status' => '0'
             ), array(
                 'ref_id' => $dataArr['ref_id'],
                 'added_by' => $_SESSION['user_detail']['user_id']
             ));
+
             $this->setError('Your payment is failed try again');
             $_SESSION['res']='2';
             return false;
@@ -514,16 +517,14 @@ The GST Keeper Team </p></td>
         $mpdfHtml .= '<b> GSTN :</b>' . $planDetail['0']->no_of_client . '<br>';
         $mpdfHtml .= '<b> Company :</b>' . $planDetail['0']->company_no . '<br>';
         $mpdfHtml .= '<b> Pan :</b>' . $planDetail['0']->pan_num . '<br>';
+		$mpdfHtml .= '<b> Sub Users :</b>' . $planDetail['0']->sub_user . '<br>';
         $mpdfHtml .= '<b> Invoice number :</b>' . $planDetail['0']->invoice_num . '<br>';
         $mpdfHtml .= '<b> support :</b>' . $planDetail['0']->support . '<br>';
         $mpdfHtml .= '<b> period_of_service :</b>' . $planDetail['0']->period_of_service . '<br>';
         $mpdfHtml .= '<b> Web Mobile App :</b>' . $planDetail['0']->web_mobile_app . '<br>';
         $mpdfHtml .= '<b> Cloud Storage :</b>' . $planDetail['0']->cloud_storage_gb . '<br>';
         $mpdfHtml .= '<b> Expert Help :</b>' . $planDetail['0']->gst_expert_help . '<br>';
-
         $mpdfHtml .= '</td>';
-
-
 
         $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
         $mpdfHtml .= 1;

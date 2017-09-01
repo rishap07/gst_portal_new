@@ -28,7 +28,8 @@ final class users extends validation {
         $dataArr['phone_number'] = isset($_POST['phonenumber']) ? $_POST['phonenumber'] : '';
         $dataArr['status'] = isset($_POST['user_status']) ? $_POST['user_status'] : '';
 		$dataArr['no_of_client'] = isset($_POST['no_of_client']) ? $_POST['no_of_client'] : '';
-
+        $dataArr['subscriber_code'] = $this->generateSubscriberRandomCode(6, $this->tableNames['user'], "subscriber_code");
+      
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
@@ -108,8 +109,9 @@ final class users extends validation {
         }
 
         return true;
-    }  
-	 public function validateSubUser($dataArr) {
+    }
+
+	public function validateSubUser($dataArr) {
 
         $rules = array(
             'first_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:First Name',
@@ -141,24 +143,32 @@ final class users extends validation {
     public function addPlanToSubscriber() {
 
         $dataArr['plan_id'] = isset($_GET['plan_id']) ? $_GET['plan_id'] : '';
-        $dataArr['plan_start_date'] = date('Y-m-d H:i:s');
-        $dataArr['payment_status'] = "1";
-        $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
-        $dataArr['added_date'] = date('Y-m-d H:i:s');
-
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
         }
 
         /* get plan details */
-        $planDetail = $this->getAllActivePlanSuAdmin("p.id,p.name,p.plan_category,p.no_of_client,p.company_no,p.pan_num,p.invoice_num,p.support,p.period_of_service,p.web_mobile_app,p.cloud_storage_gb,p.gst_expert_help,p.plan_price,(case when p.status='1' Then 'active' when p.status='0' then 'deactive' end) as status,c.name as cat_name,c.description as cat_description", "p.id='" . $dataArr['plan_id'] . "' and p.is_deleted='0'", $orderby = 'p.id asc');
-        $dataArr['plan_due_date'] = '2017-03-31 12:00:00';
+        $planDetail = $this->getAllActivePlanSuAdmin("p.id,p.name,p.description,p.plan_category,p.no_of_client,p.company_no,p.pan_num,p.sub_user,p.invoice_num,p.support,p.period_of_service,p.web_mobile_app,p.cloud_storage_gb,p.gst_expert_help,p.plan_price,(case when p.status='1' Then 'active' when p.status='0' then 'deactive' end) as status,c.name as cat_name,c.description as cat_description", "p.id='" . $dataArr['plan_id'] . "' and p.is_deleted='0'", $orderby = 'p.id asc');
+
+		$dataArr['no_of_client'] = $planDetail[0]->no_of_client;
+		$dataArr['company_no'] = $planDetail[0]->company_no;
+		$dataArr['pan_num'] = $planDetail[0]->pan_num;
+		$dataArr['sub_user'] = $planDetail[0]->sub_user;
+		$dataArr['plan_start_date'] = date('Y-m-d H:i:s');
+		$dataArr['plan_due_date'] = (date('Y')+1) . "-03-31";
+		$dataArr['plan_price'] = $planDetail[0]->plan_price;
+		$dataArr['plan_details'] = json_encode($planDetail);
+		$dataArr['status'] = '1';
+		$dataArr['payment_method'] = 'banktransfer';
+		$dataArr['payment_status'] = '0';
+        $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
+        $dataArr['added_date'] = date('Y-m-d H:i:s');
 
         if ($this->insert($this->tableNames['user_subscribed_plan'], $dataArr)) {
 
             $insertid = $this->getInsertID();
-            $this->logMsg("New Plan Subscribed Added. ID : " . $insertid . ".","plan_addplan");
+            $this->logMsg("New Plan Subscribed Added. ID : " . $insertid . ".", "user_subscribed_plan");
 
             $dataConditionArray['user_id'] = $_SESSION['user_detail']['user_id'];
             $dataUpdateArr['payment_status'] = "0";
@@ -177,7 +187,6 @@ final class users extends validation {
                 return false;
             }
         } else {
-
             $this->setError($this->validationMessage['failed']);
             return false;
         }
@@ -185,232 +194,16 @@ final class users extends validation {
         return true;
     }
 
-    public function generatePlanPdf($invid, $planDetail, $planduedate,$companyaddress,$useraddress) {
-        $mpdfHtml = '';
-        $mpdfHtml .= '<div style="margin:auto;font-size:16px;line-height:24px;color:#555;">';
-        $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;" cellpadding="0" cellspacing="0">';
-        $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;">';
-        $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;">';
-        $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td style="font-size:45px;line-height:45px;color:#333;padding:5px;vertical-align:top;padding-bottom:20px;">';
-
-        if (isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") {
-            $mpdfHtml .= '<img src="' . PROJECT_URL . '/upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="width:100%;max-width:300px;">';
-        } else {
-            $mpdfHtml .= '<img src="' . PROJECT_URL . '/image/gst-k-logo.png" style="width:100%;max-width:300px;">';
-        }
-
-        $mpdfHtml .= '</td>';
-
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;text-align:right;padding-bottom:20px;">';
-        $mpdfHtml .= '<b>Invoice #</b>: ' .$planDetail['0']->id . '<br>';
-        $mpdfHtml .= '<b>Reference #</b>: ' . $planDetail['0']->id . '<br>';
-        $mpdfHtml .= '<b>Type:</b> ' . 'Plan Invoice' . '<br>';
-        $mpdfHtml .= '<b>Invoice Date:</b>' . date('Y-m-d');
-        $mpdfHtml .= '</td>';
-        $mpdfHtml .= '</tr>';
-        $mpdfHtml .= '</table>';
-        $mpdfHtml .= '</td>';
-        $mpdfHtml .= '</tr>';
-        
-        $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;">';
-        $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;">';
-        $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;padding-bottom:20px;">';
-        $mpdfHtml .= $companyaddress['name'] . '<br>';
-        $mpdfHtml .= $companyaddress['address'] . '<br>';
-        $mpdfHtml .= $companyaddress['address1'] . '<br>';
-        $mpdfHtml .= '<b>GSTIN:</b> ' . $companyaddress['gstin'];
-        $mpdfHtml .= '<b>SAC CODE:</b> ' . $companyaddress['sac'];
-        $mpdfHtml .= '</td>';
-
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;text-align:right;padding-bottom:20px;">';
-        $mpdfHtml .= '</td>';
-        $mpdfHtml .= '</tr>';
-        $mpdfHtml .= '</table>';
-        $mpdfHtml .= '</td>';
-        $mpdfHtml .= '</tr>';
-        
-        
-        $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;">';
-        $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;">';
-        $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;padding-bottom:40px;width:50%;">';
-
-        $mpdfHtml .= '<b>Recipient Detail</b><br>';
-        $mpdfHtml .= $useraddress['name'] . '<br>';
-        $mpdfHtml .= $useraddress['address'] . '<br>';
-        $mpdfHtml .= $useraddress['address1'] . '<br>';
-        $mpdfHtml .= '<b>GSTIN:</b> ' . $useraddress['gstin'];
-        $mpdfHtml .= '</td>';
-
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;text-align:right;padding-bottom:20px;">';
-        $mpdfHtml .= '</td>';
-        $mpdfHtml .= '</tr>';
-        $mpdfHtml .= '</table>';
-        $mpdfHtml .= '</td>';
-        $mpdfHtml .= '</tr>';
-        
-        $mpdfHtml .= '<tr>';
-
-        $mpdfHtml .= '<td colspan="2">';
-
-        $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:center;">';
-        $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">S.No</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;text-align:left;">Goods/Services</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;text-align:right;">HSN/SAC Code</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;text-align:right;">Qty</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;text-align:right;">Unit</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;text-align:right;">Rate</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;text-align:right;">Total</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;text-align:right;">Discount(%)</td>';
-         $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;text-align:right;">Taxable Value</td>';
-//        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">CGST</td>';
-//        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">SGST</td>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;text-align:right;">IGST</td>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;text-align:right;">CESS</td>';
-        $mpdfHtml .= '</tr>';
-
-        $mpdfHtml .= '<tr class="heading">';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;text-align:right;">(%)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Amt (₹)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;text-align:right;">(%)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;text-align:right;">Amt (₹)</td>';
-//        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">(%)</td>';
-//        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Amt (₹)</td>';
-//        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">(%)</td>';
-//        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Amt (₹)</td>';
-        $mpdfHtml .= '</tr>';
-        $counter = 1;
-        $total_taxable_subtotal = 0.00;
-        $totaligstpercent = 18;
-        $total_igst_amount = ($totaligstpercent / 100) * $planDetail['0']->plan_price;
-        $total_plan_amount=$planDetail['0']->plan_price+$total_igst_amount;
-        
-        $mpdfHtml .= '<tr>';
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
-            $mpdfHtml .= $counter;
-            $mpdfHtml .= '</td>';
-
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:left;">';
-            $mpdfHtml .= '<b>'.$planDetail['0']->cat_name.':'.$planDetail['0']->name.'</b><br>';
-            $mpdfHtml .= '<b> GSTN :</b>'.$planDetail['0']->no_of_client.'<br>';
-            $mpdfHtml .= '<b> Company :</b>'.$planDetail['0']->company_no.'<br>';
-            $mpdfHtml .= '<b> Pan :</b>'.$planDetail['0']->pan_num.'<br>';
-            $mpdfHtml .= '<b> Invoice number :</b>'.$planDetail['0']->invoice_num.'<br>';
-            $mpdfHtml .= '<b> support :</b>'.$planDetail['0']->support.'<br>';
-            $mpdfHtml .= '<b> period_of_service :</b>'.$planDetail['0']->period_of_service.'<br>';
-            $mpdfHtml .= '<b> Web Mobile App :</b>'.$planDetail['0']->web_mobile_app.'<br>';
-//            $mpdfHtml .= '<b> e_filing :'.$planDetail['0']->no_of_client.'</b><br>';
-//            $mpdfHtml .= '<b> excel_tool :'.$planDetail['0']->no_of_client.'</b><br>';
-            $mpdfHtml .= '<b> Cloud Storage :</b>'.$planDetail['0']->cloud_storage_gb.'<br>';
-            $mpdfHtml .= '<b> Expert Help :</b>'.$planDetail['0']->gst_expert_help.'<br>';
-            
-            $mpdfHtml .= '</td>';
-
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
-            $mpdfHtml .= '#123456';
-            $mpdfHtml .= '</td>';
-
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
-            $mpdfHtml .= 1;
-            $mpdfHtml .= '</td>';
-
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
-            $mpdfHtml .= 1;
-            $mpdfHtml .= '</td>';
-
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
-            $mpdfHtml .= $planDetail['0']->plan_price;
-            $mpdfHtml .= '</td>';
-
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
-            $mpdfHtml .= $planDetail['0']->plan_price;
-            $mpdfHtml .= '</td>';
-
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
-            $mpdfHtml .= 0;
-            $mpdfHtml .= '</td>';
-            
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
-            $mpdfHtml .= $planDetail['0']->plan_price;
-            $mpdfHtml .= '</td>';
-
-//            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
-//            $mpdfHtml .= 'cgst_rate';
-//            $mpdfHtml .= '</td>';
-//
-//            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
-//            $mpdfHtml .= 'cgst_amount';
-//            $mpdfHtml .= '</td>';
-//
-//            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
-//            $mpdfHtml .= 'sgst_rate';
-//            $mpdfHtml .= '</td>';
-//
-//            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
-//            $mpdfHtml .= 'sgst_amount';
-//            $mpdfHtml .= '</td>';
-
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
-            $mpdfHtml .= $totaligstpercent;
-            $mpdfHtml .= '</td>';
-
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
-            $mpdfHtml .= $total_igst_amount;
-            $mpdfHtml .= '</td>';
-
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
-            $mpdfHtml .= '0';
-            $mpdfHtml .= '</td>';
-
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
-            $mpdfHtml .= '0';
-            $mpdfHtml .= '</td>';
-
-            $mpdfHtml .= '</tr>';
-            $mpdfHtml .= '<tr>';
-             $mpdfHtml .= '<td colspan="17" style="padding:5px;vertical-align:top;text-align:right;border-top:2px solid #eee;font-weight:bold;">';
-             $mpdfHtml .= 'Total Invoice Value (In Figure): ' . $total_plan_amount;
-        $mpdfHtml .= '</td>';
-        $mpdfHtml .= '</tr>';
-       
-        $mpdfHtml .= '</br></br>';
-        $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="10" style="padding:5px;vertical-align:top;text-align:right;border-top:2px solid #eee;font-weight:bold;">';
-             $mpdfHtml .= 'This is a computer generated invoice. No signature is required.';
-        $mpdfHtml .= '</td>';
-        $mpdfHtml .= '</tr>';
-        $mpdfHtml .= '</table>';
-
-        $mpdfHtml .= '</td>';
-
-        $mpdfHtml .= '</tr>';
-
-        $mpdfHtml .= '</table>';
-             $mpdfHtml .= '</div>';
-        return $mpdfHtml;
-//                echo "<pre>";
-//        print_r($mpdfHtml);
-//       
-//        echo "</pre>";
-//        die();
-    }
-
     public function sendsubscribemail($module, $module_message, $to_send, $from_send, $bcc, $subject,$path) {
-        $dataInsertArray['module'] = $module;
-        $dataInsertArray['module_message'] = $module_message;
-        $dataInsertArray['to_send'] = $to_send;
-        $dataInsertArray['from_send'] = $from_send;
-        $dataInsertArray['bcc'] = $bcc;
-        $dataInsertArray['subject'] = $subject;
-        $dataInsertArray['status'] = '0';
-        $dataInsertArray['attachment'] = $path;
 
+		$dataInsertArray['module'] = $module;
+		$dataInsertArray['module_message'] = $module_message;
+		$dataInsertArray['to_send'] = $to_send;
+		$dataInsertArray['from_send'] = $from_send;
+		$dataInsertArray['bcc'] = $bcc;
+		$dataInsertArray['subject'] = $subject;
+		$dataInsertArray['status'] = '0';
+		$dataInsertArray['attachment'] = $path;
 
         if ($this->insert($this->tableNames['email'], $dataInsertArray)) {
             return true;

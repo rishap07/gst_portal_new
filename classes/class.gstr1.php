@@ -23,6 +23,21 @@ final class gstr1 extends validation {
         $this->getGSTR1Data($fmonth);
     }
 
+    public function gstr1PayloadDownload() {
+        //session_destroy();
+
+        $fmonth = isset($_GET['returnmonth']) ? $_GET['returnmonth'] : date('Y-m');
+        $payload = $this->gstCreatePayload($_SESSION['user_detail']['user_id'], $fmonth);
+        $dataArr = json_encode($payload['data_arr']);
+        header("Content-type: text/json");
+        header("Content-Disposition: attachment; filename=gstr1.json");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+        echo $dataArr;
+        exit;
+
+    }
+
     public function selectgstr1Upload() {
 
         $fmonth = isset($_GET['returnmonth']) ? $_GET['returnmonth'] : date('Y-m');
@@ -97,79 +112,90 @@ final class gstr1 extends validation {
     private function getGSTR1Data($fmonth) {
         $obj_gst = new gstr();
         //$obj_gst->gstr_session_destroy();
-        $is_gross_turnover_check = $obj_gst->is_gross_turnover_check($_SESSION['user_detail']['user_id']);
+        $is_gross_turnover_check = (float)$obj_gst->is_gross_turnover_check($_SESSION['user_detail']['user_id']);
+        $cur_gt=  (float)$obj_gst->cur_gross_turnover($_SESSION['user_detail']['user_id']);
+        $is_username_check = $obj_gst->is_username_exists($_SESSION['user_detail']['user_id']);
         $dataRes = $this->generalGSTR1InvoiceList($fmonth);
-        
         $flag = 0;
-        if (!empty($is_gross_turnover_check)) {
-            if (!empty($dataRes)) {
-                $payload = $this->gstCreatePayload($_SESSION['user_detail']['user_id'], $fmonth);
-                $dataArr = $payload['data_arr'];
-                $data_ids = $payload['data_ids'];
-                $response = $obj_gst->returnSave($dataArr, $fmonth,'gstr1');
-                
-                if (!empty($response['error'] == 0)) {
-                    $flag = 1;
-                    if (!empty($data_ids)) {
-                        /********** Start Code for Update Invoice is upload ************* */
-                        $flagup = 0;
-                        /*$this->pr($data_ids);
-                        die;*/
-                        $this->query("UPDATE ".$this->getTableName('client_invoice')." SET is_gstr1_uploaded='1' WHERE invoice_id in (".$data_ids.")");
-						
-                        /*********** End code for Update Invoice is upload ********* */
+        if(!empty($is_username_check)) {
+            if (!empty($is_gross_turnover_check) && !empty($cur_gt)) {
+                if (!empty($dataRes)) {
+                    $payload = $this->gstCreatePayload($_SESSION['user_detail']['user_id'], $fmonth);
+                    $dataArr = $payload['data_arr'];
+                    $data_ids = $payload['data_ids'];
+                    $response = $obj_gst->returnSave($dataArr, $fmonth,'gstr1');
+                    
 
-                        /******************* Start Code Return Save **************** */
-                        $dataReturn = $this->get_results("select * from " . $this->getTableName('return') . " where return_month='" . $fmonth . "' and client_id='" . $_SESSION['user_detail']['user_id'] . "' and type='gstr1'");
-                        if ($flagup == '1') {
-                            if (!empty($dataReturn)) {
-                                $dataGST1_set['financial_year'] = $this->generateFinancialYear();
-                                $dataGST1_set['return_month'] = $fmonth;
-                                $dataGST1_set['status'] = '2';
-                                $dataGST1['type'] = 'gstr1';
-                                $dataGST1['client_id'] = $_SESSION['user_detail']['user_id'];
-                                $this->update($this->getTableName('return'), $dataGST1_set, $dataGST1);
-								$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update GSTR1 upload status financial month ".$fmonth,"gstr1");
-			
-                            } else {
-                                $dataGST1['financial_year'] = $this->generateFinancialYear();
-                                $dataGST1['return_month'] = $fmonth;
-                                $dataGST1['type'] = 'gstr1';
-                                $dataGST1['client_id'] = $_SESSION['user_detail']['user_id'];
-                                $dataGST1['status'] = '2';
-                                $this->insert($this->getTableName('return'), $dataGST1);
-								$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " Uploaded GSTR1 for financial month ".$fmonth,"gstr1");
-			
+                    
+                    if (!empty($response['error'] == 0)) {
+                        $flag = 1;
+
+                        if (!empty($data_ids)) {
+                            /********** Start Code for Update Invoice is upload ************* */
+                            $flagup = 0;
+                            /*$this->pr($data_ids);
+                            die;*/
+                            $this->query("UPDATE ".$this->getTableName('client_invoice')." SET is_gstr1_uploaded='1' WHERE invoice_id in (".$data_ids.")");
+    						
+                            /*********** End code for Update Invoice is upload ********* */
+
+                            /******************* Start Code Return Save **************** */
+                            $dataReturn = $this->get_results("select * from " . $this->getTableName('return') . " where return_month='" . $fmonth . "' and client_id='" . $_SESSION['user_detail']['user_id'] . "' and type='gstr1'");
+                            if ($flagup == '1') {
+                                if (!empty($dataReturn)) {
+                                    $dataGST1_set['financial_year'] = $this->generateFinancialYear();
+                                    $dataGST1_set['return_month'] = $fmonth;
+                                    $dataGST1_set['status'] = '2';
+                                    $dataGST1['type'] = 'gstr1';
+                                    $dataGST1['client_id'] = $_SESSION['user_detail']['user_id'];
+                                    $this->update($this->getTableName('return'), $dataGST1_set, $dataGST1);
+    								$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update GSTR1 upload status financial month ".$fmonth,"gstr1");
+    			
+                                } else {
+                                    $dataGST1['financial_year'] = $this->generateFinancialYear();
+                                    $dataGST1['return_month'] = $fmonth;
+                                    $dataGST1['type'] = 'gstr1';
+                                    $dataGST1['client_id'] = $_SESSION['user_detail']['user_id'];
+                                    $dataGST1['status'] = '2';
+                                    $this->insert($this->getTableName('return'), $dataGST1);
+    								$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " Uploaded GSTR1 for financial month ".$fmonth,"gstr1");
+    			
+                                }
                             }
+                            /* ******* End Code for Return Save ************************* */
+                            $this->setSuccess(" Congratulations! GSTR1 Data Uploaded.");
+                        } 
+                        else {
+                            $flag = 2;
+                            $this->setError('file not updated');
                         }
-                        /* ******* End Code for Return Save ************************* */
-                        $this->setSuccess(" Congratulations! GSTR1 Data Uploaded.");
-                    } 
-                    else {
+                    } else {
                         $flag = 2;
-                        $this->setError('file not updated');
+                        $this->setError($response['message']);
                     }
-                } else {
-                    $flag = 2;
-                    $this->setError($response['message']);
                 }
-            }
-            if ($flag == 1) {
-                return true;
-            }
-            if ($flag == 2) {
+                if ($flag == 1) {
+                    return true;
+                }
+                if ($flag == 2) {
+                    return false;
+                }
+                if ($flag == 0) {
+                    $this->setError('No new data to upload');
+                    return false;
+                }
+            } else {
+                $this->setError('Sorry! Please update your gross turnover');
                 return false;
             }
-            if ($flag == 0) {
-                $this->setError('No new data to upload');
-                return false;
-            }
-        } else {
-            $this->setError('Sorry! Please update your gross turnover');
+        }
+        else {
+            $this->setError('Sorry! Please update your GSTIN username');
             return false;
         }
         return false;
     }
+
 
     public function gstr1File() {
         $fmonth = isset($_GET['returnmonth']) ? $_GET['returnmonth'] : date('Y-m');
@@ -311,12 +337,12 @@ final class gstr1 extends validation {
         /***** End Code For AT Payload ********** */
 
         /***** Start Code For NIL Payload ********** */
-        $nil_data = $this->getNILPayload($user_id, $returnmonth);
+       /* $nil_data = $this->getNILPayload($user_id, $returnmonth);
         if (!empty($nil_data)) {
             //$data_ids[] = $nil_ids = $nil_data['nil_ids'];
             $nil_arr = $nil_data['nil_arr'];
             $dataArr = array_merge($dataArr, $nil_arr);
-        }
+        }*/
         /***** End Code For NIL Payload ********** */
 
         /***** Start Code For Doc Issue Payload ********** */
@@ -377,8 +403,9 @@ final class gstr1 extends validation {
         $dataArr = $this->gstPayloadHeader($user_id, $returnmonth);
         $is_username_check = $obj_gst->is_username_exists($_SESSION['user_detail']['user_id']);
         if (!empty($is_username_check)) {
-            $is_gross_turnover_check = $obj_gst->is_gross_turnover_check($_SESSION['user_detail']['user_id']);
-            if (!empty($is_gross_turnover_check)) {
+            $is_gross_turnover_check =(float) $obj_gst->is_gross_turnover_check($_SESSION['user_detail']['user_id']);
+            $cur_gt=  (float)$obj_gst->cur_gross_turnover($_SESSION['user_detail']['user_id']);
+            if (!empty($is_gross_turnover_check) && !empty($cur_gt)) {
 
                 $deletePayload = $this->gstDeletePayload($user_id, $returnmonth,$type,$data,$all);
 
@@ -914,6 +941,9 @@ final class gstr1 extends validation {
                     $in_type = 'DE';
                 }
                 $rever_charge = ($dataIn->supply_type == 'reversecharge') ? 'Y' : 'N';
+                /*if($dataIn->supply_type == 'tcs') {
+                    $dataArr['b2b'][$x]['inv'][$y]['etin'] = $dataIn->ecommerce_gstin_number;
+                }*/
                 $dataArr['b2b'][$x]['inv'][$y]['inv_typ'] = $in_type;
                 $dataArr['b2b'][$x]['inv'][$y]['rchrg'] = $rever_charge;
                 $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['num'] = (int) $a;

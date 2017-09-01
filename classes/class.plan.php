@@ -14,7 +14,6 @@ class plan extends validation {
     public function addPlanCategory() {
         
         $dataArr['category_name'] = isset($_POST['category_name']) ? $_POST['category_name'] : '';
-        $dataArr['category_month'] = isset($_POST['category_month']) ? $_POST['category_month'] : '';
         $dataArr['category_description'] = isset($_POST['category_description']) ? $_POST['category_description'] : '';
         $dataArr['plan_category_status'] = isset($_POST['plan_category_status']) ? $_POST['plan_category_status'] : '';
         
@@ -33,7 +32,6 @@ class plan extends validation {
         }
 
         $dataInsertArray['name'] = $dataArr['category_name'];
-        $dataInsertArray['month'] = $dataArr['category_month'];
         $dataInsertArray['description'] = $dataArr['category_description'];
         $dataInsertArray['status'] = $dataArr['plan_category_status'];
         $dataInsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
@@ -79,7 +77,6 @@ class plan extends validation {
         
         $dataArr['category_id'] = isset($_POST['ecatid']) ? $_POST['ecatid'] : '';
         $dataArr['category_name'] = isset($_POST['category_name']) ? $_POST['category_name'] : '';
-        $dataArr['category_month'] = isset($_POST['category_month']) ? $_POST['category_month'] : '';
         $dataArr['category_description'] = isset($_POST['category_description']) ? $_POST['category_description'] : '';
         $dataArr['plan_category_status'] = isset($_POST['plan_category_status']) ? $_POST['plan_category_status'] : '';
 
@@ -96,15 +93,14 @@ class plan extends validation {
             $this->setError($this->validationMessage['categoryexist']);
             return false;
         }
-        
+
         $dataConditionArray['id'] = $dataArr['category_id'];
         $dataUpdateArray['name'] = $dataArr['category_name'];
-        $dataUpdateArray['month'] = $dataArr['category_month'];
         $dataUpdateArray['description'] = $dataArr['category_description'];
         $dataUpdateArray['status'] = $dataArr['plan_category_status'];
         $dataUpdateArray['updated_by'] = $_SESSION['user_detail']['user_id'];
         $dataUpdateArray['update_date'] = date('Y-m-d H:i:s');
-        
+
         if ($this->update($this->tableNames['subscriber_plan_category'], $dataUpdateArray, $dataConditionArray)) {
             
             $this->setSuccess( $this->validationMessage['plancategoryedit'] );
@@ -118,17 +114,16 @@ class plan extends validation {
         
         return true;
     }
-    
+
     public function validatePlanCategory($dataArr) {
 
         $rules = array(
             'category_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Name',
-            'category_month' => 'required||pattern:/^' . $this->validateType['integergreaterzero'] . '$/|#|lable_name:Month',
             'category_description' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Description',
             'plan_category_status' => 'required||pattern:/^[' . $this->validateType['onlyzeroone'] . ']*$/|#|lable_name:Status'
         );
-        
-	$valid = $this->vali_obj->validate($dataArr, $rules);
+
+		$valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
             $err_arr = $valid->allErrors();
             $this->setError($err_arr);
@@ -186,7 +181,7 @@ class plan extends validation {
     }
     
     public function addPlan() {
-        
+
         $dataArr['plan_name'] = isset($_POST['plan_name']) ? $_POST['plan_name'] : '';
         $dataArr['plan_description'] = isset($_POST['plan_description']) ? $_POST['plan_description'] : '';
         $dataArr['no_of_client'] = isset($_POST['no_of_client']) ? $_POST['no_of_client'] : '';
@@ -194,6 +189,12 @@ class plan extends validation {
         $dataArr['plan_price'] = isset($_POST['plan_price']) ? $_POST['plan_price'] : '';
         $dataArr['plan_visibility'] = isset($_POST['plan_visibility']) ? $_POST['plan_visibility'] : '';
         $dataArr['plan_status'] = isset($_POST['plan_status']) ? $_POST['plan_status'] : '';
+		$dataArr['sub_user'] = isset($_POST['sub_user']) ? $_POST['sub_user'] : '';
+		$dataArr['pan_num'] = isset($_POST['pan_num']) ? $_POST['pan_num'] : '';
+        $dataArr['company_no'] = isset($_POST['company_no']) ? $_POST['company_no'] : '';
+        $dataArr['support'] = isset($_POST['support']) ? $_POST['support'] : '';
+        $dataArr['cloud_storage_gb'] = isset($_POST['cloud_storage_gb']) ? $_POST['cloud_storage_gb'] : '';
+        $dataArr['gst_expert_help'] = isset($_POST['gst_expert_help']) ? $_POST['gst_expert_help'] : '';
 
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
@@ -211,11 +212,17 @@ class plan extends validation {
         $dataInsertArray['plan_price'] = $dataArr['plan_price'];
         $dataInsertArray['status'] = $dataArr['plan_status'];
         $dataInsertArray['visible'] = $dataArr['plan_visibility'];        
-        $dataInsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
-        $dataInsertArray['added_date'] = date('Y-m-d H:i:s');
-        
+		$dataInsertArray['sub_user'] = $dataArr['sub_user'];
+        $dataInsertArray['pan_num'] = $dataArr['pan_num'];
+        $dataInsertArray['company_no'] = $dataArr['company_no'];
+        $dataInsertArray['support'] = $dataArr['support'];
+        $dataInsertArray['cloud_storage_gb'] = $dataArr['cloud_storage_gb'];
+        $dataInsertArray['gst_expert_help'] = $dataArr['gst_expert_help'];
+		$dataInsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
+		$dataInsertArray['added_date'] = date('Y-m-d H:i:s');
+
         if ($this->insert($this->tableNames['subscriber_plan'], $dataInsertArray)) {
-            
+
             $this->setSuccess( $this->validationMessage['planadd'] );
             $insertid = $this->getInsertID();
             $this->logMsg("New Plan Added. ID : " . $insertid . ".","plan_addplan");
@@ -259,12 +266,13 @@ class plan extends validation {
         $dataArr['plan_price'] = isset($_POST['plan_price']) ? $_POST['plan_price'] : '';
         $dataArr['plan_visibility'] = isset($_POST['plan_visibility']) ? $_POST['plan_visibility'] : '';
         $dataArr['plan_status'] = isset($_POST['plan_status']) ? $_POST['plan_status'] : '';
-        $dataArr['pan_num'] = isset($_POST['pan_num']) ? $_POST['pan_num'] : '';
+        $dataArr['sub_user'] = isset($_POST['sub_user']) ? $_POST['sub_user'] : '';
+		$dataArr['pan_num'] = isset($_POST['pan_num']) ? $_POST['pan_num'] : '';
         $dataArr['company_no'] = isset($_POST['company_no']) ? $_POST['company_no'] : '';
         $dataArr['support'] = isset($_POST['support']) ? $_POST['support'] : '';
         $dataArr['cloud_storage_gb'] = isset($_POST['cloud_storage_gb']) ? $_POST['cloud_storage_gb'] : '';
         $dataArr['gst_expert_help'] = isset($_POST['gst_expert_help']) ? $_POST['gst_expert_help'] : '';
-        
+
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
@@ -273,12 +281,7 @@ class plan extends validation {
         if(!$this->validatePlan($dataArr)){
             return false;
         }
-        
-        /*if($this->checkPlanExist($dataArr['plan_period'], $dataArr['plan_id'])){
-            $this->setError($this->validationMessage['categoryexist']);
-            return false;
-        }*/
-        
+
         $dataConditionArray['id'] = $dataArr['plan_id'];
         $dataUpdateArray['name'] = $dataArr['plan_name'];
         $dataUpdateArray['description'] = $dataArr['plan_description'];
@@ -286,6 +289,7 @@ class plan extends validation {
         $dataUpdateArray['plan_category'] = $dataArr['plan_period'];
         $dataUpdateArray['plan_price'] = $dataArr['plan_price'];
         $dataUpdateArray['status'] = $dataArr['plan_status'];
+		$dataUpdateArray['sub_user'] = $dataArr['sub_user'];
         $dataUpdateArray['pan_num'] = $dataArr['pan_num'];
         $dataUpdateArray['company_no'] = $dataArr['company_no'];
         $dataUpdateArray['support'] = $dataArr['support'];

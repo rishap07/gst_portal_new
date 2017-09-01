@@ -250,21 +250,20 @@ class login extends validation {
                 $dataGo4host['ref_id'] = $ref_id;
 
                 $dataPlan1['plan_id'] = $dataGo4host['plan_id'];
+				$dataPlan1['no_of_client'] = $dataPlan[0]->no_of_client;
+				$dataPlan1['company_no'] = $dataPlan[0]->company_no;
+                $dataPlan1['pan_num'] = $dataPlan[0]->pan_num;
+				$dataPlan1['sub_user'] = $dataPlan[0]->sub_user;
+				$dataPlan1['plan_start_date'] = date('Y-m-d');
+                $dataPlan1['plan_due_date'] = date('Y') . '-03-31';
                 $dataPlan1['plan_price'] = $dataPlan[0]->plan_price;
                 $dataPlan1['plan_details'] = json_encode($dataPlan);
-                $dataPlan1['no_of_client'] = $dataPlan[0]->no_of_client;
-                $dataPlan1['company_no'] = $dataPlan[0]->company_no;
-                $dataPlan1['pan_num'] = $dataPlan[0]->pan_num;
-
-                $dataPlan1['plan_start_date'] = date('Y-m-d');
-                $dataPlan1['plan_due_date'] = date('Y') . '-03-31';
                 $dataPlan1['status'] = '1';
                 $dataPlan1['payment_method'] = 'banktransfer';
                 $dataPlan1['payment_status'] = '0';
                 $dataPlan1['ref_id'] = $ref_id;
                 $dataPlan1['added_by'] = $dataGo4host['user_id'];
                 $dataPlan1['added_date'] = date('Y-m-d H:i:s');
-
 
                 $this->insert(TAB_PREFIX . "user_subscribed_plan", $dataPlan1);
                 $this->insert(TAB_PREFIX . 'payment_log', array(
@@ -282,40 +281,37 @@ class login extends validation {
         }
     }
 
-    public function redirectGohost($data) {
-        ?>
-
-        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-        <head>
-            <script type="text/javascript">
-                function submitToPaypal()
-                {
-                    document.Form2.action = '<?php echo PROJECT_URL; ?>/go4hosting/keeper_payment.php';
-                    document.Form2.submit();
-                }
-            </script>
-        </head>
-        <body onload="submitToPaypal();">
-            <form action="<?php echo PROJECT_URL; ?>/go4hosting/keeper_payment.php" name="Form2" method="POST" id="Form2"> 
-                <input type="hidden" value="0" name="channel"/>
-                <input type="hidden" value="25039" name="account_id"/>
-                <input type="hidden" value="<?php echo $data['ref_id']; ?>" name="reference_no"/>
-                <input type="hidden" value="<?php echo $data['price']; ?>" name="amount"/>
-                <input type="hidden" value="INR" name="currency"/>
-                <input type="hidden" value="INR" name="display_currency"/>
-                <input type="hidden" value="1" name="display_currency_rates"/>
-                <input type="hidden" value="Payment information from GST" name="description"/>
-                <input type="hidden" value="<?php echo PROJECT_URL . "/go4hosting/keeper_response.php"; ?>" name="return_url"/>
-                <input type="hidden" value="LIVE" name="mode"/>
-                <input type="hidden" value="<?php echo $data['username']; ?>" name="name"/>
-                <input type="hidden" value="Delhi" name="address"/>
-                <input type="hidden" value="Delhi" name="city"/>
-                <input type="hidden" value="110010" name="postal_code"/>
-                <input type="hidden" value="IND" name="country"/>
-                <input type="hidden" value="<?php echo $data['email']; ?>" name="email"/>
-                <input type="hidden" value="<?php echo $data['phone_number']; ?>" name="phone"/>
-            </form>
-        </body>
+    public function redirectGohost($data) { ?>
+		<html>
+			<head>
+				<script type="text/javascript">
+					function submitToPaypal() {
+						document.Form2.action = '<?php echo PROJECT_URL; ?>/go4hosting/keeper_payment.php';
+						document.Form2.submit();
+					}
+				</script>
+			</head>
+			<body onload="submitToPaypal();">
+				<form action="<?php echo PROJECT_URL; ?>/go4hosting/keeper_payment.php" name="Form2" method="POST" id="Form2"> 
+					<input type="hidden" value="0" name="channel"/>
+					<input type="hidden" value="25039" name="account_id"/>
+					<input type="hidden" value="<?php echo $data['ref_id']; ?>" name="reference_no"/>
+					<input type="hidden" value="<?php echo $data['price']; ?>" name="amount"/>
+					<input type="hidden" value="INR" name="currency"/>
+					<input type="hidden" value="INR" name="display_currency"/>
+					<input type="hidden" value="1" name="display_currency_rates"/>
+					<input type="hidden" value="Payment information from GST" name="description"/>
+					<input type="hidden" value="<?php echo PROJECT_URL . "/go4hosting/keeper_response.php"; ?>" name="return_url"/>
+					<input type="hidden" value="LIVE" name="mode"/>
+					<input type="hidden" value="<?php echo $data['username']; ?>" name="name"/>
+					<input type="hidden" value="Delhi" name="address"/>
+					<input type="hidden" value="Delhi" name="city"/>
+					<input type="hidden" value="110010" name="postal_code"/>
+					<input type="hidden" value="IND" name="country"/>
+					<input type="hidden" value="<?php echo $data['email']; ?>" name="email"/>
+					<input type="hidden" value="<?php echo $data['phone_number']; ?>" name="phone"/>
+				</form>
+			</body>
         </html>
         <?php
         exit();
@@ -339,11 +335,13 @@ class login extends validation {
             $emaildata = $this->get_results($sql_forgot);
 
             if (count($emaildata) > 0) {
-                $to_time = $emaildata[0]->code_senttime;
+
+				$to_time = $emaildata[0]->code_senttime;
                 $to_time = strtotime($to_time);
                 $from_time = strtotime(date('Y-m-d H:i:s'));
                 $time_diff = round(abs($to_time - $from_time) / 60, 2);
-                if ($time_diff > 15) {
+
+				if ($time_diff > 15) {
 
                     if ($this->sendMail('Email Verify', 'User ID : ' . $userid . ' email forgotPassword', $data[0]->email, 'noreply@gstkeeper.com', '', 'rishap.gandhi@cyfuture.com,sheetalprasad95@gmail.com', '', 'Password Reset', $this->getEmailVerifyMailBody($userid, $name))) {
 
@@ -354,8 +352,6 @@ class login extends validation {
                         return false;
                     }
                 } else {
-                    // $this->setError($this->validationMessage['failed']);
-                    //return false;
                     $this->setError('Email is already sent please check your mailbox or try again after 15 minutes');
                     return false;
                 }

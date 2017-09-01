@@ -19,8 +19,8 @@ final class client extends validation {
 
 		include(CLASSES_ROOT . "/digitalsignlib/X509.php");
 		$dataCurrentArr = $this->getUserDetailsById($this->sanitize(base64_decode($_POST['clientID'])));
-
-        $dataArr['name'] = isset($_POST['name']) ? $_POST['name'] : '';
+        
+		$dataArr['name'] = isset($_POST['name']) ? $_POST['name'] : '';
         $dataArr['email'] = isset($_POST['email']) ? $_POST['email'] : '';
         $dataArr['phone_number'] = isset($_POST['phone_number']) ? $_POST['phone_number'] : '';
         $dataArr['date_of_birth'] = isset($_POST['date_of_birth']) ? $_POST['date_of_birth'] : '';
@@ -30,22 +30,50 @@ final class client extends validation {
 			$dataArr['gstin_number'] = isset($_POST['gstin_number']) ? $_POST['gstin_number'] : '';
 			$dataArr['pan_card_number'] = isset($_POST['pan_card_number']) ? $_POST['pan_card_number'] : '';
 
-			$obj_plan = new plan();
 			$dataCurrentSubsArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
 
-			$clientIds = $this->getClient("GROUP_CONCAT(user_id) as clientIds", "added_by=".$this->sanitize($_SESSION['user_detail']['user_id']));
-			$totalPANs = $this->get_results("select count(DISTINCT pan_card_number) as total_pan_card_number from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by IN(".$clientIds[0]->clientIds.")");
+			$parentIds = array();
+			if($dataCurrentSubsArr['data']->user_group == 3) {
 
-			$subscribePlanDetail = $obj_plan->getPlanDetails($dataCurrentSubsArr['data']->plan_id);
+				array_push($parentIds, $dataCurrentSubsArr['data']->user_id);
+				$getSubUser = $this->get_results("select user_id from ".$this->tableNames['user']." where 1=1 AND user_group = '5' AND added_by = '" . $dataCurrentSubsArr['data']->user_id . "'");
+				foreach($getSubUser as $subuser) {
+					array_push($parentIds, $subuser->user_id);
+				}
+			} else if($dataCurrentSubsArr['data']->user_group == 5) {
+
+				$getParent = $this->get_row("select added_by from ".$this->tableNames['user']." where 1=1 AND user_group = '5' AND user_id = '" . $dataCurrentSubsArr['data']->user_id . "'");
+				array_push($parentIds, $getParent->added_by);
+
+				$getSubUser = $this->get_results("select user_id from ".$this->tableNames['user']." where 1=1 AND user_group = '5' AND added_by = '" . $getParent->added_by . "'");
+				foreach($getSubUser as $subuser) {
+					array_push($parentIds, $subuser->user_id);
+				}
+			}
+
+			$allParentIds = implode(",", $parentIds);
+			
+			echo $allParentIds; die;
+
+			$totalPANs = $this->get_results("select count(DISTINCT k.pan_card_number) as total_pan_card_number from ".$this->tableNames['user']." u left join " . $this->getTableName('client_kyc') ." k on u.user_id = k.added_by where 1=1 AND u.user_group = '4' AND u.added_by IN(".$allParentIds.")");
+			//$clientIds = $this->getClient("GROUP_CONCAT(user_id) as clientIds", "added_by=".$this->sanitize($_SESSION['user_detail']['user_id']));
+			//$totalPANs = $this->get_results("select count(DISTINCT pan_card_number) as total_pan_card_number from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by IN(".$clientIds[0]->clientIds.")");
+
+			$subscribePlanDetail = $this->getUserSubscribePlanDetails($dataCurrentSubsArr['data']->plan_id);
 			$panPermission = isset($subscribePlanDetail['data']->pan_num) ? $subscribePlanDetail['data']->pan_num : 0;
 
-			if($totalPANs[0]->total_pan_card_number >= $panPermission) {
+			if($totalPANs[0]->total_pan_card_number > $panPermission) {
 
+				$this->setError('You have reach maximum company creation limit.');
+				return false;
+
+				/*
 				$panResult = $this->get_results("select pan_card_number from " . $this->tableNames['client_kyc'] ." where 1=1 AND pan_card_number IN('".$dataArr['pan_card_number']."') AND added_by IN(".$clientIds[0]->clientIds.")");
 				if(count($panResult) == 0) {
 					$this->setError('You have reach maximum company creation limit.');
 					return false;
 				}
+				*/
 			}
 		} else {
 
