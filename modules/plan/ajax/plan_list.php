@@ -13,8 +13,8 @@ $obj_plan = new plan();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('r.id', 'r.name', 'r.description', 'r.no_of_client','r.company_no', 'r.pan_num','s.name catname', 'r.plan_price', 'r.visible', 'r.status');
-$aSearchColumns = array('r.name', 'r.description', 'r.no_of_client', 'r.plan_category', 'r.plan_price', 'r.visible', 'r.status');
+$aColumns = array('r.id', 'r.name', 'r.description', 'r.no_of_client', 'r.company_no', 'r.pan_num', 'r.sub_user', 's.name as catname', 'r.plan_price', 'r.visible', 'r.status');
+$aSearchColumns = array('r.name', 'r.description', 'r.no_of_client', 'r.company_no', 'r.pan_num', 'r.sub_user', 's.name as catname', 'r.plan_price', 'r.visible', 'r.status');
 $sIndexColumn = "r.id";
 
 /* DB table to use */
@@ -54,10 +54,8 @@ if (isset($_POST['iSortCol_0'])) {
  */
 if($_SESSION['user_detail']['user_group']=='1'){
     $spWhere = " where r.is_deleted='0' ";
-    $spWhere1 = " where r.is_deleted='0' ";
 } else {
     $spWhere = " where r.is_deleted='0' and r.added_by='".$_SESSION['user_detail']['user_id']."' ";
-    $spWhere1 = " where r.is_deleted='0' and r.added_by='".$_SESSION['user_detail']['user_id']."' ";
 }
 
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
@@ -87,29 +85,23 @@ for ($i = 0; $i < count($aColumns); $i++) {
  * Get data to display
  */
 $spWhere = trim(trim($spWhere), 'AND');
-//$spjoin = "r inner join".$sp1Table."s on r.plan_category=s.id";
-$spjoin = $obj_plan->getTableName('subscriber_plan')." r inner join " . TAB_PREFIX."subscriber_plan_category s"
-        ." on r.plan_category =s.id";
+$spjoin = $obj_plan->getTableName('subscriber_plan')." r inner join " . TAB_PREFIX."subscriber_plan_category s on r.plan_category =s.id";
 $spQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ", $aColumns)) . "
             FROM $spjoin
             $spWhere
             $spOrder
             $spLimit
-	"; 
-
+	";
 //echo $spQuery; die;
 $rResult = $obj_plan->get_results($spQuery);
-// echo "<pre>";
-//        print_r($rResult);
-//        echo "</pre>";
-//        die();
+
 /* Data set length after filtering */
 $spQuery = "SELECT FOUND_ROWS() as rows";
 $iFilteredTotal = $obj_plan->get_row($spQuery);
 $iFilteredTotal = $iFilteredTotal->rows;
 
 /* Total data set length */
-$spQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $spTable $spWhere1";
+$spQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $spTable $spWhere";
 //echo $spQuery;
 $iTotal = $obj_plan->get_row($spQuery);
 $iTotal = $iTotal->count;
@@ -147,6 +139,7 @@ foreach($rResult as $aRow) {
     $row[] = utf8_decode($aRow->catname);
     $row[] = utf8_decode($aRow->name);
     $row[] = utf8_decode($aRow->description);
+	$row[] = utf8_decode($aRow->sub_user);
     $row[] = utf8_decode($aRow->no_of_client);
     $row[] = utf8_decode($aRow->company_no);
     $row[] = utf8_decode($aRow->pan_num);

@@ -493,12 +493,12 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 		    echo "<div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>GST-Transition month of  ".$returnmonth." already submitted </div>";
 					
 				} }?>
-				<div class="tab" style="display:none;">
+				<div class="tab">
                 <a href="<?php echo PROJECT_URL . '/?page=transition_gstr&returnmonth='.$returnmonth ?>" class="active">
-                    Prepare GSTR-3B 
+                    Transition Form1
                 </a>
-                <a href="<?php echo PROJECT_URL . '/?page=return_filegstr3b_file&returnmonth='.$returnmonth ?>" >
-                    File GSTR-3B
+                <a href="<?php echo PROJECT_URL . '/?page=transition_gstr2&returnmonth='.$returnmonth ?>" >
+                    Transition Form2
                 </a>
               
             </div>

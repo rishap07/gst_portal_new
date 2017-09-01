@@ -11,10 +11,7 @@
 		if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
 			$obj_gstr2->setError('Invalid access to files');
 		} else {
-			$response1 = $obj_gstr2->downloadGSTR2();
-			$response_b2b = $response1['response_b2b'];
-			$response_cdn = $response1['response_cdn'];
-			//$obj_gstr2->pr($response1);die;
+			$obj_gstr2->downloadGSTR2();
 			
 		}
 	}
@@ -87,16 +84,15 @@
 				?>
 				
 			</div>
-			<div id="display_json"></div>
 			<?php 
 				$responseCDN = $obj_gstr2->checkUserInvoices($_SESSION['user_detail']['user_id'],$returnmonth,'CDN');
 				$responseB2B = $obj_gstr2->checkUserInvoices($_SESSION['user_detail']['user_id'],$returnmonth,'B2B');
-				$responseTable = '';
+				$responseTableB2B = $responseTableCDN = '';
 				if(!empty($responseB2B)) {
-					$responseTable .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
+					$responseTableB2B .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
 					        <thead>
 					        <tr>
-					            <th>Number</th>
+					            <th>Num</th>
 					            <th style="text-align:center">Invoice number</th> 
 					            <th style="text-align:center">Ctin</th> 
 					            <th style="text-align:center">Pos </th> 
@@ -114,10 +110,10 @@
 					            
 					            <th style="text-align:center">Rchrg</th>            
 					        </tr>';
-			            $i=0;
+			            $i=1;
                         foreach ($responseB2B as $key3 => $value) {
                         	$idt = $value->invoice_date > 0 ? date('d-m-Y', strtotime($value->invoice_date)) : '';
-                    		$responseTable .='<tr>
+                    		$responseTableB2B .='<tr>
                                	<td align="center">'.$value->itms.'</td>
                                 <td align="center">'.$value->reference_number.'</td>
                                 <td align="center">'.$value->company_gstin_number.'</td>
@@ -136,14 +132,14 @@
                             </tr>';
                           
                         }
-			            $responseTable .= '
+			            $responseTableB2B .= '
 			                </thead>
 			            </table>';
 				
-			            echo $responseTable;
+			            echo $responseTableB2B;
 				}
 				if(!empty($responseCDN)) {
-					$responseTable .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
+					$responseTableCDN .= '<table width="80%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
 			            <thead>
 			            <tr>
 			                <th>Num</th>
@@ -165,11 +161,11 @@
 			                <th style="text-align:center">Ntty</th>
 			                
 			            </tr>';
-			            $i=0;
+			            $i=1;
                         foreach ($responseCDN as $key3 => $value) {
                         	$idt = $value->invoice_date > 0 ? date('d-m-Y', strtotime($value->invoice_date)) : '';
                         	$nt_dt = $value->nt_dt > 0 ? date('d-m-Y', strtotime($value->nt_dt)) : '';
-                        		$responseTable .='<tr>
+                        		$responseTableCDN .='<tr>
                         			<td align="center">'.$value->itms.'</td>
                         			<td align="center">'.$value->nt_num.'</td>
                         			 <td align="center">'.$value->company_gstin_number.'</td>
@@ -187,14 +183,14 @@
 	                                <td align="right">'.$value->invoice_total_value.'</td>
 	                                <td align="center">'.$value->rsn.'</td>
 	                                <td align="center">'.$value->ntty.'</td>
-	                            </tr>';	
+	                            </tr>';
                           
                         }
-			            $responseTable .= '
+			            $responseTableCDN .= '
 			                </thead>
 			            </table>';
 				
-			            echo $responseTable;
+			            echo $responseTableCDN;
 				}
 			?>
 
@@ -207,29 +203,9 @@
 	<div class="clear"></div>
 </div>
 <script>
-	get_summary();
 	$(document).ready(function () {
 		$('#returnmonth').on('change', function () {
 			window.location.href = "<?php echo PROJECT_URL; ?>/?page=return_vendor_invoices&returnmonth=" + $(this).val();
 		});
 	});
-	  /******* To get Summary of GSTR2 ********/
-    function get_summary() {
-        var response_b2b = '<?php echo $response_b2b;?>';
-        var response_cdn = '<?php echo $response_cdn;?>';
-        var jstr = 'gstr2b';
-        var returnmonth = '<?php echo $returnmonth;?>';
-        $.ajax({
-            url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_json_view",
-            type: "post",
-            data: {response_b2b: response_b2b,response_cdn: response_cdn,returnmonth:returnmonth,jstr:jstr},
-            success: function (response) {
-               $('#display_json').html(response);
-
-            },
-            error: function() {
-            }
-        });
-    }
-    /******* To get Summary of GSTR2 ********/
 </script>

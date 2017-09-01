@@ -27,6 +27,7 @@ if ($_REQUEST['returnmonth'] != '') {
 }
 
 $response = $obj_api->returnSummary($returnmonth);
+
 ?>
 <?php 
 
@@ -92,7 +93,6 @@ $response = $obj_api->returnSummary($returnmonth);
                         <?php $obj_gstr1->showErrorMessage(); ?>
                         <?php $obj_gstr1->showSuccessMessge(); ?>
                         <?php $obj_gstr1->unsetMessage(); ?>
-                        
                         <div id="display_json"></div>
                     </div>
                 </div>
@@ -131,7 +131,6 @@ $response = $obj_api->returnSummary($returnmonth);
             data: {json: json,returnmonth:returnmonth},
             success: function (response) {
                $('#display_json').html(response);
-               
             },
             error: function() {
             }
@@ -148,8 +147,7 @@ $response = $obj_api->returnSummary($returnmonth);
                 data: {type:type,returnmonth:returnmonth,deleteType:'all'},
                 success: function (response) {
                     $("#loading").hide();
-                  //location.reload();
-                   //location.reload();
+                    location.reload();
                 },
                 error: function() {
                 }
@@ -158,7 +156,6 @@ $response = $obj_api->returnSummary($returnmonth);
         else {
             alert(type+ ' Invoice empty');
         }
-        
     }
     /******* To delele invoice of GSTR1 ********/
 </script>

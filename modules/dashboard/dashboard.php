@@ -2,7 +2,7 @@
 
 if(isset($_SESSION['user_detail']['user_group']) && $_SESSION['user_detail']['user_group']!='')
 {
-	if($_SESSION['user_detail']['user_group']=='3' || $_SESSION['user_detail']['user_group']=='4')
+	if($_SESSION['user_detail']['user_group']=='3' || $_SESSION['user_detail']['user_group']=='4' || $_SESSION['user_detail']['user_group']=='5')
 	{
 		if(isset($_GET['verifyemail']) && isset($_GET['passkey']))
 		{

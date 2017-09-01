@@ -54,7 +54,6 @@ if(!empty($type) && !empty($arrValues)) {
 			
 		}
 	}
-
 	if($type == 'CDNUR') {
 		$inum= isset($_POST['arrValues'][0])?$_POST['arrValues'][0]:'';
 		$idt= isset($_POST['arrValues'][1])?$_POST['arrValues'][1]:'';
@@ -99,5 +98,5 @@ if(!empty($type) && empty($arrValues) && !empty($deleteType)) {
 	$data['json'] =  $obj_api->returnSummary($returnmonth,$type);
 	$response = $obj_gst1->gstDeleteItemPayload($returnmonth,$type,$data,$deleteType);
 }
- $obj_gst1->pr($response);
- die;
+ /*$obj_gst1->pr($response);
+ die;*/

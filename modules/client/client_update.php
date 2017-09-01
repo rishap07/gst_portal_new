@@ -1,6 +1,8 @@
 <?php
 $obj_client = new client();
 $obj_plan = new plan();
+$obj_user = new users();
+
 if (!isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '') {
     $obj_client->redirect(PROJECT_URL);
     exit();
@@ -17,6 +19,7 @@ if (!$obj_client->can_read('client_list')) {
 $dataCurrentArr = array();
 $dataCurrentArr = $obj_client->getUserDetailsById($obj_client->sanitize($_SESSION['user_detail']['user_id']));
 //var_dump($dataCurrentArr);
+
 if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
 
     if (!$obj_client->can_create('client_list')) {
@@ -25,20 +28,39 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
         exit();
     }
 
-    $subscribePlanDetail = $obj_plan->getPlanDetails($dataCurrentArr['data']->plan_id);
-    $totalClientCreated = $obj_client->get_row("select count(user_id) as totalClientCreated from " . $obj_client->getTableName('user') . " where user_group=4 and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+    $subscribePlanDetail = $obj_user->getUserSubscribePlanDetails($dataCurrentArr['data']->plan_id);
+	$totalClientCreated = $obj_client->get_row("select count(user_id) as totalClientCreated from " . $obj_client->getTableName('user') . " where user_group=4 and is_deleted='0' and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
 	$totalSubuserClient = $obj_client->get_row("select no_of_client from " . $obj_client->getTableName('user') . " where user_id=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
-	$totalSubUserCreated = $obj_client->get_row("select sum(no_of_client) as totalSubUserCreated from " . $obj_client->getTableName('user') . " where user_group=5 and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	$totalSubUserCreated = $obj_client->get_row("select sum(no_of_client) as totalSubUserCreated from " . $obj_client->getTableName('user') . " where user_group=5 and is_deleted='0' and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
 	$totaluser = intval($totalClientCreated->totalClientCreated)+$totalSubUserCreated->totalSubUserCreated;
-	
-    $totalClientPan = $obj_client->get_row("select distinct(pan_card_number) as client_pan from " . $obj_client->getTableName('user') . " where added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
-	
+	//$totalClientPan = $obj_client->get_row("select distinct(pan_card_number) as client_pan from " . $obj_client->getTableName('user') . " where added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	if($_SESSION["user_detail"]["user_group"]==3)
+	{
+		if(date('Y-m-d') > $subscribePlanDetail['data']->plan_due_date)
+		{
+			$obj_client->setError('your plan is expire');
+			$obj_client->redirect(PROJECT_URL . "?page=client_update");
+		}	
+	}	
+    if($_SESSION["user_detail"]["user_group"]==5)
+	{
+		$added_by = $obj_client->get_row("select added_by from " . $obj_client->getTableName('user') . " where user_id=" . $obj_client->sanitize($_SESSION['user_detail']['user_id'])."");
+		//$dataCurrentArr = $obj_client->getUserDetailsById($added_by->added_by);
+		$sql= "select plan_due_date from " . $obj_client->getTableName('user_subscribed_plan') . " where added_by='".$added_by->added_by."' and payment_status='1' order by id desc limit 0,1";
+		$subscribePlanDetail = $obj_client->get_row($sql);	
+		
+	   if(date('Y-m-d') > $subscribePlanDetail->plan_due_date)
+		{
+			$obj_client->setError('your plan is expire');
+			$obj_client->redirect(PROJECT_URL . "?page=client_update");
+		}
+	}		
 	if($_SESSION["user_detail"]["user_group"]==3)
 	{
 		if ($subscribePlanDetail['data']->no_of_client>=0 && ($totaluser >= intval($subscribePlanDetail['data']->no_of_client))) {
 
 			$obj_client->setError('You have reach maximum client creation limit.');
-			$obj_client->redirect(PROJECT_URL . "?page=client_list");
+			$obj_client->redirect(PROJECT_URL . "?page=client_update");
 		}
 	}
 	if($_SESSION["user_detail"]["user_group"]==5)
@@ -47,17 +69,11 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
 		if ($totaluser >= intval($totalSubuserClient->no_of_client)) {
              
 			$obj_client->setError('You have reach maximum client creation limit.');
-			$obj_client->redirect(PROJECT_URL . "?page=client_list");
+			$obj_client->redirect(PROJECT_URL . "?page=client_update");
 		}
 	}
-	if($_SESSION["user_detail"]["user_group"]==3)
-	{
-		if ($subscribePlanDetail['data']->pan_num>=0 && ($totalClientPan->client_pan >= intval($subscribePlanDetail['data']->pan_num))) {
-
-			$obj_client->setError('You have reach maximum PAN limit.');
-			$obj_client->redirect(PROJECT_URL . "?page=client_list");
-		}
-	}
+	
+	
     if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])) {
         $obj_client->setError('Invalid access to files');
     } else {

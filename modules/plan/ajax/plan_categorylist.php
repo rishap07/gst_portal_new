@@ -13,8 +13,8 @@ $obj_plan = new plan();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('id','name','month', 'description', 'status');
-$aSearchColumns = array('name','month', 'description', 'status');
+$aColumns = array('id','name', 'description', 'status');
+$aSearchColumns = array('name', 'description', 'status');
 $sIndexColumn = "id";
 
 /* DB table to use */
@@ -55,7 +55,7 @@ if (isset($_POST['iSortCol_0'])) {
 $spcWhere = " where is_deleted='0' ";
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
     
-    $spWhere .= 'AND (';
+    $spcWhere .= 'AND (';
     for ($i = 0; $i < count($aSearchColumns); $i++) {
         $spcWhere .= $aSearchColumns[$i] . " LIKE '%" . utf8_encode(htmlentities($_POST['sSearch'],ENT_COMPAT,'utf-8')) . "%' OR ";
     }
@@ -96,7 +96,7 @@ $iFilteredTotal = $iFilteredTotal->rows;
 
 /* Total data set length */
 $spcQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $spcTable";
-//echo $sQuery;
+//echo $sQuery; die;
 $iTotal = $obj_plan->get_row($spcQuery);
 $iTotal = $iTotal->count;
 
@@ -124,7 +124,6 @@ if(isset($rResult) && !empty($rResult))
 
         $row[] = $temp_x;
         $row[] = utf8_decode($aRow->name);
-        $row[] = utf8_decode($aRow->month);
         $row[] = utf8_decode($aRow->description);
         $row[] = $status;
         $row[] = '<a href="'.PROJECT_URL.'/?page=plan_editcategory&action=editPlanCategory&id='.$aRow->id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=plan_categorylist&action=deletePlanCategory&id='.$aRow->id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';

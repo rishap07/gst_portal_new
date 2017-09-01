@@ -1,9 +1,5 @@
 <?php
 $obj_users = new users();
-if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '' ) {
-    $obj_users->redirect(PROJECT_URL);
-    exit();
-}
 
 if( isset($_GET['plan_id']) && $obj_users->validateId($_GET['plan_id']) ) {
         

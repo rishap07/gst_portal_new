@@ -62,7 +62,6 @@ if( isset($_GET['action']) && $_GET['action'] == 'deletePlanCategory' && isset($
                     <tr>
                         <th align='left'>#</th>
                         <th align='left'>Name</th>
-                        <th align='left'>Month</th>
                         <th align='left'>Description</th>
                         <th align='left'>Status</th>
                         <th align='left'>Action</th>
@@ -92,7 +91,6 @@ if( isset($_GET['action']) && $_GET['action'] == 'deletePlanCategory' && isset($
                 $.extend($.fn.dataTable.defaults, {'sServerMethod': 'POST'});
                 $('#mainTable').dataTable({
                     "aoColumns": [
-                        {"bSortable": false},
                         {"bSortable": false},
                         {"bSortable": false},
                         {"bSortable": false},
