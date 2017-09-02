@@ -170,8 +170,14 @@
 						<span class="collapse in hidden-xs">Business Users <span class="navrgtarrow"><i class="fa fa-chevron-right" aria-hidden="true"></i></span></span></a>
 						<ul class="nav nav-stacked collapse left-submenu" id="item2">
 							<li><a href="<?php echo PROJECT_URL; ?>/?page=client_list"><i class="fa fa-circle" aria-hidden="true"></i>All Business User</a></li>
-							<?php if ($db_obj->can_read('subscriber_subuser_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=subscriber_subuser_list"><i class="fa fa-circle" aria-hidden="true"></i>All Business SubUser</a></li><?php } ?>
 							<li><a href="<?php echo PROJECT_URL; ?>/?page=client_update"><i class="fa fa-circle" aria-hidden="true"></i>Add Business User</a></li>
+						<?php $dataCurrentArr = $db_obj->getUserDetailsById($db_obj->sanitize($_SESSION['user_detail']['user_id']));
+							$subscribePlanDetail = $db_obj->getUserSubscribePlanDetails($dataCurrentArr['data']->plan_id,$db_obj->sanitize($_SESSION['user_detail']['user_id']));
+							if(!empty($subscribePlanDetail['data']) && ($subscribePlanDetail['data']->sub_user!=0))
+							{
+							?><?php  if ($db_obj->can_read('subscriber_subuser_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=subscriber_subuser_list"><i class="fa fa-circle" aria-hidden="true"></i>All Business SubUser</a></li><?php } ?>
+							
+						<?php } ?>
 						</ul>
 					</li>
 				<?php } ?>

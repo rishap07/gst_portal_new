@@ -1,6 +1,6 @@
 <?php
 $obj_login = new login();
-if(isset($_POST['plan']) && $_POST['plan']!=''){
+if(isset($_POST['plan']) && $_POST['plan'] != ''){
 	$_SESSION['plan_id'] = $_POST['plan'];
 }
 
@@ -183,7 +183,7 @@ if (isset($_POST['register_me']) && $_POST['register_me'] == 'REGISTER') {
 						</div>
 
 						<div class="admintxt">
-							<input id="city" name="city" type="text" placeholder="City" class="required" />
+							<input id="city" name="city" type="text" placeholder="City" value="<?php echo isset($_POST['city']) ? $obj_login->sanitize($_POST['city']) : ''; ?>" class="required" />
 							<strong class="fa fa-location-arrow" aria-hidden="true"></strong>
 						</div>
 
@@ -193,7 +193,7 @@ if (isset($_POST['register_me']) && $_POST['register_me'] == 'REGISTER') {
 								<?php if(!empty($dataBStateArrs)) { ?>
 									<option value=''>Select State</option>
 									<?php foreach($dataBStateArrs as $dataBStateArr) { ?>
-										<option value='<?php echo $dataBStateArr->state_id; ?>'><?php echo $dataBStateArr->state_name; ?></option>
+										<option value='<?php echo $dataBStateArr->state_id; ?>' <?php if(isset($_POST['state']) && $_POST['state'] == $dataBStateArr->state_id) { echo "selected='selected'"; } ?>><?php echo $dataBStateArr->state_name; ?></option>
 									<?php } ?>
 								<?php } ?>
 							</select>
