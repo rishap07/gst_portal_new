@@ -556,8 +556,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 
                             <label>2.LegalName of the registered person-<span class="starred"></span></label>
 							 <label><strong><?php echo $client_name; ?></strong></label>
-						 
-							   </div>
+						    </div>
 							    <div class="col-md-4 col-sm-4 col-xs-12 form-group">
 
                             <label>3.TradeName of any-<span class="starred"></span></label>

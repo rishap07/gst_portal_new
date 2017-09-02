@@ -30,21 +30,27 @@
                     <table class=" table table-bordered table-hover ">
                         <tr>
                             <th>User Name</th>   
-							 <th>User Type</th>
-                        <th>Company Name</th>
-						
-                        <th> Gstn No.</th>
-                        <th>Action</th>
+							<th>User Type</th>
+                            <th>Company Name</th>
+							<th>No.Of Client</th>
+						    <th> Gstn No.</th>
+                            <th>Action</th>
                         </tr>
                         <?php foreach ($dataClientArr as $dataClient) { ?>
                         <?php $dataCurrentArr = $db_obj->getUserDetailsById($dataClient->user_id); ?>
+						<?php
+						  $no_of_cliet=0;
+						  $sql = "select  * from " . TAB_PREFIX . "user where user_id='" .$dataClient->user_id."'";
+                          $returndata = $db_obj->get_results($sql);
+						?>
                         <tr>
                             <td><?php echo ucwords($dataClient->name);?>(<?php echo $dataClient->username; ?>)</td>
 							 <td> <?php if($dataClient->user_group==4) { echo 'Client'; } else { echo 'Subuser';}   ?></td> 
                             <td> <?php echo $dataClient->company_name ?></td> 
+							<td><?php if($dataClient->user_group==5){ ?><span class="pull-right"><a href="<?php echo PROJECT_URL; ?>?page=subscriber_update&action=editClient&id=<?php echo ($dataClient->user_id); ?>" class="txt">ViewClient</a></span><?php echo $returndata[0]->no_of_client; } ?></td>
                             <td> <?php if($dataClient->user_group==5) { echo 'NA'; } else { echo $dataClient->gstin_number; } ?></td> 
 							<?php if($dataClient->user_group==5){?>
-						    <td>  <span class="pull-right"><a href="<?php echo PROJECT_URL; ?>?page=subscriber_update&action=editClient&id=<?php echo ($dataClient->user_id); ?>" class="txt">Update Profile</a></span></td> 
+						    <td> <span class="pull-right"><a href="<?php echo PROJECT_URL; ?>?page=subscriber_update&action=editClient&id=<?php echo ($dataClient->user_id); ?>" class="txt">Update Profile</a></span></td> 
 						<?php } else { ?> <td> <?php if ($dataCurrentArr['data']->kyc != '') { ?><span class="pull-right1"><a href="<?php echo PROJECT_URL; ?>?page=client_loginas&id=<?php echo ($dataClient->user_id); ?>" class="txt">Login As Client</a></span><?php } ?> <span class="pull-right"><a href="<?php echo PROJECT_URL; ?>?page=client_kycupdate_by_subscriber&action=updateClientKYC&id=<?php echo ($dataClient->user_id); ?>" class="txt">Update KYC</a></span></td> <?php } ?>
                         
 						</tr>

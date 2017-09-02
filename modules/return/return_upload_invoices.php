@@ -146,7 +146,7 @@ if ($_REQUEST['returnmonth'] != '') {
                                             $b2b_total = $b2b_invoice_total_value = $b2b_sumTotal = 0;
                                             if (!empty($b2bData)) {
                                                 foreach ($b2bData as $key => $b2bDatavalue) {
-                                                    $b2b_invoice_total_value += isset($b2bDatavalue->invoice_total_value)?$b2bDatavalue->invoice_total_value:0;
+                                                    $b2b_invoice_total_value += isset($b2bDatavalue->taxable_subtotal)?$b2bDatavalue->taxable_subtotal:0;
                                                     $b2b_total += $b2bDatavalue->cgst_amount + $b2bDatavalue->sgst_amount + $b2bDatavalue->igst_amount + $b2bDatavalue->cess_amount;
  
                                                 }
@@ -168,7 +168,7 @@ if ($_REQUEST['returnmonth'] != '') {
                                             $b2cl_total = $b2cl_invoice_total_value = $b2cl_sumTotal = 0;
                                             if (!empty($b2clData)) {
                                                 foreach ($b2clData as $key => $b2clDatavalue) {
-                                                    $b2cl_invoice_total_value += isset($b2clDatavalue->invoice_total_value)?$b2clDatavalue->invoice_total_value:0;
+                                                    $b2cl_invoice_total_value += isset($b2clDatavalue->taxable_subtotal)?$b2clDatavalue->taxable_subtotal:0;
                                                     $b2cl_total += $b2clDatavalue->cgst_amount + $b2clDatavalue->sgst_amount + $b2clDatavalue->igst_amount + $b2clDatavalue->cess_amount;
  
                                                 }
@@ -189,7 +189,7 @@ if ($_REQUEST['returnmonth'] != '') {
                                             $b2cs_total = $b2cs_invoice_total_value = $b2cs_sumTotal = 0;
                                             if (!empty($b2csData)) {
                                                 foreach ($b2csData as $key => $b2csDatavalue) {
-                                                    $b2cs_invoice_total_value += isset($b2csDatavalue->invoice_total_value)?$b2csDatavalue->invoice_total_value:0;
+                                                    $b2cs_invoice_total_value += isset($b2csDatavalue->taxable_subtotal)?$b2csDatavalue->taxable_subtotal:0;
                                                     $b2cs_total += $b2csDatavalue->cgst_amount + $b2csDatavalue->sgst_amount + $b2csDatavalue->igst_amount + $b2csDatavalue->cess_amount;
  
                                                 }
@@ -211,7 +211,7 @@ if ($_REQUEST['returnmonth'] != '') {
                                             $cdnr_total = $cdnr_invoice_total_value = $cdnr_sumTotal = 0;
                                             if (!empty($cdnrData)) {
                                                 foreach ($cdnrData as $key => $cdnrDatavalue) {
-                                                    $cdnr_invoice_total_value += isset($cdnrDatavalue->invoice_total_value)?$cdnrDatavalue->invoice_total_value:0;
+                                                    $cdnr_invoice_total_value += isset($cdnrDatavalue->taxable_subtotal)?$cdnrDatavalue->taxable_subtotal:0;
                                                     $cdnr_total += $cdnrDatavalue->cgst_amount + $cdnrDatavalue->sgst_amount + $cdnrDatavalue->igst_amount + $cdnrDatavalue->cess_amount;
  
                                                 }
@@ -232,7 +232,7 @@ if ($_REQUEST['returnmonth'] != '') {
                                             $exp_total = $exp_invoice_total_value = $exp_sumTotal = 0;
                                             if (!empty($expData)) {
                                                 foreach ($expData as $key => $expDatavalue) {
-                                                    $exp_invoice_total_value += isset($expDatavalue->invoice_total_value)?$expDatavalue->invoice_total_value:0;
+                                                    $exp_invoice_total_value += isset($expDatavalue->taxable_subtotal)?$expDatavalue->taxable_subtotal:0;
                                                     $exp_total += $expDatavalue->cgst_amount + $expDatavalue->sgst_amount + $expDatavalue->igst_amount + $expDatavalue->cess_amount;
  
                                                 }
@@ -253,7 +253,7 @@ if ($_REQUEST['returnmonth'] != '') {
                                             $at_total = $at_invoice_total_value = $at_sumTotal = 0;
                                             if (!empty($atData)) {
                                                 foreach ($atData as $key => $atDatavalue) {
-                                                    $at_invoice_total_value += isset($atDatavalue->invoice_total_value)?$atDatavalue->invoice_total_value:0;
+                                                    $at_invoice_total_value += isset($atDatavalue->taxable_subtotal)?$atDatavalue->taxable_subtotal:0;
                                                     $at_total += $atDatavalue->cgst_amount + $atDatavalue->sgst_amount + $atDatavalue->igst_amount + $atDatavalue->cess_amount;
  
                                                 }
@@ -273,7 +273,7 @@ if ($_REQUEST['returnmonth'] != '') {
                                             $cdnur_total = $cdnur_invoice_total_value = $cdnur_sumTotal = 0;
                                             if (!empty($cdnurData)) {
                                                 foreach ($cdnurData as $key => $cdnurDatavalue) {
-                                                    $cdnur_invoice_total_value += isset($cdnurDatavalue->invoice_total_value)?$cdnurDatavalue->invoice_total_value:0;
+                                                    $cdnur_invoice_total_value += isset($cdnurDatavalue->taxable_subtotal)?$cdnurDatavalue->taxable_subtotal:0;
                                                     $cdnur_total +=  $cdnurDatavalue->igst_amount + $cdnurDatavalue->cess_amount;
  
                                                 }

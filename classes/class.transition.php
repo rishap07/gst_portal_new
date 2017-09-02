@@ -1932,6 +1932,322 @@ final class transition extends validation {
 		}
 	   
    }
+   public function gstTransitionData2()
+   {
+	    $dataArr = array();
+		$data = array();
+		$data['4a_hsn']='';
+		$data['4a_unit']='';
+		$data['4a_qty1']='';
+		$data['4a_qty2']='';
+		$data['4a_value']='';
+		$data['4a_centraltax']='';
+		$data['4a_integrated']='';
+		$data['4a_itcallowed']='';
+		$data['4a_qty3']='';
+        $data['4b_hsn']='';
+		$data['4b_unit']='';
+		$data['4b_qty1']='';
+		$data['4b_qty2']='';
+		$data['4b_value']='';
+		$data['4b_centraltax']='';
+		$data['4b_integrated']='';
+		$data['4b_itcallowed']='';
+		$data['4b_qty3']='';
+		
+		if(!empty($_POST['4a_hsn'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['4a_hsn'] as $selected){
+			 
+             $data['4a_hsn'] = $data['4a_hsn'].$selected.',';
+			
+			} 
+			$data['4a_hsn'] = rtrim($data['4a_hsn'],",");
+			}
+		if(!empty($_POST['4a_unit'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['4a_unit'] as $selected){
+			 
+             $data['4a_unit'] = $data['4a_unit'].$selected.',';
+			
+			} 
+			$data['4a_unit'] = rtrim($data['4a_unit'],",");
+			}
+			if(!empty($_POST['4a_qty1'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['4a_qty1'] as $selected){
+			 
+             $data['4a_qty1'] = $data['4a_qty1'].$selected.',';
+			
+			} 
+			$data['4a_qty1'] = rtrim($data['4a_qty1'],",");
+			}
+			if(!empty($_POST['4a_qty2'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['4a_qty2'] as $selected){
+			 
+             $data['4a_qty2'] = $data['4a_qty2'].$selected.',';
+			
+			} 
+			$data['4a_qty2'] = rtrim($data['4a_qty2'],",");
+			}
+			if(!empty($_POST['4a_value'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['4a_value'] as $selected){
+			 
+             $data['4a_value'] = $data['4a_value'].$selected.',';
+			
+			} 
+			$data['4a_value'] = rtrim($data['4a_value'],",");
+			}
+			if(!empty($_POST['4a_centraltax'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['4a_centraltax'] as $selected){
+			 
+             $data['4a_centraltax'] = $data['4a_centraltax'].$selected.',';
+			
+			} 
+			$data['4a_centraltax'] = rtrim($data['4a_centraltax'],",");
+			}
+			if(!empty($_POST['4a_integrated'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['4a_integrated'] as $selected){
+			 
+             $data['4a_integrated'] = $data['4a_integrated'].$selected.',';
+			
+			} 
+			$data['4a_integrated'] = rtrim($data['4a_integrated'],",");
+			}
+			if(!empty($_POST['4a_itcallowed'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['4a_itcallowed'] as $selected){
+			 
+             $data['4a_itcallowed'] = $data['4a_itcallowed'].$selected.',';
+			
+			} 
+			$data['4a_itcallowed'] = rtrim($data['4a_itcallowed'],",");
+			}
+			if(!empty($_POST['4a_qty3'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['4a_qty3'] as $selected){
+			 
+             $data['4a_qty3'] = $data['4a_qty3'].$selected.',';
+			
+			} 
+			$data['4a_qty3'] = rtrim($data['4a_qty3'],",");
+			}
+			if(!empty($_POST['4b_hsn'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['4b_hsn'] as $selected){
+			 
+             $data['4b_hsn'] = $data['4b_hsn'].$selected.',';
+			
+			} 
+			$data['4b_hsn'] = rtrim($data['4b_hsn'],",");
+			}
+			if(!empty($_POST['4b_unit'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['4b_unit'] as $selected){
+			 
+             $data['4b_unit'] = $data['4b_unit'].$selected.',';
+			
+			} 
+			$data['4b_unit'] = rtrim($data['4b_unit'],",");
+			}
+			if(!empty($_POST['4b_qty1'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['4b_qty1'] as $selected){
+			 
+             $data['4b_qty1'] = $data['4b_qty1'].$selected.',';
+			
+			} 
+			$data['4b_qty1'] = rtrim($data['4b_qty1'],",");
+			}
+			if(!empty($_POST['4b_qty2'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['4b_qty2'] as $selected){
+			 
+             $data['4b_qty2'] = $data['4b_qty2'].$selected.',';
+			
+			} 
+			$data['4b_qty2'] = rtrim($data['4b_qty2'],",");
+			}
+			if(!empty($_POST['4b_value'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['4b_value'] as $selected){
+			 
+             $data['4b_value'] = $data['4b_value'].$selected.',';
+			
+			} 
+			$data['4b_value'] = rtrim($data['4b_value'],",");
+			}
+			if(!empty($_POST['4b_centraltax'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['4b_centraltax'] as $selected){
+			 
+             $data['4b_centraltax'] = $data['4b_centraltax'].$selected.',';
+			
+			} 
+			$data['4b_centraltax'] = rtrim($data['4b_centraltax'],",");
+			}
+			if(!empty($_POST['4b_integrated'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['4b_integrated'] as $selected){
+			 
+             $data['4b_integrated'] = $data['4b_integrated'].$selected.',';
+			
+			} 
+			$data['4b_integrated'] = rtrim($data['4b_integrated'],",");
+			}
+			if(!empty($_POST['4b_itcallowed'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['4b_itcallowed'] as $selected){
+			 
+             $data['4b_itcallowed'] = $data['4b_itcallowed'].$selected.',';
+			
+			} 
+			$data['4b_itcallowed'] = rtrim($data['4b_itcallowed'],",");
+			}
+			if(!empty($_POST['4b_qty3'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['4b_qty3'] as $selected){
+			 
+             $data['4b_qty3'] = $data['4b_qty3'].$selected.',';
+			
+			} 
+			$data['4b_qty3'] = rtrim($data['4b_qty3'],",");
+			}
+		
+		
+	
+	    $data5a[]=array("a4_hsn"=>$data['4a_hsn'],"a4_unit"=>$data['4a_unit'],"a4_qty1"=>$data['4a_qty1'],"a4_qty2"=>$data['4a_qty2'],"a4_value"=>$data['4a_value'],"a4_centraltax"=>$data['4a_centraltax'],"a4_integrated"=>$data['4a_integrated'],"a4_itcallowed"=>$data['4a_itcallowed'],"a4_qty3"=>$data['4a_qty3'],"b4_hsn"=>$data['4b_hsn'],"b4_unit"=>$data['4b_unit'],"b4_qty1"=>$data['4b_qty1'],"b4_qty2"=>$data['4b_qty2'],"b4_value"=>$data['4b_value'],"b4_centraltax"=>$data['4b_centraltax'],"b4_integrated"=>$data['4b_integrated'],"b4_itcallowed"=>$data['4b_itcallowed'],"b4_qty3"=>$data['4b_qty3']);
+		$dataArr['gstr_transition_data'] = base64_encode(json_encode($data5a));
+			
+	   return $dataArr;
+   }
+   public function saveGstrTransition2()
+    {
+		$data = $this->get_results("select * from gst_transition_form2 where added_by='".$_SESSION['user_detail']['user_id']."' and financial_month='".$this->sanitize($_GET['returnmonth'])."'");
+		$dataArr = $this->gstTransitionData2();
+		 $dataArr['taxable_name'] = isset($_POST['taxable_name']) ? $_POST['taxable_name'] : ''; 
+	     $dataArr['transition_status'] = isset($_POST['transition_status']) ? $_POST['transition_status'] : '';
+        $dataArr['terms_condition'] = isset($_POST['accept']) ? $_POST['accept'] : ''; 		 
+		if($dataArr['terms_condition']==1)
+		{
+		}
+		else{
+			$this->setError('Please check the information provided by you is correct');
+			return false;  
+		}
+		//$dataPlaceOfSupply = $this->getPlaceOfSupply();
+	   $sql = "select * from " . TAB_PREFIX . "client_kyc where added_by='" . $_SESSION['user_detail']['user_id'] . "' order by id desc limit 0,1";
+     
+       $clientdata = $this->get_results($sql);
+	   $client_gstin_number;
+	   if(count($clientdata) > 0 )
+	   {
+		   $client_gstin_number = $clientdata[0]->gstin_number;
+	   }
+	   //$dataArr['client_gstin_number'] = $client_gstin_number;
+	   
+
+           $returnmonth = $this->sanitize($_GET['returnmonth']);
+		if(empty($data))
+		{
+			$dataArr['financial_month']=$this->sanitize($_GET['returnmonth']);
+			$dataArr['added_by']=$this->sanitize($_SESSION["user_detail"]["user_id"]);
+			
+			if ($this->insert('gst_transition_form2', $dataArr)) {
+				//$this->getPlaceOfSupplyUnregistered();
+				//$this->getPlaceOfSupplyComposition();
+				//$this->getPlaceOfSupplyUinHolder();
+				$this->setSuccess('GST transition form Saved Successfully');
+				$this->logMsg("GST transition Inserted financial month : " . $returnmonth,"gst_transition");
+				return true;
+			}
+			else
+			{
+				$this->setError('Failed to save GSTR3B data');
+			   return false;    	   
+		   }
+
+		}
+		else
+		{
+			
+			if ($this->update('gst_transition_form2', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
+				//$this->getPlaceOfSupplyUnregistered();
+				//$this->getPlaceOfSupplyComposition();
+				//$this->getPlaceOfSupplyUinHolder();
+		                      
+				$this->setSuccess('GST transition month of '.$returnmonth."updated Successfully");
+				//$this->logMsg("GSTR3B updated financial month : " . $returnmonth,"gstr_3b");
+				return true;
+			}
+			else
+			{
+				$this->setError('Failed to save GSTR3B data');
+			   return false;    	   
+		   }
+		}
+	   
+   }
+   public function generategst_transitionForm2Html($returnid,$returnmonth)
+	{
+	    
+	       $htmlResponse = $this->generategst_transitionForm2Pdf($_SESSION['user_detail']['user_id'],$returnid,$returnmonth);
+	        if ($htmlResponse === false) {
+
+	            $obj_client->setError("No Plan Pdf found.");
+	            return false;
+	        }
+	        $obj_mpdf = new mPDF();
+	        $obj_mpdf->SetHeader('GST-Transition Form');
+	        $obj_mpdf->WriteHTML($htmlResponse);
+	        $datetime=date('Y-m-d-His');
+	       
+	       $taxInvoicePdf = 'gsttransitionform-' . $_SESSION['user_detail']['user_id'] . '_' .$datetime. '.pdf';
+		   $filepath ="/upload/transition-form/".$taxInvoicePdf;
+	        ob_clean();
+	        //$proof_photograph = $this->gstr3bUploads($taxInvoicePdf, 'plan-invoice', 'upload','.pdf');
+	        $pic = $taxInvoicePdf;
+	     
+			  ob_clean();
+			  if($_GET['action'] == 'printInvoice')
+			  {
+				  
+			 $obj_mpdf->Output($taxInvoicePdf, 'I');
+			  }
+			  else if($_GET['action'] == 'emailInvoice')
+			  {
+				  //$obj_mpdf->Output($taxInvoicePdf, PROJECT_URL ."/upload/gstr3b-file/");
+				  $dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
+			      $sendmail = $dataCurrentUserArr['data']->kyc->email;
+			      $name = $dataCurrentUserArr['data']->kyc->name;
+			      $userid = $_SESSION["user_detail"]["user_id"];
+				  $obj_mpdf->Output("upload/transition-form/".$taxInvoicePdf);
+				  $mpdfHtml = $this->gstTransitionEmailMessage($name,$returnmonth);
+				 // return $mpdfHtml;
+				  
+			 if ($this->sendMail('Email GST-Transitionfile', 'User ID : ' . $userid . ' email GST-Transition', $sendmail, 'noreply@gstkeeper.com', '', 'rishap07@gmail.com,sheetalprasad95@gmail.com', $filepath, 'GST-Transition form month of '.$returnmonth.'',$mpdfHtml )) {
+
+					$this->setSuccess('Kindly check your email');
+					$this->redirect(PROJECT_URL . "?page=transition_gstr&returnmonth=" . $returnmonth);
+	               // return true;
+	            } else {
+	                $this->setError('Try again some issue in sending in email.');
+						$this->redirect(PROJECT_URL . "?page=transition_gstr&returnmonth=" . $returnmonth);
+	               // return false;
+	            }
+			  }
+			  else
+			  {
+				  $obj_mpdf->Output($taxInvoicePdf, 'D');
+			  }
+		 
+				$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " in User has been updated");
+			   
+	}
   
    public function generategst_transitionHtml($returnid,$returnmonth)
 	{
@@ -1995,6 +2311,304 @@ final class transition extends validation {
 		$mpdfHtml .='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> <title>gst</title> </head> <body> <div style="width:720px; margin:auto; border:solid #CCC 1px;"> <table cellpadding="0" cellspacing="0" width="100%" > <tbody> <tr> <td height="auto"><table width="720" cellpadding="0" cellspacing="0" bgcolor="#fff" style="font-family:Arial, Helvetica, sans-serif;margin:0px auto;"> <tbody> <tr> <td width="30"></td> <td><table width="100%" cellpadding="0" cellspacing="0"> <tbody> <tr> <td align="left" valign="middle" height="80"><a target="_blank" href="https://www.gstkeeper.com/"><img src="https://gstkeeper.com/newsletter/4july2017/gst-logo.png" alt="" border="0"></a></td> <td align="right" valign="middle" style="font-size:18px;color:#cf3502;font-family:Arial, Helvetica, sans-serif;" height="80px"> <span><img src="https://gstkeeper.com/newsletter/6july2017/phone-icon.jpg" alt=""></span>1-800-212-2022<br> <span><img src="https://gstkeeper.com/newsletter/6july2017/mail-icon.jpg" alt=""></span><a href="mailto:contact@gstkeeper.com" style="font-size:14px;color:#cf3502;text-decoration:none;"> contact@gstkeeper.com</a></td> </tr> </tbody> </table></td> <td width="30"></td> </tr> <tr> <td width="30"></td> <td><table width="100%" cellpadding="0" cellspacing="0"> <tbody> <tr> <td align="center" valign="middle"><img src="https://www.gstkeeper.com/newsletter/7july-planpurchase/images/banner.jpg" width="700" height="132" /></td> </tr> </tbody> </table></td> <td width="30"></td> </tr> <tr> <td width="30" ></td> <td><table width="100%" cellpadding="0" cellspacing="0"> <tbody> <tr> <td height="157" align="center" valign="top"><table width="100%" cellpadding="0px" cellspacing="0" > <tbody> <tr> <td width="13"></td> <td width="350" style="font-size:15px;color:#090909;font-family:Arial, Helvetica, sans-serif; padding-top:10px; "><strong>Hi '.$name.'! </strong></td> <td width="20"></td> </tr> <tr> <td colspan="3" height="10"></td> </tr> <tr> <td width="13"></td> <td height="110" align="justify" valign="top" style="font-size:13px;color:#191919;font-family:Arial, Helvetica, sans-serif; line-height:18px; ">';
 		$mpdfHtml .='<p>Please find the attachment enclosed here along with GST-Transition form month of '.$returnmonth.' file.</p><p><strong>Thanks!</strong><BR /> The GST Keeper Team </p></td> <td width="20"></td> </tr> </tbody> </table></td> </tr> </tbody> </table></td> </tr> <!--<tr> <td align="center" height="29"><img src="http://cdn.go4hosting.in/mailer/12-oct/resources-img.jpg" alt="" /></td> </tr>--> <tr> <td colspan="3" height="15"></td> </tr> <tr> <td width="30"></td> <td><table width="98%" align="right" cellpadding="0" cellspacing="0" style="background-color:#f1f1f1; height:80px; padding:10px;"> <tbody> <tr> <td width="47%"><a href="http://www.cyfuture.com/" target="_blank"><img src="https://gstkeeper.com/newsletter/4july2017/cyfuture-logo.png" alt="" border="0" /></a></td> <td width="53%" align="right"><table width="100%" cellpadding="0" cellspacing="0"> <tbody> <tr> <td width="20" height="50"></td> <td valign="middle" style="font-size:14px;color:#333;font-family:Arial, Helvetica, sans-serif;"><strong><i>Connect with us</i></strong></td> <td valign="middle" width="50" align="center"><a target="_blank" href="https://www.facebook.com/GST-Keeper-632910016898628/"><img src="https://gstkeeper.com/newsletter/4july2017/fb-icon.png" alt="" border="0" /></a></td> <td valign="middle" width="40" align="left"><a target="_blank" href="https://plus.google.com/101841021110541536034"><img src="https://gstkeeper.com/newsletter/4july2017/g+-icon.png" alt="" border="0" /></a></td> <td valign="middle" width="40" align="left"><a target="_blank" href="https://twitter.com/GstKeeper"><img src="https://gstkeeper.com/newsletter/4july2017/twit-icon.png" alt="" border="0" /></a></td> <td valign="middle" width="40" align="left"><a target="_blank" href="https://www.youtube.com/channel/UCsDdNFR8kJ3YVWpEvBrFeSA"><img src="https://gstkeeper.com/newsletter/4july2017/utube-icon.png" alt="" border="0" /></a></td> <td valign="middle" width="40" align="left"><a target="_blank" href="https://www.linkedin.com/company/gst-keeper"><img src="https://gstkeeper.com/newsletter/4july2017/in-icon.jpg" alt="" border="0" /></a></td> </tr> </tbody> </table></td> </tr> </tbody> </table></td> <td width="30"></td> </tr> <tr> <td width="30"></td> <td height="76" valign="middle"><table width="100%" cellpadding="0" cellspacing="0"> <tbody> <tr> <td width="20"></td> <td align="center"><font style="font-size:14px;color:#444;font-family:Arial, Helvetica, sans-serif;">Cyfuture ( India ) Pvt. Ltd.</font><br> <font style="font-size:12px;color:#444;font-family:Arial, Helvetica, sans-serif;">Plot No. 197-198 Noida Special Economic Zone (NSEZ) Phase II, Noida 201 305</font><br> <font style="font-size:12px;color:#444;font-family:Arial, Helvetica, sans-serif;">E-mail: <a style="text-decoration:none;color:#3194d5;" href="mailto:contact@gstkeeper.com">contact@gstkeeper.com</a></font><br></td> <td width="15" align="left">&nbsp;</td> </tr> </tbody> </table></td> </tbody> </table></td> </tr> </tbody> </table> </div> </body> </html>';
 		return $mpdfHtml;
+	}
+	private function generategst_transitionForm2Pdf($invid,$returnid,$returnmonth) {
+	   $sql = "select  *,count(id) as totalinvoice from gst_transition_form2 where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
+       $returndata = $this->get_results($sql);
+	   $sql = "select  *,count(id) as totalinvoice from gst_transition_form2 where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
+       $returndata1 = $this->get_results($sql);
+	   $sql = "select * from " . TAB_PREFIX . "client_kyc where added_by='" . $_SESSION['user_detail']['user_id'] . "' order by id desc limit 0,1";
+	   $clientdata = $this->get_results($sql);
+	   $client_gstin_number;
+	   $client_name;
+	   $taxable_name='';
+	   
+	   if(count($clientdata) > 0 )
+	   {
+		   $client_gstin_number = $clientdata[0]->gstin_number;
+		   $client_name = $clientdata[0]->name;
+		 	   
+	   }
+		if($returndata1[0]->totalinvoice > 0)
+		{
+			 $taxable_name=$returndata1[0]->taxable_name;
+		$arr = $returndata1[0]->gstr_transition_data;
+		$arr1= base64_decode($arr);
+		$transition_arr = json_decode($arr1);	
+		$a4_hsn='';
+		$a4_unit='';
+		$a4_qty1='';
+		$a4_qty2='';
+		$a4_value='';
+		$a4_centraltax='';
+		$a4_integrated='';
+		$a4_itcallowed='';
+		$a4_qty3='';
+        $b4_hsn='';
+		$b4_unit='';
+		$b4_qty1='';
+		$b4_qty2='';
+		$b4_value='';
+		$b4_centraltax='';
+		$b4_integrated='';
+		$b4_itcallowed='';
+		$b4_qty3='';
+		
+
+		
+		foreach($transition_arr as $item)
+		{
+			
+			$a4_hsn=$item->a4_hsn;
+			$a4_unit=$item->a4_unit;
+			$a4_qty1=$item->a4_qty1;
+			$a4_qty2=$item->a4_qty2;
+			$a4_value=$item->a4_value;
+			$a4_centraltax=$item->a4_centraltax;
+			$a4_integrated=$item->a4_integrated;
+			$a4_itcallowed=$item->a4_itcallowed;
+			$a4_qty3=$item->a4_qty3;
+            $b4_hsn=$item->b4_hsn;
+			$b4_unit=$item->b4_unit;
+			$b4_qty1=$item->b4_qty1;
+			$b4_qty2=$item->b4_qty2;
+			$b4_value=$item->b4_value;
+			$b4_centraltax=$item->b4_centraltax;
+			$b4_integrated=$item->b4_integrated;
+			$b4_itcallowed=$item->b4_itcallowed;
+			$b4_qty3=$item->b4_qty3;	
+            			
+		}
+		}
+		$mpdfHtml .='<html>';
+		$mpdfHtml .='<body>';
+		$mpdfHtml .='<div class="row"> <div class="col-md-12 col-sm-12 col-xs-12 form-group">
+         <label>1.GSTIN-<span class="starred"></span></label> <label style="text-align:right; float:right;"><strong>'.(!empty($client_gstin_number)?$client_gstin_number:'').'</strong></label></div>    
+		 <div class="col-md-12 col-sm-12 col-xs-12 form-group"><label>2.Name of Taxable Person-<span class="starred"></span></label><label><strong>'.(!empty($taxable_name)?$taxable_name:'').'</strong></label></div>
+	     <div class="col-md-12 col-sm-12 col-xs-12 form-group"><label>3.Tax Period:Month of Year-<span class="starred"></span></label> <label><strong>'.$returnmonth.'</strong></label> </div>  </div>';	
+	  $mpdfHtml .= '<br><br><div style="position: relative;min-height: 1px;padding-right: 0px;padding-left: 0px;" class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
+		   <div style="width: 100%;position: relative;min-height: 1px;padding-right: 15px;padding-left:0px;position: relative;min-height: 1px padding-right: 0px;
+		    padding-left: 15px; font-size:12px !important;" class="col-md-12 col-sm-12 col-xs-12">
+		    <div style="position: relative;min-height: 1px padding-right: 15px;
+		    padding-left: 15px;" class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav"></div>
+		    <div class="whitebg formboxcontainer">';
+			
+     $mpdfHtml .='<div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+ >4.Details of Input held on stock on appointment date of in which respect of which he is not in possession of any invoice/document evidencing payment of tax forward to electronic credit ledger</div>
+<div class="tableresponsive"><table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone"><thead>
+<tr> <th>HSN at 6 Digit level</th><th>Unit</th> <th>Qty</th> <th>Qty.</th>    <th>Value</th> <th>CentralTax</th> <th>IntegratedTax</th> <th>Itc Allowed</th><th>Qty</th>  </tr> </thead>  <tbody>';
+        
+								if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								$a4_hsn=(explode(",",$a4_hsn));
+								$a4_unit=(explode(",",$a4_unit));
+								$a4_qty1=(explode(",",$a4_qty1));
+								$a4_qty2=(explode(",",$a4_qty2));
+								$a4_value=(explode(",",$a4_value));
+								$a4_centraltax=(explode(",",$a4_centraltax));
+								$a4_integrated=(explode(",",$a4_integrated));
+								$a4_itcallowed=(explode(",",$a4_itcallowed));
+								$a4_qty3=(explode(",",$a4_qty3));
+												
+								
+			                    $start='';
+								if(sizeof($a4_hsn) > 1)
+								{
+									$start = $a4_hsn;
+									
+								}
+								elseif(sizeof($a4_unit) > 1)
+								{
+									 $start = $a4_unit;
+								}
+								elseif(sizeof($a4_qty1) > 1)
+								{
+									 $start = $a4_qty1;
+									
+								}
+								elseif(sizeof($a4_qty2) > 1)
+								{
+									$start = $a4_qty2;
+								}
+								elseif(sizeof($a4_value) > 1)
+								{
+									$start = $a4_value;
+								}
+								elseif(sizeof($a4_centraltax) > 1)
+								{
+									$start = $a4_centraltax;
+								}
+								elseif(sizeof($a4_integrated) > 1)
+								{
+									$start = $a4_integrated;
+								}
+								elseif(sizeof($a4_itcallowed) > 1)
+								{
+									$start = $a4_itcallowed;
+								}
+								elseif(sizeof($a4_qty3) > 1)
+								{
+									$start = $a4_qty3;
+							     }			
+													
+								else{
+									$start = $a4_hsn;
+								}
+								
+									
+						       $taxreturn=0;
+							   $dateoffilling_return=0;
+							   $balance_cenvat_credit=0;
+							   $cenvat_credit_admissible=0;
+							  for($i=0;$i < sizeof($start); $i++) {
+								  $sno =0;
+                     		$sno = $i+1;				   
+                           $mpdfHtml .='<tr>'; 
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($a4_hsn[$i])?$a4_hsn[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a4_unit[$i])?$a4_unit[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a4_qty1[$i])?$a4_qty1[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a4_qty2[$i])?$a4_qty2[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a4_value[$i])?$a4_value[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($a4_centraltax[$i])?$a4_centraltax[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						    $mpdfHtml .='<td>
+									 <label>'.(!empty($a4_integrated[$i])?$a4_integrated[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						     $mpdfHtml .='<td>
+									 <label>'.(!empty($a4_itcallowed[$i])?$a4_itcallowed[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						    $mpdfHtml .='<td>
+									 <label>'.(!empty($a4_qty3[$i])?$a4_qty3[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='</tr>';
+	          }	}							
+								 
+        $mpdfHtml .='</tbody></table></div>';
+		$mpdfHtml .='<br><div class="greyheading" style="float: left;width: 100%;font-size: 15px;background: #adadad;padding: 7px 10px;color: #FFF;font-family: opensans_bold;font-weight: normal;" class="greyheading" class="greyheading"
+ >5.Credit on State Tax on the stock mentioned in 4 above(To be there only in states having vat at single point</div>
+ <div class="tableresponsive"><table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0" style="font-size:13px;   font-family: opensans_bold; font-weight:normal; width: 100%;font-weight:normal;" class="table  tablecontent tablecontent2 bordernone">
+ <thead><tr><th colspan="3" align="center">Opening stock for the tax period</th>  <th colspan="5" align="center">Outward Supply made</th>
+  <th>Closing balance</th> </tr><tr><th>HSN at 6 Digit level</th> <th>Unit</th><th>Qty</th> <th>Qty.</th>								
+   <th>Value</th><th>CentralTax</th>  <th>IntegratedTax</th> <th>Itc Allowed</th><th>Qty</th>  </tr> </thead> <tbody>';	
+      	    if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
+								{
+								$b4_hsn=(explode(",",$b4_hsn));
+								$b4_unit=(explode(",",$b4_unit));
+								$b4_qty1=(explode(",",$b4_qty1));
+								$b4_qty2=(explode(",",$b4_qty2));
+								$b4_value=(explode(",",$b4_value));
+								$b4_centraltax=(explode(",",$b4_centraltax));
+								$b4_integrated=(explode(",",$b4_integrated));
+								$b4_itcallowed=(explode(",",$b4_itcallowed));
+								$b4_qty3=(explode(",",$b4_qty3));
+								
+								
+								
+			                    $start='';
+								if(sizeof($b4_hsn) > 1)
+								{
+									$start = $b4_hsn;
+									
+								}
+								elseif(sizeof($b4_unit) > 1)
+								{
+									 $start = $b4_unit;
+								}
+								elseif(sizeof($b4_qty1) > 1)
+								{
+									 $start = $b4_qty1;
+									
+								}
+								elseif(sizeof($b4_qty2) > 1)
+								{
+									$start = $b4_qty2;
+								}
+								elseif(sizeof($b4_value) > 1)
+								{
+									$start = $b4_value;
+								}
+								elseif(sizeof($b4_centraltax) > 1)
+								{
+									$start = $b4_centraltax;
+								}
+								elseif(sizeof($b4_integrated) > 1)
+								{
+									$start = $b4_integrated;
+								}
+								elseif(sizeof($b4_itcallowed) > 1)
+								{
+									$start = $b4_itcallowed;
+								}
+								elseif(sizeof($b4_qty3) > 1)
+								{
+									$start = $b4_qty3;
+							     }			
+													
+								else{
+									$start = $b4_hsn;
+								}
+								
+									
+						       $taxreturn=0;
+							   $dateoffilling_return=0;
+							   $balance_cenvat_credit=0;
+							   $cenvat_credit_admissible=0;
+							  for($i=0;$i < sizeof($start); $i++) {
+							$sno =0;
+                     		$sno = $i+1;				   
+                           $mpdfHtml .='<tr>'; 
+                           $mpdfHtml .='<td>
+									 <label>'.(!empty($b4_hsn[$i])?$b4_hsn[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b4_unit[$i])?$b4_unit[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b4_qty1[$i])?$b4_qty1[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b4_qty2[$i])?$b4_qty2[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b4_value[$i])?$b4_value[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						   $mpdfHtml .='<td>
+									 <label>'.(!empty($b4_centraltax[$i])?$b4_centraltax[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						    $mpdfHtml .='<td>
+									 <label>'.(!empty($b4_integrated[$i])?$b4_integrated[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						     $mpdfHtml .='<td>
+									 <label>'.(!empty($b4_itcallowed[$i])?$b4_itcallowed[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						    $mpdfHtml .='<td>
+									 <label>'.(!empty($b4_qty3[$i])?$b4_qty3[$i]:'').'</label>'; 
+						  $mpdfHtml .='</td>';
+						  $mpdfHtml .='</tr>';
+	          }	}		
+  
+                            
+                        
+         $mpdfHtml .='</tbody></table></div>'; 						
+        $mpdfHtml .='<br><br><div style="font-size:14px;">I here by solemnly affirm and declare that the information given herein above is true and correct to the best of my knowledge and belief and nothing has been concealed thereform</div>';		
+		$mpdfHtml .='<br><br><div style="font-size:14px;">Place<p align="right">Signature<br>Name of Authorised Signatory</p></div>';	
+		$mpdfHtml .='</div></div></div>'; 
+		$mpdfHtml .='</div>';
+		$mpdfHtml .='</body>';
+		$mpdfHtml .='</html>';
+		return $mpdfHtml;
+	
 	}
 	private function generategst_transitionPdf($invid,$returnid,$returnmonth) {
 		$sql = "select  *,count(id) as totalinvoice from gst_transition_form where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
@@ -4394,6 +5008,20 @@ $mpdfHtml .= '<br><div class="greyheading" style="float: left;width: 100%;font-s
 		$userid = $_SESSION['user_detail']['user_id'];
 	
 		 if($this->update('gst_transition_form', array('final_submit' => 1), array('financial_month' => $fmonth)))
+		 {
+		 $this->setSuccess('GST-Transition submitted successfully');
+		 $this->logMsg("GST-Transition form final submit month :".$this->sanitize($_GET['returnmonth']),"gst_transition");
+   
+		 return true;
+		 }
+   }
+   public function finalSaveGstrTransition2()
+   {
+		//$return_id =   isset($_POST['returnid']) ? $_POST['returnid'] : '';
+		$fmonth =   $this->sanitize($_GET['returnmonth']);
+		$userid = $_SESSION['user_detail']['user_id'];
+	
+		 if($this->update('gst_transition_form2', array('final_submit' => 1), array('financial_month' => $fmonth)))
 		 {
 		 $this->setSuccess('GST-Transition submitted successfully');
 		 $this->logMsg("GST-Transition form final submit month :".$this->sanitize($_GET['returnmonth']),"gst_transition");

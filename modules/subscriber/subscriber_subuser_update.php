@@ -6,12 +6,17 @@ $totalSubUserRemaining=0;
 /* get current user data */
 	$dataCurrentArr = array();
 	$dataCurrentArr = $obj_client->getUserDetailsById($obj_client->sanitize($_SESSION['user_detail']['user_id']));
-    $subscribePlanDetail = $obj_user->getUserSubscribePlanDetails($dataCurrentArr['data']->plan_id);
-	$totalClientCreated = $obj_client->get_row("select count(user_id) as totalClientCreated from " . $obj_client->getTableName('user') . " where user_group=4 and is_deleted='0' and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
-	$totalSubUserCreated = $obj_client->get_row("select count(user_id) as totalSubUserCreated from " . $obj_client->getTableName('user') . " where user_group=5 and is_deleted='0' and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
-	$totalClientCreated_subuser = $obj_client->get_row("select sum(no_of_client) as totalClientCreated from " . $obj_client->getTableName('user') . " where is_deleted='0' AND user_group=5 and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+    $subscribePlanDetail = $obj_user->getUserSubscribePlanDetails($dataCurrentArr['data']->plan_id,$obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	$totalClientCreated = $obj_client->get_row("select count(user_id) as totalClientCreated from " . $obj_client->getTableName('user') . " where user_group=4 and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	$totalSubUserCreated = $obj_client->get_row("select count(user_id) as totalSubUserCreated from " . $obj_client->getTableName('user') . " where user_group=5 and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	$totalClientCreated_subuser = $obj_client->get_row("select sum(no_of_client) as totalClientCreated from " . $obj_client->getTableName('user') . " where user_group=5 and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
 	$totalSubUserRemaining= intval($subscribePlanDetail['data']->sub_user)-$totalSubUserCreated->totalSubUserCreated;
+	if($subscribePlanDetail['data']->no_of_client==-1)
+	{
+		
+	}else{
     $totalclient = (intval($subscribePlanDetail['data']->no_of_client))-($totalClientCreated->totalClientCreated+$totalClientCreated_subuser->totalClientCreated);
+	}
 	if (!isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '') {
     $obj_client->redirect(PROJECT_URL);
     exit();
@@ -33,31 +38,40 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
         exit();
     }
 
-    $totalClientCreated = $obj_client->get_row("select count(user_id) as totalClientCreated from " . $obj_client->getTableName('user') . " where user_group=4 and is_deleted='0' and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
-	$totalClientCreated_subuser = $obj_client->get_row("select sum(no_of_client) as totalClientCreated from " . $obj_client->getTableName('user') . " where user_group=5 and is_deleted='0' and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
-	$totalSubUserCreated = $obj_client->get_row("select count(user_id) as totalSubUserCreated from " . $obj_client->getTableName('user') . " where user_group=5 and is_deleted='0' and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+    $totalClientCreated = $obj_client->get_row("select count(user_id) as totalClientCreated from " . $obj_client->getTableName('user') . " where user_group=4  and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	$totalClientCreated_subuser = $obj_client->get_row("select sum(no_of_client) as totalClientCreated from " . $obj_client->getTableName('user') . " where user_group=5  and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	$totalSubUserCreated = $obj_client->get_row("select count(user_id) as totalSubUserCreated from " . $obj_client->getTableName('user') . " where user_group=5  and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
 	if(date('Y-m-d') > $subscribePlanDetail['data']->plan_due_date)
 		{
 			$obj_client->setError('your plan is expire');
 			$obj_client->redirect(PROJECT_URL . "?page=subscriber_subuser_update");
 		}
 	//$totaluser = intval($totalClientCreated->totalClientCreated)+$totalSubUserCreated->totalSubUserCreated+$_POST["no_of_client"];
-	if(!$obj_user->is_positive_integer($_POST["no_of_client"])) {
-		$obj_user->setError('Given value for number of GSTN is not acceptable');
+	if(!$obj_user->is_positive_integer($obj_user->sanitize($_POST["no_of_client"]))) {
+		$obj_user->setError('Given value for number of Client is not acceptable');
 		$obj_user->redirect(PROJECT_URL . "?page=subscriber_subuser_update");
 	}  
-	
-	if($totalSubUserCreated->totalSubUserCreated >= intval($subscribePlanDetail['data']->sub_user))
+	if($subscribePlanDetail['data']->sub_user==-1)
 	{
-		$obj_client->setError('You have reach maximum subuser creation limit.');
-        $obj_client->redirect(PROJECT_URL . "?page=subscriber_subuser_update");
 	}
+	else
+	{
+		if($totalSubUserCreated->totalSubUserCreated >= intval($subscribePlanDetail['data']->sub_user))
+		{
+			$obj_client->setError('You have reach maximum subuser creation limit.');
+			$obj_client->redirect(PROJECT_URL . "?page=subscriber_subuser_update");
+		}
+	}
+	if($subscribePlanDetail['data']->no_of_client==-1)
+	{
+	}else{
 	$totalclient = (intval($subscribePlanDetail['data']->no_of_client))-($totalClientCreated->totalClientCreated+$totalClientCreated_subuser->totalClientCreated);
-	if($_POST["no_of_client"] > $totalclient)
+	if($obj_client->sanitize($_POST["no_of_client"]) > $totalclient)
 	{
 		$obj_client->setError('You have reach maximum client subuser creation limit.');
         $obj_client->redirect(PROJECT_URL . "?page=subscriber_subuser_update");
 	}  
+	}
     
 
     if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])) {
@@ -77,27 +91,31 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update' && isset($_GET['id']
         exit();
     }
     
-	$totalClientCreated = $obj_client->get_row("select count(user_id) as totalClientCreated from " . $obj_client->getTableName('user') . " where user_group=4 and is_deleted='0' and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
-	$totalClientCreated_subuser = $obj_client->get_row("select sum(no_of_client) as totalClientCreated from " . $obj_client->getTableName('user') . " where user_group=5 AND is_deleted='0' and user_id!='".$obj_client->sanitize($_GET["id"])."' and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	$totalClientCreated = $obj_client->get_row("select count(user_id) as totalClientCreated from " . $obj_client->getTableName('user') . " where user_group=4 and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	$totalClientCreated_subuser = $obj_client->get_row("select sum(no_of_client) as totalClientCreated from " . $obj_client->getTableName('user') . " where user_group=5 and user_id!='".$obj_client->sanitize($_GET["id"])."' and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
 
-	$totalSubUserCreated = $obj_client->get_row("select count(user_id) as totalSubUserCreated from " . $obj_client->getTableName('user') . " where user_group=5 and is_deleted='0' and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	$totalSubUserCreated = $obj_client->get_row("select count(user_id) as totalSubUserCreated from " . $obj_client->getTableName('user') . " where user_group=5 and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
 	//$totaluser = intval($totalClientCreated->totalClientCreated)+$totalSubUserCreated->totalSubUserCreated+$_POST["no_of_client"];
-	if(!$obj_user->is_positive_integer($_POST["no_of_client"])) {
-		$obj_user->setError('Given value for number of GSTN is not acceptable');
+	if(!$obj_user->is_positive_integer($obj_client->sanitize($_POST["no_of_client"]))) {
+		$obj_user->setError('Given value for number of Client is not acceptable');
 		$obj_user->redirect(PROJECT_URL . "?page=subscriber_subuser_list");
 	}  
 	
 	if($totalSubUserCreated->totalSubUserCreated >= intval($subscribePlanDetail['data']->sub_user))
 	{
 		//$obj_client->setError('You have reach maximum subuser creation limit.');
-        //$obj_client->redirect(PROJECT_URL . "?page=subscriber_subuser_list");
+		//$obj_client->redirect(PROJECT_URL . "?page=subscriber_subuser_list");
 	}
-	$totalclient = (intval($subscribePlanDetail['data']->no_of_client))-($totalClientCreated->totalClientCreated+$totalClientCreated_subuser->totalClientCreated);
-	
-	if($_POST["no_of_client"] > $totalclient)
+	if($subscribePlanDetail['data']->no_of_client==-1)
 	{
-		$obj_client->setError('You have reach maximum client subuser creation limit.');
-        $obj_client->redirect(PROJECT_URL . "?page=subscriber_subuser_list");
+	}
+	else{
+		$totalclient = (intval($subscribePlanDetail['data']->no_of_client))-($totalClientCreated->totalClientCreated+$totalClientCreated_subuser->totalClientCreated);
+		if($obj_client->sanitize($_POST["no_of_client"]) > $totalclient)
+		{
+			$obj_client->setError('You have reach maximum client subuser creation limit.');
+			$obj_client->redirect(PROJECT_URL . "?page=subscriber_subuser_list");
+		}
 	}
 	
 	//$totalSubUserRemaining= intval($subscribePlanDetail['data']->sub_user)-$totalSubUserCreated;
@@ -261,8 +279,11 @@ if (isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClie
                         </select>
                     </div>
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-                        
-                        <label>Enter No of Client ( Client Remaining: <?php echo $totalclient?> )  (SubUser Remaining: <?php echo $totalSubUserRemaining; ?> ) <span class="starred">*</span></label>
+                        <?php if($subscribePlanDetail['data']->no_of_client==-1){
+							?>
+                        <label>Enter No of Client (SubUser Remaining: <?php echo $totalSubUserRemaining; ?> ) <span class="starred">*</span></label>
+						<?php } else { ?> <label>Enter No of Client ( Client Remaining: <?php echo $totalclient?> )  (SubUser Remaining: <?php echo $totalSubUserRemaining; ?> ) <span class="starred">*</span></label><?php } ?>
+						
                         <input type="text" name="no_of_client" id="no_of_client" placeholder="Enter number of Client" class="required form-control"  value="<?php if (isset($_POST['no_of_client'])) {
     echo $_POST['no_of_client'];
 } else if (isset($dataArr['data']->no_of_client)) {

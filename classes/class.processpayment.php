@@ -28,6 +28,7 @@ class processpayment extends validation
 
 			$get_amount = $this->findAll(TAB_PREFIX . $tablename, $columnname[0] . '=' . $_SESSION['plan_id'], "" . $columnname[1] . " as amount");
             $get_UserDetails = $this->findAll(TAB_PREFIX . 'user', ' user_id=' . $_SESSION['user_detail']['user_id']);
+			$userStateData = $this->getStateDetailByStateId($get_UserDetails[0]->state);
 
             $cur_date = date('Y-m-d H:i:s');
             $ref_id   = date('siHmdy');
@@ -91,8 +92,8 @@ class processpayment extends validation
 				<input type="hidden" value="<?php echo PROJECT_URL . "/go4hosting/keeper_response.php"; ?>" name="return_url"/>
 				<input type="hidden" value="LIVE" name="mode"/>
 				<input type="hidden" value="<?php echo $get_UserDetails[0]->username; ?>" name="name"/>
-				<input type="hidden" value="Delhi" name="address"/>
-				<input type="hidden" value="Delhi" name="city"/>
+				<input type="hidden" value="<?php if(isset($userStateData['data']->state_name)) { echo $userStateData['data']->state_name; } else { echo "Delhi"; } ?>" name="address"/>
+				<input type="hidden" value="<?php echo $get_UserDetails[0]->city; ?>" name="city"/>
 				<input type="hidden" value="110010" name="postal_code"/>
 				<input type="hidden" value="IND" name="country"/>
 				<input type="hidden" value="<?php echo $get_UserDetails[0]->email; ?>" name="email"/>
@@ -102,14 +103,14 @@ class processpayment extends validation
             <script type="text/javascript">
 				window.onload=func1;
 				function func1(){
-					document.payment.submit(); 
-                } 
-            </script>
+					document.payment.submit();
+				}
+			</script>
 			<?php
 			exit();
         }
     }
-    
+
     public function payment_method() {
 
 		$dataArr 						= array();

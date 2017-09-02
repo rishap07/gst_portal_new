@@ -197,7 +197,7 @@ final class gstr extends validation {
         $url=  'http://devapi.gstsystem.co.in/taxpayerapi/v0.2/authenticate';
         $result_data= $this->hitUrl($url,$data_string,$header);
         //echo 'app_key: '.$_SESSION['app_key'];
-        //$this->pr($result_data);
+       // $this->pr($result_data);
         //die;
         $data = json_decode($result_data);
 
@@ -430,15 +430,58 @@ final class gstr extends validation {
             $retDta_sum = json_decode($result_data_sum);
             //$this->pr($retDta_sum);
             
-            if(isset($retDta_sum->status_cd) && $retDta_sum->status_cd=='1')
+            if(isset($retDta_sum->status_cd) && $retDta_sum->status_cd=='1' )
             {
-               $retRek_sum = $retDta_sum->rek;
+                $retRek_sum = $retDta_sum->rek;
                 $retData_sum = $retDta_sum->data;
                 $apiEk1_sum = openssl_decrypt(base64_decode($retRek_sum),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
                 $decodejson_sum = base64_decode(openssl_decrypt(base64_decode($retData_sum),"aes-256-ecb",$apiEk1_sum, OPENSSL_RAW_DATA));
                 $return_encode = $decodejson_sum;
-                //echo  $return_encode;
+               // echo  $return_encode;
                 return $return_encode;
+            }
+            elseif(isset($retDta_sum->status_cd) && $retDta_sum->status_cd=='2')         
+            {
+                $retRek_sum = $retDta_sum->rek;
+                $retData_sum = $retDta_sum->data;
+                $apiEk1_sum = openssl_decrypt(base64_decode($retRek_sum),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
+                $decodejson_sum = base64_decode(openssl_decrypt(base64_decode($retData_sum),"aes-256-ecb",$apiEk1_sum, OPENSSL_RAW_DATA));
+                $return_encode = $decodejson_sum;
+                echo  $return_encode;
+                return $return_encode;
+                /*if(!empty($return_encode)) {
+                    $filearr = json_decode($return_encode);
+                    $token = $filearr->token;
+                    $_SESSION['token'] = $token = '677b0e10557a4f56b2236387cfc24060';
+                    //Start code for create header
+                    $header3_array = array(
+                        'auth-token:' . $_SESSION['auth_token'] . '',
+                        'gstin:' . $gstin . '',
+                        'ret_period: '.$api_return_period.' ',
+                        'username:' . $username . '',
+                        'accept:application/json',
+                        'action:' . 'FILEDET' . ''
+                    );
+                        
+                    $header3 = $this->header($header3_array);
+                    if(!$this->gst_is_expired($_SESSION['auth_date']) == false) {
+                        $dataGST1['token'] =  $_SESSION['token'];
+                        $dataGST1where['user_id'] =  $_SESSION['user_detail']['user_id'];
+                        $this->update($this->getTableName('user_gstr1'),  $dataGST1, $dataGST1where);
+                    }
+                    $filedetUrl='http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/gstr1?token=677b0e10557a4f56b2236387cfc24060&action=FILEDET&gstin='.$gstin.'&ret_period='.$api_return_period.'';
+
+                    $result_data_sum1 = $this->hitGetUrl($filedetUrl, '', $header3);
+                    $retDta1 = json_decode($result_data_sum1);
+                    $this->pr($retDta1);
+                    return $return_encode;
+                }
+                else {
+                    $msg = "Sorry! Unable to process";
+                    $this->setError($msg);
+                    return false;
+                }*/
+                
             }
             else {
                 $msg = "Sorry! Unable to process";
@@ -457,8 +500,12 @@ final class gstr extends validation {
         }
     }
 
+    public function gstrFileTokenGenrate() {
+
+    }
+
     public function returnDeleteItems($deleteData, $returnmonth, $jstr) {
-       if($this->authenticateToken() == false) {
+        if($this->authenticateToken() == false) {
             return false;
         }
         $action = 'RETSAVE';
@@ -552,7 +599,8 @@ final class gstr extends validation {
                     }
                     else {
                         $this->array_key_search('error_msg', $jstr1_status);
-                        $msg = $this->error_msg;;
+                        $msg = $this->error_msg;
+                        $this->pr($msg);
                     }
                 }
                 else {
@@ -579,39 +627,6 @@ final class gstr extends validation {
         $response['error'] = $error;
         return $response;
     }
-
-    public function gstPayloadDownload($data) {
-        header("Content-type: text/json");
-        header("Content-Disposition: attachment; filename=gstr1.json");
-        header("Pragma: no-cache");
-        header("Expires: 0");
-
-        echo '{
-            "glossary": {
-                "title": "example glossary",
-                "GlossDiv": {
-                    "title": "S",
-                    "GlossList": {
-                        "GlossEntry": {
-                            "ID": "SGML",
-                            "SortAs": "SGML",
-                            "GlossTerm": "Standard Generalized Markup Language",
-                            "Acronym": "SGML",
-                            "Abbrev": "ISO 8879:1986",
-                            "GlossDef": {
-                                "para": "A meta-markup language, used to create markup languages such as DocBook.",
-                                "GlossSeeAlso": ["GML", "XML"]
-                            },
-                            "GlossSee": "markup"
-                        }
-                    }
-                }
-            }
-        }';
-        exit;
-
-    }
-
     public function getRetrunPeriodFormat($returnmonth) {
         $api_return_period = '';
         if(!empty($returnmonth)) {
@@ -677,7 +692,7 @@ final class gstr extends validation {
     public function gst_is_expired($last_auth_date='') {
         $today_date = date('Y-m-d h:i:s');
         $diff = (strtotime($today_date)-strtotime($last_auth_date));
-        if($diff <= 6000) {
+        if($diff <= 300) {
             return true;
         }
         else {

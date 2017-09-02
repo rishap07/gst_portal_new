@@ -1634,7 +1634,7 @@ class common extends db {
     }
 
     final public function generalGSTR1InvoiceList($returnmonth,$uploaded='0') {
-        $query = "select invoice_id from " . TAB_PREFIX . 'client_invoice' . " where invoice_nature='salesinvoice' and (invoice_type='creditnote' or invoice_type='debitnote' or invoice_type='taxinvoice' or invoice_type='receiptvoucherinvoice' or  invoice_type='exportinvoice' or invoice_type='sezunitinvoice' or invoice_type='deemedexportinvoice') and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%' and is_gstr1_uploaded='".$uploaded."'";
+        $query = "select invoice_id from " . TAB_PREFIX . 'client_invoice' . " where invoice_nature='salesinvoice' and (invoice_type='creditnote' or invoice_type='debitnote' or invoice_type='taxinvoice' or invoice_type='receiptvoucherinvoice' or  invoice_type='exportinvoice' or invoice_type='sezunitinvoice' or invoice_type='deemedexportinvoice' or invoice_type='refundvoucherinvoice' ) and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%' and is_gstr1_uploaded='".$uploaded."'";
         return $this->get_results($query);
     }
 
@@ -1643,10 +1643,10 @@ class common extends db {
         $query = "select invoice_id from " . TAB_PREFIX . 'client_invoice' . " where invoice_nature='salesinvoice' and billing_gstin_number='" . $dataCurrentUserArr['data']->kyc->gstin_number . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%' and is_gstr1_uploaded != '0' and is_gstr2_downloaded='0'";
         return $this->get_results($query);
     }
-	
-	public function getUserSubscribePlanDetails($planid = '') {
 
-		$data = $this->get_row("select * from " . $this->tableNames['user_subscribed_plan'] ." where added_by = ". $this->sanitize($_SESSION['user_detail']['user_id'])." AND plan_id='".$planid."' AND payment_status='1' order by id DESC LIMIT 0,1");
+	public function getUserSubscribePlanDetails($planid = '',$userid) {
+      //echo $sql="select * from " . $this->tableNames['user_subscribed_plan'] ." as p inner join " . $this->tableNames['user'] ." as u on u.user_id = p.added_by  where p.added_by = ".$userid." AND p.plan_id='".$planid."' AND u.payment_status='1' order by id DESC LIMIT 0,1";
+		$data = $this->get_row("select * from " . $this->tableNames['user_subscribed_plan'] ."  where added_by = ".$userid." AND plan_id='".$planid."' order by id DESC LIMIT 0,1");
         $dataArr = array();
         if (!empty($data)) {
             $dataArr['data'] = $data;

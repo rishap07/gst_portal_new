@@ -40,6 +40,8 @@ final class client extends validation {
 				foreach($getSubUser as $subuser) {
 					array_push($parentIds, $subuser->user_id);
 				}
+
+				$subscribePlanDetail = $this->getUserSubscribePlanDetails($dataCurrentSubsArr['data']->plan_id, $dataCurrentSubsArr['data']->user_id);
 			} else if($dataCurrentSubsArr['data']->user_group == 5) {
 
 				$getParent = $this->get_row("select added_by from ".$this->tableNames['user']." where 1=1 AND user_group = '5' AND user_id = '" . $dataCurrentSubsArr['data']->user_id . "'");
@@ -49,38 +51,44 @@ final class client extends validation {
 				foreach($getSubUser as $subuser) {
 					array_push($parentIds, $subuser->user_id);
 				}
+
+				$dataParentSubsArr = $this->getUserDetailsById($getParent->added_by);
+				$subscribePlanDetail = $this->getUserSubscribePlanDetails($dataParentSubsArr['data']->plan_id, $getParent->added_by);
 			}
 
 			$allParentIds = implode(",", $parentIds);
-			
-			echo $allParentIds; die;
 
 			$totalPANs = $this->get_results("select count(DISTINCT k.pan_card_number) as total_pan_card_number from ".$this->tableNames['user']." u left join " . $this->getTableName('client_kyc') ." k on u.user_id = k.added_by where 1=1 AND u.user_group = '4' AND u.added_by IN(".$allParentIds.")");
-			//$clientIds = $this->getClient("GROUP_CONCAT(user_id) as clientIds", "added_by=".$this->sanitize($_SESSION['user_detail']['user_id']));
-			//$totalPANs = $this->get_results("select count(DISTINCT pan_card_number) as total_pan_card_number from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by IN(".$clientIds[0]->clientIds.")");
-
-			$subscribePlanDetail = $this->getUserSubscribePlanDetails($dataCurrentSubsArr['data']->plan_id);
 			$panPermission = isset($subscribePlanDetail['data']->pan_num) ? $subscribePlanDetail['data']->pan_num : 0;
-
-			if($totalPANs[0]->total_pan_card_number > $panPermission) {
-
-				$this->setError('You have reach maximum company creation limit.');
+		
+			$panFromGTIN = substr(substr($dataArr['gstin_number'], 2), 0, -3);
+			if($panFromGTIN !== $dataArr['pan_card_number']) {
+				$this->setError('Pan Card number should be according to GSTIN.');
 				return false;
+			}
+			
+			if($totalPANs[0]->total_pan_card_number >= $panPermission && $panPermission != -1) {
 
-				/*
-				$panResult = $this->get_results("select pan_card_number from " . $this->tableNames['client_kyc'] ." where 1=1 AND pan_card_number IN('".$dataArr['pan_card_number']."') AND added_by IN(".$clientIds[0]->clientIds.")");
+				$panResult = $this->get_results("select pan_card_number from ".$this->tableNames['user']." u left join " . $this->tableNames['client_kyc'] ." k on u.user_id = k.added_by where 1=1 AND u.user_group = '4' AND k.pan_card_number = '".$dataArr['pan_card_number']."' AND u.added_by IN(".$allParentIds.")");
 				if(count($panResult) == 0) {
 					$this->setError('You have reach maximum company creation limit.');
 					return false;
 				}
-				*/
+			}
+
+			$state_tin = isset($_POST['state_tin']) ? $_POST['state_tin'] : '';
+			$state_gstin_tin = substr($dataArr['gstin_number'], 0, 2);
+
+			if($state_gstin_tin != $state_tin) {
+				$this->setError('State should be valid according to GSTIN.');
+				return false;
 			}
 		} else {
 
 			$state_tin = isset($_POST['state_tin']) ? $_POST['state_tin'] : '';
 			$state_gstin_number = isset($dataCurrentArr['data']->kyc->gstin_number) ? $dataCurrentArr['data']->kyc->gstin_number : '';
 			$state_gstin_tin = substr($state_gstin_number, 0, 2);
-			
+
 			if($state_gstin_tin != $state_tin) {
 				$this->setError('State should be valid according to GSTIN.');
 				return false;
@@ -229,24 +237,59 @@ final class client extends validation {
 			$dataArr['gstin_number'] = isset($_POST['gstin_number']) ? $_POST['gstin_number'] : '';
 			$dataArr['pan_card_number'] = isset($_POST['pan_card_number']) ? $_POST['pan_card_number'] : '';
 
-			$obj_plan = new plan();
 			$dataCurrentSubsArr = $this->getUserDetailsById($this->sanitize($dataCurrentArr['data']->added_by));
 
-			$clientIds = $this->getClient("GROUP_CONCAT(user_id) as clientIds", "added_by=".$this->sanitize($dataCurrentArr['data']->added_by));
-			$totalPANs = $this->get_results("select count(DISTINCT pan_card_number) as total_pan_card_number from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by IN(".$clientIds[0]->clientIds.")");
+			$parentIds = array();
+			if($dataCurrentSubsArr['data']->user_group == 3) {
 
-			$subscribePlanDetail = $obj_plan->getPlanDetails($dataCurrentSubsArr['data']->plan_id);
+				array_push($parentIds, $dataCurrentSubsArr['data']->user_id);
+				$getSubUser = $this->get_results("select user_id from ".$this->tableNames['user']." where 1=1 AND user_group = '5' AND added_by = '" . $dataCurrentSubsArr['data']->user_id . "'");
+				foreach($getSubUser as $subuser) {
+					array_push($parentIds, $subuser->user_id);
+				}
+
+				$subscribePlanDetail = $this->getUserSubscribePlanDetails($dataCurrentSubsArr['data']->plan_id, $dataCurrentSubsArr['data']->user_id);
+			} else if($dataCurrentSubsArr['data']->user_group == 5) {
+
+				$getParent = $this->get_row("select added_by from ".$this->tableNames['user']." where 1=1 AND user_group = '5' AND user_id = '" . $dataCurrentSubsArr['data']->user_id . "'");
+				array_push($parentIds, $getParent->added_by);
+
+				$getSubUser = $this->get_results("select user_id from ".$this->tableNames['user']." where 1=1 AND user_group = '5' AND added_by = '" . $getParent->added_by . "'");
+				foreach($getSubUser as $subuser) {
+					array_push($parentIds, $subuser->user_id);
+				}
+
+				$dataParentSubsArr = $this->getUserDetailsById($getParent->added_by);
+				$subscribePlanDetail = $this->getUserSubscribePlanDetails($dataParentSubsArr['data']->plan_id, $getParent->added_by);
+			}
+			
+			$allParentIds = implode(",", $parentIds);
+
+			$totalPANs = $this->get_results("select count(DISTINCT k.pan_card_number) as total_pan_card_number from ".$this->tableNames['user']." u left join " . $this->getTableName('client_kyc') ." k on u.user_id = k.added_by where 1=1 AND u.user_group = '4' AND u.added_by IN(".$allParentIds.")");
 			$panPermission = isset($subscribePlanDetail['data']->pan_num) ? $subscribePlanDetail['data']->pan_num : 0;
 
-			if($totalPANs[0]->total_pan_card_number >= $panPermission) {
+			$panFromGTIN = substr(substr($dataArr['gstin_number'], 2), 0, -3);
+			if($panFromGTIN !== $dataArr['pan_card_number']) {
+				$this->setError('Pan Card number should be according to GSTIN.');
+				return false;
+			}
 
-				$panResult = $this->get_results("select pan_card_number from " . $this->tableNames['client_kyc'] ." where 1=1 AND pan_card_number IN('".$dataArr['pan_card_number']."') AND added_by IN(".$clientIds[0]->clientIds.")");
+			if($totalPANs[0]->total_pan_card_number >= $panPermission && $panPermission != -1) {
+
+				$panResult = $this->get_results("select pan_card_number from ".$this->tableNames['user']." u left join " . $this->tableNames['client_kyc'] ." k on u.user_id = k.added_by where 1=1 AND u.user_group = '4' AND k.pan_card_number = '".$dataArr['pan_card_number']."' AND u.added_by IN(".$allParentIds.")");
 				if(count($panResult) == 0) {
 					$this->setError('You have reach maximum company creation limit.');
 					return false;
 				}
 			}
 
+			$state_tin = isset($_POST['state_tin']) ? $_POST['state_tin'] : '';
+			$state_gstin_tin = substr($dataArr['gstin_number'], 0, 2);
+
+			if($state_gstin_tin != $state_tin) {
+				$this->setError('State should be valid according to GSTIN.');
+				return false;
+			}
 		} else {
 
 			$state_tin = isset($_POST['state_tin']) ? $_POST['state_tin'] : '';

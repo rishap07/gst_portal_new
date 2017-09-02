@@ -212,16 +212,20 @@ class login extends validation {
             if (!isset($_SESSION['plan_id']) || $_SESSION['plan_id'] == '') {
                 return true;
             } else {
-                $dataGo4host['user_id'] = $userData['data']->user_id;
+
+				$dataGo4host['user_id'] = $userData['data']->user_id;
                 $dataGo4host['username'] = $userData['data']->username;
                 $dataGo4host['email'] = $userData['data']->email;
                 $dataGo4host['phone_number'] = $userData['data']->phone_number;
-
+				$dataGo4host['city'] = $userData['data']->city;
+				$dataGo4host['state'] = $userData['data']->state;
                 $dataGo4host['name'] = $userData['data']->name;
                 $dataGo4host['user_group'] = $userData['data']->user_group;
                 $dataGo4host['plan_id'] = $_SESSION['plan_id'];
-                unset($_SESSION['plan_id']);
-                $dataPlan = $this->get_results("select * from " . TAB_PREFIX . "subscriber_plan where id='" . $this->sanitize($dataGo4host['plan_id']) . "' and is_deleted='0' and status='1'");
+
+				unset($_SESSION['plan_id']);
+
+				$dataPlan = $this->get_results("select * from " . TAB_PREFIX . "subscriber_plan where id='" . $this->sanitize($dataGo4host['plan_id']) . "' and is_deleted='0' and status='1'");
                 $dataGo4host['price'] = isset($dataPlan[0]->plan_price) ? $dataPlan[0]->plan_price : '9990';
                 $price_data = $dataGo4host['price'];
 
@@ -281,7 +285,9 @@ class login extends validation {
         }
     }
 
-    public function redirectGohost($data) { ?>
+    public function redirectGohost($data) {
+		
+		$userStateData = $this->getStateDetailByStateId($data['state']); ?>
 		<html>
 			<head>
 				<script type="text/javascript">
@@ -304,8 +310,8 @@ class login extends validation {
 					<input type="hidden" value="<?php echo PROJECT_URL . "/go4hosting/keeper_response.php"; ?>" name="return_url"/>
 					<input type="hidden" value="LIVE" name="mode"/>
 					<input type="hidden" value="<?php echo $data['username']; ?>" name="name"/>
-					<input type="hidden" value="Delhi" name="address"/>
-					<input type="hidden" value="Delhi" name="city"/>
+					<input type="hidden" value="<?php if(isset($userStateData['data']->state_name)) { echo $userStateData['data']->state_name; } else { echo "Delhi"; } ?>" name="address"/>
+					<input type="hidden" value="<?php echo $data['city']; ?>" name="city"/>
 					<input type="hidden" value="110010" name="postal_code"/>
 					<input type="hidden" value="IND" name="country"/>
 					<input type="hidden" value="<?php echo $data['email']; ?>" name="email"/>

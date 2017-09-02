@@ -2,7 +2,7 @@
 $obj_client = new client();
 $obj_plan = new plan();
 $obj_user = new users();
-
+  
 if (!isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '') {
     $obj_client->redirect(PROJECT_URL);
     exit();
@@ -28,10 +28,10 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
         exit();
     }
 
-    $subscribePlanDetail = $obj_user->getUserSubscribePlanDetails($dataCurrentArr['data']->plan_id);
-	$totalClientCreated = $obj_client->get_row("select count(user_id) as totalClientCreated from " . $obj_client->getTableName('user') . " where user_group=4 and is_deleted='0' and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+    $subscribePlanDetail = $obj_user->getUserSubscribePlanDetails($dataCurrentArr['data']->plan_id,$obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	$totalClientCreated = $obj_client->get_row("select count(user_id) as totalClientCreated from " . $obj_client->getTableName('user') . " where user_group=4 and  added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
 	$totalSubuserClient = $obj_client->get_row("select no_of_client from " . $obj_client->getTableName('user') . " where user_id=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
-	$totalSubUserCreated = $obj_client->get_row("select sum(no_of_client) as totalSubUserCreated from " . $obj_client->getTableName('user') . " where user_group=5 and is_deleted='0' and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
+	$totalSubUserCreated = $obj_client->get_row("select sum(no_of_client) as totalSubUserCreated from " . $obj_client->getTableName('user') . " where user_group=5 and added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
 	$totaluser = intval($totalClientCreated->totalClientCreated)+$totalSubUserCreated->totalSubUserCreated;
 	//$totalClientPan = $obj_client->get_row("select distinct(pan_card_number) as client_pan from " . $obj_client->getTableName('user') . " where added_by=" . $obj_client->sanitize($_SESSION['user_detail']['user_id']));
 	if($_SESSION["user_detail"]["user_group"]==3)
@@ -57,10 +57,14 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
 	}		
 	if($_SESSION["user_detail"]["user_group"]==3)
 	{
-		if ($subscribePlanDetail['data']->no_of_client>=0 && ($totaluser >= intval($subscribePlanDetail['data']->no_of_client))) {
+		if($subscribePlanDetail['data']->no_of_client==-1)
+		{
+		}else{
+			if ($subscribePlanDetail['data']->no_of_client>=0 && ($totaluser >= intval($subscribePlanDetail['data']->no_of_client))) {
 
-			$obj_client->setError('You have reach maximum client creation limit.');
-			$obj_client->redirect(PROJECT_URL . "?page=client_update");
+				$obj_client->setError('You have reach maximum client creation limit.');
+				$obj_client->redirect(PROJECT_URL . "?page=client_update");
+			}
 		}
 	}
 	if($_SESSION["user_detail"]["user_group"]==5)
@@ -199,7 +203,7 @@ if (isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editClie
                     <div class="col-md-4 col-sm-4 col-xs-12 form-group">
 
                         <label>Email Address<span class="starred">*</span></label>
-                        <input type="text" name="emailaddress" id="emailaddress" placeholder="Enter email address" class="form-control" data-bind="email" value="<?php if (isset($_POST['emailaddress'])) {
+                        <input type="text" name="emailaddress" id="emailaddress" placeholder="Enter email address" class="required form-control" data-bind="email" value="<?php if (isset($_POST['emailaddress'])) {
     echo $_POST['emailaddress'];
 } else if (isset($dataArr['data']->email)) {
     echo $dataArr['data']->email;

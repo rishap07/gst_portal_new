@@ -116,6 +116,7 @@ final class gstr1 extends validation {
         $cur_gt=  (float)$obj_gst->cur_gross_turnover($_SESSION['user_detail']['user_id']);
         $is_username_check = $obj_gst->is_username_exists($_SESSION['user_detail']['user_id']);
         $dataRes = $this->generalGSTR1InvoiceList($fmonth);
+		$this->pr($dataRes);
         $flag = 0;
         if(!empty($is_username_check)) {
             if (!empty($is_gross_turnover_check) && !empty($cur_gt)) {
@@ -319,12 +320,12 @@ final class gstr1 extends validation {
         /***** End Code For CDNUR Payload ********** */
 
         /***** Start Code For HSN Summary Payload ********** */
-        $hsn_data = $this->gstHSNPayload($user_id, $returnmonth);
+        /*$hsn_data = $this->gstHSNPayload($user_id, $returnmonth);
         if (!empty($hsn_data)) {
             //$data_ids[] = $hsn_ids = $hsn_data['hsn_ids'];
             $hsn_arr = $hsn_data['hsn_arr'];
             $dataArr = array_merge($dataArr, $hsn_arr);
-        }
+        }*/
         /***** END Code For HSN Summary Payload ********** */
 
         /***** Start Code For AT Payload ********** */
@@ -463,7 +464,13 @@ final class gstr1 extends validation {
                 $idt = isset($data['idt'])?$data['idt']:'';
                 $json = isset($data['json'])?$data['json']:'';
                 if($all == 'all') {
-                    $jstr1_array = json_decode($json,true);
+                    $b2b_data = $this->gstB2BPayload($user_id, $returnmonth,'D');
+                    //$this->pr($b2b_data);
+                    if (!empty($b2b_data)) {
+                        $dataArr = $b2b_data['b2b_arr'];
+                        $data_ids = $b2b_data['b2b_ids'];
+                    }
+                    /*$jstr1_array = json_decode($json,true);
                     if(isset($jstr1_array['b2b'])) {
                         $i=0;
                         foreach ($jstr1_array['b2b'] as $key1 => $inv_value) {
@@ -484,7 +491,7 @@ final class gstr1 extends validation {
                             }
                             $i++;
                         }  
-                    }
+                    }*/
                     
                 }
                 else {
@@ -492,8 +499,9 @@ final class gstr1 extends validation {
                     $dataArr['b2b'][0]['inv'][0]['flag'] = 'D';
                     $dataArr['b2b'][0]['inv'][0]['inum'] = $inum;
                     $dataArr['b2b'][0]['inv'][0]['idt'] = $idt;
+                    $data_ids = $this->gstB2BDeleteQuery($user_id,$returnmonth, $ctin,$inum,$idt,$all);
+
                 }
-                $data_ids = $this->gstB2BDeleteQuery($user_id,$returnmonth, $ctin,$inum,$idt,$all);
             }
             if($type == 'B2CL') {
                 $pos = isset($data['pos'])?$data['pos']:'';
@@ -765,8 +773,8 @@ final class gstr1 extends validation {
         }
         $response['data_ids'] = $data_ids;
         $response['data_arr'] = $dataArr;
-        $this->pr($response);
-        //die;
+        /*$this->pr($response);
+        die;*/
         return $response;
     }
 
@@ -900,9 +908,12 @@ final class gstr1 extends validation {
         return $ids; 
     }
 
-    public function gstB2BPayload($user_id, $returnmonth) {
+    public function gstB2BPayload($user_id, $returnmonth,$flag='') {
         $dataArr = $response = $b2b_array = $b2b_ids = array();
         $dataInvB2B = $this->getB2BInvoices($user_id, $returnmonth);
+        if(!empty($flag)) {
+           $dataInvB2B = $this->getB2BInvoices($user_id, $returnmonth,'1');
+        }
         if (isset($dataInvB2B) && !empty($dataInvB2B)) {
 
             $x = 0;
@@ -923,12 +934,23 @@ final class gstr1 extends validation {
                 $dataArr['b2b'][$x]['ctin'] = $dataIn->billing_gstin_number;
                 $dataArr['b2b'][$x]['inv'][$y]['inum'] = $dataIn->reference_number;
                 $dataArr['b2b'][$x]['inv'][$y]['idt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+                if(!empty($flag)) {
+                   $dataArr['b2b'][$x]['inv'][$y]['flag'] = $flag; 
+                }
                 $dataArr['b2b'][$x]['inv'][$y]['val'] = (float) $dataIn->invoice_total_value;
                 $dataArr['b2b'][$x]['inv'][$y]['pos'] = strlen($dataIn->supply_place) == '1' ? '0' . $dataIn->supply_place : $dataIn->supply_place;
                 $in_type = '';
                 if ($dataIn->invoice_type == 'taxinvoice' || $dataIn->invoice_type =='billofsupplyinvoice') {
                     $in_type = 'R';
-                } else if ($dataIn->invoice_type == 'sezunitinvoice') {
+
+                    if ($dataIn->company_state != $dataIn->supply_place ) {
+                        $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['iamt'] = (float) $dataIn->igst_amount;
+                    } else {
+                        $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['samt'] = (float) $dataIn->sgst_amount;
+                        $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['camt'] = (float) $dataIn->cgst_amount;
+                    }
+                } 
+                else if ($dataIn->invoice_type == 'sezunitinvoice') {
 					if($dataIn->export_supply_meant=='withpayment')
 					{
 						$in_type = 'SEWP';
@@ -937,8 +959,12 @@ final class gstr1 extends validation {
 					{
 						$in_type = 'SEWOP';
 					}
+                    $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['iamt'] = (float) $dataIn->igst_amount;
+
                 } else if ($dataIn->invoice_type == 'deemedexportinvoice') {
                     $in_type = 'DE';
+
+                    $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['iamt'] = (float) $dataIn->igst_amount;
                 }
                 $rever_charge = ($dataIn->supply_type == 'reversecharge') ? 'Y' : 'N';
                 /*if($dataIn->supply_type == 'tcs') {
@@ -950,13 +976,11 @@ final class gstr1 extends validation {
                 $rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
                 $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['rt'] = (float) $rt;
                 $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['txval'] = (float) $dataIn->taxable_subtotal;
-                if ($dataIn->company_state != $dataIn->supply_place) {
-                    $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['iamt'] = (float) $dataIn->igst_amount;
-                } else {
-                    $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['samt'] = (float) $dataIn->sgst_amount;
-                    $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['camt'] = (float) $dataIn->cgst_amount;
-                }
+
+                
                 $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['csamt'] = (float) $dataIn->cess_amount;
+                
+
                 $z++;
                 $temp_number = $dataIn->reference_number;
                 $a++;
@@ -1538,7 +1562,7 @@ final class gstr1 extends validation {
         $dataInvDeliverySUAP = $docDeliverySUAP[0];
         $dataInvCancleDeliverySUAP = $docDeliverySUAP[1];
 
-        if(isset($dataInvDeliverySUAP) && !empty($dataInvDeliveryJobWork))
+        if(isset($dataInvDeliverySUAP) && !empty($dataInvDeliverySUAP) && !empty($dataInvDeliveryJobWork))
         {
           $doc_num = 8;
           $z=0;

@@ -80,7 +80,8 @@ final class users extends validation {
         $dataArr['phone_number'] = isset($_POST['phonenumber']) ? $_POST['phonenumber'] : '';
         $dataArr['status'] = isset($_POST['user_status']) ? $_POST['user_status'] : '';
 		$dataArr['no_of_client'] = isset($_POST['no_of_client']) ? $_POST['no_of_client'] : '';
-
+        $dataArr['subscriber_code'] = $this->generateSubscriberRandomCode(6, $this->tableNames['user'], "subscriber_code");
+      
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
@@ -155,6 +156,7 @@ final class users extends validation {
 		$dataArr['company_no'] = $planDetail[0]->company_no;
 		$dataArr['pan_num'] = $planDetail[0]->pan_num;
 		$dataArr['sub_user'] = $planDetail[0]->sub_user;
+		$dataArr['cloud_storage_gb'] = $planDetail[0]->cloud_storage_gb;
 		$dataArr['plan_start_date'] = date('Y-m-d H:i:s');
 		$dataArr['plan_due_date'] = (date('Y')+1) . "-03-31";
 		$dataArr['plan_price'] = $planDetail[0]->plan_price;

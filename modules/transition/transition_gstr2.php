@@ -34,7 +34,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 	  
   }
   else{
-    if($obj_transition->saveGstrTransition()){
+    if($obj_transition->saveGstrTransition2()){
         //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
     }
   }
@@ -47,7 +47,7 @@ if(isset($_POST['finalsubmit']) && $_POST['finalsubmit']=='final submit') {
 						  
 } else{
  				  
-    if($obj_transition->finalSaveGstrTransition()){
+    if($obj_transition->finalSaveGstrTransition2()){
         //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
     }
 }
@@ -55,7 +55,7 @@ if(isset($_POST['finalsubmit']) && $_POST['finalsubmit']=='final submit') {
 if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['id'])) {
 
     
-    $htmlResponse = $obj_transition->generategst_transitionHtml($_GET['id'],$_GET['returnmonth']);
+    $htmlResponse = $obj_transition->generategst_transitionForm2Html($_GET['id'],$_GET['returnmonth']);
 
     if ($htmlResponse === false) {
 
@@ -100,21 +100,23 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
        $sql = "select  *,count(id) as totalinvoice from gst_transition_form2 where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
        $returndata = $obj_transition->get_results($sql);
 	   $sql = "select  *,count(id) as totalinvoice from gst_transition_form2 where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
- 
        $returndata1 = $obj_transition->get_results($sql);
-	    $sql = "select * from " . TAB_PREFIX . "client_kyc where added_by='" . $_SESSION['user_detail']['user_id'] . "' order by id desc limit 0,1";
+	   $sql = "select * from " . TAB_PREFIX . "client_kyc where added_by='" . $_SESSION['user_detail']['user_id'] . "' order by id desc limit 0,1";
 	   $clientdata = $obj_transition->get_results($sql);
 	   $client_gstin_number;
 	   $client_name;
+	   $taxable_name='';
 	   
 	   if(count($clientdata) > 0 )
 	   {
 		   $client_gstin_number = $clientdata[0]->gstin_number;
 		   $client_name = $clientdata[0]->name;
+		  
 		   
 	   }
 		if($returndata1[0]->totalinvoice > 0)
 		{
+			 $taxable_name=$returndata1[0]->taxable_name;
 		$arr = $returndata1[0]->gstr_transition_data;
 		$arr1= base64_decode($arr);
 		$transition_arr = json_decode($arr1);	
@@ -159,7 +161,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 			$b4_centraltax=$item->b4_centraltax;
 			$b4_integrated=$item->b4_integrated;
 			$b4_itcallowed=$item->b4_itcallowed;
-			$b4_qty3=$item->b4_qty3;			
+			$b4_qty3=$item->b4_qty3;	
+            			
 		}
 		}
 		 
@@ -208,12 +211,12 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 		    echo "<div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>GST-Transition month of  ".$returnmonth." already submitted </div>";
 					
 				} }?>
-				<div class="tab" style="display:none;">
-                <a href="<?php echo PROJECT_URL . '/?page=transition_gstr2&returnmonth='.$returnmonth ?>" class="active">
-                    Prepare GSTR-3B 
+				<div class="tab">
+                <a href="<?php echo PROJECT_URL . '/?page=transition_gstr&returnmonth='.$returnmonth ?>">
+                    Transition Form1
                 </a>
-                <a href="<?php echo PROJECT_URL . '/?page=return_filegstr3b_file&returnmonth='.$returnmonth ?>" >
-                    File GSTR-3B
+                <a href="<?php echo PROJECT_URL . '/?page=transition_gstr2&returnmonth='.$returnmonth ?>" class="active" >
+                    Transition Form2
                 </a>
               
             </div>
@@ -267,39 +270,23 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 							 <label><strong><?php echo $client_gstin_number; ?></strong></label>
 						     </div>
 							 
-							    <div class="col-md-12 col-sm-12 col-xs-12 form-group">
+							    
+							   <div class="col-md-4 col-sm-4 col-xs-12 form-group">
 
                             <label>2.Name of taxable person-<span class="starred"></span></label>
-							 <label><strong><?php echo $client_name; ?></strong></label>
-						 
-							   </div>
+							 <input type="text" maxlength="100" id="taxable_name"  name="taxable_name" value="<?php if(isset($returndata1[0]->taxable_name)) { echo $returndata1[0]->taxable_name; } else { echo ''; } ?>"
+ class="form-control"  placeholder="" /> 
+						    
+							   </div><div class="clear"></div>
 							     <div class="col-md-12 col-sm-12 col-xs-12 form-group">
 
                             <label>3.Tax Period: month Year-<span class="starred"></span></label>
-							 <label><strong><?php echo $client_name; ?></strong></label>
+							 <label><strong><?php echo $returnmonth; ?></strong></label>
 						 
 							   </div>
 							   
 							    
-                            <label>4.Wheather all the return required under existing law for the period of six month immediately preceding appoint date have been furnished<span class="starred"></span></label>
-							 <div class="col-md-2 col-sm-2 col-xs-12 form-group">
-
-							 <select name='transition_status' id='transition_status' class='required form-control'>
-                        
-						   <option value='1' <?php
-                                    if (isset($returndata1[0]->transition_status) && $returndata1[0]->transition_status == 1) {
-                                        echo "selected='selected'";
-                                    }
-                                    ?>>Active</option>
-									 <option value='0' <?php
-                                    if (isset($returndata1[0]->transition_status) && $returndata1[0]->transition_status==0) {
-                                        echo "selected='selected'";
-                                    }
-                                    ?>>InActive</option>
-							
-                        </select>
-						    
-							   </div>
+                            
 							   </div>
                     	<div class="greyheading">4.Details of Input held on stock on appointment date of in which respect of which he is not in possession of any invoice/document evidencing payment of tax forward to electronic credit ledger</div>
 					       <div class="tableresponsive">
@@ -452,7 +439,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4a_value[]" value="<?php if(isset($a5_value[$i])) { echo $a5_value[$i]; } else { echo ''; }?>"  class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4a_value[]" value="<?php if(isset($a4_value[$i])) { echo $a4_value[$i]; } else { echo ''; }?>"  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -464,7 +451,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a5_centraltax[$i])) { echo $a5_centraltax[$i]; } else { echo ''; }?>" name="4a_centraltax[]"  class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a4_centraltax[$i])) { echo $a4_centraltax[$i]; } else { echo ''; }?>" name="4a_centraltax[]"  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								 <td>
@@ -472,11 +459,11 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
 								 {
 									 ?>
-									 <label><?php if(isset($a4_integratedtax[$i])) { echo $a4_integratedtax[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php if(isset($a4_integrated[$i])) { echo $a4_integrated[$i]; } else { echo ''; } ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a4_integratedtax[$i])) { echo $a4_integratedtax[$i]; } else { echo ''; }?>" name="4a_integratedtax[]"  class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a4_integrated[$i])) { echo $a4_integrated[$i]; } else { echo ''; }?>" name="4a_integrated[]"  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -484,11 +471,11 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
 								 {
 									 ?>
-									 <label><?php if(isset($a5_itcallowed[$i])) { echo $a5_itcallowed[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php if(isset($a4_itcallowed[$i])) { echo $a4_itcallowed[$i]; } else { echo ''; } ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a5_itcallowed[$i])) { echo $a5_itcallowed[$i]; } else { echo ''; }?>" name="4a_itcallowed[]"  class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a4_itcallowed[$i])) { echo $a4_itcallowed[$i]; } else { echo ''; }?>" name="4a_itcallowed[]"  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								 <td>
@@ -496,11 +483,11 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
 								 {
 									 ?>
-									 <label><?php if(isset($a5_qty3[$i])) { echo $a5_qty3[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php if(isset($a4_qty3[$i])) { echo $a4_qty3[$i]; } else { echo ''; } ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a5_qty3[$i])) { echo $a5_qty3[$i]; } else { echo ''; }?>" name="4a_qty3[]"  class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a4_qty3[$i])) { echo $a4_qty3[$i]; } else { echo ''; }?>" name="4a_qty3[]"  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								 <?php if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 0))
@@ -521,7 +508,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								
 								<?php if(($sno==sizeof($start)) && ($returndata[0]->final_submit==1))  
 								{
-									echo '<tr><td></td><td>Total</td><td>'.$taxreturn.'</td><td>'.$dateoffilling_return.'</td><td>'.$balance_cenvat_credit.'</td><td>'.$cenvat_credit_admissible.'</td></tr>';
+									//echo '<tr><td></td><td>Total</td><td>'.$taxreturn.'</td><td>'.$dateoffilling_return.'</td><td>'.$balance_cenvat_credit.'</td><td>'.$cenvat_credit_admissible.'</td></tr>';
 									
 								}
 									}  } else { ?>
@@ -613,7 +600,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4a_integratedtax[]"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4a_integrated[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -785,12 +772,12 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
 								 {
 									 ?>
-									 <label><?php if(isset($a4_qty1[$i])) { echo $a4_qty1[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php if(isset($b4_qty1[$i])) { echo $b4_qty1[$i]; } else { echo ''; } ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4a_qty1[]"
- class="form-control" value="<?php if(isset($a4_qty1[$i])) { echo $a4_qty1[$i]; } else { echo ''; }?>"  placeholder="" /> 
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4b_qty1[]"
+ class="form-control" value="<?php if(isset($b4_qty1[$i])) { echo $b4_qty1[$i]; } else { echo ''; }?>"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -798,12 +785,12 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
 								 {
 									 ?>
-									 <label><?php if(isset($a4_qty2[$i])) { echo $a4_qty2[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php if(isset($b4_qty2[$i])) { echo $b4_qty2[$i]; } else { echo ''; } ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);"  name="4a_qty2[]"
- class="form-control" value="<?php if(isset($a4_qty2[$i])) { echo $a4_qty2[$i]; } else { echo ''; }?>"  placeholder="" /> 
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);"  name="4b_qty2[]"
+ class="form-control" value="<?php if(isset($b4_qty2[$i])) { echo $b4_qty2[$i]; } else { echo ''; }?>"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -811,11 +798,11 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
 								 {
 									 ?>
-									 <label><?php if(isset($a4_value[$i])) { echo $a4_value[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php if(isset($b4_value[$i])) { echo $b4_value[$i]; } else { echo ''; } ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4a_value[]" value="<?php if(isset($a5_value[$i])) { echo $a5_value[$i]; } else { echo ''; }?>"  class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4b_value[]" value="<?php if(isset($b4_value[$i])) { echo $b4_value[$i]; } else { echo ''; }?>"  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -823,11 +810,11 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
 								 {
 									 ?>
-									 <label><?php if(isset($a4_centraltax[$i])) { echo $a4_centraltax[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php if(isset($b4_centraltax[$i])) { echo $b4_centraltax[$i]; } else { echo ''; } ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a5_centraltax[$i])) { echo $a5_centraltax[$i]; } else { echo ''; }?>" name="4a_centraltax[]"  class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b4_centraltax[$i])) { echo $b4_centraltax[$i]; } else { echo ''; }?>" name="4b_centraltax[]"  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								 <td>
@@ -835,11 +822,11 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
 								 {
 									 ?>
-									 <label><?php if(isset($a4_integratedtax[$i])) { echo $a4_integratedtax[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php if(isset($b4_integrated[$i])) { echo $b4_integrated[$i]; } else { echo ''; } ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a4_integratedtax[$i])) { echo $a4_integratedtax[$i]; } else { echo ''; }?>" name="4a_integratedtax[]"  class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b4_integrated[$i])) { echo $b4_integrated[$i]; } else { echo ''; }?>" name="4b_integrated[]"  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -847,11 +834,11 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
 								 {
 									 ?>
-									 <label><?php if(isset($a5_itcallowed[$i])) { echo $a5_itcallowed[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php if(isset($b4_itcallowed[$i])) { echo $b4_itcallowed[$i]; } else { echo ''; } ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a5_itcallowed[$i])) { echo $a5_itcallowed[$i]; } else { echo ''; }?>" name="4a_itcallowed[]"  class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b4_itcallowed[$i])) { echo $b4_itcallowed[$i]; } else { echo ''; }?>" name="4b_itcallowed[]"  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								 <td>
@@ -859,11 +846,11 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
 								 {
 									 ?>
-									 <label><?php if(isset($a5_qty3[$i])) { echo $a5_qty3[$i]; } else { echo ''; } ?><span class="starred"></span></label>
+									 <label><?php if(isset($b4_qty3[$i])) { echo $b4_qty3[$i]; } else { echo ''; } ?><span class="starred"></span></label>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a5_qty3[$i])) { echo $a5_qty3[$i]; } else { echo ''; }?>" name="4a_qty3[]"  class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b4_qty3[$i])) { echo $b4_qty3[$i]; } else { echo ''; }?>" name="4b_qty3[]"  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								 <?php if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 0))
@@ -871,7 +858,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 							        if($i==0){
 									 ?>
                                     <td>
-									 <a class="addMoreInvoice add-table4a"  href="javascript:void(0)">
+									 <a class="addMoreInvoice add-table4b"  href="javascript:void(0)">
 									<div class="tooltip2">
 										<i class="fa fa-plus-circle addicon"></i>
 										<span class="tooltiptext">Add More</span>
@@ -884,7 +871,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								
 								<?php if(($sno==sizeof($start)) && ($returndata[0]->final_submit==1))  
 								{
-									echo '<tr><td></td><td>Total</td><td>'.$taxreturn.'</td><td>'.$dateoffilling_return.'</td><td>'.$balance_cenvat_credit.'</td><td>'.$cenvat_credit_admissible.'</td></tr>';
+									//echo '<tr><td></td><td>Total</td><td>'.$taxreturn.'</td><td>'.$dateoffilling_return.'</td><td>'.$balance_cenvat_credit.'</td><td>'.$cenvat_credit_admissible.'</td></tr>';
 									
 								}
 									}  } else { ?>
@@ -898,7 +885,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4a_hsn[]"
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4b_hsn[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -911,7 +898,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4a_unit[]"
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4b_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -924,7 +911,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4a_qty1[]"
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4b_qty1[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -937,7 +924,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4a_qty2[]"
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4b_qty2[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -950,7 +937,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4a_value[]"
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4b_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -963,7 +950,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4a_centraltax[]"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4b_centraltax[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -976,7 +963,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4a_integratedtax[]"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4b_integrated[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -989,7 +976,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4a_itcallowed[]"  class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4b_itcallowed[]"  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -1001,7 +988,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4a_qty3[]"  class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4b_qty3[]"  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
                                     <td>
@@ -1094,7 +1081,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
        
 			
 		    
-            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='4a_hsn[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_unit[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_qty1[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_qty2[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_value[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_centraltax[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_integratedtax[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_itcallowed[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_qty[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='4a_hsn[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_unit[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_qty1[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_qty2[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_value[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_centraltax[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_integrated[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_itcallowed[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_qty[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table4a').append(markup);
         });
@@ -1114,7 +1101,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
        
 			
 		    
-            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='4b_hsn[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_unit[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_qty1[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_qty2[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_value[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_centraltax[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_integratedtax[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_itcallowed[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_qty[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='4b_hsn[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_unit[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_qty1[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_qty2[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_value[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_centraltax[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_integrated[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_itcallowed[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_qty[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table4b').append(markup);
         });

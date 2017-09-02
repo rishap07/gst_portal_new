@@ -147,7 +147,7 @@ $response = $obj_api->returnSummary($returnmonth);
                 data: {type:type,returnmonth:returnmonth,deleteType:'all'},
                 success: function (response) {
                     $("#loading").hide();
-                    location.reload();
+                    //location.reload();
                 },
                 error: function() {
                 }
