@@ -75,16 +75,9 @@ if (isset($_POST['returnmonth'])) {
             </div>
                 <div class="border1"></div>
                 <div class="listcontent">
-                    <?php $dataClientArr = $db_obj->getClient("user_id,vendor_type, CONCAT(first_name,' ',last_name) as name, username, u.email, company_name,k.gstin_number, (case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "u.is_deleted='0' AND u.added_by='" . $_SESSION['user_detail']['user_id'] . "'"); ?>
+                    <?php $dataClientArr = $db_obj->getClient("user_id,user_group,vendor_type, CONCAT(first_name,' ',last_name) as name, username, u.email, company_name,k.gstin_number, (case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "u.is_deleted='0' AND u.added_by='" . $_SESSION['user_detail']['user_id'] . "'"); ?>
 
-                    <?php
-//                     echo "<pre>";
-//        print_r($dataClientArr);
-//        echo "</pre>";
-//        die();
-                    
-                        ?>
-                    <table class=" table table-bordered table-hover ">
+                   <table class=" table table-bordered table-hover ">
                         <tr>
                          <th>User Name</th>   
                         <th>Company Name</th>
@@ -226,9 +219,11 @@ if (isset($_POST['returnmonth'])) {
                             <td><?php echo ucwords($dataClient->name);?>(<?php echo $dataClient->username; ?>)</td>
                             <td> <?php echo $dataClient->company_name ?></td> 
                             <td> <?php echo $dataClient->gstin_number ?></td> 
-							<td> <?php echo $status_msg; ?></td> 
-							<td> <?php echo $status_gstr2_msg; ?></td> 
-							<td> <?php echo $status_gstr3_msg; ?></td> 
+							<td> <?php if($dataClient->user_group==5){ echo 'NA'; } else { echo $status_msg; } ?></td> 
+							<td> <?php if($dataClient->user_group==5){ echo 'NA'; } else { echo $status_gstr2_msg; } ?></td> 
+							<td> <?php if($dataClient->user_group==5){ echo 'NA'; } else { echo $status_gstr3_msg; } ?></td> 
+							
+							
 							
 								
 							   

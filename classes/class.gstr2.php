@@ -33,12 +33,15 @@ final class gstr2 extends validation {
 		if(!empty($response_b2b) || !empty($response_cdn)) {
 			$jstrb2b_array = json_decode($response_b2b,true);
 		    $jstrcdn_array = json_decode($response_cdn,true);
+		    //$this->pr($jstrb2b_array);
+		    
 		    //$this->pr($jstrcdn_array);
 		    if(isset($jstrb2b_array['b2b'])) {
 		    	$x=0;
 		        foreach ($jstrb2b_array['b2b'] as $key1 => $inv_value) {
 		            if(isset($inv_value['inv'])) {
 		                $ctin = isset($inv_value['ctin'])?$inv_value['ctin']:'';
+
 		                foreach ($inv_value['inv'] as $key2 => $jstr1_value) {
 		                    $val = isset($jstr1_value['val'])?$jstr1_value['val']:0;
 		                    $itms = isset($jstr1_value['itms'])?$jstr1_value['itms']:array();
@@ -106,9 +109,10 @@ final class gstr2 extends validation {
 		                           
 		                        }
 		                    }
+		                    $x++;
 		                }
 		            }
-		            $x++;
+		            
 		            
 		        }
 		    }
@@ -194,7 +198,8 @@ final class gstr2 extends validation {
 		    $y=0;
 		    $data = array_reduce($dataUpdate, 'array_merge', $data1);
 		    
-		    //$this->pr($data);
+		    /*$this->pr($data);
+		    die;*/
 		    if(!empty($data)) {
 			    $results_old = $this->checkUserInvoices($this->sanitize($_SESSION['user_detail']['user_id']),$gstr2ReturnMonth);
 			    //$this->pr($results_old);

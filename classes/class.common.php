@@ -836,7 +836,7 @@ class common extends db {
 			return $dataCurrentArr;	
 		}
 		return false;
-	}		
+	}
     /* Get user details by user id */
 
     public function getUserDetailsById($user_id = '') {
@@ -1646,7 +1646,7 @@ class common extends db {
 
 	public function getUserSubscribePlanDetails($planid = '',$userid) {
       //echo $sql="select * from " . $this->tableNames['user_subscribed_plan'] ." as p inner join " . $this->tableNames['user'] ." as u on u.user_id = p.added_by  where p.added_by = ".$userid." AND p.plan_id='".$planid."' AND u.payment_status='1' order by id DESC LIMIT 0,1";
-		$data = $this->get_row("select * from " . $this->tableNames['user_subscribed_plan'] ."  where added_by = ".$userid." AND plan_id='".$planid."' order by id DESC LIMIT 0,1");
+	    $data = $this->get_row("select * from " . $this->tableNames['user_subscribed_plan'] ."  where added_by = ".$userid." AND plan_id='".$planid."' AND payment_status='1' order by id DESC LIMIT 0,1");
         $dataArr = array();
         if (!empty($data)) {
             $dataArr['data'] = $data;

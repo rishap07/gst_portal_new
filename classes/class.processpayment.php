@@ -92,8 +92,8 @@ class processpayment extends validation
 				<input type="hidden" value="<?php echo PROJECT_URL . "/go4hosting/keeper_response.php"; ?>" name="return_url"/>
 				<input type="hidden" value="LIVE" name="mode"/>
 				<input type="hidden" value="<?php echo $get_UserDetails[0]->username; ?>" name="name"/>
-				<input type="hidden" value="<?php if(isset($userStateData['data']->state_name)) { echo $userStateData['data']->state_name; } else { echo "Delhi"; } ?>" name="address"/>
-				<input type="hidden" value="<?php echo $get_UserDetails[0]->city; ?>" name="city"/>
+				<input type="hidden" value="<?php if(!empty($userStateData['data']) && isset($userStateData['data']->state_name)) { echo $userStateData['data']->state_name; } else { echo "Delhi"; } ?>" name="address"/>
+				<input type="hidden" value="<?php if(empty($get_UserDetails[0]->city)) { echo "Delhi"; } else { echo $get_UserDetails[0]->city; } ?>" name="city"/>
 				<input type="hidden" value="110010" name="postal_code"/>
 				<input type="hidden" value="IND" name="country"/>
 				<input type="hidden" value="<?php echo $get_UserDetails[0]->email; ?>" name="email"/>
@@ -143,7 +143,7 @@ class processpayment extends validation
             $dataUpdateArr['payment_status']  = "1";
             $dataUpdateArr['plan_id']         = $dataPl[0]->id;
             $dataUpdateArr['plan_start_date'] = date('Y-m-d H:i:s');
-            $dataUpdateArr['plan_due_date']   = (date('Y')+1) . "-03-31";
+            $dataUpdateArr['plan_due_date']   = (date('Y')+1) . "-03-31 23:59:59";
 
             $this->update(TAB_PREFIX . "user", $dataUpdateArr, array('user_id' => $_SESSION['user_detail']['user_id']));
             $this->setSuccess('Your payment is successful.');

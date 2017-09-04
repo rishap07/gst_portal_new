@@ -116,7 +116,7 @@ final class gstr1 extends validation {
         $cur_gt=  (float)$obj_gst->cur_gross_turnover($_SESSION['user_detail']['user_id']);
         $is_username_check = $obj_gst->is_username_exists($_SESSION['user_detail']['user_id']);
         $dataRes = $this->generalGSTR1InvoiceList($fmonth);
-		$this->pr($dataRes);
+		//$this->pr($dataRes);
         $flag = 0;
         if(!empty($is_username_check)) {
             if (!empty($is_gross_turnover_check) && !empty($cur_gt)) {
@@ -418,7 +418,7 @@ final class gstr1 extends validation {
                     
                     $flag = 0;
                     //$this->pr($deletePayload);
-                    if (!empty($response['error'] == 0)) {
+                    if ($response['error'] == 0) {
                         $inum = isset($data['inum'])?$data['inum']:'';
                         $this->setSuccess("Your Invoice : ".$inum." has been deleted from GSTN.");
                         //if (!empty($data_ids)) {
@@ -430,6 +430,11 @@ final class gstr1 extends validation {
                             $this->setError('file not deleted from database.');
                             return false; 
                         }*/
+                         return true; 
+                    }
+                    if ($response['error'] == 2) {
+                        $this->setSuccess($response['message']);
+                        return true; 
                     }
                     else {
                         $this->setError($response['message']);

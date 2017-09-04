@@ -52,7 +52,7 @@ if (isset($_POST['iSortCol_0'])) {
  * on very large tables, and MySQL's regex functionality is very limited
  */
 
-$uWhere = " where is_deleted='0' AND user_group = '5' AND added_by='".$_SESSION['user_detail']['user_id']."' ";
+$uWhere = " where is_deleted='0' AND user_group = '4' AND added_by='".$_GET["id"]."' ";
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
     
     $uWhere .= 'AND (';
@@ -86,7 +86,7 @@ $uQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ",
             $uOrder
             $uLimit
 	";
-//echo $uQuery; die;
+
 $rResult = $obj_client->get_results($uQuery);
 
 /* Data set length after filtering */
@@ -95,7 +95,7 @@ $iFilteredTotal = $obj_client->get_row($uQuery);
 $iFilteredTotal = $iFilteredTotal->rows;
 
 /* Total data set length */
-$uQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $uTable where  is_deleted='0' AND user_group = '5'  AND added_by='".$_SESSION['user_detail']['user_id']."' ";
+$uQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $uTable where  is_deleted='0' AND user_group = '4'  AND added_by='".$_GET["id"]."' ";
 //echo $uQuery;die;
 $iTotal = $obj_client->get_row($uQuery);
 $iTotal = $iTotal->count;
@@ -129,15 +129,14 @@ foreach($rResult as $aRow) {
     $row[] = utf8_decode($aRow->name);
     $row[] = utf8_decode($aRow->username);
     $row[] = utf8_decode($aRow->email);
-	 $row[] = utf8_decode($aRow->no_of_client);
-    $row[] = utf8_decode($aRow->company_name);
+	$row[] = utf8_decode($aRow->company_name);
     $row[] = utf8_decode($aRow->phone_number);
     $row[] = $status;
 
 	if ($dataCurrentArr['data']->kyc == '') {
-		$row[] = '<a href="'.PROJECT_URL.'/?page=subscriber_subuser_update&action=editClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>';
+		//$row[] = '<a href="'.PROJECT_URL.'/?page=subscriber_subuser_update&action=editClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=subscriber_subuser_list&action=deleteClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
     } else {
-		$row[] = '<a href="'.PROJECT_URL.'/?page=subscriber_subuser_update&action=editClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_loginas&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Login" >Login As Client</a>&nbsp;&nbsp;';
+		//$row[] = '<a href="'.PROJECT_URL.'/?page=subscriber_subuser_update&action=editClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_loginas&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Login" >Login As Client</a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=subscriber_subuser_list&action=deleteClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
 	}
 
 	$output['aaData'][] = $row;

@@ -158,7 +158,7 @@ final class users extends validation {
 		$dataArr['sub_user'] = $planDetail[0]->sub_user;
 		$dataArr['cloud_storage_gb'] = $planDetail[0]->cloud_storage_gb;
 		$dataArr['plan_start_date'] = date('Y-m-d H:i:s');
-		$dataArr['plan_due_date'] = (date('Y')+1) . "-03-31";
+		$dataArr['plan_due_date'] = (date('Y')+1) . "-03-31 23:59:59";
 		$dataArr['plan_price'] = $planDetail[0]->plan_price;
 		$dataArr['plan_details'] = json_encode($planDetail);
 		$dataArr['status'] = '1';
@@ -166,7 +166,7 @@ final class users extends validation {
 		$dataArr['payment_status'] = '0';
         $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['added_date'] = date('Y-m-d H:i:s');
-
+		
         if ($this->insert($this->tableNames['user_subscribed_plan'], $dataArr)) {
 
             $insertid = $this->getInsertID();

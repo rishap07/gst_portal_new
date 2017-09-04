@@ -134,9 +134,9 @@ foreach($rResult as $aRow) {
     $row[] = $status;
 
 	if ($dataCurrentArr['data']->kyc == '') {
-		$row[] = '<a href="'.PROJECT_URL.'/?page=client_update&action=editClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_kycupdate_by_subscriber&action=updateClientKYC&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Update KYC" >Update KYC</a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_list&action=deleteClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
+		$row[] = '<a href="'.PROJECT_URL.'/?page=client_update&action=editClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_kycupdate_by_subscriber&action=updateClientKYC&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Update KYC" >Update KYC</a>';
     } else {
-		$row[] = '<a href="'.PROJECT_URL.'/?page=client_update&action=editClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_loginas&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Login" >Login As Client</a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_kycupdate_by_subscriber&action=updateClientKYC&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Update KYC" >Update KYC</a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_list&action=deleteClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
+		$row[] = '<a href="'.PROJECT_URL.'/?page=client_update&action=editClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_loginas&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Login" >Login As Client</a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_kycupdate_by_subscriber&action=updateClientKYC&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Update KYC" >Update KYC</a>';
 	}
 
 	$output['aaData'][] = $row;

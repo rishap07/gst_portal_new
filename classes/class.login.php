@@ -259,7 +259,7 @@ class login extends validation {
                 $dataPlan1['pan_num'] = $dataPlan[0]->pan_num;
 				$dataPlan1['sub_user'] = $dataPlan[0]->sub_user;
 				$dataPlan1['plan_start_date'] = date('Y-m-d');
-                $dataPlan1['plan_due_date'] = date('Y') . '-03-31';
+                $dataPlan1['plan_due_date'] = (date('Y')+1) . "-03-31 23:59:59";
                 $dataPlan1['plan_price'] = $dataPlan[0]->plan_price;
                 $dataPlan1['plan_details'] = json_encode($dataPlan);
                 $dataPlan1['status'] = '1';
@@ -310,8 +310,8 @@ class login extends validation {
 					<input type="hidden" value="<?php echo PROJECT_URL . "/go4hosting/keeper_response.php"; ?>" name="return_url"/>
 					<input type="hidden" value="LIVE" name="mode"/>
 					<input type="hidden" value="<?php echo $data['username']; ?>" name="name"/>
-					<input type="hidden" value="<?php if(isset($userStateData['data']->state_name)) { echo $userStateData['data']->state_name; } else { echo "Delhi"; } ?>" name="address"/>
-					<input type="hidden" value="<?php echo $data['city']; ?>" name="city"/>
+					<input type="hidden" value="<?php if(!empty($userStateData['data']) && isset($userStateData['data']->state_name)) { echo $userStateData['data']->state_name; } else { echo "Delhi"; } ?>" name="address"/>
+					<input type="hidden" value="<?php if(empty($data['city'])) { echo "Delhi"; } else { echo $data['city']; } ?>" name="city"/>
 					<input type="hidden" value="110010" name="postal_code"/>
 					<input type="hidden" value="IND" name="country"/>
 					<input type="hidden" value="<?php echo $data['email']; ?>" name="email"/>

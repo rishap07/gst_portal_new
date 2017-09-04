@@ -1,56 +1,77 @@
 <?php
-$obj_gstr1 = new gstr1();
-$obj_api =  new gstr();
-$returnmonth = '2017-07';
-if (!isset($_REQUEST['type']) || $_REQUEST['type'] == '') 
-{
-  $obj_gstr1->redirect(PROJECT_URL . "/?page=return_client");
-  exit();
+$obj_gstr = new gstr();
+$dataCurrentUserArr = $obj_gstr->getUserDetailsById( $obj_gstr->sanitize($_SESSION['user_detail']['user_id']) );
+if($dataCurrentUserArr['data']->kyc->vendor_type!='1'){
+    $obj_gstr->setError("Invalid Access to file");
+    $obj_gstr->redirect(PROJECT_URL . "/?page=dashboard");
+    exit();
 }
 if (!isset($_REQUEST['returnmonth']) || $_REQUEST['returnmonth'] == '') 
 {
-  $obj_gstr1->redirect(PROJECT_URL . "/?page=return_client");
-  exit();
+    $obj_gstr->redirect(PROJECT_URL . "/?page=return_client");
+    exit();
 }
-$type = 'B2B';
-if ($_REQUEST['type'] != '') {
-  $type = $_REQUEST['type'];
+if(isset($_POST['submit']) && $_POST['submit']=='Upload GSTR JSON')
+{
+    // /$obj_gstr->pr($_FILES);
+    if ($_FILES['json']['name'] != '' && $_FILES['json']['name'] != '') {
+
+        $extension = pathinfo($_FILES['json']['name'], PATHINFO_EXTENSION);
+        if($extension == 'json' ) {
+
+            $path = $_FILES['json']['tmp_name'];
+            $filesize = $_FILES['json']['size'];
+            if($filesize  > 0) {
+                $cert_content = file_get_contents($path);
+                //echo $cert_content;
+                if ($obj_gstr->gstr1UploadSummary($returnmonth,$jstr='gstr1',$cert_content)) 
+                {
+                    //echo "ddfgfd";
+                }
+            } else {
+                $obj_gstr->setError('Empty File.');
+                return false;
+            }
+        } else {
+            $obj_gstr->setError('Invalid File Extension, should be in json only.');
+            return false;
+        }
+    }
+    else {
+        $obj_gstr->setError('Invalid File ');
+        return false;
+    }
 }
-
-
+$returnmonth = '2017-07';
 if ($_REQUEST['returnmonth'] != '') {
-  $returnmonth = $_REQUEST['returnmonth'];
+    $returnmonth = $_REQUEST['returnmonth'];
 }
-//echo $_REQUEST['type'];
-$response = $obj_api->returnSummary($returnmonth,$_REQUEST['type']);
-//$obj_api->pr($response);
-
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr">
     <div class="col-md-11 col-sm-12 col-xs-12 mobpadlr">
         <div class="col-md-12 col-sm-12 col-xs-12 heading">
             <div class="tab col-md-12 col-sm-12 col-xs-12">
-              
                 <a href="<?php echo PROJECT_URL . '/?page=return_summary&returnmonth=' . $returnmonth ?>" >
                     View GSTR1 Summary
-                </a>
+                </a>   
                 <a href="<?php echo PROJECT_URL . '/?page=return_view_invoices&returnmonth=' . $returnmonth ?>">
                     View My Invoice
                 </a>
-                <a href="<?php echo PROJECT_URL . '/?page=return_upload_invoices&returnmonth=' . $returnmonth ?>"  >
+                <a href="<?php echo PROJECT_URL . '/?page=return_upload_invoices&returnmonth=' . $returnmonth ?>" >
                     Upload To GSTN
                 </a>
                 </a>
-                 <a href="<?php echo PROJECT_URL . '/?page=return_get_summary&returnmonth=' . $returnmonth ?>" class="active">
+                <a href="<?php echo PROJECT_URL . '/?page=return_get_summary&returnmonth=' . $returnmonth ?>" class="active" >
                     GSTR1 SUMMARY
-                </a>  
+                </a>
                 <a href="<?php echo PROJECT_URL . '/?page=return_filling_summary&returnmonth=' . $returnmonth ?>">
                     File GSTr-1
-                </a>            
+                </a>     
             </div>
-            <div id="get_summary" class="tabcontent">
+
+            <div id="upload_invoice" class="tabcontent">
                 <div class="col-md-12 col-sm-12 col-xs-12">
-                    <div class="col-md-6 col-sm-12 col-xs-12"><h3>GSTR1 <?php echo $_REQUEST['type'];?> Summary</h3></div>
+                    <div class="col-md-6 col-sm-12 col-xs-12"><h3>Upload Summary</h3></div>
                 </div>
                 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
                     <div class="col-md-12 col-sm-12 col-xs-12">
@@ -60,7 +81,7 @@ $response = $obj_api->returnSummary($returnmonth,$_REQUEST['type']);
                                     Month Of Return 
                                     <?php
                                     $dataQuery = "SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS niceDate FROM gst_client_invoice group by nicedate";
-                                    $dataRes = $obj_gstr1->get_results($dataQuery);
+                                    $dataRes = $obj_gstr->get_results($dataQuery);
                                     if (!empty($dataRes)) {
                                         ?>
                                         <select class="dateselectbox" id="returnmonth" name="returnmonth">
@@ -83,20 +104,22 @@ $response = $obj_api->returnSummary($returnmonth,$_REQUEST['type']);
                                 </form>
                             </div>
                             <div class="clearfix"></div>
-                            <?php $obj_gstr1->showErrorMessage(); ?>
-                            <?php $obj_gstr1->showSuccessMessge(); ?>
-                            <?php $obj_gstr1->unsetMessage(); ?>
-                            <?php if(!empty($response['urls']) && isset($response['urls']))   {
-                                $i=1;
-                                foreach ($response['urls'] as $key => $value) { ?>
-                                    Download Encode URL : <a href="<?php echo 'http://sbfiles.gstsystem.co.in'.$value->ul;?>"><button class="btn btn-success">GSTR1 Json Data <?php echo $i++;?> </button></a><br/><br/>
-                                    <?php 
-                                }
-                            }
-                            else { ?>
-                                <div id="display_json"></div>
-                            <?php } ?>
+                            <?php $obj_gstr->showErrorMessage(); ?>
+                            <?php $obj_gstr->showSuccessMessge(); ?>
+                            <?php $obj_gstr->unsetMessage(); ?>
+                            <div class="clearfix"></div>
                             
+                            <div class="col-md-12 col-sm-12 col-xs-12 text-center">
+                                <form method="post" style="width:auto; display: inline-block;" enctype="multipart/form-data">
+                                    <input type="file" name="json" class="btn btn-default  btnwidth">
+                                    <br/>
+                                    <input type="submit" name="submit" value="Upload GSTR JSON" class="btn btn-default btn-success btnwidth">
+                                </form>
+
+                            </div>
+                           
+                            <div class="clearfix"></div>
+                             
                         </div>
                     </div>
                 </div>
@@ -105,32 +128,10 @@ $response = $obj_api->returnSummary($returnmonth,$_REQUEST['type']);
     </div>
 </div>
 <script>
-    get_summary();
-    
     $(document).ready(function () {
         $('#returnmonth').on('change', function () {
-            //alert(<?php echo $returnmonth; ?>);
-            document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_get_summary_view&type=<?php echo $type; ?>&returnmonth=<?php echo $returnmonth; ?>';
-            document.form2.submit();            
+            document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_upload_invoices&returnmonth=<?php echo $returnmonth; ?>';
+            document.form2.submit();
         });
     });
-
-    /******* To get Summary of GSTR1 ********/
-    function get_summary() {
-        var json = '<?php echo $response;?>';
-        var type = '<?php echo $type;?>';
-        var returnmonth = '<?php echo $returnmonth;?>';
-        $.ajax({
-            url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_json_view",
-            type: "post",
-           data: {json: json,type: type,returnmonth:returnmonth},
-            success: function (response) {
-               $('#display_json').html(response);
-
-            },
-            error: function() {
-            }
-        });
-    }
-    /******* To get Summary of GSTR1 ********/
 </script>

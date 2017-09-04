@@ -65,9 +65,9 @@ class validation extends upload {
 			'admin_log'=>TAB_PREFIX.'admin_log',
 			'admin_setting'=>TAB_PREFIX.'admin_setting',
             'email_templates'=>TAB_PREFIX.'email_templates',
-			'mobile_messages'=>TAB_PREFIX.'mobile_messages'
-			
-			
+			'mobile_messages'=>TAB_PREFIX.'mobile_messages',
+			'returnfile_setting'=>TAB_PREFIX.'returnfile_setting'
+						
         );
 
         $this->checkUserPortalAccess();
@@ -169,17 +169,18 @@ class validation extends upload {
     {
         return $this->validationMessage[$msg];
     }
-    
+
     public function checkUserAccess() {
-        
+
         if( isset($_SESSION['user_detail']['user_id']) && $_SESSION['user_detail']['user_id'] != '' ) {
-            
+
             $currentUserDetails = $this->getUserDetailsById( $_SESSION['user_detail']['user_id'] );
-            if($currentUserDetails['data']->user_group == 3) {
+
+			if($currentUserDetails['data']->user_group == 3) {
 
                 if( isset($_GET['page']) && $_GET['page'] != "plan_chooseplan" && $_GET['page'] != "logout" && $_GET['page'] != "payment_online"  && $_GET['page'] != "payment_error"  && $_GET['page'] != "payment_success" && $_GET['page'] != "payment_response") {
 
-                    if($currentUserDetails['data']->plan_id == 0) {
+					if($currentUserDetails['data']->plan_id == 0 || $currentUserDetails['data']->payment_status == 0) {
                         $this->redirect(PROJECT_URL . "?page=plan_chooseplan");
                     }
                 }
@@ -378,7 +379,7 @@ class validation extends upload {
             $queryCDNR .=  " and a.is_gstr1_uploaded='0' ";
         }
         $queryCDNR .= " and a.status='1' and a.billing_gstin_number!='' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%'  and a.is_canceled='0' and a.is_deleted='0' group by a.reference_number order by a.supply_place ";
-       echo 'CDNR: '.$queryCDNR.'<br/>';
+       //echo 'CDNR: '.$queryCDNR.'<br/>';
         return $this->get_results($queryCDNR);
     }
 
@@ -441,7 +442,7 @@ class validation extends upload {
         return $this->get_results($queryExp); 
     }
 
-    protected function getHSNInvoices($user_id,$returnmonth,$type=''){
+    public function getHSNInvoices($user_id,$returnmonth,$type=''){
         $queryHsn =  "select a.invoice_id,a.invoice_type,a.invoice_date,sum(a.invoice_total_value) as invoice_total_value,b.item_name,s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_type,b.item_hsncode,b.item_quantity,b.item_unit,sum(b.taxable_subtotal) as taxable_subtotal, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
 
         if($type != '') {

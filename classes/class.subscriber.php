@@ -10,16 +10,12 @@ final class subscriber extends validation {
     
     function __construct() {
         parent::__construct();
-    }
-    
-   
-    
-  
+    }     
   
    
 	 public function validateSub($dataArr) {
       $rules[]='';
-		   if (isset($_POST['password']) && $_POST['password'] != '') {
+	if (isset($_POST['password']) && $_POST['password'] != '') {
 	
         $rules = array(
           
@@ -91,11 +87,20 @@ final class subscriber extends validation {
 				$mobile_flag=1;
 			}
         }
-		if(!empty($_POST['emailaddress']))
+		if(!empty($this->sanitize($_POST['emailaddress'])))
 		{
+		    $sql="select * from ".TAB_PREFIX."user WHERE (user_group='3') and user_id <> '".$_SESSION["user_detail"]["user_id"]."' and email='".$this->sanitize($_POST['emailaddress'])."'";
+			$dataCurrentArr = $this->get_results($sql);
+			
+			if(!empty($dataCurrentArr))
+			{
+			$this->setError('This Email id is already exists');
+			$this->redirect(PROJECT_URL . "?page=subscriber_update");
+			}
+		
 			$sql="select * from ".TAB_PREFIX."user WHERE (user_group='3' or user_group='4' or user_group='5') and user_id='".$_SESSION["user_detail"]["user_id"]."'";
 			$dataCurrentArr = $this->get_results($sql);
-			if($dataCurrentArr[0]->email == $_POST['emailaddress'])
+			if($dataCurrentArr[0]->email == $this->sanitize($_POST['emailaddress']))
 			{
 				$email_flag=0;
   			}
@@ -114,7 +119,7 @@ final class subscriber extends validation {
             }
         }
 
-		if (!empty($_POST['password'])) {
+		if (!empty($this->sanitize($_POST['password']))) {
             $dataArr['password'] = isset($_POST['password']) ? $_POST['password'] : '';
         }
 	     if (!$this->validateSub($dataArr)) {
@@ -122,7 +127,7 @@ final class subscriber extends validation {
         }
 	   if(!empty($_POST['password']) || (!empty($_POST['confirmpassword'])))
 	   {
-	   if ($dataArr['password'] != $_POST['confirmpassword']) {
+	   if ($dataArr['password'] != $this->sanitize($_POST['confirmpassword'])) {
             $this->setError($this->validationMessage['passwordnotmatched']);
             return false;
         }

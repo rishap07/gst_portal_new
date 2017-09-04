@@ -628,7 +628,7 @@ echo $response;
                 data: {type:type,returnmonth:returnmonth,arrValues: arrValues},
                 success: function (response) {
                     $("#loading").hide();
-                   location.reload();
+                   //location.reload();
                 },
                 error: function() {
                 }

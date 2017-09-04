@@ -9,12 +9,16 @@ $obj_client = new client();
 if (isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
 
     $dataCurrentArr = $obj_client->getUserDetailsById($obj_client->sanitize($_GET['id']));
-    if($dataCurrentArr['data']->added_by!=$_SESSION['user_detail']['user_id'])
-    {
-        $obj_client->setError("Invalid Login Access.");
-        $obj_client->redirect(PROJECT_URL . "/?page=dashboard");
-        exit();
-    }
+	
+	if($dataCurrentArr['data']->added_by!=$_SESSION['user_detail']['user_id'])
+			{
+				$obj_client->setError("Invalid Login Access.");
+				$obj_client->redirect(PROJECT_URL . "/?page=dashboard");
+				exit();
+			}
+	
+		
+	
     if ($dataCurrentArr['data']->kyc == '') {
         $obj_client->setError("First update client KYC.");
         $obj_client->redirect(PROJECT_URL . "/?page=dashboard");

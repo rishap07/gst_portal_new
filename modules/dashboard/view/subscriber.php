@@ -39,15 +39,16 @@
                         <?php foreach ($dataClientArr as $dataClient) { ?>
                         <?php $dataCurrentArr = $db_obj->getUserDetailsById($dataClient->user_id); ?>
 						<?php
-						  $no_of_cliet=0;
-						  $sql = "select  * from " . TAB_PREFIX . "user where user_id='" .$dataClient->user_id."'";
-                          $returndata = $db_obj->get_results($sql);
+						  $no_of_client=0;
+						 $sql = "select  count(user_id) as no_of_client from " . TAB_PREFIX . "user where added_by='" .$dataClient->user_id."' and user_group='4'";
+                         $returndata = $db_obj->get_results($sql);
+						 
 						?>
                         <tr>
                             <td><?php echo ucwords($dataClient->name);?>(<?php echo $dataClient->username; ?>)</td>
 							 <td> <?php if($dataClient->user_group==4) { echo 'Client'; } else { echo 'Subuser';}   ?></td> 
                             <td> <?php echo $dataClient->company_name ?></td> 
-							<td><?php if($dataClient->user_group==5){ ?><span class="pull-right"><a href="<?php echo PROJECT_URL; ?>?page=subscriber_update&action=editClient&id=<?php echo ($dataClient->user_id); ?>" class="txt">ViewClient</a></span><?php echo $returndata[0]->no_of_client; } ?></td>
+							<td><?php if($dataClient->user_group==5){ ?><?php if(!empty($returndata[0]) && ($returndata[0]->no_of_client > 0)) { ?><span class="pull-right"><a href="<?php echo PROJECT_URL; ?>?page=subscriber_client_list&id=<?php echo ($dataClient->user_id); ?>" class="txt">ViewClient</a></span><?php echo $returndata[0]->no_of_client; } else { echo $no_of_client; } } ?></td>
                             <td> <?php if($dataClient->user_group==5) { echo 'NA'; } else { echo $dataClient->gstin_number; } ?></td> 
 							<?php if($dataClient->user_group==5){?>
 						    <td> <span class="pull-right"><a href="<?php echo PROJECT_URL; ?>?page=subscriber_update&action=editClient&id=<?php echo ($dataClient->user_id); ?>" class="txt">Update Profile</a></span></td> 
