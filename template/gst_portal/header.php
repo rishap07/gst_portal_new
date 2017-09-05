@@ -11,23 +11,19 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 	<title><?php echo isset($form_data[0]->Title) ? $form_data[0]->Title : 'GST Keeper'; ?></title>
-	
 	<!--COMMON CSS START HERE-->
 	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/bootstrap.min.css?8" />
 	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/style.css?10" />
 	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/font-awesome.min.css?8" />
 	<!--COMMON CSS END HERE-->
-
 	<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/datatables/media/css/jquery.dataTables.min.css?8" />
 	<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/jquery_ui/jquery-ui.css" />
 	<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/jquery-ui-timepicker/jquery-ui-timepicker-addon.css?8" />
 	<link rel="stylesheet" type="text/css" href="<?php echo PROJECT_URL; ?>/script/select2/select2.css?8" />
 	<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/custom.css?8" />
 	<link type="text/css" rel="stylesheet" href="<?php echo PROJECT_URL; ?>/script/jalerts/jquery.alerts.css?8" />
-
 	<script src="<?php echo THEME_URL; ?>/js/jquery-1.12.4.js"></script>
 	<script type="text/javascript" src="<?php echo THEME_URL; ?>/js/bootstrap.min.js"></script>
-
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$('.row-offcanvas-left').addClass('');
@@ -37,17 +33,13 @@
 			});
 		});
 	</script>
-	
-
-	
-</head>
+	</head>
 <body>
 	<div class="mobilemenu"><a href="#"><i class="fa fa-bars" aria-hidden="true"></i></a></div>
 	<div class="mobileheader shadow">
 		<div class="col-sm-4 col-xs-6 moblogo" style="padding-left:0px;">
 			<a href="#"><img src="image/mob-GST-logo.jpg" alt="#"></a>
-		</div>
-	 
+		</div>	 
 		<div class="col-sm-6 col-xs-6 mobuserinfo">
 			<ul class="userinfo">
 				<li>
@@ -105,18 +97,12 @@
 				 echo  html_entity_decode($dataArrSetting[0]->livechat_setting);			 
 				}
 				
-				 ?>
-				<!--
-				<li><div class="tollfreenumber" style="margin-top:-15px;">Toll Free<br/> <span>1800-212-2022</span> </div><span class="iconphone"></span></li>
-				<li><a href="javascript:void(0)"><div class="tollfreenumber"> <span>Live Chat</span></div> <span class="iconchat"></span></a></li>
-		     //-->
+				 ?>				
 				<?php 
 				if(($_SESSION["user_detail"]["user_group"]==3) || ($_SESSION["user_detail"]["user_group"]==4))
-				{
-					
+				{					
 				if($count > 1)
-				{
-					
+				{				
 					?>
 				 <li id="noti_Container"><i class="fa fa-bell-o" aria-hidden="true"></i>
                 <div id="noti_Counter"></div>   <!--SHOW NOTIFICATIONS COUNT.-->
@@ -143,8 +129,7 @@
 			  
 				 if ($dataArr['data'] != '' && isset($dataArr['data']->profile_pics) &&($dataArr['data']->profile_pics!='') ) {
                   $profile_pics="/upload/profile-picture/".$dataArr['data']->profile_pics;					 
-				}
-				
+				}			
 			    
 				?>
 					<a href="<?php echo PROJECT_URL; ?>/?page=subscriber_update"><img style="height:40px;" src="<?php echo PROJECT_URL.$profile_pics; ?>" alt="#"></a><?php echo ucwords($_SESSION['user_detail']['name']);?></div></li>
@@ -235,12 +220,12 @@
 						<span class="collapse in hidden-xs">Module<span class="navrgtarrow"><i class="fa fa-chevron-right" aria-hidden="true"></i></span></span></a>
 						<ul class="nav nav-stacked collapse left-submenu" id="item11">
 						<?php if ($db_obj->can_read('module_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=module_list"><i class="fa fa-circle" aria-hidden="true"></i>Module Listing</a></li><?php } ?>
-							
-						
+									
 						</ul>
 					</li>
 				<?php } ?>
-				<?php if ($db_obj->can_read('client_kyc') || $db_obj->can_read('subscriber_update'))  { ?>
+				<?php if ($db_obj->can_read('client_kyc') || $db_obj->can_read('subscriber_update')) {
+					?>
 					<li>
 						<a href="#" data-target="#item8" data-toggle="collapse"><i class="fa fa-cog"></i> 
 						<span class="collapse in hidden-xs">Business Setting <span class="navrgtarrow"><i class="fa fa-chevron-right" aria-hidden="true"></i></span></span></a>
@@ -263,7 +248,6 @@
 						</ul>
 					</li>
 				<?php } ?>
-				
 				<?php if ($db_obj->can_read('user_group') || $db_obj->can_read('user_role')) { ?>
 					<li>
 						<a href="#" data-target="#item7" data-toggle="collapse"><i class="fa fa-cog"></i> 
