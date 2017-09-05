@@ -25,7 +25,7 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
     } else {
 		
 		if($_POST['invoice_type'] == "taxinvoice") {
-			
+
 			$uploadInvoice = $obj_purchase->uploadPurchaseClientInvoice();
 			$redirectPath = "purchase_invoice_list";
 		} else if($_POST['invoice_type'] == "taximportinvoice") {

@@ -49,7 +49,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'emailInvoice' && isset($_GET['
     );
 
     $mail->CharSet = "UTF-8";
-    $mail->Subject = 'GST Invoice-' . $_GET['id'];
+    $mail->Subject = 'GST Keeper Tax Invoice-' . $_GET['id'];
     $mail->SetFrom('noreply.Gstkeeper@gstkeeper.com', 'GST Keeper');
     $mail->MsgHTML($message);
     $mail->AddAddress($sendmail);
@@ -218,7 +218,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                             <div class="height20"></div>
                             <div class="clearfix"></div>
 
-                            <div class="invoice-box" style="width:580px;overflow-x:scroll;overflow-y:hidden;">
+                            <div class="invoice-box" style="overflow-x:scroll;overflow-y:hidden;">
                                 <table cellpadding="0" cellspacing="0">
                                     <tr class="top">
                                         <td colspan="2">
@@ -255,14 +255,16 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                                         <?php echo $invoiceData[0]->company_address; ?><br>
 														<?php if(!empty($invoiceData[0]->company_email)) { ?><b>Email:</b> <?php echo $invoiceData[0]->company_email; ?><br><?php } ?>
 														<?php if(!empty($invoiceData[0]->company_phone_number)) { ?><b>Phone:</b> <?php echo $invoiceData[0]->company_phone_number; ?><br><?php } ?>
-                                                        <b>GSTIN:</b> <?php echo $invoiceData[0]->gstin_number; ?>
+														<?php $panFromGTIN = substr(substr($invoiceData[0]->gstin_number, 2), 0, -3); ?>
+														<b>PAN:</b> <?php echo $panFromGTIN; ?><br>
+														<b>GSTIN:</b> <?php echo $invoiceData[0]->gstin_number; ?>
                                                     </td>
 
                                                     <td style="text-align:right;vertical-align:top;width:48%;padding-left:2%;">
                                                         <?php if($invoiceData[0]->invoice_type === "exportinvoice") { ?>
 
                                                             <b>Export Supply Meant:</b> <?php if($invoiceData[0]->export_supply_meant == "withpayment") { echo "Payment of Integrated Tax"; } else { echo "Without Payment of Integrated Tax"; } ?><br>
-                                                            <?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php echo $supply_place_data['data']->state_name; ?><br> <?php } ?>
+                                                            <?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php if($supply_place_data['data']->state_tin == 99) { echo $supply_place_data['data']->state_name; } else { echo $supply_place_data['data']->state_name . "(" . $supply_place_data['data']->state_tin . ")"; } ?><br> <?php } ?>
 															<?php if ($invoiceData[0]->is_canceled == 1) { ?> <b>Canceled Invoice:</b> <?php echo "Canceled"; ?><br> <?php } ?>
                                                             <?php if ($invoiceData[0]->advance_adjustment == 1) { ?> <b>Advance Adjustment:</b> <?php echo "Yes"; ?><br> <?php } ?>
 
@@ -278,7 +280,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                                         <?php } else if($invoiceData[0]->invoice_type === "sezunitinvoice" || $invoiceData[0]->invoice_type === "deemedexportinvoice") { ?>
 
 															<b>Export Supply Meant:</b> <?php if($invoiceData[0]->export_supply_meant == "withpayment") { echo "Payment of Integrated Tax"; } else { echo "Without Payment of Integrated Tax"; } ?><br>
-                                                            <?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php echo $supply_place_data['data']->state_name; ?><br> <?php } ?>
+                                                            <?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php if($supply_place_data['data']->state_tin == 99) { echo $supply_place_data['data']->state_name; } else { echo $supply_place_data['data']->state_name . "(" . $supply_place_data['data']->state_tin . ")"; } ?><br> <?php } ?>
 															<?php if ($invoiceData[0]->is_canceled == 1) { ?> <b>Canceled Invoice:</b> <?php echo "Canceled"; ?><br> <?php } ?>
                                                             <?php if ($invoiceData[0]->advance_adjustment == 1) { ?> <b>Advance Adjustment:</b> <?php echo "Yes"; ?><br> <?php } ?>
 
@@ -290,7 +292,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 														<?php } else { ?>
 
                                                             <b>Supply Type:</b> <?php if($invoiceData[0]->supply_type == "reversecharge") { echo "Reverse Charge"; } else if($invoiceData[0]->supply_type == "tds") { echo "TDS"; } else if($invoiceData[0]->supply_type == "tcs") { echo "TCS"; } else { echo "Normal"; } ?><br>
-                                                            <?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php echo $supply_place_data['data']->state_name; ?><br> <?php } ?>
+                                                            <?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php if($supply_place_data['data']->state_tin == 99) { echo $supply_place_data['data']->state_name; } else { echo $supply_place_data['data']->state_name . "(" . $supply_place_data['data']->state_tin . ")"; } ?><br> <?php } ?>
                                                             
 															<?php if ($invoiceData[0]->supply_type === "tcs") { ?>
 																<b>Ecommerce GSTIN Number:</b> <?php echo $invoiceData[0]->ecommerce_gstin_number; ?><br>
@@ -324,7 +326,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 														<?php $billing_vendor_data = $obj_client->getVendorDetailByVendorId($invoiceData[0]->billing_vendor_type); ?>
 														<?php echo $billing_vendor_data['data']->vendor_name; ?><br>
 														<?php if(!empty($invoiceData[0]->billing_gstin_number)) { ?>
-															<b>GSTIN:</b> <?php echo $invoiceData[0]->billing_gstin_number; ?>
+															<b>GSTIN/UIN:</b> <?php echo $invoiceData[0]->billing_gstin_number; ?>
                                                         <?php } ?>
                                                     </td>
 
@@ -336,7 +338,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 														<?php $shipping_vendor_data = $obj_client->getVendorDetailByVendorId($invoiceData[0]->shipping_vendor_type); ?>
 														<?php echo $shipping_vendor_data['data']->vendor_name; ?><br>
 														<?php if(!empty($invoiceData[0]->shipping_gstin_number)) { ?>
-															<b>GSTIN:</b> <?php echo $invoiceData[0]->shipping_gstin_number; ?>
+															<b>GSTIN/UIN:</b> <?php echo $invoiceData[0]->shipping_gstin_number; ?>
                                                         <?php } ?>
                                                     </td>
                                                 </tr>

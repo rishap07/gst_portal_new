@@ -97,6 +97,7 @@ final class gstr extends validation {
         else {
             $_SESSION['app_key'] = $this->app_key = $app_key;
         }
+        //$this->pr($_SESSION['app_key']);
     }
     
     public function aes256_ecb_encrypt($key, $data, $iv) {
@@ -194,9 +195,10 @@ final class gstr extends validation {
         );
         $header = $this->header($header_array);
         //End code for create header
+        //$this->pr($header);
 
-        $url=  'http://devapi.gstsystem.co.in/taxpayerapi/v0.2/authenticate';
-        
+        //$url=  'http://devapi.gstsystem.co.in/taxpayerapi/v0.2/authenticate';
+        $url = 'https://gspapi.karvygst.com/Authenticate';
 
         if(empty($this->checkUserGstr1Exists('app_key')) && empty($this->checkUserGstr1Exists('auth_token'))) {
             //echo 'New App and Auth';
@@ -246,6 +248,7 @@ final class gstr extends validation {
         if($this->authenticateToken() == false) {
             return false;
         }
+        //$this->pr($_SESSION);die;
         $msg = $return_encode = '';
         $error = 1;
         $response = array();
@@ -471,11 +474,8 @@ final class gstr extends validation {
                         $ref2 = json_decode($decodejson2);
                         //$this->pr($ref2);
                         if(!empty($ref2)) {
-                            $urls = $ref2->urls;
-                            //$final_data = array('urls' =>$urls);
-                            $response['urls'] = $urls;
-                            //return $response;
-                            
+                            $response = $ref2;
+                            return $response;
                         }
                     }
                     else {
@@ -506,16 +506,12 @@ final class gstr extends validation {
         }
     }
 
-    public function gstr1UploadSummary($returnmonth,$jstr='gstr1',$encodeJson) {
+    public function gstr1UploadSummary($returnmonth,$jstr='gstr1',$encodeJson,$rek) {
         //echo 'json: '.$encodeJson;
-        echo $rek = 'orvyvoONhUC8fVeze8iabN44V0wyd5x1y+0YzhRQqjY=';
-        echo '<br/>'.$_SESSION['decrypt_sess_key'];
-        echo '<br/>'.$hash = '0762aeabfa5cffa39274ffa77cef641c302a2f8d4d16980c74551c84a62e035d';
-        $apiEk1_sum = openssl_decrypt(base64_decode($rek),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
-        $decodejson_sum = base64_decode(openssl_decrypt(base64_decode($encodeJson),"aes-256-ecb",$apiEk1_sum, OPENSSL_RAW_DATA));
-        $a = base64_decode($encodeJson);
-
-        $this->pr($a);
+        $rek = 'orvyvoONhUC8fVeze8iabN44V0wyd5x1y+0YzhRQqjY=';
+        $derypt_rek = base64_decode($rek);
+        $final_json = base64_decode(openssl_decrypt(base64_decode($encodeJson),"aes-256-ecb",$derypt_rek, OPENSSL_RAW_DATA));
+        return $final_json;
     }
 
     public function decrypt_string($encodedText = '', $salt = '8638FD63E6CC16872ACDED6CE49E5A270ECDE1B3B938B590E547138BB7F120EA') {
@@ -768,20 +764,26 @@ final class gstr extends validation {
     }
 
     public function header($fields= array()) {
-        $client_secret = 'a9bcf665fe424883b7b94791eb31f667';
-        $clientid = 'l7xx1ed437f1e18347c38bd2aad6e6dd3b3c';
-        $ip_usr = '203.197.205.110';
+        $client_secret = API_CLIENT_SECRET;
+        $clientid = API_CLIENT_ID;
+        $ip_usr = API_IP;
         $state_cd = $this->state_cd();
-        $txn= 'TXN789123456789';
+        $txn= API_TXN;
+        $karvyclientid= 'VYFKG###fdkfjf';
+        $karvyclientsecret= 'VYFdd##fdkfjf';
+
         $header_new_array = array();
 
         $header= array(
-          'client-secret: '.$client_secret.'',
-          'clientid: '.$clientid.'',
-          'Content-Type: application/json',
-          'ip-usr: '.$ip_usr.'',
-          'state-cd: '.$state_cd.'',
-          'txn: '.$txn.'');
+            'client-secret: '.$client_secret.'',
+            'clientid: '.$clientid.'',
+            'Content-Type: application/json',
+            'ip-usr: '.$ip_usr.'',
+            'state-cd: '.$state_cd.'',
+            'txn: '.$txn.'',
+            'karvyclientid:'.$karvyclientid.'',
+            'karvyclient-secret:'.$karvyclientsecret.''
+        );
 
         if(!empty($fields)) {
             $header= array_merge($header,$fields);
@@ -790,7 +792,7 @@ final class gstr extends validation {
     }
 
     public function username() {
-        $username = 'Cyfuture.TN.TP.1';//'Cyfuture.TN.TP.1';//'Karthiheyini.TN.1';
+        $username = '';//'Cyfuture.TN.TP.1';//'Karthiheyini.TN.1';
         if(isset($_SESSION['user_detail']['user_id'])) {
             $clientKyc = $this->get_results("select `gstin_username` as username from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by = ".$_SESSION['user_detail']['user_id']." ");
             if(!empty($clientKyc)) {
@@ -861,19 +863,27 @@ final class gstr extends validation {
         $state_cd = '';
         $state_cd = substr($this->gstin(),0,2);
         return $state_cd;
-    }
-
-    
+    }    
 
     public function hitUrl($url,$data_string,$header) { 
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,$header);
-        $result = curl_exec($ch);
-        curl_close($ch);
-        return $result;     
+        try {
+            //$this->pr($data_string);
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER,$header);
+            $result = curl_exec($ch);
+            //$this->pr($result);
+            curl_close($ch);
+            return $result;  
+        }
+        catch (Exception $e) {
+            $this->pr($e);
+            //echo 'Caught exception: ',  $e->getMessage(), "\n";
+        }
+
+           
     }
 
     public function hitPulUrl($url, $data_string, $header)

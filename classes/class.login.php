@@ -72,6 +72,7 @@ class login extends validation {
                         return false;
                     }
                 }
+
                 return true;
             } else {
                 $msg = explode('|', $server_output->msg);
@@ -413,21 +414,18 @@ class login extends validation {
         $token = $this->getToken();
         //$data = '<a href="'.PROJECT_URL.'/verify_forgot_password.php?verifyForgot=' . $token . '&passkey='.base64_encode($userid).'">Click here</a>  or copy the below url and paste on browser to verify your email';
        $mpdfHtml='';
-		$mpdfHtml = $mpdfHtml.'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
-        $mpdfHtml = $mpdfHtml.'<html xmlns="http://www.w3.org/1999/xhtml">';
-        $mpdfHtml = $mpdfHtml.'<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>gst</title></head><body>';
-        $mpdfHtml = $mpdfHtml.'<div style="width:720px; margin:auto; border:solid #CCC 1px;">';
-        $mpdfHtml = $mpdfHtml.'<table cellpadding="0" cellspacing="0" width="100%">';
+	   $mpdfHtml = $mpdfHtml.'<div style="width:720px; margin:auto; border:solid #CCC 1px;">';
+       $mpdfHtml = $mpdfHtml.'<table cellpadding="0" cellspacing="0" width="100%">';
        $mpdfHtml = $mpdfHtml.'<tbody><tr>  <td height="auto"><table width="720" cellpadding="0" cellspacing="0" bgcolor="#fff" style="font-family:Arial, Helvetica, sans-serif;margin:0px auto;">';
        $mpdfHtml = $mpdfHtml.' <tbody>  <tr> <td width="30"></td>    <td><table width="100%" cellpadding="0" cellspacing="0">    <tbody>';
-       $mpdfHtml = $mpdfHtml.'<tr><td align="left" valign="middle" height="80"><a target="_blank" href="https://www.gstkeeper.com/"><img src="https://gstkeeper.com/newsletter/4july2017/gst-logo.png" alt="" border="0"></a></td>';
+       $mpdfHtml = $mpdfHtml.'<tr><td align="left" valign="middle" height="80"><a target="_blank" href="https://www.gstkeeper.com/"><img src="' . PROJECT_URL . '/newsletter/4july2017/gst-logo.png" alt="" border="0"></a></td>';
        $mpdfHtml = $mpdfHtml.' <td align="right" valign="middle" style="font-size:18px;color:#cf3502;font-family:Arial, Helvetica, sans-serif;" height="80px"> <span><img src="https://gstkeeper.com/newsletter/6july2017/phone-icon.jpg" alt=""></span>1-800-212-2022<br>';     
-	   $mpdfHtml = $mpdfHtml.'<span><img src="https://gstkeeper.com/newsletter/6july2017/mail-icon.jpg" alt=""></span><a href="mailto:contact@gstkeeper.com" style="font-size:14px;color:#cf3502;text-decoration:none;"> contact@gstkeeper.com</a></td> </tr> </tbody> </table></td>';
-	$mpdfHtml = $mpdfHtml.' <td width="30"></td> </tr> <tr> <td width="30"></td>    <td><table width="100%" cellpadding="0" cellspacing="0"><tbody>';          
-		$mpdfHtml = $mpdfHtml.'<tr>  <td align="center" valign="middle"><img src="https://www.gstkeeper.com/newsletter/7july/images/banner.jpg" alt="" border="0" width="700"></td> </tr>';
-		$mpdfHtml = $mpdfHtml.' </tbody> </table></td> <td width="30"></td>   </tr>';           
+	   $mpdfHtml = $mpdfHtml.'<span><img src="' . PROJECT_URL . '/newsletter/6july2017/mail-icon.jpg" alt=""></span><a href="mailto:contact@gstkeeper.com" style="font-size:14px;color:#cf3502;text-decoration:none;"> contact@gstkeeper.com</a></td> </tr> </tbody> </table></td>';
+	   $mpdfHtml = $mpdfHtml.' <td width="30"></td> </tr> <tr> <td width="30"></td>    <td><table width="100%" cellpadding="0" cellspacing="0"><tbody>';          
+	   $mpdfHtml = $mpdfHtml.'<tr>  <td align="center" valign="middle"><img src="https://www.gstkeeper.com/newsletter/7july/images/banner.jpg" alt="" border="0" width="700"></td> </tr>';
+	  $mpdfHtml = $mpdfHtml.' </tbody> </table></td> <td width="30"></td>   </tr>';           
 	  $mpdfHtml = $mpdfHtml.'<tr>  <td width="30"  ></td> <td><table width="100%" cellpadding="0" cellspacing="0">  <tbody>';          
-	$mpdfHtml = $mpdfHtml.' <tr><td height="319" align="center" valign="top"><table width="100%" cellpadding="0px" cellspacing="0" > <tbody>';        
+	 $mpdfHtml = $mpdfHtml.' <tr><td height="319" align="center" valign="top"><table width="100%" cellpadding="0px" cellspacing="0" > <tbody>';        
 	 $mpdfHtml = $mpdfHtml.' <tr> <td width="13"></td>  <td width="350"  style="font-size:15px;color:#090909;font-family:Arial, Helvetica, sans-serif; padding-top:10px; "></td><td width="20"></td>  </tr>';
 	 $mpdfHtml = $mpdfHtml.' <tr>  <td colspan="3" height="10"></td>  </tr>';
 	 $mpdfHtml = $mpdfHtml.'  <tr><td width="13"></td> <td height="140" align="justify"  valign="top" style="font-size:13px;color:#191919;font-family:Arial, Helvetica, sans-serif; line-height:18px; "> <p><strong>Dear ' . $name . '</strong></p>'; 
@@ -442,7 +440,7 @@ class login extends validation {
      $mpdfHtml = $mpdfHtml.'<td width="47%"><a href="http://www.cyfuture.com/" target="_blank"><img src="https://gstkeeper.com/newsletter/4july2017/cyfuture-logo.png" alt="" border="0" /></a></td>';
      $mpdfHtml = $mpdfHtml.'<td width="53%" align="right"><table width="100%" cellpadding="0" cellspacing="0">   <tbody>';
      $mpdfHtml = $mpdfHtml.' <tr>  <td width="20" height="50"></td>  <td valign="middle" style="font-size:14px;color:#333;font-family:Arial, Helvetica, sans-serif;"><strong><i>Connect with us</i></strong></td>';           
-                    
+                
      $mpdfHtml = $mpdfHtml.'<td valign="middle" width="50" align="center"><a target="_blank" href="https://www.facebook.com/GST-Keeper-632910016898628/"><img src="https://gstkeeper.com/newsletter/4july2017/fb-icon.png" alt="" border="0" /></a></td>';
      $mpdfHtml = $mpdfHtml.'<td valign="middle" width="40" align="left"><a target="_blank" href="https://plus.google.com/101841021110541536034"><img src="https://gstkeeper.com/newsletter/4july2017/g+-icon.png" alt="" border="0" /></a></td>';
      $mpdfHtml = $mpdfHtml.'<td valign="middle" width="40" align="left"><a target="_blank" href="https://twitter.com/GstKeeper"><img src="https://gstkeeper.com/newsletter/4july2017/twit-icon.png" alt="" border="0" /></a></td>';
@@ -453,7 +451,7 @@ class login extends validation {
       $mpdfHtml = $mpdfHtml.' <tr><td width="20"></td><td align="center"><font style="font-size:14px;color:#444;font-family:Arial, Helvetica, sans-serif;">Cyfuture ( India ) Pvt. Ltd.</font><br>';   
        $mpdfHtml = $mpdfHtml.'<font style="font-size:12px;color:#444;font-family:Arial, Helvetica, sans-serif;">Plot No. 197-198 Noida Special Economic Zone (NSEZ) Phase II, Noida 201 305</font><br>';     
        $mpdfHtml = $mpdfHtml.' <font style="font-size:12px;color:#444;font-family:Arial, Helvetica, sans-serif;">E-mail: <a style="text-decoration:none;color:#3194d5;" href="mailto:contact@gstkeeper.com">contact@gstkeeper.com</a></font><br></td>';      
-        $mpdfHtml = $mpdfHtml.' <td width="15" align="left">&nbsp;</td> </tr></tbody>  </table></td></tbody></table></td></tr></tbody></table></div></body></html>'; 
+        $mpdfHtml = $mpdfHtml.' <td width="15" align="left">&nbsp;</td> </tr></tbody>  </table></td></tbody></table></td></tr></tbody></table></div>'; 
         $this->update(TAB_PREFIX . "user", array('forgotemail_code' => $token, 'forgotemail_verify' => 0), array('user_id' => $userid));
         $dataInsertArray['userid'] = $userid;
         $dataInsertArray['code'] = $token;

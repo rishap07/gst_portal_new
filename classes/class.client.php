@@ -4034,7 +4034,9 @@ final class client extends validation {
         $mpdfHtml .= $invoiceData[0]->company_address . '<br>';
 		if(!empty($invoiceData[0]->company_email)) { $mpdfHtml .= '<b>Email:</b> ' . $invoiceData[0]->company_email . '<br>'; }
         if(!empty($invoiceData[0]->company_phone_number)) { $mpdfHtml .= '<b>Phone:</b> ' . $invoiceData[0]->company_phone_number . '<br>'; }
-        $mpdfHtml .= '<b>GSTIN:</b> ' . $invoiceData[0]->gstin_number;
+		$panFromGTIN = substr(substr($invoiceData[0]->gstin_number, 2), 0, -3);
+		$mpdfHtml .= '<b>PAN:</b> ' . $panFromGTIN  . '<br>';
+		$mpdfHtml .= '<b>GSTIN:</b> ' . $invoiceData[0]->gstin_number;
         $mpdfHtml .= '</td>';
 
         $mpdfHtml .= '<td style="vertical-align:top;text-align:right;padding-bottom:20px;width:48%;padding-left:2%;">';
@@ -4045,7 +4047,11 @@ final class client extends validation {
 			else { $exportSupplyMeant = "Without Payment of Integrated Tax"; }
 			
 			if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) {
-                $mpdfHtml .= '<b>Place Of Supply:</b> ' . $supply_place_data['data']->state_name . '<br>';
+                if($supply_place_data['data']->state_tin == 99) {
+					$mpdfHtml .= '<b>Place Of Supply:</b> ' . $supply_place_data['data']->state_name . '<br>';
+				} else {
+					$mpdfHtml .= '<b>Place Of Supply:</b> ' . $supply_place_data['data']->state_name . '(' . $supply_place_data['data']->state_tin . ')' . '<br>';
+				}
             }
 			
 			$mpdfHtml .= '<b>Supply Meant:</b> ' . $exportSupplyMeant . '<br>';
@@ -4073,7 +4079,11 @@ final class client extends validation {
 			$mpdfHtml .= '<b>Supply Meant:</b> ' . $exportSupplyMeant . '<br>';
 			
 			if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) {
-                $mpdfHtml .= '<b>Place Of Supply:</b> ' . $supply_place_data['data']->state_name . '<br>';
+				if($supply_place_data['data']->state_tin == 99) {
+					$mpdfHtml .= '<b>Place Of Supply:</b> ' . $supply_place_data['data']->state_name . '<br>';
+				} else {
+					$mpdfHtml .= '<b>Place Of Supply:</b> ' . $supply_place_data['data']->state_name . '(' . $supply_place_data['data']->state_tin . ')' . '<br>';
+				}
             }
 
 			if ($invoiceData[0]->is_canceled == 1) { $mpdfHtml .= '<b>Canceled Invoice:</b> Canceled <br>'; }
@@ -4096,7 +4106,11 @@ final class client extends validation {
 
 			$mpdfHtml .= '<b>Supply Type:</b> ' . $supplyType . '<br>';
 			if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) {
-                $mpdfHtml .= '<b>Place Of Supply:</b> ' . $supply_place_data['data']->state_name . '<br>';
+                if($supply_place_data['data']->state_tin == 99) {
+					$mpdfHtml .= '<b>Place Of Supply:</b> ' . $supply_place_data['data']->state_name . '<br>';
+				} else {
+					$mpdfHtml .= '<b>Place Of Supply:</b> ' . $supply_place_data['data']->state_name . '(' . $supply_place_data['data']->state_tin . ')' . '<br>';
+				}
             }
 
 			if ($invoiceData[0]->is_canceled == 1) { $mpdfHtml .= '<b>Canceled Invoice:</b> Canceled <br>'; }
@@ -4136,7 +4150,7 @@ final class client extends validation {
 			$billing_vendor_data = $this->getVendorDetailByVendorId($invoiceData[0]->billing_vendor_type);
 			$mpdfHtml .= $billing_vendor_data['data']->vendor_name . '<br>';
 
-			if (!empty($invoiceData[0]->billing_gstin_number)) { $mpdfHtml .= '<b>GSTIN:</b> ' . $invoiceData[0]->billing_gstin_number; }
+			if (!empty($invoiceData[0]->billing_gstin_number)) { $mpdfHtml .= '<b>GSTIN/UIN:</b> ' . $invoiceData[0]->billing_gstin_number; }
 		$mpdfHtml .= '</td>';
 
 		$mpdfHtml .= '<td style="vertical-align:top;text-align:right;padding-bottom:40px;width:48%;padding-left:2%;">';
@@ -4148,7 +4162,7 @@ final class client extends validation {
 			$shipping_vendor_data = $this->getVendorDetailByVendorId($invoiceData[0]->shipping_vendor_type);
 			$mpdfHtml .= $shipping_vendor_data['data']->vendor_name . '<br>';
 			
-			if (!empty($invoiceData[0]->billing_gstin_number)) { $mpdfHtml .= '<b>GSTIN:</b> ' . $invoiceData[0]->shipping_gstin_number; }
+			if (!empty($invoiceData[0]->shipping_gstin_number)) { $mpdfHtml .= '<b>GSTIN/UIN:</b> ' . $invoiceData[0]->shipping_gstin_number; }
 		$mpdfHtml .= '</td>';
 
         $mpdfHtml .= '</tr>';

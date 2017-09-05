@@ -487,7 +487,7 @@
 
 						<div class='col-sm-4'>    
 							<div class='form-group'>
-								<label for="item_category_name">Category <span class="starred">*</span></label>
+								<label for="item_category_name">HSN/SAC Category <span class="starred">*</span></label>
 								<input type="text" placeholder="Item Category" name='item_category_name' id="item_category_name" data-bind="content" class="required form-control" />
 								<input type="hidden" name='item_category' id="item_category" class="required" />
 							</div>
@@ -504,6 +504,24 @@
 					<div class='row'>
 						<div class='col-sm-4'>    
 							<div class='form-group'>
+								<label for="is_applicable">Applicable Taxes <span class="starred">*</span></label>
+								<select name="is_applicable" id="is_applicable" class="required form-control">
+									<option value="0">Applicable</option>
+									<option value="1">Non-GST</option>
+									<option value="2">Exempted</option>
+								</select>
+							</div>
+						</div>
+
+						<div class='col-sm-4'>
+							<div class='form-group'>
+								<label for="unit_price">Unit Price(Rs.) </label>
+								<input type="text" placeholder="Item Unit Price" name='unit_price' id="unit_price" data-bind="demical" class="form-control itemUnitPrice" />
+							</div>
+						</div>
+
+						<div class='col-sm-4'>    
+							<div class='form-group'>
 								<label for="item_unit">Unit <span class="starred">*</span></label>
 								<select name="item_unit" id="item_unit" class="required form-control" data-bind="numnzero">
 									<?php $dataUnitArrs = $obj_client->getMasterUnits("unit_id,unit_name,unit_code,(case when status='1' Then 'active' when status='0' then 'deactive' end) as status", "is_deleted='0' AND status='1'"); ?>
@@ -516,20 +534,24 @@
 								</select>
 							</div>
 						</div>
-
-						<div class='col-sm-4'>    
-							<div class='form-group'>
-								<label for="unit_price">Unit Price(Rs.) </label>
-								<input type="text" placeholder="Item Unit Price" name='unit_price' id="unit_price" data-bind="demical" class="form-control itemUnitPrice" />
-							</div>
-						</div>
-
+						
+					</div>
+					
+					<div class='row'>
+						
 						<div class='col-sm-4'>
 							<label for="status">Status <span class="starred">*</span></label>
 							<select name="status" id="status" class="required form-control">
 								<option value="1">Active</option>
 								<option value="0">Inactive</option>
 							</select>
+						</div>
+
+						<div class='col-sm-4'>
+							<div class='form-group'>
+								<label for="item_description">Description </label>
+								<textarea placeholder="Item Unit Price" name='item_description' id="item_description" data-bind="content" class="form-control" /></textarea>
+							</div>
 						</div>
 
 					</div>

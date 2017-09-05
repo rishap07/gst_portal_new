@@ -106,9 +106,11 @@ if(isset($_POST['submit']) && ($_POST['submit']='File with Aadhar' || $_POST['su
                                 else
                                 {
                                 ?>
-                                <div class="col-md-6 col-sm-12 col-xs-12">
+                                <!--
+								<div class="col-md-6 col-sm-12 col-xs-12">
                                     <button type="button" class="btn btn-default btn-success btnwidth addnew" data-toggle="modal" data-target="#myModal">File GSTR1</button>
                                 </div>
+								-->
                                 <?php
                                 }
                                 ?>

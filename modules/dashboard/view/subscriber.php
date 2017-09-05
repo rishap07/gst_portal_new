@@ -27,7 +27,7 @@
 
                     if (!empty($dataClientArr)) {
                         ?>
-                    <table class=" table table-bordered table-hover ">
+                    <table class="table table-bordered table-hover" style="font-size:14px;">
                         <tr>
                             <th>User Name</th>   
 							<th>User Type</th>

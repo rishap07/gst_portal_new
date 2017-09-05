@@ -168,10 +168,12 @@ if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
 										if($flag==1)
 										{
 											?>
-										<div class="col-md-6 col-sm-12 col-xs-12">
-                            
-                                    <input type="submit" name="submit" value="Upload TO GSTN" class="btn btn-default btn-success btnwidth addnew">
-                              </div><div class="clear"></div><br>
+								<!--
+								<div class="col-md-6 col-sm-12 col-xs-12">
+								<input type="submit" name="submit" value="Upload TO GSTN" class="btn btn-default btn-success btnwidth addnew">
+								</div>
+							  -->
+							  <div class="clear"></div><br>
 										<?php } ?>
                                     <table width="100%" border="0" cellspacing="0" cellpadding="0"  class="table table-striped invoice-filter-table" id="mainTable1">
                                         <?php

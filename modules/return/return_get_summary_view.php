@@ -21,9 +21,44 @@ if ($_REQUEST['type'] != '') {
 if ($_REQUEST['returnmonth'] != '') {
   $returnmonth = $_REQUEST['returnmonth'];
 }
+
 //echo $_REQUEST['type'];
 $response = $obj_api->returnSummary($returnmonth,$_REQUEST['type']);
 //$obj_api->pr($response);
+if(!empty($response->ek) && isset($response->ek))   { 
+    if(isset($_POST['submit']) && $_POST['submit']=='Upload GSTR JSON')
+    {
+        // /$obj_api->pr($_FILES);
+        if ($_FILES['json']['name'] != '' && $_FILES['json']['name'] != '') {
+            $extension = pathinfo($_FILES['json']['name'], PATHINFO_EXTENSION);
+            if($extension == 'json' ) {
+
+                $path = $_FILES['json']['tmp_name'];
+                $filesize = $_FILES['json']['size'];
+                if($filesize  > 0) {
+                    $json = file_get_contents($path);
+                    //echo $json;
+                    if ($a = $obj_api->gstr1UploadSummary($returnmonth,$jstr='gstr1',$json,$response->ek)) 
+                    {
+                        //$obj_api->pr($a);
+                        $response = $a;
+                    }
+                } else {
+                    $obj_api->setError('Empty File.');
+                    return false;
+                }
+            } else {
+                $obj_api->setError('Invalid File Extension, should be in json only.');
+                return false;
+            }
+        }
+        else {
+            $obj_api->setError('Invalid File ');
+            return false;
+        }
+    }
+}
+
 
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr">
@@ -86,16 +121,30 @@ $response = $obj_api->returnSummary($returnmonth,$_REQUEST['type']);
                             <?php $obj_gstr1->showErrorMessage(); ?>
                             <?php $obj_gstr1->showSuccessMessge(); ?>
                             <?php $obj_gstr1->unsetMessage(); ?>
-                            <?php if(!empty($response['urls']) && isset($response['urls']))   {
+                            <?php if(!empty($response->urls) && isset($response->urls))   { ?>
+                                <div class="col-md-12 col-sm-12 col-xs-12 text-center">
+                                    <form method="post" style="width:auto; display: inline-block;" enctype="multipart/form-data">
+                                        <input type="file" name="json" class="btn btn-default  btnwidth">
+                                        <br/>
+                                        <input type="submit" name="submit" value="Upload GSTR JSON" class="btn btn-default btn-success btnwidth">
+                                    </form>
+
+                                </div>
+                               
+                                <div class="clearfix"></div>
+                                <?php
                                 $i=1;
-                                foreach ($response['urls'] as $key => $value) { ?>
-                                    Download Encode URL : <a href="<?php echo 'http://sbfiles.gstsystem.co.in'.$value->ul;?>"><button class="btn btn-success">GSTR1 Json Data <?php echo $i++;?> </button></a><br/><br/>
+                                foreach ($response->urls as $key => $value) { 
+                                    //$obj_gstr1->pr($value);die;?>
+                                    Download Encode URL : <a href="<?php echo 'http://sbfiles.gstsystem.co.in'.$value->ul;?>"><button class="btn btn-primary">GSTR1 Json Data <?php echo $i++;?> </button></a><br/><br/>
                                     <?php 
-                                }
+                                } 
+                               
                             }
                             else { ?>
-                                <div id="display_json"></div>
+                                
                             <?php } ?>
+                            <div id="display_json"></div>
                             
                         </div>
                     </div>

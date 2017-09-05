@@ -767,11 +767,11 @@ final class gstr extends validation {
 
     public function gstr_session_destroy() {
         if(!empty($_SESSION['hexcode']) && !empty($_SESSION['app_key']) && !empty($_SESSION['auth_token']) && !empty($_SESSION['auth_date']) && !empty($_SESSION['decrypt_sess_key'])) {
-            unset($_SESSION['hexcode']);
-            unset($_SESSION['app_key']);
-            unset($_SESSION['auth_token']);
-            unset($_SESSION['auth_date']);
-            unset($_SESSION['decrypt_sess_key']);
+            //unset($_SESSION['hexcode']);
+            //unset($_SESSION['app_key']);
+            //unset($_SESSION['auth_token']);
+            //unset($_SESSION['auth_date']);
+            //unset($_SESSION['decrypt_sess_key']);
         }
     }
 

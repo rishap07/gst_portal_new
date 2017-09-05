@@ -111,10 +111,12 @@ if ($_REQUEST['returnmonth'] != '') {
                             {
                             ?>
                             <div class="col-md-12 col-sm-12 col-xs-12 text-center">
-                                <form method="post" style="width:auto; display: inline-block;">
+                                <!--
+								<form method="post" style="width:auto; display: inline-block;">
                                     <input type="submit" name="submit" value="Upload TO GSTN" class="btn btn-default btn-success btnwidth">
                                 </form>
-                                <form style="width:auto; display: inline-block;" method="post" action ="<?php echo PROJECT_URL.'/?ajax=return_gstr_payload';?>&returnmonth=<?php echo $returnmonth; ?>">
+								-->
+                                <form style="width:auto; display: inline-block;margin-bottom:10px;" method="post" action ="<?php echo PROJECT_URL.'/?ajax=return_gstr_payload';?>&returnmonth=<?php echo $returnmonth; ?>">
                                     <!-- <input type="submit" name="submit" value="Download GSTR1" class="btn btn-orange btnwidth" style="margin-top: 0px;"> -->
                                     <input type="submit" name="submit" value="Download GSTR1" class="btn btn-default btn-warning btnwidth">
                                 </form>

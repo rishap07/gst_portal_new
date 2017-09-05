@@ -194,7 +194,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                 <!--INVOICE PRINT RIGHT  START HERE-->
                 <?php if (isset($invoiceData[0]->invoice_id)) { ?>
 
-                    <div class="col-md-8 col-sm-12 mobdisplaynone invoicergtcol" style="padding-right:0px;">
+                    <div class="col-md-8 col-sm-12 mobdisplaynone invoicergtcol">
 
                         <!---INVOICE TOP ICON START HERE-->
                         <div class="inovicergttop">
@@ -213,7 +213,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                             <div class="height20"></div>
                             <div class="clearfix"></div>
 
-                            <div class="invoice-box" style="width:580px;overflow-x:scroll;overflow-y:hidden;">
+                            <div class="invoice-box" style="overflow-x:scroll;overflow-y:hidden;">
                                 <table cellpadding="0" cellspacing="0">
                                     <tr class="top">
                                         <td colspan="2">
@@ -248,10 +248,12 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                                         <?php echo $invoiceData[0]->company_address; ?><br>
 														<?php if(!empty($invoiceData[0]->company_email)) { ?><b>Email:</b> <?php echo $invoiceData[0]->company_email; ?><br><?php } ?>
 														<?php if(!empty($invoiceData[0]->company_phone_number)) { ?><b>Phone:</b> <?php echo $invoiceData[0]->company_phone_number; ?><br><?php } ?>
-                                                        <b>GSTIN:</b> <?php echo $invoiceData[0]->gstin_number; ?>
+														<?php $panFromGTIN = substr(substr($invoiceData[0]->gstin_number, 2), 0, -3); ?>
+														<b>PAN:</b> <?php echo $panFromGTIN; ?><br>
+														<b>GSTIN:</b> <?php echo $invoiceData[0]->gstin_number; ?>
                                                     </td>
 
-                                                    <td>
+                                                    <td style="text-align:right;vertical-align:top;width:48%;padding-left:2%;">
                                                         <?php if ($invoiceData[0]->is_canceled == 1) { ?> <b>Canceled Invoice:</b> <?php echo "Canceled"; ?> <?php } ?>
                                                     </td>
                                                 </tr>
@@ -271,7 +273,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 														<?php $billing_vendor_data = $obj_client->getVendorDetailByVendorId($invoiceData[0]->billing_vendor_type); ?>
 														<?php echo $billing_vendor_data['data']->vendor_name; ?><br>
 														<?php if(!empty($invoiceData[0]->billing_gstin_number)) { ?>
-															<b>GSTIN:</b> <?php echo $invoiceData[0]->billing_gstin_number; ?>
+															<b>GSTIN/UIN:</b> <?php echo $invoiceData[0]->billing_gstin_number; ?>
                                                         <?php } ?>
                                                     </td>
 
@@ -283,7 +285,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 														<?php $shipping_vendor_data = $obj_client->getVendorDetailByVendorId($invoiceData[0]->shipping_vendor_type); ?>
 														<?php echo $shipping_vendor_data['data']->vendor_name; ?><br>
 														<?php if(!empty($invoiceData[0]->shipping_gstin_number)) { ?>
-															<b>GSTIN:</b> <?php echo $invoiceData[0]->shipping_gstin_number; ?>
+															<b>GSTIN/UIN:</b> <?php echo $invoiceData[0]->shipping_gstin_number; ?>
                                                         <?php } ?>
                                                     </td>
                                                 </tr>
