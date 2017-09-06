@@ -423,30 +423,16 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 												<tr class="total lightblue">
 													<td colspan="9" align="right" class="fontbold textsmall">Total Invoice Value:</td>
 													<?php if($invoiceData[0]->advance_adjustment == 1) { echo '<td style="text-align:left;"><span>'.$total_advance_subtotal.'</span></td>'; } ?>
-													<td style="text-align:left;"><span><?php echo $total_taxable_subtotal; ?></span></td>
+													<td style="text-align:center;"><span><?php echo $total_taxable_subtotal; ?></span></td>
 													<td><span>&nbsp;</span></td>
-													<td style="text-align:left;"><span><?php echo $total_cgst_amount; ?></span></td>
+													<td style="text-align:center;"><span><?php echo $total_cgst_amount; ?></span></td>
 													<td><span>&nbsp;</span></td>
-													<td style="text-align:left;"><span><?php echo $total_sgst_amount; ?></span></td>
+													<td style="text-align:center;"><span><?php echo $total_sgst_amount; ?></span></td>
 													<td><span>&nbsp;</span></td>
-													<td style="text-align:left;"><span><?php echo $total_igst_amount; ?></span></td>
+													<td style="text-align:center;"><span><?php echo $total_igst_amount; ?></span></td>
 													<td><span>&nbsp;</span></td>
-													<td style="text-align:left;"><span><?php echo $total_cess_amount; ?></span></td>
+													<td style="text-align:center;"><span><?php echo $total_cess_amount; ?></span></td>
 												</tr>
-
-                                                <tr class="total lightyellow">
-                                                    <td <?php if ($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="19"'; } else { echo 'colspan="18"'; } ?>>
-                                                        Total Invoice Value (In Figure): <i class="fa fa-inr"></i><?php echo $invoiceData[0]->invoice_total_value; ?>
-                                                    </td>
-                                                </tr>
-
-                                                <?php $invoice_total_value_words = $obj_client->convert_number_to_words($invoiceData[0]->invoice_total_value); ?>
-
-                                                <tr class="total lightpink">
-                                                    <td <?php if ($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="19"'; } else { echo 'colspan="18"'; } ?>>
-                                                        Total Invoice Value (In Words): <?php echo ucwords($invoice_total_value_words); ?>
-                                                    </td>
-                                                </tr>
 
 												<?php if ($invoiceData[0]->supply_type === "tds" || $invoiceData[0]->supply_type === "tcs") { ?>
 
@@ -519,6 +505,20 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 													<?php } ?>
 
 												<?php } ?>
+												
+												<tr class="total lightyellow">
+                                                    <td <?php if ($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="19"'; } else { echo 'colspan="18"'; } ?>>
+                                                        Total Invoice Value (In Figure): <i class="fa fa-inr"></i><?php echo $invoiceData[0]->invoice_total_value; ?>
+                                                    </td>
+                                                </tr>
+
+                                                <?php $invoice_total_value_words = $obj_client->convert_number_to_words($invoiceData[0]->invoice_total_value); ?>
+
+                                                <tr class="total lightpink">
+                                                    <td <?php if ($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="19"'; } else { echo 'colspan="18"'; } ?>>
+                                                        Total Invoice Value (In Words): <?php echo ucwords($invoice_total_value_words); ?>
+                                                    </td>
+                                                </tr>
 
                                             </table>
 

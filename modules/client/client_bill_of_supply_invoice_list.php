@@ -333,7 +333,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 												
 												<tr class="total lightblue">
 													<td colspan="9" align="right" class="fontbold textsmall">Total Invoice Value:</td>
-													<td style="text-align:left;"><span><?php echo $total_taxable_subtotal; ?></span></td>
+													<td style="text-align:center;"><span><?php echo $total_taxable_subtotal; ?></span></td>
 												</tr>
 
                                                 <tr class="total lightyellow">

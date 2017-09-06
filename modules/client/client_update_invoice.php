@@ -614,18 +614,6 @@
 							<td class="lightblue fontbold textsmall" align="center"></td>
 						</tr>
 
-						<tr>
-							<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="19"'; } else { echo 'colspan="18"'; } ?> align="right" class="lightyellow totalamount">Total Invoice Value <span>(In Figure)</span><div class="totalprice"><i class="fa fa-inr"></i><span class="invoicetotalprice"><?php echo $invoiceData[0]->invoice_total_value; ?></span></div></td>
-							<td class="lightyellow" align="left"></td>
-						</tr>
-
-						<?php $invoice_total_value_words = $obj_client->convert_number_to_words($invoiceData[0]->invoice_total_value); ?>
-						
-						<tr>
-							<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="19"'; } else { echo 'colspan="18"'; } ?> align="right" class="lightpink fontbold totalamountwords" style="font-size:13px;">Total Invoice Value <small>(In Words):</small> <span class="totalpricewords"><?php echo ucwords($invoice_total_value_words); ?></span></td>
-							<td class="lightpink" align="left"></td>
-						</tr>
-
 						<tr class="rvcamount" <?php if($invoiceData[0]->supply_type === "reversecharge") { echo 'style="display:table-row;"'; } ?>>
 							<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="11"'; } else { echo 'colspan="10"'; } ?> align="right" class="lightgreen fontbold textsmall rvcamountftd">Amount of Tax Subject to Reverse Charge</td>
 							<td class="lightgreen fontbold textsmall rvccgst" align="center"><span>-</span></td>
@@ -663,6 +651,18 @@
 							<td class="lightgreen fontbold textsmall tcscess" align="center"><span>0%</span></td>
 							<td class="lightgreen fontbold textsmall tcscessamount" align="center"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall" align="left"></td>
+						</tr>
+						
+						<tr>
+							<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="19"'; } else { echo 'colspan="18"'; } ?> align="right" class="lightyellow totalamount">Total Invoice Value <span>(In Figure)</span><div class="totalprice"><i class="fa fa-inr"></i><span class="invoicetotalprice"><?php echo $invoiceData[0]->invoice_total_value; ?></span></div></td>
+							<td class="lightyellow" align="left"></td>
+						</tr>
+
+						<?php $invoice_total_value_words = $obj_client->convert_number_to_words($invoiceData[0]->invoice_total_value); ?>
+						
+						<tr>
+							<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="19"'; } else { echo 'colspan="18"'; } ?> align="right" class="lightpink fontbold totalamountwords" style="font-size:13px;">Total Invoice Value <small>(In Words):</small> <span class="totalpricewords"><?php echo ucwords($invoice_total_value_words); ?></span></td>
+							<td class="lightpink" align="left"></td>
 						</tr>
 
 					</table>

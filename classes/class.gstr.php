@@ -197,8 +197,8 @@ final class gstr extends validation {
         //End code for create header
         //$this->pr($header);
 
-        //$url=  'http://devapi.gstsystem.co.in/taxpayerapi/v0.2/authenticate';
-        $url = 'https://gspapi.karvygst.com/Authenticate';
+        $url=  'http://devapi.gstsystem.co.in/taxpayerapi/v0.2/authenticate';
+        //$url = 'https://gspapi.karvygst.com/Authenticate';
 
         if(empty($this->checkUserGstr1Exists('app_key')) && empty($this->checkUserGstr1Exists('auth_token'))) {
             //echo 'New App and Auth';
@@ -781,8 +781,8 @@ final class gstr extends validation {
             'ip-usr: '.$ip_usr.'',
             'state-cd: '.$state_cd.'',
             'txn: '.$txn.'',
-            'karvyclientid:'.$karvyclientid.'',
-            'karvyclient-secret:'.$karvyclientsecret.''
+            //'karvyclientid:'.$karvyclientid.'',
+            //'karvyclient-secret:'.$karvyclientsecret.''
         );
 
         if(!empty($fields)) {

@@ -66,8 +66,13 @@ class validation extends upload {
 			'admin_setting'=>TAB_PREFIX.'admin_setting',
             'email_templates'=>TAB_PREFIX.'email_templates',
 			'mobile_messages'=>TAB_PREFIX.'mobile_messages',
-			'returnfile_setting'=>TAB_PREFIX.'returnfile_setting'
+			'returnfile_setting'=>TAB_PREFIX.'returnfile_setting',
+			'transition_form1'=>TAB_PREFIX.'transition_form1',
+			'transition_form2'=>TAB_PREFIX.'transition_form2',
+			'return_cat'=>TAB_PREFIX.'return_categories',
+			'return_subcat'=>TAB_PREFIX.'return_subcategories'
 						
+					
         );
 
         $this->checkUserPortalAccess();
@@ -295,6 +300,7 @@ class validation extends upload {
             $flag=1;
         }
         $query = "select  SUM(invoice_total_value) AS total,count(invoice_total_value) as invoicecount from ".TAB_PREFIX."client_invoice where invoice_date like'".$month."%' and added_by='".$_SESSION['user_detail']['user_id']."'";
+        
         $data2 = $this->get_results($query);
         if(!empty($data2))
         {
@@ -310,7 +316,8 @@ class validation extends upload {
         return $dataArr;
     }
 
-    public function getB2BInvoices($user_id,$returnmonth,$type=''){
+    public function getB2BInvoices($user_id,$returnmonth,$type='',$ids=''){
+       
        $queryB2B =  "select a.export_supply_meant, a.invoice_id,
        a.invoice_type,a.billing_gstin_number,
        a.reference_number,
@@ -324,7 +331,7 @@ class validation extends upload {
        b.cgst_rate,
        b.sgst_rate,
        b.consolidate_rate,
-       
+       a.billing_name,
         sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id  inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
         
         if($type != '') {
@@ -336,21 +343,24 @@ class validation extends upload {
         else if($type == '') {
             $queryB2B .=  " and a.is_gstr1_uploaded='0' ";
         }
+        if(!empty($ids)) {
+            $queryB2B .=  " and a.invoice_id in (".$ids.") ";
+        }
 
         $queryB2B .= "and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number!='' and (a.invoice_type='taxinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice')  and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' group by a.reference_number, b.consolidate_rate ";
 
-        //echo $queryB2B.'<br/>';
-        //die;
         
         return $this->get_results($queryB2B);
     }
 
 
-    public function getB2CLInvoices($user_id,$returnmonth,$type=''){
+    public function getB2CLInvoices($user_id,$returnmonth,$type='',$ids=''){
+        //echo $ids;
         $queryB2CL =  "select a.invoice_id,
         a.invoice_type,
         a.billing_gstin_number,
         a.reference_number,
+        a.billing_name,
         (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
         (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id)  as taxable_subtotal,
         s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_type,a.supply_type,b.igst_rate,b.cgst_rate,b.sgst_rate,b.consolidate_rate, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
@@ -364,16 +374,20 @@ class validation extends upload {
         else if($type == '') {
             $queryB2CL .=  " and a.is_gstr1_uploaded='0' ";
         }
+        if(!empty($ids)) {
+            $queryB2CL .=  " and a.invoice_id in (".$ids.") ";
+        }
 
         $queryB2CL .= "and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number='' and a.invoice_total_value>'250000' and a.supply_place!=a.company_state and (a.invoice_type='taxinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice') and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' group by a.reference_number, b.consolidate_rate order by a.supply_place ";
-        //echo $queryB2CL.'<br/>';
+        //echo '<br/>b2cl '.$queryB2CL.'<br/>';
         return $this->get_results($queryB2CL); 
     }
 
-    public function getB2CSInvoices($user_id,$returnmonth,$type=''){
+    public function getB2CSInvoices($user_id,$returnmonth,$type='',$ids=''){
         $queryB2CS =  "select a.invoice_id,
         a.invoice_type,
         a.billing_gstin_number,
+        a.billing_name,
         a.reference_number,
         a.invoice_date,
         (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
@@ -389,15 +403,19 @@ class validation extends upload {
         else if($type == '') {
             $queryB2CS .=  " and a.is_gstr1_uploaded='0' ";
         }
+        if(!empty($ids)) {
+            $queryB2CS .=  " and a.invoice_id in (".$ids.") ";
+        }
 
         $queryB2CS .= " and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number='' and (a.supply_place=a.company_state  or (a.supply_place!=a.company_state and a.invoice_total_value<='250000')) and (a.invoice_type='taxinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice') and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' group by a.reference_number, b.consolidate_rate order by a.supply_place ";
-       // echo $queryB2CS.'<br/>';
+        //echo '<br/>b2cs '.$queryB2CS.'<br/>';
         return $this->get_results($queryB2CS);
     }
 
-    public function getCDNRInvoices($user_id,$returnmonth,$type=''){
+    public function getCDNRInvoices($user_id,$returnmonth,$type='',$ids=''){
        $queryCDNR =  "select a.invoice_id,
        a.invoice_type,a.reference_number ,
+       a.billing_name,
        c.reference_number as corresponding_document_number,
        c.invoice_date as corresponding_document_date, 
        a.invoice_id,a.billing_gstin_number,
@@ -415,13 +433,18 @@ class validation extends upload {
         else if($type == '') {
             $queryCDNR .=  " and a.is_gstr1_uploaded='0' ";
         }
+        if(!empty($ids)) {
+            $queryCDNR .=  " and a.invoice_id in (".$ids.") ";
+        }
+
         $queryCDNR .= " and a.status='1' and a.billing_gstin_number!='' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%'  and a.is_canceled='0' and a.is_deleted='0' group by a.reference_number order by a.supply_place ";
        //echo 'CDNR: '.$queryCDNR.'<br/>';
         return $this->get_results($queryCDNR);
     }
 
-    public function getCDNURInvoices($user_id,$returnmonth,$type=''){
-        $queryCDNUR =  "select a.invoice_id,a.invoice_type,a.reference_number,c.reference_number as corresponding_document_number,c.export_supply_meant,
+    public function getCDNURInvoices($user_id,$returnmonth,$type='',$ids=''){
+        $queryCDNUR =  "select a.invoice_id,
+        a.billing_name,a.invoice_type,a.reference_number,c.reference_number as corresponding_document_number,c.export_supply_meant,
         c.invoice_type as original_type,
         c.invoice_date as corresponding_document_date,a.billing_gstin_number,
         a.reference_number,
@@ -439,6 +462,9 @@ class validation extends upload {
         else if($type == '') {
             $queryCDNUR .=  " and a.is_gstr1_uploaded='0' ";
         }
+        if(!empty($ids)) {
+            $queryCDNUR .=  " and a.invoice_id in (".$ids.") ";
+        }
         $queryCDNUR .= " and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '".$returnmonth."%' 
             and a.supply_place!=a.company_state and a.invoice_corresponding_type='taxinvoice' 
             and a.billing_gstin_number='' and a.invoice_total_value >'250000' 
@@ -449,8 +475,8 @@ class validation extends upload {
         return $this->get_results($queryCDNUR);
     }
 
-    public function getATInvoices($user_id,$returnmonth,$type=''){
-       $queryAt =  "select a.invoice_id,a.invoice_type,a.reference_number,a.billing_gstin_number,a.reference_number,s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_date,
+    public function getATInvoices($user_id,$returnmonth,$type='',$ids=''){
+       $queryAt =  "select a.invoice_id,a.billing_name,a.invoice_type,a.reference_number,a.billing_gstin_number,a.reference_number,s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_date,
        (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
         (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id)  as taxable_subtotal,
         b.item_name, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount,b.igst_rate,b.cgst_rate,b.sgst_rate,b.consolidate_rate from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id  inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
@@ -465,15 +491,19 @@ class validation extends upload {
         else if($type == '') {
             $queryAt .=  "and a.is_gstr1_uploaded='0' ";
         }
+        if(!empty($ids)) {
+            $queryAt .=  " and a.invoice_id in (".$ids.") ";
+        }
 
         $queryAt .= " and a.status='1'  and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.invoice_type='receiptvoucherinvoice' and a.is_canceled='0' and a.is_deleted='0' group by a.supply_place ,b.consolidate_rate order by a.supply_place ";
         //echo 'AT====='.$queryAt.'<br/>';
         return $this->get_results($queryAt);
     }
 
-    public function getEXPInvoices($user_id,$returnmonth,$type=''){
+    public function getEXPInvoices($user_id,$returnmonth,$type='',$ids=''){
        $queryExp =  "select a.export_bill_number,
        a.invoice_type,
+       a.billing_name,
        a.export_bill_date,
        a.export_bill_port_code,
        a.invoice_id,
@@ -495,14 +525,17 @@ class validation extends upload {
         else if($type == '') {
             $queryExp .=  "and a.is_gstr1_uploaded='0' ";
         }
+        if(!empty($ids)) {
+            $queryExp .=  " and a.invoice_id in (".$ids.") ";
+        }
 
        $queryExp .= " and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and ((a.invoice_type='exportinvoice' and a.export_bill_number !='' and a.export_bill_date != '' and a.export_bill_port_code != '')) and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0'  group by a.invoice_id,b.consolidate_rate order by a.export_supply_meant";
         //echo 'Exp=>>>>>>'.$queryExp.'<br/>';
         return $this->get_results($queryExp); 
     }
 
-    public function getHSNInvoices($user_id,$returnmonth,$type=''){
-        $queryHsn =  "select a.invoice_id,a.invoice_type,a.invoice_date,sum(a.invoice_total_value) as invoice_total_value,b.item_name,s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_type,
+    public function getHSNInvoices($user_id,$returnmonth,$type='',$ids=''){
+        $queryHsn =  "select a.invoice_id,a.invoice_type,a.billing_name,a.invoice_date,sum(a.invoice_total_value) as invoice_total_value,b.item_name,s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_type,
         b.item_hsncode,b.item_quantity,
         b.item_unit,
         (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
@@ -520,14 +553,17 @@ class validation extends upload {
         else if($type == '') {
             $queryHsn .=  " and a.is_gstr1_uploaded='0' ";
         }
+        if(!empty($ids)) {
+            $queryHsn .=  " and a.invoice_id in (".$ids.") ";
+        }
 
         $queryHsn .= " and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and (a.invoice_type='creditnote' or a.invoice_type='debitnote' or a.invoice_type='taxinvoice' or  a.invoice_type='exportinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice' ) and a.is_canceled='0' and a.is_deleted='0' group by b.item_hsncode";
         //echo "<br>HSN<br><br>".$queryHsn.'<br/>';
         return $this->get_results($queryHsn); 
     }
     
-    public function getNILInvoices($user_id,$returnmonth){
-        $query1 =  "select a.invoice_id,a.invoice_type,a.billing_gstin_number,a.reference_number,s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_date,b.item_name,a.invoice_type,, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount,
+    public function getNILInvoices($user_id,$returnmonth,$type='',$ids=''){
+        $query1 =  "select a.invoice_id,a.billing_name,a.invoice_type,a.billing_gstin_number,a.reference_number,s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_date,b.item_name,a.invoice_type,, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount,
             (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
         (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id)  as taxable_subtotal
              from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id  where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number!='' and a.is_canceled='0' and a.is_deleted='0' inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id ";
@@ -543,32 +579,72 @@ class validation extends upload {
 
     }
 
-    protected function getDOCSalesInvoices($user_id,$returnmonth){
-        $querySales =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and   a.invoice_type in('taxinvoice','exportinvoice','sezunitinvoice','deemedexportinvoice','sezunitinvoice')  and a.is_canceled='0' and a.is_deleted='0' order by a.reference_number";
-        $queryCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  a.invoice_type in('taxinvoice','exportinvoice','sezunitinvoice','deemedexportinvoice','sezunitinvoice') group by a.reference_number order by a.reference_number";
+    protected function getDOCSalesInvoices($user_id,$returnmonth,$ids=''){
+        $querySales =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1 ";
 
+        if(!empty($ids)) {
+            $querySales .=  " and a.invoice_id in (".$ids.") ";
+        }
+        $querySales .= " and 
+        a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and   a.invoice_type in('taxinvoice','exportinvoice','sezunitinvoice','deemedexportinvoice','sezunitinvoice')  and a.is_canceled='0' and a.is_deleted='0' order by a.reference_number";
+
+        $queryCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1 ";
+        if(!empty($ids)) {
+            $queryCancle .=  " and a.invoice_id in (".$ids.") ";
+        }
+
+        $queryCancle .= " and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  a.invoice_type in('taxinvoice','exportinvoice','sezunitinvoice','deemedexportinvoice','sezunitinvoice') group by a.reference_number order by a.reference_number";
+        //echo '<br/>Sale querySales: '.$querySales.'<br/>';
+        //echo '<br/>Sale queryCancle: '.$queryCancle.'<br/>';
         $dataInvSales = $this->get_results($querySales);
         $dataInvCancelSales = $this->get_results($queryCancle);
         $data = array($dataInvSales,$dataInvCancelSales);
         return $data;
 
     }
-    protected function getDOCRevisedInvoices($user_id,$returnmonth){
-        $queryRevised =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and  a.invoice_type = 'revisedtaxinvoice' and a.is_canceled='0' and a.is_deleted='0'  order by a.reference_number";
+    protected function getDOCRevisedInvoices($user_id,$returnmonth,$ids=''){
+        $queryRevised =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1 ";
 
-        $queryRevisedCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  a.invoice_type = 'revisedtaxinvoice'  group by a.reference_number order by a.reference_number";
+        if(!empty($ids)) {
+            $queryRevised .=  " and a.invoice_id in (".$ids.") ";
+        }
 
+        $queryRevised .= " and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and  a.invoice_type = 'revisedtaxinvoice' and a.is_canceled='0' and a.is_deleted='0'  order by a.reference_number";
+
+
+        $queryRevisedCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1 ";
+
+        if(!empty($ids)) {
+            $queryRevisedCancle .=  " and a.invoice_id in (".$ids.") ";
+        }
+
+        $queryRevisedCancle .= " and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  a.invoice_type = 'revisedtaxinvoice'  group by a.reference_number order by a.reference_number";
+        //echo '<br/>queryRevised: '.$queryRevised.'<br/>';
+        //echo '<br/>queryRevisedCancle: '.$queryRevisedCancle.'<br/>';
         $dataInvRevised = $this->get_results($queryRevised);
         $dataInvCancleRevised = $this->get_results($queryRevisedCancle);
         $data = array($dataInvRevised,$dataInvCancleRevised);
         return $data;
 
     }
-    protected function getDOCDebitInvoices($user_id,$returnmonth){
-        $queryDebit =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and  a.invoice_type = 'debitnote' and a.is_canceled='0' and a.is_deleted='0'  order by a.reference_number";
+    protected function getDOCDebitInvoices($user_id,$returnmonth,$ids=''){
+        $queryDebit =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1 ";
 
-        $queryDebitCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  a.invoice_type = 'debitnote'  group by a.reference_number order by a.reference_number";
+        if(!empty($ids)) {
+            $queryDebit .=  " and a.invoice_id in (".$ids.") ";
+        }
 
+        $queryDebit .= " and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and  a.invoice_type = 'debitnote' and a.is_canceled='0' and a.is_deleted='0'  order by a.reference_number";
+
+        $queryDebitCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1 ";
+
+        if(!empty($ids)) {
+            $queryDebitCancle .=  " and a.invoice_id in (".$ids.") ";
+        }
+
+        $queryDebitCancle .= " and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  a.invoice_type = 'debitnote'  group by a.reference_number order by a.reference_number";
+        //echo '<br/>queryDebit: '.$queryDebit.'<br/>';
+        //echo '<br/>queryDebitCancle: '.$queryDebitCancle.'<br/>';
         $dataInvDebit = $this->get_results($queryDebit);
         $dataInvCancleDebit = $this->get_results($queryDebitCancle);
         $data = array($dataInvDebit,$dataInvCancleDebit);
@@ -576,10 +652,25 @@ class validation extends upload {
 
     }
 
-    protected function getDOCCreditInvoices($user_id,$returnmonth){
-        $queryCredit =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and  a.invoice_type = 'creditnote' and a.is_canceled='0' and a.is_deleted='0' order by a.reference_number";
+    protected function getDOCCreditInvoices($user_id,$returnmonth,$ids=''){
+        $queryCredit =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1 ";
 
-        $queryCreditCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  a.invoice_type = 'creditnote'  group by a.reference_number order by a.reference_number";
+        if(!empty($ids)) {
+            $queryCredit .=  " and a.invoice_id in (".$ids.") ";
+        }
+
+        $queryCredit .=  " and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and  a.invoice_type = 'creditnote' and a.is_canceled='0' and a.is_deleted='0' order by a.reference_number";
+
+        $queryCreditCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1 ";
+
+        if(!empty($ids)) {
+            $queryCreditCancle .=  " and a.invoice_id in (".$ids.") ";
+        }
+
+        $queryCreditCancle .= " and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  a.invoice_type = 'creditnote'  group by a.reference_number order by a.reference_number";
+
+        //echo '<br/>queryCredit: '.$queryCredit.'<br/>';
+        //echo '<br/>queryCreditCancle: '.$queryCreditCancle.'<br/>';
 
         $dataInvCredit = $this->get_results($queryCredit);
         $dataInvCancleCredit = $this->get_results($queryCreditCancle);
@@ -587,21 +678,47 @@ class validation extends upload {
         return $data;
 
     }
-    protected function getDOCReceiptInvoices($user_id,$returnmonth){
-        $queryReceipt =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and  a.invoice_type = 'receiptvoucherinvoice' and a.is_canceled='0' and a.is_deleted='0'  order by a.reference_number";
+    protected function getDOCReceiptInvoices($user_id,$returnmonth,$ids=''){
+        $queryReceipt =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1 ";
 
-        $queryReceiptCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  a.invoice_type = 'receiptvoucherinvoice'  group by a.reference_number order by a.reference_number";
+        if(!empty($ids)) {
+            $queryReceipt .=  " and a.invoice_id in (".$ids.") ";
+        }
 
-        //End Code For Doc
+        $queryReceipt .=  " and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and  a.invoice_type = 'receiptvoucherinvoice' and a.is_canceled='0' and a.is_deleted='0'  order by a.reference_number";
+
+        $queryReceiptCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1 ";
+
+        if(!empty($ids)) {
+            $queryReceiptCancle .=  " and a.invoice_id in (".$ids.") ";
+        }
+
+        $queryReceiptCancle .= " and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  a.invoice_type = 'receiptvoucherinvoice'  group by a.reference_number order by a.reference_number";
+
+        //echo '<br/>queryReceipt: '.$queryReceipt.'<br/>';
+        //echo '<br/>queryReceiptCancle: '.$queryReceiptCancle.'<br/>';
+
         $dataInvReceipt = $this->get_results($queryReceipt);
         $dataInvCancleReceipt = $this->get_results($queryReceiptCancle);
         $data = array($dataInvReceipt,$dataInvCancleReceipt);
         return $data;
     }
-    protected function getDOCRefundInvoices($user_id,$returnmonth){
-        $queryReceipt =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and  a.invoice_type = 'refundvoucherinvoice' and a.is_canceled='0' and a.is_deleted='0' order by a.reference_number";
+    protected function getDOCRefundInvoices($user_id,$returnmonth,$ids=''){
+        $queryReceipt =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1 ";
+        if(!empty($ids)) {
+            $queryReceipt .=  " and a.invoice_id in (".$ids.") ";
+        }
+        $queryReceipt .= " and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and  a.invoice_type = 'refundvoucherinvoice' and a.is_canceled='0' and a.is_deleted='0' order by a.reference_number";
 
-        $queryReceiptCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  a.invoice_type = 'refundvoucherinvoice'  group by a.reference_number order by a.reference_number";
+        $queryReceiptCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1 ";
+        if(!empty($ids)) {
+            $queryReceiptCancle .=  " and a.invoice_id in (".$ids.") ";
+        }
+
+        $queryReceiptCancle .= " and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  a.invoice_type = 'refundvoucherinvoice'  group by a.reference_number order by a.reference_number";
+
+        //echo '<br/>queryRefnd: '.$queryReceipt.'<br/>';
+        //echo '<br/>queryRefndCancle: '.$queryReceiptCancle.'<br/>';
 
         $dataInvRefund = $this->get_results($queryReceipt);
         $dataInvCancleRefund = $this->get_results($queryReceiptCancle);
@@ -609,10 +726,22 @@ class validation extends upload {
         return $data;
     }
 
-    protected function getDOCDeliveryChallanJobWorkInvoices($user_id,$returnmonth){
-        $queryDeliveryJobWork =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and  a.invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'jobwork' and a.is_canceled='0' and a.is_deleted='0' order by a.reference_number";
+    protected function getDOCDeliveryChallanJobWorkInvoices($user_id,$returnmonth,$ids=''){
+        $queryDeliveryJobWork =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1 ";
+        if(!empty($ids)) {
+            $queryDeliveryJobWork .=  " and a.invoice_id in (".$ids.") ";
+        }
+        $queryDeliveryJobWork .= " and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and  a.invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'jobwork' and a.is_canceled='0' and a.is_deleted='0' order by a.reference_number";
 
-        $queryDeliveryJobWorkCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  a.invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'jobwork' group by a.reference_number order by a.reference_number";
+        $queryDeliveryJobWorkCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1 ";
+        if(!empty($ids)) {
+            $queryDeliveryJobWorkCancle .=  " and a.invoice_id in (".$ids.") ";
+        }
+        $queryDeliveryJobWorkCancle .= " and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  a.invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'jobwork' group by a.reference_number order by a.reference_number";
+
+        //echo '<br/>queryDeliveryJobWork: '.$queryDeliveryJobWork.'<br/>';
+        //echo '<br/>queryDeliveryJobWorkCancle: '.$queryDeliveryJobWorkCancle.'<br/>';
+
 
         $dataInvDeliveryJobWork = $this->get_results($queryDeliveryJobWork);
         $dataInvCancleDeliveryJobWork = $this->get_results($queryDeliveryJobWorkCancle);
@@ -620,10 +749,23 @@ class validation extends upload {
         return $data;
     }
 
-    protected function getDOCDeliveryChallanSupplyOnApprovalInvoices($user_id,$returnmonth){
-        $queryDeliverySUAP =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and  a.invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'supplyonapproval' and a.is_canceled='0' and a.is_deleted='0' order by a.reference_number";
+    protected function getDOCDeliveryChallanSupplyOnApprovalInvoices($user_id,$returnmonth,$ids=''){
+        $queryDeliverySUAP =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1 ";
+        if(!empty($ids)) {
+            $queryDeliverySUAP .=  " and a.invoice_id in (".$ids.") ";
+        }
 
-        $queryDeliverySUAPCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  a.invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'supplyonapproval'  group by a.reference_number order by a.reference_number";
+        $queryDeliverySUAP .= " and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and  a.invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'supplyonapproval' and a.is_canceled='0' and a.is_deleted='0' order by a.reference_number";
+
+        $queryDeliverySUAPCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1 ";
+        if(!empty($ids)) {
+            $queryDeliverySUAPCancle .=  " and a.invoice_id in (".$ids.") ";
+        }
+
+        $queryDeliverySUAPCancle .= " and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  a.invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'supplyonapproval'  group by a.reference_number order by a.reference_number";
+
+        //echo '<br/>queryDeliverySUAP: '.$queryDeliverySUAP.'<br/>';
+        //echo '<br/>queryDeliverySUAPCancle: '.$queryDeliverySUAPCancle.'<br/>';
 
         $dataInvDeliverySUAP = $this->get_results($queryDeliverySUAP);
         $dataInvCancleDeliverySUAP = $this->get_results($queryDeliverySUAPCancle);
@@ -631,10 +773,23 @@ class validation extends upload {
         return $data;
     }
 
-    protected function getDOCDeliveryChallanInCaseLiquidGasInvoices($user_id,$returnmonth){
-        $queryDeliverySULGAS =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and  a.invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'supplyofliquidgas' and a.is_canceled='0' and a.is_deleted='0' order by a.reference_number";
+    protected function getDOCDeliveryChallanInCaseLiquidGasInvoices($user_id,$returnmonth,$ids=''){
+        $queryDeliverySULGAS =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1 ";
+        if(!empty($ids)) {
+            $queryDeliverySULGAS .=  " and a.invoice_id in (".$ids.") ";
+        }
 
-        $queryDeliverySULGASCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'supplyofliquidgas' group by a.reference_number order by a.reference_number";
+        $queryDeliverySULGAS .=  " and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and  a.invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'supplyofliquidgas' and a.is_canceled='0' and a.is_deleted='0' order by a.reference_number";
+
+        $queryDeliverySULGASCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1";
+        if(!empty($ids)) {
+            $queryDeliverySULGASCancle .=  " and a.invoice_id in (".$ids.") ";
+        }
+
+        $queryDeliverySULGASCancle .=  " and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'supplyofliquidgas' group by a.reference_number order by a.reference_number";
+
+         //echo '<br/>queryDeliverySULGAS: '.$queryDeliverySULGAS.'<br/>';
+        //echo '<br/>queryDeliverySULGASCancle: '.$queryDeliverySULGASCancle.'<br/>';
 
         $dataInvDeliverySULGAS = $this->get_results($queryDeliverySULGAS);
         $dataInvCancleDeliverySULGAS = $this->get_results($queryDeliverySULGASCancle);
@@ -642,11 +797,24 @@ class validation extends upload {
         return $data;
     }
 
-    protected function getDOCDeliveryChallanInCaseOtherInvoices($user_id,$returnmonth){
+    protected function getDOCDeliveryChallanInCaseOtherInvoices($user_id,$returnmonth,$ids=''){
 
-        $queryDeliverySupplyOther =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and  a.invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'supplyofliquidgas' and a.is_canceled='0' and a.is_deleted='0' order by a.reference_number";
+        $queryDeliverySupplyOther =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1";
+        if(!empty($ids)) {
+            $queryDeliverySupplyOther .=  " and a.invoice_id in (".$ids.") ";
+        }
 
-        $queryDeliverySupplyOtherCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'others'  group by a.reference_number order by a.reference_number";
+        $queryDeliverySupplyOther .=  " and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and  a.invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'supplyofliquidgas' and a.is_canceled='0' and a.is_deleted='0' order by a.reference_number";
+
+        $queryDeliverySupplyOtherCancle =  "select a.invoice_id,a.reference_number from ".$this->getTableName('client_invoice')." a where 1 ";
+        if(!empty($ids)) {
+            $queryDeliverySupplyOtherCancle .=  " and a.invoice_id in (".$ids.") ";
+        }
+
+        $queryDeliverySupplyOtherCancle .=  " and a.is_gstr1_uploaded='0' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.reference_number != '' and a.is_canceled = '1'  and  invoice_type = 'deliverychallaninvoice' and  a.delivery_challan_type = 'others'  group by a.reference_number order by a.reference_number";
+
+        //echo '<br/>queryDeliverySupplyOther: '.$queryDeliverySupplyOther.'<br/>';
+        //echo '<br/>queryDeliverySupplyOtherCancle: '.$queryDeliverySupplyOtherCancle.'<br/>';
 
         $dataInvDeliverySupplyOther = $this->get_results($queryDeliverySupplyOther);
         $dataInvCancleDeliverySupplyOther= $this->get_results($queryDeliverySupplyOtherCancle);

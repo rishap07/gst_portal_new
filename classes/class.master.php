@@ -230,7 +230,20 @@ final class master extends validation {
             }
         }
     }
+    public function getvendorName($vendorname)
+	{
+		    $sql = "select count(vendor_id) as numcount,vendor_id from " . TAB_PREFIX . "vendor_type WHERE vendor_name like '%" .$vendorname. "%'";
+            $dataCurrentArr = $this->get_results($sql);
 
+            if ($dataCurrentArr[0]->numcount > 0) {
+				
+				return $dataCurrentArr[0]->vendor_id;
+			}
+			else
+			{
+				return false;
+			}
+	}
     public function updateVendor() {
         $dataArr = array();
         $dataArr = $this->getvendorData();

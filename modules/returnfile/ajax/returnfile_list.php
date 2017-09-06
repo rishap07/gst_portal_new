@@ -14,7 +14,7 @@ $obj_master = new master();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('g.id', 'g.returnform_name', 'g.returnfile_description', 'g.returntofile_vendor_id','g.returnfile_date','g.status');
+$aColumns = array('g.id', 'g.returnform_name','g.returnfile_type','g.returnfile_description', 'g.returntofile_vendor_id','g.returnfile_date','g.status');
 $aSearchColumns = array('g.returnform_name', 'g.returnfile_description');
 $sIndexColumn = "g.id";
 
@@ -138,13 +138,27 @@ foreach($rResult as $aRow) {
 		$vendordata = $db_obj->get_results("select * from gst_vendor_type where vendor_id='".$aRow->returntofile_vendor_id."'");
         //$type = $aRow->returntofile_vendor_id;
 		$type = $vendordata[0]->vendor_name;
-    }    
+    }  
+     $file_type='';
+	
+	  if($aRow->returnfile_type == 0){
+        $file_type = 'th of Month';
+    }elseif($aRow->returnfile_type == 1){
+		$file_type = 'th of Quartly';
+    } 
+    elseif($aRow->returnfile_type == 2){
+		$file_type = 'th of Yearly';
+    }
+    else{
+		$file_type = 'th of Month';
+	}		
+   	
    
     $row[] = $temp_x;
     $row[] = utf8_decode($aRow->returnform_name);
 	$row[] = utf8_decode($aRow->returnfile_description);
 	$row[] = utf8_decode($type);
-    $row[] = utf8_decode($aRow->returnfile_date.'th of month');
+    $row[] = utf8_decode($aRow->returnfile_date.$file_type);
    	$row[] = utf8_decode($status);
 	
    

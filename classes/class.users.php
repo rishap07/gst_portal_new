@@ -737,7 +737,7 @@ final class users extends validation {
         $dataArr['group_id'] = $this->sanitize($_GET['id']);
         $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['added_date'] = date('Y-m-d H:i:s');
-        if (!$this->insert($this->tableNames['user_role_permission'], $dataArr)) {
+		if (!$this->insert($this->tableNames['user_role_permission'], $dataArr)) {
             $this->setError($this->validationMessage['failed']);
             return false;
         }
@@ -751,7 +751,7 @@ final class users extends validation {
         $dataArr = array();
         if ($type == 'submit') {
             $dataArr['role_id'] = isset($_POST['user_role_id'][$posi]) ? $_POST['user_role_id'][$posi] : '';
-            $dataArr['can_read'] = isset($_POST['view'][$_POST['user_role_id'][$posi]]) ? $_POST['view'][$_POST['user_role_id'][$x]] : '0';
+            $dataArr['can_read'] = isset($_POST['view'][$_POST['user_role_id'][$posi]]) ? $_POST['view'][$_POST['user_role_id'][$posi]] : '0';
             $dataArr['can_create'] = isset($_POST['create'][$_POST['user_role_id'][$posi]]) ? $_POST['create'][$_POST['user_role_id'][$posi]] : '0';
             $dataArr['can_update'] = isset($_POST['update'][$_POST['user_role_id'][$posi]]) ? $_POST['update'][$_POST['user_role_id'][$posi]] : '0';
             $dataArr['can_delete'] = isset($_POST['delete'][$_POST['user_role_id'][$posi]]) ? $_POST['delete'][$_POST['user_role_id'][$posi]] : '0';
@@ -761,6 +761,7 @@ final class users extends validation {
             $dataArr['set']['can_update'] = isset($_POST['update'][$_POST['user_role_id'][$posi]]) ? $_POST['update'][$_POST['user_role_id'][$posi]] : '0';
             $dataArr['set']['can_delete'] = isset($_POST['delete'][$_POST['user_role_id'][$posi]]) ? $_POST['delete'][$_POST['user_role_id'][$posi]] : '0';
         }
+		
         return $dataArr;
     }
 

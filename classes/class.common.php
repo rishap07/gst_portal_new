@@ -65,150 +65,46 @@ class common extends db {
     }
 
     private function getEmailVerifyMailBody($name) {
-        $token = md5(uniqid(rand(), 1));
-        //$data = '<a href="'.PROJECT_URL.'/?page=dashboard&verifyemail=' . $token . '&passkey='.md5($_SESSION['user_detail']['user_id']).'">Click here</a>  or copy the below url and paste on browser to verify your email';
-        $data = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>gst</title>
-</head>
-
-<body>
-<div style="width:720px; margin:auto; border:solid #CCC 1px;">
-<table cellpadding="0" cellspacing="0" width="100%" >
-  <tbody>
-    <tr>
-      <td height="auto"><table width="720" cellpadding="0" cellspacing="0" bgcolor="#fff" style="font-family:Arial, Helvetica, sans-serif;margin:0px auto;">
-          <tbody>
-            <tr>
-              <td width="30"></td>
-              <td><table width="100%" cellpadding="0" cellspacing="0">
-                  <tbody>
-                    <tr>
-                      <td align="left" valign="middle" height="80"><a target="_blank" href="https://www.gstkeeper.com/"><img src="https://gstkeeper.com/newsletter/4july2017/gst-logo.png" alt="" border="0"></a></td>
-                      <td align="right" valign="middle" style="font-size:18px;color:#cf3502;font-family:Arial, Helvetica, sans-serif;" height="80px"> <span><img src="https://gstkeeper.com/newsletter/6july2017/phone-icon.jpg" alt=""></span>1-800-212-2022<br>
-                        <span><img src="https://gstkeeper.com/newsletter/6july2017/mail-icon.jpg"></span><a href="mailto:contact@gstkeeper.com" style="font-size:14px;color:#cf3502;text-decoration:none;"> contact@gstkeeper.com</a></td>
-                    </tr>
-                  </tbody>
-                </table></td>
-              <td width="30"></td>
-            </tr>
-            <tr>
-              <td width="30"></td>
-              <td><table width="100%" cellpadding="0" cellspacing="0">
-                  <tbody>
-                    <tr>
-                      <td align="center" valign="middle"><img src="https://www.gstkeeper.com/newsletter/7july/images/banner.jpg" alt="" border="0" width="700"></td>
-                    </tr>
-                  </tbody>
-                </table></td>
-              <td width="30"></td>
-            </tr>
-        
-         
-           
-            <tr>
-              <td width="30"  ></td>
-              <td><table width="100%" cellpadding="0" cellspacing="0">
-                <tbody>
-                  <tr>
-                    <td height="319" align="center" valign="top"><table width="100%" cellpadding="0px" cellspacing="0" >
-                      <tbody>
-                        
-                        <tr>
-                          <td width="13"></td>
-                          <td width="350"  style="font-size:15px;color:#090909;font-family:Arial, Helvetica, sans-serif; padding-top:10px; "><strong>Hi ' . $name . ' 
-</strong></td>
-                          <td width="20"></td>
-                          </tr>
-                        <tr>
-                          <td colspan="3" height="10"></td>
-                          </tr>
-                        <tr>
-                          <td width="13"></td>
-                          <td height="140" align="justify"  valign="top" style="font-size:13px;color:#191919;font-family:Arial, Helvetica, sans-serif; line-height:18px; ">
-                            <p>Thanks for getting started with GST Keeper! We just need to verify your email address.</p>
-                            
-                            <p>Please click the link below:</p>
-							<p>
-							<a href="' . PROJECT_URL . '/?page=dashboard&verifyemail=' . $token . '&passkey=' . md5($_SESSION['user_detail']['user_id']) . '" style="padding:2px 5px;background:#cf3502;color:#fff;text-decoration:none;font-size:20px;" target="_blank" >Verify</a></p>
-                            <BR /><BR /><BR />
-     <p>Thanks,<BR />
-<strong>The GST Keeper Team </strong></p></td>
-                          </tr>
-                        
-                        </tbody>
-                    </table></td>
-                    </tr>
-                </tbody>
-              </table></td>
-              
-            </tr>
-            <!--<tr>
-         
-         <td  align="center" height="29"><img src="http://cdn.go4hosting.in/mailer/12-oct/resources-img.jpg"  alt=""    /></td>
-         
-         </tr>-->
-            
-            <tr>
-              <td colspan="3" height="15"></td>
-            </tr>
-         
-          
-            <tr>
-              <td width="30"></td>
-              <td><table width="98%" align="right" cellpadding="0" cellspacing="0" style="background-color:#f1f1f1; height:80px; padding:10px;">
-                <tbody>
-                  <tr>
-                    <td width="47%"><a href="http://www.cyfuture.com/" target="_blank"><img src="https://gstkeeper.com/newsletter/4july2017/cyfuture-logo.png" alt="" border="0" /></a></td>
-                    <td width="53%" align="right"><table width="100%" cellpadding="0" cellspacing="0">
-                      <tbody>
-                        <tr>
-                          <td width="20" height="50"></td>
-                          <td valign="middle" style="font-size:14px;color:#333;font-family:Arial, Helvetica, sans-serif;"><strong><i>Connect with us</i></strong></td>
-                          <td valign="middle" width="50" align="center"><a target="_blank" href="https://www.facebook.com/GST-Keeper-632910016898628/"><img src="https://gstkeeper.com/newsletter/4july2017/fb-icon.png" alt="" border="0" /></a></td>
-                          <td valign="middle" width="40" align="left"><a target="_blank" href="https://plus.google.com/101841021110541536034"><img src="https://gstkeeper.com/newsletter/4july2017/g+-icon.png" alt="" border="0" /></a></td>
-                          <td valign="middle" width="40" align="left"><a target="_blank" href="https://twitter.com/GstKeeper"><img src="https://gstkeeper.com/newsletter/4july2017/twit-icon.png" alt="" border="0" /></a></td>
-                          <td valign="middle" width="40" align="left"><a target="_blank" href="https://www.youtube.com/channel/UCsDdNFR8kJ3YVWpEvBrFeSA"><img src="https://gstkeeper.com/newsletter/4july2017/utube-icon.png" alt="" border="0" /></a></td>
-                          <td valign="middle" width="40" align="left"><a target="_blank" href="https://www.linkedin.com/company/gst-keeper"><img src="https://gstkeeper.com/newsletter/4july2017/in-icon.jpg" alt="" border="0" /></a></td>
-                        </tr>
-                      </tbody>
-                    </table></td>
-                  </tr>
-                </tbody>
-              </table></td>
-              <td width="30"></td>
-            </tr>
-            <tr>
-              <td width="30"></td>
-              <td height="76" valign="middle"><table width="100%" cellpadding="0" cellspacing="0">
-                  <tbody>
-                    <tr>
-                      <td width="20"></td>
-                      <td align="center"><font style="font-size:14px;color:#444;font-family:Arial, Helvetica, sans-serif;">Cyfuture ( India ) Pvt. Ltd.</font><br>
-                        <font style="font-size:12px;color:#444;font-family:Arial, Helvetica, sans-serif;">Plot No. 197-198 Noida Special Economic Zone (NSEZ) Phase II, Noida 201 305</font><br>
-                      <font style="font-size:12px;color:#444;font-family:Arial, Helvetica, sans-serif;">E-mail: <a style="text-decoration:none;color:#3194d5;" href="mailto:contact@gstkeeper.com">contact@gstkeeper.com</a></font><br></td>
-                      <td width="15" align="left">&nbsp;</td>
-                    </tr>
-                  </tbody>
-              </table></td>
-             
-         
-          </tbody>
-        </table></td>
-    </tr>
-  </tbody>
-</table>
-
-
-
-
-</div>
-</body>
-</html>';
-        $this->update(TAB_PREFIX . "user", array('email_code' => $token), array('user_id' => $_SESSION['user_detail']['user_id']));
-        return $data;
+    $token = md5(uniqid(rand(), 1));
+    $mpdfHtml='';
+	$mpdfHtml = $mpdfHtml.'<div style="width:720px; margin:auto; border:solid #CCC 1px;">';
+    $mpdfHtml = $mpdfHtml.'<table cellpadding="0" cellspacing="0" width="100%"><tbody>';
+    $mpdfHtml = $mpdfHtml.'<tr><td height="auto"><table width="720" cellpadding="0" cellspacing="0" bgcolor="#fff" style="font-family:Arial, Helvetica, sans-serif;margin:0px auto;">';
+    $mpdfHtml = $mpdfHtml.'<tbody><tr><td width="30"></td> <td><table width="100%" cellpadding="0" cellspacing="0">'; 
+    $mpdfHtml = $mpdfHtml.'<tbody><tr><td align="left" valign="middle" height="80"><a target="_blank" href="https://www.gstkeeper.com/"><img src="' . PROJECT_URL . '/image/newsletter/4july2017/gst-logo.png" alt="" border="0"></a></td>';
+    $mpdfHtml = $mpdfHtml.'<td align="right" valign="middle" style="font-size:18px;color:#cf3502;font-family:Arial, Helvetica, sans-serif;" height="80px"> <span><img src="' . PROJECT_URL . '/image/newsletter/6july2017/phone-icon.jpg" alt=""></span>1-800-212-2022<br>';
+    $mpdfHtml = $mpdfHtml.'<span><img src="' . PROJECT_URL . '/image/newsletter/6july2017/mail-icon.jpg"></span><a href="mailto:contact@gstkeeper.com" style="font-size:14px;color:#cf3502;text-decoration:none;"> contact@gstkeeper.com</a></td></tr></tbody></table></td><td width="30"></td></tr>';
+    $mpdfHtml = $mpdfHtml.'<tr><td width="30"></td><td><table width="100%" cellpadding="0" cellspacing="0"><tbody>';              
+    $mpdfHtml = $mpdfHtml.'<tr><td align="center" valign="middle"><img src="' . PROJECT_URL . '/image/newsletter/7july/images/banner.jpg" alt="" border="0" width="700"></td></tr>';
+    $mpdfHtml = $mpdfHtml.'</tbody></table></td><td width="30"></td></tr>';                          
+    $mpdfHtml = $mpdfHtml.'<tr><td width="30"></td> <td><table width="100%" cellpadding="0" cellspacing="0"><tbody>';   
+    $mpdfHtml = $mpdfHtml.'<tr><td height="319" align="center" valign="top"><table width="100%" cellpadding="0px" cellspacing="0"><tbody>';
+    $mpdfHtml = $mpdfHtml.'<tr><td width="13"></td><td width="350"  style="font-size:15px;color:#090909;font-family:Arial, Helvetica, sans-serif; padding-top:10px; "><strong>Hi ' . $name . '</strong></td><td width="20"></td></tr>'; 
+    $mpdfHtml = $mpdfHtml.'<tr><td colspan="3" height="10"></td></tr>';                  
+    $mpdfHtml = $mpdfHtml.'<tr><td width="13"></td><td height="140" align="justify"  valign="top" style="font-size:13px;color:#191919;font-family:Arial, Helvetica, sans-serif; line-height:18px;">';
+    $mpdfHtml = $mpdfHtml.'<p>Thanks for getting started with GST Keeper! We just need to verify your email address.</p>';
+    $mpdfHtml = $mpdfHtml.'<p>Please click the link below:</p>';                                                                     
+    $mpdfHtml = $mpdfHtml.'<p><a href="' . PROJECT_URL . '/?page=dashboard&verifyemail=' . $token . '&passkey=' . md5($_SESSION['user_detail']['user_id']) . '" style="padding:2px 5px;background:#cf3502;color:#fff;text-decoration:none;font-size:20px;" target="_blank" >Verify</a></p>';
+    $mpdfHtml = $mpdfHtml.'<BR /><BR /><BR /><p>Thanks,<BR /><strong>The GST Keeper Team </strong></p></td></tr>';                                          
+    $mpdfHtml = $mpdfHtml.'</tbody></table></td></tr></tbody></table></td></tr>';                    
+    $mpdfHtml = $mpdfHtml.'<!--<tr><td  align="center" height="29"><img src="http://cdn.go4hosting.in/mailer/12-oct/resources-img.jpg"  alt="" /></td></tr>-->';
+    $mpdfHtml = $mpdfHtml.'<tr><td colspan="3" height="15"></td></tr>';                              
+    $mpdfHtml = $mpdfHtml.'<tr><td width="30"></td><td><table width="98%" align="right" cellpadding="0" cellspacing="0" style="background-color:#f1f1f1; height:80px; padding:10px;">';
+    $mpdfHtml = $mpdfHtml.'<tbody><tr><td width="47%"><a href="http://www.cyfuture.com/" target="_blank"><img src="' . PROJECT_URL . '/image/newsletter/4july2017/cyfuture-logo.png" alt="" border="0" /></a></td>';
+    $mpdfHtml = $mpdfHtml.'<td width="53%" align="right"><table width="100%" cellpadding="0" cellspacing="0">';
+    $mpdfHtml = $mpdfHtml.'<tbody><tr><td width="20" height="50"></td><td valign="middle" style="font-size:14px;color:#333;font-family:Arial, Helvetica, sans-serif;"><strong><i>Connect with us</i></strong></td>';
+    $mpdfHtml = $mpdfHtml.'<td valign="middle" width="50" align="center"><a target="_blank" href="https://www.facebook.com/GST-Keeper-632910016898628/"><img src="' . PROJECT_URL . '/image/newsletter/4july2017/fb-icon.png" alt="" border="0" /></a></td>';
+    $mpdfHtml = $mpdfHtml.'<td valign="middle" width="40" align="left"><a target="_blank" href="https://plus.google.com/101841021110541536034"><img src="' . PROJECT_URL . '/image/newsletter/4july2017/g+-icon.png" alt="" border="0" /></a></td>';
+    $mpdfHtml = $mpdfHtml.'<td valign="middle" width="40" align="left"><a target="_blank" href="https://twitter.com/GstKeeper"><img src="' . PROJECT_URL . '/image/newsletter/4july2017/twit-icon.png" alt="" border="0" /></a></td>';
+    $mpdfHtml = $mpdfHtml.'<td valign="middle" width="40" align="left"><a target="_blank" href="https://www.youtube.com/channel/UCsDdNFR8kJ3YVWpEvBrFeSA"><img src="' . PROJECT_URL . '/image/newsletter/4july2017/utube-icon.png" alt="" border="0" /></a></td>';
+    $mpdfHtml = $mpdfHtml.'<td valign="middle" width="40" align="left"><a target="_blank" href="https://www.linkedin.com/company/gst-keeper"><img src="' . PROJECT_URL . '/image/newsletter/4july2017/in-icon.jpg" alt="" border="0" /></a></td></tr>';
+    $mpdfHtml = $mpdfHtml.'</tbody></table></td></tr></tbody></table></td><td width="30"></td></tr>';                                                                                                                       
+    $mpdfHtml = $mpdfHtml.'<tr><td width="30"></td><td height="76" valign="middle"><table width="100%" cellpadding="0" cellspacing="0">';
+    $mpdfHtml = $mpdfHtml.'<tbody><tr><td width="20"></td><td align="center"><font style="font-size:14px;color:#444;font-family:Arial, Helvetica, sans-serif;">Cyfuture ( India ) Pvt. Ltd.</font><br>';
+    $mpdfHtml = $mpdfHtml.'<font style="font-size:12px;color:#444;font-family:Arial, Helvetica, sans-serif;">Plot No. 197-198 Noida Special Economic Zone (NSEZ) Phase II, Noida 201 305</font><br>';
+    $mpdfHtml = $mpdfHtml.'<font style="font-size:12px;color:#444;font-family:Arial, Helvetica, sans-serif;">E-mail: <a style="text-decoration:none;color:#3194d5;" href="mailto:contact@gstkeeper.com">contact@gstkeeper.com</a></font><br></td><td width="15" align="left">&nbsp;</td></tr></tbody></table></td></tbody></table></td></tr> </tbody></table>';
+    $this->update(TAB_PREFIX . "user", array('email_code' => $token), array('user_id' => $_SESSION['user_detail']['user_id']));
+     return $mpdfHtml;
     }
 
     public function sendMail($module = '', $module_message = '', $to_send, $from_send, $cc = '', $bcc = '', $attachment = '', $subject, $body) {

@@ -125,10 +125,9 @@ else
                                                 foreach ($b2bData as $key => $b2bDatavalue) {
                                                     $b2b_invoice_total_value += isset($b2bDatavalue->taxable_subtotal)?$b2bDatavalue->taxable_subtotal:0;
                                                     $b2b_total += $b2bDatavalue->cgst_amount + $b2bDatavalue->sgst_amount + $b2bDatavalue->igst_amount + $b2bDatavalue->cess_amount;
- 
+                                                    $b2b_sumTotal +=isset($b2bDatavalue->invoice_total_value)?$b2bDatavalue->invoice_total_value:0;
                                                 }
                                                 
-                                                $b2b_sumTotal = $b2b_invoice_total_value + $b2b_total;
                                             }
 
 
@@ -147,10 +146,10 @@ else
                                                 foreach ($b2clData as $key => $b2clDatavalue) {
                                                     $b2cl_invoice_total_value += isset($b2clDatavalue->taxable_subtotal)?$b2clDatavalue->taxable_subtotal:0;
                                                     $b2cl_total += $b2clDatavalue->cgst_amount + $b2clDatavalue->sgst_amount + $b2clDatavalue->igst_amount + $b2clDatavalue->cess_amount;
- 
+                                                    $b2cl_sumTotal +=isset($b2clDatavalue->invoice_total_value)?$b2clDatavalue->invoice_total_value:0;
                                                 }
                                                 
-                                                $b2cl_sumTotal = $b2cl_invoice_total_value + $b2cl_total;
+                                                
                                             }
 
                                             ?>
@@ -168,11 +167,11 @@ else
                                                 foreach ($b2csData as $key => $b2csDatavalue) {
                                                     $b2cs_invoice_total_value += isset($b2csDatavalue->taxable_subtotal)?$b2csDatavalue->taxable_subtotal:0;
                                                     $b2cs_total += $b2csDatavalue->cgst_amount + $b2csDatavalue->sgst_amount + $b2csDatavalue->igst_amount + $b2csDatavalue->cess_amount;
+                                                    $b2cs_sumTotal +=isset($b2csDatavalue->invoice_total_value)?$b2csDatavalue->invoice_total_value:0;
  
                                                 }
                                                 
-                                                $b2cs_sumTotal = $b2cs_invoice_total_value + $b2cs_total;
-                                            }
+                                             }
 
                                             ?>
                                             <td>B2C Small</td>
@@ -190,10 +189,9 @@ else
                                                 foreach ($cdnrData as $key => $cdnrDatavalue) {
                                                     $cdnr_invoice_total_value += isset($cdnrDatavalue->taxable_subtotal)?$cdnrDatavalue->taxable_subtotal:0;
                                                     $cdnr_total += $cdnrDatavalue->cgst_amount + $cdnrDatavalue->sgst_amount + $cdnrDatavalue->igst_amount + $cdnrDatavalue->cess_amount;
- 
+                                                    $cdnr_sumTotal +=isset($cdnrDatavalue->invoice_total_value)?$cdnrDatavalue->invoice_total_value:0;
                                                 }
                                                 
-                                                $cdnr_sumTotal = $cdnr_invoice_total_value + $cdnr_total;
                                             }
                                             ?>
                                             <td>Credit Debit Notes Registered</td>
@@ -211,10 +209,9 @@ else
                                                 foreach ($expData as $key => $expDatavalue) {
                                                     $exp_invoice_total_value += isset($expDatavalue->taxable_subtotal)?$expDatavalue->taxable_subtotal:0;
                                                     $exp_total += $expDatavalue->cgst_amount + $expDatavalue->sgst_amount + $expDatavalue->igst_amount + $expDatavalue->cess_amount;
- 
+                                                    $exp_sumTotal +=isset($expDatavalue->invoice_total_value)?$expDatavalue->invoice_total_value:0;
                                                 }
                                                 
-                                                $exp_sumTotal = $exp_invoice_total_value + $exp_total;
                                             }
                                             ?>
                                             <td>Export</td>
@@ -232,10 +229,9 @@ else
                                                 foreach ($atData as $key => $atDatavalue) {
                                                     $at_invoice_total_value += isset($atDatavalue->taxable_subtotal)?$atDatavalue->taxable_subtotal:0;
                                                     $at_total += $atDatavalue->cgst_amount + $atDatavalue->sgst_amount + $atDatavalue->igst_amount + $atDatavalue->cess_amount;
- 
+                                                    $at_sumTotal +=isset($atDatavalue->invoice_total_value)?$atDatavalue->invoice_total_value:0;
                                                 }
                                                 
-                                                $at_sumTotal = $at_invoice_total_value + $at_total;
                                             }
                                             ?>
                                             <td>Advance Tax</td>
@@ -252,10 +248,9 @@ else
                                                 foreach ($cdnurData as $key => $cdnurDatavalue) {
                                                     $cdnur_invoice_total_value += isset($cdnurDatavalue->taxable_subtotal)?$cdnurDatavalue->taxable_subtotal:0;
                                                     $cdnur_total +=  $cdnurDatavalue->igst_amount + $cdnurDatavalue->cess_amount;
- 
+                                                    $cdnur_sumTotal +=isset($cdnurDatavalue->invoice_total_value)?$cdnurDatavalue->invoice_total_value:0;
                                                 }
                                                 
-                                                $cdnur_sumTotal = $cdnur_invoice_total_value + $cdnur_total;
                                             }
                                             ?>
                                             <td>Credit Debit Notes Unregistered</td>

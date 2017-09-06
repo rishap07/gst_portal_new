@@ -92,19 +92,11 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
     $obj_mpdf->WriteHTML($htmlResponse);
 
   
-}
-
-
-
-
-
-
-
-       
+}  
 	  // $sql = "select  *,count(return_id) as totalinvoice from ".TAB_PREFIX."client_return_gstr3b where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by return_id desc limit 0,1";
-       $sql = "select  *,count(id) as totalinvoice from gst_transition_form where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
+       $sql = "select  *,count(id) as totalinvoice from ".TAB_PREFIX."transition_form1 where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
        $returndata = $obj_transition->get_results($sql);
-	   $sql = "select  *,count(id) as totalinvoice from gst_transition_form where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
+	   $sql = "select  *,count(id) as totalinvoice from ".TAB_PREFIX."transition_form1 where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
  
        $returndata1 = $obj_transition->get_results($sql);
 	    $sql = "select * from " . TAB_PREFIX . "client_kyc where added_by='" . $_SESSION['user_detail']['user_id'] . "' order by id desc limit 0,1";

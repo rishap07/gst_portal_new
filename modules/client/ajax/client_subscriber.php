@@ -175,8 +175,7 @@ if (isset($rResult) && !empty($rResult)) {
         //$row[] = $visible;
 //    $row[] = $status;
         $row[] = '<a href="' . PROJECT_URL . '/?page=client_subscribeview&action=view&id=' . $aRow->user_id . '" class="iconedit hint--bottom" '
-                . 'data-hint="view" ><i class="fa fa-eye"></i></a>'
-        ;
+                . 'data-hint="view" ><i class="fa fa-eye"></i></a>';
         $output['aaData'][] = $row;
         $temp_x++;
     }

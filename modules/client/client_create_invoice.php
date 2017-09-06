@@ -438,16 +438,6 @@
 							<td class="lightblue fontbold textsmall" align="center"></td>
 						</tr>
 
-						<tr>
-							<td colspan="18" align="right" class="lightyellow totalamount">Total Invoice Value <span>(In Figure):</span><div class="totalprice"><i class="fa fa-inr"></i><span class="invoicetotalprice">0.00</span></div></td>
-							<td class="lightyellow" align="left"></td>
-						</tr>
-
-						<tr>
-							<td colspan="18" align="right" class="lightpink fontbold totalamountwords" style="font-size:13px;">Total Invoice Value <small>(In Words):</small> <span class="totalpricewords">Nill</span></td>
-							<td class="lightpink" align="left"></td>
-						</tr>
-
 						<tr class="rvcamount">
 							<td colspan="10" align="right" class="lightgreen fontbold textsmall rvcamountftd">Amount of Tax Subject to Reverse Charge:</td>
 							<td class="lightgreen fontbold textsmall rvccgst" align="center"><span>-</span></td>
@@ -485,6 +475,16 @@
 							<td class="lightgreen fontbold textsmall tcscess" align="center"><span>0%</span></td>
 							<td class="lightgreen fontbold textsmall tcscessamount" align="center"><span>0.00</span></td>
 							<td class="lightgreen fontbold textsmall" align="left"></td>
+						</tr>
+
+						<tr>
+							<td colspan="18" align="right" class="lightyellow totalamount">Total Invoice Value <span>(In Figure):</span><div class="totalprice"><i class="fa fa-inr"></i><span class="invoicetotalprice">0.00</span></div></td>
+							<td class="lightyellow" align="left"></td>
+						</tr>
+
+						<tr>
+							<td colspan="18" align="right" class="lightpink fontbold totalamountwords" style="font-size:13px;">Total Invoice Value <small>(In Words):</small> <span class="totalpricewords">Nill</span></td>
+							<td class="lightpink" align="left"></td>
 						</tr>
 
 					</table>

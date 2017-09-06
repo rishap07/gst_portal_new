@@ -1,8 +1,8 @@
 <?php
 
 $obj_return = new gstr3b();
+$obj_master = new master();
 $returnmonth = date('Y-m');
-
 if(isset($_POST['returnmonth']))
 {
     $returnmonth = $_POST['returnmonth'];
@@ -93,11 +93,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
     
 }
 
-
+        
        
 	   $sql = "select  *,count(return_id) as totalinvoice from ".TAB_PREFIX."client_return_gstr3b where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by return_id desc limit 0,1";
- 
-        $returndata = $obj_return->get_results($sql);
+       $returndata = $obj_return->get_results($sql);
 	    
 		
 	     $tdsTotquery = "SELECT COUNT(i.invoice_id) as numcount,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and supply_type='tds' and  invoice_date like '%" . $returnmonth . "%'";
@@ -114,7 +113,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
         if (!empty($tcsTotData)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
-  $nature_of_supply_a_Totquery = "SELECT sum(item.taxable_subtotal) as taxable_subtotal, COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id INNER join gst_vendor_type as v on v.vendor_id=i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and invoice_type not in('exportinvoice','sezunitinvoice','deemedexportinvoice') and (item.igst_rate > 0 or (item.sgst_rate > 0 and item.cgst_rate > 0)) and (v.vendor_id<>3 and v.vendor_id<>'5') and invoice_date like '%" . $returnmonth . "%'";
+        $nature_of_supply_a_Totquery = "SELECT sum(item.taxable_subtotal) as taxable_subtotal, COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id INNER join gst_vendor_type as v on v.vendor_id=i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and invoice_type not in('exportinvoice','sezunitinvoice','deemedexportinvoice') and (item.igst_rate > 0 or (item.sgst_rate > 0 and item.cgst_rate > 0)) and (v.vendor_id<>3 and v.vendor_id<>'5') and invoice_date like '%" . $returnmonth . "%'";
          
 		
 	    $nature_of_supply_a_TotData = $obj_return->get_results($nature_of_supply_a_Totquery);
@@ -190,21 +189,45 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
         if (!empty($nature_of_supply_a_5a_TotData)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
-	*/	 
-	  $supply_unregistered="SELECT i.billing_state as state, COUNT(i.invoice_id) as numcount,sum(igst_amount) as igst_amount,sum(item.taxable_subtotal) as totaltaxable_value FROM gst_client_invoice as i inner join gst_client_invoice_item as item on item.invoice_id = i.invoice_id inner join gst_vendor_type as v on v.vendor_id = i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0' and billing_gstin_number='' and (v.vendor_id<>'2' and v.vendor_id<>'4') and i.status='1' GROUP by i.billing_state";
+	*/
+      $flag = $obj_master->getVendorName('Composition vendor');
+	   $vendor_id1=0;
+		if($flag!=0)
+		{
+			$vendor_id1 = $flag;
+		}
+      $flag = $obj_master->getVendorName('uin holder');
+	   $vendor_id2=0;
+		if($flag!=0)
+		{
+			$vendor_id2 = $flag;
+		}			
+	 $supply_unregistered="SELECT i.billing_state as state, COUNT(i.invoice_id) as numcount,sum(igst_amount) as igst_amount,sum(item.taxable_subtotal) as totaltaxable_value FROM gst_client_invoice as i inner join gst_client_invoice_item as item on item.invoice_id = i.invoice_id inner join gst_vendor_type as v on v.vendor_id = i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0' and billing_gstin_number='' and (v.vendor_id<>'".$vendor_id1."' and v.vendor_id<>'".$vendor_id2."') and i.status='1' GROUP by i.billing_state";
 	 $supply_unregistered_data = $obj_return->get_results($supply_unregistered);
         $total = 0;
         if (!empty($supply_unregistered_data)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
-		
-	 $supply_composition="SELECT i.billing_state as state, COUNT(i.invoice_id) as numcount,sum(igst_amount) as igst_amount,sum(item.taxable_subtotal) as totaltaxable_value FROM gst_client_invoice as i inner join gst_client_invoice_item as item on item.invoice_id = i.invoice_id inner join gst_vendor_type as v on v.vendor_id = i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0' and v.vendor_id='2' and i.status='1' GROUP by i.billing_state";
+	   $flag = $obj_master->getVendorName('Composition vendor');
+	   $vendor_id=0;
+		if($flag!=0)
+		{
+			$vendor_id = $flag;
+		}
+	
+	 $supply_composition="SELECT i.billing_state as state, COUNT(i.invoice_id) as numcount,sum(igst_amount) as igst_amount,sum(item.taxable_subtotal) as totaltaxable_value FROM gst_client_invoice as i inner join gst_client_invoice_item as item on item.invoice_id = i.invoice_id inner join gst_vendor_type as v on v.vendor_id = i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0' and v.vendor_id='".$vendor_id."' and i.status='1' GROUP by i.billing_state";
 	 $supply_composition_data = $obj_return->get_results($supply_composition);
         $total = 0;
         if (!empty($supply_composition_data)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
-	 $supply_uin_holder="SELECT i.billing_state as state, COUNT(i.invoice_id) as numcount,sum(igst_amount) as igst_amount,sum(item.taxable_subtotal) as totaltaxable_value FROM gst_client_invoice as i inner join gst_client_invoice_item as item on item.invoice_id = i.invoice_id inner join gst_vendor_type as v on v.vendor_id = i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0' and v.vendor_id='4' and i.status='1' GROUP by i.billing_state";
+	$flag = $obj_master->getVendorName('uin holder');
+	   $vendor_id=0;
+		if($flag!=0)
+		{
+			$vendor_id = $flag;
+		}	 
+	 $supply_uin_holder="SELECT i.billing_state as state, COUNT(i.invoice_id) as numcount,sum(igst_amount) as igst_amount,sum(item.taxable_subtotal) as totaltaxable_value FROM gst_client_invoice as i inner join gst_client_invoice_item as item on item.invoice_id = i.invoice_id inner join gst_vendor_type as v on v.vendor_id = i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0' and v.vendor_id='".$vendor_id."' and i.status='1' GROUP by i.billing_state";
 	 $supply_uin_holder_data = $obj_return->get_results($supply_uin_holder);
         $total = 0;
         if (!empty($supply_uin_holder_data)) {

@@ -1,5 +1,9 @@
 <?php
 $obj_return = new returnfile();
+if(isset($_POST['r_id'])) {
+							echo "working"; die();
+                            $dataCatArrs = $obj_return->get_results("select * from " . $obj_return->getTableName('return_subcat') . " where status='1' and is_deleted='0' and cat_id='".$_POST["r_id"]."' order by id asc"); 
+}
 if (!isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '') {
     $obj_return->redirect(PROJECT_URL);
     exit();
@@ -40,7 +44,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
     }
 }
 ?>
-<script src="<?php echo PROJECT_URL;?>/editor/ckeditor/ckeditor.js"></script>
+
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
@@ -102,8 +106,8 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
                                                 echo 'selected="selected"';
                                             }
                                             ?>><?php echo $dataVendorArr->vendor_name; ?></option>
-    <?php } ?>
-<?php } ?>
+							 <?php } ?>
+							<?php } ?>
                         </select>
                     </div> <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                         <label>Status<span class="starred">*</span></label>
@@ -149,9 +153,60 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
                             ?>>Monthly</option>
 							</select>
 							</div>                   
-					
+					   <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+					    <form method='post' name='form2'>
+                        <label>Return Category<span class="starred">*</span></label>
+                        <select name='return_cat' id='return_cat' class='required form-control'>
+                            <?php $dataCatArrs = $obj_return->get_results("select * from " . $obj_return->getTableName('return_cat') . " where status='1' and is_deleted='0' order by id asc"); ?>
+                            <?php if (!empty($dataCatArrs)) { ?>
+                                <?php
+                                if ($dataCurrentArr[0]->cat_id == 0) {
+                                    ?>
+                                    <option value='0' 'selected="selected">Select category</option>
+                                <?php } else { ?>
+                                    <option value='0'>Select category</option>
+                                <?php } ?>
+                                <?php foreach ($dataCatArrs as $dataCatArr) { ?>
+                                    <option value='<?php echo $dataCatArr->id; ?>' <?php
+                                            if (isset($_POST['return_cat']) && $_POST['return_cat'] == $dataCatArr->id) {
+                                                echo 'selected="selected"';
+                                            } else if (isset($dataArr[0]->cat_id) && $dataCurrentArr[0]->cat_id == $dataCatArr->id) {
+                                                echo 'selected="selected"';
+                                            }
+                                            ?>><?php echo $dataCatArr->return_name; ?></option>
+							 <?php } ?>
+							<?php } ?>
+                        </select></form>
+                    </div>
                     <div class="clear"></div>
-					 <div class="col-md-12 col-sm-12 col-xs-12 form-group">
+					   <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                        <label>Return SubCategory<span class="starred">*</span></label>
+                        <select name='return_subcat' id='return_subcat' class='required form-control'>
+						<?php 
+						if(isset($_POST['r_id'])) {
+							echo "working"; die();
+                            $dataCatArrs = $obj_return->get_results("select * from " . $obj_return->getTableName('return_subcat') . " where status='1' and is_deleted='0' and cat_id='".$_POST["r_id"]."' order by id asc"); ?>
+                            <?php if (!empty($dataCatArrs)) { ?>
+                                <?php
+                                if ($dataCurrentArr[0]->subcat_id == 0) {
+                                    ?>
+                                    <option value='0' selected="selected">Select Subcategory</option>
+                                <?php } else { ?>
+                                    <option value='0'>Select Subcategory</option>
+                                <?php } ?>
+                                <?php foreach ($dataCatArrs as $dataCatArr) { ?>
+                                    <option value='<?php echo $dataCatArr->id; ?>' <?php
+                                            if (isset($_POST['return_cat']) && $_POST['return_cat'] == $dataCatArr->id) {
+                                                echo 'selected="selected"';
+                                            } else if (isset($dataArr[0]->subcat_id) && $dataCurrentArr[0]->subcat_id == $dataCatArr->id) {
+                                                echo 'selected="selected"';
+                                            }
+                                            ?>><?php echo $dataCatArr->subcat_name; ?></option>
+							 <?php } ?>
+						<?php } } ?>
+                        </select>
+                    </div>
+					 <div class="col-md-8 col-sm-8 col-xs-12 form-group">
 
                         <label>Description<span class="starred">*</span></label>
                          <textarea placeholder="Enter return form description" maxlength="255"  name="returnfile_description" id="returnfile_description" class="required form-control"><?php
@@ -192,23 +247,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
 
 
 <!--========================sidemenu over=========================-->
-<script>
-    CKEDITOR.replace('notification_message', {
-        filebrowserUploadUrl: "<?php echo PROJECT_URL; ?>/editor/ckeditor/ckupload.php",
-        filebrowserBrowseUrl: "<?php echo PROJECT_URL; ?>/editor/ckeditor/browse.php?type=Images"
-    });
-</script>
-<script>
-    $(document).ready(function () {
-        $('#submit').click(function () {
-            var mesg = {};
-            if (vali.validate(mesg, 'client-user')) {
-                return true;
-            }
-            return false;
-        });
-    });
-</script>
+
 <script type="text/javascript">
     function isNumberKey(evt)
     {
@@ -227,6 +266,27 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
     }
 
 </script>
+<script>
+        $(document).ready(function() {
+  $("#return_cat").change(function() {
+	 
+    var return_id = $(this).val();
+	 if(return_id != "") {
+      $.ajax({
+        url:'<?php echo PROJECT_URL;?>/?page=returnfile_update',
+        data:{r_id:return_id},
+        type:'POST',
+        success:function(response) {
+          var resp = $.trim(response);
+          $("#return_subcat").html(resp);
+        }
+      });
+    } else {
+      $("#return_subcat").html("<option value=''>------- Select --------</option>");
+    }
+  });
+});
+    </script>
 <script>
 /*
     $(document).ready(function () {
