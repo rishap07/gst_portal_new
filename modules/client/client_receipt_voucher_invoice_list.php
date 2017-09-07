@@ -194,12 +194,11 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                 <!--INVOICE PRINT RIGHT  START HERE-->
                 <?php if (isset($invoiceData[0]->invoice_id)) { ?>
 
-                    <div class="col-md-8 col-sm-12 mobdisplaynone invoicergtcol" style="padding-right:0px;">
+                    <div class="col-md-8 col-sm-12 mobdisplaynone invoicergtcol">
 
                         <!---INVOICE TOP ICON START HERE-->
                         <div class="inovicergttop">
                             <ul class="iconlist">
-                                
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=client_update_receipt_voucher_invoice&action=editRVInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Edit"><i class="fa fa-pencil" aria-hidden="true"></i></div></a></li>
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=client_receipt_voucher_invoice_list&action=downloadRVInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=client_receipt_voucher_invoice_list&action=printRVInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>" target="_blank"><div data-toggle="tooltip" data-placement="bottom" title="PRINT"><i class="fa fa-print" aria-hidden="true"></i></div></a></li>

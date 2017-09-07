@@ -354,7 +354,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                     <?php if(!empty($invoiceData[0]->description)) { ?>
                                         <tr class="description">
                                             <td colspan="2">
-												<p><b>Description:</b> <?php echo $invoiceData[0]->description; ?></p>
+												<p><b>Additional Notes:</b> <?php echo $invoiceData[0]->description; ?></p>
                                             </td>
                                         </tr>
                                     <?php } ?>

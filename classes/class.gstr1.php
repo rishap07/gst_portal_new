@@ -291,7 +291,7 @@ final class gstr1 extends validation {
         /***** End Code For B2B Payload ********** */
 
         /***** Start Code For B2CL Payload ********** */
-        $b2cl_data = $this->gstB2CLPayload($user_id, $returnmonth,$ids);
+        $b2cl_data = $this->gstB2CLPayload($user_id, $returnmonth,'',$ids);
         if (!empty($b2cl_data)) {
             $data_ids[] = $b2cl_ids = $b2cl_data['b2cl_ids'];
             $b2cl_arr = $b2cl_data['b2cl_arr'];
@@ -300,7 +300,7 @@ final class gstr1 extends validation {
         /***** End Code For B2CL Payload ********** */
 
         /***** Start Code For B2CS Payload ********** */
-        $b2cs_data = $this->gstB2CSPayload($user_id, $returnmonth,$ids);
+        $b2cs_data = $this->gstB2CSPayload($user_id, $returnmonth,'',$ids);
         if (!empty($b2cs_data)) {
             $data_ids[] = $b2cs_ids = $b2cs_data['b2cs_ids'];
             $b2cs_arr = $b2cs_data['b2cs_arr'];
@@ -309,7 +309,7 @@ final class gstr1 extends validation {
         /***** End Code For B2CS Payload ********** */
 
         /** *** Start Code For CDNR Payload ********** */
-        $cdnr_data = $this->gstCDNRPayload($user_id, $returnmonth,$ids);
+        $cdnr_data = $this->gstCDNRPayload($user_id, $returnmonth,'',$ids);
         if (!empty($cdnr_data)) {
             $data_ids[] = $cdnr_ids = $cdnr_data['cdnr_ids'];
             $cdnr_arr = $cdnr_data['cdnr_arr'];
@@ -318,7 +318,7 @@ final class gstr1 extends validation {
         /****** End Code For CDNR Payload ********** */
 
         /** *** Start Code For CDNUR Payload ********** */
-        $cdnur_data = $this->gstCDNURPayload($user_id, $returnmonth,$ids);
+        $cdnur_data = $this->gstCDNURPayload($user_id, $returnmonth,'',$ids);
         if (!empty($cdnur_data)) {
             $data_ids[] = $cdnur_ids = $cdnur_data['cdnur_ids'];
             $cdnur_arr = $cdnur_data['cdnur_arr'];
@@ -327,16 +327,16 @@ final class gstr1 extends validation {
         /***** End Code For CDNUR Payload ********** */
 
         /***** Start Code For HSN Summary Payload ********** */
-        /*$hsn_data = $this->gstHSNPayload($user_id, $returnmonth);
+        $hsn_data = $this->gstHSNPayload($user_id, $returnmonth,'');
         if (!empty($hsn_data)) {
             //$data_ids[] = $hsn_ids = $hsn_data['hsn_ids'];
             $hsn_arr = $hsn_data['hsn_arr'];
             $dataArr = array_merge($dataArr, $hsn_arr);
-        }*/
+        }
         /***** END Code For HSN Summary Payload ********** */
 
         /***** Start Code For AT Payload ********** */
-        $at_data = $this->gstATPayload($user_id, $returnmonth,$ids);
+        $at_data = $this->gstATPayload($user_id, $returnmonth,'',$ids);
         if (!empty($at_data)) {
             $data_ids[] = $at_ids = $at_data['at_ids'];
             $at_arr = $at_data['at_arr'];
@@ -345,16 +345,16 @@ final class gstr1 extends validation {
         /***** End Code For AT Payload ********** */
 
         /***** Start Code For NIL Payload ********** */
-       /* $nil_data = $this->getNILPayload($user_id, $returnmonth,$ids);
+        $nil_data = $this->getNILPayload($user_id, $returnmonth,'',$ids);
         if (!empty($nil_data)) {
             //$data_ids[] = $nil_ids = $nil_data['nil_ids'];
             $nil_arr = $nil_data['nil_arr'];
             $dataArr = array_merge($dataArr, $nil_arr);
-        }*/
+        }
         /***** End Code For NIL Payload ********** */
 
         /***** Start Code For Doc Issue Payload ********** */
-        $doc_data = $this->getDOCISSUEPayload($user_id, $returnmonth,$ids);
+        $doc_data = $this->getDOCISSUEPayload($user_id, $returnmonth,'',$ids);
         if (!empty($doc_data)) {
             //$data_ids[] = $doc_ids = $doc_data['doc_ids'];
             $doc_arr = $doc_data['doc_arr'];
@@ -363,7 +363,7 @@ final class gstr1 extends validation {
         /***** End Code For Doc Issue Payload ********** */
 
         /***** Start Code For Exp Payload ********** */
-        $exp_data = $this->getEXPPayload($user_id, $returnmonth,$ids);
+        $exp_data = $this->getEXPPayload($user_id, $returnmonth,'',$ids);
         if (!empty($exp_data)) {
             $data_ids[] = $exp_ids = $exp_data['exp_ids'];
             $exp_arr = $exp_data['exp_arr'];
@@ -372,7 +372,7 @@ final class gstr1 extends validation {
         /***** End Code For Exp Payload ********** */
 
         /***** Start Code For TXPD  Payload ********** */
-        // $txpd_data = $this->getTXPDPayload($user_id, $returnmonth,$ids);
+        // $txpd_data = $this->getTXPDPayload($user_id, $returnmonth,,'',$ids);
         // if (!empty($txpd_data)) {
         //     $data_ids[] = $txpd_ids = $txpd_data['txpd_ids'];
         //     $txpd_arr = $txpd_data['txpd_arr'];
@@ -1011,8 +1011,9 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function gstB2CLPayload($user_id, $returnmonth,$ids='') {
+    public function gstB2CLPayload($user_id, $returnmonth,$flag='',$ids='') {
         $dataArr = $response = $b2cl_array = $b2cl_ids = array();
+
         $dataInvB2CL = $this->getB2CLInvoices($user_id, $returnmonth,'',$ids);
         if (isset($dataInvB2CL) && !empty($dataInvB2CL)) {
 
@@ -1066,7 +1067,7 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function gstB2CSPayload($user_id, $returnmonth,$ids='') {
+    public function gstB2CSPayload($user_id, $returnmonth,$flag='',$ids='') {
         $dataArr = $response = $b2cs_array = $b2cs_ids = array();
         $dataInvB2CS = $this->getB2CSInvoices($user_id, $returnmonth,'',$ids);
         if (isset($dataInvB2CS) && !empty($dataInvB2CS)) {
@@ -1128,7 +1129,7 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function gstCDNRPayload($user_id, $returnmonth,$ids='') {
+    public function gstCDNRPayload($user_id, $returnmonth,$flag='',$ids='') {
         $dataArr = $response = $cdnr_array = $cdnr_ids = array();
         $dataInvCDNR = $this->getCDNRInvoices($user_id, $returnmonth,'',$ids);
         //$this->pr($dataInvCDNR);
@@ -1163,7 +1164,7 @@ final class gstr1 extends validation {
                 $dataArr['cdnr'][$x]['nt'][$y]['nt_num'] = $dataIn->reference_number;
                 $dataArr['cdnr'][$x]['nt'][$y]['nt_dt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
                 $dataArr['cdnr'][$x]['nt'][$y]['p_gst'] = "N";
-                $dataArr['cdnr'][$x]['nt'][$y]['rsn'] = "02-Post Sale Discount";
+                $dataArr['cdnr'][$x]['nt'][$y]['rsn'] = $dataIn->reason_issuing_document;//"02-Post Sale Discount";
                 $dataArr['cdnr'][$x]['nt'][$y]['inum'] = $dataIn->corresponding_document_number;
                 $dataArr['cdnr'][$x]['nt'][$y]['idt'] = date('d-m-Y', strtotime($dataIn->corresponding_document_date));
                 $dataArr['cdnr'][$x]['nt'][$y]['val'] = (float) $dataIn->invoice_total_value;
@@ -1193,7 +1194,7 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function gstCDNURPayload($user_id, $returnmonth,$ids='') {
+    public function gstCDNURPayload($user_id, $returnmonth,$flag='',$ids='') {
         $dataArr = $response = $cdnur_array = $cdnur_ids = array();
         $dataInvCDNUR = $this->getCDNURInvoices($user_id, $returnmonth,'',$ids);
        // $this->pr($dataInvCDNUR);
@@ -1238,7 +1239,7 @@ final class gstr1 extends validation {
                 $dataArr['cdnur'][$x]['nt_num'] = $dataIn->reference_number;
                 $dataArr['cdnur'][$x]['nt_dt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
                 $dataArr['cdnur'][$x]['p_gst'] = "N";
-                $dataArr['cdnur'][$x]['rsn'] = "02-Post Sale Discount";
+                $dataArr['cdnur'][$x]['rsn'] = $dataIn->reason_issuing_document;//"02-Post Sale Discount";
                 $dataArr['cdnur'][$x]['inum'] = $dataIn->corresponding_document_number;
                 $dataArr['cdnur'][$x]['idt'] = date('d-m-Y', strtotime($dataIn->corresponding_document_date));
                 $dataArr['cdnur'][$x]['val'] = (float) $dataIn->invoice_total_value;
@@ -1264,16 +1265,17 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function gstHSNPayload($user_id, $returnmonth,$ids='') {
+    public function gstHSNPayload($user_id, $returnmonth,$flag='',$ids='') {
         $dataArr = $response = $hsn_array = $hsn_ids = array();
         $dataInvHsn = $this->getHSNInvoices($user_id, $returnmonth,'',$ids);
         if (isset($dataInvHsn) && !empty($dataInvHsn)) {
             $y = 0;
             $a = 1;
             foreach ($dataInvHsn as $dataIn) {
+
                 $dataArr['hsn']['data'][$y]['num'] = (int) $a;
                 $dataArr['hsn']['data'][$y]['hsn_sc'] = $dataIn->item_hsncode;
-                $dataArr['hsn']['data'][$y]['desc'] = $dataIn->item_name;
+                $dataArr['hsn']['data'][$y]['desc'] = substr($dataIn->item_name,0,strpos($dataIn->item_name, ' ', 30));
                 $dataArr['hsn']['data'][$y]['uqc'] = $dataIn->item_unit;
                 $dataArr['hsn']['data'][$y]['qty'] = (float) $dataIn->item_quantity;
                 $dataArr['hsn']['data'][$y]['val'] = (float) $dataIn->invoice_total_value;
@@ -1297,7 +1299,7 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function gstATPayload($user_id, $returnmonth,$ids='') {
+    public function gstATPayload($user_id, $returnmonth,$flag='',$ids='') {
         $dataArr = $response = $at_array = $at_ids = array();
         $dataInvAt = $this->getATInvoices($user_id, $returnmonth,'',$ids);
         if (isset($dataInvAt) && !empty($dataInvAt)) {
@@ -1347,7 +1349,7 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function getNILPayload($user_id, $returnmonth,$ids='') {
+    public function getNILPayload($user_id, $returnmonth,$flag='',$ids='') {
         $dataArr = $response = $nil_array = $nil_ids = array();
         $dataInvNil = $this->getNilInvoices($user_id, $returnmonth,'',$ids);
         //$this->pr($dataInvNil);
@@ -1401,7 +1403,8 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function getDOCISSUEPayload($user_id, $returnmonth,$ids='') {
+    public function getDOCISSUEPayload($user_id, $returnmonth,$flag='',$ids='')
+    {
         $dataArr = $response = $doc_ids = $doc_array = array();
         //Start Code For Doc
         $dataInvDoc = array();
@@ -1409,7 +1412,7 @@ final class gstr1 extends validation {
         $final_array = $dataRevise = $dataRevised = $dataDebit = $dataCredit = $dataReceipt = $dataRefund = $dataDeliveryJobWork =  $dataDeliverySUAP = $dataDeliverySULGAS = $dataDeliverySupplyOther = array();
 
         /*********** Start code For Doc Sales *************/
-        $docSales = $this->getDOCSalesInvoices($user_id, $returnmonth,$ids);
+        $docSales = $this->getDOCSalesInvoices($user_id, $returnmonth,'',$ids);
 
         $dataInvSales =  $docSales[0];
         $dataInvCancelSales = $docSales[1];
@@ -1434,7 +1437,7 @@ final class gstr1 extends validation {
         /*********** End code For Doc Sales *************/
 
         /*********** Start code For Doc Revised *************/
-        $docRevised = $this->getDOCRevisedInvoices($user_id, $returnmonth,$ids);
+        $docRevised = $this->getDOCRevisedInvoices($user_id, $returnmonth,'',$ids);
         $dataInvSales =  $docRevised[0];
         $dataInvCancelSales = $docRevised[1];
         if(isset($dataInvRevised) && !empty($dataInvRevised))
@@ -1457,7 +1460,7 @@ final class gstr1 extends validation {
         /*********** End code For Doc Revised *************/
 
         /*********** Start code For Debit  *************/
-        $docDebit = $this->getDOCDebitInvoices($user_id, $returnmonth,$ids);
+        $docDebit = $this->getDOCDebitInvoices($user_id, $returnmonth,'',$ids);
         $dataInvDebit = $docDebit[0];
         $dataInvCancleDebit = $docDebit[1];
         if(isset($dataInvDebit) && !empty($dataInvDebit))
@@ -1480,7 +1483,7 @@ final class gstr1 extends validation {
         /*********** End code For Debit  *************/
 
         /*********** Start code For Credit  *************/
-        $docCredit = $this->getDOCCreditInvoices($user_id, $returnmonth,$ids);
+        $docCredit = $this->getDOCCreditInvoices($user_id, $returnmonth,'',$ids);
         $dataInvCredit = $docCredit[0];
         $dataInvCancleCredit = $docCredit[1];
         if(isset($dataInvCredit) && !empty($dataInvCredit))
@@ -1503,7 +1506,7 @@ final class gstr1 extends validation {
         /*********** End code For Credit  *************/
 
         /*********** Start code For Receipt   *************/
-        $docReceipt = $this->getDOCReceiptInvoices($user_id, $returnmonth,$ids);
+        $docReceipt = $this->getDOCReceiptInvoices($user_id, $returnmonth,'',$ids);
         $dataInvReceipt =  $docReceipt[0];
         $dataInvCancleReceipt =  $docReceipt[1];
         if(isset($dataInvReceipt) && !empty($dataInvReceipt))
@@ -1526,7 +1529,7 @@ final class gstr1 extends validation {
         /*********** End code For Receipt   *************/
 
         /*********** Start code For Refund   *************/
-        $docRefund = $this->getDOCRefundInvoices($user_id, $returnmonth,$ids);
+        $docRefund = $this->getDOCRefundInvoices($user_id, $returnmonth,'',$ids);
         $dataInvRefund = $docRefund[0];
         $dataInvCancleRefund = $docRefund[1];
         if(isset($dataInvRefund) && !empty($dataInvRefund))
@@ -1549,7 +1552,7 @@ final class gstr1 extends validation {
         /*********** End code For Refund   *************/
 
         /*********** Start code Delivery Challan for job work  *************/
-        $docDeliveryJobWork = $this->getDOCDeliveryChallanJobWorkInvoices($user_id, $returnmonth,$ids);
+        $docDeliveryJobWork = $this->getDOCDeliveryChallanJobWorkInvoices($user_id, $returnmonth,'',$ids);
         $dataInvDeliveryJobWork = $docDeliveryJobWork[0];
         $dataInvCancleDeliveryJobWork = $docDeliveryJobWork[1];
 
@@ -1573,7 +1576,7 @@ final class gstr1 extends validation {
         /*********** End code Delivery Challan for job work *************/
 
         /*********** Start code Delivery Challan for supply on approval  *************/
-        $docDeliverySUAP = $this->getDOCDeliveryChallanSupplyOnApprovalInvoices($user_id, $returnmonth,$ids);
+        $docDeliverySUAP = $this->getDOCDeliveryChallanSupplyOnApprovalInvoices($user_id, $returnmonth,'',$ids);
         $dataInvDeliverySUAP = $docDeliverySUAP[0];
         $dataInvCancleDeliverySUAP = $docDeliverySUAP[1];
 
@@ -1597,7 +1600,7 @@ final class gstr1 extends validation {
         /*********** End code Delivery Challan for supply on approval *************/
 
         /*********** Start code Delivery Challan in case of liquid gas  *************/
-        $docDeliverySULGAS = $this->getDOCDeliveryChallanInCaseLiquidGasInvoices($user_id, $returnmonth,$ids);
+        $docDeliverySULGAS = $this->getDOCDeliveryChallanInCaseLiquidGasInvoices($user_id, $returnmonth,'',$ids);
         $dataInvDeliverySULGAS = $docDeliverySULGAS[0];
         $dataInvCancleDeliverySULGAS = $docDeliverySULGAS[1];
 
@@ -1621,7 +1624,7 @@ final class gstr1 extends validation {
         /*********** End code Delivery Challan in case of liquid gas *************/
 
         /*********** Start code Delivery Challan in cases other than by way of supply  *************/
-        $docDeliveryOther = $this->getDOCDeliveryChallanInCaseOtherInvoices($user_id, $returnmonth,$ids);
+        $docDeliveryOther = $this->getDOCDeliveryChallanInCaseOtherInvoices($user_id, $returnmonth,'',$ids);
         $dataInvDeliverySupplyOther = $docDeliveryOther[0];
         $dataInvCancleDeliverySupplyOther= $docDeliveryOther[1];
 
@@ -1654,7 +1657,7 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function getEXPPayload($user_id, $returnmonth,$ids='') {
+    public function getEXPPayload($user_id, $returnmonth,$flag='',$ids='') {
         $dataArr = $response = $exp_ids = $exp_array = $dataArr1 = $dataArr2 = array();
         $dataInvExp = $this->getEXPInvoices($user_id, $returnmonth,'',$ids);
         if (isset($dataInvExp) && !empty($dataInvExp)) {
@@ -1751,7 +1754,7 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function getTXPDPayload($user_id, $returnmonth,$ids='') {
+    public function getTXPDPayload($user_id, $returnmonth,$flag='',$ids='') {
         $dataArr = $response = $txpd_ids = array();
         $dataArr['txpd'][0]['pos'] = '05';
         $dataArr['txpd'][0]['sply_ty'] = 'INTER';

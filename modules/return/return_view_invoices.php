@@ -35,9 +35,9 @@ if($type=="B2B")
 
 
 
-if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
+if(isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN')
 {
-    if(isset($_POST['type']) && $_POST['type']!='')
+   if(isset($_POST['name']) && $_POST['name']!='')
     {
         $ids = implode(',',  $_POST['name']);
         if(!empty($ids)) {
@@ -45,17 +45,18 @@ if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
             {
 
             }
-        }
-        
+        }   
     }
+    else {
+        $obj_gstr1->setError('Sorry! No Invoices are selected');
+    }
+    
 }
 
 ?>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css">
- 					
-    
+<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/bootstrap-multiselect.css"/>
+<script type="text/javascript" src="<?php echo THEME_URL; ?>/js/bootstrap-multiselect.js"></script>
     <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr">
 
     <div class="col-md-11 col-sm-12 col-xs-12 mobpadlr">
@@ -81,7 +82,6 @@ if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
             <div id="view_invoice" class="tabcontent">
                 <div class="col-md-12 col-sm-12 col-xs-12">
                     <div class="col-md-6 col-sm-12 col-xs-12"><h3>My Invoices</h3></div>
-                   
                 </div>
               
                 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
@@ -158,7 +158,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
                                 </div>
                             </div>
                             </form>
-
+                            <form style="width:auto; display: inline-block;margin-bottom:10px;" method="post" name="form4">
 
                                 <?php
                                 $invCount= 0;
@@ -311,16 +311,15 @@ if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
                                     if($flag==1)
                                     {
                                     ?>
-                                        <div class="col-md-6 col-sm-12 col-xs-12">
-                                            <form method="post">
-                                            <!-- <input type="submit" name="submit" value="Upload TO GSTN" class="btn btn-default btn-success btnwidth addnew"> -->
-                                            </form>
-                                            <form style="width:auto; display: inline-block;margin-bottom:10px;" method="post" action ="<?php echo PROJECT_URL.'/?ajax=return_gstr_payload';?>&returnmonth=<?php echo $returnmonth; ?>">
-                                                <input type="submit" name="submit" value="Download GSTR1" class="btn btn-default btn-warning btnwidth">
+                                        <div style="text-align: center;">
+                                            
+                                           <!--  <input type="submit" name="submit_up" id="up" value="Upload TO GSTN" class="btn  btn-success "> -->
+                                            <input type="submit" name="submit_dwn" id="down" value="Download GSTR1" class="btn btn-warning ">
                                             
                                         </div>
                                         <div class="clear"></div><br>
                                     <?php } 
+                                }
                                 ?>
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0"  class="table table-striped invoice-filter-table" id="mainTable1">
                                     <thead>
@@ -361,44 +360,83 @@ if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
                                                     <th style='text-align:right'>Total Amt</th>
                                                     <th align='center'>Type</th>
                                                     <th align='center'>Status</th>
+                                                    <th align='center'></th>
                                                 </tr>
                                                 <?php
-                                                if(!empty($type))
-                                                {
-                                                    if(!empty($Data))
+                                                if($invCount >0) {
+                                                    if(!empty($type))
                                                     {
-                                                        $flag=1;
-                                                        $i=1;
-                                                        foreach($Data as $Item)
+                                                        if(!empty($Data))
                                                         {
-                                                            ?>
-                                                            <tr>
-                                                                <td align="center" bgcolor="#FFFFFF">
-                                                                    <input type="hidden" name="type" value="<?php echo $type;?>"/>
-                                                                    <input type="checkbox" class="name" name="name[]" value="<?php echo $Item->invoice_id;?>"/> </td>
-                                                                <td align='left'><?php echo $i++;?></td>
-                                                                <td align='left'><?php echo $Item->invoice_date;?></td>
-                                                                <td align='left'><?php echo $Item->reference_number;?></td>
-                                                                <td align='left'><?php echo $Item->billing_name;?></td>
-                                                                <td align='left'><?php echo $Item->billing_gstin_number;?></td>
-                                                                <td style='text-align:right'><?php echo $Item->taxable_subtotal;?></td>
-                                                                <td style='text-align:right'><?php echo $Item->cgst_amount + $Item->sgst_amount + $Item->igst_amount + $Item->cess_amount;?></td>
-                                                                <td style='text-align:right'><?php echo $Item->invoice_total_value;?></td>
-                                                                <td align='center'><?php echo $type; ?></td>
-                                                                <td align='center'><?php echo (isset($Item->is_gstr1_uploaded) && $Item->is_gstr1_uploaded=='0') ? 'Pending':'Uploaded';?></td>
-                                                            </tr>
-                                                            <?php
-                                                        }
-                                                    }						
+                                                            $flag=1;
+                                                            $i=1;
+                                                            foreach($Data as $Item)
+                                                            {
+                                                                ?>
+                                                                <tr>
+                                                                    <td align="center" bgcolor="#FFFFFF">
+                                                                       <input type="checkbox" class="name" name="name[]" value="<?php echo $Item->invoice_id;?>"/> 
+                                                                    </td>
+                                                                    <td align='left'><?php echo $i++;?></td>
+                                                                    <td align='left'><?php echo $Item->invoice_date;?></td>
+                                                                    <td align='left'><?php echo $Item->reference_number;?></td>
+                                                                    <td align='left'><?php echo $Item->billing_name;?></td>
+                                                                    <td align='left'><?php echo $Item->billing_gstin_number;?></td>
+                                                                    <td style='text-align:right'><?php echo $Item->taxable_subtotal;?></td>
+                                                                    <td style='text-align:right'><?php echo $Item->cgst_amount + $Item->sgst_amount + $Item->igst_amount + $Item->cess_amount;?></td>
+                                                                    <td style='text-align:right'><?php echo $Item->invoice_total_value;?></td>
+                                                                    <td align='center'><?php echo $type; ?></td>
+                                                                    <td align='center'><?php echo (isset($Item->is_gstr1_uploaded) && $Item->is_gstr1_uploaded=='0') ? 'Pending':'Uploaded';?></td>
+                                                                    <?php 
+                                                                    //$obj_gstr1->pr($Item->is_gstr1_uploaded);
+                                                                    $url = 'javascript:;';
+                                                                    if($type == 'B2B' || $type == 'B2CL' || $type == 'B2CS') {
+                                                                        if($Item->invoice_type == 'taxinvoice') {
+                                                                            $url = PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$Item->invoice_id;
+                                                                        }
+                                                                        if($Item->invoice_type == 'sezunitinvoice' || $Item->invoice_type == 'deemedexportinvoice' ) {
+                                                                            $url = PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$Item->invoice_id;
+                                                                        }
+                                                                        
+                                                                    }
+                                                                    if($type == 'AT') {
+                                                                        $url = PROJECT_URL.'/?page=client_update_receipt_voucher_invoice&action=editRVInvoice&id='.$Item->invoice_id;
+                                                                    }
+                                                                    if($type == 'EXP') {
+                                                                        $url = PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$Item->invoice_id;
+                                                                    }
+                                                                    if($type == 'CDNR' || $type == 'CDNUR'  ) {
+                                                                        if($Item->invoice_type == 'creditnote' || $Item->invoice_type == 'debitnote') {
+                                                                            $url = PROJECT_URL.'/?page=client_update_revised_tax_invoice&action=editRTInvoice&id='.$Item->invoice_id;
+                                                                        }
+                                                                        if($Item->invoice_type == 'refundvoucherinvoice') {
+                                                                            $url = PROJECT_URL.'/?page=client_refund_voucher_invoice_list&action=viewRFInvoice&id='.$Item->invoice_id;
+                                                                        }
+                                                                        
+                                                                    }
+                                                                    
+                                                                    ?>
+                                                                    <td align='center'><a href="<?php echo $url; ?>" target="_blank">View</a></td>
+                                                                </tr>
+                                                                <?php
+                                                            }
+                                                        }						
+                                                    }
                                                 }
+                                                else { ?>
+                                                    <tr>
+                                                        <td colspan="13" align="center" bgcolor="#FFFFFF">
+                                                           Sorry! No Invoices are found.
+                                                        </td>
+                                                    </tr>
+                                                <?php }
 
                                                 ?>
                                             </thead>
                                         </table> 
                                     </div>  
-                                <?php } 
-                                 ?>
-                                </form>
+                                
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -408,12 +446,34 @@ if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
 </div>
 <script type="text/javascript">
     $(document).ready(function () {
+        $('#down').click(function () {
+            flag=0;
+             $(".name").each(function(){
+                if ($(this).prop('checked')==true){ 
+                    flag=1;
+                }
+            });
+            if(flag==1)
+            {
+                document.form4.action = '<?php echo PROJECT_URL.'/?ajax=return_gstr_payload';?>&returnmonth=<?php echo $returnmonth; ?>';
+                document.form4.submit();
+            }
+            else
+            {
+                alert('No Invoices are selected?');
+                return false;
+            }
+        });
+        $('#up').on('click', function () {
+            document.form4.action = '<?php echo PROJECT_URL.'/?page=return_view_invoices';?>&returnmonth=<?php echo $returnmonth; ?>';
+            document.form4.submit();
+        });
         $('#multiple-checkboxes').multiselect();
         $('#returnmonth').on('change', function () {
             document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_view_invoices&returnmonth=<?php echo $returnmonth; ?>';
             document.form2.submit();
         });
-         $('.type').on('change', function () {
+        $('.type').on('change', function () {
             document.form3.action = '<?php echo PROJECT_URL; ?>/?page=return_view_invoices&returnmonth=<?php echo $returnmonth; ?>';
             document.form3.submit();
         });
@@ -431,13 +491,16 @@ if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
             $('.name').attr('checked', this.checked);
         });
         $(".name").click(function () {
- 
+
             if ($(".name").length == $(".name:checked").length) {
                 $("#selectall").attr("checked", "checked");
-            } else {
+            } 
+            else {
                 $("#selectall").removeAttr("checked");
             }
- 
         });
+
+       
+
     });
 </script>

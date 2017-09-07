@@ -140,6 +140,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 												cii.item_id, 
 												cii.item_name, 
 												cii.item_hsncode, 
+												cii.item_description, 
 												cii.item_quantity, 
 												cii.item_unit, 
 												cii.item_unit_price, 
@@ -166,6 +167,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 												cii.item_id, 
 												cii.item_name, 
 												cii.item_hsncode, 
+												cii.item_description, 
 												cii.item_quantity, 
 												cii.item_unit, 
 												cii.item_unit_price, 
@@ -192,12 +194,11 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                 <!--INVOICE PRINT RIGHT  START HERE-->
                 <?php if (isset($invoiceData[0]->invoice_id)) { ?>
 
-                    <div class="col-md-8 col-sm-12 mobdisplaynone invoicergtcol" style="padding-right:0px;">
+                    <div class="col-md-8 col-sm-12 mobdisplaynone invoicergtcol">
 
                         <!---INVOICE TOP ICON START HERE-->
                         <div class="inovicergttop">
                             <ul class="iconlist">
-                                
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=client_update_revised_tax_invoice&action=editRTInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Edit"><i class="fa fa-pencil" aria-hidden="true"></i></div></a></li>
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=client_revised_tax_invoice_list&action=downloadRTInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=client_revised_tax_invoice_list&action=printRTInvoice&id=<?php echo $invoiceData[0]->invoice_id; ?>" target="_blank"><div data-toggle="tooltip" data-placement="bottom" title="PRINT"><i class="fa fa-print" aria-hidden="true"></i></div></a></li>
@@ -212,8 +213,8 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                             <div class="height20"></div>
                             <div class="clearfix"></div>
 
-                            <div class="invoice-box" style="width:650px;overflow-x:scroll;overflow-y:hidden;">
-                                <table cellpadding="0" cellspacing="0" style="width:625px;">
+                            <div class="invoice-box" style="overflow-x:scroll;overflow-y:hidden;">
+                                <table cellpadding="0" cellspacing="0">
                                     <tr class="top">
                                         <td colspan="2">
                                             <table>
@@ -226,7 +227,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                                         <?php } ?>
                                                     </td>
 
-													<td>
+													<td style="text-align:right;vertical-align:top;">
                                                         <b>Invoice #</b>: <?php echo $invoiceData[0]->serial_number; ?><br>
                                                         <b>Reference #</b>: <?php echo $invoiceData[0]->reference_number; ?><br>
                                                         <b>Nature:</b> <?php echo "Sales Invoice"; ?><br>
@@ -243,15 +244,20 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                         <td colspan="2">
                                             <table>
                                                 <tr>
-                                                    <td>
+                                                    <td style="text-align:left;vertical-align:top;width:48%;padding-right:2%;">
                                                         <?php echo $invoiceData[0]->company_name; ?><br>
                                                         <?php echo $invoiceData[0]->company_address; ?><br>
-                                                        <b>GSTIN:</b> <?php echo $invoiceData[0]->gstin_number; ?>
+														<?php if(!empty($invoiceData[0]->company_email)) { ?><b>Email:</b> <?php echo $invoiceData[0]->company_email; ?><br><?php } ?>
+														<?php if(!empty($invoiceData[0]->company_phone_number)) { ?><b>Phone:</b> <?php echo $invoiceData[0]->company_phone_number; ?><br><?php } ?>
+														<?php $panFromGTIN = substr(substr($invoiceData[0]->gstin_number, 2), 0, -3); ?>
+														<b>PAN:</b> <?php echo $panFromGTIN; ?><br>
+														<b>GSTIN:</b> <?php echo $invoiceData[0]->gstin_number; ?>
                                                     </td>
 
-                                                    <td>
-                                                        <?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php echo $supply_place_data['data']->state_name; ?><br> <?php } ?>
-                                                        <b>Document Nature:</b> <?php if($invoiceData[0]->invoice_type == "creditnote") { echo "Credit Note"; } else if($invoiceData[0]->invoice_type == "debitnote") { echo "Debit Note"; } else { echo "Revised Tax Invoice"; } ?><br>
+                                                    <td style="text-align:right;vertical-align:top;width:48%;padding-left:2%;">
+                                                        <?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php if($supply_place_data['data']->state_tin == 99) { echo $supply_place_data['data']->state_name; } else { echo $supply_place_data['data']->state_name . "(" . $supply_place_data['data']->state_tin . ")"; } ?><br> <?php } ?>
+														<b>Reason Issuing Document:</b> <?php echo $invoiceData[0]->reason_issuing_document; ?><br>
+														<b>Document Nature:</b> <?php if($invoiceData[0]->invoice_type == "creditnote") { echo "Credit Note"; } else if($invoiceData[0]->invoice_type == "debitnote") { echo "Debit Note"; } else { echo "Revised Tax Invoice"; } ?><br>
 														<b>Corresponding Type:</b> <?php if($invoiceData[0]->invoice_corresponding_type == "taxinvoice") { echo "Tax Invoice" . "<br>"; } else if($invoiceData[0]->invoice_corresponding_type == "billofsupplyinvoice") { echo "Bill of Supply Invoice" . "<br>"; } ?>
 
 														<?php $dataCorresDocumentRow = $obj_client->get_row("select * from ".$obj_client->getTableName('client_invoice')." where invoice_id = '".$invoiceData[0]->corresponding_document_number."' AND invoice_type = '".$invoiceData[0]->invoice_corresponding_type."' AND is_deleted='0' AND added_by = ".$obj_client->sanitize($_SESSION['user_detail']['user_id'])); ?>
@@ -273,7 +279,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                         <td colspan="2">
                                             <table>
                                                 <tr>
-                                                    <td>
+                                                    <td style="vertical-align:top;text-align:left;width:48%;padding-right:2%;">
                                                         <b>Recipient Detail</b><br>
                                                         <?php echo $invoiceData[0]->billing_name; ?><br>
                                                         <?php if($invoiceData[0]->billing_company_name) { ?> <?php echo $invoiceData[0]->billing_company_name; ?><br> <?php } ?>
@@ -281,11 +287,11 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 														<?php $billing_vendor_data = $obj_client->getVendorDetailByVendorId($invoiceData[0]->billing_vendor_type); ?>
 														<?php echo $billing_vendor_data['data']->vendor_name; ?><br>
 														<?php if(!empty($invoiceData[0]->billing_gstin_number)) { ?>
-															<b>GSTIN:</b> <?php echo $invoiceData[0]->billing_gstin_number; ?>
+															<b>GSTIN/UIN:</b> <?php echo $invoiceData[0]->billing_gstin_number; ?>
                                                         <?php } ?>
                                                     </td>
 
-                                                    <td>
+                                                    <td style="vertical-align:top;text-align:right;width:48%;padding-left:2%;">
                                                         <b>Address Of Delivery / Shipping Detail</b><br>
                                                         <?php echo $invoiceData[0]->shipping_name; ?><br>
                                                         <?php if($invoiceData[0]->shipping_company_name) { ?> <?php echo $invoiceData[0]->shipping_company_name; ?><br> <?php } ?>
@@ -293,7 +299,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 														<?php $shipping_vendor_data = $obj_client->getVendorDetailByVendorId($invoiceData[0]->shipping_vendor_type); ?>
 														<?php echo $shipping_vendor_data['data']->vendor_name; ?><br>
 														<?php if(!empty($invoiceData[0]->shipping_gstin_number)) { ?>
-															<b>GSTIN:</b> <?php echo $invoiceData[0]->shipping_gstin_number; ?>
+															<b>GSTIN/UIN:</b> <?php echo $invoiceData[0]->shipping_gstin_number; ?>
                                                         <?php } ?>
                                                     </td>
                                                 </tr>
@@ -309,16 +315,17 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                                     <td rowspan="2">S.No</td>
                                                     <td rowspan="2">Goods/Services</td>
                                                     <td rowspan="2">HSN/SAC Code</td>
+													<td rowspan="2">Item Description</td>
                                                     <td rowspan="2">Qty</td>
                                                     <td rowspan="2">Unit</td>
                                                     <td rowspan="2">Rate<br>(<i class="fa fa-inr"></i>)</td>
                                                     <td rowspan="2">Total<br>(<i class="fa fa-inr"></i>)</td>
                                                     <td rowspan="2">Discount(%)</td>
                                                     <td rowspan="2">Taxable Value<br>(<i class="fa fa-inr"></i>)</td>
-                                                    <td colspan="2" style="border-bottom:1px solid #808080;">CGST</td>
-                                                    <td colspan="2" style="border-bottom:1px solid #808080;">SGST</td>
-                                                    <td colspan="2" style="border-bottom:1px solid #808080;">IGST</td>
-                                                    <td colspan="2" style="border-bottom:1px solid #808080;">CESS</td>
+                                                    <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">CGST</td>
+                                                    <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">SGST</td>
+                                                    <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">IGST</td>
+                                                    <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">CESS</td>
                                                 </tr>
 
                                                 <tr class="heading">
@@ -333,12 +340,18 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                                 </tr>
 
                                                 <?php $counter = 1; ?>
+                                                <?php $total_taxable_subtotal = 0.00; ?>
+                                                <?php $total_cgst_amount = 0.00; ?>
+                                                <?php $total_sgst_amount = 0.00; ?>
+                                                <?php $total_igst_amount = 0.00; ?>
+												<?php $total_cess_amount = 0.00; ?>
 												<?php foreach ($invoiceData as $invData) { ?>
 
                                                     <tr class="item">
                                                         <td><?php echo $counter; ?></td>
                                                         <td><?php echo $invData->item_name; ?></td>
                                                         <td><?php echo $invData->item_hsncode; ?></td>
+														<td><?php echo $invData->item_description; ?></td>
                                                         <td><?php echo $invData->item_quantity; ?></td>
                                                         <td><?php echo $invData->item_unit; ?></td>
                                                         <td><?php echo $invData->item_unit_price; ?></td>
@@ -355,16 +368,34 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                                         <td><?php echo $invData->cess_amount; ?></td>
                                                     </tr>
 
+                                                    <?php $total_taxable_subtotal += $invData->taxable_subtotal; ?>
+                                                    <?php $total_cgst_amount += $invData->cgst_amount; ?>
+                                                    <?php $total_sgst_amount += $invData->sgst_amount; ?>
+                                                    <?php $total_igst_amount += $invData->igst_amount; ?>
+													<?php $total_cess_amount += $invData->cess_amount; ?>
 													<?php $counter++; ?>
                                                 <?php } ?>
 
-                                                <tr class="total">
-                                                    <td colspan="17">Total Invoice Value (In Figure): <i class="fa fa-inr"></i><?php echo $invoiceData[0]->invoice_total_value; ?></td>
+												<tr class="total lightblue">
+													<td colspan="9" align="right" class="fontbold textsmall">Total Invoice Value:</td>
+													<td style="text-align:center;"><span><?php echo $total_taxable_subtotal; ?></span></td>
+													<td><span>&nbsp;</span></td>
+													<td style="text-align:center;"><span><?php echo $total_cgst_amount; ?></span></td>
+													<td><span>&nbsp;</span></td>
+													<td style="text-align:center;"><span><?php echo $total_sgst_amount; ?></span></td>
+													<td><span>&nbsp;</span></td>
+													<td style="text-align:center;"><span><?php echo $total_igst_amount; ?></span></td>
+													<td><span>&nbsp;</span></td>
+													<td style="text-align:center;"><span><?php echo $total_cess_amount; ?></span></td>
+												</tr>
+
+                                                <tr class="total lightyellow">
+                                                    <td colspan="18">Total Invoice Value (In Figure): <i class="fa fa-inr"></i><?php echo $invoiceData[0]->invoice_total_value; ?></td>
                                                 </tr>
-												
+
 												<?php $invoice_total_value_words = $obj_client->convert_number_to_words($invoiceData[0]->invoice_total_value); ?>
-                                                <tr class="total">
-                                                	<td colspan="17">Total Invoice Value (In Words): <?php echo ucwords($invoice_total_value_words); ?></td>
+                                                <tr class="total lightpink">
+                                                	<td colspan="18">Total Invoice Value (In Words): <?php echo ucwords($invoice_total_value_words); ?></td>
                                                 </tr>
 
                                             </table>
@@ -373,11 +404,11 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                     </tr>
                                     
                                     <?php if(!empty($invoiceData[0]->description)) { ?>
-                                        <tr class="description">
-                                            <td colspan="2">
-												<p><b>Description:</b> <?php echo $invoiceData[0]->description; ?></p>
-                                            </td>
-                                        </tr>
+										<tr class="description">
+											<td colspan="2">
+												<p><b>Additional Notes:</b> <?php echo $invoiceData[0]->description; ?></p>
+											</td>
+										</tr>
                                     <?php } ?>
 
                                 </table>

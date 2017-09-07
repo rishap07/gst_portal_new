@@ -1,9 +1,7 @@
 <?php
 $obj_return = new returnfile();
-if(isset($_POST['r_id'])) {
-							echo "working"; die();
-                            $dataCatArrs = $obj_return->get_results("select * from " . $obj_return->getTableName('return_subcat') . " where status='1' and is_deleted='0' and cat_id='".$_POST["r_id"]."' order by id asc"); 
-}
+
+$catid=0;						
 if (!isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '') {
     $obj_return->redirect(PROJECT_URL);
     exit();
@@ -57,7 +55,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
 
         <div class="clear"></div>
         <div class="whitebg formboxcontainer">
-            <form name="client-user" id="client-user" method="POST">
+          
                 <h2 class="greyheading">
                     <?php
                     if (isset($_GET["action"]) && ($_GET["action"] == "editNotification") && (isset($_GET["id"]))) {
@@ -66,12 +64,73 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
                         echo 'Create New';
                     }
                     ?>ReturnFile Setting</h2>
-
-                <div class="row">
-
-
+<form method="post" name="form1">
+      <div class="row">
+	    <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+					
+					  <label>Return Category<span class="starred">*</span></label>
+                        <select name='return_cat'   id='return_cat' class='required form-control'>
+                            <?php $dataCatArrs = $obj_return->get_results("select * from " . $obj_return->getTableName('return_cat') . " where status='1' and is_deleted='0' order by id asc"); ?>
+                            <?php if (!empty($dataCatArrs)) { ?>
+                                <?php
+                                if ($dataCurrentArr[0]->cat_id == 0) {
+                                    ?>
+                                    <option value='0' 'selected="selected">Select category</option>
+                                <?php } else { ?>
+                                    <option value='0'>Select category</option>
+                                <?php } ?>
+                                <?php foreach ($dataCatArrs as $dataCatArr) { ?>
+                                    <option value='<?php echo $dataCatArr->id; ?>' <?php
+									
+									      if (isset($dataCurrentArr[0]->cat_id) && $dataCurrentArr[0]->cat_id == $dataCatArr->id) {
+											  $catid = $dataCatArr->id;
+                                              echo 'selected="selected"';
+                                            }
+                                            else if (isset($_POST['return_cat']) && $_POST['return_cat'] == $dataCatArr->id) {
+                                                echo 'selected="selected"';
+                                            } else if(isset($_GET['r_id']) && $_GET['r_id'] == $dataCatArr->id) {
+                                                echo 'selected="selected"';
+                                            } 
+                                            ?>><?php echo $dataCatArr->return_name; ?></option>
+							 <?php } ?>
+							<?php } ?>
+                        </select>
+                    </div>
+					 <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                        <label>Return SubCategory<span class="starred">*</span></label>
+                        <select name='return_subcat' id='return_subcat' class='required form-control'>
+						<?php 
+						if(isset($_GET['r_id'])) {
+							$sql='';
+							
+						   $sql="select * from " . $obj_return->getTableName('return_subcat') . " where status='1' and is_deleted='0' and cat_id='".$_GET["r_id"]."' order by id asc";
+						}else{
+						$sql="select * from " . $obj_return->getTableName('return_subcat') . " where status='1' and is_deleted='0' and cat_id='".$catid."' order by id asc";
+				
+						}							
+                            $dataCatArrs = $obj_return->get_results($sql); ?>
+                            <?php if (!empty($dataCatArrs)) { ?>
+                                <?php
+                                if ($dataCurrentArr[0]->subcat_id == 0) {
+                                    ?>
+                                    <option value='0' selected="selected">Select Subcategory</option>
+                                <?php } else { ?>
+                                    <option value='0'>Select Subcategory</option>
+                                <?php } ?>
+                                <?php foreach ($dataCatArrs as $dataCatArr) { ?>
+                                    <option value='<?php echo $dataCatArr->id; ?>' <?php
+                                            if (isset($_POST['return_cat']) && $_POST['return_cat'] == $dataCatArr->id) {
+                                                echo 'selected="selected"';
+                                            } else if (isset($dataCurrentArr[0]->subcat_id) && $dataCurrentArr[0]->subcat_id == $dataCatArr->id) {
+                                                echo 'selected="selected"';
+                                            }
+                                            ?>><?php echo $dataCatArr->subcat_name; ?></option>
+							 <?php } ?>
+						<?php }  ?>
+                        </select>
+                    </div>
                     <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-
+                    
                         <label>Return Form<span class="starred">*</span></label>
 
 
@@ -85,7 +144,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
 
 
                     </div>
-                   
+                   <div class="clear"></div>
                     <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                         <label>Vendor Type<span class="starred">*</span></label>
                         <select name='vendor_type' id='vendor_type' class='required form-control'>
@@ -124,15 +183,14 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
                             }
                             ?>>InActive</option>
 
-                        </select></div><div class="clear"> </div>
-                   
-                    <div class="clear"></div>
-
+                        </select></div>
+                    
 
                     <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                         <label>EndDate<span class="starred">*</span></label>
                         <input type="text" name="returnfile_date" value="<?php if (isset($_POST['returnfile_date'])) { echo $_POST['returnfile_date']; } else if (isset($dataCurrentArr[0]->returnfile_date)) { echo $dataCurrentArr[0]->returnfile_date; }?>" class="required form-control"   />
 		             </div>
+					 <div class="clear"></div>
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
                         <label>ReturnFile Type<span class="starred">*</span></label>
                         <select name='returnfile_type' id='returnfile_type' class='required form-control'>
@@ -153,59 +211,8 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
                             ?>>Monthly</option>
 							</select>
 							</div>                   
-					   <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-					    <form method='post' name='form2'>
-                        <label>Return Category<span class="starred">*</span></label>
-                        <select name='return_cat' id='return_cat' class='required form-control'>
-                            <?php $dataCatArrs = $obj_return->get_results("select * from " . $obj_return->getTableName('return_cat') . " where status='1' and is_deleted='0' order by id asc"); ?>
-                            <?php if (!empty($dataCatArrs)) { ?>
-                                <?php
-                                if ($dataCurrentArr[0]->cat_id == 0) {
-                                    ?>
-                                    <option value='0' 'selected="selected">Select category</option>
-                                <?php } else { ?>
-                                    <option value='0'>Select category</option>
-                                <?php } ?>
-                                <?php foreach ($dataCatArrs as $dataCatArr) { ?>
-                                    <option value='<?php echo $dataCatArr->id; ?>' <?php
-                                            if (isset($_POST['return_cat']) && $_POST['return_cat'] == $dataCatArr->id) {
-                                                echo 'selected="selected"';
-                                            } else if (isset($dataArr[0]->cat_id) && $dataCurrentArr[0]->cat_id == $dataCatArr->id) {
-                                                echo 'selected="selected"';
-                                            }
-                                            ?>><?php echo $dataCatArr->return_name; ?></option>
-							 <?php } ?>
-							<?php } ?>
-                        </select></form>
-                    </div>
-                    <div class="clear"></div>
-					   <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-                        <label>Return SubCategory<span class="starred">*</span></label>
-                        <select name='return_subcat' id='return_subcat' class='required form-control'>
-						<?php 
-						if(isset($_POST['r_id'])) {
-							echo "working"; die();
-                            $dataCatArrs = $obj_return->get_results("select * from " . $obj_return->getTableName('return_subcat') . " where status='1' and is_deleted='0' and cat_id='".$_POST["r_id"]."' order by id asc"); ?>
-                            <?php if (!empty($dataCatArrs)) { ?>
-                                <?php
-                                if ($dataCurrentArr[0]->subcat_id == 0) {
-                                    ?>
-                                    <option value='0' selected="selected">Select Subcategory</option>
-                                <?php } else { ?>
-                                    <option value='0'>Select Subcategory</option>
-                                <?php } ?>
-                                <?php foreach ($dataCatArrs as $dataCatArr) { ?>
-                                    <option value='<?php echo $dataCatArr->id; ?>' <?php
-                                            if (isset($_POST['return_cat']) && $_POST['return_cat'] == $dataCatArr->id) {
-                                                echo 'selected="selected"';
-                                            } else if (isset($dataArr[0]->subcat_id) && $dataCurrentArr[0]->subcat_id == $dataCatArr->id) {
-                                                echo 'selected="selected"';
-                                            }
-                                            ?>><?php echo $dataCatArr->subcat_name; ?></option>
-							 <?php } ?>
-						<?php } } ?>
-                        </select>
-                    </div>
+					 
+
 					 <div class="col-md-8 col-sm-8 col-xs-12 form-group">
 
                         <label>Description<span class="starred">*</span></label>
@@ -223,7 +230,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
 
 
 
-
+                     
                         <div class="tc">
                             <input type='submit' class="btn btn-default btn-success" name='submit' value='<?php
                             if (isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editNotification") {
@@ -234,14 +241,14 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
                             ?>' id='submit'>
                             <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=dashboard"; ?>';" class="btn btn-danger"/>
                         </div>
-
+                      
 
                     </div>
 
                 </div>
-
+</form>
         </div>
-        </form>
+       
     </div>
 </div>
 
@@ -266,38 +273,59 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
     }
 
 </script>
+
 <script>
-        $(document).ready(function() {
-  $("#return_cat").change(function() {
-	 
-    var return_id = $(this).val();
-	 if(return_id != "") {
-      $.ajax({
-        url:'<?php echo PROJECT_URL;?>/?page=returnfile_update',
-        data:{r_id:return_id},
-        type:'POST',
-        success:function(response) {
-          var resp = $.trim(response);
-          $("#return_subcat").html(resp);
-        }
-      });
-    } else {
-      $("#return_subcat").html("<option value=''>------- Select --------</option>");
-    }
-  });
-});
+        /*	
+			function submitDataOnClick(form){	
+					
+				document.form2.action='<?php echo PROJECT_URL;?>/?page=returnfile_update';
+				document.form2.submit();
+			}
+			*/
     </script>
 <script>
 /*
-    $(document).ready(function () {
-        $("*[name=end_date],*[name=returnfile_date]").datetimepicker({
-            changeMonth: true,
-            changeYear: true,
-            dateFormat: 'yy-mm-dd',
-            yearRange: '2017:<?php echo date("Y"); ?>',
-            maxDate: '0:<?php echo date("Y"); ?>'
-        });
-
-    });
-	*/
+function getSubCat(val) {
+	$.ajax({
+	type: "POST",
+	async : true,
+	url: '<?php echo PROJECT_URL;?>/?page=returnfile_update',
+	data:'r_id='+val,
+	success: function(data){
+		$("#return_subcat").html(data);
+	}
+	});
+}
+*/
 </script>
+<script>
+
+ $(document).ready(function() {
+  $("#return_cat").change(function() {
+	 
+    var return_id = $(this).val();
+	
+	      <?php
+				if(isset($_REQUEST['action']) && $_REQUEST['action'] != '' && $_REQUEST['action']=="editReturnFile")
+				{
+					?>
+					window.location.href = '<?php echo PROJECT_URL; ?>/?page=returnfile_update&action=editReturnFile&id=<?php echo $_REQUEST["id"]; ?>&r_id='+return_id+'';
+	
+					<?php
+				}else
+				{
+					?>
+						window.location.href = '<?php echo PROJECT_URL; ?>/?page=returnfile_update&r_id='+return_id+'';
+	
+					<?php
+				}
+				?>
+	
+  });
+});
+     
+
+    
+    </script>
+
+

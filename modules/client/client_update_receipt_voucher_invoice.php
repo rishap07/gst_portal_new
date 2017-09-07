@@ -342,8 +342,8 @@
 
 				<div class="row">
 					<div class="col-md-12 form-group">
-						<label>Description</label>
-						<textarea placeholder="Enter Description" class="form-control" name="description" id="description" data-bind="content"><?php echo $invoiceData[0]->description; ?></textarea>
+						<label>Additional Notes</label>
+						<textarea placeholder="Enter Additional Notes" class="form-control" name="description" id="description" data-bind="content"><?php echo $invoiceData[0]->description; ?></textarea>
 					</div>
 				</div>
 

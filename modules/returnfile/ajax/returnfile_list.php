@@ -14,7 +14,7 @@ $obj_master = new master();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('g.id', 'g.returnform_name','g.returnfile_type','g.returnfile_description', 'g.returntofile_vendor_id','g.returnfile_date','g.status');
+$aColumns = array('g.id', 'g.returnform_name','g.cat_id','g.subcat_id','g.returnfile_type','g.returnfile_description', 'g.returntofile_vendor_id','g.returnfile_date','g.status');
 $aSearchColumns = array('g.returnform_name', 'g.returnfile_description');
 $sIndexColumn = "g.id";
 
@@ -46,7 +46,7 @@ if (isset($_POST['iSortCol_0'])) {
         }
     }
     if ($spOrder == "ORDER BY ") {
-        $spOrder = "ORDER BY g.id ASC";
+        $spOrder = "ORDER BY g.cat_id DESC";
     }
 }
 
@@ -92,7 +92,7 @@ $spQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", "
             $spOrder
             $spLimit
 	"; 
-
+//echo $spQuery;
 $rResult = $obj_plan->get_results($spQuery);
 // echo "<pre>";
 //        print_r($rResult);
@@ -138,7 +138,23 @@ foreach($rResult as $aRow) {
 		$vendordata = $db_obj->get_results("select * from gst_vendor_type where vendor_id='".$aRow->returntofile_vendor_id."'");
         //$type = $aRow->returntofile_vendor_id;
 		$type = $vendordata[0]->vendor_name;
-    }  
+    } 
+    $group='';
+	  if($aRow->cat_id == '0'){
+        $group = 'NA';
+    }else{
+		$vendordata = $db_obj->get_results("select * from gst_return_categories where id='".$aRow->cat_id."'");
+        //$type = $aRow->returntofile_vendor_id;
+		$group = $vendordata[0]->return_name;
+    }
+    $subcat='';
+	  if($aRow->subcat_id == '0'){
+        $subcat = 'NA';
+    }else{
+		$vendordata = $db_obj->get_results("select * from gst_return_subcategories where id='".$aRow->subcat_id."'");
+        //$type = $aRow->returntofile_vendor_id;
+		$subcat = $vendordata[0]->subcat_name;
+    }	
      $file_type='';
 	
 	  if($aRow->returnfile_type == 0){
@@ -157,6 +173,8 @@ foreach($rResult as $aRow) {
     $row[] = $temp_x;
     $row[] = utf8_decode($aRow->returnform_name);
 	$row[] = utf8_decode($aRow->returnfile_description);
+	$row[] = utf8_decode($group);
+	$row[] = utf8_decode($subcat);
 	$row[] = utf8_decode($type);
     $row[] = utf8_decode($aRow->returnfile_date.$file_type);
    	$row[] = utf8_decode($status);

@@ -1,10 +1,13 @@
 <?php
+//echo date('m');
+$datetime =new datetime('2017-02-10 00:00:00');
+echo date_format($datetime,"d");
 $obj_client = new client();
 $returnmonth = date('Y-m');
 if(isset($_POST['returnmonth']))
 {
     $returnmonth = $_POST['returnmonth'];
-	$obj_client->redirect(PROJECT_URL."/?page=return_client&returnmonth=".$returnmonth);
+	$obj_client->redirect(PROJECT_URL."/?page=return_client1&returnmonth=".$returnmonth);
 	exit();
 }
 $returnmonth= date('Y-m');
@@ -246,7 +249,16 @@ if(!empty($dataInvPurchase))
                 </div>
             </div>
         </div>
-
+    <?php
+       $flag = $db_obj->getVendorName('composition vendor');
+	   $vendor_id1=0;
+		$sql="SELECT * FROM " . $db_obj->getTableName("returnfile_setting") . " as s inner join " . $db_obj->getTableName("return_cat") . " as c on c.id = s.cat_id
+	 INNER join  " . $db_obj->getTableName("return_subcat") . " as subcat on subcat.id = s.subcat_id where c.id = 1";
+	 $dataGstr3b = $db_obj->get_results($sql);
+	 if(!empty($dataGstr3b) && ($flag==$dataArr['data']->kyc->vendor_type))
+	 {	   
+  
+	?>
          <div class="col-md-12 col-sm-12 col-xs-12 whitebg gstr-box">
             <div class="lightyellow roundbtn"><span>GSTR-3B File</span>  | <span>Monthly Return Filing</span></div>
             <div class="clearfix"></div>
@@ -273,10 +285,7 @@ if(!empty($dataInvPurchase))
             </div>
         </div>
 		 
-   <?php
-   if($dataArr['data']->kyc->vendor_type==2)
-{
-	?>
+   
 	   <div class="col-md-12 col-sm-12 col-xs-12 whitebg gstr-box">
             <div class="lightyellow roundbtn"><span>GSTR-4</span>  | <span>Monthly Return Filing</span></div>
             <div class="clearfix"></div>
@@ -324,65 +333,81 @@ if(!empty($dataInvPurchase))
                 </div>
             </div>
         </div>
+		
 	<?php
 }else{?>
         <!--GSTR STEP START HERE--->
+		<?php
+	   $flag = $db_obj->getVendorName('registered');
+	   $vendor_id1=0;
+		if($flag!=0)
+		{
+			$vendor_id1 = $flag;
+		}	
+	 $sql="SELECT * FROM " . $db_obj->getTableName("returnfile_setting") . " as s inner join " . $db_obj->getTableName("return_cat") . " as c on c.id = s.cat_id
+	 INNER join  " . $db_obj->getTableName("return_subcat") . " as subcat on subcat.id = s.subcat_id where c.id = 1";
+	 $dataGstr1 = $db_obj->get_results($sql);
+	 if(!empty($dataGstr1) && ($flag==$dataArr['data']->kyc->vendor_type))
+	 {
+      	 ?>
         <div class="col-md-12 col-sm-12 col-xs-12 whitebg gstr-box">
             <div class="lightyellow roundbtn"><span>GSTR-1</span>  | <span>Sales Return Filing</span></div>
             <div class="clearfix"></div>
             <div class="gstr-step-row">
                 <div class="row">
                     <div class="col-md-8 col-sm-8 modpadlr">
+			<?php 
+			$i=0;
+           foreach($dataGstr1 as $data)
+		   { $i = $i+1; 
+		   if(isset($_REQUEST["returnmonth"]) && $_REQUEST["returnmonth"]!='')
+		   {
+		   $sql="SELECT * FROM " . $db_obj->getTableName("returnfile_dates") . " where cat_id='".$data->cat_id."' and subcat_id='".$data->subcat_id."' and  is_deleted='0' and status='1' and return_month='".$_REQUEST["returnmonth"]."'";
+		   }
+		   else
+		   {
+			$month = date('m');   
+			echo $sql="SELECT * FROM " . $db_obj->getTableName("returnfile_dates") . " where cat_id='".$data->cat_id."' and subcat_id='".$data->subcat_id."' and  is_deleted='0' and status='1' and return_month='".$month."'";
+		   }
+		   $res = $db_obj->get_results($sql);
+		   
+		   ?>		   
                         <div class="rowsteps">
 						 <div class="row step-col actionable">
 
                                 <div class="col-md-5 col-sm-5 col-xs-5"><span class="statusbullet"></span>
-                                    <span class="txtinovice">GSTR-1 Initiated</span></div>
-                                <div class="col-md-3 col-sm-3 col-xs-3"><?php if($sale_initiate_status==1) { ?> <span class="txtinovice"> <?php echo  "Completed"; ?> </span> <?php } else {  ?> <span class="txtorange"> <?php echo "pending"; ?> </span> <?php } ?></div>
-								<?php if($sale_initiate_status==1) { 
+                                <span class="txtinovice"><?php echo $data->subcat_name; ?></span></div>
+                                <div class="col-md-3 col-sm-3 col-xs-3"><?php 
+								if($i==1)
+								{
+								$status = $sale_initiate_status;
+								}
+								else if($i==2)
+								{
+									$status = $sale_upload_status;
+								}
+								else if($i==3)
+								{
+									$status = $sale_file_status;
+								}
+								else if($i==4)
+								{
+									$status = '';
+								}
+								else{
+									$status = '';
+								}
+								if($status==1) { ?> <span class="txtinovice"> <?php echo  "Completed"; ?> </span> <?php } else {  ?> <span class="txtorange"> <?php echo "pending"; ?> </span> <?php } ?></div>
+								<?php if($status==1) { 
 								?>
                                 <div class="col-md-4 col-sm-4 txtinovice col-xs-4"><i class="fa fa-check" aria-hidden="true"></i> Completed</div>
 								<?php } else {  ?>
-								  <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on 10 <?php  echo $month; ?></div>
+								  <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on <?php echo $data->returnfile_date; ?> <?php echo $month;?></div>
 								<?php } ?>
                             </div>
 							</div>
-					<div class="rowsteps">
-                            <div class="row step-col actionable">
-
-                                <div class="col-md-5 col-sm-5 col-xs-5"><span class="statusbullet"></span>
-                                    <span class="txtinovice">Upload invoices to GSTN</span></div>
-                                <div class="col-md-3 col-sm-3 col-xs-3"><?php if($sale_upload_status==1) { ?> <span class="txtinovice"> <?php echo  "Completed"; ?> </span> <?php } else {  ?> <span class="txtorange"> <?php echo "pending"; ?> </span> <?php } ?></div>
-								<?php if($sale_upload_status==1) { 
-								?>
-                                <div class="col-md-4 col-sm-4 txtinovice col-xs-4"><i class="fa fa-check" aria-hidden="true"></i> Completed</div>
-								<?php } else {  ?>
-								  <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on 10 <?php if(isset($_REQUEST["returnmonth"]) && ($_REQUEST["returnmonth"]=='2017-07')) { echo 'september'; } else { echo $month; }?></div>
-								<?php } ?>
-                            </div>
-                        </div>
-
-                        <div class="rowsteps">
-                            <div class="row step-col actionable">
-                                <div class="col-md-5 col-sm-5 col-xs-5"><span class="statusbullet"></span>
-                                    <span class="txtinovice">File GSTR-1</span></div>
-                                <div class="col-md-3 col-sm-3 col-xs-3"><?php if($sale_file_status==1) { ?> <span class="txtinovice"> <?php echo  "filed"; ?> </span> <?php } else {  ?> <span class="txtorange"> <?php echo "pending"; ?> </span> <?php } ?></div>
-                                <?php if($sale_file_status==1) { 
-								?>
-                                <div class="col-md-4 col-sm-4 txtinovice col-xs-4"><i class="fa fa-check" aria-hidden="true"></i> Completed</div>
-								<?php } else {  ?>
-								  <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on 10 <?php echo $month;?></div>
-								<?php } ?>
-                            </div>
-                        </div>
-                        <div class="rowsteps">
-                            <div class="row step-col actionable">
-                                <div class="col-md-5 col-sm-5 col-xs-5"><span class="statusbullet txt_grey"></span>
-                                    <span class="txtinovice txt_grey">Reconcile Invoices</span></div>
-                                <div class="col-md-3 col-sm-3 col-xs-3"><span class="txtorange txt_grey">Pending</span></div>
-                                <div class="col-md-4 col-sm-4 txtorange col-xs-4 txt_grey"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on 17 <?php echo $month;?></div>
-                            </div>
-                        </div>
+		   <?php } ?>                    
+                        
                     </div>
                     <div class="col-md-4 col-sm-4" style="background:#fde7e0;margin-top:20px;  border-radius:3px; padding:15px">
                         <div class="gstrrgtbox">File GSTR-1<br/><span>To work on GST Return 1 (Sales)</span></div>
@@ -391,74 +416,67 @@ if(!empty($dataInvPurchase))
                 </div>
             </div>
         </div>
-
+	 <?php } ?>
         <!--GSTR STEP END HERE--->      
 
 
         <!--GSTR STEP START HERE--->
+		<?php
+	 $sql="SELECT * FROM " . $db_obj->getTableName("returnfile_setting") . " as s inner join " . $db_obj->getTableName("return_cat") . " as c on c.id = s.cat_id
+	 INNER join  " . $db_obj->getTableName("return_subcat") . " as subcat on subcat.id = s.subcat_id where c.id = 2";
+	 $dataGstr2 = $db_obj->get_results($sql);
+	 
+	 if(!empty($dataGstr2) && ($flag!=0))
+	 { ?>
         <div class="col-md-12 col-sm-12 col-xs-12 whitebg gstr-box">
             <div class="lightyellow roundbtn"><span>GSTR-2</span>  | <span>Purchase Return Filing</span></div>
             <div class="clearfix"></div>
             <div class="gstr-step-row">
                 <div class="row">
                     <div class="col-md-8 col-sm-8 modpadlr">
+					
+			<?php $i=0; foreach($dataGstr2 as $data) {
+				$i = $i+1;
+					         if($i==1)
+								{
+								$status = $purchase_initiate_status;
+								}
+								else if($i==2)
+								{
+									$status = $purchase_download_status;
+								}
+								else if($i==3)
+								{
+									$status = '';
+								}
+								else if($i==4)
+								{
+									$status = '';
+								}
+								else if($i==5)
+								{
+									$status = $purchase_file_status;
+								}
+								else{
+									$status = '';
+								}
+               ?>				
 					 <div class="rowsteps">
 						 <div class="row step-col actionable">
 
                                 <div class="col-md-5 col-sm-5 col-xs-5"><span class="statusbullet"></span>
-                                    <span class="txtinovice">GSTR-2 Initiated</span></div>
-                                <div class="col-md-3 col-sm-3 col-xs-3"><?php if($purchase_initiate_status==1) { ?> <span class="txtinovice"> <?php echo  "Completed"; ?> </span> <?php } else {  ?> <span class="txtorange"> <?php echo "pending"; ?> </span> <?php } ?></div>
-								<?php if($purchase_initiate_status==1) { 
+                                    <span class="txtinovice"><?php echo $data->subcat_name; ?></span></div>
+                                <div class="col-md-3 col-sm-3 col-xs-3"><?php if($status==1) { ?> <span class="txtinovice"> <?php echo  "Completed"; ?> </span> <?php } else {  ?> <span class="txtorange"> <?php echo "pending"; ?> </span> <?php } ?></div>
+								<?php if($status==1) { 
 								?>
                                 <div class="col-md-4 col-sm-4 txtinovice col-xs-4"><i class="fa fa-check" aria-hidden="true"></i> Completed</div>
 								<?php } else {  ?>
-								  <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on 10 <?php echo $month;?></div>
+								  <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on <?php echo $data->returnfile_date; ?> <?php echo $month;?></div>
 								<?php } ?>
                             </div>
 							</div>
-                        <div class="rowsteps">
-                            <div class="row step-col actionable">
-                                <div class="col-md-5 col-sm-5 col-xs-5"><span class="statusbullet"></span>
-                                    <span class="txtinovice">Download invoices from GSTN</span></div>
-                                <div class="col-md-3 col-sm-3 col-xs-3"><?php if($purchase_download_status==1) { ?> <span class="txtinovice"> <?php echo  "Downloaded"; ?> </span> <?php } else {  ?> <span class="txtorange"> <?php echo "pending"; ?> </span> <?php } ?></div>
-                             <?php if($purchase_download_status==1) { 
-								?>
-                                <div class="col-md-4 col-sm-4 txtinovice col-xs-4"><i class="fa fa-check" aria-hidden="true"></i> Completed</div>
-								<?php } else {  ?>
-								  <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on 10 <?php echo $month;?></div>
-								<?php } ?>
-                            </div>
-                        </div>
-
-                        <div class="rowsteps">
-                            <div class="row step-col actionable">
-                                <div class="col-md-5 col-sm-5 col-xs-5"><span class="statusbullet"></span>
-                                    <span class="txtinovice">Match and Reconcile</span></div>
-                                <div class="col-md-3 col-sm-3 col-xs-3"><span class="txtorange">Pending</span></div>
-                                <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on 15 <?php echo $month;?></div>
-                            </div>
-                        </div>
-                        <div class="rowsteps">
-                            <div class="row step-col actionable">
-                                <div class="col-md-5 col-sm-5 col-xs-5"><span class="statusbullet"></span>
-                                    <span class="txtinovice">Claim ITC</span></div>
-                                <div class="col-md-3 col-sm-3 col-xs-3"><span class="txtorange">Pending</span></div>
-                                <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on 15 <?php echo $month;?></div>
-                            </div>
-                        </div>
-                        <div class="rowsteps">
-                            <div class="row step-col actionable">
-                                <div class="col-md-5 col-sm-5 col-xs-5"><span class="statusbullet"></span>
-                                    <span class="txtinovice">File GSTR-2</span></div>
-                                <div class="col-md-3 col-sm-3 col-xs-3"><?php if($purchase_file_status==1) { ?> <span class="txtinovice"> <?php echo  "Filed"; ?> </span> <?php } else {  ?> <span class="txtorange"> <?php echo "pending"; ?> </span> <?php } ?></div>
-                                 <?php if($purchase_file_status==1)   { 
-								?>
-                                <div class="col-md-4 col-sm-4 txtinovice col-xs-4"><i class="fa fa-check" aria-hidden="true"></i> Completed</div>
-								<?php } else {  ?>
-								  <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on 10 <?php echo $month;?></div>
-								<?php } ?>
-                            </div>
-                        </div>
+                        
+			<?php } ?>
                     </div>
                     <div class="col-md-4 col-sm-4" style="background:#fde7e0;margin-top:20px;  border-radius:3px; padding:15px">
                         <div class="gstrrgtbox">File GSTR-2<br/><span>To work on GST Return 2 (Purchases)</span></div>
@@ -467,48 +485,54 @@ if(!empty($dataInvPurchase))
                 </div>
             </div>
         </div>
-
+	 <?php } ?>
         <!--GSTR STEP END HERE--->      
         <!--GSTR STEP START HERE--->
+				<?php
+	$sql="SELECT * FROM " . $db_obj->getTableName("returnfile_setting") . " as s inner join " . $db_obj->getTableName("return_cat") . " as c on c.id = s.cat_id
+	 INNER join  " . $db_obj->getTableName("return_subcat") . " as subcat on subcat.id = s.subcat_id where c.id = 3";
+	 $dataGstr3 = $db_obj->get_results($sql);
+	 
+	 if(!empty($dataGstr3) && ($flag!=0))
+	 { ?>
         <div class="col-md-12 col-sm-12 col-xs-12 whitebg gstr-box">
             <div class="lightyellow roundbtn"><span>GSTR-3</span>  | <span>Monthly Return Filing</span></div>
             <div class="clearfix"></div>
             <div class="gstr-step-row">
                 <div class="row">
                     <div class="col-md-8 col-sm-8 modpadlr">
+		<?php $i=0; foreach($dataGstr3 as $data) {
+				$i = $i+1;
+					         if($i==1)
+								{
+								$status = '';
+								}
+								else if($i==2)
+								{
+									$status = '';
+								}
+								else if($i==3)
+								{
+									$status = '';
+								}
+								else if($i==4)
+								{
+									$status = '';
+								}
+								else{
+									$status = '';
+								}
+               ?>			
                         <div class="rowsteps">
                             <div class="row step-col actionable">
                                 <div class="col-md-5 col-sm-5 col-xs-5"><span class="statusbullet"></span>
-                                    <span class="txtinovice">Review Monthly Summary</span></div>
+                                    <span class="txtinovice"><?php echo $data->subcat_name; ?></span></div>
                                 <div class="col-md-3 col-sm-3 col-xs-3"><span class="txtorange">Pending</span></div>
-                                <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on 20 <?php echo $month;?></div>
+                                <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on <?php echo $data->returnfile_date; ?> <?php echo $month;?></div>
                             </div>
                         </div>
 
-                        <div class="rowsteps">
-                            <div class="row step-col actionable">
-                                <div class="col-md-5 col-sm-5 col-xs-5"><span class="statusbullet"></span>
-                                    <span class="txtinovice">Payments / Refunds</span></div>
-                                <div class="col-md-3 col-sm-3 col-xs-3"><span class="txtorange">Pending</span></div>
-                                <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on 20 <?php echo $month;?></div>
-                            </div>
-                        </div>
-                        <div class="rowsteps">
-                            <div class="row step-col actionable">
-                                <div class="col-md-5 col-sm-5 col-xs-5"><span class="statusbullet"></span>
-                                    <span class="txtinovice">View Challans</span></div>
-                                <div class="col-md-3 col-sm-3 col-xs-3"><span class="txtorange">Pending</span></div>
-                                <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on 20 <?php echo $month;?></div>
-                            </div>
-                        </div>
-                        <div class="rowsteps">
-                            <div class="row step-col actionable">
-                                <div class="col-md-5 col-sm-5 col-xs-5"><span class="statusbullet"></span>
-                                    <span class="txtinovice">File GSTR-3</span></div>
-                                <div class="col-md-3 col-sm-3 col-xs-3"><span class="txtorange">Pending</span></div>
-                                <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on 20 <?php echo $month;?></div>
-                            </div>
-                        </div>
+		<?php } ?>     
                     </div>
                     <div class="col-md-4 col-sm-4" style="background:#fde7e0;margin-top:20px;  border-radius:3px; padding:15px">
                         <div class="gstrrgtbox">File GSTR-3<br/><span>To work on GST Return 3</span></div>
@@ -518,7 +542,7 @@ if(!empty($dataInvPurchase))
             </div>
         </div>
    
-<?php } ?>
+<?php } } ?>
 
     <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer" style="display:none;">
         <div class="col-md-12 col-sm-12 col-xs-12">
@@ -558,12 +582,12 @@ if(!empty($dataInvPurchase))
 				if(isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '')
 				{
 					?>
-					document.form2.action='<?php echo PROJECT_URL;?>/?page=return_client&returnmonth=<?php echo $_REQUEST['returnmonth'];?>';
+					document.form2.action='<?php echo PROJECT_URL;?>/?page=return_client1&returnmonth=<?php echo $_REQUEST['returnmonth'];?>';
 					<?php
 				}else
 				{
 					?>
-					document.form2.action='<?php echo PROJECT_URL;?>/?page=return_client';
+					document.form2.action='<?php echo PROJECT_URL;?>/?page=return_client1';
 					<?php
 				}
 				?>

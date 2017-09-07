@@ -30,6 +30,10 @@ final class returnfile extends validation {
 		  $dataArr['returnfile_type'] = isset($_POST['returnfile_type']) ? $_POST['returnfile_type'] : '';
 		  $dataArr['returntofile_vendor_id'] = isset($_POST['vendor_type']) ? $_POST['vendor_type'] : '';
 		  $dataArr['status'] = isset($_POST['returnfile_status']) ? $_POST['returnfile_status'] : '';
+		  $dataArr['cat_id'] = isset($_POST['return_cat']) ? $_POST['return_cat'] : '';
+		  $dataArr['subcat_id'] = isset($_POST['return_subcat']) ? $_POST['return_subcat'] : '';
+		  
+		
 		  return $dataArr;
 		      
 	}	
@@ -63,6 +67,7 @@ final class returnfile extends validation {
   			}
 			else
 			{
+				/*
 				$sql="select count(id) as numcount from ".TAB_PREFIX."returnfile_setting WHERE returnform_name='".$dataArr["returnform_name"]."'";
 				$dataCurrentArr = $this->get_results($sql);
 				
@@ -71,9 +76,8 @@ final class returnfile extends validation {
 				{
 					$this->setError('ReturnForm Name already exists');
 					   return false; 
-				}	
-				else
-				{
+				}
+                */				
 				
 					if ($this->insert(TAB_PREFIX.'returnfile_setting', $dataArr)) {
 						$this->setSuccess('Returnfile setting Saved Successfully');
@@ -86,22 +90,23 @@ final class returnfile extends validation {
 						$this->setError('Failed to save returnfile data');
 					   return false;    	   
 				   }
-				}
+				
 
 			}
 		}
 		else
 		{
+			/*
 			$sql="select count(id) as numcount from ".TAB_PREFIX."returnfile_setting WHERE returnform_name='".$dataArr["returnform_name"]."'";
 			$dataCurrentArr = $this->get_results($sql);
 			if($dataCurrentArr[0]->numcount > 0)
 
 			{
-				$this->setError('ReturnForm Name already exists');
-				   return false; 
-			}	
-			else
-			{
+				//$this->setError('ReturnForm Name already exists');
+				//   return false; 
+			}
+           */			
+			
 				 $dataArr['added_date'] = date('Y-m-d H:i:s');
 				 $dataArr['added_by'] = $_SESSION["user_detail"]["user_id"];
 				if ($this->insert(TAB_PREFIX.'returnfile_setting', $dataArr)) {
@@ -115,7 +120,7 @@ final class returnfile extends validation {
 					$this->setError('Failed to save returnfile data');
 				   return false;    	   
 			   }
-			}
+			
 		}
         
 	

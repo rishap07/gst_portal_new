@@ -66,7 +66,9 @@ if( isset($_GET['action']) && $_GET['action'] == 'deletePlan' && isset($_GET['id
                         <th align='left'>#</th>
                     
                         <th align='left'>Name</th>
-                        <th align='left' width="200px">Message</th>
+                        <th align='left' width="100px">Message</th>
+						<th align='left'>Group</th>
+						<th align='left'>SubCategory</th>
                         <th align='left'>Vendor</th>
                         <th align='left'>StartFrom</th>
 						<th align='left'>Status</th>
@@ -102,6 +104,8 @@ if( isset($_GET['action']) && $_GET['action'] == 'deletePlan' && isset($_GET['id
                         {"bSortable": false},
                         {"bSortable": false},
                         {"bSortable": false},
+						{"bSortable": false},
+						{"bSortable": false},
 						{"bSortable": false},
 						{"bSortable": false},
 										

@@ -190,25 +190,25 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
 	*/
-      $flag = $obj_master->getVendorName('Composition vendor');
+       $flag = $db_obj->getVendorName('Composition vendor');
 	   $vendor_id1=0;
 		if($flag!=0)
 		{
 			$vendor_id1 = $flag;
 		}
-      $flag = $obj_master->getVendorName('uin holder');
+      $flag = $db_obj->getVendorName('uin holder');
 	   $vendor_id2=0;
 		if($flag!=0)
 		{
 			$vendor_id2 = $flag;
 		}			
-	 $supply_unregistered="SELECT i.billing_state as state, COUNT(i.invoice_id) as numcount,sum(igst_amount) as igst_amount,sum(item.taxable_subtotal) as totaltaxable_value FROM gst_client_invoice as i inner join gst_client_invoice_item as item on item.invoice_id = i.invoice_id inner join gst_vendor_type as v on v.vendor_id = i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0' and billing_gstin_number='' and (v.vendor_id<>'".$vendor_id1."' and v.vendor_id<>'".$vendor_id2."') and i.status='1' GROUP by i.billing_state";
+     $supply_unregistered="SELECT i.billing_state as state, COUNT(i.invoice_id) as numcount,sum(igst_amount) as igst_amount,sum(item.taxable_subtotal) as totaltaxable_value FROM gst_client_invoice as i inner join gst_client_invoice_item as item on item.invoice_id = i.invoice_id inner join gst_vendor_type as v on v.vendor_id = i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0' and billing_gstin_number='' and (v.vendor_id<>'".$vendor_id1."' and v.vendor_id<>'".$vendor_id2."') and i.status='1' GROUP by i.billing_state";
 	 $supply_unregistered_data = $obj_return->get_results($supply_unregistered);
         $total = 0;
         if (!empty($supply_unregistered_data)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
-	   $flag = $obj_master->getVendorName('Composition vendor');
+	   $flag = $db_obj->getVendorName('Composition vendor');
 	   $vendor_id=0;
 		if($flag!=0)
 		{
