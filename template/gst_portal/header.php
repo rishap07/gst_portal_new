@@ -334,7 +334,19 @@
 				<?php if ($db_obj->can_read('client_invoice')) { ?>
 					<li><a href="<?php echo PROJECT_URL . '/?page=return_client'; ?>"><i class="fa fa-refresh"></i> <span class="collapse in hidden-xs">Return</span></a></li>
 				<?php } ?>
-
+                  	<?php if ($db_obj->can_read('returnfile_list')) { ?>
+					<li>
+						<a href="#" data-target="#returnfile" data-toggle="collapse"><i class="fa fa-cog"></i> 
+						<span class="collapse in hidden-xs">ReturnFile Setting<span class="navrgtarrow"><i class="fa fa-chevron-right" aria-hidden="true"></i></span></span></a>
+						<ul class="nav nav-stacked collapse left-submenu" id="returnfile">
+						 	<?php if ($db_obj->can_read('returnfile_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=returnfile_date_list"><i class="fa fa-circle" aria-hidden="true"></i>ReturnFile dates</a></li><?php } ?>
+							<?php if ($db_obj->can_read('returnfile_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=returnfile_category_list"><i class="fa fa-circle" aria-hidden="true"></i>ReturnFile Category</a></li><?php } ?>
+							<?php if ($db_obj->can_read('returnfile_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=returnfile_subcategory_list"><i class="fa fa-circle" aria-hidden="true"></i>ReturnFile SubCategory</a></li><?php } ?>
+				
+						</ul>
+					</li>
+				<?php } ?>
+			
 				 <?php if ($db_obj->can_read('activitylog')) { ?>
 					<li>
 						<a href="#" data-target="#itemActivity" data-toggle="collapse"><i class="fa fa-list"></i> 

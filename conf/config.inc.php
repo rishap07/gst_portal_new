@@ -145,6 +145,21 @@ define('SCRIPT_URL', PROJECT_URL . SCRIPT_DIR);
 # INCLUDE CLASSES FILES NEEDED WHEN AN OBJECT IS INITIALIZED
 #-------------------------------------------------------------------------------
 
+
+#-------------------------------------------------------------------------------
+# API URLS
+#------------------------- DEMO ----------------------------------------------
+//define('API_CLIENT_ID', 'l7xx1ed437f1e18347c38bd2aad6e6dd3b3c');
+//define('API_CLIENT_SECRET', 'a9bcf665fe424883b7b94791eb31f667');
+#---------------------- LIVE ------------------------------------------
+define('API_CLIENT_ID', 'l7xx77bf62d48fd045ffbbe6ad958d11a372');
+define('API_CLIENT_SECRET', 'b4afd81551ec4f8f969b171bc4373340');
+
+define('API_TXN', 'TXN789123456789');
+define('API_IP', '203.197.205.110');
+
+
+
 function __autoload($class) {
     $class = strtolower($class);
     //echo CLASSES_ROOT . "/class." . $class . ".php<br>";
