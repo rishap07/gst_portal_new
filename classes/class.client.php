@@ -1087,6 +1087,10 @@ final class client extends validation {
             $rules['item_hsncode'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Item HSN Code';
         }
 
+		if (array_key_exists("item_description", $dataArr)) {
+            $rules['item_description'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Item Description';
+        }
+
 		if (array_key_exists("item_quantity", $dataArr)) {
 			$rules['item_quantity'] = 'required||numeric||decimal|#|lable_name:Item Quantity';
 		}
@@ -1337,20 +1341,36 @@ final class client extends validation {
 
                 $item_name = isset($data['W']) ? trim($data['W']) : '';
                 $item_hsncode = isset($data['X']) ? trim($data['X']) : '';
-				$dataArray['item_quantity'] = isset($data['Y']) ? round($data['Y'], 2) : '';
 
-				$dataArray['item_unit'] = isset($data['Z']) ? $data['Z'] : '';
+				$dataArray['item_description'] = isset($data['Y']) ? trim($data['Y']) : '';
+				$item_description = $dataArray['item_description'];
+				
+				$applicable_tax = isset($data['Z']) ? $data['Z'] : '';
+				if ($applicable_tax != '' && strtoupper($applicable_tax) == 'NON GST') {
+					$dataArray['is_applicable'] = '1';
+					$is_applicable = '1';
+				} else if ($applicable_tax != '' && strtoupper($applicable_tax) == 'EXEMPTED') {
+					$dataArray['is_applicable'] = '2';
+					$is_applicable = '2';
+				} else {
+					$dataArray['is_applicable'] = '0';
+					$is_applicable = '0';
+				}
+
+				$dataArray['item_quantity'] = isset($data['AA']) ? round($data['AA'], 2) : '';
+
+				$dataArray['item_unit'] = isset($data['AB']) ? $data['AB'] : '';
 				$item_unit =  $dataArray['item_unit'];
 				
-                $dataArray['item_rate'] = isset($data['AA']) ? round($data['AA'], 2) : 0.00;
+                $dataArray['item_rate'] = isset($data['AC']) ? round($data['AC'], 2) : 0.00;
 				$item_rate = round($dataArray['item_rate'], 2);
 
-                $dataArray['item_discount'] = isset($data['AB']) ? round($data['AB'], 2) : 0.00;
-                $dataArray['advance_amount'] = isset($data['AC']) ? round($data['AC'], 2) : 0.00;
+                $dataArray['item_discount'] = isset($data['AD']) ? round($data['AD'], 2) : 0.00;
+                $dataArray['advance_amount'] = isset($data['AE']) ? round($data['AE'], 2) : 0.00;
 				
 				if(!empty($item_name) && !empty($item_hsncode)) {
 
-                    $checkClientMasterItem = $this->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_description, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m where 1=1 AND cm.item_category = m.item_id AND cm.item_name = '" . $item_name . "' && m.hsn_code = '" . $item_hsncode . "' AND cm.is_deleted='0' AND cm.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
+                    $checkClientMasterItem = $this->get_row("select cm.item_id, cm.is_applicable, cm.item_name, cm.unit_price, cm.item_description, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m where 1=1 AND cm.item_category = m.item_id AND cm.item_name = '" . $item_name . "' && m.hsn_code = '" . $item_hsncode . "' AND cm.is_deleted='0' AND cm.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
 					if (!empty($checkClientMasterItem)) {
 
 						$dataArray['item_id'] = $checkClientMasterItem->item_id;
@@ -1376,6 +1396,8 @@ final class client extends validation {
 
 							$dataInsertItemArray['item_name'] = $item_name;
 							$dataInsertItemArray['item_category'] = $masterItem->item_id;
+							$dataInsertItemArray['item_description'] = $item_description;
+							$dataInsertItemArray['is_applicable'] = $is_applicable;
 							$dataInsertItemArray['unit_price'] = $item_rate;
 							$dataInsertItemArray['item_unit'] = $master_unit_id;
 							$dataInsertItemArray['status'] = '1';
@@ -1402,10 +1424,10 @@ final class client extends validation {
 					array_push($currentItemError, "Description of Goods and HSN Code should be valid.");
                 }
 
-				$dataArray['cgst_rate'] = isset($data['AD']) ? round($data['AD'], 3) : 0.000;
-				$dataArray['sgst_rate'] = isset($data['AE']) ? round($data['AE'], 3) : 0.000;
-				$dataArray['igst_rate'] = isset($data['AF']) ? round($data['AF'], 3) : 0.000;
-				$dataArray['cess_rate'] = isset($data['AG']) ? round($data['AG'], 3) : 0.000;
+				$dataArray['cgst_rate'] = isset($data['AF']) ? round($data['AF'], 3) : 0.000;
+				$dataArray['sgst_rate'] = isset($data['AG']) ? round($data['AG'], 3) : 0.000;
+				$dataArray['igst_rate'] = isset($data['AH']) ? round($data['AH'], 3) : 0.000;
+				$dataArray['cess_rate'] = isset($data['AI']) ? round($data['AI'], 3) : 0.000;
 
 				/* get current user data */
                 $dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
@@ -1426,7 +1448,7 @@ final class client extends validation {
 				}
 
 				/* Invoice Description */
-				$dataArray['description'] = isset($data['AH']) ? $data['AH'] : '';
+				$dataArray['description'] = isset($data['AJ']) ? $data['AJ'] : '';
 
                 $invoiceErrors = $this->validateClientInvoiceExcel($dataArray);
                 if ($invoiceErrors !== true || !empty($currentItemError)) {
@@ -1437,7 +1459,7 @@ final class client extends validation {
                     }
                     $invoiceErrors = array_merge($invoiceErrors, $currentItemError);
                     $invoiceErrors = implode(", ", $invoiceErrors);
-                    $objPHPExcel->getActiveSheet()->SetCellValue('AI' . $rowKey, $invoiceErrors);
+                    $objPHPExcel->getActiveSheet()->SetCellValue('AK' . $rowKey, $invoiceErrors);
                 }
 				
 				if ($errorflag === false) {
@@ -1450,6 +1472,8 @@ final class client extends validation {
 					$invoiceArray[$arrayKey]['reference_number'] = $dataArray['reference_number'];
 					$invoiceArray[$arrayKey]['company_name'] = $dataCurrentUserArr['data']->kyc->name;
 					$invoiceArray[$arrayKey]['company_address'] = $dataCurrentUserArr['data']->kyc->full_address;
+					$invoiceArray[$arrayKey]['company_email'] = $dataCurrentUserArr['data']->kyc->email;
+					$invoiceArray[$arrayKey]['company_phone_number'] = $dataCurrentUserArr['data']->kyc->phone_number;
 					$invoiceArray[$arrayKey]['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
 					$invoiceArray[$arrayKey]['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
 					$invoiceArray[$arrayKey]['invoice_date'] = $dataArray['invoice_date'];
@@ -1489,6 +1513,8 @@ final class client extends validation {
 					$invoiceItemArray['item_id'] = $dataArray['item_id'];
 					$invoiceItemArray['item_name'] = $dataArray['item_name'];
 					$invoiceItemArray['item_hsncode'] = $dataArray['item_hsncode'];
+					$invoiceItemArray['item_description'] = $dataArray['item_description'];
+					$invoiceItemArray['is_applicable'] = $dataArray['is_applicable'];
 					$invoiceItemArray['item_quantity'] = $dataArray['item_quantity'];
 					$invoiceItemArray['item_unit'] = $dataArray['item_unit'];
 					$invoiceItemArray['item_unit_price'] = $dataArray['item_rate'];
@@ -1511,7 +1537,7 @@ final class client extends validation {
 
             if ($errorflag === true) {
 
-                $objPHPExcel->getActiveSheet()->SetCellValue('AI1', "Error Information");
+                $objPHPExcel->getActiveSheet()->SetCellValue('AK1', "Error Information");
                 $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
                 $objWriter->save($invoice_excel_dir_path);
                 $this->setError($this->validationMessage['excelerror']);
@@ -1577,6 +1603,8 @@ final class client extends validation {
 							"item_id" => $invoiceInnerRow['item_id'],
 							"item_name" => $invoiceInnerRow['item_name'],
 							"item_hsncode" => $invoiceInnerRow['item_hsncode'],
+							"item_description" => $invoiceInnerRow['item_description'],
+							"is_applicable" => $invoiceInnerRow['is_applicable'],
 							"item_quantity" => $invoiceItemQuantity,
 							"item_unit" => $invoiceInnerRow['item_unit'],
 							"item_unit_price" => $itemUnitPrice,
@@ -1610,6 +1638,8 @@ final class client extends validation {
                         $InsertArray['serial_number'] = $this->generateInvoiceNumber($this->sanitize($_SESSION['user_detail']['user_id']));
                         $InsertArray['company_name'] = $invoiceRow['company_name'];
                         $InsertArray['company_address'] = $invoiceRow['company_address'];
+						$InsertArray['company_email'] = $invoiceRow['company_email'];
+						$InsertArray['company_phone_number'] = $invoiceRow['company_phone_number'];
                         $InsertArray['company_state'] = $invoiceRow['company_state'];
                         $InsertArray['gstin_number'] = $invoiceRow['gstin_number'];
                         $InsertArray['invoice_date'] = $invoiceRow['invoice_date'];
@@ -1763,7 +1793,7 @@ final class client extends validation {
 					array_push($currentItemError, "Invalid Advance Adjustment.");
                 }
 
-				if($dataArray['advance_adjustment'] == 1) {
+				if(isset($dataArray['advance_adjustment']) && $dataArray['advance_adjustment'] == 1) {
 
 					$receipt_voucher_serial = isset($data['G']) ? $data['G'] : '';
 					$dataReceiptVoucherArrs = $this->get_row("select invoice_id, serial_number, invoice_date, supply_place, is_canceled from ".$this->tableNames['client_invoice']." where 1=1 AND serial_number = '".$receipt_voucher_serial."' AND invoice_type = 'receiptvoucherinvoice' AND is_canceled='0' AND status='1' AND is_deleted='0' AND financial_year = '".$currentFinancialYear."' AND added_by = ".$this->sanitize($_SESSION['user_detail']['user_id']));
@@ -1879,7 +1909,7 @@ final class client extends validation {
 
 				$dataArray['shipping_gstin_number'] = isset($data['U']) ? $data['U'] : '';
 
-				if($dataArray['invoice_type'] == "exportinvoice") {
+				if(isset($dataArray['invoice_type']) && $dataArray['invoice_type'] == "exportinvoice") {
 
 					$dataArray['export_bill_number'] = isset($data['V']) ? $data['V'] : '';
 					$dataArray['export_bill_port_code'] = isset($data['W']) ? $data['W'] : '';
@@ -1888,20 +1918,36 @@ final class client extends validation {
 
                 $item_name = isset($data['Y']) ? trim($data['Y']) : '';
                 $item_hsncode = isset($data['Z']) ? trim($data['Z']) : '';
-				$dataArray['item_quantity'] = isset($data['AA']) ? round($data['AA'], 2) : '';
 
-				$dataArray['item_unit'] = isset($data['AB']) ? $data['AB'] : '';
+				$dataArray['item_description'] = isset($data['AA']) ? trim($data['AA']) : '';
+				$item_description = $dataArray['item_description'];
+				
+				$applicable_tax = isset($data['AB']) ? $data['AB'] : '';
+				if ($applicable_tax != '' && strtoupper($applicable_tax) == 'NON GST') {
+					$dataArray['is_applicable'] = '1';
+					$is_applicable = '1';
+				} else if ($applicable_tax != '' && strtoupper($applicable_tax) == 'EXEMPTED') {
+					$dataArray['is_applicable'] = '2';
+					$is_applicable = '2';
+				} else {
+					$dataArray['is_applicable'] = '0';
+					$is_applicable = '0';
+				}
+
+				$dataArray['item_quantity'] = isset($data['AC']) ? round($data['AC'], 2) : '';
+
+				$dataArray['item_unit'] = isset($data['AD']) ? $data['AD'] : '';
 				$item_unit =  $dataArray['item_unit'];
 
-                $dataArray['item_rate'] = isset($data['AC']) ? round($data['AC'], 2) : 0.00;
+                $dataArray['item_rate'] = isset($data['AE']) ? round($data['AE'], 2) : 0.00;
 				$item_rate = round($dataArray['item_rate'], 2);
 
-                $dataArray['item_discount'] = isset($data['AD']) ? round($data['AD'], 2) : 0.00;
-                $dataArray['advance_amount'] = isset($data['AE']) ? round($data['AE'], 2) : 0.00;
+                $dataArray['item_discount'] = isset($data['AF']) ? round($data['AF'], 2) : 0.00;
+                $dataArray['advance_amount'] = isset($data['AG']) ? round($data['AG'], 2) : 0.00;
 
 				if(!empty($item_name) && !empty($item_hsncode)) {
 
-                    $checkClientMasterItem = $this->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_description, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m where 1=1 AND cm.item_category = m.item_id AND cm.item_name = '" . $item_name . "' && m.hsn_code = '" . $item_hsncode . "' AND cm.is_deleted='0' AND cm.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
+                    $checkClientMasterItem = $this->get_row("select cm.item_id, cm.is_applicable, cm.item_name, cm.unit_price, cm.item_description, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m where 1=1 AND cm.item_category = m.item_id AND cm.item_name = '" . $item_name . "' && m.hsn_code = '" . $item_hsncode . "' AND cm.is_deleted='0' AND cm.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
 					if (!empty($checkClientMasterItem)) {
 
 						$dataArray['item_id'] = $checkClientMasterItem->item_id;
@@ -1927,6 +1973,8 @@ final class client extends validation {
 
 							$dataInsertItemArray['item_name'] = $item_name;
 							$dataInsertItemArray['item_category'] = $masterItem->item_id;
+							$dataInsertItemArray['item_description'] = $item_description;
+							$dataInsertItemArray['is_applicable'] = $is_applicable;
 							$dataInsertItemArray['unit_price'] = $item_rate;
 							$dataInsertItemArray['item_unit'] = $master_unit_id;
 							$dataInsertItemArray['status'] = '1';
@@ -1953,8 +2001,8 @@ final class client extends validation {
 					array_push($currentItemError, "Description of Goods and HSN Code should be valid.");
                 }
 
-				$dataArray['igst_rate'] = isset($data['AF']) ? round($data['AF'], 3) : 0.000;
-				$dataArray['cess_rate'] = isset($data['AG']) ? round($data['AG'], 3) : 0.000;
+				$dataArray['igst_rate'] = isset($data['AH']) ? round($data['AH'], 3) : 0.000;
+				$dataArray['cess_rate'] = isset($data['AI']) ? round($data['AI'], 3) : 0.000;
 
 				/* get current user data */
                 $dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
@@ -1967,7 +2015,7 @@ final class client extends validation {
 				}
 
 				/* Invoice Description */
-				$dataArray['description'] = isset($data['AH']) ? $data['AH'] : '';
+				$dataArray['description'] = isset($data['AJ']) ? $data['AJ'] : '';
 
                 $invoiceErrors = $this->validateClientInvoiceExcel($dataArray);
                 if ($invoiceErrors !== true || !empty($currentItemError)) {
@@ -1978,7 +2026,7 @@ final class client extends validation {
                     }
                     $invoiceErrors = array_merge($invoiceErrors, $currentItemError);
                     $invoiceErrors = implode(", ", $invoiceErrors);
-                    $objPHPExcel->getActiveSheet()->SetCellValue('AI' . $rowKey, $invoiceErrors);
+                    $objPHPExcel->getActiveSheet()->SetCellValue('AK' . $rowKey, $invoiceErrors);
                 }
 
 				if ($errorflag === false) {
@@ -2030,6 +2078,8 @@ final class client extends validation {
 					$invoiceItemArray['item_id'] = $dataArray['item_id'];
 					$invoiceItemArray['item_name'] = $dataArray['item_name'];
 					$invoiceItemArray['item_hsncode'] = $dataArray['item_hsncode'];
+					$invoiceItemArray['item_description'] = $dataArray['item_description'];
+					$invoiceItemArray['is_applicable'] = $dataArray['is_applicable'];
 					$invoiceItemArray['item_quantity'] = $dataArray['item_quantity'];
 					$invoiceItemArray['item_unit'] = $dataArray['item_unit'];
 					$invoiceItemArray['item_unit_price'] = $dataArray['item_rate'];
@@ -2050,7 +2100,7 @@ final class client extends validation {
 
             if ($errorflag === true) {
 
-                $objPHPExcel->getActiveSheet()->SetCellValue('AI1', "Error Information");
+                $objPHPExcel->getActiveSheet()->SetCellValue('AK1', "Error Information");
                 $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
                 $objWriter->save($invoice_excel_dir_path);
                 $this->setError($this->validationMessage['excelerror']);
@@ -2109,6 +2159,8 @@ final class client extends validation {
 							"item_id" => $invoiceInnerRow['item_id'],
 							"item_name" => $invoiceInnerRow['item_name'],
 							"item_hsncode" => $invoiceInnerRow['item_hsncode'],
+							"item_description" => $invoiceInnerRow['item_description'],
+							"is_applicable" => $invoiceInnerRow['is_applicable'],
 							"item_quantity" => $invoiceItemQuantity,
 							"item_unit" => $invoiceInnerRow['item_unit'],
 							"item_unit_price" => $itemUnitPrice,
@@ -2350,24 +2402,38 @@ final class client extends validation {
 				}
 
 				$dataArray['shipping_gstin_number'] = isset($data['P']) ? $data['P'] : '';
-				
-				
-				
+
 				$item_name = isset($data['Q']) ? trim($data['Q']) : '';
 				$item_hsncode = isset($data['R']) ? trim($data['R']) : '';
-				$dataArray['item_quantity'] = isset($data['S']) ? round($data['S'], 2) : '';
 
-				$dataArray['item_unit'] = isset($data['T']) ? $data['T'] : '';
+				$dataArray['item_description'] = isset($data['S']) ? trim($data['S']) : '';
+				$item_description = $dataArray['item_description'];
+				
+				$applicable_tax = isset($data['T']) ? $data['T'] : '';
+				if ($applicable_tax != '' && strtoupper($applicable_tax) == 'NON GST') {
+					$dataArray['is_applicable'] = '1';
+					$is_applicable = '1';
+				} else if ($applicable_tax != '' && strtoupper($applicable_tax) == 'EXEMPTED') {
+					$dataArray['is_applicable'] = '2';
+					$is_applicable = '2';
+				} else {
+					$dataArray['is_applicable'] = '0';
+					$is_applicable = '0';
+				}
+
+				$dataArray['item_quantity'] = isset($data['U']) ? round($data['U'], 2) : '';
+
+				$dataArray['item_unit'] = isset($data['V']) ? $data['V'] : '';
 				$item_unit =  $dataArray['item_unit'];
 				
-				$dataArray['item_rate'] = isset($data['U']) ? round($data['U'], 2) : 0.00;
+				$dataArray['item_rate'] = isset($data['W']) ? round($data['W'], 2) : 0.00;
 				$item_rate = round($dataArray['item_rate'], 2);
 
-				$dataArray['item_discount'] = isset($data['V']) ? round($data['V'], 2) : 0.00;
+				$dataArray['item_discount'] = isset($data['X']) ? round($data['X'], 2) : 0.00;
 
 				if(!empty($item_name) && !empty($item_hsncode)) {
 
-					$checkClientMasterItem = $this->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_description, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, cm.item_unit from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m where 1=1 AND cm.item_category = m.item_id AND cm.item_name = '" . $item_name . "' && m.hsn_code = '" . $item_hsncode . "' AND cm.is_deleted='0' AND cm.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
+					$checkClientMasterItem = $this->get_row("select cm.item_id, cm.is_applicable, cm.item_name, cm.unit_price, cm.item_description, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, cm.item_unit from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m where 1=1 AND cm.item_category = m.item_id AND cm.item_name = '" . $item_name . "' && m.hsn_code = '" . $item_hsncode . "' AND cm.is_deleted='0' AND cm.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
 					if (!empty($checkClientMasterItem)) {
 
 						$dataArray['item_id'] = $checkClientMasterItem->item_id;
@@ -2393,6 +2459,8 @@ final class client extends validation {
 
 							$dataInsertItemArray['item_name'] = $item_name;
 							$dataInsertItemArray['item_category'] = $masterItem->item_id;
+							$dataInsertItemArray['item_description'] = $item_description;
+							$dataInsertItemArray['is_applicable'] = $is_applicable;
 							$dataInsertItemArray['unit_price'] = $item_rate;
 							$dataInsertItemArray['item_unit'] = $master_unit_id;
 							$dataInsertItemArray['status'] = '1';
@@ -2430,7 +2498,7 @@ final class client extends validation {
 				}
 
 				/* Invoice Description */
-				$dataArray['description'] = isset($data['W']) ? $data['W'] : '';
+				$dataArray['description'] = isset($data['Y']) ? $data['Y'] : '';
 
 				$invoiceErrors = $this->validateClientInvoiceExcel($dataArray);
 				if ($invoiceErrors !== true || !empty($currentItemError)) {
@@ -2441,7 +2509,7 @@ final class client extends validation {
 					}
 					$invoiceErrors = array_merge($invoiceErrors, $currentItemError);
 					$invoiceErrors = implode(", ", $invoiceErrors);
-					$objPHPExcel->getActiveSheet()->SetCellValue('X' . $rowKey, $invoiceErrors);
+					$objPHPExcel->getActiveSheet()->SetCellValue('Z' . $rowKey, $invoiceErrors);
 				}
 
 				if ($errorflag === false) {
@@ -2479,6 +2547,8 @@ final class client extends validation {
 					$invoiceItemArray['item_id'] = $dataArray['item_id'];
 					$invoiceItemArray['item_name'] = $dataArray['item_name'];
 					$invoiceItemArray['item_hsncode'] = $dataArray['item_hsncode'];
+					$invoiceItemArray['item_description'] = $dataArray['item_description'];
+					$invoiceItemArray['is_applicable'] = $dataArray['is_applicable'];
 					$invoiceItemArray['item_quantity'] = $dataArray['item_quantity'];
 					$invoiceItemArray['item_unit'] = $dataArray['item_unit'];
 					$invoiceItemArray['item_unit_price'] = $dataArray['item_rate'];
@@ -2490,7 +2560,7 @@ final class client extends validation {
 
 			if ($errorflag === true) {
 
-				$objPHPExcel->getActiveSheet()->SetCellValue('X1', "Error Information");
+				$objPHPExcel->getActiveSheet()->SetCellValue('Z1', "Error Information");
 				$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
 				$objWriter->save($invoice_excel_dir_path);
 				$this->setError($this->validationMessage['excelerror']);
@@ -2520,6 +2590,8 @@ final class client extends validation {
 							"item_id" => $invoiceInnerRow['item_id'],
 							"item_name" => $invoiceInnerRow['item_name'],
 							"item_hsncode" => $invoiceInnerRow['item_hsncode'],
+							"item_description" => $invoiceInnerRow['item_description'],
+							"is_applicable" => $invoiceInnerRow['is_applicable'],
 							"item_quantity" => $invoiceItemQuantity,
 							"item_unit" => $invoiceInnerRow['item_unit'],
 							"item_unit_price" => $itemUnitPrice,
@@ -2774,11 +2846,26 @@ final class client extends validation {
 				$dataArray['shipping_gstin_number'] = isset($data['R']) ? $data['R'] : '';
 
                 $item_name = isset($data['S']) ? trim($data['S']) : '';
-				$item_hsncode = isset($data['T']) ? trim($data['T']) : '';				
+				$item_hsncode = isset($data['T']) ? trim($data['T']) : '';
+
+				$dataArray['item_description'] = isset($data['U']) ? trim($data['U']) : '';
+				$item_description = $dataArray['item_description'];
+				
+				$applicable_tax = isset($data['V']) ? $data['V'] : '';
+				if ($applicable_tax != '' && strtoupper($applicable_tax) == 'NON GST') {
+					$dataArray['is_applicable'] = '1';
+					$is_applicable = '1';
+				} else if ($applicable_tax != '' && strtoupper($applicable_tax) == 'EXEMPTED') {
+					$dataArray['is_applicable'] = '2';
+					$is_applicable = '2';
+				} else {
+					$dataArray['is_applicable'] = '0';
+					$is_applicable = '0';
+				}
 
 				if(!empty($item_name) && !empty($item_hsncode)) {
 
-					$checkClientMasterItem = $this->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_description, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m where 1=1 AND cm.item_category = m.item_id AND cm.item_name = '" . $item_name . "' && m.hsn_code = '" . $item_hsncode . "' AND cm.is_deleted='0' AND cm.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
+					$checkClientMasterItem = $this->get_row("select cm.item_id, cm.is_applicable, cm.item_name, cm.unit_price, cm.item_description, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m where 1=1 AND cm.item_category = m.item_id AND cm.item_name = '" . $item_name . "' && m.hsn_code = '" . $item_hsncode . "' AND cm.is_deleted='0' AND cm.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
 					if (!empty($checkClientMasterItem)) {
 
 						$dataArray['item_id'] = $checkClientMasterItem->item_id;
@@ -2798,6 +2885,8 @@ final class client extends validation {
 
 							$dataInsertItemArray['item_name'] = $item_name;
 							$dataInsertItemArray['item_category'] = $masterItem->item_id;
+							$dataInsertItemArray['item_description'] = $item_description;
+							$dataInsertItemArray['is_applicable'] = $is_applicable;
 							$dataInsertItemArray['item_unit'] = $master_unit_id;
 							$dataInsertItemArray['status'] = '1';
 							$dataInsertItemArray['added_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);
@@ -2823,16 +2912,16 @@ final class client extends validation {
 					array_push($currentItemError, "Description of Goods and HSN Code should be valid.");
 				}
 
-				$dataArray['advance_amount'] = isset($data['U']) ? round($data['U'], 2) : 0.000;
-				$dataArray['cgst_rate'] = isset($data['V']) ? round($data['V'], 3) : 0.000;
-				$dataArray['sgst_rate'] = isset($data['W']) ? round($data['W'], 3) : 0.000;
-				$dataArray['igst_rate'] = isset($data['X']) ? round($data['X'], 3) : 0.000;
-				$dataArray['cess_rate'] = isset($data['Y']) ? round($data['Y'], 3) : 0.000;
+				$dataArray['advance_amount'] = isset($data['W']) ? round($data['W'], 2) : 0.000;
+				$dataArray['cgst_rate'] = isset($data['X']) ? round($data['X'], 3) : 0.000;
+				$dataArray['sgst_rate'] = isset($data['Y']) ? round($data['Y'], 3) : 0.000;
+				$dataArray['igst_rate'] = isset($data['Z']) ? round($data['Z'], 3) : 0.000;
+				$dataArray['cess_rate'] = isset($data['AA']) ? round($data['AA'], 3) : 0.000;
 
 				/* get current user data */
 				$dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
 
-				if($dataCurrentUserArr['data']->kyc->state_id === $dataArray['supply_place']) {
+				if(isset($dataArray['supply_place']) && $dataCurrentUserArr['data']->kyc->state_id === $dataArray['supply_place']) {
 
 					if($dataArray['cgst_rate'] != $dataArray['sgst_rate']) {
 						$errorflag = true;
@@ -2848,7 +2937,7 @@ final class client extends validation {
 				}
 
 				/* Invoice Description */
-				$dataArray['description'] = isset($data['Z']) ? $data['Z'] : '';
+				$dataArray['description'] = isset($data['AB']) ? $data['AB'] : '';
 
 				$invoiceErrors = $this->validateClientInvoiceExcel($dataArray);
 				if ($invoiceErrors !== true || !empty($currentItemError)) {
@@ -2859,7 +2948,7 @@ final class client extends validation {
 					}
 					$invoiceErrors = array_merge($invoiceErrors, $currentItemError);
 					$invoiceErrors = implode(", ", $invoiceErrors);
-					$objPHPExcel->getActiveSheet()->SetCellValue('AA' . $rowKey, $invoiceErrors);
+					$objPHPExcel->getActiveSheet()->SetCellValue('AC' . $rowKey, $invoiceErrors);
 				}
 
 				if ($errorflag === false) {
@@ -2899,6 +2988,8 @@ final class client extends validation {
 					$invoiceItemArray['item_id'] = $dataArray['item_id'];
 					$invoiceItemArray['item_name'] = $dataArray['item_name'];
 					$invoiceItemArray['item_hsncode'] = $dataArray['item_hsncode'];
+					$invoiceItemArray['item_description'] = $dataArray['item_description'];
+					$invoiceItemArray['is_applicable'] = $dataArray['is_applicable'];
 					$invoiceItemArray['advance_amount'] = $dataArray['advance_amount'];
 					$invoiceItemArray['cgst_rate'] = $dataArray['cgst_rate'];
 					$invoiceItemArray['sgst_rate'] = $dataArray['sgst_rate'];
@@ -2911,7 +3002,7 @@ final class client extends validation {
 
             if ($errorflag === true) {
 
-				$objPHPExcel->getActiveSheet()->SetCellValue('AA1', "Error Information");
+				$objPHPExcel->getActiveSheet()->SetCellValue('AC1', "Error Information");
 				$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
 				$objWriter->save($invoice_excel_dir_path);
 				$this->setError($this->validationMessage['excelerror']);
@@ -2954,14 +3045,23 @@ final class client extends validation {
 							$invoiceItemIGSTTaxAmount = ($itemIGSTTax/100) * $invoiceItemTaxableAmount;
 							$invoiceItemCESSTaxAmount = ($itemCESSTax/100) * $invoiceItemTaxableAmount;
 						}
+						
+						if ($invoiceRow['is_tax_payable'] == "1") {
 
-						$invoiceItemTotalAmount = ($invoiceItemTaxableAmount + $invoiceItemCSGTTaxAmount + $invoiceItemSGSTTaxAmount + $invoiceItemIGSTTaxAmount + $invoiceItemCESSTaxAmount);
-						$invoiceTotalAmount += $invoiceItemTotalAmount;
+							$invoiceItemTotalAmount = $invoiceItemTaxableAmount;
+							$invoiceTotalAmount += $invoiceItemTotalAmount;
+						} else {
+
+							$invoiceItemTotalAmount = ($invoiceItemTaxableAmount + $invoiceItemCSGTTaxAmount + $invoiceItemSGSTTaxAmount + $invoiceItemIGSTTaxAmount + $invoiceItemCESSTaxAmount);
+							$invoiceTotalAmount += $invoiceItemTotalAmount;
+						}
 
 						$ItemArray = array(
 							"item_id" => $invoiceInnerRow['item_id'],
 							"item_name" => $invoiceInnerRow['item_name'],
 							"item_hsncode" => $invoiceInnerRow['item_hsncode'],
+							"item_description" => $invoiceInnerRow['item_description'],
+							"is_applicable" => $invoiceInnerRow['is_applicable'],
 							"taxable_subtotal" => round($invoiceItemTaxableAmount, 2),
 							"cgst_rate" => $itemCSGTTax,
 							"cgst_amount" => round($invoiceItemCSGTTaxAmount, 2),
@@ -3082,7 +3182,15 @@ final class client extends validation {
 				$dataArray['reference_number'] = isset($data['A']) ? $data['A'] : '';
 				$dataArray['invoice_date'] = isset($data['B']) ? $data['B'] : '';
 
-				$invoice_type = isset($data['C']) ? $data['C'] : '';
+				$reason_issuing_document = isset($data['C']) ? $data['C'] : '';
+				if(in_array($reason_issuing_document, $this->validateCDnRReason)) {
+					$dataArray['reason_issuing_document'] = $reason_issuing_document;
+				} else {
+					$errorflag = true;
+					array_push($currentItemError, "Invalid Issuing Reason.");
+				}
+
+				$invoice_type = isset($data['D']) ? $data['D'] : '';
 				if ($invoice_type != '' && strtoupper($invoice_type) === 'REVISED TAX INVOICE') {
                     $dataArray['invoice_type'] = "revisedtaxinvoice";
                 } else if ($invoice_type != '' && strtoupper($invoice_type) === 'CREDIT NOTE') {
@@ -3094,7 +3202,7 @@ final class client extends validation {
 					array_push($currentItemError, "Invalid Invoice Type.");
                 }
 
-				$invoice_corresponding_type = isset($data['D']) ? $data['D'] : '';
+				$invoice_corresponding_type = isset($data['E']) ? $data['E'] : '';
 				if ($invoice_corresponding_type != '' && strtoupper($invoice_corresponding_type) === 'TAX INVOICE') {
                     $dataArray['invoice_corresponding_type'] = "taxinvoice";
                 } else if ($invoice_corresponding_type != '' && strtoupper($invoice_corresponding_type) === 'BILL OF SUPPLY') {
@@ -3104,7 +3212,7 @@ final class client extends validation {
 					array_push($currentItemError, "Invalid Corresponding Type.");
                 }
 
-                $corresponding_document_number = isset($data['E']) ? $data['E'] : '';
+                $corresponding_document_number = isset($data['F']) ? $data['F'] : '';
 				$correspondingTypeData = $this->get_row("select 
 													invoice_id, 
 													serial_number, 
@@ -3123,7 +3231,7 @@ final class client extends validation {
 					array_push($currentItemError, "Invalid Corresponding Document Number.");
                 }
 
-				$supply_place = isset($data['F']) ? $data['F'] : '';
+				$supply_place = isset($data['G']) ? $data['G'] : '';
 				if ($supply_place != '') {
 
 					$supply_state_data = $this->getStateDetailByStateNameCode($supply_place);
@@ -3138,11 +3246,11 @@ final class client extends validation {
 					array_push($currentItemError, "Invalid Place Of Supply.");
 				}
 
-				$dataArray['billing_name'] = isset($data['G']) ? $data['G'] : '';
-				$dataArray['billing_company_name'] = isset($data['H']) ? $data['H'] : '';
-				$dataArray['billing_address'] = isset($data['I']) ? $data['I'] : '';
+				$dataArray['billing_name'] = isset($data['H']) ? $data['H'] : '';
+				$dataArray['billing_company_name'] = isset($data['I']) ? $data['I'] : '';
+				$dataArray['billing_address'] = isset($data['J']) ? $data['J'] : '';
 
-				$billing_state = isset($data['J']) ? $data['J'] : '';
+				$billing_state = isset($data['K']) ? $data['K'] : '';
 				if ($billing_state != '') {
 
 					$billing_state_data = $this->getStateDetailByStateNameCode($billing_state);
@@ -3158,7 +3266,7 @@ final class client extends validation {
 					array_push($currentItemError, "Invalid Billing State.");
 				}
 
-				$billing_country = isset($data['K']) ? $data['K'] : '';
+				$billing_country = isset($data['L']) ? $data['L'] : '';
 				if ($billing_country != '') {
 
 					$billing_country_data = $this->getCountryDetailByCountryCode($billing_country);
@@ -3173,7 +3281,7 @@ final class client extends validation {
 					array_push($currentItemError, "Invalid Billing Country.");
 				}
 
-				$billing_vendor_type = isset($data['L']) ? $data['L'] : '';
+				$billing_vendor_type = isset($data['M']) ? $data['M'] : '';
 				if ($billing_vendor_type != '') {
 
 					$dataVendorNameArrs = $this->get_row("select vendor_id, vendor_name from ".$this->tableNames['vendor_type']." where 1=1 AND UPPER(vendor_name) = '".strtoupper($billing_vendor_type)."' AND status='1' AND is_deleted='0'");
@@ -3188,13 +3296,13 @@ final class client extends validation {
 					array_push($currentItemError, "Invalid Billing Vendor Type.");
 				}
 
-				$dataArray['billing_gstin_number'] = isset($data['M']) ? $data['M'] : '';
+				$dataArray['billing_gstin_number'] = isset($data['N']) ? $data['N'] : '';
 
-				$dataArray['shipping_name'] = isset($data['N']) ? $data['N'] : '';
-				$dataArray['shipping_company_name'] = isset($data['O']) ? $data['O'] : '';
-				$dataArray['shipping_address'] = isset($data['P']) ? $data['P'] : '';
+				$dataArray['shipping_name'] = isset($data['O']) ? $data['O'] : '';
+				$dataArray['shipping_company_name'] = isset($data['P']) ? $data['P'] : '';
+				$dataArray['shipping_address'] = isset($data['Q']) ? $data['Q'] : '';
 
-				$shipping_state = isset($data['Q']) ? $data['Q'] : '';
+				$shipping_state = isset($data['R']) ? $data['R'] : '';
 				if ($shipping_state != '') {
 
 					$shipping_state_data = $this->getStateDetailByStateNameCode($shipping_state);
@@ -3210,7 +3318,7 @@ final class client extends validation {
 					array_push($currentItemError, "Invalid Shipping State.");
 				}
 
-				$shipping_country = isset($data['R']) ? $data['R'] : '';
+				$shipping_country = isset($data['S']) ? $data['S'] : '';
 				if ($shipping_country != '') {
 
 					$shipping_country_data = $this->getCountryDetailByCountryCode($shipping_country);
@@ -3225,7 +3333,7 @@ final class client extends validation {
 					array_push($currentItemError, "Invalid Shipping Country.");
 				}
 
-				$shipping_vendor_type = isset($data['S']) ? $data['S'] : '';
+				$shipping_vendor_type = isset($data['T']) ? $data['T'] : '';
 				if ($shipping_vendor_type != '') {
 
 					$dataVendorNameArrs = $this->get_row("select vendor_id, vendor_name from ".$this->tableNames['vendor_type']." where 1=1 AND UPPER(vendor_name) = '".strtoupper($shipping_vendor_type)."' AND status='1' AND is_deleted='0'");
@@ -3240,23 +3348,39 @@ final class client extends validation {
 					array_push($currentItemError, "Invalid Shipping Vendor Type.");
 				}
 
-				$dataArray['shipping_gstin_number'] = isset($data['T']) ? $data['T'] : '';
+				$dataArray['shipping_gstin_number'] = isset($data['U']) ? $data['U'] : '';
 
-				$item_name = isset($data['U']) ? trim($data['U']) : '';
-				$item_hsncode = isset($data['V']) ? trim($data['V']) : '';
-				$dataArray['item_quantity'] = isset($data['W']) ? round($data['W'], 2) : '';
+				$item_name = isset($data['V']) ? trim($data['V']) : '';
+				$item_hsncode = isset($data['W']) ? trim($data['W']) : '';
 
-				$dataArray['item_unit'] = isset($data['X']) ? $data['X'] : '';
+				$dataArray['item_description'] = isset($data['X']) ? trim($data['X']) : '';
+				$item_description = $dataArray['item_description'];
+				
+				$applicable_tax = isset($data['Y']) ? $data['Y'] : '';
+				if ($applicable_tax != '' && strtoupper($applicable_tax) == 'NON GST') {
+					$dataArray['is_applicable'] = '1';
+					$is_applicable = '1';
+				} else if ($applicable_tax != '' && strtoupper($applicable_tax) == 'EXEMPTED') {
+					$dataArray['is_applicable'] = '2';
+					$is_applicable = '2';
+				} else {
+					$dataArray['is_applicable'] = '0';
+					$is_applicable = '0';
+				}
+
+				$dataArray['item_quantity'] = isset($data['Z']) ? round($data['Z'], 2) : '';
+
+				$dataArray['item_unit'] = isset($data['AA']) ? $data['AA'] : '';
 				$item_unit =  $dataArray['item_unit'];
 				
-				$dataArray['item_rate'] = isset($data['Y']) ? round($data['Y'], 2) : 0.00;
+				$dataArray['item_rate'] = isset($data['AB']) ? round($data['AB'], 2) : 0.00;
 				$item_rate = round($dataArray['item_rate'], 2);
 
-				$dataArray['item_discount'] = isset($data['Z']) ? round($data['Z'], 2) : 0.00;
+				$dataArray['item_discount'] = isset($data['AC']) ? round($data['AC'], 2) : 0.00;
 
 				if(!empty($item_name) && !empty($item_hsncode)) {
 
-					$checkClientMasterItem = $this->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_description, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m where 1=1 AND cm.item_category = m.item_id AND cm.item_name = '" . $item_name . "' && m.hsn_code = '" . $item_hsncode . "' AND cm.is_deleted='0' AND cm.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
+					$checkClientMasterItem = $this->get_row("select cm.item_id, cm.is_applicable, cm.item_name, cm.unit_price, cm.item_description, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m where 1=1 AND cm.item_category = m.item_id AND cm.item_name = '" . $item_name . "' && m.hsn_code = '" . $item_hsncode . "' AND cm.is_deleted='0' AND cm.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
 					if (!empty($checkClientMasterItem)) {
 
 						$dataArray['item_id'] = $checkClientMasterItem->item_id;
@@ -3282,6 +3406,8 @@ final class client extends validation {
 
 							$dataInsertItemArray['item_name'] = $item_name;
 							$dataInsertItemArray['item_category'] = $masterItem->item_id;
+							$dataInsertItemArray['item_description'] = $item_description;
+							$dataInsertItemArray['is_applicable'] = $is_applicable;
 							$dataInsertItemArray['unit_price'] = $item_rate;
 							$dataInsertItemArray['item_unit'] = $master_unit_id;
 							$dataInsertItemArray['status'] = '1';
@@ -3308,15 +3434,15 @@ final class client extends validation {
 					array_push($currentItemError, "Description of Goods and HSN Code should be valid.");
 				}
 
-				$dataArray['cgst_rate'] = isset($data['AA']) ? round($data['AA'], 3) : 0.000;
-				$dataArray['sgst_rate'] = isset($data['AB']) ? round($data['AB'], 3) : 0.000;
-				$dataArray['igst_rate'] = isset($data['AC']) ? round($data['AC'], 3) : 0.000;
-				$dataArray['cess_rate'] = isset($data['AD']) ? round($data['AD'], 3) : 0.000;
+				$dataArray['cgst_rate'] = isset($data['AD']) ? round($data['AD'], 3) : 0.000;
+				$dataArray['sgst_rate'] = isset($data['AE']) ? round($data['AE'], 3) : 0.000;
+				$dataArray['igst_rate'] = isset($data['AF']) ? round($data['AF'], 3) : 0.000;
+				$dataArray['cess_rate'] = isset($data['AG']) ? round($data['AG'], 3) : 0.000;
 
 				/* get current user data */
 				$dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
 
-				if($dataCurrentUserArr['data']->kyc->state_id === $dataArray['supply_place']) {
+				if(isset($dataArray['supply_place']) && $dataCurrentUserArr['data']->kyc->state_id === $dataArray['supply_place']) {
 
 					if($dataArray['cgst_rate'] != $dataArray['sgst_rate']) {
 						$errorflag = true;
@@ -3332,7 +3458,7 @@ final class client extends validation {
 				}
 
 				/* Invoice Description */
-				$dataArray['description'] = isset($data['AE']) ? $data['AE'] : '';
+				$dataArray['description'] = isset($data['AH']) ? $data['AH'] : '';
 
 				$invoiceErrors = $this->validateClientInvoiceExcel($dataArray);
 				if ($invoiceErrors !== true || !empty($currentItemError)) {
@@ -3343,7 +3469,7 @@ final class client extends validation {
 					}
 					$invoiceErrors = array_merge($invoiceErrors, $currentItemError);
 					$invoiceErrors = implode(", ", $invoiceErrors);
-					$objPHPExcel->getActiveSheet()->SetCellValue('AF' . $rowKey, $invoiceErrors);
+					$objPHPExcel->getActiveSheet()->SetCellValue('AI' . $rowKey, $invoiceErrors);
 				}
 				
 				if ($errorflag === false) {
@@ -3359,6 +3485,7 @@ final class client extends validation {
 					$invoiceArray[$arrayKey]['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
 					$invoiceArray[$arrayKey]['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
 					$invoiceArray[$arrayKey]['invoice_date'] = $dataArray['invoice_date'];
+					$invoiceArray[$arrayKey]['reason_issuing_document'] = $dataArray['reason_issuing_document'];
 					$invoiceArray[$arrayKey]['invoice_corresponding_type'] = $dataArray['invoice_corresponding_type'];
 					$invoiceArray[$arrayKey]['corresponding_document_number'] = $dataArray['corresponding_document_number'];
 					$invoiceArray[$arrayKey]['corresponding_document_date'] = $dataArray['corresponding_document_date'];
@@ -3385,6 +3512,8 @@ final class client extends validation {
 					$invoiceItemArray['item_id'] = $dataArray['item_id'];
 					$invoiceItemArray['item_name'] = $dataArray['item_name'];
 					$invoiceItemArray['item_hsncode'] = $dataArray['item_hsncode'];
+					$invoiceItemArray['item_description'] = $dataArray['item_description'];
+					$invoiceItemArray['is_applicable'] = $dataArray['is_applicable'];
 					$invoiceItemArray['item_quantity'] = $dataArray['item_quantity'];
 					$invoiceItemArray['item_unit'] = $dataArray['item_unit'];
 					$invoiceItemArray['item_unit_price'] = $dataArray['item_rate'];
@@ -3400,7 +3529,7 @@ final class client extends validation {
 
             if ($errorflag === true) {
 
-				$objPHPExcel->getActiveSheet()->SetCellValue('AF1', "Error Information");
+				$objPHPExcel->getActiveSheet()->SetCellValue('AI1', "Error Information");
 				$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
 				$objWriter->save($invoice_excel_dir_path);
 				$this->setError($this->validationMessage['excelerror']);
@@ -3457,6 +3586,8 @@ final class client extends validation {
 							"item_id" => $invoiceInnerRow['item_id'],
 							"item_name" => $invoiceInnerRow['item_name'],
 							"item_hsncode" => $invoiceInnerRow['item_hsncode'],
+							"item_description" => $invoiceInnerRow['item_description'],
+							"is_applicable" => $invoiceInnerRow['is_applicable'],
 							"item_quantity" => $invoiceItemQuantity,
 							"item_unit" => $invoiceInnerRow['item_unit'],
 							"item_unit_price" => $itemUnitPrice,
@@ -3492,6 +3623,7 @@ final class client extends validation {
 						$InsertArray['company_state'] = $invoiceRow['company_state'];
 						$InsertArray['gstin_number'] = $invoiceRow['gstin_number'];
 						$InsertArray['invoice_date'] = $invoiceRow['invoice_date'];
+						$InsertArray['reason_issuing_document'] = $invoiceRow['reason_issuing_document'];
 						$InsertArray['invoice_corresponding_type'] = $invoiceRow['invoice_corresponding_type'];
 						$InsertArray['corresponding_document_number'] = $invoiceRow['corresponding_document_number'];
 						$InsertArray['corresponding_document_date'] = $invoiceRow['corresponding_document_date'];
@@ -3667,19 +3799,35 @@ final class client extends validation {
 
 				$item_name = isset($data['L']) ? trim($data['L']) : '';
 				$item_hsncode = isset($data['M']) ? trim($data['M']) : '';
-				$dataArray['item_quantity'] = isset($data['N']) ? round($data['N'], 3) : '';
 
-				$dataArray['item_unit'] = isset($data['O']) ? $data['O'] : '';
+				$dataArray['item_description'] = isset($data['N']) ? trim($data['N']) : '';
+				$item_description = $dataArray['item_description'];
+
+				$applicable_tax = isset($data['O']) ? $data['O'] : '';
+				if ($applicable_tax != '' && strtoupper($applicable_tax) == 'NON GST') {
+					$dataArray['is_applicable'] = '1';
+					$is_applicable = '1';
+				} else if ($applicable_tax != '' && strtoupper($applicable_tax) == 'EXEMPTED') {
+					$dataArray['is_applicable'] = '2';
+					$is_applicable = '2';
+				} else {
+					$dataArray['is_applicable'] = '0';
+					$is_applicable = '0';
+				}
+
+				$dataArray['item_quantity'] = isset($data['P']) ? round($data['P'], 3) : '';
+
+				$dataArray['item_unit'] = isset($data['Q']) ? $data['Q'] : '';
 				$item_unit =  $dataArray['item_unit'];
 
-				$dataArray['item_rate'] = isset($data['P']) ? round($data['P'], 2) : 0.00;
+				$dataArray['item_rate'] = isset($data['R']) ? round($data['R'], 2) : 0.00;
 				$item_rate = round($dataArray['item_rate'], 2);
 
-				$dataArray['item_discount'] = isset($data['Q']) ? round($data['Q'], 3) : 0.00;
+				$dataArray['item_discount'] = isset($data['S']) ? round($data['S'], 3) : 0.00;
 
 				if(!empty($item_name) && !empty($item_hsncode)) {
 
-					$checkClientMasterItem = $this->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_description, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m where 1=1 AND cm.item_category = m.item_id AND cm.item_name = '" . $item_name . "' && m.hsn_code = '" . $item_hsncode . "' AND cm.is_deleted='0' AND cm.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
+					$checkClientMasterItem = $this->get_row("select cm.item_id, cm.is_applicable, cm.item_name, cm.unit_price, cm.item_description, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit from " . $this->tableNames['client_master_item'] . " as cm, " . $this->tableNames['item'] . " as m where 1=1 AND cm.item_category = m.item_id AND cm.item_name = '" . $item_name . "' && m.hsn_code = '" . $item_hsncode . "' AND cm.is_deleted='0' AND cm.added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
 					if (!empty($checkClientMasterItem)) {
 
 						$dataArray['item_id'] = $checkClientMasterItem->item_id;
@@ -3705,6 +3853,8 @@ final class client extends validation {
 
 							$dataInsertItemArray['item_name'] = $item_name;
 							$dataInsertItemArray['item_category'] = $masterItem->item_id;
+							$dataInsertItemArray['item_description'] = $item_description;
+							$dataInsertItemArray['is_applicable'] = $is_applicable;
 							$dataInsertItemArray['unit_price'] = $item_rate;
 							$dataInsertItemArray['item_unit'] = $master_unit_id;
 							$dataInsertItemArray['status'] = '1';
@@ -3731,15 +3881,15 @@ final class client extends validation {
 					array_push($currentItemError, "Description of Goods and HSN Code should be valid.");
 				}
 
-				$dataArray['cgst_rate'] = isset($data['R']) ? round($data['R'], 3) : 0.000;
-				$dataArray['sgst_rate'] = isset($data['S']) ? round($data['S'], 3) : 0.000;
-				$dataArray['igst_rate'] = isset($data['T']) ? round($data['T'], 3) : 0.000;
-				$dataArray['cess_rate'] = isset($data['U']) ? round($data['U'], 3) : 0.000;
+				$dataArray['cgst_rate'] = isset($data['T']) ? round($data['T'], 3) : 0.000;
+				$dataArray['sgst_rate'] = isset($data['U']) ? round($data['U'], 3) : 0.000;
+				$dataArray['igst_rate'] = isset($data['V']) ? round($data['V'], 3) : 0.000;
+				$dataArray['cess_rate'] = isset($data['W']) ? round($data['W'], 3) : 0.000;
 
 				/* get current user data */
 				$dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
 
-				if($dataCurrentUserArr['data']->kyc->state_id === $dataArray['supply_place']) {
+				if(isset($dataArray['supply_place']) && $dataCurrentUserArr['data']->kyc->state_id === $dataArray['supply_place']) {
 
 					if($dataArray['cgst_rate'] != $dataArray['sgst_rate']) {
 						$errorflag = true;
@@ -3755,7 +3905,7 @@ final class client extends validation {
 				}
 
 				/* Invoice Description */
-				$dataArray['description'] = isset($data['V']) ? $data['V'] : '';
+				$dataArray['description'] = isset($data['X']) ? $data['X'] : '';
 
 				$invoiceErrors = $this->validateClientInvoiceExcel($dataArray);
 				if ($invoiceErrors !== true || !empty($currentItemError)) {
@@ -3766,7 +3916,7 @@ final class client extends validation {
 					}
 					$invoiceErrors = array_merge($invoiceErrors, $currentItemError);
 					$invoiceErrors = implode(", ", $invoiceErrors);
-					$objPHPExcel->getActiveSheet()->SetCellValue('W' . $rowKey, $invoiceErrors);
+					$objPHPExcel->getActiveSheet()->SetCellValue('Y' . $rowKey, $invoiceErrors);
 				}
 				
 				if ($errorflag === false) {
@@ -3798,6 +3948,8 @@ final class client extends validation {
 					$invoiceItemArray['item_id'] = $dataArray['item_id'];
 					$invoiceItemArray['item_name'] = $dataArray['item_name'];
 					$invoiceItemArray['item_hsncode'] = $dataArray['item_hsncode'];
+					$invoiceItemArray['item_description'] = $dataArray['item_description'];
+					$invoiceItemArray['is_applicable'] = $dataArray['is_applicable'];
 					$invoiceItemArray['item_quantity'] = $dataArray['item_quantity'];
 					$invoiceItemArray['item_unit'] = $dataArray['item_unit'];
 					$invoiceItemArray['item_unit_price'] = $dataArray['item_rate'];
@@ -3813,7 +3965,7 @@ final class client extends validation {
 
             if ($errorflag === true) {
 
-				$objPHPExcel->getActiveSheet()->SetCellValue('W1', "Error Information");
+				$objPHPExcel->getActiveSheet()->SetCellValue('Y1', "Error Information");
 				$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
 				$objWriter->save($invoice_excel_dir_path);
 				$this->setError($this->validationMessage['excelerror']);
@@ -3870,6 +4022,8 @@ final class client extends validation {
 							"item_id" => $invoiceInnerRow['item_id'],
 							"item_name" => $invoiceInnerRow['item_name'],
 							"item_hsncode" => $invoiceInnerRow['item_hsncode'],
+							"item_description" => $invoiceInnerRow['item_description'],
+							"is_applicable" => $invoiceInnerRow['is_applicable'],
 							"item_quantity" => $invoiceItemQuantity,
 							"item_unit" => $invoiceInnerRow['item_unit'],
 							"item_unit_price" => $itemUnitPrice,
@@ -5703,6 +5857,9 @@ final class client extends validation {
     public function generateRTInvoiceHtml($invid) {
 
         $currentFinancialYear = $this->generateFinancialYear();
+		
+		/* get current user data */
+		$dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
 
         $invoiceData = $this->get_results("select 
 											ci.*, 
@@ -5710,6 +5867,7 @@ final class client extends validation {
 											cii.item_id, 
 											cii.item_name, 
 											cii.item_hsncode, 
+											cii.item_description, 
 											cii.item_quantity, 
 											cii.item_unit, 
 											cii.item_unit_price, 
@@ -5738,7 +5896,7 @@ final class client extends validation {
         $mpdfHtml .= '<div style="margin:auto;font-size:16px;line-height:24px;color:#555;">';
         $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;" cellpadding="0" cellspacing="0">';
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;">';
+        $mpdfHtml .= '<td colspan="2" style="vertical-align:top;">';
         $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;">';
         $mpdfHtml .= '<tr>';
         $mpdfHtml .= '<td style="font-size:45px;line-height:45px;color:#333;padding:5px;vertical-align:top;padding-bottom:20px;">';
@@ -5751,11 +5909,16 @@ final class client extends validation {
 
         $mpdfHtml .= '</td>';
 
-		$mpdfHtml .= '<td style="padding:5px;vertical-align:top;text-align:right;padding-bottom:20px;">';
+		if($invoiceData[0]->invoice_type == "creditnote") { $invoiceType = "Credit Note"; } 
+		else if($invoiceData[0]->invoice_type == "debitnote") { $invoiceType = "Debit Note"; } 
+		else { $invoiceType = "Revised Tax Invoice"; }
+
+		$mpdfHtml .= '<td style="vertical-align:top;text-align:right;padding-bottom:20px;">';
         $mpdfHtml .= '<b>Invoice #</b>: ' . $invoiceData[0]->serial_number . '<br>';
         $mpdfHtml .= '<b>Reference #</b>: ' . $invoiceData[0]->reference_number . '<br>';
+		$mpdfHtml .= '<b>Type:</b> ' . $invoiceType . '<br>';
 		$mpdfHtml .= '<b>Nature:</b> Sales Invoice<br>';
-        $mpdfHtml .= '<b>Invoice Date:</b>' . $invoiceData[0]->invoice_date;
+        $mpdfHtml .= '<b>Invoice Date:</b> ' . $invoiceData[0]->invoice_date;
         $mpdfHtml .= '</td>';
         $mpdfHtml .= '</tr>';
         $mpdfHtml .= '</table>';
@@ -5765,31 +5928,35 @@ final class client extends validation {
         $supply_place_data = $this->getStateDetailByStateId($invoiceData[0]->supply_place);
 
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;">';
-        $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;">';
+        $mpdfHtml .= '<td colspan="2" style="vertical-align:top;">';
+        $mpdfHtml .= '<table style="width:100%;line-height:inherit;">';
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;padding-bottom:20px;">';
+        $mpdfHtml .= '<td style="text-align:left;vertical-align:top;padding-bottom:20px;width:48%;padding-right:2%;">';
         $mpdfHtml .= $invoiceData[0]->company_name . '<br>';
         $mpdfHtml .= $invoiceData[0]->company_address . '<br>';
-        $mpdfHtml .= '<b>GSTIN:</b> ' . $invoiceData[0]->gstin_number;
+		if(!empty($invoiceData[0]->company_email)) { $mpdfHtml .= '<b>Email:</b> ' . $invoiceData[0]->company_email . '<br>'; }
+        if(!empty($invoiceData[0]->company_phone_number)) { $mpdfHtml .= '<b>Phone:</b> ' . $invoiceData[0]->company_phone_number . '<br>'; }
+		$panFromGTIN = substr(substr($invoiceData[0]->gstin_number, 2), 0, -3);
+		$mpdfHtml .= '<b>PAN:</b> ' . $panFromGTIN  . '<br>';
+		$mpdfHtml .= '<b>GSTIN:</b> ' . $invoiceData[0]->gstin_number;
         $mpdfHtml .= '</td>';
 
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;text-align:right;padding-bottom:20px;">';
+        $mpdfHtml .= '<td style="vertical-align:top;text-align:right;padding-bottom:20px;width:48%;padding-left:2%;">';
 
 		if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) {
-			$mpdfHtml .= '<b>Place Of Supply:</b>' . $supply_place_data['data']->state_name . '<br>';
+			if($supply_place_data['data']->state_tin == 97) {
+				$mpdfHtml .= '<b>Place Of Supply:</b> ' . $supply_place_data['data']->state_name . '<br>';
+			} else {
+				$mpdfHtml .= '<b>Place Of Supply:</b> ' . $supply_place_data['data']->state_name . '(' . $supply_place_data['data']->state_tin . ')' . '<br>';
+			}
 		}
 
-		if($invoiceData[0]->invoice_type == "creditnote") { $invoiceNature = "Credit Note"; } 
-		else if($invoiceData[0]->invoice_type == "Credit Note") { $invoiceNature = "Debit Note"; } 
-		else { $invoiceNature = "Revised Tax Invoice"; }
+		$mpdfHtml .= '<b>Reason Issuing Document:</b> ' . $invoiceData[0]->reason_issuing_document . '<br>';
 
-		$mpdfHtml .= '<b>Document Nature:</b>' . $invoiceNature . '<br>';
-		
 		if($invoiceData[0]->invoice_corresponding_type == "taxinvoice") { $invoiceType = "Tax Invoice"; } 
 		else if($invoiceData[0]->invoice_corresponding_type == "billofsupplyinvoice") { $invoiceType = "Bill of Supply Invoice"; }
 
-		$mpdfHtml .= '<b>Corresponding Type:</b>' . $invoiceType . '<br>';
+		$mpdfHtml .= '<b>Corresponding Type:</b> ' . $invoiceType . '<br>';
 
 		$dataCorresDocumentRow = $this->get_row("select * from " . $this->tableNames['client_invoice'] . " where invoice_id = '".$invoiceData[0]->corresponding_document_number."' AND invoice_type = '".$invoiceData[0]->invoice_corresponding_type."' AND is_deleted='0' AND added_by = ".$this->sanitize($_SESSION['user_detail']['user_id']));
 
@@ -5808,11 +5975,11 @@ final class client extends validation {
         $mpdfHtml .= '</tr>';
 
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;">';
-        $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;">';
+        $mpdfHtml .= '<td colspan="2" style="vertical-align:top;">';
+        $mpdfHtml .= '<table style="width:100%;line-height:inherit;">';
         $mpdfHtml .= '<tr>';
        
-		$mpdfHtml .= '<td style="padding:5px;vertical-align:top;padding-bottom:40px;width:50%;">';
+		$mpdfHtml .= '<td style="vertical-align:top;text-align:left;padding-bottom:40px;width:48%;padding-right:2%;">';
 			$mpdfHtml .= '<b>Recipient Detail</b><br>';
 			$mpdfHtml .= $invoiceData[0]->billing_name . '<br>';
 			if ($invoiceData[0]->billing_company_name) { $mpdfHtml .= $invoiceData[0]->billing_company_name . '<br>'; }
@@ -5820,11 +5987,11 @@ final class client extends validation {
 			
 			$billing_vendor_data = $this->getVendorDetailByVendorId($invoiceData[0]->billing_vendor_type);
 			$mpdfHtml .= $billing_vendor_data['data']->vendor_name . '<br>';
-			
-			if (!empty($invoiceData[0]->billing_gstin_number)) { $mpdfHtml .= '<b>GSTIN:</b>' . $invoiceData[0]->billing_gstin_number; }
+
+			if (!empty($invoiceData[0]->billing_gstin_number)) { $mpdfHtml .= '<b>GSTIN/UIN:</b> ' . $invoiceData[0]->billing_gstin_number; }
 		$mpdfHtml .= '</td>';
 
-		$mpdfHtml .= '<td style="padding:5px;vertical-align:top;text-align:right;padding-bottom:40px;width:50%;">';
+		$mpdfHtml .= '<td style="vertical-align:top;text-align:right;padding-bottom:40px;width:48%;padding-left:2%;">';
 			$mpdfHtml .= '<b>Address Of Delivery / Shipping Detail</b><br>';
 			$mpdfHtml .= $invoiceData[0]->shipping_name . '<br>';
 			if ($invoiceData[0]->shipping_company_name) { $mpdfHtml .= $invoiceData[0]->shipping_company_name . '<br>'; }
@@ -5833,150 +6000,274 @@ final class client extends validation {
 			$shipping_vendor_data = $this->getVendorDetailByVendorId($invoiceData[0]->shipping_vendor_type);
 			$mpdfHtml .= $shipping_vendor_data['data']->vendor_name . '<br>';
 			
-			if (!empty($invoiceData[0]->billing_gstin_number)) { $mpdfHtml .= '<b>GSTIN:</b>' . $invoiceData[0]->shipping_gstin_number; }
+			if (!empty($invoiceData[0]->shipping_gstin_number)) { $mpdfHtml .= '<b>GSTIN/UIN:</b> ' . $invoiceData[0]->shipping_gstin_number; }
 		$mpdfHtml .= '</td>';
 
         $mpdfHtml .= '</tr>';
         $mpdfHtml .= '</table>';
         $mpdfHtml .= '</td>';
         $mpdfHtml .= '</tr>';
+		
+        $mpdfHtml .= '</table>';
 
+        $mpdfHtml .= '<table border="1" style="border-collapse:collapse;width:100%;line-height:inherit;text-align:center;">';
         $mpdfHtml .= '<tr>';
-
-        $mpdfHtml .= '<td colspan="2">';
-
-        $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:center;">';
-        $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">S.No</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Goods/Services</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">HSN/SAC Code</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Qty</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Unit</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Rate (₹)</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Total (₹)</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Discount(%)</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Taxable Value (₹)</td>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">CGST</td>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">SGST</td>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">IGST</td>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">CESS</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">S.No</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Goods/Services</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">HSN/SAC Code</td>';
+		$mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Item Description</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Qty</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Unit</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Rate (₹)</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Total (₹)</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Discount(%)</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Taxable Value (₹)</td>';
+        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">CGST</td>';
+        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">SGST</td>';
+        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">IGST</td>';
+        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">CESS</td>';
         $mpdfHtml .= '</tr>';
 
         $mpdfHtml .= '<tr class="heading">';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">(%)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Amt (₹)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">(%)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Amt (₹)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">(%)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Amt (₹)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">(%)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Amt (₹)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">(%)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Amt (₹)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">(%)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Amt (₹)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">(%)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Amt (₹)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">(%)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Amt (₹)</td>';
         $mpdfHtml .= '</tr>';
 
         $counter = 1;
+        $total_taxable_subtotal = 0.00;
+        $total_cgst_amount = 0.00;
+        $total_sgst_amount = 0.00;
+        $total_igst_amount = 0.00;
+        $total_cess_amount = 0.00;
         foreach ($invoiceData as $invData) {
 
             $mpdfHtml .= '<tr>';
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $counter;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_name;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_hsncode;
             $mpdfHtml .= '</td>';
+			
+			$mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
+            $mpdfHtml .= $invData->item_description;
+            $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_quantity;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_unit;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_unit_price;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->subtotal;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->discount;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->taxable_subtotal;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->cgst_rate;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->cgst_amount;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->sgst_rate;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->sgst_amount;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->igst_rate;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->igst_amount;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->cess_rate;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->cess_amount;
             $mpdfHtml .= '</td>';
 
             $mpdfHtml .= '</tr>';
 
+            $total_taxable_subtotal += $invData->taxable_subtotal;
+            $total_cgst_amount += $invData->cgst_amount;
+            $total_sgst_amount += $invData->sgst_amount;
+            $total_igst_amount += $invData->igst_amount;
+            $total_cess_amount += $invData->cess_amount;
+
             $counter++;
         }
 
-        $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="17" style="padding:5px;vertical-align:top;text-align:right;border-top:2px solid #eee;font-weight:bold;">';
-        $mpdfHtml .= 'Total Invoice Value (In Figure): ' . $invoiceData[0]->invoice_total_value;
+		$mpdfHtml .= '<tr style="background:#d9edf7;">';
+		$mpdfHtml .= '<td colspan="9" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Total Invoice Value</td>';
+		$mpdfHtml .= '<td>'.$total_taxable_subtotal.'</td>';
+		$mpdfHtml .= '<td>&nbsp;</td>';
+		$mpdfHtml .= '<td>'.$total_cgst_amount.'</td>';
+		$mpdfHtml .= '<td>&nbsp;</td>';
+		$mpdfHtml .= '<td>'.$total_sgst_amount.'</td>';
+		$mpdfHtml .= '<td>&nbsp;</td>';
+		$mpdfHtml .= '<td>'.$total_igst_amount.'</td>';
+		$mpdfHtml .= '<td>&nbsp;</td>';
+		$mpdfHtml .= '<td>'.$total_cess_amount.'</td>';
+		$mpdfHtml .= '</tr>';
+
+		$mpdfHtml .= '<tr style="background:#ffefbf;">';
+        $mpdfHtml .= '<td colspan="18" style="padding:5px;vertical-align:top;text-align:right;font-weight:bold;">';
+        $mpdfHtml .= 'Total Invoice Value (In Figure): ₹' . $invoiceData[0]->invoice_total_value;
         $mpdfHtml .= '</td>';
         $mpdfHtml .= '</tr>';
 
         $invoice_total_value_words = $this->convert_number_to_words($invoiceData[0]->invoice_total_value);
 
-        $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="17" style="padding:5px;vertical-align:top;text-align:right;border-top:2px solid #eee;font-weight:bold;">';
+        $mpdfHtml .= '<tr style="background:#f2dede;">';
+        $mpdfHtml .= '<td colspan="18" style="padding:5px;vertical-align:top;text-align:right;font-weight:bold;">';
         $mpdfHtml .= 'Total Invoice Value (In Words): ' . ucwords($invoice_total_value_words);
         $mpdfHtml .= '</td>';
         $mpdfHtml .= '</tr>';
 
         $mpdfHtml .= '</table>';
 
-        $mpdfHtml .= '</td>';
+		$mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;" cellpadding="0" cellspacing="0">';
 
-        $mpdfHtml .= '</tr>';
-		
-		if(!empty($invoiceData[0]->description)) {
-			$mpdfHtml .= '<tr class="description">';
-				$mpdfHtml .= '<td colspan="2">';
-					$mpdfHtml .= '<p><b>Description:</b> '. $invoiceData[0]->description .'</p>';
+			if(!empty($invoiceData[0]->description)) {
+				$mpdfHtml .= '<tr class="description">';
+					$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
+						$mpdfHtml .= '<p><b>Additional Notes:</b> '. $invoiceData[0]->description .'</p>';
+					$mpdfHtml .= '</td>';
+				$mpdfHtml .= '</tr>';
+			}
+
+			$mpdfHtml .= '<tr>';
+				$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
+					$mpdfHtml .= '<table style="width:100%;line-height:inherit;">';
+						
+						$mpdfHtml .= '<tr>';
+
+							$mpdfHtml .= '<td style="vertical-align:top;width:50%;">';
+								
+								if(
+									!empty($dataCurrentUserArr['data']->kyc->bank_name) || 
+									!empty($dataCurrentUserArr['data']->kyc->account_number) || 
+									!empty($dataCurrentUserArr['data']->kyc->branch_name) || 
+									!empty($dataCurrentUserArr['data']->kyc->ifsc_code)
+								) {
+								
+									$mpdfHtml .= '<b>Bank Details :-</b><br>';
+
+									$mpdfHtml .= '<table width="100%" border="1" style="border-collapse:collapse;width:100%;line-height:inherit;">';
+										$mpdfHtml .= '<tr>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:40%;">';
+												$mpdfHtml .= '<b>Bank Name</b>';
+											$mpdfHtml .= '</td>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:60%;padding-left:5px;">';
+												$mpdfHtml .= $dataCurrentUserArr['data']->kyc->bank_name;
+											$mpdfHtml .= '</td>';
+										
+										$mpdfHtml .= '</tr>';
+
+										$mpdfHtml .= '<tr>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:40%;">';
+												$mpdfHtml .= '<b>Account Number</b>';
+											$mpdfHtml .= '</td>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:60%;padding-left:5px;">';
+												$mpdfHtml .= $dataCurrentUserArr['data']->kyc->account_number;
+											$mpdfHtml .= '</td>';
+
+										$mpdfHtml .= '</tr>';									
+
+										$mpdfHtml .= '<tr>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:40%;">';
+												$mpdfHtml .= '<b>Branch Name</b>';
+											$mpdfHtml .= '</td>';
+											
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:60%;padding-left:5px;">';
+												$mpdfHtml .= $dataCurrentUserArr['data']->kyc->branch_name;
+											$mpdfHtml .= '</td>';
+										
+										$mpdfHtml .= '</tr>';
+
+										$mpdfHtml .= '<tr>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:40%;">';
+												$mpdfHtml .= '<b>IFSC Code</b>';
+											$mpdfHtml .= '</td>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:60%;padding-left:5px;">';
+												$mpdfHtml .= $dataCurrentUserArr['data']->kyc->ifsc_code;
+											$mpdfHtml .= '</td>';
+
+										$mpdfHtml .= '</tr>';
+
+									$mpdfHtml .= '</table>';
+								}
+
+							$mpdfHtml .= '</td>';
+
+							$mpdfHtml .= '<td style="padding-top:50px;vertical-align:top;padding-left:10%;width:40%;">';
+
+								$mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:center;">';
+									$mpdfHtml .= '<tr class="signature">';
+										$mpdfHtml .= '<td style="vertical-align:top;">';
+										$mpdfHtml .= '</td>';
+										$mpdfHtml .= '<td style="vertical-align:top;">';
+											$mpdfHtml .= '<p style="text-align:right;">';
+												$mpdfHtml .= '<hr style="height:2px;">';
+											$mpdfHtml .= '</p>';
+											$mpdfHtml .= '<p style="text-align:center;">';
+												$mpdfHtml .= 'For ' . $dataCurrentUserArr['data']->kyc->name;
+											$mpdfHtml .= '</p>';
+											$mpdfHtml .= '<p style="text-align:center;">';
+												$mpdfHtml .= '<b>(Authorised Signatory)</b>';
+											$mpdfHtml .= '</p>';
+										$mpdfHtml .= '</td>';
+									$mpdfHtml .= '</tr>';
+								$mpdfHtml .= '</table>';
+
+							$mpdfHtml .= '</td>';
+
+						$mpdfHtml .= '</tr>';
+
+					$mpdfHtml .= '</table>';
 				$mpdfHtml .= '</td>';
 			$mpdfHtml .= '</tr>';
-		}
 
         $mpdfHtml .= '</table>';
         $mpdfHtml .= '</div>';
@@ -5988,6 +6279,9 @@ final class client extends validation {
     public function generateDCInvoiceHtml($invid) {
 
         $currentFinancialYear = $this->generateFinancialYear();
+		
+		/* get current user data */
+		$dataCurrentUserArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
 
         $invoiceData = $this->get_results("select 
 											ci.*, 
@@ -5995,6 +6289,7 @@ final class client extends validation {
 											cii.item_id, 
 											cii.item_name, 
 											cii.item_hsncode, 
+											cii.item_description, 
 											cii.item_quantity, 
 											cii.item_unit, 
 											cii.item_unit_price, 
@@ -6023,7 +6318,7 @@ final class client extends validation {
         $mpdfHtml .= '<div style="margin:auto;font-size:16px;line-height:24px;color:#555;">';
         $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;" cellpadding="0" cellspacing="0">';
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;">';
+        $mpdfHtml .= '<td colspan="2" style="vertical-align:top;">';
         $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;">';
         $mpdfHtml .= '<tr>';
         $mpdfHtml .= '<td style="font-size:45px;line-height:45px;color:#333;padding:5px;vertical-align:top;padding-bottom:20px;">';
@@ -6036,12 +6331,12 @@ final class client extends validation {
 
         $mpdfHtml .= '</td>';
 
-		$mpdfHtml .= '<td style="padding:5px;vertical-align:top;text-align:right;padding-bottom:20px;">';
-        $mpdfHtml .= '<b>Invoice #: </b>' . $invoiceData[0]->serial_number . '<br>';
-        $mpdfHtml .= '<b>Reference #: </b>' . $invoiceData[0]->reference_number . '<br>';
+		$mpdfHtml .= '<td style="vertical-align:top;text-align:right;padding-bottom:20px;">';
+        $mpdfHtml .= '<b>Invoice #</b>: ' . $invoiceData[0]->serial_number . '<br>';
+        $mpdfHtml .= '<b>Reference #</b>: ' . $invoiceData[0]->reference_number . '<br>';
 		$mpdfHtml .= '<b>Type:</b> Delivery Challan<br>';
 		$mpdfHtml .= '<b>Nature:</b> Sales Invoice<br>';
-        $mpdfHtml .= '<b>Invoice Date: </b>' . $invoiceData[0]->invoice_date;
+        $mpdfHtml .= '<b>Invoice Date:</b> ' . $invoiceData[0]->invoice_date;
         $mpdfHtml .= '</td>';
         $mpdfHtml .= '</tr>';
         $mpdfHtml .= '</table>';
@@ -6051,19 +6346,27 @@ final class client extends validation {
         $supply_place_data = $this->getStateDetailByStateId($invoiceData[0]->supply_place);
 
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;">';
-        $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;">';
+        $mpdfHtml .= '<td colspan="2" style="vertical-align:top;">';
+        $mpdfHtml .= '<table style="width:100%;line-height:inherit;">';
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;padding-bottom:20px;">';
+        $mpdfHtml .= '<td style="text-align:left;vertical-align:top;padding-bottom:20px;width:48%;padding-right:2%;">';
         $mpdfHtml .= $invoiceData[0]->company_name . '<br>';
         $mpdfHtml .= $invoiceData[0]->company_address . '<br>';
-        $mpdfHtml .= '<b>GSTIN:</b> ' . $invoiceData[0]->gstin_number;
+		if(!empty($invoiceData[0]->company_email)) { $mpdfHtml .= '<b>Email:</b> ' . $invoiceData[0]->company_email . '<br>'; }
+        if(!empty($invoiceData[0]->company_phone_number)) { $mpdfHtml .= '<b>Phone:</b> ' . $invoiceData[0]->company_phone_number . '<br>'; }
+		$panFromGTIN = substr(substr($invoiceData[0]->gstin_number, 2), 0, -3);
+		$mpdfHtml .= '<b>PAN:</b> ' . $panFromGTIN  . '<br>';
+		$mpdfHtml .= '<b>GSTIN:</b> ' . $invoiceData[0]->gstin_number;
         $mpdfHtml .= '</td>';
 
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;text-align:right;padding-bottom:20px;">';
+        $mpdfHtml .= '<td style="vertical-align:top;text-align:right;padding-bottom:20px;width:48%;padding-left:2%;">';
 
 		if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) {
-			$mpdfHtml .= '<b>Place Of Supply:</b>' . $supply_place_data['data']->state_name . '<br>';
+			if($supply_place_data['data']->state_tin == 97) {
+				$mpdfHtml .= '<b>Place Of Supply:</b> ' . $supply_place_data['data']->state_name . '<br>';
+			} else {
+				$mpdfHtml .= '<b>Place Of Supply:</b> ' . $supply_place_data['data']->state_name . '(' . $supply_place_data['data']->state_tin . ')' . '<br>';
+			}
 		}
 
 		if($invoiceData[0]->delivery_challan_type == "jobwork") { $challanType = "Job Work"; } 
@@ -6071,31 +6374,30 @@ final class client extends validation {
 		else if($invoiceData[0]->delivery_challan_type == "supplyonapproval") { $challanType = "Supply on Approval"; } 
 		else { $challanType = "Others"; }
 
-		$mpdfHtml .= '<b>Challan Type:</b>' . $challanType . '<br>';
-
+		$mpdfHtml .= '<b>Challan Type:</b> ' . $challanType . '<br>';
 		if ($invoiceData[0]->is_canceled == 1) { $mpdfHtml .= '<b>Canceled Invoice:</b> Canceled'; }
 
-        $mpdfHtml .= '</td>';
+		$mpdfHtml .= '</td>';
         $mpdfHtml .= '</tr>';
         $mpdfHtml .= '</table>';
         $mpdfHtml .= '</td>';
         $mpdfHtml .= '</tr>';
 
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;">';
-        $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;">';
+        $mpdfHtml .= '<td colspan="2" style="vertical-align:top;">';
+        $mpdfHtml .= '<table style="width:100%;line-height:inherit;">';
         $mpdfHtml .= '<tr>';
-       
-		$mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;padding-bottom:40px;width:50%;">';
+
+		$mpdfHtml .= '<td style="vertical-align:top;text-align:left;padding-bottom:40px;width:48%;padding-right:2%;">';
 			$mpdfHtml .= '<b>Consignee Detail</b><br>';
 			$mpdfHtml .= $invoiceData[0]->billing_name . '<br>';
 			if ($invoiceData[0]->billing_company_name) { $mpdfHtml .= $invoiceData[0]->billing_company_name . '<br>'; }
 			$mpdfHtml .= $invoiceData[0]->billing_address . '<br>';
-
+			
 			$billing_vendor_data = $this->getVendorDetailByVendorId($invoiceData[0]->billing_vendor_type);
 			$mpdfHtml .= $billing_vendor_data['data']->vendor_name . '<br>';
 
-			if ($invoiceData[0]->billing_gstin_number > 0) { $mpdfHtml .= '<b>GSTIN:</b>' . $invoiceData[0]->billing_gstin_number; }
+			if (!empty($invoiceData[0]->billing_gstin_number)) { $mpdfHtml .= '<b>GSTIN/UIN:</b> ' . $invoiceData[0]->billing_gstin_number; }
 		$mpdfHtml .= '</td>';
 
         $mpdfHtml .= '</tr>';
@@ -6103,142 +6405,266 @@ final class client extends validation {
         $mpdfHtml .= '</td>';
         $mpdfHtml .= '</tr>';
 
-        $mpdfHtml .= '<tr>';
+        $mpdfHtml .= '</table>';
 
-        $mpdfHtml .= '<td colspan="2">';
-
-        $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:center;">';
+        $mpdfHtml .= '<table border="1" style="border-collapse:collapse;width:100%;line-height:inherit;text-align:center;">';
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">S.No</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Goods/Services</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">HSN/SAC Code</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Qty</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Unit</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Rate (₹)</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Total (₹)</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Discount(%)</td>';
-        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Taxable Value (₹)</td>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">CGST</td>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">SGST</td>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">IGST</td>';
-        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">CESS</td>';
+		$mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">S.No</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Goods/Services</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">HSN/SAC Code</td>';
+		$mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Item Description</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Qty</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Unit</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Rate (₹)</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Total (₹)</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Discount(%)</td>';
+        $mpdfHtml .= '<td rowspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Taxable Value (₹)</td>';
+        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">CGST</td>';
+        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">SGST</td>';
+        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">IGST</td>';
+        $mpdfHtml .= '<td colspan="2" style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">CESS</td>';
         $mpdfHtml .= '</tr>';
 
         $mpdfHtml .= '<tr class="heading">';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">(%)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Amt (₹)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">(%)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Amt (₹)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">(%)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Amt (₹)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">(%)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Amt (₹)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">(%)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Amt (₹)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">(%)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Amt (₹)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">(%)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Amt (₹)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">(%)</td>';
+        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;font-weight:bold;">Amt (₹)</td>';
         $mpdfHtml .= '</tr>';
 
         $counter = 1;
+        $total_taxable_subtotal = 0.00;
+        $total_cgst_amount = 0.00;
+        $total_sgst_amount = 0.00;
+        $total_igst_amount = 0.00;
+        $total_cess_amount = 0.00;
         foreach ($invoiceData as $invData) {
 
             $mpdfHtml .= '<tr>';
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $counter;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_name;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_hsncode;
             $mpdfHtml .= '</td>';
+			
+			$mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
+            $mpdfHtml .= $invData->item_description;
+            $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_quantity;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_unit;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->item_unit_price;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->subtotal;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->discount;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->taxable_subtotal;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->cgst_rate;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->cgst_amount;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->sgst_rate;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->sgst_amount;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->igst_rate;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->igst_amount;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->cess_rate;
             $mpdfHtml .= '</td>';
 
-            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;">';
+            $mpdfHtml .= '<td style="padding:5px;vertical-align:top;">';
             $mpdfHtml .= $invData->cess_amount;
             $mpdfHtml .= '</td>';
 
             $mpdfHtml .= '</tr>';
 
+            $total_taxable_subtotal += $invData->taxable_subtotal;
+            $total_cgst_amount += $invData->cgst_amount;
+            $total_sgst_amount += $invData->sgst_amount;
+            $total_igst_amount += $invData->igst_amount;
+            $total_cess_amount += $invData->cess_amount;
+
             $counter++;
         }
+		
+		$mpdfHtml .= '<tr style="background:#d9edf7;">';
+		$mpdfHtml .= '<td colspan="9" align="right" style="font-size:14px;padding:5px;vertical-align:top;font-family:opensans_bold;font-weight:normal;">Total Invoice Value</td>';
+		$mpdfHtml .= '<td>'.$total_taxable_subtotal.'</td>';
+		$mpdfHtml .= '<td>&nbsp;</td>';
+		$mpdfHtml .= '<td>'.$total_cgst_amount.'</td>';
+		$mpdfHtml .= '<td>&nbsp;</td>';
+		$mpdfHtml .= '<td>'.$total_sgst_amount.'</td>';
+		$mpdfHtml .= '<td>&nbsp;</td>';
+		$mpdfHtml .= '<td>'.$total_igst_amount.'</td>';
+		$mpdfHtml .= '<td>&nbsp;</td>';
+		$mpdfHtml .= '<td>'.$total_cess_amount.'</td>';
+		$mpdfHtml .= '</tr>';
 
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="17" style="padding:5px;vertical-align:top;text-align:right;border-top:2px solid #eee;font-weight:bold;">';
-        $mpdfHtml .= 'Total Invoice Value (In Figure): ' . $invoiceData[0]->invoice_total_value;
+        $mpdfHtml .= '<td colspan="18" style="padding:5px;vertical-align:top;text-align:right;font-weight:bold;">';
+        $mpdfHtml .= 'Total Invoice Value (In Figure): ₹' . $invoiceData[0]->invoice_total_value;
         $mpdfHtml .= '</td>';
         $mpdfHtml .= '</tr>';
 
         $invoice_total_value_words = $this->convert_number_to_words($invoiceData[0]->invoice_total_value);
 
         $mpdfHtml .= '<tr>';
-        $mpdfHtml .= '<td colspan="17" style="padding:5px;vertical-align:top;text-align:right;border-top:2px solid #eee;font-weight:bold;">';
+        $mpdfHtml .= '<td colspan="18" style="padding:5px;vertical-align:top;text-align:right;font-weight:bold;">';
         $mpdfHtml .= 'Total Invoice Value (In Words): ' . ucwords($invoice_total_value_words);
         $mpdfHtml .= '</td>';
         $mpdfHtml .= '</tr>';
 
         $mpdfHtml .= '</table>';
 
-        $mpdfHtml .= '</td>';
+        $mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:left;" cellpadding="0" cellspacing="0">';
 
-        $mpdfHtml .= '</tr>';
-		
-		if(!empty($invoiceData[0]->description)) {
-			$mpdfHtml .= '<tr class="description">';
-				$mpdfHtml .= '<td colspan="2">';
-					$mpdfHtml .= '<p><b>Description:</b> '. $invoiceData[0]->description .'</p>';
+			if(!empty($invoiceData[0]->description)) {
+				$mpdfHtml .= '<tr class="description">';
+					$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
+						$mpdfHtml .= '<p><b>Additional Notes:</b> '. $invoiceData[0]->description .'</p>';
+					$mpdfHtml .= '</td>';
+				$mpdfHtml .= '</tr>';
+			}
+
+			$mpdfHtml .= '<tr>';
+				$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
+					$mpdfHtml .= '<table style="width:100%;line-height:inherit;">';
+						
+						$mpdfHtml .= '<tr>';
+
+							$mpdfHtml .= '<td style="vertical-align:top;width:50%;">';
+								
+								if(
+									!empty($dataCurrentUserArr['data']->kyc->bank_name) || 
+									!empty($dataCurrentUserArr['data']->kyc->account_number) || 
+									!empty($dataCurrentUserArr['data']->kyc->branch_name) || 
+									!empty($dataCurrentUserArr['data']->kyc->ifsc_code)
+								) {
+								
+									$mpdfHtml .= '<b>Bank Details :-</b><br>';
+
+									$mpdfHtml .= '<table width="100%" border="1" style="border-collapse:collapse;width:100%;line-height:inherit;">';
+										$mpdfHtml .= '<tr>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:40%;">';
+												$mpdfHtml .= '<b>Bank Name</b>';
+											$mpdfHtml .= '</td>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:60%;padding-left:5px;">';
+												$mpdfHtml .= $dataCurrentUserArr['data']->kyc->bank_name;
+											$mpdfHtml .= '</td>';
+										
+										$mpdfHtml .= '</tr>';
+
+										$mpdfHtml .= '<tr>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:40%;">';
+												$mpdfHtml .= '<b>Account Number</b>';
+											$mpdfHtml .= '</td>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:60%;padding-left:5px;">';
+												$mpdfHtml .= $dataCurrentUserArr['data']->kyc->account_number;
+											$mpdfHtml .= '</td>';
+
+										$mpdfHtml .= '</tr>';									
+
+										$mpdfHtml .= '<tr>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:40%;">';
+												$mpdfHtml .= '<b>Branch Name</b>';
+											$mpdfHtml .= '</td>';
+											
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:60%;padding-left:5px;">';
+												$mpdfHtml .= $dataCurrentUserArr['data']->kyc->branch_name;
+											$mpdfHtml .= '</td>';
+										
+										$mpdfHtml .= '</tr>';
+
+										$mpdfHtml .= '<tr>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:40%;">';
+												$mpdfHtml .= '<b>IFSC Code</b>';
+											$mpdfHtml .= '</td>';
+
+											$mpdfHtml .= '<td style="vertical-align:top;text-align:left;width:60%;padding-left:5px;">';
+												$mpdfHtml .= $dataCurrentUserArr['data']->kyc->ifsc_code;
+											$mpdfHtml .= '</td>';
+
+										$mpdfHtml .= '</tr>';
+
+									$mpdfHtml .= '</table>';
+								}
+
+							$mpdfHtml .= '</td>';
+
+							$mpdfHtml .= '<td style="padding-top:50px;vertical-align:top;padding-left:10%;width:40%;">';
+
+								$mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:center;">';
+									$mpdfHtml .= '<tr class="signature">';
+										$mpdfHtml .= '<td style="vertical-align:top;">';
+										$mpdfHtml .= '</td>';
+										$mpdfHtml .= '<td style="vertical-align:top;">';
+											$mpdfHtml .= '<p style="text-align:right;">';
+												$mpdfHtml .= '<hr style="height:2px;">';
+											$mpdfHtml .= '</p>';
+											$mpdfHtml .= '<p style="text-align:center;">';
+												$mpdfHtml .= 'For ' . $dataCurrentUserArr['data']->kyc->name;
+											$mpdfHtml .= '</p>';
+											$mpdfHtml .= '<p style="text-align:center;">';
+												$mpdfHtml .= '<b>(Authorised Signatory)</b>';
+											$mpdfHtml .= '</p>';
+										$mpdfHtml .= '</td>';
+									$mpdfHtml .= '</tr>';
+								$mpdfHtml .= '</table>';
+
+							$mpdfHtml .= '</td>';
+
+						$mpdfHtml .= '</tr>';
+
+					$mpdfHtml .= '</table>';
 				$mpdfHtml .= '</td>';
 			$mpdfHtml .= '</tr>';
-		}
 
         $mpdfHtml .= '</table>';
         $mpdfHtml .= '</div>';

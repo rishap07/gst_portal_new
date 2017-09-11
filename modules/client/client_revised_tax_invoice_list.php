@@ -18,7 +18,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadRTInvoice' && isset($_
         exit();
     }
 
-    $obj_mpdf = new mPDF();
+    $obj_mpdf = new mPDF('utf-8', 'A4');
     $obj_mpdf->SetHeader('Revised Tax Invoice');
     $obj_mpdf->WriteHTML($htmlResponse);
 
@@ -80,7 +80,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printRTInvoice' && isset($_GET
         exit();
     }
 
-    $obj_mpdf = new mPDF();
+    $obj_mpdf = new mPDF('utf-8', 'A4');
     $obj_mpdf->SetHeader('Revised Tax Invoice');
     $obj_mpdf->WriteHTML($htmlResponse);
 
@@ -230,6 +230,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 													<td style="text-align:right;vertical-align:top;">
                                                         <b>Invoice #</b>: <?php echo $invoiceData[0]->serial_number; ?><br>
                                                         <b>Reference #</b>: <?php echo $invoiceData[0]->reference_number; ?><br>
+														<b>Type:</b> <?php if($invoiceData[0]->invoice_type == "creditnote") { echo "Credit Note"; } else if($invoiceData[0]->invoice_type == "debitnote") { echo "Debit Note"; } else { echo "Revised Tax Invoice"; } ?><br>
                                                         <b>Nature:</b> <?php echo "Sales Invoice"; ?><br>
                                                         <b>Invoice Date:</b> <?php echo $invoiceData[0]->invoice_date; ?>
                                                     </td>
@@ -255,9 +256,8 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                                     </td>
 
                                                     <td style="text-align:right;vertical-align:top;width:48%;padding-left:2%;">
-                                                        <?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php if($supply_place_data['data']->state_tin == 99) { echo $supply_place_data['data']->state_name; } else { echo $supply_place_data['data']->state_name . "(" . $supply_place_data['data']->state_tin . ")"; } ?><br> <?php } ?>
+                                                        <?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php if($supply_place_data['data']->state_tin == 97) { echo $supply_place_data['data']->state_name; } else { echo $supply_place_data['data']->state_name . "(" . $supply_place_data['data']->state_tin . ")"; } ?><br> <?php } ?>
 														<b>Reason Issuing Document:</b> <?php echo $invoiceData[0]->reason_issuing_document; ?><br>
-														<b>Document Nature:</b> <?php if($invoiceData[0]->invoice_type == "creditnote") { echo "Credit Note"; } else if($invoiceData[0]->invoice_type == "debitnote") { echo "Debit Note"; } else { echo "Revised Tax Invoice"; } ?><br>
 														<b>Corresponding Type:</b> <?php if($invoiceData[0]->invoice_corresponding_type == "taxinvoice") { echo "Tax Invoice" . "<br>"; } else if($invoiceData[0]->invoice_corresponding_type == "billofsupplyinvoice") { echo "Bill of Supply Invoice" . "<br>"; } ?>
 
 														<?php $dataCorresDocumentRow = $obj_client->get_row("select * from ".$obj_client->getTableName('client_invoice')." where invoice_id = '".$invoiceData[0]->corresponding_document_number."' AND invoice_type = '".$invoiceData[0]->invoice_corresponding_type."' AND is_deleted='0' AND added_by = ".$obj_client->sanitize($_SESSION['user_detail']['user_id'])); ?>

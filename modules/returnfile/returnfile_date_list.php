@@ -4,67 +4,34 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
     $obj_plan->redirect(PROJECT_URL);
     exit();
 }
-$obj_notification->updateuserNotificationDetail();
-             /*
- 
-				$message="";
-				$count=1;
-				$flag=0;
-		        $sql="select * from " . $db_obj->getTableName('notification') . " as n INNER join " . $db_obj->getTableName('user_notification') . " as u on u.notification_id=n.notification_id  where n.status='1' and  u.user_id='".$_SESSION["user_detail"]["user_id"]."' order by u.notification_id desc";
-				$dataNotification = $db_obj->get_results($sql);
-                if(!empty($dataNotification))
-				{
-					
-						foreach($dataNotification as $dataItem)
-					   {
 
-						  ?> 
-						  <tr>
-						  <?php
-						  if((date('Y-m-d H:i:s')>=$dataItem->start_date) && (date('Y-m-d H:i:s') <= $dataItem->end_date))
-						  {
-							  $flag=1;
-						  if($dataItem->vendor_list==0)
-						  {
-							   if($obj_notification->updateNotificationDetail($dataItem->notification_id))
-		                    	{
-			                   }
-							 
-						  
-					       
-						  }
-						 if(isset($dataArr['data']->kyc->vendor_type) && $dataArr['data']->kyc->vendor_type==$dataItem->vendor_list)
-							  { 
-							    if($obj_notification->updateNotificationDetail($dataItem->notification_id))
-		                    	{
-			                   }
-							  
-								
-						  }
-						  }
-						 
-						
-					  }
-				if($flag==1){
-			
-				
-				
-				 } }  */?>
+if(!$obj_plan->can_read('returnfile_list')) {
 
+    $obj_plan->setError($obj_plan->getValMsg('can_read'));
+    $obj_plan->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
+
+
+/* get current user data */
+
+?>
 
 <!--========================sidemenu over=========================-->
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
-       <h1>Notification List</h1>
+       <h1>ReturnFile List</h1>
         <div class="whitebg formboxcontainer">
-      
+        <div>
+            <a class='btn btn-default btn-success btnwidth addnew' href='<?php echo PROJECT_URL;?>/?page=returnfile_date_update'>Add New</a>
+        </div>
          <div class="clear height10"></div>
        
           <?php $obj_plan->showErrorMessage(); ?>
             <?php $obj_plan->showSuccessMessge(); ?>
             <?php $obj_plan->unsetMessage(); ?>
-        <h2 class="greyheading">Notification Listing</h2>
+        <h2 class="greyheading">ReturnFile Listing</h2>
         
         <div class="adminformbx">
           
@@ -75,9 +42,13 @@ $obj_notification->updateuserNotificationDetail();
                     <tr>
                         <th align='left'>#</th>
                     
-                        <th align='left' width="200px">Title</th>
-                        <th align='left'>Message</th>
-                        
+                        <th align='left'>Name</th>
+                        <th align='left'>Category</th>
+						<th align='left'>SubCategory</th>
+						<th align='left'>ReturnMonth</th>
+						<th align='left'>Date</th>
+                      	<th align='left'>Status</th>
+                        <th align='left'>Action</th>
                     </tr>
                 </thead>
 
@@ -107,8 +78,13 @@ $obj_notification->updateuserNotificationDetail();
                     "aoColumns": [
                         {"bSortable": false},
                         {"bSortable": false},
-						 {"bSortable": false}
-                     
+                        {"bSortable": false},
+                        {"bSortable": false},
+						{"bSortable": false},
+						{"bSortable": false},
+						{"bSortable": false},
+						
+                        {"bSortable": false}
                     ],
                     "sDom": "lfrtip",
                     "aLengthMenu": [
@@ -119,7 +95,7 @@ $obj_notification->updateuserNotificationDetail();
                     "bServerSide": true,
                     "bStateSave": false,
                     "bDestroy": true,
-                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=notification",
+                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=returnfile_date_list",
                     "fnServerParams": function (aoData) {
                     },
                     "iDisplayLength": 50

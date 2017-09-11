@@ -71,10 +71,8 @@ class validation extends upload {
 			'transition_form2'=>TAB_PREFIX.'transition_form2',
 			'return_cat'=>TAB_PREFIX.'return_categories',
 			'return_subcat'=>TAB_PREFIX.'return_subcategories',
-			'returnfile_dates'=>TAB_PREFIX.'returnfile_dates'
-			
-						
-					
+			'returnfile_dates'=>TAB_PREFIX.'returnfile_dates',
+            'otp_request'=>TAB_PREFIX.'otp_request',
         );
 
         $this->checkUserPortalAccess();
@@ -88,6 +86,16 @@ class validation extends upload {
             exit();
         }
     }
+
+	protected $validateCDnRReason = array(
+										"01-Sales Return", 
+										"02-Post Sale Discount", 
+										"03-Deficiency in services", 
+										"04-Correction in Invoice", 
+										"05-Change in POS", 
+										"06-Finalization of Provisional assessment", 
+										"07-Others"
+									);
 
     //onedash   /^[a-zA-Z\d]+[(-{1})|(a-zA-Z\d)][a-zA-Z\d]+$/
     protected $validateType = array(
@@ -163,7 +171,7 @@ class validation extends upload {
         'supplieradded' => ' Supplier added successfully.',
         'itemadded' => ' Item added successfully.',
         'excelerror' => 'There is an error in uploaded excel. Download and check in error information column.',
-         'gstinservererror' => 'GSTIN Server is down.'
+        'gstinservererror' => 'GSTIN Server is down.'
     );
 
     public function getTableName($tablename)
@@ -444,7 +452,7 @@ class validation extends upload {
             $queryCDNR .=  " and a.invoice_id in (".$ids.") ";
         }
 
-        $queryCDNR .= " and a.status='1' and a.billing_gstin_number!='' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%'  and a.is_canceled='0' and a.is_deleted='0' group by a.reference_number order by a.supply_place ";
+        $queryCDNR .= " and a.status='1' and a.billing_gstin_number!='' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%'  and a.is_canceled='0' and a.is_deleted='0' group by a.reference_number, b.consolidate_rate order by a.supply_place ";
        //echo 'CDNR: '.$queryCDNR.'<br/>';
         return $this->get_results($queryCDNR);
     }
@@ -476,7 +484,7 @@ class validation extends upload {
         }
         $queryCDNUR .= " and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '".$returnmonth."%' 
             and a.supply_place!=a.company_state and a.invoice_corresponding_type='taxinvoice' 
-            and a.billing_gstin_number='' and a.invoice_total_value >'250000' 
+            and a.billing_gstin_number=''
            
             and (c.invoice_type='exportinvoice' or c.invoice_type='sezunitinvoice' or c.invoice_type='deemedexportinvoice' or c.invoice_type='taxinvoice') 
             and a.is_canceled='0' and a.is_deleted='0' group by a.reference_number, b.consolidate_rate order by a.supply_place ";
@@ -580,11 +588,12 @@ class validation extends upload {
         return $this->get_results($queryHsn); 
     }
     
-    public function getNILInvoices($user_id,$returnmonth,$type='',$ids=''){
+    public function getNILTotalInvoices($user_id,$returnmonth,$type='',$ids=''){
         $query1 =  "select a.invoice_id,a.billing_name,
         a.invoice_type,
         a.billing_gstin_number,
         a.is_gstr1_uploaded,
+        b.is_applicable,
         a.reference_number,s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_date,b.item_name,a.invoice_type,
         sum(b.igst_amount) as igst_amount, 
         sum(b.cgst_amount) as cgst_amount, 
@@ -606,10 +615,11 @@ class validation extends upload {
         if(!empty($ids)) {
             $query1 .=  " and a.invoice_id in (".$ids.") ";
         }
-        $query1 .=  " and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number!='' and a.is_canceled='0' and a.is_deleted='0'  ";
+        $query1 .=  " and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number!='' and a.is_canceled='0' and a.is_deleted='0' and (a.invoice_type='taxinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice' or a.invoice_type='exportinvoice' )  and a.invoice_nature='salesinvoice' and (b.is_applicable = '1' or b.is_applicable = '2' or (b.is_applicable = '0' and b.igst_rate = '0.00' and b.cgst_rate = '0.00'  and b.sgst_rate = '0.00'))  ";
 
        $query2 =  "select a.invoice_id,
        a.invoice_type,
+       b.is_applicable,
        s.state_tin as company_state,
        a.billing_gstin_number,
        a.reference_number,
@@ -632,7 +642,62 @@ class validation extends upload {
             $query2 .=  " and a.invoice_id in (".$ids.") ";
         }
 
-        $query2 .=  " and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number='' and a.is_canceled='0' and a.is_deleted='0' ";
+        $query2 .=  " and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number='' and a.is_canceled='0' and a.is_deleted='0' and (a.invoice_type='taxinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice' or a.invoice_type='exportinvoice' )  and a.invoice_nature='salesinvoice' and (b.is_applicable = '1' or b.is_applicable = '2' or (b.is_applicable = '0' and b.igst_rate = '0.00' and b.cgst_rate = '0.00'  and b.sgst_rate = '0.00')) ";
+
+        echo 'Nil: '.$query1."<br><br>".$query2.'<br>';
+
+        $dataInv1 = $this->get_results($query1);
+        $dataInv2 = $this->get_results($query2);
+        $data = array($dataInv1,$dataInv2);
+        return $data;
+
+    }
+    public function getNILInvoices($user_id,$returnmonth,$type='',$ids=''){
+        $query1 =  "select a.invoice_id,a.billing_name,
+        a.invoice_type,
+        a.billing_gstin_number,
+        a.is_gstr1_uploaded,
+        b.is_applicable,
+        a.reference_number,s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_date,b.item_name,a.invoice_type,
+        a.invoice_total_value
+        from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
+
+        if($type != '') {
+            if($type != 'all') {
+                $query1 .=  " and a.is_gstr1_uploaded='".$type."'  ";            
+            }
+            
+        }
+        else if($type == '') {
+            $query1 .=  " and a.is_gstr1_uploaded='0' ";
+        }
+        if(!empty($ids)) {
+            $query1 .=  " and a.invoice_id in (".$ids.") ";
+        }
+        $query1 .=  " and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number!='' and a.is_canceled='0' and a.is_deleted='0' and (a.invoice_type='taxinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice' or a.invoice_type='exportinvoice' )  and a.invoice_nature='salesinvoice' and (b.is_applicable = '1' or b.is_applicable = '2' or (b.is_applicable = '0' and b.igst_rate = '0.00' and b.cgst_rate = '0.00'  and b.sgst_rate = '0.00'))  ";
+
+       $query2 =  "select a.invoice_id,a.billing_name,
+        a.invoice_type,
+        a.billing_gstin_number,
+        a.is_gstr1_uploaded,
+        b.is_applicable,
+        a.reference_number,s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_date,b.item_name,a.invoice_type,
+        a.invoice_total_value
+        from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
+
+        if($type != '') {
+            if($type != 'all') {
+                $query2 .=  " and a.is_gstr1_uploaded='".$type."'  ";
+            }
+        }
+        else if($type == '') {
+            $query2 .=  " and a.is_gstr1_uploaded='0' ";
+        }
+        if(!empty($ids)) {
+            $query2 .=  " and a.invoice_id in (".$ids.") ";
+        }
+
+        $query2 .=  " and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number='' and a.is_canceled='0' and a.is_deleted='0' and (a.invoice_type='taxinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice' or a.invoice_type='exportinvoice' )  and a.invoice_nature='salesinvoice' and (b.is_applicable = '1' or b.is_applicable = '2' or (b.is_applicable = '0' and b.igst_rate = '0.00' and b.cgst_rate = '0.00'  and b.sgst_rate = '0.00')) ";
 
         //echo 'Nil: '.$query1."<br><br>".$query2.'<br>';
 

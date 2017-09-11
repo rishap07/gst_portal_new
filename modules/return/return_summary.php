@@ -120,12 +120,29 @@ else
                                         <tr>
                                             <?php
                                             $b2bData = $obj_gstr1->getB2BInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all');
+                                            //$obj_gstr1->pr($b2bData);
                                             $b2b_total = $b2b_invoice_total_value = $b2b_sumTotal = 0;
+                                            $b2bCount = $tempTotVal = $tempInvTot=  0;
                                             if (!empty($b2bData)) {
+                                                $tempInv = '';
                                                 foreach ($b2bData as $key => $b2bDatavalue) {
-                                                    $b2b_invoice_total_value += isset($b2bDatavalue->taxable_subtotal)?$b2bDatavalue->taxable_subtotal:0;
+                                                    if($tempInv!='' && $tempInv!=$b2bDatavalue->invoice_id)
+                                                    {
+                                                        $b2bCount++;
+                                                        $b2b_sumTotal +=$tempTotVal;
+                                                        $b2b_invoice_total_value +=$tempInvTot;
+                                                    }
+                                                    $tempInvTot = isset($b2bDatavalue->taxable_subtotal)?$b2bDatavalue->taxable_subtotal:0;
                                                     $b2b_total += $b2bDatavalue->cgst_amount + $b2bDatavalue->sgst_amount + $b2bDatavalue->igst_amount + $b2bDatavalue->cess_amount;
-                                                    $b2b_sumTotal +=isset($b2bDatavalue->invoice_total_value)?$b2bDatavalue->invoice_total_value:0;
+                                                    $tempTotVal = isset($b2bDatavalue->invoice_total_value)?$b2bDatavalue->invoice_total_value:0;
+                                                    
+                                                    $tempInv=$b2bDatavalue->invoice_id;
+                                                }
+                                                if($tempInv!='')
+                                                {
+                                                    $b2bCount++;
+                                                    $b2b_sumTotal +=$tempTotVal;
+                                                    $b2b_invoice_total_value +=$tempInvTot;
                                                 }
                                                 
                                             }
@@ -133,7 +150,7 @@ else
 
                                             ?>
                                             <td>B2B</th>
-                                            <td align='right'><?php echo count($b2bData); ?></td>
+                                            <td align='right'><?php echo $b2bCount; ?></td>
                                             <td align='right'><?php echo $b2b_invoice_total_value; ?></td>
                                             <td align='right'><?php echo $b2b_total; ?></td>
                                             <td align='right'><?php echo $b2b_sumTotal; ?></td>
@@ -142,19 +159,33 @@ else
                                             <?php
                                             $b2clData = $obj_gstr1->getB2CLInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all');
                                             $b2cl_total = $b2cl_invoice_total_value = $b2cl_sumTotal = 0;
+                                            $b2clCount = $tempTotVal = $tempInvTot = 0;
                                             if (!empty($b2clData)) {
+                                                $tempInv = '';
                                                 foreach ($b2clData as $key => $b2clDatavalue) {
-                                                    $b2cl_invoice_total_value += isset($b2clDatavalue->taxable_subtotal)?$b2clDatavalue->taxable_subtotal:0;
+                                                    if($tempInv!='' && $tempInv!=$b2clDatavalue->invoice_id)
+                                                    {
+                                                        $b2clCount++;
+                                                        $b2cl_sumTotal +=$tempTotVal;
+                                                        $b2cl_invoice_total_value +=$tempInvTot;
+                                                    }
+                                                    $tempInvTot = isset($b2clDatavalue->taxable_subtotal)?$b2clDatavalue->taxable_subtotal:0;
                                                     $b2cl_total += $b2clDatavalue->cgst_amount + $b2clDatavalue->sgst_amount + $b2clDatavalue->igst_amount + $b2clDatavalue->cess_amount;
-                                                    $b2cl_sumTotal +=isset($b2clDatavalue->invoice_total_value)?$b2clDatavalue->invoice_total_value:0;
+                                                    $tempTotVal =isset($b2clDatavalue->invoice_total_value)?$b2clDatavalue->invoice_total_value:0;
+                                                    $tempInv=$b2clDatavalue->invoice_id;
                                                 }
-                                                
+                                                if($tempInv!='')
+                                                {
+                                                    $b2clCount++;
+                                                    $b2cl_sumTotal +=$tempTotVal;
+                                                    $b2cl_invoice_total_value +=$tempInvTot;
+                                                }
                                                 
                                             }
 
                                             ?>
                                             <td>B2C Large</td>
-                                            <td align='right'><?php echo count($b2clData); ?></td>
+                                            <td align='right'><?php echo $b2clCount; ?></td>
                                             <td align='right'><?php echo $b2cl_invoice_total_value; ?></td>
                                             <td align='right'><?php echo $b2cl_total; ?></td>
                                             <td align='right'><?php echo $b2cl_sumTotal; ?></td>
@@ -163,19 +194,34 @@ else
                                             <?php
                                             $b2csData = $obj_gstr1->getB2CSInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all');
                                             $b2cs_total = $b2cs_invoice_total_value = $b2cs_sumTotal = 0;
+                                            $b2csCount = $tempTotVal = $tempInvTot = 0;
                                             if (!empty($b2csData)) {
+                                                $tempInv = '';
                                                 foreach ($b2csData as $key => $b2csDatavalue) {
-                                                    $b2cs_invoice_total_value += isset($b2csDatavalue->taxable_subtotal)?$b2csDatavalue->taxable_subtotal:0;
+                                                    
+                                                    if($tempInv!='' && $tempInv!=$b2csDatavalue->invoice_id )
+                                                    {
+                                                        $b2csCount++;
+                                                        $b2cs_sumTotal +=$tempTotVal;
+                                                        $b2cl_invoice_total_value +=$tempInvTot;
+                                                    }
+                                                    $b2cs_invoice_total_value = isset($b2csDatavalue->taxable_subtotal)?$b2csDatavalue->taxable_subtotal:0;
                                                     $b2cs_total += $b2csDatavalue->cgst_amount + $b2csDatavalue->sgst_amount + $b2csDatavalue->igst_amount + $b2csDatavalue->cess_amount;
-                                                    $b2cs_sumTotal +=isset($b2csDatavalue->invoice_total_value)?$b2csDatavalue->invoice_total_value:0;
- 
+                                                    $b2cs_sumTotal =isset($b2csDatavalue->invoice_total_value)?$b2csDatavalue->invoice_total_value:0;
+                                                    $tempInv=$b2csDatavalue->invoice_id;
+                                                }
+                                                if($tempInv!='')
+                                                {
+                                                    $b2csCount++;
+                                                    $b2cs_sumTotal +=$tempTotVal;
+                                                    $b2cs_invoice_total_value +=$tempInvTot;
                                                 }
                                                 
                                              }
 
                                             ?>
                                             <td>B2C Small</td>
-                                            <td align='right'><?php echo count($b2csData); ?></td>
+                                            <td align='right'><?php echo $b2csCount; ?></td>
                                             <td align='right'><?php echo $b2cs_invoice_total_value; ?></td>
                                             <td align='right'><?php echo $b2cs_total; ?></td>
                                             <td align='right'><?php echo $b2cs_sumTotal; ?></td>
@@ -183,19 +229,33 @@ else
                                         <tr>
                                             <?php
                                             $cdnrData = $obj_gstr1->getCDNRInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all');
-
                                             $cdnr_total = $cdnr_invoice_total_value = $cdnr_sumTotal = 0;
+                                            $cdnrCount = $tempTotVal = $tempInvTot = 0;
                                             if (!empty($cdnrData)) {
+                                                $tempInv = '';
                                                 foreach ($cdnrData as $key => $cdnrDatavalue) {
-                                                    $cdnr_invoice_total_value += isset($cdnrDatavalue->taxable_subtotal)?$cdnrDatavalue->taxable_subtotal:0;
+                                                    if($tempInv!='' && $tempInv!=$cdnrDatavalue->invoice_id )
+                                                    {
+                                                        $cdnrCount++;
+                                                        $cdnr_sumTotal +=$tempTotVal;
+                                                        $cdnr_invoice_total_value +=$tempInvTot;
+                                                    }
+                                                    $tempInvTot = isset($cdnrDatavalue->taxable_subtotal)?$cdnrDatavalue->taxable_subtotal:0;
                                                     $cdnr_total += $cdnrDatavalue->cgst_amount + $cdnrDatavalue->sgst_amount + $cdnrDatavalue->igst_amount + $cdnrDatavalue->cess_amount;
-                                                    $cdnr_sumTotal +=isset($cdnrDatavalue->invoice_total_value)?$cdnrDatavalue->invoice_total_value:0;
+                                                    $tempTotVal =isset($cdnrDatavalue->invoice_total_value)?$cdnrDatavalue->invoice_total_value:0;
+                                                    $tempInv=$cdnrDatavalue->invoice_id;
+                                                }
+                                                if($tempInv!='' )
+                                                {
+                                                    $cdnrCount++;
+                                                    $cdnr_sumTotal +=$tempTotVal;
+                                                    $cdnr_invoice_total_value +=$tempInvTot;
                                                 }
                                                 
                                             }
                                             ?>
                                             <td>Credit Debit Notes Registered</td>
-                                            <td align='right'><?php echo count($cdnrData); ?></td>
+                                            <td align='right'><?php echo $cdnrCount; ?></td>
                                             <td align='right'><?php echo $cdnr_invoice_total_value; ?></td>
                                             <td align='right'><?php echo $cdnr_total; ?></td>
                                             <td align='right'><?php echo $cdnr_sumTotal; ?></td>
@@ -205,17 +265,32 @@ else
                                             $expData = $obj_gstr1->getEXPInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all');
 											
                                             $exp_total = $exp_invoice_total_value = $exp_sumTotal = 0;
+                                            $expCount = $tempTotVal = $tempInvTot = 0;
                                             if (!empty($expData)) {
+                                                $tempInv = '';
                                                 foreach ($expData as $key => $expDatavalue) {
-                                                    $exp_invoice_total_value += isset($expDatavalue->taxable_subtotal)?$expDatavalue->taxable_subtotal:0;
+                                                    if($tempInv!='' && $tempInv!=$expDatavalue->invoice_id )
+                                                    {
+                                                        $expCount++;
+                                                        $exp_sumTotal +=$tempTotVal;
+                                                        $exp_invoice_total_value +=$tempInvTot;
+                                                    }
+                                                    $tempInvTot = isset($expDatavalue->taxable_subtotal)?$expDatavalue->taxable_subtotal:0;
                                                     $exp_total += $expDatavalue->cgst_amount + $expDatavalue->sgst_amount + $expDatavalue->igst_amount + $expDatavalue->cess_amount;
-                                                    $exp_sumTotal +=isset($expDatavalue->invoice_total_value)?$expDatavalue->invoice_total_value:0;
+                                                    $tempTotVal =isset($expDatavalue->invoice_total_value)?$expDatavalue->invoice_total_value:0;
+                                                    $tempInv=$expDatavalue->invoice_id;
+                                                }
+                                                if($tempInv!='')
+                                                {
+                                                    $expCount++;
+                                                    $exp_sumTotal +=$tempTotVal;
+                                                    $exp_invoice_total_value +=$tempInvTot;
                                                 }
                                                 
                                             }
                                             ?>
                                             <td>Export</td>
-                                            <td align='right'><?php echo count($expData); ?></td>
+                                            <td align='right'><?php echo $expCount; ?></td>
                                             <td align='right'><?php echo $exp_invoice_total_value; ?></td>
                                             <td align='right'><?php echo $exp_total; ?></td>
                                             <td align='right'><?php echo $exp_sumTotal; ?></td>
@@ -223,19 +298,33 @@ else
                                         <tr>
                                             <?php
                                             $atData = $obj_gstr1->getATInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all');
-											//$obj_gstr1->pr($atData);
                                             $at_total = $at_invoice_total_value = $at_sumTotal = 0;
+                                            $atCount = $tempTotVal = $tempInvTot = 0;
                                             if (!empty($atData)) {
+                                                $tempInv = '';
                                                 foreach ($atData as $key => $atDatavalue) {
-                                                    $at_invoice_total_value += isset($atDatavalue->taxable_subtotal)?$atDatavalue->taxable_subtotal:0;
+                                                    if($tempInv!='' && $tempInv!=$atDatavalue->invoice_id )
+                                                    {
+                                                        $atCount++;
+                                                        $at_sumTotal +=$tempTotVal;
+                                                        $at_invoice_total_value +=$tempInvTot;
+                                                    }
+                                                    $tempInvTot = isset($atDatavalue->taxable_subtotal)?$atDatavalue->taxable_subtotal:0;
                                                     $at_total += $atDatavalue->cgst_amount + $atDatavalue->sgst_amount + $atDatavalue->igst_amount + $atDatavalue->cess_amount;
-                                                    $at_sumTotal +=isset($atDatavalue->invoice_total_value)?$atDatavalue->invoice_total_value:0;
+                                                    $tempTotVal =isset($atDatavalue->invoice_total_value)?$atDatavalue->invoice_total_value:0;
+                                                    $tempInv=$atDatavalue->invoice_id;
+                                                }
+                                                if($tempInv!='')
+                                                {
+                                                    $atCount++;
+                                                    $at_sumTotal +=$tempTotVal;
+                                                    $at_invoice_total_value +=$tempInvTot;
                                                 }
                                                 
                                             }
                                             ?>
                                             <td>Advance Tax</td>
-                                            <td align='right'><?php echo count($atData); ?></td>
+                                            <td align='right'><?php echo $atCount; ?></td>
                                             <td align='right'><?php echo $at_invoice_total_value; ?></td>
                                             <td align='right'><?php echo $at_total; ?></td>
                                             <td align='right'><?php echo $at_sumTotal; ?></td>
@@ -244,17 +333,32 @@ else
                                             <?php
                                             $cdnurData = $obj_gstr1->getCDNURInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all');
                                             $cdnur_total = $cdnur_invoice_total_value = $cdnur_sumTotal = 0;
+                                            $cdnurCount = $tempTotVal = $tempInvTot = 0;
                                             if (!empty($cdnurData)) {
+                                                $tempInv = '';
                                                 foreach ($cdnurData as $key => $cdnurDatavalue) {
-                                                    $cdnur_invoice_total_value += isset($cdnurDatavalue->taxable_subtotal)?$cdnurDatavalue->taxable_subtotal:0;
+                                                    if($tempInv!='' && $tempInv!=$cdnurDatavalue->invoice_id )
+                                                    {
+                                                        $cdnurCount++;
+                                                        $cdnur_sumTotal +=$tempTotVal;
+                                                        $cdnur_invoice_total_value +=$tempInvTot;
+                                                    }
+                                                    $tempInvTot = isset($cdnurDatavalue->taxable_subtotal)?$cdnurDatavalue->taxable_subtotal:0;
                                                     $cdnur_total +=  $cdnurDatavalue->igst_amount + $cdnurDatavalue->cess_amount;
-                                                    $cdnur_sumTotal +=isset($cdnurDatavalue->invoice_total_value)?$cdnurDatavalue->invoice_total_value:0;
+                                                    $tempTotVal =isset($cdnurDatavalue->invoice_total_value)?$cdnurDatavalue->invoice_total_value:0;
+                                                    $tempInv=$cdnurDatavalue->invoice_id;
+                                                }
+                                                if($tempInv!='' && $tempInv!=$atDatavalue->invoice_id )
+                                                {
+                                                    $cdnurCount++;
+                                                    $cdnur_sumTotal +=$tempTotVal;
+                                                    $cdnur_invoice_total_value +=$tempInvTot;
                                                 }
                                                 
                                             }
                                             ?>
                                             <td>Credit Debit Notes Unregistered</td>
-                                            <td align='right'><?php echo count($cdnurData); ?></td>
+                                            <td align='right'><?php echo $cdnurCount; ?></td>
                                             <td align='right'><?php echo $cdnur_invoice_total_value; ?></td>
                                             <td align='right'><?php echo $cdnur_total; ?></td>
                                             <td align='right'><?php echo $cdnur_sumTotal; ?></td>

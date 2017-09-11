@@ -156,7 +156,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'update') {
 					 <div class="col-md-12 col-sm-12 col-xs-12 form-group">
 
                         <label>Message<span class="starred">*</span></label>
-                         <textarea placeholder="Enter notification message" maxlength="255"  name="notification_message" id="notification_message" class="required form-control"><?php
+                         <textarea placeholder="Enter notification message" maxlength="255"  name="notification_message" id="notification_message" class="form-control"><?php
                         if (isset($_POST['notification_message'])) {
                             echo $_POST['notification_message'];
                         } else if (isset($dataCurrentArr[0]->notification_message)) {

@@ -31,8 +31,8 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	$dataArr['invoice_type'] = 'deliverychallaninvoice';
 	$dataArr['invoice_nature'] = 'salesinvoice';
 	$dataArr['invoice_date'] = isset($params['invoice_date']) ? $params['invoice_date'] : '';
-	$dataArr['reference_number'] = isset($params['invoice_reference_number']) ? $params['invoice_reference_number'] : '';
-	$dataArr['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
+	$dataArr['reference_number'] = isset($params['invoice_reference_number']) ? $params['invoice_reference_number'] : '';	
+	$dataArr['company_state'] = isset($params['company_state']) ? $params['company_state'] : '';
 	$dataArr['delivery_challan_type'] = isset($params['delivery_challan_type']) ? trim($params['delivery_challan_type']) : '';
 	$dataArr['description'] = isset($params['description']) ? trim($params['description']) : '';
 
@@ -93,6 +93,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 
 			$dataInvoiceArr = array();
 			$dataInvoiceArr['invoice_itemid'] = isset($params['invoice_itemid'][$i]) ? $params['invoice_itemid'][$i] : '';
+			$dataInvoiceArr['invoice_description'] = isset($params['invoice_description'][$i]) ? $params['invoice_description'][$i] : '';
 			$dataInvoiceArr['invoice_quantity'] = isset($params['invoice_quantity'][$i]) ? $params['invoice_quantity'][$i] : 0.00;
 			$dataInvoiceArr['invoice_unit'] = isset($params['invoice_unit'][$i]) ? $params['invoice_unit'][$i] : '';
 			$dataInvoiceArr['invoice_discount'] = isset($params['invoice_discount'][$i]) ? $params['invoice_discount'][$i] : 0.00;
@@ -108,7 +109,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 				$invoiceErrorMessage = array_merge($invoiceItemErrors, $invoiceErrorMessage);
 			}
 
-			$clientMasterItem = $obj_client->get_row("select cm.item_id, cm.item_name, cm.unit_price, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit, u.unit_id, u.unit_name, u.unit_code from " . $obj_client->getTableName('client_master_item') . " as cm, " . $obj_client->getTableName('item') . " as m, " . $obj_client->getTableName('unit') . " as u where 1=1 AND cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.item_id = ".$dataInvoiceArr['invoice_itemid']." AND cm.is_deleted='0' AND cm.status = '1' AND cm.added_by = '".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."'");
+			$clientMasterItem = $obj_client->get_row("select cm.item_id, cm.is_applicable, cm.item_name, cm.unit_price, cm.item_category, m.item_id as category_id, m.item_name as category_name, m.hsn_code, m.igst_tax_rate, m.csgt_tax_rate, m.sgst_tax_rate, m.cess_tax_rate, cm.item_unit, u.unit_id, u.unit_name, u.unit_code from " . $obj_client->getTableName('client_master_item') . " as cm, " . $obj_client->getTableName('item') . " as m, " . $obj_client->getTableName('unit') . " as u where 1=1 AND cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.item_id = ".$dataInvoiceArr['invoice_itemid']." AND cm.is_deleted='0' AND cm.status = '1' AND cm.added_by = '".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."'");
 			if (!empty($clientMasterItem)) {
 
 				$itemUnitPrice = (float)$dataInvoiceArr['invoice_rate'];
@@ -156,7 +157,9 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 				$ItemArray = array(
 								"item_id" => $clientMasterItem->item_id,
 								"item_name" => $clientMasterItem->item_name,
+								"item_description" => $dataInvoiceArr['invoice_description'],
 								"item_hsncode" => $clientMasterItem->hsn_code,
+								"is_applicable" => $clientMasterItem->is_applicable,
 								"item_quantity" => $invoiceItemQuantity,
 								"item_unit" => $invoiceItemUnit,
 								"item_unit_price" => $itemUnitPrice,

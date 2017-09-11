@@ -66,8 +66,6 @@ final class master extends validation {
             $dataArr['added_date'] = date('Y-m-d H:i:s');
         }
 
-
-
         return $dataArr;
     }
 
@@ -1291,17 +1289,19 @@ final class master extends validation {
     }
 
     private function validateItem($dataArr) {
-        $rules = array(
+
+		$rules = array(
             'item_name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Item',
             'hsn_code' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:HSN Code',
             'item_type' => 'required||numeric||min:0||max:1|#|lable_name:Item Type',
-            'applicable' => 'required||numeric||min:0||max:2|#|lable_name:applicable',
-            'igst_tax_rate' => 'required||decimalzero||max:100|#|lable_name:IGST Tax Rate',
-            'csgt_tax_rate' => 'required||decimalzero||max:100|#|lable_name:CSGT Tax Rate',
-            'sgst_tax_rate' => 'required||decimalzero||max:100|#|lable_nameSGST Tax Rate',
-            'cess_tax_rate' => 'required||decimalzero||max:100|#|lable_name:Cess Tax Rate',
+            'applicable' => 'required||numeric||min:0||max:2|#|lable_name:Applicable Tax',
+            'igst_tax_rate' => 'required||numeric||max:100|#|lable_name:IGST Tax Rate',
+            'csgt_tax_rate' => 'required||numeric||max:100|#|lable_name:CSGT Tax Rate',
+            'sgst_tax_rate' => 'required||numeric||max:100|#|lable_name:SGST Tax Rate',
+            'cess_tax_rate' => 'required||numeric||max:1000|#|lable_name:Cess Tax Rate',
             'status' => 'required|#|lable_name:State'
         );
+
         $valid = $this->vali_obj->validate($dataArr, $rules);
         if ($valid->hasErrors()) {
             $err_arr = $valid->allErrors();
@@ -1313,14 +1313,17 @@ final class master extends validation {
     }
 
     final public function updateItem() {
-        $dataArr = $this->getItemData();
+        
+		$dataArr = $this->getItemData();
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
         }
+
         if (!$this->validateItem($dataArr)) {
            return false;
         }
+
         $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
         $dataArr['update_date'] = date('Y-m-d H:i:s');
         if (!$this->update($this->tableNames['item'], $dataArr, array('item_id' => $this->sanitize($_GET['id'])))) {

@@ -11,9 +11,7 @@ final class notification extends validation {
     function __construct() {
         parent::__construct();
     }
-    
-   
-   
+       
   
   
    
@@ -108,7 +106,7 @@ final class notification extends validation {
 		$message="<ul class='noti-ul'>";
 	    $count=1;
 		$flag=0;
-		$sql="select *,u.status as nstatus  from " . $this->getTableName('notification') . " as n INNER join " . $this->getTableName('user_notification') . " as u on u.notification_id=n.notification_id  where n.status='1' and u.user_id='".$_SESSION["user_detail"]["user_id"]."' order by u.notification_id desc";
+		$sql="select *,u.status as nstatus  from " . $this->getTableName('notification') . " as n INNER join " . $this->getTableName('user_notification') . " as u on u.notification_id=n.notification_id  where n.status='1' and u.user_id='".$_SESSION["user_detail"]["user_id"]."' order by u.notification_id desc limit 0,1";
 			
 		$dataNotification = $this->get_results($sql);
         if(!empty($dataNotification))
@@ -126,7 +124,9 @@ final class notification extends validation {
 								 {
 								 }
 								
-								 $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_message)). "</a></li>";
+								// $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_message)). "</a></li>";
+								$message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name)). "</a></li>";
+								
 								 $count = $count+1;
 							  }
 							  if(isset($dataArr['data']->kyc->vendor_type) && $dataArr['data']->kyc->vendor_type==$dataItem->vendor_list)
@@ -136,9 +136,9 @@ final class notification extends validation {
 								 {
 								 }
 						
-							    $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_message)). "</a></li>";
-							
-									 $count = $count+1;
+							   // $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_message)). "</a></li>";
+							 $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name)). "</a></li>";
+							 $count = $count+1;
 									
 							   }
 						  }

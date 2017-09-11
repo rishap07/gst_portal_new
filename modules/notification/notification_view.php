@@ -114,12 +114,13 @@ if((isset($_GET["id"])) && (!empty($_GET["id"])))
 
 
     <tr>
-        <td style="font-size:14px;"><strong>Title</strong></td>
-        <td style="font-size:14px;"><?php echo $rResult[0]->notification_name ?></td>
+        
+        <td style="font-size:12px;" colspan="2" align="left"><h2><?php echo $rResult[0]->notification_name ?></h2></td>
     </tr>
      <tr>
-        <td style="font-size:14px;"><strong>Message</strong></td><br>
-        <td style="font-size:14px;"><?php echo html_entity_decode($rResult[0]->notification_message); ?></td>
+        
+        <td style="font-size:14px;" colspan="2" align="left">
+<p><?php echo html_entity_decode($rResult[0]->notification_message); ?></p></td>
     </tr> 
    
 </table>

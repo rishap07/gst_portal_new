@@ -135,6 +135,8 @@ final class gstr1 extends validation {
                     //$this->pr($payload);die;
                     $response = $obj_gst->returnSave($dataArr, $fmonth,'gstr1');
                     
+
+                    
                     if (!empty($response['error'] == 0)) {
                         $flag = 1;
 
@@ -379,8 +381,8 @@ final class gstr1 extends validation {
         /***** End Code For TXPD Payload ********** */
 
         
-        /*$this->pr($dataArr);       
-        die; */
+        $this->pr($dataArr);       
+        die; 
         
         $temp_id = '';
         $x = 0;

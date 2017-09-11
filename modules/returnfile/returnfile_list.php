@@ -5,37 +5,14 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
     exit();
 }
 
-if(!$obj_plan->can_read('plan_list')) {
+if(!$obj_plan->can_read('returnfile_list')) {
 
     $obj_plan->setError($obj_plan->getValMsg('can_read'));
     $obj_plan->redirect(PROJECT_URL."/?page=dashboard");
     exit();
 }
 
-if( isset($_GET['action']) && $_GET['action'] == 'deletePlan' && isset($_GET['id'])) {
-    
-	if(!$obj_plan->can_delete('plan_list')) {
 
-		$obj_plan->setError($obj_plan->getValMsg('can_delete'));
-		$obj_plan->redirect(PROJECT_URL."/?page=plan_list");
-		exit();
-	}
-	
-    $planid = $_GET['id'];
-    $planDetail = $obj_plan->getPlanDetails($planid);
-
-       
-    if( $planDetail['status'] == "success" ) {
-        
-        if($obj_plan->deletePlan($planDetail['data']->id)){
-            $obj_plan->redirect(PROJECT_URL."?page=plan_list");
-        }
-        
-    } else {
-        $obj_plan->setError($obj_plan->validationMessage['noplanexist']);
-        $obj_plan->redirect(PROJECT_URL."?page=plan_list");
-    }
-}
 /* get current user data */
 
 ?>

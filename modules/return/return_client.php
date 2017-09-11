@@ -234,9 +234,7 @@ if(!empty($dataInvPurchase))
                     <div class="col-md-8 col-sm-8 modpadlr">
                         <div class="rowsteps">
                             
-                        </div>
-
-                      
+                        </div>                   
                        
                     </div>
                     <div class="col-md-4 col-sm-4" style="background:#fde7e0; margin-top:20px; border-radius:3px; padding:15px">
@@ -357,7 +355,7 @@ if(!empty($dataInvPurchase))
 								?>
                                 <div class="col-md-4 col-sm-4 txtinovice col-xs-4"><i class="fa fa-check" aria-hidden="true"></i> Completed</div>
 								<?php } else {  ?>
-								  <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on 10 <?php if(isset($_REQUEST["returnmonth"]) && ($_REQUEST["returnmonth"]=='2017-07')) { echo 'september'; } else { echo $month; }?></div>
+								  <div class="col-md-4 col-sm-4 txtorange col-xs-4"><i class="fa fa-clock-o" aria-hidden="true"></i> Due on 10 <?php  echo $month; ?></div>
 								<?php } ?>
                             </div>
                         </div>

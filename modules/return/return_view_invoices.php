@@ -1,4 +1,5 @@
 <?php
+//session_destroy();
 $obj_gstr1 = new gstr1();
 $dataCurrentUserArr = $obj_gstr1->getUserDetailsById( $obj_gstr1->sanitize($_SESSION['user_detail']['user_id']) );
 //$obj_gstr1->pr($dataCurrentUserArr['data']);die;
@@ -33,10 +34,11 @@ if($type=="B2B")
     }
 }
 
+//$obj_gstr1->pr($_POST);
 
-
-if(isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN')
+if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isset($_POST['name']))
 {
+
    if(isset($_POST['name']) && $_POST['name']!='')
     {
         $ids = implode(',',  $_POST['name']);
@@ -52,6 +54,8 @@ if(isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN')
     }
     
 }
+
+
 
 ?>
 
@@ -158,7 +162,7 @@ if(isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN')
                                 </div>
                             </div>
                             </form>
-                            <form style="width:auto; display: inline-block;margin-bottom:10px;" method="post" name="form4">
+                            <form style="width:auto; display: inline-block;margin-bottom:10px;" method="post" name="form4" id="UploadForm">
 
                                 <?php
                                 $invCount= 0;
@@ -312,8 +316,8 @@ if(isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN')
                                     {
                                     ?>
                                         <div style="text-align: center;">
-                                            
-                                           <!--  <input type="submit" name="submit_up" id="up" value="Upload TO GSTN" class="btn  btn-success "> -->
+                                            <input type="submit" name="submit_up" id="up" value="Upload TO GSTN" class="btn  btn-success " >
+
                                             <input type="submit" name="submit_dwn" id="down" value="Download GSTR1" class="btn btn-warning ">
                                             
                                         </div>
@@ -444,6 +448,23 @@ if(isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN')
         </div>
     </div>
 </div>
+<!-- Modal -->
+<div id="otpModalBox" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">       
+      
+      <div class="modal-body">
+      <label>OTP:</label>
+       <input id="otp_code" type="textbox" name="otp" class="form-control" data-bind="numeric">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button id="otpModalBoxSubmit" type="button" value="OTP" class="btn btn-success" >Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
 <script type="text/javascript">
     $(document).ready(function () {
         $('#down').click(function () {
@@ -464,10 +485,10 @@ if(isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN')
                 return false;
             }
         });
-        $('#up').on('click', function () {
+        /*$('#up').on('click', function () {
             document.form4.action = '<?php echo PROJECT_URL.'/?page=return_view_invoices';?>&returnmonth=<?php echo $returnmonth; ?>';
             document.form4.submit();
-        });
+        });*/
         $('#multiple-checkboxes').multiselect();
         $('#returnmonth').on('change', function () {
             document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_view_invoices&returnmonth=<?php echo $returnmonth; ?>';
@@ -502,5 +523,80 @@ if(isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN')
 
        
 
+    });
+    $('#up').on('click', function (event) {
+        flag=0;
+        $(".name").each(function(){
+            if ($(this).prop('checked')==true){ 
+                flag=1;
+            }
+        });
+        if(flag==1)
+        {
+            //event.preventDefault();
+            $.ajax({
+                url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_details_check",
+                type: "json",
+                success: function (response) {
+                    //alert(response);
+                    if(response == 1) {
+                        $('#otpModalBox').modal('show');
+                        return false;
+                    }
+                    if(response == 0) {
+                       document.form4.submit();
+                    }
+                    else {
+                        location.reload();
+                    }
+                },
+                error: function() {
+                    alert('Please try again.');
+                    return false;
+                }
+            });
+            return false;
+            
+        }
+        else
+        {
+            alert('No Invoices are selected?');
+            return false;
+        }
+        return false;
+
+    });
+    $( "#otpModalBoxSubmit" ).click(function( event ) {
+      var otp = $('#otp_code').val();
+      //event.preventDefault();
+      if(otp != '') {
+        $.ajax({
+            url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_otp_request",
+            type: "post",
+            data: {otp:otp},
+            success: function (response) {
+                //alert(response);
+                var arr = $.parseJSON(response);
+                if(arr.error == 1) {
+                    location.reload();
+                    return false;
+                }
+                else {
+                    document.form4.submit();
+                    //return true;
+                }
+            },
+            error: function() {
+                alert('Enter OTP First');
+                return false;
+            }
+        });
+        return false;
+      }
+      else {
+        alert('Enter OTP First');
+        return false;
+      }
+      return false;
     });
 </script>

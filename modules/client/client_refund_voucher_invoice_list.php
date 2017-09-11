@@ -18,7 +18,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadRFInvoice' && isset($_
         exit();
     }
 
-    $obj_mpdf = new mPDF();
+    $obj_mpdf = new mPDF('utf-8', 'A4');
     $obj_mpdf->SetHeader('Refund Voucher Invoice');
     $obj_mpdf->WriteHTML($htmlResponse);
 
@@ -80,7 +80,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printRFInvoice' && isset($_GET
         exit();
     }
 
-    $obj_mpdf = new mPDF();
+    $obj_mpdf = new mPDF('utf-8', 'A4');
     $obj_mpdf->SetHeader('Refund Voucher Invoice');
     $obj_mpdf->WriteHTML($htmlResponse);
 
@@ -257,7 +257,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                                     </td>
 
                                                     <td style="text-align:right;vertical-align:top;width:48%;padding-left:2%;">
-														<?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php if($supply_place_data['data']->state_tin == 99) { echo $supply_place_data['data']->state_name; } else { echo $supply_place_data['data']->state_name . "(" . $supply_place_data['data']->state_tin . ")"; } ?><br> <?php } ?>
+														<?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php if($supply_place_data['data']->state_tin == 97) { echo $supply_place_data['data']->state_name; } else { echo $supply_place_data['data']->state_name . "(" . $supply_place_data['data']->state_tin . ")"; } ?><br> <?php } ?>
                                                         <b>Reverse Charge:</b> <?php if ($invoiceData[0]->is_tax_payable == 1) { echo "Yes" . "<br>"; } else { echo "No" . "<br>"; } ?>
 														<?php $dataReceiptVoucherRow = $obj_client->get_row("select * from ".$obj_client->getTableName('client_invoice')." where invoice_id = '".$invoiceData[0]->refund_voucher_receipt."' AND invoice_type = 'receiptvoucherinvoice' AND is_deleted='0' AND added_by = ".$obj_client->sanitize($_SESSION['user_detail']['user_id'])); ?>
 
