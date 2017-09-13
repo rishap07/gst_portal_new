@@ -970,7 +970,57 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 		$data['table2_srno_to']='';
 		$data['table2_totalno']='';
 		$data['table2_cancelled']='';
-		$data['table2_netissued']='';			
+		$data['table2_netissued']='';
+        $data['table3_srno_from']='';
+		$data['table3_srno_to']='';
+		$data['table3_totalno']='';
+		$data['table3_cancelled']='';
+		$data['table3_netissued']='';
+        $data['table4_srno_from']='';
+		$data['table4_srno_to']='';
+		$data['table4_totalno']='';
+		$data['table4_cancelled']='';
+		$data['table4_netissued']='';
+        $data['table5_srno_from']='';
+		$data['table5_srno_to']='';
+		$data['table5_totalno']='';
+		$data['table5_cancelled']='';
+		$data['table5_netissued']='';
+        $data['table6_srno_from']='';
+		$data['table6_srno_to']='';
+		$data['table6_totalno']='';
+		$data['table6_cancelled']='';
+		$data['table6_netissued']='';
+        $data['table7_srno_from']='';
+		$data['table7_srno_to']='';
+		$data['table7_totalno']='';
+		$data['table7_cancelled']='';
+		$data['table7_netissued']='';
+        $data['table8_srno_from']='';
+		$data['table8_srno_to']='';
+		$data['table8_totalno']='';
+		$data['table8_cancelled']='';
+		$data['table8_netissued']='';
+        $data['table9_srno_from']='';
+		$data['table9_srno_to']='';
+		$data['table9_totalno']='';
+		$data['table9_cancelled']='';
+		$data['table9_netissued']='';
+        $data['table10_srno_from']='';
+		$data['table10_srno_to']='';
+		$data['table10_totalno']='';
+		$data['table10_cancelled']='';
+		$data['table10_netissued']='';	
+        $data['table11_srno_from']='';
+		$data['table11_srno_to']='';
+		$data['table11_totalno']='';
+		$data['table11_cancelled']='';
+		$data['table11_netissued']='';
+        $data['table12_srno_from']='';
+		$data['table12_srno_to']='';
+		$data['table12_totalno']='';
+		$data['table12_cancelled']='';
+		$data['table12_netissued']='';		
 		
 		if(!empty($_POST['table1_srno_from'])){
      // Loop to store and display values of individual checked checkbox.
@@ -1064,11 +1114,488 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 			} 
 			$data['table2_netissued'] = rtrim($data['table2_netissued'],",");
 			}
-		
-		
-		
+			//code for table3 post data
+			if(!empty($_POST['table3_srno_from'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table3_srno_from'] as $selected){
+			 
+             $data['table3_srno_from'] = $data['table3_srno_from'].$selected.',';
+			
+			} 
+			$data['table3_srno_from'] = rtrim($data['table3_srno_from'],",");
+			}
+			
+		if(!empty($_POST['table3_srno_to'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table3_srno_to'] as $selected){
+			 
+             $data['table3_srno_to'] = $data['table3_srno_to'].$selected.',';
+			
+			} 
+			$data['table3_srno_to'] = rtrim($data['table3_srno_to'],",");
+			}
+			if(!empty($_POST['table3_totalno'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table3_totalno'] as $selected){
+			 
+             $data['table3_totalno'] = $data['table3_totalno'].$selected.',';
+			
+			} 
+			$data['table3_totalno'] = rtrim($data['table3_totalno'],",");
+			}
+			if(!empty($_POST['table3_cancelled'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table3_cancelled'] as $selected){
+			 
+             $data['table3_cancelled'] = $data['table3_cancelled'].$selected.',';
+			
+			} 
+			$data['table3_cancelled'] = rtrim($data['table3_cancelled'],",");
+			}
+			if(!empty($_POST['table3_netissued'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table3_netissued'] as $selected){
+			 
+             $data['table3_netissued'] = $data['table3_netissued'].$selected.',';
+			
+			} 
+			$data['table3_netissued'] = rtrim($data['table3_netissued'],",");
+			}
+			//code end here for table3 post data
+		 //code for table4 post data
+		 if(!empty($_POST['table4_srno_from'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table4_srno_from'] as $selected){
+			 
+             $data['table4_srno_from'] = $data['table4_srno_from'].$selected.',';
+			
+			} 
+			$data['table4_srno_from'] = rtrim($data['table4_srno_from'],",");
+			}
+			
+		if(!empty($_POST['table4_srno_to'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table4_srno_to'] as $selected){
+			 
+             $data['table4_srno_to'] = $data['table4_srno_to'].$selected.',';
+			
+			} 
+			$data['table4_srno_to'] = rtrim($data['table4_srno_to'],",");
+			}
+			if(!empty($_POST['table4_totalno'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table4_totalno'] as $selected){
+			 
+             $data['table4_totalno'] = $data['table4_totalno'].$selected.',';
+			
+			} 
+			$data['table4_totalno'] = rtrim($data['table4_totalno'],",");
+			}
+			if(!empty($_POST['table4_cancelled'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table4_cancelled'] as $selected){
+			 
+             $data['table4_cancelled'] = $data['table4_cancelled'].$selected.',';
+			
+			} 
+			$data['table4_cancelled'] = rtrim($data['table4_cancelled'],",");
+			}
+			if(!empty($_POST['table4_netissued'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table4_netissued'] as $selected){
+			 
+             $data['table4_netissued'] = $data['table4_netissued'].$selected.',';
+			
+			} 
+			$data['table4_netissued'] = rtrim($data['table4_netissued'],",");
+			}
+		 //code end here for table4 post data
+		  //code for table5 post data start here
+		  if(!empty($_POST['table5_srno_from'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table5_srno_from'] as $selected){
+			 
+             $data['table5_srno_from'] = $data['table5_srno_from'].$selected.',';
+			
+			} 
+			$data['table5_srno_from'] = rtrim($data['table5_srno_from'],",");
+			}
+			
+		if(!empty($_POST['table5_srno_to'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table5_srno_to'] as $selected){
+			 
+             $data['table5_srno_to'] = $data['table5_srno_to'].$selected.',';
+			
+			} 
+			$data['table5_srno_to'] = rtrim($data['table5_srno_to'],",");
+			}
+			if(!empty($_POST['table5_totalno'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table5_totalno'] as $selected){
+			 
+             $data['table5_totalno'] = $data['table5_totalno'].$selected.',';
+			
+			} 
+			$data['table5_totalno'] = rtrim($data['table5_totalno'],",");
+			}
+			if(!empty($_POST['table5_cancelled'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table5_cancelled'] as $selected){
+			 
+             $data['table5_cancelled'] = $data['table5_cancelled'].$selected.',';
+			
+			} 
+			$data['table5_cancelled'] = rtrim($data['table5_cancelled'],",");
+			}
+			if(!empty($_POST['table5_netissued'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table5_netissued'] as $selected){
+			 
+             $data['table5_netissued'] = $data['table5_netissued'].$selected.',';
+			
+			} 
+			$data['table5_netissued'] = rtrim($data['table5_netissued'],",");
+			}
+          //code for table5 post data end here
+          //code start here for table 6 post data
+		  if(!empty($_POST['table6_srno_from'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table6_srno_from'] as $selected){
+			 
+             $data['table6_srno_from'] = $data['table6_srno_from'].$selected.',';
+			
+			} 
+			$data['table6_srno_from'] = rtrim($data['table6_srno_from'],",");
+			}
+			
+		if(!empty($_POST['table6_srno_to'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table6_srno_to'] as $selected){
+			 
+             $data['table6_srno_to'] = $data['table6_srno_to'].$selected.',';
+			
+			} 
+			$data['table6_srno_to'] = rtrim($data['table6_srno_to'],",");
+			}
+			if(!empty($_POST['table6_totalno'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table6_totalno'] as $selected){
+			 
+             $data['table6_totalno'] = $data['table6_totalno'].$selected.',';
+			
+			} 
+			$data['table6_totalno'] = rtrim($data['table6_totalno'],",");
+			}
+			if(!empty($_POST['table6_cancelled'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table6_cancelled'] as $selected){
+			 
+             $data['table6_cancelled'] = $data['table6_cancelled'].$selected.',';
+			
+			} 
+			$data['table6_cancelled'] = rtrim($data['table6_cancelled'],",");
+			}
+			if(!empty($_POST['table6_netissued'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table6_netissued'] as $selected){
+			 
+             $data['table6_netissued'] = $data['table6_netissued'].$selected.',';
+			
+			} 
+			$data['table6_netissued'] = rtrim($data['table6_netissued'],",");
+			}
+          //code end here for table 6 post data	
+          //code start here for table 7 post data
+		  if(!empty($_POST['table7_srno_from'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table7_srno_from'] as $selected){
+			 
+             $data['table7_srno_from'] = $data['table7_srno_from'].$selected.',';
+			
+			} 
+			$data['table7_srno_from'] = rtrim($data['table7_srno_from'],",");
+			}
+			
+		if(!empty($_POST['table7_srno_to'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table7_srno_to'] as $selected){
+			 
+             $data['table7_srno_to'] = $data['table7_srno_to'].$selected.',';
+			
+			} 
+			$data['table7_srno_to'] = rtrim($data['table7_srno_to'],",");
+			}
+			if(!empty($_POST['table7_totalno'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table7_totalno'] as $selected){
+			 
+             $data['table7_totalno'] = $data['table7_totalno'].$selected.',';
+			
+			} 
+			$data['table7_totalno'] = rtrim($data['table7_totalno'],",");
+			}
+			if(!empty($_POST['table7_cancelled'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table7_cancelled'] as $selected){
+			 
+             $data['table7_cancelled'] = $data['table7_cancelled'].$selected.',';
+			
+			} 
+			$data['table7_cancelled'] = rtrim($data['table7_cancelled'],",");
+			}
+			if(!empty($_POST['table7_netissued'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table7_netissued'] as $selected){
+			 
+             $data['table7_netissued'] = $data['table7_netissued'].$selected.',';
+			
+			} 
+			$data['table7_netissued'] = rtrim($data['table7_netissued'],",");
+			}
+          // code end here for table 7 post data
+           // code start here for table 8 post data
+          if(!empty($_POST['table8_srno_from'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table8_srno_from'] as $selected){
+			 
+             $data['table8_srno_from'] = $data['table8_srno_from'].$selected.',';
+			
+			} 
+			$data['table8_srno_from'] = rtrim($data['table8_srno_from'],",");
+			}
+			
+		if(!empty($_POST['table8_srno_to'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table8_srno_to'] as $selected){
+			 
+             $data['table8_srno_to'] = $data['table8_srno_to'].$selected.',';
+			
+			} 
+			$data['table8_srno_to'] = rtrim($data['table8_srno_to'],",");
+			}
+			if(!empty($_POST['table8_totalno'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table8_totalno'] as $selected){
+			 
+             $data['table8_totalno'] = $data['table8_totalno'].$selected.',';
+			
+			} 
+			$data['table8_totalno'] = rtrim($data['table8_totalno'],",");
+			}
+			if(!empty($_POST['table8_cancelled'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table8_cancelled'] as $selected){
+			 
+             $data['table8_cancelled'] = $data['table8_cancelled'].$selected.',';
+			
+			} 
+			$data['table8_cancelled'] = rtrim($data['table8_cancelled'],",");
+			}
+			if(!empty($_POST['table8_netissued'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table8_netissued'] as $selected){
+			 
+             $data['table8_netissued'] = $data['table8_netissued'].$selected.',';
+			
+			} 
+			$data['table8_netissued'] = rtrim($data['table8_netissued'],",");
+			}
+          // code end here for table 8 post data		   
+		  //code start for table 9 post data
+		  if(!empty($_POST['table9_srno_from'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table9_srno_from'] as $selected){
+			 
+             $data['table9_srno_from'] = $data['table9_srno_from'].$selected.',';
+			
+			} 
+			$data['table9_srno_from'] = rtrim($data['table9_srno_from'],",");
+			}
+			
+		if(!empty($_POST['table9_srno_to'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table9_srno_to'] as $selected){
+			 
+             $data['table9_srno_to'] = $data['table9_srno_to'].$selected.',';
+			
+			} 
+			$data['table9_srno_to'] = rtrim($data['table9_srno_to'],",");
+			}
+			if(!empty($_POST['table9_totalno'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table9_totalno'] as $selected){
+			 
+             $data['table9_totalno'] = $data['table9_totalno'].$selected.',';
+			
+			} 
+			$data['table9_totalno'] = rtrim($data['table9_totalno'],",");
+			}
+			if(!empty($_POST['table9_cancelled'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table9_cancelled'] as $selected){
+			 
+             $data['table9_cancelled'] = $data['table9_cancelled'].$selected.',';
+			
+			} 
+			$data['table9_cancelled'] = rtrim($data['table9_cancelled'],",");
+			}
+			if(!empty($_POST['table9_netissued'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table9_netissued'] as $selected){
+			 
+             $data['table9_netissued'] = $data['table9_netissued'].$selected.',';
+			
+			} 
+			$data['table9_netissued'] = rtrim($data['table9_netissued'],",");
+			}
+		  //code end here for table 9 post data
+		  //code for table10 post data
+		  if(!empty($_POST['table10_srno_from'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table10_srno_from'] as $selected){
+			 
+             $data['table10_srno_from'] = $data['table10_srno_from'].$selected.',';
+			
+			} 
+			$data['table10_srno_from'] = rtrim($data['table10_srno_from'],",");
+			}
+			
+		if(!empty($_POST['table10_srno_to'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table10_srno_to'] as $selected){
+			 
+             $data['table10_srno_to'] = $data['table10_srno_to'].$selected.',';
+			
+			} 
+			$data['table10_srno_to'] = rtrim($data['table10_srno_to'],",");
+			}
+			if(!empty($_POST['table10_totalno'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table10_totalno'] as $selected){
+			 
+             $data['table10_totalno'] = $data['table10_totalno'].$selected.',';
+			
+			} 
+			$data['table10_totalno'] = rtrim($data['table10_totalno'],",");
+			}
+			if(!empty($_POST['table10_cancelled'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table10_cancelled'] as $selected){
+			 
+             $data['table10_cancelled'] = $data['table10_cancelled'].$selected.',';
+			
+			} 
+			$data['table10_cancelled'] = rtrim($data['table10_cancelled'],",");
+			}
+			if(!empty($_POST['table10_netissued'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table10_netissued'] as $selected){
+			 
+             $data['table10_netissued'] = $data['table10_netissued'].$selected.',';
+			
+			} 
+			$data['table10_netissued'] = rtrim($data['table10_netissued'],",");
+			}
+		  //code end here for table 10 post data
+		  //code start here for table11 post data
+		  if(!empty($_POST['table11_srno_from'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table11_srno_from'] as $selected){
+			 
+             $data['table11_srno_from'] = $data['table11_srno_from'].$selected.',';
+			
+			} 
+			$data['table11_srno_from'] = rtrim($data['table11_srno_from'],",");
+			}
+			
+		if(!empty($_POST['table11_srno_to'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table11_srno_to'] as $selected){
+			 
+             $data['table11_srno_to'] = $data['table11_srno_to'].$selected.',';
+			
+			} 
+			$data['table11_srno_to'] = rtrim($data['table11_srno_to'],",");
+			}
+			if(!empty($_POST['table11_totalno'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table11_totalno'] as $selected){
+			 
+             $data['table11_totalno'] = $data['table11_totalno'].$selected.',';
+			
+			} 
+			$data['table11_totalno'] = rtrim($data['table11_totalno'],",");
+			}
+			if(!empty($_POST['table11_cancelled'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table11_cancelled'] as $selected){
+			 
+             $data['table11_cancelled'] = $data['table11_cancelled'].$selected.',';
+			
+			} 
+			$data['table11_cancelled'] = rtrim($data['table11_cancelled'],",");
+			}
+			if(!empty($_POST['table11_netissued'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table11_netissued'] as $selected){
+			 
+             $data['table11_netissued'] = $data['table11_netissued'].$selected.',';
+			
+			} 
+			$data['table11_netissued'] = rtrim($data['table11_netissued'],",");
+			}
+		  //code end here for table 11 post data
+		  //code for table 12 post data
+		  if(!empty($_POST['table12_srno_from'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table12_srno_from'] as $selected){
+			 
+             $data['table12_srno_from'] = $data['table12_srno_from'].$selected.',';
+			
+			} 
+			$data['table12_srno_from'] = rtrim($data['table12_srno_from'],",");
+			}
+			
+		if(!empty($_POST['table12_srno_to'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table12_srno_to'] as $selected){
+			 
+             $data['table12_srno_to'] = $data['table12_srno_to'].$selected.',';
+			
+			} 
+			$data['table12_srno_to'] = rtrim($data['table12_srno_to'],",");
+			}
+			if(!empty($_POST['table12_totalno'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table12_totalno'] as $selected){
+			 
+             $data['table12_totalno'] = $data['table12_totalno'].$selected.',';
+			
+			} 
+			$data['table12_totalno'] = rtrim($data['table12_totalno'],",");
+			}
+			if(!empty($_POST['table12_cancelled'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table12_cancelled'] as $selected){
+			 
+             $data['table12_cancelled'] = $data['table12_cancelled'].$selected.',';
+			
+			} 
+			$data['table12_cancelled'] = rtrim($data['table12_cancelled'],",");
+			}
+			if(!empty($_POST['table12_netissued'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table12_netissued'] as $selected){
+			 
+             $data['table12_netissued'] = $data['table12_netissued'].$selected.',';
+			
+			} 
+			$data['table12_netissued'] = rtrim($data['table12_netissued'],",");
+			}
+		  //code end here for table 12 post data
 	
-	    $data5a[]=array("table1_srno_from"=>$data['table1_srno_from'],"table1_srno_to"=>$data['table1_srno_to'],"table1_totalno"=>$data['table1_totalno'],"table1_cancelled"=>$data['table1_cancelled'],"table1_netissued"=>$data['table1_netissued'],"table2_srno_from"=>$data['table2_srno_from'],"table2_srno_to"=>$data['table2_srno_to'],"table2_totalno"=>$data['table2_totalno'],"table2_cancelled"=>$data['table2_cancelled'],"table2_netissued"=>$data['table2_netissued']);
+	    $data5a[]=array("table1_srno_from"=>$data['table1_srno_from'],"table1_srno_to"=>$data['table1_srno_to'],"table1_totalno"=>$data['table1_totalno'],"table1_cancelled"=>$data['table1_cancelled'],"table1_netissued"=>$data['table1_netissued'],"table2_srno_from"=>$data['table2_srno_from'],"table2_srno_to"=>$data['table2_srno_to'],"table2_totalno"=>$data['table2_totalno'],"table2_cancelled"=>$data['table2_cancelled'],"table2_netissued"=>$data['table2_netissued'],"table3_srno_from"=>$data['table3_srno_from'],"table3_srno_to"=>$data['table3_srno_to'],"table3_totalno"=>$data['table3_totalno'],"table3_cancelled"=>$data['table3_cancelled'],"table3_netissued"=>$data['table3_netissued'],"table4_srno_from"=>$data['table4_srno_from'],"table4_srno_to"=>$data['table4_srno_to'],"table4_totalno"=>$data['table4_totalno'],"table4_cancelled"=>$data['table4_cancelled'],"table4_netissued"=>$data['table4_netissued'],"table5_srno_from"=>$data['table5_srno_from'],"table5_srno_to"=>$data['table5_srno_to'],"table5_totalno"=>$data['table5_totalno'],"table5_cancelled"=>$data['table5_cancelled'],"table5_netissued"=>$data['table5_netissued'],"table6_srno_from"=>$data['table6_srno_from'],"table6_srno_to"=>$data['table6_srno_to'],"table6_totalno"=>$data['table6_totalno'],"table6_cancelled"=>$data['table6_cancelled'],"table6_netissued"=>$data['table6_netissued'],"table7_srno_from"=>$data['table7_srno_from'],"table7_srno_to"=>$data['table7_srno_to'],"table7_totalno"=>$data['table7_totalno'],"table7_cancelled"=>$data['table7_cancelled'],"table7_netissued"=>$data['table7_netissued'],"table8_srno_from"=>$data['table8_srno_from'],"table8_srno_to"=>$data['table8_srno_to'],"table8_totalno"=>$data['table8_totalno'],"table8_cancelled"=>$data['table8_cancelled'],"table8_netissued"=>$data['table8_netissued'],"table9_srno_from"=>$data['table9_srno_from'],"table9_srno_to"=>$data['table9_srno_to'],"table9_totalno"=>$data['table9_totalno'],"table9_cancelled"=>$data['table9_cancelled'],"table9_netissued"=>$data['table9_netissued'],"table10_srno_from"=>$data['table10_srno_from'],"table10_srno_to"=>$data['table10_srno_to'],"table10_totalno"=>$data['table10_totalno'],"table10_cancelled"=>$data['table10_cancelled'],"table10_netissued"=>$data['table10_netissued'],"table11_srno_from"=>$data['table11_srno_from'],"table11_srno_to"=>$data['table11_srno_to'],"table11_totalno"=>$data['table11_totalno'],"table11_cancelled"=>$data['table11_cancelled'],"table11_netissued"=>$data['table11_netissued'],"table12_srno_from"=>$data['table12_srno_from'],"table12_srno_to"=>$data['table12_srno_to'],"table12_totalno"=>$data['table12_totalno'],"table12_cancelled"=>$data['table12_cancelled'],"table12_netissued"=>$data['table12_netissued']);
 		$dataArr['gstr1_summary_data'] = base64_encode(json_encode($data5a));
 	 	
 	   return $dataArr;

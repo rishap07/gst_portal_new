@@ -8,28 +8,28 @@ if(!$obj_purchase->can_read('client_invoice')) {
 	exit();
 }
 
-if (isset($_GET['action']) && $_GET['action'] == 'downloadPurchaseBOSInvoice' && isset($_GET['id']) && $obj_purchase->validateId($_GET['id'])) {
+if (isset($_GET['action']) && $_GET['action'] == 'downloadPurchasePVInvoice' && isset($_GET['id']) && $obj_purchase->validateId($_GET['id'])) {
 
-    $htmlResponse = $obj_purchase->generatePurchaseBOSInvoiceHtml($_GET['id']);
+    $htmlResponse = $obj_purchase->generatePurchasePVInvoiceHtml($_GET['id']);
     if ($htmlResponse === false) {
 
         $obj_purchase->setError("No invoice found.");
-        $obj_purchase->redirect(PROJECT_URL . "?page=purchase_bill_of_supply_invoice_list");
+        $obj_purchase->redirect(PROJECT_URL . "?page=purchase_payment_voucher_invoice_list");
         exit();
     }
 
     $obj_mpdf = new mPDF('utf-8', 'A4');
-    $obj_mpdf->SetHeader('Purchase Bill of Supply Invoice');
+    $obj_mpdf->SetHeader('Payment Voucher Invoice');
     $obj_mpdf->WriteHTML($htmlResponse);
 
-    $taxInvoicePdf = 'purchase-bos-invoice-' . $_GET['id'] . '.pdf';
+    $taxInvoicePdf = 'payment-voucher-invoice-' . $_GET['id'] . '.pdf';
     ob_clean();
     $obj_mpdf->Output($taxInvoicePdf, 'D');
 }
 
-if (isset($_GET['action']) && $_GET['action'] == 'emailPurchaseBOSInvoice' && isset($_GET['id']) && $obj_purchase->validateId($_GET['id'])) {
+if (isset($_GET['action']) && $_GET['action'] == 'emailPurchasePVInvoice' && isset($_GET['id']) && $obj_purchase->validateId($_GET['id'])) {
 
-    $htmlResponse = $obj_purchase->generatePurchaseBOSInvoiceHtml($_GET['id']);
+    $htmlResponse = $obj_purchase->generatePurchasePVInvoiceHtml($_GET['id']);
 
     $dataCurrentUserArr = $obj_purchase->getUserDetailsById($obj_purchase->sanitize($_SESSION['user_detail']['user_id']));
     $sendmail = $dataCurrentUserArr['data']->kyc->email;
@@ -50,7 +50,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'emailPurchaseBOSInvoice' && is
     );
 
     $mail->CharSet = "UTF-8";
-    $mail->Subject = 'GST Purchase Bill of Supply Invoice-' . $_GET['id'];
+    $mail->Subject = 'GST Receipt Voucher Invoice-' . $_GET['id'];
     $mail->SetFrom('noreply.Gstkeeper@gstkeeper.com', 'GST Keeper');
     $mail->MsgHTML($message);
     $mail->AddAddress($sendmail);
@@ -60,31 +60,31 @@ if (isset($_GET['action']) && $_GET['action'] == 'emailPurchaseBOSInvoice' && is
 
         $obj_purchase->setSuccess("Mail Sent Successfully.");
         $mail->ClearAllRecipients();
-        $obj_purchase->redirect(PROJECT_URL . "?page=purchase_bill_of_supply_invoice_list");
+        $obj_purchase->redirect(PROJECT_URL . "?page=purchase_payment_voucher_invoice_list");
     } else {
 
         $obj_purchase->setError($mail->ErrorInfo);
         $mail->ClearAllRecipients();
-        $obj_purchase->redirect(PROJECT_URL . "?page=purchase_bill_of_supply_invoice_list");
+        $obj_purchase->redirect(PROJECT_URL . "?page=purchase_payment_voucher_invoice_list");
     }
 }
 
-if (isset($_GET['action']) && $_GET['action'] == 'printPurchaseBOSInvoice' && isset($_GET['id']) && $obj_purchase->validateId($_GET['id'])) {
+if (isset($_GET['action']) && $_GET['action'] == 'printPurchasePVInvoice' && isset($_GET['id']) && $obj_purchase->validateId($_GET['id'])) {
 
-    $htmlResponse = $obj_purchase->generatePurchaseBOSInvoiceHtml($_GET['id']);
+    $htmlResponse = $obj_purchase->generatePurchasePVInvoiceHtml($_GET['id']);
 
     if ($htmlResponse === false) {
 
         $obj_purchase->setError("No invoice found.");
-        $obj_purchase->redirect(PROJECT_URL . "?page=purchase_bill_of_supply_invoice_list");
+        $obj_purchase->redirect(PROJECT_URL . "?page=purchase_payment_voucher_invoice_list");
         exit();
     }
 
     $obj_mpdf = new mPDF('utf-8', 'A4');
-    $obj_mpdf->SetHeader('Purchase Bill of Supply Invoice');
+    $obj_mpdf->SetHeader('Payment Voucher Invoice');
     $obj_mpdf->WriteHTML($htmlResponse);
 
-    $taxInvoicePdf = 'purchase-bos-invoice-' . $_GET['id'] . '.pdf';
+    $taxInvoicePdf = 'payment-voucher-invoice-' . $_GET['id'] . '.pdf';
     ob_clean();
     $obj_mpdf->Output($taxInvoicePdf, 'I');
 }
@@ -99,7 +99,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
-        <div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Purchase Bill of Supply Invoice</h1></div>
+        <div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Payment Voucher Invoices</h1></div>
         <div class="formboxcontainer padleft0 mobinvoicecol" style="padding-top:0px;">
 
             <?php $obj_purchase->showErrorMessage(); ?>
@@ -109,17 +109,16 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
             <div class="row">
 
                 <!--INVOICE LEFT TABLE START HERE-->
-				<div class="fixed-left-col col-sm-12 col-xs-12" style="padding-right:0px; padding-left:0px;">
-
+                <div class="fixed-left-col col-sm-12 col-xs-12" style="padding-right:0px; padding-left:0px;">
                     <div class="invoiceheaderfixed">
                         <div class="col-md-8">
-                            <a href='javascript:void(0)' class="btn btn-warning pull-left checkAll">Check All</a>
-                            <a href='javascript:void(0)' class="btn btn-danger pull-left cancelAll" data-toggle="tooltip" title="Cancel All"><i class="fa fa-times" aria-hidden="true"></i></a>
+							<a href='javascript:void(0)' class="btn btn-warning pull-left checkAll">Check All</a>
+							<a href='javascript:void(0)' class="btn btn-danger pull-left cancelAll" data-toggle="tooltip" title="Cancel All"><i class="fa fa-times" aria-hidden="true"></i></a>
 							<a href='javascript:void(0)' class="btn btn-success pull-left revokeAll" data-toggle="tooltip" title="Revoke All"><i class="fa fa-undo" aria-hidden="true"></i></a>
                         </div>
 
                         <div class="col-md-4">
-                            <a href='<?php echo PROJECT_URL; ?>/?page=purchase_bill_of_supply_invoice_create' class="btn btn-success pull-right"><i class="fa fa-plus" aria-hidden="true"></i> New</a>
+                            <a href='<?php echo PROJECT_URL; ?>/?page=purchase_payment_voucher_invoice_create' class="btn btn-success pull-right"><i class="fa fa-plus" aria-hidden="true"></i> New</a>
                         </div>
                     </div>
 
@@ -131,12 +130,13 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 
                 <?php
                 /* code for display invoice according to invoice id pass in query string */
-                if (isset($_GET['action']) && $_GET['action'] == 'viewPurchaseBOSInvoice' && isset($_GET['id']) && $obj_purchase->validateId($_GET['id'])) {
+                if (isset($_GET['action']) && $_GET['action'] == 'viewPurchasePVInvoice' && isset($_GET['id']) && $obj_purchase->validateId($_GET['id'])) {
 
-                    $invoicePurchaseId = $obj_purchase->sanitize($_GET['id']);
+                    $invid = $obj_purchase->sanitize($_GET['id']);
                     $invoiceData = $obj_purchase->get_results("select 
 												ci.*, 
 												cii.purchase_invoice_item_id, 
+												cii.item_id, 
 												cii.item_id, 
 												cii.item_name, 
 												cii.item_description, 
@@ -146,10 +146,19 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 												cii.item_unit_price, 
 												cii.subtotal, 
 												cii.discount, 
+												cii.advance_amount, 
 												cii.taxable_subtotal, 
+												cii.cgst_rate, 
+												cii.cgst_amount, 
+												cii.sgst_rate, 
+												cii.sgst_amount, 
+												cii.igst_rate, 
+												cii.igst_amount, 
+												cii.cess_rate, 
+												cii.cess_amount, 
 												cii.total 
 												from 
-											" . $obj_purchase->getTableName('client_purchase_invoice') . " as ci INNER JOIN " . $obj_purchase->getTableName('client_purchase_invoice_item') . " as cii ON ci.purchase_invoice_id = cii.purchase_invoice_id where ci.purchase_invoice_id = " . $invoicePurchaseId . " AND ci.invoice_type = 'billofsupplyinvoice' AND ci.added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND cii.added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND ci.is_deleted='0' AND cii.is_deleted='0'");
+											" . $obj_purchase->getTableName('client_purchase_invoice') . " as ci INNER JOIN " . $obj_purchase->getTableName('client_purchase_invoice_item') . " as cii ON ci.purchase_invoice_id = cii.purchase_invoice_id where ci.purchase_invoice_id = " . $invid . " AND ci.invoice_type = 'paymentvoucherinvoice' AND ci.added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND cii.added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND ci.is_deleted='0' AND cii.is_deleted='0'");
                 } else {
 
 					$invoiceData = $obj_purchase->get_results("select 
@@ -157,17 +166,26 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 												cii.purchase_invoice_item_id, 
 												cii.item_id, 
 												cii.item_name, 
-												cii.item_description, 
 												cii.item_hsncode, 
+												cii.item_description, 
 												cii.item_quantity, 
 												cii.item_unit, 
 												cii.item_unit_price, 
 												cii.subtotal, 
 												cii.discount, 
+												cii.advance_amount, 
 												cii.taxable_subtotal, 
+												cii.cgst_rate, 
+												cii.cgst_amount, 
+												cii.sgst_rate, 
+												cii.sgst_amount, 
+												cii.igst_rate, 
+												cii.igst_amount, 
+												cii.cess_rate, 
+												cii.cess_amount, 
 												cii.total 
 												from 
-											" . $obj_purchase->getTableName('client_purchase_invoice') . " as ci INNER JOIN " . $obj_purchase->getTableName('client_purchase_invoice_item') . " as cii ON ci.purchase_invoice_id = cii.purchase_invoice_id where ci.purchase_invoice_id = (SELECT purchase_invoice_id FROM ".$obj_purchase->getTableName('client_purchase_invoice')." Where invoice_type = 'billofsupplyinvoice' AND added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND is_deleted='0' Order by purchase_invoice_id desc limit 0,1) AND ci.invoice_type = 'billofsupplyinvoice' AND ci.added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND cii.added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND ci.is_deleted='0' AND cii.is_deleted='0'");
+											" . $obj_purchase->getTableName('client_purchase_invoice') . " as ci INNER JOIN " . $obj_purchase->getTableName('client_purchase_invoice_item') . " as cii ON ci.purchase_invoice_id = cii.purchase_invoice_id where ci.purchase_invoice_id = (SELECT purchase_invoice_id FROM ".$obj_purchase->getTableName('client_purchase_invoice')." Where invoice_type = 'paymentvoucherinvoice' AND added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND is_deleted='0' Order by purchase_invoice_id desc limit 0,1) AND ci.invoice_type = 'paymentvoucherinvoice' AND ci.added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND cii.added_by = '" . $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) . "' AND ci.is_deleted='0' AND cii.is_deleted='0'");
 				}
                 /* Invoice display query code end here */
                 ?>
@@ -181,11 +199,11 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                         <!---INVOICE TOP ICON START HERE-->
                         <div class="inovicergttop">
                             <ul class="iconlist">
-								<li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_receipt_voucher_invoice_update&action=editPurchaseBOSInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Edit"><i class="fa fa-pencil" aria-hidden="true"></i></div></a></li>
-                                <li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_bill_of_supply_invoice_list&action=downloadPurchaseBOSInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
-                                <li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_bill_of_supply_invoice_list&action=printPurchaseBOSInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>" target="_blank"><div data-toggle="tooltip" data-placement="bottom" title="PRINT"><i class="fa fa-print" aria-hidden="true"></i></div></a></li>
-                                <li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_bill_of_supply_invoice_list&action=emailPurchaseBOSInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></div></a></li>
-                            </ul>
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_payment_voucher_invoice_update&action=editPurchasePVInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Edit"><i class="fa fa-pencil" aria-hidden="true"></i></div></a></li>
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_payment_voucher_invoice_list&action=downloadPurchasePVInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_payment_voucher_invoice_list&action=printPurchasePVInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>" target="_blank"><div data-toggle="tooltip" data-placement="bottom" title="PRINT"><i class="fa fa-print" aria-hidden="true"></i></div></a></li>
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_payment_voucher_invoice_list&action=emailPurchasePVInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></div></a></li>
+							</ul>
                         </div>
 
                         <!---INVOICE div print START HERE-->
@@ -196,7 +214,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                             <div class="clearfix"></div>
 
                             <div class="invoice-box" style="overflow-x:scroll;overflow-y:hidden;">
-								<table cellpadding="0" cellspacing="0">
+                                <table cellpadding="0" cellspacing="0">
                                     <tr class="top">
                                         <td colspan="2">
                                             <table>
@@ -209,10 +227,10 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                                                         <?php } ?>
                                                     </td>
 
-                                                    <td style="text-align:right;vertical-align:top;">
+													<td style="text-align:right;vertical-align:top;">
                                                         <b>Invoice #</b>: <?php echo $invoiceData[0]->serial_number; ?><br>
                                                         <b>Reference #</b>: <?php echo $invoiceData[0]->reference_number; ?><br>
-                                                        <b>Type:</b> Bill of Supply Invoice<br>
+                                                        <b>Type:</b> Receipt Voucher<br>
                                                         <b>Nature:</b> <?php echo "Purchase Invoice"; ?><br>
                                                         <b>Invoice Date:</b> <?php echo $invoiceData[0]->invoice_date; ?>
                                                     </td>
@@ -221,11 +239,13 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                                         </td>
                                     </tr>
 
-                                    <tr class="information">
-                                        <td colspan="2">
-                                            <table>
-                                                <tr>
-                                                    <td style="text-align:left;vertical-align:top;width:48%;padding-right:2%;">
+                                    <?php $supply_place_data = $obj_purchase->getStateDetailByStateId($invoiceData[0]->supply_place); ?>
+
+									<tr class="information">
+										<td colspan="2">
+											<table>
+												<tr>
+													<td style="text-align:left;vertical-align:top;width:48%;padding-right:2%;">
                                                         <?php echo $invoiceData[0]->company_name; ?><br>
                                                         <?php echo $invoiceData[0]->company_address; ?><br>
 														<?php if(!empty($invoiceData[0]->company_email)) { ?><b>Email:</b> <?php echo $invoiceData[0]->company_email; ?><br><?php } ?>
@@ -236,8 +256,10 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                                                     </td>
 
                                                     <td style="text-align:right;vertical-align:top;width:48%;padding-left:2%;">
+														<?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php if($supply_place_data['data']->state_tin == 97) { echo $supply_place_data['data']->state_name; } else { echo $supply_place_data['data']->state_name . "(" . $supply_place_data['data']->state_tin . ")"; } ?><br> <?php } ?>
+														<b>Reverse Charge:</b> <?php if ($invoiceData[0]->is_tax_payable == 1) { echo "Yes" . "<br>"; } else { echo "No" . "<br>"; } ?>
 														<?php if ($invoiceData[0]->is_canceled == 1) { ?> <b>Canceled Invoice:</b> <?php echo "Canceled"; ?> <?php } ?>
-                                                    </td>
+                                                  	</td>
                                                 </tr>
                                             </table>
                                         </td>
@@ -276,57 +298,121 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                                     </tr>
 
                                     <tr>
-										<td colspan="2">
+                                        <td colspan="2">
 
-											<table class="view-invoice-table" align="center">
+                                            <table class="view-invoice-table" align="center">
 												<tr class="heading">
-                                                    <td>S.No</td>
-                                                    <td>Goods/Services</td>
-                                                    <td>HSN/SAC Code</td>
-													<td>Item Description</td>
-                                                    <td>Qty</td>
-                                                    <td>Unit</td>
-                                                    <td>Rate<br>(<i class="fa fa-inr"></i>)</td>
-                                                    <td>Total<br>(<i class="fa fa-inr"></i>)</td>
-                                                    <td>Discount(%)</td>
-                                                    <td>Net Total Value<br>(<i class="fa fa-inr"></i>)</td>
+                                                    <td rowspan="2">S.No</td>
+                                                    <td rowspan="2">Goods/Services</td>
+                                                    <td rowspan="2">HSN/SAC Code</td>
+													<td rowspan="2">Item Description</td>
+													<td rowspan="2">Advance Value<br>(<i class="fa fa-inr"></i>)</td>
+                                                    <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">CGST</td>
+                                                    <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">SGST</td>
+                                                    <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">IGST</td>
+                                                    <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">CESS</td>
+                                                </tr>
+
+                                                <tr class="heading">
+                                                    <td>(%)</td>
+                                                    <td>Amt (<i class="fa fa-inr"></i>)</td>
+                                                    <td>(%)</td>
+                                                    <td>Amt (<i class="fa fa-inr"></i>)</td>
+                                                    <td>(%)</td>
+                                                    <td>Amt (<i class="fa fa-inr"></i>)</td>
+                                                    <td>(%)</td>
+                                                    <td>Amt (<i class="fa fa-inr"></i>)</td>
                                                 </tr>
 
                                                 <?php $counter = 1; ?>
 												<?php $total_taxable_subtotal = 0.00; ?>
+												<?php $total_cgst_amount = 0.00; ?>
+                                                <?php $total_sgst_amount = 0.00; ?>
+                                                <?php $total_igst_amount = 0.00; ?>
+												<?php $total_cess_amount = 0.00; ?>
 												<?php foreach ($invoiceData as $invData) { ?>
 
-													<tr class="item">
+                                                    <tr class="item">
                                                         <td><?php echo $counter; ?></td>
                                                         <td><?php echo $invData->item_name; ?></td>
                                                         <td><?php echo $invData->item_hsncode; ?></td>
 														<td><?php echo $invData->item_description; ?></td>
-                                                        <td><?php echo $invData->item_quantity; ?></td>
-                                                        <td><?php echo $invData->item_unit; ?></td>
-                                                        <td><?php echo $invData->item_unit_price; ?></td>
-                                                        <td><?php echo $invData->subtotal; ?></td>
-                                                        <td><?php echo $invData->discount; ?></td>
-                                                        <td><?php echo $invData->taxable_subtotal; ?></td>
+														<td><?php echo $invData->taxable_subtotal; ?></td>
+                                                        <td><?php echo $invData->cgst_rate; ?></td>
+                                                        <td><?php echo $invData->cgst_amount; ?></td>
+                                                        <td><?php echo $invData->sgst_rate; ?></td>
+                                                        <td><?php echo $invData->sgst_amount; ?></td>
+                                                        <td><?php echo $invData->igst_rate; ?></td>
+                                                        <td><?php echo $invData->igst_amount; ?></td>
+                                                        <td><?php echo $invData->cess_rate; ?></td>
+                                                        <td><?php echo $invData->cess_amount; ?></td>
                                                     </tr>
 
-													<?php $total_taxable_subtotal += $invData->taxable_subtotal; ?>
+                                                    <?php $total_taxable_subtotal += $invData->taxable_subtotal; ?>
+                                                    <?php $total_cgst_amount += $invData->cgst_amount; ?>
+                                                    <?php $total_sgst_amount += $invData->sgst_amount; ?>
+                                                    <?php $total_igst_amount += $invData->igst_amount; ?>
+													<?php $total_cess_amount += $invData->cess_amount; ?>
 													<?php $counter++; ?>
-												<?php } ?>
+                                                <?php } ?>
 												
 												<tr class="total lightblue">
-													<td colspan="9" align="right" class="fontbold textsmall">Total Invoice Value:</td>
+													<td colspan="4" align="right" class="fontbold textsmall">Total Invoice Value:</td>
 													<td style="text-align:center;"><span><?php echo $total_taxable_subtotal; ?></span></td>
+													<td><span>&nbsp;</span></td>
+													<td style="text-align:center;"><span><?php echo $total_cgst_amount; ?></span></td>
+													<td><span>&nbsp;</span></td>
+													<td style="text-align:center;"><span><?php echo $total_sgst_amount; ?></span></td>
+													<td><span>&nbsp;</span></td>
+													<td style="text-align:center;"><span><?php echo $total_igst_amount; ?></span></td>
+													<td><span>&nbsp;</span></td>
+													<td style="text-align:center;"><span><?php echo $total_cess_amount; ?></span></td>
 												</tr>
 
-                                                <tr class="total lightyellow">
-                                                    <td colspan="10">
+												<?php if ($invoiceData[0]->is_tax_payable == "1") { ?>
+
+													<?php if($invoiceData[0]->supplier_billing_state === $invoiceData[0]->supply_place) { ?>
+
+														<tr class="total lightgreen">
+															<td colspan="5" align="right" class="fontbold textsmall">Amount of Tax Subject to Reverse Charge</td>
+															<td>-</td>
+															<td><?php echo $total_cgst_amount; ?></td>
+															<td>-</td>
+															<td><?php echo $total_sgst_amount; ?></td>
+															<td>-</td>
+															<td>0.00</td>
+															<td>-</td>
+															<td><?php echo $total_cess_amount; ?></td>
+														</tr>
+
+													<?php } else { ?>
+
+														<tr class="total lightgreen">
+															<td colspan="5" align="right" class="fontbold textsmall">Amount of Tax Subject to Reverse Charge</td>
+															<td>-</td>
+															<td>0.00</td>
+															<td>-</td>
+															<td>0.00</td>
+															<td>-</td>
+															<td><?php echo $total_igst_amount; ?></td>
+															<td>-</td>
+															<td><?php echo $total_cess_amount; ?></td>
+														</tr>
+
+													<?php } ?>
+
+												<?php } ?>
+
+												<tr class="total lightyellow">
+                                                    <td colspan="13">
                                                         Total Invoice Value (In Figure): <i class="fa fa-inr"></i><?php echo $invoiceData[0]->invoice_total_value; ?>
                                                     </td>
                                                 </tr>
 
                                                 <?php $invoice_total_value_words = $obj_purchase->convert_number_to_words($invoiceData[0]->invoice_total_value); ?>
+
                                                 <tr class="total lightpink">
-                                                    <td colspan="10">
+                                                    <td colspan="13">
                                                         Total Invoice Value (In Words): <?php echo ucwords($invoice_total_value_words); ?>
                                                     </td>
                                                 </tr>
@@ -336,7 +422,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                                         </td>
                                     </tr>
 
-									<?php if(!empty($invoiceData[0]->description)) { ?>
+                                    <?php if(!empty($invoiceData[0]->description)) { ?>
 										<tr class="description">
 											<td colspan="2">
 												<p><b>Additional Notes:</b> <?php echo $invoiceData[0]->description; ?></p>
@@ -356,9 +442,9 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
     </div>
 </div>
 <script>
-    $(document).ready(function () {
+	$(document).ready(function () {
 
-		$(".formboxcontainer").on("click", ".checkAll", function(){
+        $(".formboxcontainer").on("click", ".checkAll", function(){
 
 			if($('[name="purchase_invoice[]"]:checked').length > 0) {
 				$(".checkAll").text("Check All");
@@ -369,7 +455,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 			}
 		});
 
-		$(".formboxcontainer").on("click", ".cancelAll", function(){
+        $(".formboxcontainer").on("click", ".cancelAll", function(){
 			
 			var selectedCheckboxes = new Array();
 			$('.purchaseInvoice:checkbox:checked').each(function () {
@@ -477,7 +563,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
         TableManaged.init();
     });
 
-	var TableManaged = function () {
+    var TableManaged = function () {
         return {
             init: function () {
                 if (!jQuery().dataTable) {
@@ -502,7 +588,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                     "bDestroy": true,
                     "searching": false,
                     "bLengthChange": false,
-                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=purchase_bill_of_supply_invoice_list",
+                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=purchase_payment_voucher_invoice_list",
                     "fnServerParams": function (aoData) {
                     },
                     "iDisplayLength": 6

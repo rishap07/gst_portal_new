@@ -1316,7 +1316,6 @@
         function totalInvoiceValueCalculation() {
 
             var totalInvoiceValue = 0.00;
-			var totalInvoiceWithoutTaxValue = 0.00;
 			var totalInvoiceCGSTValue = 0.00;
 			var totalInvoiceSGSTValue = 0.00;
 			var totalInvoiceIGSTValue = 0.00;
@@ -1344,8 +1343,6 @@
 					} else {
 						totalInvoiceValue += (taxablevalue + cgstamount + sgstamount + igstamount + cessamount);
 					}
-
-					totalInvoiceWithoutTaxValue += taxablevalue;
                 }
             });
 
