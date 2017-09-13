@@ -23,19 +23,11 @@ final class gstr1 extends validation {
         $this->getGSTR1Data($fmonth,$ids);
     }
 
-    public function gstr1PayloadDownload($ids='') {
+    public function gstr1PayloadDownload($ids='',$type='') {
         //session_destroy();
         
         $fmonth = isset($_GET['returnmonth']) ? $_GET['returnmonth'] : date('Y-m');
-        /*if($ids=='')
-        {
-            $payload = $this->gstCreatePayload($_SESSION['user_detail']['user_id'], $fmonth);
-        }
-        else
-        {
-            $payload = $this->gstCreatePayload($_SESSION['user_detail']['user_id'], $fmonth,$ids);
-        }*/
-        $payload = $this->gstCreatePayload($_SESSION['user_detail']['user_id'], $fmonth,$ids);
+        $payload = $this->gstCreatePayload($_SESSION['user_detail']['user_id'], $fmonth,$ids,$type);
         $dataArr = json_encode($payload['data_arr']);
         header("Content-type: text/json");
         header("Content-Disposition: attachment; filename=gstr1.json");
@@ -276,11 +268,11 @@ final class gstr1 extends validation {
         return $dataArr;
     }
 
-    public function gstCreatePayload($user_id, $returnmonth,$ids='') {
+    public function gstCreatePayload($user_id, $returnmonth,$ids='',$type='') {
         $data_ids = array();
         $dataArr = $this->gstPayloadHeader($user_id, $returnmonth);
         /***** Start Code For B2B Payload ********** */
-        $b2b_data = $this->gstB2BPayload($user_id, $returnmonth,'',$ids);
+        $b2b_data = $this->gstB2BPayload($user_id, $returnmonth,'',$ids,$type);
         if (!empty($b2b_data)) {
             $data_ids[] = $b2b_ids = $b2b_data['b2b_ids'];
             $b2b_arr = $b2b_data['b2b_arr'];
@@ -289,7 +281,7 @@ final class gstr1 extends validation {
         /***** End Code For B2B Payload ********** */
 
         /***** Start Code For B2CL Payload ********** */
-        $b2cl_data = $this->gstB2CLPayload($user_id, $returnmonth,'',$ids);
+        $b2cl_data = $this->gstB2CLPayload($user_id, $returnmonth,'',$ids,$type);
         if (!empty($b2cl_data)) {
             $data_ids[] = $b2cl_ids = $b2cl_data['b2cl_ids'];
             $b2cl_arr = $b2cl_data['b2cl_arr'];
@@ -298,7 +290,7 @@ final class gstr1 extends validation {
         /***** End Code For B2CL Payload ********** */
 
         /***** Start Code For B2CS Payload ********** */
-        $b2cs_data = $this->gstB2CSPayload($user_id, $returnmonth,'',$ids);
+        $b2cs_data = $this->gstB2CSPayload($user_id, $returnmonth,'',$ids,$type);
         if (!empty($b2cs_data)) {
             $data_ids[] = $b2cs_ids = $b2cs_data['b2cs_ids'];
             $b2cs_arr = $b2cs_data['b2cs_arr'];
@@ -307,7 +299,7 @@ final class gstr1 extends validation {
         /***** End Code For B2CS Payload ********** */
 
         /** *** Start Code For CDNR Payload ********** */
-        $cdnr_data = $this->gstCDNRPayload($user_id, $returnmonth,'',$ids);
+        $cdnr_data = $this->gstCDNRPayload($user_id, $returnmonth,'',$ids,$type);
         if (!empty($cdnr_data)) {
             $data_ids[] = $cdnr_ids = $cdnr_data['cdnr_ids'];
             $cdnr_arr = $cdnr_data['cdnr_arr'];
@@ -316,7 +308,7 @@ final class gstr1 extends validation {
         /****** End Code For CDNR Payload ********** */
 
         /** *** Start Code For CDNUR Payload ********** */
-        $cdnur_data = $this->gstCDNURPayload($user_id, $returnmonth,'',$ids);
+        $cdnur_data = $this->gstCDNURPayload($user_id, $returnmonth,'',$ids,$type);
         if (!empty($cdnur_data)) {
             $data_ids[] = $cdnur_ids = $cdnur_data['cdnur_ids'];
             $cdnur_arr = $cdnur_data['cdnur_arr'];
@@ -325,7 +317,7 @@ final class gstr1 extends validation {
         /***** End Code For CDNUR Payload ********** */
 
         /***** Start Code For HSN Summary Payload ********** */
-        $hsn_data = $this->gstHSNPayload($user_id, $returnmonth,'');
+        $hsn_data = $this->gstHSNPayload($user_id, $returnmonth,'',$ids,$type);
         if (!empty($hsn_data)) {
             //$data_ids[] = $hsn_ids = $hsn_data['hsn_ids'];
             $hsn_arr = $hsn_data['hsn_arr'];
@@ -334,7 +326,7 @@ final class gstr1 extends validation {
         /***** END Code For HSN Summary Payload ********** */
 
         /***** Start Code For AT Payload ********** */
-        $at_data = $this->gstATPayload($user_id, $returnmonth,'',$ids);
+        $at_data = $this->gstATPayload($user_id, $returnmonth,'',$ids,$type);
         if (!empty($at_data)) {
             $data_ids[] = $at_ids = $at_data['at_ids'];
             $at_arr = $at_data['at_arr'];
@@ -343,7 +335,7 @@ final class gstr1 extends validation {
         /***** End Code For AT Payload ********** */
 
         /***** Start Code For NIL Payload ********** */
-        $nil_data = $this->getNILPayload($user_id, $returnmonth,'',$ids);
+        $nil_data = $this->getNILPayload($user_id, $returnmonth,'',$ids,$type);
         if (!empty($nil_data)) {
             $data_ids[] = $nil_ids = $nil_data['nil_ids'];
             $nil_arr = $nil_data['nil_arr'];
@@ -352,7 +344,7 @@ final class gstr1 extends validation {
         /***** End Code For NIL Payload ********** */
 
         /***** Start Code For Doc Issue Payload ********** */
-        $doc_data = $this->getDOCISSUEPayload($user_id, $returnmonth,'',$ids);
+        $doc_data = $this->getDOCISSUEPayload($user_id, $returnmonth,'',$ids,$type);
         if (!empty($doc_data)) {
             //$data_ids[] = $doc_ids = $doc_data['doc_ids'];
             $doc_arr = $doc_data['doc_arr'];
@@ -361,7 +353,7 @@ final class gstr1 extends validation {
         /***** End Code For Doc Issue Payload ********** */
 
         /***** Start Code For Exp Payload ********** */
-        $exp_data = $this->getEXPPayload($user_id, $returnmonth,'',$ids);
+        $exp_data = $this->getEXPPayload($user_id, $returnmonth,'',$ids,$type);
         if (!empty($exp_data)) {
             $data_ids[] = $exp_ids = $exp_data['exp_ids'];
             $exp_arr = $exp_data['exp_arr'];
@@ -918,14 +910,14 @@ final class gstr1 extends validation {
         return $ids; 
     }
 
-    public function gstB2BPayload($user_id, $returnmonth,$flag='',$ids='') {
+    public function gstB2BPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $b2b_array = $b2b_ids = array();
         
         if(!empty($flag)) {
            $dataInvB2B = $this->getB2BInvoices($user_id, $returnmonth,'1');
         }
         else {
-           $dataInvB2B = $this->getB2BInvoices($user_id, $returnmonth,'',$ids); 
+           $dataInvB2B = $this->getB2BInvoices($user_id, $returnmonth,$type,$ids); 
         }
         if (isset($dataInvB2B) && !empty($dataInvB2B)) {
 
@@ -964,14 +956,14 @@ final class gstr1 extends validation {
                     }
                 } 
                 else if ($dataIn->invoice_type == 'sezunitinvoice') {
-					if($dataIn->export_supply_meant=='withpayment')
-					{
-						$in_type = 'SEWP';
-					}
-					else
-					{
-						$in_type = 'SEWOP';
-					}
+                    if($dataIn->export_supply_meant=='withpayment')
+                    {
+                            $in_type = 'SEWP';
+                    }
+                    else
+                    {
+                            $in_type = 'SEWOP';
+                    }
                     $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['iamt'] = (float) $dataIn->igst_amount;
 
                 } else if ($dataIn->invoice_type == 'deemedexportinvoice') {
@@ -1009,10 +1001,10 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function gstB2CLPayload($user_id, $returnmonth,$flag='',$ids='') {
+    public function gstB2CLPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $b2cl_array = $b2cl_ids = array();
 
-        $dataInvB2CL = $this->getB2CLInvoices($user_id, $returnmonth,'',$ids);
+        $dataInvB2CL = $this->getB2CLInvoices($user_id, $returnmonth,$type,$ids);
         if (isset($dataInvB2CL) && !empty($dataInvB2CL)) {
 
             $x = 0;
@@ -1065,9 +1057,9 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function gstB2CSPayload($user_id, $returnmonth,$flag='',$ids='') {
+    public function gstB2CSPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $b2cs_array = $b2cs_ids = array();
-        $dataInvB2CS = $this->getB2CSInvoices($user_id, $returnmonth,'',$ids);
+        $dataInvB2CS = $this->getB2CSInvoices($user_id, $returnmonth,$type,$ids);
         if (isset($dataInvB2CS) && !empty($dataInvB2CS)) {
 
             $x = 0;
@@ -1127,9 +1119,9 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function gstCDNRPayload($user_id, $returnmonth,$flag='',$ids='') {
+    public function gstCDNRPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $cdnr_array = $cdnr_ids = array();
-        $dataInvCDNR = $this->getCDNRInvoices($user_id, $returnmonth,'',$ids);
+        $dataInvCDNR = $this->getCDNRInvoices($user_id, $returnmonth,$type,$ids);
         //$this->pr($dataInvCDNR);
         if (isset($dataInvCDNR) && !empty($dataInvCDNR)) {
 
@@ -1192,9 +1184,9 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function gstCDNURPayload($user_id, $returnmonth,$flag='',$ids='') {
+    public function gstCDNURPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $cdnur_array = $cdnur_ids = array();
-        $dataInvCDNUR = $this->getCDNURInvoices($user_id, $returnmonth,'',$ids);
+        $dataInvCDNUR = $this->getCDNURInvoices($user_id, $returnmonth,$type,$ids);
        // $this->pr($dataInvCDNUR);
         if (isset($dataInvCDNUR) && !empty($dataInvCDNUR)) {
 
@@ -1263,9 +1255,9 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function gstHSNPayload($user_id, $returnmonth,$flag='',$ids='') {
+    public function gstHSNPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $hsn_array = $hsn_ids = array();
-        $dataInvHsn = $this->getHSNInvoices($user_id, $returnmonth,'',$ids);
+        $dataInvHsn = $this->getHSNInvoices($user_id, $returnmonth,$type,$ids);
         if (isset($dataInvHsn) && !empty($dataInvHsn)) {
             $y = 0;
             $a = 1;
@@ -1297,9 +1289,10 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function gstATPayload($user_id, $returnmonth,$flag='',$ids='') {
+    public function gstATPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $at_array = $at_ids = array();
-        $dataInvAt = $this->getATInvoices($user_id, $returnmonth,'',$ids);
+        $dataInvAt = $this->getATInvoices($user_id, $returnmonth,$type,$ids);
+        //$this->pr($dataInvAt);
         if (isset($dataInvAt) && !empty($dataInvAt)) {
             $z = 0;
             $y = 0;
@@ -1347,9 +1340,9 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function getNILPayload($user_id, $returnmonth,$flag='',$ids='') {
+    public function getNILPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $nil_array = $nil_ids = array();
-        $dataInvNil = $this->getNilInvoices($user_id, $returnmonth,'',$ids);
+        $dataInvNil = $this->getNilInvoices($user_id, $returnmonth,$type,$ids);
         //$this->pr($dataInvNil);
         if (!empty($dataInvNil)) {
             $dataInv1 = $dataInvNil[0];
@@ -1469,7 +1462,9 @@ final class gstr1 extends validation {
                 $nil_ids = array_unique(array_column($nil_array, 'invoice_id'));
             }
 
-            $dataArr["nill"][0]["inv"] = $nill_inv_array_b2b;
+            if(!empty($nill_inv_array_b2b)) {
+                $dataArr["nill"][0]["inv"] = $nill_inv_array_b2b;
+            }
         }
         $response['nil_ids'] = $nil_ids;
         $response['nil_arr'] = $dataArr;
@@ -1477,263 +1472,9 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function getDOCISSUEPayload($user_id, $returnmonth,$flag='',$ids='')
-    {
-        $dataArr = $response = $doc_ids = $doc_array = array();
-        //Start Code For Doc
-        $dataInvDoc = array();
-
-        $final_array = $dataRevise = $dataRevised = $dataDebit = $dataCredit = $dataReceipt = $dataRefund = $dataDeliveryJobWork =  $dataDeliverySUAP = $dataDeliverySULGAS = $dataDeliverySupplyOther = array();
-
-        /*********** Start code For Doc Sales *************/
-        $docSales = $this->getDOCSalesInvoices($user_id, $returnmonth,'',$ids);
-
-        $dataInvSales =  $docSales[0];
-        $dataInvCancelSales = $docSales[1];
-        if(isset($dataInvSales) && !empty($dataInvSales))
-        {
-          $doc_num = 1;
-          $z=0;
-          $a = 1;
-          $totnum= count($dataInvSales);
-          $cancel = count($dataInvCancelSales);
-          $net_issue = $totnum - $cancel;
-          $dataSales['doc_num'] = (int)$doc_num;
-          $dataSales['docs'][$z]['num'] = (int)$a;
-          $dataSales['docs'][$z]['from'] = $dataInvSales[0]->reference_number;
-          $dataSales['docs'][$z]['to'] = $dataInvSales[$totnum-1]->reference_number;
-          $dataSales['docs'][$z]['totnum'] = (int)$totnum;
-          $dataSales['docs'][$z]['cancel'] = (int)$cancel;
-          $dataSales['docs'][$z]['net_issue'] = (int)$net_issue;
-          $final_array[] = $dataSales;
-          
-        }
-        /*********** End code For Doc Sales *************/
-
-        /*********** Start code For Doc Revised *************/
-        $docRevised = $this->getDOCRevisedInvoices($user_id, $returnmonth,'',$ids);
-        $dataInvSales =  $docRevised[0];
-        $dataInvCancelSales = $docRevised[1];
-        if(isset($dataInvRevised) && !empty($dataInvRevised))
-        {
-          $doc_num = 2;
-          $z=0;
-          $a = 1;
-          $totnum= count($dataInvRevised);
-          $cancel = count($dataInvCancleRevised);
-          $net_issue = $totnum - $cancel;
-          $dataRevised['doc_num'] = (int)$doc_num;
-          $dataRevised['docs'][$z]['num'] = (int)$a;
-          $dataRevised['docs'][$z]['from'] = $dataInvRevised[0]->reference_number;
-          $dataRevised['docs'][$z]['to'] = $dataInvRevised[$totnum-1]->reference_number;
-          $dataRevised['docs'][$z]['totnum'] = (int)$totnum;
-          $dataRevised['docs'][$z]['cancel'] = (int)$cancel;
-          $dataRevised['docs'][$z]['net_issue'] = (int)$net_issue;
-          $final_array[] = $dataRevised;
-        }
-        /*********** End code For Doc Revised *************/
-
-        /*********** Start code For Debit  *************/
-        $docDebit = $this->getDOCDebitInvoices($user_id, $returnmonth,'',$ids);
-        $dataInvDebit = $docDebit[0];
-        $dataInvCancleDebit = $docDebit[1];
-        if(isset($dataInvDebit) && !empty($dataInvDebit))
-        {
-          $doc_num = 3;
-          $z=0;
-          $a = 1;
-          $totnum= count($dataInvDebit);
-          $cancel = count($dataInvCancleDebit);
-          $net_issue = $totnum - $cancel;
-          $dataDebit['doc_num'] = (int)$doc_num;
-          $dataDebit['docs'][$z]['num'] = (int)$a;
-          $dataDebit['docs'][$z]['from'] = $dataInvDebit[0]->reference_number;
-          $dataDebit['docs'][$z]['to'] = $dataInvDebit[$totnum-1]->reference_number;
-          $dataDebit['docs'][$z]['totnum'] = (int)$totnum;
-          $dataDebit['docs'][$z]['cancel'] = (int)$cancel;
-          $dataDebit['docs'][$z]['net_issue'] = (int)$net_issue;
-          $final_array[] = $dataDebit;
-        }
-        /*********** End code For Debit  *************/
-
-        /*********** Start code For Credit  *************/
-        $docCredit = $this->getDOCCreditInvoices($user_id, $returnmonth,'',$ids);
-        $dataInvCredit = $docCredit[0];
-        $dataInvCancleCredit = $docCredit[1];
-        if(isset($dataInvCredit) && !empty($dataInvCredit))
-        {
-          $doc_num = 4;
-          $z=0;
-          $a = 1;
-          $totnum= count($dataInvCredit);
-          $cancel = count($dataInvCancleCredit);
-          $net_issue = $totnum - $cancel;
-          $dataCredit['doc_num'] = (int)$doc_num;
-          $dataCredit['docs'][$z]['num'] = (int)$a;
-          $dataCredit['docs'][$z]['from'] = $dataInvCredit[0]->reference_number;
-          $dataCredit['docs'][$z]['to'] = $dataInvCredit[$totnum-1]->reference_number;
-          $dataCredit['docs'][$z]['totnum'] = (int)$totnum;
-          $dataCredit['docs'][$z]['cancel'] = (int)$cancel;
-          $dataCredit['docs'][$z]['net_issue'] = (int)$net_issue;
-          $final_array[] = $dataCredit;
-        }
-        /*********** End code For Credit  *************/
-
-        /*********** Start code For Receipt   *************/
-        $docReceipt = $this->getDOCReceiptInvoices($user_id, $returnmonth,'',$ids);
-        $dataInvReceipt =  $docReceipt[0];
-        $dataInvCancleReceipt =  $docReceipt[1];
-        if(isset($dataInvReceipt) && !empty($dataInvReceipt))
-        {
-          $doc_num = 5;
-          $z=0;
-          $a = 1;
-          $totnum= count($dataInvReceipt);
-          $cancel = count($dataInvCancleReceipt);
-          $net_issue = $totnum - $cancel;
-          $dataReceipt['doc_num'] = (int)$doc_num;
-          $dataReceipt['docs'][$z]['num'] = (int)$a;
-          $dataReceipt['docs'][$z]['from'] = $dataInvReceipt[0]->reference_number;
-          $dataReceipt['docs'][$z]['to'] = $dataInvReceipt[$totnum-1]->reference_number;
-          $dataReceipt['docs'][$z]['totnum'] = (int)$totnum;
-          $dataReceipt['docs'][$z]['cancel'] = (int)$cancel;
-          $dataReceipt['docs'][$z]['net_issue'] = (int)$net_issue;
-          $final_array[] = $dataReceipt;
-        }
-        /*********** End code For Receipt   *************/
-
-        /*********** Start code For Refund   *************/
-        $docRefund = $this->getDOCRefundInvoices($user_id, $returnmonth,'',$ids);
-        $dataInvRefund = $docRefund[0];
-        $dataInvCancleRefund = $docRefund[1];
-        if(isset($dataInvRefund) && !empty($dataInvRefund))
-        {
-          $doc_num = 6;
-          $z=0;
-          $a = 1;
-          $totnum= count($dataInvRefund);
-          $cancel = count($dataInvCancleRefund);
-          $net_issue = $totnum - $cancel;
-          $dataRefund['doc_num'] = (int)$doc_num;
-          $dataRefund['docs'][$z]['num'] = (int)$a;
-          $dataRefund['docs'][$z]['from'] = $dataInvRefund[0]->reference_number;
-          $dataRefund['docs'][$z]['to'] = $dataInvRefund[$totnum-1]->reference_number;
-          $dataRefund['docs'][$z]['totnum'] = (int)$totnum;
-          $dataRefund['docs'][$z]['cancel'] = (int)$cancel;
-          $dataRefund['docs'][$z]['net_issue'] = (int)$net_issue;
-          $final_array[] = $dataRefund;
-        }
-        /*********** End code For Refund   *************/
-
-        /*********** Start code Delivery Challan for job work  *************/
-        $docDeliveryJobWork = $this->getDOCDeliveryChallanJobWorkInvoices($user_id, $returnmonth,'',$ids);
-        $dataInvDeliveryJobWork = $docDeliveryJobWork[0];
-        $dataInvCancleDeliveryJobWork = $docDeliveryJobWork[1];
-
-        if(isset($dataInvDeliveryJobWork) && !empty($dataInvDeliveryJobWork))
-        {
-          $doc_num = 7;
-          $z=0;
-          $a = 1;
-          $totnum= count($dataInvRefund);
-          $cancel = count($dataInvCancleDeliveryJobWork);
-          $net_issue = $totnum - $cancel;
-          $dataDeliveryJobWork['doc_num'] = (int)$doc_num;
-          $dataDeliveryJobWork['docs'][$z]['num'] = (int)$a;
-          $dataDeliveryJobWork['docs'][$z]['from'] = $dataInvDeliveryJobWork[0]->reference_number;
-          $dataDeliveryJobWork['docs'][$z]['to'] = $dataInvDeliveryJobWork[$totnum-1]->reference_number;
-          $dataDeliveryJobWork['docs'][$z]['totnum'] = (int)$totnum;
-          $dataDeliveryJobWork['docs'][$z]['cancel'] = (int)$cancel;
-          $dataDeliveryJobWork['docs'][$z]['net_issue'] = (int)$net_issue;
-          $final_array[] = $dataDeliveryJobWork;
-        }
-        /*********** End code Delivery Challan for job work *************/
-
-        /*********** Start code Delivery Challan for supply on approval  *************/
-        $docDeliverySUAP = $this->getDOCDeliveryChallanSupplyOnApprovalInvoices($user_id, $returnmonth,'',$ids);
-        $dataInvDeliverySUAP = $docDeliverySUAP[0];
-        $dataInvCancleDeliverySUAP = $docDeliverySUAP[1];
-
-        if(isset($dataInvDeliverySUAP) && !empty($dataInvDeliverySUAP) && !empty($dataInvDeliveryJobWork))
-        {
-          $doc_num = 8;
-          $z=0;
-          $a = 1;
-          $totnum= count($dataInvDeliverySUAP);
-          $cancel = count($dataInvCancleDeliverySUAP);
-          $net_issue = $totnum - $cancel;
-          $dataDeliverySUAP['doc_num'] = (int)$doc_num;
-          $dataDeliverySUAP['docs'][$z]['num'] = (int)$a;
-          $dataDeliverySUAP['docs'][$z]['from'] = $dataInvDeliverySUAP[0]->reference_number;
-          $dataDeliverySUAP['docs'][$z]['to'] = $dataInvDeliverySUAP[$totnum-1]->reference_number;
-          $dataDeliverySUAP['docs'][$z]['totnum'] = (int)$totnum;
-          $dataDeliverySUAP['docs'][$z]['cancel'] = (int)$cancel;
-          $dataDeliverySUAP['docs'][$z]['net_issue'] = (int)$net_issue;
-          $final_array[] = $dataDeliverySUAP;
-        }
-        /*********** End code Delivery Challan for supply on approval *************/
-
-        /*********** Start code Delivery Challan in case of liquid gas  *************/
-        $docDeliverySULGAS = $this->getDOCDeliveryChallanInCaseLiquidGasInvoices($user_id, $returnmonth,'',$ids);
-        $dataInvDeliverySULGAS = $docDeliverySULGAS[0];
-        $dataInvCancleDeliverySULGAS = $docDeliverySULGAS[1];
-
-        if(isset($dataInvDeliverySULGAS) && !empty($dataInvDeliverySULGAS))
-        {
-          $doc_num = 9;
-          $z=0;
-          $a = 1;
-          $totnum= count($dataInvDeliverySULGAS);
-          $cancel = count($dataInvCancleDeliverySULGAS);
-          $net_issue = $totnum - $cancel;
-          $dataDeliverySULGAS['doc_num'] = (int)$doc_num;
-          $dataDeliverySULGAS['docs'][$z]['num'] = (int)$a;
-          $dataDeliverySULGAS['docs'][$z]['from'] = $dataInvDeliverySULGAS[0]->reference_number;
-          $dataDeliverySULGAS['docs'][$z]['to'] = $dataInvDeliverySULGAS[$totnum-1]->reference_number;
-          $dataDeliverySULGAS['docs'][$z]['totnum'] = (int)$totnum;
-          $dataDeliverySULGAS['docs'][$z]['cancel'] = (int)$cancel;
-          $dataDeliverySULGAS['docs'][$z]['net_issue'] = (int)$net_issue;
-          $final_array[] = $dataDeliverySULGAS;
-        }
-        /*********** End code Delivery Challan in case of liquid gas *************/
-
-        /*********** Start code Delivery Challan in cases other than by way of supply  *************/
-        $docDeliveryOther = $this->getDOCDeliveryChallanInCaseOtherInvoices($user_id, $returnmonth,'',$ids);
-        $dataInvDeliverySupplyOther = $docDeliveryOther[0];
-        $dataInvCancleDeliverySupplyOther= $docDeliveryOther[1];
-
-        if(isset($dataInvDeliverySupplyOther) && !empty($dataInvDeliverySupplyOther))
-        {
-          $doc_num = 10;
-          $z=0;
-          $a = 1;
-          $totnum= count($dataInvDeliverySupplyOther);
-          $cancel = count($dataInvCancleDeliverySupplyOther);
-          $net_issue = $totnum - $cancel;
-          $dataDeliverySupplyOther['doc_num'] = (int)$doc_num;
-          $dataDeliverySupplyOther['docs'][$z]['num'] = (int)$a;
-          $dataDeliverySupplyOther['docs'][$z]['from'] = $dataInvDeliverySupplyOther[0]->reference_number;
-          $dataDeliverySupplyOther['docs'][$z]['to'] = $dataInvDeliverySupplyOther[$totnum-1]->reference_number;
-          $dataDeliverySupplyOther['docs'][$z]['totnum'] = (int)$totnum;
-          $dataDeliverySupplyOther['docs'][$z]['cancel'] = (int)$cancel;
-          $dataDeliverySupplyOther['docs'][$z]['net_issue'] = (int)$net_issue;
-          $final_array[] = $dataDeliverySupplyOther;
-        }
-        /*********** End code Delivery Challan in cases other than by way of supply  *************/
-
-        if(!empty($final_array)) {
-            $dataInvDoc['doc_issue']['doc_det']  = $final_array;
-        }
-        
-        $response['doc_ids'] = $doc_ids;
-        $response['doc_arr'] = $dataInvDoc;
-
-        return $response;
-    }
-
-    public function getEXPPayload($user_id, $returnmonth,$flag='',$ids='') {
+    public function getEXPPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $exp_ids = $exp_array = $dataArr1 = $dataArr2 = array();
-        $dataInvExp = $this->getEXPInvoices($user_id, $returnmonth,'',$ids);
+        $dataInvExp = $this->getEXPInvoices($user_id, $returnmonth,$type,$ids);
         if (isset($dataInvExp) && !empty($dataInvExp)) {
             $y = 0;
             $a = 1;
@@ -1828,7 +1569,261 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function getTXPDPayload($user_id, $returnmonth,$flag='',$ids='') {
+    public function getDOCISSUEPayload($user_id, $returnmonth,$flag='',$ids='',$type='')
+    {
+        $dataArr = $response = $doc_ids = $doc_array = array();
+        //Start Code For Doc
+        $dataInvDoc = array();
+
+        $final_array = $dataRevise = $dataRevised = $dataDebit = $dataCredit = $dataReceipt = $dataRefund = $dataDeliveryJobWork =  $dataDeliverySUAP = $dataDeliverySULGAS = $dataDeliverySupplyOther = array();
+
+        /*********** Start code For Doc Sales *************/
+        $docSales = $this->getDOCSalesInvoices($user_id, $returnmonth,$type,$ids);
+
+        $dataInvSales =  $docSales[0];
+        $dataInvCancelSales = $docSales[1];
+        if(isset($dataInvSales) && !empty($dataInvSales))
+        {
+          $doc_num = 1;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvSales);
+          $cancel = count($dataInvCancelSales);
+          $net_issue = $totnum - $cancel;
+          $dataSales['doc_num'] = (int)$doc_num;
+          $dataSales['docs'][$z]['num'] = (int)$a;
+          $dataSales['docs'][$z]['from'] = $dataInvSales[0]->reference_number;
+          $dataSales['docs'][$z]['to'] = $dataInvSales[$totnum-1]->reference_number;
+          $dataSales['docs'][$z]['totnum'] = (int)$totnum;
+          $dataSales['docs'][$z]['cancel'] = (int)$cancel;
+          $dataSales['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataSales;
+          
+        }
+        /*********** End code For Doc Sales *************/
+
+        /*********** Start code For Doc Revised *************/
+        $docRevised = $this->getDOCRevisedInvoices($user_id, $returnmonth,$type,$ids);
+        $dataInvSales =  $docRevised[0];
+        $dataInvCancelSales = $docRevised[1];
+        if(isset($dataInvRevised) && !empty($dataInvRevised))
+        {
+          $doc_num = 2;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvRevised);
+          $cancel = count($dataInvCancleRevised);
+          $net_issue = $totnum - $cancel;
+          $dataRevised['doc_num'] = (int)$doc_num;
+          $dataRevised['docs'][$z]['num'] = (int)$a;
+          $dataRevised['docs'][$z]['from'] = $dataInvRevised[0]->reference_number;
+          $dataRevised['docs'][$z]['to'] = $dataInvRevised[$totnum-1]->reference_number;
+          $dataRevised['docs'][$z]['totnum'] = (int)$totnum;
+          $dataRevised['docs'][$z]['cancel'] = (int)$cancel;
+          $dataRevised['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataRevised;
+        }
+        /*********** End code For Doc Revised *************/
+
+        /*********** Start code For Debit  *************/
+        $docDebit = $this->getDOCDebitInvoices($user_id, $returnmonth,$type,$ids);
+        $dataInvDebit = $docDebit[0];
+        $dataInvCancleDebit = $docDebit[1];
+        if(isset($dataInvDebit) && !empty($dataInvDebit))
+        {
+          $doc_num = 3;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvDebit);
+          $cancel = count($dataInvCancleDebit);
+          $net_issue = $totnum - $cancel;
+          $dataDebit['doc_num'] = (int)$doc_num;
+          $dataDebit['docs'][$z]['num'] = (int)$a;
+          $dataDebit['docs'][$z]['from'] = $dataInvDebit[0]->reference_number;
+          $dataDebit['docs'][$z]['to'] = $dataInvDebit[$totnum-1]->reference_number;
+          $dataDebit['docs'][$z]['totnum'] = (int)$totnum;
+          $dataDebit['docs'][$z]['cancel'] = (int)$cancel;
+          $dataDebit['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataDebit;
+        }
+        /*********** End code For Debit  *************/
+
+        /*********** Start code For Credit  *************/
+        $docCredit = $this->getDOCCreditInvoices($user_id, $returnmonth,$type,$ids);
+        $dataInvCredit = $docCredit[0];
+        $dataInvCancleCredit = $docCredit[1];
+        if(isset($dataInvCredit) && !empty($dataInvCredit))
+        {
+          $doc_num = 4;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvCredit);
+          $cancel = count($dataInvCancleCredit);
+          $net_issue = $totnum - $cancel;
+          $dataCredit['doc_num'] = (int)$doc_num;
+          $dataCredit['docs'][$z]['num'] = (int)$a;
+          $dataCredit['docs'][$z]['from'] = $dataInvCredit[0]->reference_number;
+          $dataCredit['docs'][$z]['to'] = $dataInvCredit[$totnum-1]->reference_number;
+          $dataCredit['docs'][$z]['totnum'] = (int)$totnum;
+          $dataCredit['docs'][$z]['cancel'] = (int)$cancel;
+          $dataCredit['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataCredit;
+        }
+        /*********** End code For Credit  *************/
+
+        /*********** Start code For Receipt   *************/
+        $docReceipt = $this->getDOCReceiptInvoices($user_id, $returnmonth,$type,$ids);
+        $dataInvReceipt =  $docReceipt[0];
+        $dataInvCancleReceipt =  $docReceipt[1];
+        if(isset($dataInvReceipt) && !empty($dataInvReceipt))
+        {
+          $doc_num = 5;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvReceipt);
+          $cancel = count($dataInvCancleReceipt);
+          $net_issue = $totnum - $cancel;
+          $dataReceipt['doc_num'] = (int)$doc_num;
+          $dataReceipt['docs'][$z]['num'] = (int)$a;
+          $dataReceipt['docs'][$z]['from'] = $dataInvReceipt[0]->reference_number;
+          $dataReceipt['docs'][$z]['to'] = $dataInvReceipt[$totnum-1]->reference_number;
+          $dataReceipt['docs'][$z]['totnum'] = (int)$totnum;
+          $dataReceipt['docs'][$z]['cancel'] = (int)$cancel;
+          $dataReceipt['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataReceipt;
+        }
+        /*********** End code For Receipt   *************/
+
+        /*********** Start code For Refund   *************/
+        $docRefund = $this->getDOCRefundInvoices($user_id, $returnmonth,$type,$ids);
+        $dataInvRefund = $docRefund[0];
+        $dataInvCancleRefund = $docRefund[1];
+        if(isset($dataInvRefund) && !empty($dataInvRefund))
+        {
+          $doc_num = 6;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvRefund);
+          $cancel = count($dataInvCancleRefund);
+          $net_issue = $totnum - $cancel;
+          $dataRefund['doc_num'] = (int)$doc_num;
+          $dataRefund['docs'][$z]['num'] = (int)$a;
+          $dataRefund['docs'][$z]['from'] = $dataInvRefund[0]->reference_number;
+          $dataRefund['docs'][$z]['to'] = $dataInvRefund[$totnum-1]->reference_number;
+          $dataRefund['docs'][$z]['totnum'] = (int)$totnum;
+          $dataRefund['docs'][$z]['cancel'] = (int)$cancel;
+          $dataRefund['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataRefund;
+        }
+        /*********** End code For Refund   *************/
+
+        /*********** Start code Delivery Challan for job work  *************/
+        $docDeliveryJobWork = $this->getDOCDeliveryChallanJobWorkInvoices($user_id, $returnmonth,$type,$ids);
+        $dataInvDeliveryJobWork = $docDeliveryJobWork[0];
+        $dataInvCancleDeliveryJobWork = $docDeliveryJobWork[1];
+
+        if(isset($dataInvDeliveryJobWork) && !empty($dataInvDeliveryJobWork))
+        {
+          $doc_num = 7;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvRefund);
+          $cancel = count($dataInvCancleDeliveryJobWork);
+          $net_issue = $totnum - $cancel;
+          $dataDeliveryJobWork['doc_num'] = (int)$doc_num;
+          $dataDeliveryJobWork['docs'][$z]['num'] = (int)$a;
+          $dataDeliveryJobWork['docs'][$z]['from'] = $dataInvDeliveryJobWork[0]->reference_number;
+          $dataDeliveryJobWork['docs'][$z]['to'] = $dataInvDeliveryJobWork[$totnum-1]->reference_number;
+          $dataDeliveryJobWork['docs'][$z]['totnum'] = (int)$totnum;
+          $dataDeliveryJobWork['docs'][$z]['cancel'] = (int)$cancel;
+          $dataDeliveryJobWork['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataDeliveryJobWork;
+        }
+        /*********** End code Delivery Challan for job work *************/
+
+        /*********** Start code Delivery Challan for supply on approval  *************/
+        $docDeliverySUAP = $this->getDOCDeliveryChallanSupplyOnApprovalInvoices($user_id, $returnmonth,$type,$ids);
+        $dataInvDeliverySUAP = $docDeliverySUAP[0];
+        $dataInvCancleDeliverySUAP = $docDeliverySUAP[1];
+
+        if(isset($dataInvDeliverySUAP) && !empty($dataInvDeliverySUAP) && !empty($dataInvDeliveryJobWork))
+        {
+          $doc_num = 8;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvDeliverySUAP);
+          $cancel = count($dataInvCancleDeliverySUAP);
+          $net_issue = $totnum - $cancel;
+          $dataDeliverySUAP['doc_num'] = (int)$doc_num;
+          $dataDeliverySUAP['docs'][$z]['num'] = (int)$a;
+          $dataDeliverySUAP['docs'][$z]['from'] = $dataInvDeliverySUAP[0]->reference_number;
+          $dataDeliverySUAP['docs'][$z]['to'] = $dataInvDeliverySUAP[$totnum-1]->reference_number;
+          $dataDeliverySUAP['docs'][$z]['totnum'] = (int)$totnum;
+          $dataDeliverySUAP['docs'][$z]['cancel'] = (int)$cancel;
+          $dataDeliverySUAP['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataDeliverySUAP;
+        }
+        /*********** End code Delivery Challan for supply on approval *************/
+
+        /*********** Start code Delivery Challan in case of liquid gas  *************/
+        $docDeliverySULGAS = $this->getDOCDeliveryChallanInCaseLiquidGasInvoices($user_id, $returnmonth,$type,$ids);
+        $dataInvDeliverySULGAS = $docDeliverySULGAS[0];
+        $dataInvCancleDeliverySULGAS = $docDeliverySULGAS[1];
+
+        if(isset($dataInvDeliverySULGAS) && !empty($dataInvDeliverySULGAS))
+        {
+          $doc_num = 9;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvDeliverySULGAS);
+          $cancel = count($dataInvCancleDeliverySULGAS);
+          $net_issue = $totnum - $cancel;
+          $dataDeliverySULGAS['doc_num'] = (int)$doc_num;
+          $dataDeliverySULGAS['docs'][$z]['num'] = (int)$a;
+          $dataDeliverySULGAS['docs'][$z]['from'] = $dataInvDeliverySULGAS[0]->reference_number;
+          $dataDeliverySULGAS['docs'][$z]['to'] = $dataInvDeliverySULGAS[$totnum-1]->reference_number;
+          $dataDeliverySULGAS['docs'][$z]['totnum'] = (int)$totnum;
+          $dataDeliverySULGAS['docs'][$z]['cancel'] = (int)$cancel;
+          $dataDeliverySULGAS['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataDeliverySULGAS;
+        }
+        /*********** End code Delivery Challan in case of liquid gas *************/
+
+        /*********** Start code Delivery Challan in cases other than by way of supply  *************/
+        $docDeliveryOther = $this->getDOCDeliveryChallanInCaseOtherInvoices($user_id, $returnmonth,$type,$ids);
+        $dataInvDeliverySupplyOther = $docDeliveryOther[0];
+        $dataInvCancleDeliverySupplyOther= $docDeliveryOther[1];
+
+        if(isset($dataInvDeliverySupplyOther) && !empty($dataInvDeliverySupplyOther))
+        {
+          $doc_num = 10;
+          $z=0;
+          $a = 1;
+          $totnum= count($dataInvDeliverySupplyOther);
+          $cancel = count($dataInvCancleDeliverySupplyOther);
+          $net_issue = $totnum - $cancel;
+          $dataDeliverySupplyOther['doc_num'] = (int)$doc_num;
+          $dataDeliverySupplyOther['docs'][$z]['num'] = (int)$a;
+          $dataDeliverySupplyOther['docs'][$z]['from'] = $dataInvDeliverySupplyOther[0]->reference_number;
+          $dataDeliverySupplyOther['docs'][$z]['to'] = $dataInvDeliverySupplyOther[$totnum-1]->reference_number;
+          $dataDeliverySupplyOther['docs'][$z]['totnum'] = (int)$totnum;
+          $dataDeliverySupplyOther['docs'][$z]['cancel'] = (int)$cancel;
+          $dataDeliverySupplyOther['docs'][$z]['net_issue'] = (int)$net_issue;
+          $final_array[] = $dataDeliverySupplyOther;
+        }
+        /*********** End code Delivery Challan in cases other than by way of supply  *************/
+
+        if(!empty($final_array)) {
+            $dataInvDoc['doc_issue']['doc_det']  = $final_array;
+        }
+        
+        $response['doc_ids'] = $doc_ids;
+        $response['doc_arr'] = $dataInvDoc;
+
+        return $response;
+    }
+
+    public function getTXPDPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $txpd_ids = array();
         $dataArr['txpd'][0]['pos'] = '05';
         $dataArr['txpd'][0]['sply_ty'] = 'INTER';

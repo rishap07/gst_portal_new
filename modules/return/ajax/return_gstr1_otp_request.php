@@ -27,5 +27,5 @@ else
 
 }
 
-echo json_encode(array('error' => $error));
+echo json_encode(array('error_code' => $error));
 die;

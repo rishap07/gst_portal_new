@@ -389,18 +389,729 @@ final class gstr2 extends validation {
         //Sales Data;
         $dataQuery = "select re.category,re.claim_rate,re.claim_value, re.id,pur.billing_gstin_number as gstin_number,re.reference_number,pur.company_name,pur_it.taxable_subtotal,re.invoice_status,re.status,sum(pur_it.cgst_amount) as cgst_amount,sum(pur_it.sgst_amount) as sgst_amount,sum(pur_it.igst_amount) as igst_amount,sum(pur_it.cess_amount) as cess_amount,pur.invoice_total_value,re.invoice_date,re.invoice_status,re.status from ".$this->getTableName('client_reconcile_purchase_invoice1')." re inner join ".$this->getTableName('client_invoice')." pur on re.reference_number=pur.reference_number inner join ".$this->getTableName('client_invoice_item')." pur_it on pur.invoice_id=pur_it.invoice_id where  re.invoice_date like('%".$this->sanitize($_GET['returnmonth'])."%') and re.added_by='".$_SESSION['user_detail']['user_id']."' and ((re.invoice_status='0' and re.status='1')or(re.invoice_status='0' and re.status='2')or(re.invoice_status='0' and re.status='4')or(re.invoice_status='1' and re.status='1')or(re.invoice_status='1' and re.status='2')or(re.invoice_status='1' and re.status='3')or(re.invoice_status='1' and re.status='4')or(re.invoice_status='3' and re.status='1')or(re.invoice_status='3' and re.status='2')or(re.invoice_status='3' and re.status='4')) and re.is_uploaded='0'  group by pur.reference_number ";
         $dataSale = $this->get_results($dataQuery);
-
        // print_r($this->sanitize($_GET['returnmonth']));
         $data = array_merge($dataPur,$dataSale);
 		if(!empty($data))
 		{
           return $data;
 		}
-
-
-
     }
+	 private function getPurchaseB2BInvoices($user_id,$returnmonth){
+       $queryB2B="select i.purchase_invoice_id, i.recipient_shipping_gstin_number,i.supplier_billing_gstin_number,i.serial_number as invoice_number,i.invoice_date,i.invoice_total_value,i.supply_place,i.supply_type from gst_client_purchase_invoice as i where i.invoice_nature='purchaseinvoice' and i.added_by='".$user_id."' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and 
+i.supplier_billing_gstin_number!='' and (i.invoice_type='taxinvoice' or i.invoice_type='sezunitinvoice' or i.invoice_type='importinvoice')  and i.invoice_nature='purchaseinvoice'  AND i.invoice_date like '%".$returnmonth."%'";
+	  return $this->get_results($queryB2B);
+	  
+    }
+    private function getPurchaseB2BInvoicesDetails($user_id,$returnmonth){
+
+	 $queryB2B =  "SELECT it.consolidate_rate as rateof_invoice,i.purchase_invoice_id,it.purchase_invoice_item_id,i.recipient_shipping_gstin_number,i.supplier_billing_gstin_number,i.serial_number as invoice_number,i.invoice_date,i.invoice_total_value,i.supply_place,i.supply_type,it.total,it.taxable_subtotal,it.igst_amount,it.cgst_amount,it.sgst_amount,it.cess_amount from gst_client_purchase_invoice as i INNER JOIN gst_client_purchase_invoice_item as it on it.purchase_invoice_id = i.purchase_invoice_id where i.invoice_nature='purchaseinvoice' and i.added_by='".$user_id."' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and 
+i.supplier_billing_gstin_number!='' and (i.invoice_type='taxinvoice' or i.invoice_type='sezunitinvoice' or i.invoice_type='importinvoice')  and i.invoice_nature='purchaseinvoice'  AND i.invoice_date like '%".$returnmonth."%'";
+     
+    return $this->get_results($queryB2B);
+	}
+	 private function getPurchaseB2clInvoices($user_id,$returnmonth){
+       $queryB2B="select i.purchase_invoice_id, i.recipient_shipping_gstin_number,i.supplier_billing_gstin_number,i.serial_number as invoice_number,i.invoice_date,i.invoice_total_value,i.supply_place,i.supply_type from gst_client_purchase_invoice as i where i.invoice_nature='purchaseinvoice' and i.added_by='".$user_id."' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and 
+i.supplier_billing_gstin_number='' and i.invoice_total_value>'250000' and (i.invoice_type='taxinvoice' or i.invoice_type='sezunitinvoice' or i.invoice_type='importinvoice')  and i.invoice_nature='purchaseinvoice'  AND i.invoice_date like '%".$returnmonth."%'";
+	  return $this->get_results($queryB2B); 
+	  }
+	private function getPurchaseB2clInvoicesDetails($user_id,$returnmonth){
+
+	 $queryB2B =  "SELECT it.consolidate_rate as rateof_invoice,i.purchase_invoice_id,it.purchase_invoice_item_id,i.recipient_shipping_gstin_number,i.supplier_billing_gstin_number,i.serial_number as invoice_number,i.invoice_date,i.invoice_total_value,i.supply_place,i.supply_type,it.total,it.taxable_subtotal,it.igst_amount,it.cgst_amount,it.sgst_amount,it.cess_amount from gst_client_purchase_invoice as i INNER JOIN gst_client_purchase_invoice_item as it on it.purchase_invoice_id = i.purchase_invoice_id where i.invoice_nature='purchaseinvoice' and i.added_by='".$user_id."' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and 
+i.supplier_billing_gstin_number='' and i.invoice_total_value>'250000' and (i.invoice_type='taxinvoice' or i.invoice_type='sezunitinvoice' or i.invoice_type='importinvoice')  and i.invoice_nature='purchaseinvoice'  AND i.invoice_date like '%".$returnmonth."%'";
+     return $this->get_results($queryB2B);
+	}
+	 private function getPurchaseB2csmallInvoices($user_id,$returnmonth){
+     $queryB2B="select i.purchase_invoice_id, i.recipient_shipping_gstin_number,i.supplier_billing_gstin_number,i.serial_number as invoice_number,i.invoice_date,i.invoice_total_value,i.supply_place,i.supply_type from gst_client_purchase_invoice as i where i.invoice_nature='purchaseinvoice' and i.added_by='".$user_id."' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and 
+i.supplier_billing_gstin_number='' and i.invoice_total_value < '250000' and (i.invoice_type='taxinvoice' or i.invoice_type='sezunitinvoice' or i.invoice_type='importinvoice')  and i.invoice_nature='purchaseinvoice'  AND i.invoice_date like '%".$returnmonth."%'";
+	  return $this->get_results($queryB2B); 
+	  }
+	 private function getPurchaseB2csmallInvoicesDetails($user_id,$returnmonth){
+
+	  $queryB2B =  "SELECT it.consolidate_rate as rateof_invoice,i.purchase_invoice_id,it.purchase_invoice_item_id,i.recipient_shipping_gstin_number,i.supplier_billing_gstin_number,i.serial_number as invoice_number,i.invoice_date,i.invoice_total_value,i.supply_place,i.supply_type,it.total,it.taxable_subtotal,it.igst_amount,it.cgst_amount,it.sgst_amount,it.cess_amount from gst_client_purchase_invoice as i INNER JOIN gst_client_purchase_invoice_item as it on it.purchase_invoice_id = i.purchase_invoice_id where i.invoice_nature='purchaseinvoice' and i.added_by='".$user_id."' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and 
+i.supplier_billing_gstin_number='' and i.invoice_total_value < '250000' and (i.invoice_type='taxinvoice' or i.invoice_type='sezunitinvoice' or i.invoice_type='importinvoice')  and i.invoice_nature='purchaseinvoice'  AND i.invoice_date like '%".$returnmonth."%'";
+     return $this->get_results($queryB2B);
+	}
+	 private function getPurchaseImportInvoices($user_id,$returnmonth){
+     echo $queryB2B="select i.purchase_invoice_id, i.recipient_shipping_gstin_number,i.supplier_billing_gstin_number,i.serial_number as invoice_number,i.invoice_date,i.invoice_total_value,i.supply_place,i.supply_type from gst_client_purchase_invoice as i where i.invoice_nature='purchaseinvoice' and i.added_by='".$user_id."' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and 
+(i.invoice_type='deemedimportinvoice')  and i.invoice_nature='purchaseinvoice'  AND i.invoice_date like '%".$returnmonth."%'";
+	  return $this->get_results($queryB2B); 
+	  }
+	 private function getPurchaseImportInvoicesDetails($user_id,$returnmonth){
+
+	 $queryB2B =  "SELECT it.consolidate_rate as rateof_invoice,i.purchase_invoice_id,it.purchase_invoice_item_id,i.recipient_shipping_gstin_number,i.supplier_billing_gstin_number,i.serial_number as invoice_number,i.invoice_date,i.invoice_total_value,i.supply_place,i.supply_type,it.total,it.taxable_subtotal,it.igst_amount,it.cgst_amount,it.sgst_amount,it.cess_amount from gst_client_purchase_invoice as i INNER JOIN gst_client_purchase_invoice_item as it on it.purchase_invoice_id = i.purchase_invoice_id where i.invoice_nature='purchaseinvoice' and i.added_by='".$user_id."' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and 
+(i.invoice_type='deemedimportinvoice')  and i.invoice_nature='purchaseinvoice'  AND i.invoice_date like '%".$returnmonth."%'";
+     return $this->get_results($queryB2B);
+	}
+	private function getPurchaseCdnrInvoices($user_id,$returnmonth){
+     $queryB2B="select i.purchase_invoice_id, i.recipient_shipping_gstin_number,i.supplier_billing_gstin_number,i.serial_number as invoice_number,i.invoice_date,i.invoice_total_value,i.supply_place,i.supply_type from gst_client_purchase_invoice as i where i.invoice_nature='purchaseinvoice' and i.added_by='".$user_id."' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and 
+i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice_type='creditnote')  and i.invoice_nature='purchaseinvoice'  AND i.invoice_date like '%".$returnmonth."%'";
+	  return $this->get_results($queryB2B); 
+	  }
+	 private function getPurchaseCdnrInvoicesDetails($user_id,$returnmonth){
+
+	  $queryB2B =  "SELECT it.consolidate_rate as rateof_invoice,i.purchase_invoice_id,it.purchase_invoice_item_id,i.recipient_shipping_gstin_number,i.supplier_billing_gstin_number,i.serial_number as invoice_number,i.invoice_date,i.invoice_total_value,i.supply_place,i.supply_type,it.total,it.taxable_subtotal,it.igst_amount,it.cgst_amount,it.sgst_amount,it.cess_amount from gst_client_purchase_invoice as i INNER JOIN gst_client_purchase_invoice_item as it on it.purchase_invoice_id = i.purchase_invoice_id where i.invoice_nature='purchaseinvoice' and i.added_by='".$user_id."' and i.status='1' and i.is_canceled='0' and i.is_deleted='0' and 
+i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice_type='creditnote') and i.invoice_nature='purchaseinvoice'  AND i.invoice_date like '%".$returnmonth."%'";
+     return $this->get_results($queryB2B);
+	}
+	public function insertGstr2B2bInvoice($userid,$returnmonth)
+	{
+		$this->query("DELETE FROM gst_gstr2summary_purchase_invoice_item WHERE added_by='".$this->sanitize($_SESSION["user_detail"]["user_id"])."' and financial_month='".$returnmonth."'"); 
+        $this->query("DELETE FROM gst_gstr2summary_purchase_invoice WHERE added_by='".$this->sanitize($_SESSION["user_detail"]["user_id"])."' and financial_month='".$returnmonth."'"); 
+     	$b2bdata =array();
+		$b2bdata = $this->getPurchaseB2BInvoices($userid,$returnmonth);
+	   if(!empty($b2bdata))
+		{
+			$flag=0;
+			$dataArr =array();
+			$x=0;
+			foreach($b2bdata as $data)
+			{
+				
+				$dataArr[$x]["purchase_invoice_id"] = $data->purchase_invoice_id;
+			    $dataArr[$x]["company_gstin_number"] = $data->recipient_shipping_gstin_number;
+				$dataArr[$x]["financial_month"] = $returnmonth;
+				$dataArr[$x]["invoice_number"] = $data->invoice_number;
+				$dataArr[$x]["invoice_date"] = $data->invoice_date;
+				$dataArr[$x]["invoice_total_value"] = $data->invoice_total_value;
+				$dataArr[$x]["placeof_supply"] = $data->supply_place;
+				$dataArr[$x]["added_by"] = $this->sanitize($_SESSION["user_detail"]["user_id"]);	
+				$dataArr[$x]["added_date"] = date('Y-m-d H:i:s');				
+			
+				
+			 if($data->supply_place=='normal')
+				{
+					$dataArr[$x]["reverse_charge"] = 'N';
+				}
+				elseif($data->supply_place=='reversecharge')
+				{
+					$dataArr[$x]["reverse_charge"] = 'Y';
+				}
+	    		$dataArr[$x]["supplier_billing_gstin_number"] = $data->supplier_billing_gstin_number;
+		 	    $x++;
+			}
+			if(!empty($dataArr))
+			{
+				if ($this->insertMultiple('gst_gstr2summary_purchase_invoice',$dataArr)) {
+					$flag=1;	
+					if($flag==1)
+					{
+					$this->setSuccess('GSTR2 B2B summary invoices added successfully');
+					$this->logMsg("User ID GSTR2 B2B invoice added : " . $_SESSION['user_detail']['user_id'],"gstr2_summary");
+					return true;
+					}
+				}else
+				{
+				$flag=0;	
+				$this->setError('Failed to save returnfile data');	
+				return false;
+				}
+			}
+		}	
+	}
+	public function insertGstr2B2bInvoiceDetails($userid,$returnmonth)
+	{	   
+	    $b2bdata =array();
+		$b2bdata = $this->getPurchaseB2BInvoicesDetails($userid,$returnmonth);
+		if(!empty($b2bdata))
+		{
+			$flag=0;
+			$x=0;
+			$dataArr =array();
+			foreach($b2bdata as $data)
+			{
+				$dataArr[$x]["purchase_invoice_id"] = $data->purchase_invoice_id;
+				$dataArr[$x]["purchase_invoice_item_id"] = $data->purchase_invoice_item_id;
+			    $dataArr[$x]["rateof_invoice"] = $data->rateof_invoice;
+				$dataArr[$x]["tax_value"] = $data->taxable_subtotal;
+				$dataArr[$x]["igst_amount"] = $data->igst_amount;
+				$dataArr[$x]["cgst_amount"] = $data->cgst_amount;
+				$dataArr[$x]["sgst_amount"] = $data->sgst_amount;
+				$dataArr[$x]["cess_amount"] = $data->cess_amount;	
+				$dataArr[$x]["added_by"] = $this->sanitize($_SESSION["user_detail"]["user_id"]);	
+				$dataArr[$x]["added_date"] = date('Y-m-d H:i:s');
+				$dataArr[$x]["financial_month"] = $returnmonth;
+				$x++;
+			}
+			if(!empty($dataArr))
+			{
+				if ($this->insertMultiple('gst_gstr2summary_purchase_invoice_item',$dataArr)) 
+				{	$flag=1;
+					if($flag==1)
+					{
+					$this->setSuccess('GSTR2 B2B summary invoice details added successfully');
+					$this->logMsg("User ID GSTR2 B2B invoice added : " . $_SESSION['user_detail']['user_id'],"gstr2_summary");
+					return true;
+					}
+				}else
+					{	
+                    $flag=0;				
+					$this->setError('Failed to save returnfile data');	
+					return false;
+					}
+				
+			}
+		}
+		
 	
+	}
+	public function insertGstr2B2clInvoice($userid,$returnmonth)
+	{
+	 	$b2bdata =array();
+		$b2bdata = $this->getPurchaseB2clInvoices($userid,$returnmonth);
+	   if(!empty($b2bdata))
+		{
+			$flag=0;
+			$dataArr =array();
+			$x=0;
+			foreach($b2bdata as $data)
+			{
+				
+				$dataArr[$x]["purchase_invoice_id"] = $data->purchase_invoice_id;
+			    $dataArr[$x]["company_gstin_number"] = $data->recipient_shipping_gstin_number;
+				$dataArr[$x]["financial_month"] = $returnmonth;
+				$dataArr[$x]["invoice_number"] = $data->invoice_number;
+				$dataArr[$x]["invoice_date"] = $data->invoice_date;
+				$dataArr[$x]["invoice_total_value"] = $data->invoice_total_value;
+				$dataArr[$x]["placeof_supply"] = $data->supply_place;
+				$dataArr[$x]["added_by"] = $this->sanitize($_SESSION["user_detail"]["user_id"]);	
+				$dataArr[$x]["added_date"] = date('Y-m-d H:i:s');				
+			
+				
+			 if($data->supply_place=='normal')
+				{
+					$dataArr[$x]["reverse_charge"] = 'N';
+				}
+				elseif($data->supply_place=='reversecharge')
+				{
+					$dataArr[$x]["reverse_charge"] = 'Y';
+				}
+	    		$dataArr[$x]["supplier_billing_gstin_number"] = $data->supplier_billing_gstin_number;
+		 	    $x++;
+			}
+			if(!empty($dataArr))
+			{
+				if ($this->insertMultiple('gst_gstr2summary_purchase_invoice',$dataArr)) {
+					$flag=1;	
+					if($flag==1)
+					{
+					$this->setSuccess('GSTR2 B2B summary invoices added successfully');
+					$this->logMsg("User ID GSTR2 B2B invoice added : " . $_SESSION['user_detail']['user_id'],"gstr2_summary");
+					return true;
+					}
+				}else
+				{
+				$flag=0;	
+				$this->setError('Failed to save returnfile data');	
+				return false;
+				}
+			}
+		}
+		
+	
+	}
+	public function insertGstr2B2clInvoiceDetails($userid,$returnmonth)
+	{	   
+	    $b2bdata =array();
+		$b2bdata = $this->getPurchaseB2clInvoicesDetails($userid,$returnmonth);
+		if(!empty($b2bdata))
+		{
+			$flag=0;
+			$x=0;
+			$dataArr =array();
+			foreach($b2bdata as $data)
+			{
+				$dataArr[$x]["purchase_invoice_id"] = $data->purchase_invoice_id;
+				$dataArr[$x]["purchase_invoice_item_id"] = $data->purchase_invoice_item_id;
+			    $dataArr[$x]["rateof_invoice"] = $data->rateof_invoice;
+				$dataArr[$x]["tax_value"] = $data->taxable_subtotal;
+				$dataArr[$x]["igst_amount"] = $data->igst_amount;
+				$dataArr[$x]["cgst_amount"] = $data->cgst_amount;
+				$dataArr[$x]["sgst_amount"] = $data->sgst_amount;
+				$dataArr[$x]["cess_amount"] = $data->cess_amount;	
+				$dataArr[$x]["added_by"] = $this->sanitize($_SESSION["user_detail"]["user_id"]);	
+				$dataArr[$x]["added_date"] = date('Y-m-d H:i:s');
+				$dataArr[$x]["financial_month"] = $returnmonth;
+				$x++;
+			}
+			if(!empty($dataArr))
+			{
+				if ($this->insertMultiple('gst_gstr2summary_purchase_invoice_item',$dataArr)) 
+				{	$flag=1;
+					if($flag==1)
+					{
+					$this->setSuccess('GSTR2 B2B summary invoice details added successfully');
+					$this->logMsg("User ID GSTR2 B2B invoice added : " . $_SESSION['user_detail']['user_id'],"gstr2_summary");
+					return true;
+					}
+				}else
+					{	
+                    $flag=0;				
+					$this->setError('Failed to save returnfile data');	
+					return false;
+					}
+				
+			}
+		}
+	
+	}
+	public function insertGstr2B2csmallInvoice($userid,$returnmonth)
+	{
+	 	$b2bdata =array();
+		$b2bdata = $this->getPurchaseB2csmallInvoices($userid,$returnmonth);
+	   if(!empty($b2bdata))
+		{
+			$flag=0;
+			$dataArr =array();
+			$x=0;
+			foreach($b2bdata as $data)
+			{
+				
+				$dataArr[$x]["purchase_invoice_id"] = $data->purchase_invoice_id;
+			    $dataArr[$x]["company_gstin_number"] = $data->recipient_shipping_gstin_number;
+				$dataArr[$x]["financial_month"] = $returnmonth;
+				$dataArr[$x]["invoice_number"] = $data->invoice_number;
+				$dataArr[$x]["invoice_date"] = $data->invoice_date;
+				$dataArr[$x]["invoice_total_value"] = $data->invoice_total_value;
+				$dataArr[$x]["placeof_supply"] = $data->supply_place;
+				$dataArr[$x]["added_by"] = $this->sanitize($_SESSION["user_detail"]["user_id"]);	
+				$dataArr[$x]["added_date"] = date('Y-m-d H:i:s');				
+			
+				
+			 if($data->supply_place=='normal')
+				{
+					$dataArr[$x]["reverse_charge"] = 'N';
+				}
+				elseif($data->supply_place=='reversecharge')
+				{
+					$dataArr[$x]["reverse_charge"] = 'Y';
+				}
+	    		$dataArr[$x]["supplier_billing_gstin_number"] = $data->supplier_billing_gstin_number;
+		 	    $x++;
+			}
+			if(!empty($dataArr))
+			{
+				if ($this->insertMultiple('gst_gstr2summary_purchase_invoice',$dataArr)) {
+					$flag=1;	
+					if($flag==1)
+					{
+					$this->setSuccess('GSTR2 B2B summary invoices added successfully');
+					$this->logMsg("User ID GSTR2 B2B invoice added : " . $_SESSION['user_detail']['user_id'],"gstr2_summary");
+					return true;
+					}
+				}else
+				{
+				$flag=0;	
+				$this->setError('Failed to save returnfile data');	
+				return false;
+				}
+			}
+		}
+		
+	}
+	public function insertGstr2B2csmallInvoiceDetails($userid,$returnmonth)
+	{	   
+	    $b2bdata =array();
+		$b2bdata = $this->getPurchaseB2csmallInvoicesDetails($userid,$returnmonth);
+		if(!empty($b2bdata))
+		{
+			$flag=0;
+			$x=0;
+			$dataArr =array();
+			foreach($b2bdata as $data)
+			{
+				$dataArr[$x]["purchase_invoice_id"] = $data->purchase_invoice_id;
+				$dataArr[$x]["purchase_invoice_item_id"] = $data->purchase_invoice_item_id;
+			    $dataArr[$x]["rateof_invoice"] = $data->rateof_invoice;
+				$dataArr[$x]["tax_value"] = $data->taxable_subtotal;
+				$dataArr[$x]["igst_amount"] = $data->igst_amount;
+				$dataArr[$x]["cgst_amount"] = $data->cgst_amount;
+				$dataArr[$x]["sgst_amount"] = $data->sgst_amount;
+				$dataArr[$x]["cess_amount"] = $data->cess_amount;	
+				$dataArr[$x]["added_by"] = $this->sanitize($_SESSION["user_detail"]["user_id"]);	
+				$dataArr[$x]["added_date"] = date('Y-m-d H:i:s');
+				$dataArr[$x]["financial_month"] = $returnmonth;
+				$x++;
+			}
+			
+			if(!empty($dataArr))
+			{
+				
+				if ($this->insertMultiple('gst_gstr2summary_purchase_invoice_item',$dataArr)) 
+				{	$flag=1;
+					if($flag==1)
+					{
+					$this->setSuccess('GSTR2 B2B summary invoice details added successfully');
+					$this->logMsg("User ID GSTR2 B2B invoice added : " . $_SESSION['user_detail']['user_id'],"gstr2_summary");
+					return true;
+					}
+				}else
+					{	
+                    $flag=0;				
+					$this->setError('Failed to save returnfile data');	
+					return false;
+					}
+				
+			}
+		}
+	
+	}
+	public function insertGstr2ImportInvoice($userid,$returnmonth)
+	{
+	 	$b2bdata =array();
+		$b2bdata = $this->getPurchaseImportInvoices($userid,$returnmonth);
+	   if(!empty($b2bdata))
+		{
+			$flag=0;
+			$dataArr =array();
+			$x=0;
+			foreach($b2bdata as $data)
+			{
+				
+				$dataArr[$x]["purchase_invoice_id"] = $data->purchase_invoice_id;
+			    $dataArr[$x]["company_gstin_number"] = $data->recipient_shipping_gstin_number;
+				$dataArr[$x]["financial_month"] = $returnmonth;
+				$dataArr[$x]["invoice_number"] = $data->invoice_number;
+				$dataArr[$x]["invoice_date"] = $data->invoice_date;
+				$dataArr[$x]["invoice_total_value"] = $data->invoice_total_value;
+				$dataArr[$x]["placeof_supply"] = $data->supply_place;
+				$dataArr[$x]["added_by"] = $this->sanitize($_SESSION["user_detail"]["user_id"]);	
+				$dataArr[$x]["added_date"] = date('Y-m-d H:i:s');				
+			
+				
+			 if($data->supply_place=='normal')
+				{
+					$dataArr[$x]["reverse_charge"] = 'N';
+				}
+				elseif($data->supply_place=='reversecharge')
+				{
+					$dataArr[$x]["reverse_charge"] = 'Y';
+				}
+	    		$dataArr[$x]["supplier_billing_gstin_number"] = $data->supplier_billing_gstin_number;
+		 	    $x++;
+			}
+			if(!empty($dataArr))
+			{
+				if ($this->insertMultiple('gst_gstr2summary_purchase_invoice',$dataArr)) {
+					$flag=1;	
+					if($flag==1)
+					{
+					$this->setSuccess('GSTR2 B2B summary invoices added successfully');
+					$this->logMsg("User ID GSTR2 B2B invoice added : " . $_SESSION['user_detail']['user_id'],"gstr2_summary");
+					return true;
+					}
+				}else
+				{
+				$flag=0;	
+				$this->setError('Failed to save returnfile data');	
+				return false;
+				}
+			}
+		}
+		
+	}
+	public function insertGstr2ImportInvoiceDetails($userid,$returnmonth)
+	{	   
+	    $b2bdata =array();
+		$b2bdata = $this->getPurchaseImportInvoicesDetails($userid,$returnmonth);
+		if(!empty($b2bdata))
+		{
+			$flag=0;
+			$x=0;
+			$dataArr =array();
+			foreach($b2bdata as $data)
+			{
+				$dataArr[$x]["purchase_invoice_id"] = $data->purchase_invoice_id;
+				$dataArr[$x]["purchase_invoice_item_id"] = $data->purchase_invoice_item_id;
+			    $dataArr[$x]["rateof_invoice"] = $data->rateof_invoice;
+				$dataArr[$x]["tax_value"] = $data->taxable_subtotal;
+				$dataArr[$x]["igst_amount"] = $data->igst_amount;
+				$dataArr[$x]["cgst_amount"] = $data->cgst_amount;
+				$dataArr[$x]["sgst_amount"] = $data->sgst_amount;
+				$dataArr[$x]["cess_amount"] = $data->cess_amount;	
+				$dataArr[$x]["added_by"] = $this->sanitize($_SESSION["user_detail"]["user_id"]);	
+				$dataArr[$x]["added_date"] = date('Y-m-d H:i:s');
+				$dataArr[$x]["financial_month"] = $returnmonth;
+				$x++;
+			}
+			
+			if(!empty($dataArr))
+			{
+				
+				if ($this->insertMultiple('gst_gstr2summary_purchase_invoice_item',$dataArr)) 
+				{	$flag=1;
+					if($flag==1)
+					{
+					$this->setSuccess('GSTR2 B2B summary invoice details added successfully');
+					$this->logMsg("User ID GSTR2 B2B invoice added : " . $_SESSION['user_detail']['user_id'],"gstr2_summary");
+					return true;
+					}
+				}else
+					{	
+                    $flag=0;				
+					$this->setError('Failed to save returnfile data');	
+					return false;
+					}
+				
+			}
+		}
+	
+	}
+	public function insertGstr2CdnrInvoice($userid,$returnmonth)
+	{
+	 	$b2bdata =array();
+		$b2bdata = $this->getPurchaseCdnrInvoices($userid,$returnmonth);
+	   if(!empty($b2bdata))
+		{
+			$flag=0;
+			$dataArr =array();
+			$x=0;
+			foreach($b2bdata as $data)
+			{
+				
+				$dataArr[$x]["purchase_invoice_id"] = $data->purchase_invoice_id;
+			    $dataArr[$x]["company_gstin_number"] = $data->recipient_shipping_gstin_number;
+				$dataArr[$x]["financial_month"] = $returnmonth;
+				$dataArr[$x]["invoice_number"] = $data->invoice_number;
+				$dataArr[$x]["invoice_date"] = $data->invoice_date;
+				$dataArr[$x]["invoice_total_value"] = $data->invoice_total_value;
+				$dataArr[$x]["placeof_supply"] = $data->supply_place;
+				$dataArr[$x]["added_by"] = $this->sanitize($_SESSION["user_detail"]["user_id"]);	
+				$dataArr[$x]["added_date"] = date('Y-m-d H:i:s');				
+			
+				
+			 if($data->supply_place=='normal')
+				{
+					$dataArr[$x]["reverse_charge"] = 'N';
+				}
+				elseif($data->supply_place=='reversecharge')
+				{
+					$dataArr[$x]["reverse_charge"] = 'Y';
+				}
+	    		$dataArr[$x]["supplier_billing_gstin_number"] = $data->supplier_billing_gstin_number;
+		 	    $x++;
+			}
+			if(!empty($dataArr))
+			{
+				if ($this->insertMultiple('gst_gstr2summary_purchase_invoice',$dataArr)) {
+					$flag=1;	
+					if($flag==1)
+					{
+					$this->setSuccess('GSTR2 B2B summary invoices added successfully');
+					$this->logMsg("User ID GSTR2 B2B invoice added : " . $_SESSION['user_detail']['user_id'],"gstr2_summary");
+					return true;
+					}
+				}else
+				{
+				$flag=0;	
+				$this->setError('Failed to save returnfile data');	
+				return false;
+				}
+			}
+		}
+		
+	}
+	public function insertGstr2CdnrInvoiceDetails($userid,$returnmonth)
+	{	   
+	    $b2bdata =array();
+		$b2bdata = $this->getPurchaseCdnrInvoicesDetails($userid,$returnmonth);
+		if(!empty($b2bdata))
+		{
+			$flag=0;
+			$x=0;
+			$dataArr =array();
+			foreach($b2bdata as $data)
+			{
+				$dataArr[$x]["purchase_invoice_id"] = $data->purchase_invoice_id;
+				$dataArr[$x]["purchase_invoice_item_id"] = $data->purchase_invoice_item_id;
+			    $dataArr[$x]["rateof_invoice"] = $data->rateof_invoice;
+				$dataArr[$x]["tax_value"] = $data->taxable_subtotal;
+				$dataArr[$x]["igst_amount"] = $data->igst_amount;
+				$dataArr[$x]["cgst_amount"] = $data->cgst_amount;
+				$dataArr[$x]["sgst_amount"] = $data->sgst_amount;
+				$dataArr[$x]["cess_amount"] = $data->cess_amount;	
+				$dataArr[$x]["added_by"] = $this->sanitize($_SESSION["user_detail"]["user_id"]);	
+				$dataArr[$x]["added_date"] = date('Y-m-d H:i:s');
+				$dataArr[$x]["financial_month"] = $returnmonth;
+				$x++;
+			}
+			
+			if(!empty($dataArr))
+			{
+				
+				if ($this->insertMultiple('gst_gstr2summary_purchase_invoice_item',$dataArr)) 
+				{	$flag=1;
+					if($flag==1)
+					{
+					$this->setSuccess('GSTR2 B2B summary invoice details added successfully');
+					$this->logMsg("User ID GSTR2 B2B invoice added : " . $_SESSION['user_detail']['user_id'],"gstr2_summary");
+					return true;
+					}
+				}else
+					{	
+                    $flag=0;				
+					$this->setError('Failed to save returnfile data');	
+					return false;
+					}
+				
+			}
+		}
+	
+	}
+	public function gstDocumentSummaryData()
+   {
+	    $dataArr = array();
+		$data = array();
+		$data['table1_srno_from']='';
+		$data['table1_srno_to']='';
+		$data['table1_totalno']='';
+		$data['table1_cancelled']='';
+		$data['table1_netissued']='';
+        $data['table2_srno_from']='';
+		$data['table2_srno_to']='';
+		$data['table2_totalno']='';
+		$data['table2_cancelled']='';
+		$data['table2_netissued']='';			
+		
+		if(!empty($_POST['table1_srno_from'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table1_srno_from'] as $selected){
+			 
+             $data['table1_srno_from'] = $data['table1_srno_from'].$selected.',';
+			
+			} 
+			$data['table1_srno_from'] = rtrim($data['table1_srno_from'],",");
+			}
+			
+		if(!empty($_POST['table1_srno_to'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table1_srno_to'] as $selected){
+			 
+             $data['table1_srno_to'] = $data['table1_srno_to'].$selected.',';
+			
+			} 
+			$data['table1_srno_to'] = rtrim($data['table1_srno_to'],",");
+			}
+			if(!empty($_POST['table1_totalno'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table1_totalno'] as $selected){
+			 
+             $data['table1_totalno'] = $data['table1_totalno'].$selected.',';
+			
+			} 
+			$data['table1_totalno'] = rtrim($data['table1_totalno'],",");
+			}
+			if(!empty($_POST['table1_cancelled'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table1_cancelled'] as $selected){
+			 
+             $data['table1_cancelled'] = $data['table1_cancelled'].$selected.',';
+			
+			} 
+			$data['table1_cancelled'] = rtrim($data['table1_cancelled'],",");
+			}
+			if(!empty($_POST['table1_netissued'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table1_netissued'] as $selected){
+			 
+             $data['table1_netissued'] = $data['table1_netissued'].$selected.',';
+			
+			} 
+			$data['table1_netissued'] = rtrim($data['table1_netissued'],",");
+			}
+			if(!empty($_POST['table2_srno_from'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table2_srno_from'] as $selected){
+			 
+             $data['table2_srno_from'] = $data['table2_srno_from'].$selected.',';
+			
+			} 
+			$data['table2_srno_from'] = rtrim($data['table2_srno_from'],",");
+			}
+			
+		if(!empty($_POST['table2_srno_to'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table2_srno_to'] as $selected){
+			 
+             $data['table2_srno_to'] = $data['table2_srno_to'].$selected.',';
+			
+			} 
+			$data['table2_srno_to'] = rtrim($data['table2_srno_to'],",");
+			}
+			if(!empty($_POST['table2_totalno'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table2_totalno'] as $selected){
+			 
+             $data['table2_totalno'] = $data['table2_totalno'].$selected.',';
+			
+			} 
+			$data['table2_totalno'] = rtrim($data['table2_totalno'],",");
+			}
+			if(!empty($_POST['table2_cancelled'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table2_cancelled'] as $selected){
+			 
+             $data['table2_cancelled'] = $data['table2_cancelled'].$selected.',';
+			
+			} 
+			$data['table2_cancelled'] = rtrim($data['table2_cancelled'],",");
+			}
+			if(!empty($_POST['table2_netissued'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table2_netissued'] as $selected){
+			 
+             $data['table2_netissued'] = $data['table2_netissued'].$selected.',';
+			
+			} 
+			$data['table2_netissued'] = rtrim($data['table2_netissued'],",");
+			}
+		
+		
+		
+	
+	    $data5a[]=array("table1_srno_from"=>$data['table1_srno_from'],"table1_srno_to"=>$data['table1_srno_to'],"table1_totalno"=>$data['table1_totalno'],"table1_cancelled"=>$data['table1_cancelled'],"table1_netissued"=>$data['table1_netissued'],"table2_srno_from"=>$data['table2_srno_from'],"table2_srno_to"=>$data['table2_srno_to'],"table2_totalno"=>$data['table2_totalno'],"table2_cancelled"=>$data['table2_cancelled'],"table2_netissued"=>$data['table2_netissued']);
+		$dataArr['gstr1_summary_data'] = base64_encode(json_encode($data5a));
+	 	
+	   return $dataArr;
+   }
+    public function saveGstr1DocumentSummary()
+    {
+	    $data = $this->get_results("select * from gst_gstr1_document_summary where added_by='".$_SESSION['user_detail']['user_id']."' and financial_month='".$this->sanitize($_GET['returnmonth'])."'");
+		$dataArr = $this->gstDocumentSummaryData();
+	    $returnmonth = $this->sanitize($_GET['returnmonth']);
+		if(empty($data))
+		{
+			$dataArr['financial_month']=$this->sanitize($_GET['returnmonth']);
+			$dataArr['added_by']=$this->sanitize($_SESSION["user_detail"]["user_id"]);
+			
+			if ($this->insert('gst_gstr1_document_summary', $dataArr)) {
+				$this->setSuccess('GSTR1 document summary form Saved Successfully');
+				$this->logMsg("GSTR1 document summary Inserted financial month : " . $returnmonth,"gstr1");
+				return true;
+			}
+			else
+			{
+				$this->setError('Failed to save GSTR1 document summary data');
+			   return false;    	   
+		   }
+
+		}
+		else
+		{
+			
+			if ($this->update('gst_gstr1_document_summary', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
+			  
+				$this->setSuccess('GSTR1 document summary month of '.$returnmonth."updated Successfully");
+				//$this->logMsg("GSTR3B updated financial month : " . $returnmonth,"gstr_3b");
+				return true;
+			}
+			else
+			{
+				$this->setError('Failed to save GSTR3B data');
+			   return false;    	   
+		   }
+	    }
+	  
+   }
 	public function gstr2File() {
         $fmonth = isset($_GET['returnmonth']) ? $_GET['returnmonth'] : date('Y-m');
         

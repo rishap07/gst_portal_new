@@ -47,11 +47,12 @@ if (isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
                 </form>
             </div>
 
-            <div class="col-md-12 col-sm-12 col-xs-12 tablistnav padleft0">
-                <?php
-                              include(PROJECT_ROOT."/modules/return/include/tab.php");
+           <div class="col-md-12 col-sm-12 col-xs-12 heading">
+            <div class="tab col-md-12 col-sm-12 col-xs-12">
+              <?php
+                        include(PROJECT_ROOT."/modules/return/include/tab.php");
                ?>
-            </div>
+            </div></div>
             <div class="clear"></div>
             <?php
             $dataReturns = $obj_gstr2->get_results("select * from " . TAB_PREFIX . "return where return_month='" . $returnmonth . "' and client_id='" . $_SESSION['user_detail']['user_id'] . "' and status='3' and type='gstr2'");

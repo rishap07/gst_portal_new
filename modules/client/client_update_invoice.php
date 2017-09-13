@@ -595,7 +595,6 @@
 							<?php $total_cgst_amount += $invData->cgst_amount; ?>
 							<?php $total_sgst_amount += $invData->sgst_amount; ?>
 							<?php $total_igst_amount += $invData->igst_amount; ?>
-
 							<?php $counter++; ?>
 						<?php } ?>
 

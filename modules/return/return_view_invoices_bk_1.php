@@ -175,252 +175,151 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                 $Data = $b2bData = $b2clData = $b2csData = $cdnrData = $cdnurData = $atData = $expData = array();
                                 if($type=='B2B')
                                 {
-                                    $Data = $b2bData = $obj_gstr1->getB2BInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all');
+                                    $Data = $b2bData = $obj_gstr1->getB2BInvoices($_SESSION['user_detail']['user_id'], $returnmonth);
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
-                                    $invoice_temp = '';
-                                    $invoice_total_value_temp = '';
-                                    $invCount =0;
                                     if (!empty($b2bData)) {
-                                        
                                         foreach ($b2bData as $key => $b2bDatavalue) {
-                                            if($invoice_temp!='' and $invoice_temp!=$b2bDatavalue->invoice_id)
-                                            {
-                                                $invCount++;
-                                                $invoice_total_value +=$invoice_total_value_temp;
-                                                $sumTotal +=$sumTotal_temp;
-                                            }
-                                            $invoice_total_value_temp = isset($b2bDatavalue->taxable_subtotal)?$b2bDatavalue->taxable_subtotal:0;
+                                            $invoice_total_value += isset($b2bDatavalue->taxable_subtotal)?$b2bDatavalue->taxable_subtotal:0;
                                             $total += $b2bDatavalue->cgst_amount + $b2bDatavalue->sgst_amount + $b2bDatavalue->igst_amount + $b2bDatavalue->cess_amount;
                                             $igstTotal += $b2bDatavalue->igst_amount;
                                             $sgstTotal += $b2bDatavalue->sgst_amount;
                                             $cgstTotal += $b2bDatavalue->cgst_amount;
                                             $cessTotal += $b2bDatavalue->cess_amount;
-                                            $sumTotal_temp = isset($b2bDatavalue->invoice_total_value)?$b2bDatavalue->invoice_total_value:0;
-                                            $invoice_temp=$b2bDatavalue->invoice_id;
+                                            $sumTotal += isset($b2bDatavalue->invoice_total_value)?$b2bDatavalue->invoice_total_value:0;
                                         }
-                                        if($invoice_temp!='')
-                                        {
-                                            $invCount++;
-                                            $invoice_total_value +=$invoice_total_value_temp;
-                                            $sumTotal +=$sumTotal_temp;
-                                        }
+
+                                        //$sumTotal = $invoice_total_value + $total;
+                                        $invCount = count($b2bData);
                                     }
+                                    // /$obj_gstr1->pr($b2bData);    
                                 }
                                 if($type=='B2CL')
                                 {
-                                    $group_by = "";
-                                    $order_by = 'a.reference_number';
-                                    $Data = $b2clData = $obj_gstr1->getB2CLInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
-                                    $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;  
-                                    
-                                    $invoice_temp = '';
-                                    $invCount = 0;
+                                    $Data = $b2clData = $obj_gstr1->getB2CLInvoices($_SESSION['user_detail']['user_id'], $returnmonth);
+                                    $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
                                     if (!empty($b2clData)) {
                                         foreach ($b2clData as $key => $b2clDatavalue) {
-                                            if($invoice_temp!='' and $invoice_temp!=$b2clDatavalue->invoice_id)
-                                            {
-                                                $invCount++;
-                                                $invoice_total_value +=$invoice_total_value_temp;
-                                                $sumTotal +=$sumTotal_temp;
-                                            }
-                                            $invoice_total_value_temp = isset($b2clDatavalue->taxable_subtotal)?$b2clDatavalue->taxable_subtotal:0;
+                                            $invoice_total_value += isset($b2clDatavalue->taxable_subtotal)?$b2clDatavalue->taxable_subtotal:0;
                                             $total += $b2clDatavalue->cgst_amount + $b2clDatavalue->sgst_amount + $b2clDatavalue->igst_amount + $b2clDatavalue->cess_amount;
                                             $igstTotal += $b2clDatavalue->igst_amount;
                                             $sgstTotal += $b2clDatavalue->sgst_amount;
                                             $cgstTotal += $b2clDatavalue->cgst_amount;
                                             $cessTotal += $b2clDatavalue->cess_amount;
-                                            $sumTotal_temp = isset($b2clDatavalue->invoice_total_value)?$b2clDatavalue->invoice_total_value:0;
-                                            $invoice_temp=$b2clDatavalue->invoice_id;
+                                            $sumTotal += isset($b2clDatavalue->invoice_total_value)?$b2clDatavalue->invoice_total_value:0;
                                         }
-                                        if($invoice_temp!='')
-                                        {
-                                            $invCount++;
-                                            $invoice_total_value +=$invoice_total_value_temp;
-                                            $sumTotal +=$sumTotal_temp;
-                                        }
+
+                                        //$sumTotal = $invoice_total_value + $total;
+                                        $invCount = count($b2clData);
                                     }
 
                                 }
                                 if($type=='B2CS')
                                 {
-                                    $group_by = "";
-                                    $order_by = 'a.reference_number';
-                                    $Data = $b2csData = $obj_gstr1->getB2CSInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
+                                    $Data = $b2csData = $obj_gstr1->getB2CSInvoices($_SESSION['user_detail']['user_id'], $returnmonth);
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
-                                    $invoice_temp = '';
-                                    $invCount = 0;
                                     if (!empty($b2csData)) {
                                         foreach ($b2csData as $key => $b2csDatavalue) {
-                                            if($invoice_temp!='' and $invoice_temp!=$b2csDatavalue->invoice_id)
-                                            {
-                                                $invCount++;
-                                                $invoice_total_value +=$invoice_total_value_temp;
-                                                $sumTotal +=$sumTotal_temp;
-                                            }
-                                            $invoice_total_value_temp = isset($b2csDatavalue->taxable_subtotal)?$b2csDatavalue->taxable_subtotal:0;
+                                            $invoice_total_value += isset($b2csDatavalue->taxable_subtotal)?$b2csDatavalue->taxable_subtotal:0;
                                             $total += $b2csDatavalue->cgst_amount + $b2csDatavalue->sgst_amount + $b2csDatavalue->igst_amount + $b2csDatavalue->cess_amount;
                                             $igstTotal += $b2csDatavalue->igst_amount;
                                             $sgstTotal += $b2csDatavalue->sgst_amount;
                                             $cgstTotal += $b2csDatavalue->cgst_amount;
                                             $cessTotal += $b2csDatavalue->cess_amount;
-                                            $sumTotal_temp = isset($b2csDatavalue->invoice_total_value)?$b2csDatavalue->invoice_total_value:0;
-                                            $invoice_temp=$b2csDatavalue->invoice_id;
+                                            $sumTotal += isset($b2csDatavalue->invoice_total_value)?$b2csDatavalue->invoice_total_value:0;
                                         }
-                                        if($invoice_temp!='')
-                                        {
-                                            $invCount++;
-                                            $invoice_total_value +=$invoice_total_value_temp;
-                                            $sumTotal +=$sumTotal_temp;
-                                        }
+
+
+                                        $invCount = count($b2csData);
                                     }
 
                                 }
                                 if($type=='CDNR')
                                 {
-                                    $Data = $cdnrData = $obj_gstr1->getCDNRInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all');
+                                    $Data = $cdnrData = $obj_gstr1->getCDNRInvoices($_SESSION['user_detail']['user_id'], $returnmonth);
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
-                                    $invoice_temp = '';
-                                    $invCount = 0;
                                     if (!empty($cdnrData)) {
                                         foreach ($cdnrData as $key => $cdnrDatavalue) {
-                                            if($invoice_temp!='' and $invoice_temp!=$cdnrDatavalue->invoice_id)
-                                            {
-                                                $invCount++;
-                                                $invoice_total_value +=$invoice_total_value_temp;
-                                                $sumTotal +=$sumTotal_temp;
-                                            }
-                                            $invoice_total_value_temp = isset($cdnrDatavalue->taxable_subtotal)?$cdnrDatavalue->taxable_subtotal:0;
+                                            $invoice_total_value += isset($cdnrDatavalue->taxable_subtotal)?$cdnrDatavalue->taxable_subtotal:0;
                                             $total += $cdnrDatavalue->cgst_amount + $cdnrDatavalue->sgst_amount + $cdnrDatavalue->igst_amount + $cdnrDatavalue->cess_amount;
                                             $igstTotal += $cdnrDatavalue->igst_amount;
                                             $sgstTotal += $cdnrDatavalue->sgst_amount;
                                             $cgstTotal += $cdnrDatavalue->cgst_amount;
                                             $cessTotal += $cdnrDatavalue->cess_amount;
-                                            $sumTotal_temp = isset($cdnrDatavalue->invoice_total_value)?$cdnrDatavalue->invoice_total_value:0;
-                                            $invoice_temp=$cdnrDatavalue->invoice_id;
+                                            $sumTotal += isset($cdnrDatavalue->invoice_total_value)?$cdnrDatavalue->invoice_total_value:0;
+
                                         }
-                                        if($invoice_temp!='')
-                                        {
-                                            $invCount++;
-                                            $invoice_total_value +=$invoice_total_value_temp;
-                                            $sumTotal +=$sumTotal_temp;
-                                        }
+
+                                       //$sumTotal = $invoice_total_value + $total;
+                                       $invCount = count($cdnrData);
                                     }
 
                                 }
                                 if($type=='CDNUR')
                                 {
-                                    $group_by = "";
-                                    $order_by = 'a.reference_number';
-                                    $Data = $cdnurData = $obj_gstr1->getCDNURInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
+                                    $Data = $cdnurData = $obj_gstr1->getCDNURInvoices($_SESSION['user_detail']['user_id'], $returnmonth);
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
-                                    $sumTotal_temp = '';
-                                    $invoice_temp = '';
-                                    $invCount = 0;
                                     if (!empty($cdnurData)) {
                                         foreach ($cdnurData as $key => $cdnurDatavalue) {
-                                            if($invoice_temp!='' and $invoice_temp!=$cdnurDatavalue->invoice_id)
-                                            {
-                                                $invCount++;
-                                                $invoice_total_value +=$invoice_total_value_temp;
-                                                $sumTotal +=$sumTotal_temp;
-                                            }
-                                            $invoice_total_value = isset($cdnurDatavalue->taxable_subtotal)?$cdnurDatavalue->taxable_subtotal:0;
-                                            $invoice_total_value_temp =  $cdnurDatavalue->igst_amount + $cdnurDatavalue->cess_amount;
+                                            $invoice_total_value += isset($cdnurDatavalue->taxable_subtotal)?$cdnurDatavalue->taxable_subtotal:0;
+                                            $total +=  $cdnurDatavalue->igst_amount + $cdnurDatavalue->cess_amount;
                                             $igstTotal += $cdnurDatavalue->igst_amount;
                                             $sgstTotal += $cdnurDatavalue->sgst_amount;
                                             $cgstTotal += $cdnurDatavalue->cgst_amount;
                                             $cessTotal += $cdnurDatavalue->cess_amount;
-                                            $sumTotal_temp = isset($cdnurDatavalue->invoice_total_value)?$cdnurDatavalue->invoice_total_value:0;
-                                            $invoice_temp=$cdnurDatavalue->invoice_id;
+                                            $sumTotal += isset($cdnurDatavalue->invoice_total_value)?$cdnurDatavalue->invoice_total_value:0;
                                         }
-                                        if($invoice_temp!='')
-                                        {
-                                            $invCount++;
-                                            $invoice_total_value +=$invoice_total_value_temp;
-                                            $sumTotal +=$sumTotal_temp;
-                                        }
+
+                                        //$sumTotal = $invoice_total_value + $total;
+                                        $invCount = count($cdnurData);
                                     }
 
                                 }
                                 if($type=='AT')
                                 {
-                                    $group_by = " a.reference_number ,b.consolidate_rate ";
-                                    $order_by = 'a.reference_number';
-                                    $Data = $atData = $obj_gstr1->getATInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
+                                    $Data = $atData = $obj_gstr1->getATInvoices($_SESSION['user_detail']['user_id'], $returnmonth);
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
-                                    $sumTotal_temp = '';
-                                    $invoice_temp = '';
-                                    $invCount = 0;
                                     if (!empty($atData)) {
-                                        $invoice_temp='';
                                         foreach ($atData as $key => $atDatavalue) {
-                                            if($invoice_temp!='' and $invoice_temp!=$atDatavalue->invoice_id)
-                                            {
-                                                $invCount++;
-                                                $invoice_total_value +=$invoice_total_value_temp;
-                                                $sumTotal +=$sumTotal_temp;
-                                            }
-                                            $invoice_total_value_temp = isset($atDatavalue->taxable_subtotal)?$atDatavalue->taxable_subtotal:0;
+                                            $invoice_total_value += isset($atDatavalue->taxable_subtotal)?$atDatavalue->taxable_subtotal:0;
                                             $total += $atDatavalue->cgst_amount + $atDatavalue->sgst_amount + $atDatavalue->igst_amount + $atDatavalue->cess_amount;
                                             $igstTotal += $atDatavalue->igst_amount;
                                             $sgstTotal += $atDatavalue->sgst_amount;
                                             $cgstTotal += $atDatavalue->cgst_amount;
                                             $cessTotal += $atDatavalue->cess_amount;
-                                            $sumTotal_temp = isset($atDatavalue->invoice_total_value)?$atDatavalue->invoice_total_value:0;
-                                            $invoice_temp=$atDatavalue->invoice_id;
+                                            $sumTotal += isset($atDatavalue->invoice_total_value)?$atDatavalue->invoice_total_value:0;
                                         }
-                                        if($invoice_temp!='')
-                                        {
-                                            $invCount++;
-                                            $invoice_total_value +=$invoice_total_value_temp;
-                                            $sumTotal +=$sumTotal_temp;
-                                        }
+                                        $invCount = count($atData);
                                     }
 
                                 }
                                 if($type=='EXP')
                                 {
-                                    $group_by = " a.reference_number ,b.consolidate_rate ";
-                                    $order_by = 'a.reference_number';
-                                    $Data = $expData = $obj_gstr1->getEXPInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
+                                    $Data = $expData = $obj_gstr1->getEXPInvoices($_SESSION['user_detail']['user_id'], $returnmonth);
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
-                                    $sumTotal_temp = '';
-                                    $invoice_temp = '';
-                                    $invCount = 0;
                                     if (!empty($expData)) {
-                                        $invoice_temp='';
                                         foreach ($expData as $key => $expDatavalue) {
-                                            if($invoice_temp!='' and $invoice_temp!=$expDatavalue->invoice_id)
-                                            {
-                                                $invCount++;
-                                                $invoice_total_value +=$invoice_total_value_temp;
-                                                $sumTotal +=$sumTotal_temp;
-                                            }
-                                            $invoice_total_value_temp = isset($expDatavalue->taxable_subtotal)?$expDatavalue->taxable_subtotal:0;
+                                            $invoice_total_value += isset($expDatavalue->taxable_subtotal)?$expDatavalue->taxable_subtotal:0;
                                             $total += $expDatavalue->cgst_amount + $expDatavalue->sgst_amount + $expDatavalue->igst_amount + $expDatavalue->cess_amount;
                                             $igstTotal += $expDatavalue->igst_amount;
                                             $sgstTotal += $expDatavalue->sgst_amount;
                                             $cgstTotal += $expDatavalue->cgst_amount;
                                             $cessTotal += $expDatavalue->cess_amount;
-                                            $sumTotal_temp = isset($expDatavalue->invoice_total_value)?$expDatavalue->invoice_total_value:0;
-                                            $invoice_temp=$expDatavalue->invoice_id;
+                                            $sumTotal += isset($expDatavalue->invoice_total_value)?$expDatavalue->invoice_total_value:0;
                                         }
-                                        if($invoice_temp!='')
-                                        {
-                                            $invCount++;
-                                            $invoice_total_value +=$invoice_total_value_temp;
-                                            $sumTotal +=$sumTotal_temp;
-                                        }
+                                        $invCount = count($expData);
                                     }
                                 }
-                                if($invCount >0) 
-                                {
+                                if($invCount >0) {
+                                ?>
+                                <?php
                                     if($flag==1)
                                     {
                                     ?>
                                         <div style="text-align: center;">
                                             <input type="submit" name="submit_up" id="up" value="Upload TO GSTN" class="btn  btn-success " >
+
                                             <input type="submit" name="submit_dwn" id="down" value="Download GSTR1" class="btn btn-warning ">
+                                            
                                         </div>
                                         <div class="clear"></div><br>
                                     <?php } 
@@ -453,19 +352,13 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                         <table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
                                             <thead>
                                                 <tr>
-                                                    <th align='left'><input name="select_all" value="1" id="example-select-all" type="checkbox" /></th>
+                                                    <th align='left'><input name="select_all" value="1" id="example-select-all" type="checkbox" />
+                                                    </th>
                                                     <th align='left'>No.</th>
                                                     <th align='left'>Date</th>
                                                     <th align='left'>Invoice Number</th>
                                                     <th align='left'>Customer</th>
-                                                    <?php
-                                                    if($type!='B2CL' && $type!='B2CS' && $type!='CDNUR')
-                                                    {
-                                                    ?>
                                                     <th align='left'>GSTIN</th>
-                                                    <?php
-                                                    }
-                                                    ?>
                                                     <th style='text-align:right'>Taxable AMT</th>
                                                     <th style='text-align:right'>Total Tax</th>
                                                     <th style='text-align:right'>Total Amt</th>
@@ -481,52 +374,47 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                                         {
                                                             $flag=1;
                                                             $i=1;
-                                                            $temp_inv = '';
-                                                            $tax = 0;
                                                             foreach($Data as $Item)
                                                             {
-                                                                
-                                                                if($temp_inv!='' and $temp_inv!=$Item->invoice_id)   
-                                                                {
                                                                 ?>
                                                                 <tr>
                                                                     <td align="center" bgcolor="#FFFFFF">
-                                                                       <input type="checkbox" class="name" name="name[]" value="<?php echo $temp_inv;?>"/> 
+                                                                       <input type="checkbox" class="name" name="name[]" value="<?php echo $Item->invoice_id;?>"/> 
                                                                     </td>
                                                                     <td align='left'><?php echo $i++;?></td>
-                                                                    <td align='left'><?php echo $invoice_date;?></td>
-                                                                    <td align='left'><?php echo $reference_number;?></td>
-                                                                    <td align='left'><?php echo $billing_name;?></td>
-                                                                    <td align='left'><?php echo $billing_gstin_number;?></td>
-                                                                    <td style='text-align:right'><?php echo $taxable_subtotal;?></td>
-                                                                    <td style='text-align:right'><?php echo $tax?></td>
-                                                                    <td style='text-align:right'><?php echo $invoice_total_value;?></td>
+                                                                    <td align='left'><?php echo $Item->invoice_date;?></td>
+                                                                    <td align='left'><?php echo $Item->reference_number;?></td>
+                                                                    <td align='left'><?php echo $Item->billing_name;?></td>
+                                                                    <td align='left'><?php echo $Item->billing_gstin_number;?></td>
+                                                                    <td style='text-align:right'><?php echo $Item->taxable_subtotal;?></td>
+                                                                    <td style='text-align:right'><?php echo $Item->cgst_amount + $Item->sgst_amount + $Item->igst_amount + $Item->cess_amount;?></td>
+                                                                    <td style='text-align:right'><?php echo $Item->invoice_total_value;?></td>
                                                                     <td align='center'><?php echo $type; ?></td>
-                                                                    <td align='center'><?php echo $is_uploaded;?></td>
+                                                                    <td align='center'><?php echo (isset($Item->is_gstr1_uploaded) && $Item->is_gstr1_uploaded=='0') ? 'Pending':'Uploaded';?></td>
                                                                     <?php 
                                                                     //$obj_gstr1->pr($Item->is_gstr1_uploaded);
                                                                     $url = 'javascript:;';
                                                                     if($type == 'B2B' || $type == 'B2CL' || $type == 'B2CS') {
-                                                                        if($invoice_type == 'taxinvoice') {
-                                                                            $url = PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$temp_inv;
+                                                                        if($Item->invoice_type == 'taxinvoice') {
+                                                                            $url = PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$Item->invoice_id;
                                                                         }
-                                                                        if($invoice_type == 'sezunitinvoice' || $invoice_type == 'deemedexportinvoice' ) {
-                                                                            $url = PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$temp_inv;
+                                                                        if($Item->invoice_type == 'sezunitinvoice' || $Item->invoice_type == 'deemedexportinvoice' ) {
+                                                                            $url = PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$Item->invoice_id;
                                                                         }
                                                                         
                                                                     }
                                                                     if($type == 'AT') {
-                                                                        $url = PROJECT_URL.'/?page=client_update_receipt_voucher_invoice&action=editRVInvoice&id='.$temp_inv;
+                                                                        $url = PROJECT_URL.'/?page=client_update_receipt_voucher_invoice&action=editRVInvoice&id='.$Item->invoice_id;
                                                                     }
                                                                     if($type == 'EXP') {
-                                                                        $url = PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$temp_inv;
+                                                                        $url = PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$Item->invoice_id;
                                                                     }
                                                                     if($type == 'CDNR' || $type == 'CDNUR'  ) {
-                                                                        if($invoice_type == 'creditnote' || $invoice_type == 'debitnote') {
-                                                                            $url = PROJECT_URL.'/?page=client_update_revised_tax_invoice&action=editRTInvoice&id='.$temp_inv;
+                                                                        if($Item->invoice_type == 'creditnote' || $Item->invoice_type == 'debitnote') {
+                                                                            $url = PROJECT_URL.'/?page=client_update_revised_tax_invoice&action=editRTInvoice&id='.$Item->invoice_id;
                                                                         }
-                                                                        if($invoice_type == 'refundvoucherinvoice') {
-                                                                            $url = PROJECT_URL.'/?page=client_refund_voucher_invoice_list&action=viewRFInvoice&id='.$temp_inv;
+                                                                        if($Item->invoice_type == 'refundvoucherinvoice') {
+                                                                            $url = PROJECT_URL.'/?page=client_refund_voucher_invoice_list&action=viewRFInvoice&id='.$Item->invoice_id;
                                                                         }
                                                                         
                                                                     }
@@ -535,71 +423,8 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                                                     <td align='center'><a href="<?php echo $url; ?>" target="_blank">View</a></td>
                                                                 </tr>
                                                                 <?php
-                                                                 $tax=0;
-                                                                }
-                                                                $invoice_date = $Item->invoice_date;
-                                                                $reference_number = $Item->reference_number;
-                                                                $billing_name = $Item->billing_name;
-                                                                $billing_gstin_number = $Item->billing_gstin_number;
-                                                                $taxable_subtotal = $Item->taxable_subtotal;
-                                                                $invoice_total_value = $Item->invoice_total_value;
-                                                                $is_uploaded =  (isset($Item->is_gstr1_uploaded) && $Item->is_gstr1_uploaded=='0') ? 'Pending':'Uploaded';
-                                                                $invoice_type = $Item->invoice_type;
-                                                                $tax += $Item->cgst_amount + $Item->sgst_amount + $Item->igst_amount + $Item->cess_amount;
-                                                                $temp_inv=$Item->invoice_id;
                                                             }
-                                                            if($temp_inv!='')   
-                                                            {
-                                                            ?>
-                                                            <tr>
-                                                                    <td align="center" bgcolor="#FFFFFF">
-                                                                       <input type="checkbox" class="name" name="name[]" value="<?php echo $temp_inv;?>"/> 
-                                                                    </td>
-                                                                    <td align='left'><?php echo $i++;?></td>
-                                                                    <td align='left'><?php echo $invoice_date;?></td>
-                                                                    <td align='left'><?php echo $reference_number;?></td>
-                                                                    <td align='left'><?php echo $billing_name;?></td>
-                                                                    <td align='left'><?php echo $billing_gstin_number;?></td>
-                                                                    <td style='text-align:right'><?php echo $taxable_subtotal;?></td>
-                                                                    <td style='text-align:right'><?php echo $tax?></td>
-                                                                    <td style='text-align:right'><?php echo $invoice_total_value;?></td>
-                                                                    <td align='center'><?php echo $type; ?></td>
-                                                                    <td align='center'><?php echo $is_uploaded;?></td>
-                                                                    <?php 
-                                                                    //$obj_gstr1->pr($Item->is_gstr1_uploaded);
-                                                                    $url = 'javascript:;';
-                                                                    if($type == 'B2B' || $type == 'B2CL' || $type == 'B2CS') {
-                                                                        if($invoice_type == 'taxinvoice') {
-                                                                            $url = PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$temp_inv;
-                                                                        }
-                                                                        if($invoice_type == 'sezunitinvoice' || $invoice_type == 'deemedexportinvoice' ) {
-                                                                            $url = PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$temp_inv;
-                                                                        }
-                                                                        
-                                                                    }
-                                                                    if($type == 'AT') {
-                                                                        $url = PROJECT_URL.'/?page=client_update_receipt_voucher_invoice&action=editRVInvoice&id='.$temp_inv;
-                                                                    }
-                                                                    if($type == 'EXP') {
-                                                                        $url = PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$temp_inv;
-                                                                    }
-                                                                    if($type == 'CDNR' || $type == 'CDNUR'  ) {
-                                                                        if($invoice_type == 'creditnote' || $invoice_type == 'debitnote') {
-                                                                            $url = PROJECT_URL.'/?page=client_update_revised_tax_invoice&action=editRTInvoice&id='.$temp_inv;
-                                                                        }
-                                                                        if($invoice_type == 'refundvoucherinvoice') {
-                                                                            $url = PROJECT_URL.'/?page=client_refund_voucher_invoice_list&action=viewRFInvoice&id='.$temp_inv;
-                                                                        }
-                                                                        
-                                                                    }
-                                                                    
-                                                                    ?>
-                                                                    <td align='center'><a href="<?php echo $url; ?>" target="_blank">View</a></td>
-                                                                </tr>
-                                                            <?php
-                                                            }
-                                                        }
-                                                        
+                                                        }						
                                                     }
                                                 }
                                                 else { ?>
@@ -623,6 +448,22 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
         </div>
     </div>
 </div>
+<!-- Modal -->
+<!-- <div id="otpModalBox" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">       
+      
+      <div class="modal-body">
+      <label>OTP:</label>
+       <input id="otp_code" type="textbox" name="otp" class="form-control" data-bind="numeric">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button id="otpModalBoxSubmit" type="button" value="OTP" class="btn btn-success" >Submit</button>
+      </div>
+    </div>
+  </div>
+</div> -->
 <?php $obj_gstr = new gstr();
 $obj_gstr->uploadOtpPopupJs();
 ?>
@@ -682,5 +523,82 @@ $obj_gstr->uploadOtpPopupJs();
             }
         });
 
+       
+
     });
+    /*$("#up").on("click", function (event) {
+        flag=0;
+        $(".name").each(function(){
+            if ($(this).prop("checked")==true){ 
+                flag=1;
+            }
+        });
+        if(flag==1)
+        {
+            //event.preventDefault();
+            $.ajax({
+                url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_details_check",
+                type: "json",
+                success: function (response) {
+                    alert(response);
+                    if(response == 1) {
+                        $("#otpModalBox").modal("show");
+                        return false;
+                    }
+                    else if(response == 0) {
+                       document.form4.submit();
+                    }
+                    else {
+                        location.reload();
+                    }
+                },
+                error: function() {
+                    alert("Please try again.");
+                    return false;
+                }
+            });
+            return false;
+            
+        }
+        else
+        {
+            alert("No Invoices are selected?");
+            return false;
+        }
+        return false;
+
+    });
+    $( "#otpModalBoxSubmit" ).click(function( event ) {
+      var otp = $('#otp_code').val();
+      //event.preventDefault();
+      if(otp != " ") {
+        $.ajax({
+            url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_otp_request",
+            type: "post",
+            data: {otp:otp},
+            success: function (response) {
+                //alert(response);
+                var arr = $.parseJSON(response);
+                if(arr.error == 1) {
+                    location.reload();
+                    return false;
+                }
+                else {
+                    document.form4.submit();
+                    //return true;
+                }
+            },
+            error: function() {
+                alert("Enter OTP First");
+                return false;
+            }
+        });
+        return false;
+      }
+      else {
+        alert("Enter OTP First");
+        return false;
+      }
+      return false;
+    });*/
 </script>

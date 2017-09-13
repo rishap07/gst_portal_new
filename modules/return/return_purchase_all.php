@@ -1,6 +1,11 @@
 <?php
 $obj_client = new client();
 $obj_gstr1 = new gstr1();
+$type='invoice';
+if(isset($_POST['invoice_type']))
+{
+    $type=$_POST['invoice_type'];
+}
 if (!isset($_REQUEST['returnmonth']) || $_REQUEST['returnmonth'] == '') {
     $obj_client->redirect(PROJECT_URL . "/?page=return_client");
     exit();
@@ -9,10 +14,18 @@ $returnmonth = '2017-07';
 if ($_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
 }
-$type='invoice';
-if(isset($_POST['invoice_type']))
+
+//$obj_gstr1->pr($_POST);\
+
+if($type!="all")
 {
-	$type=$_POST['invoice_type'];
+	if (isset($_POST['returnmonth'])) 
+    {
+        //$returnmonth = $_POST['returnmonth'];
+
+        //$obj_gstr1->redirect(PROJECT_URL . "/?page=return_purchase_all&returnmonth=" . $returnmonth);
+        //exit();
+    }
 }
 if (isset($_POST['returnmonth'])) 
 {
@@ -24,18 +37,18 @@ if (isset($_POST['returnmonth']))
 }
 ?>
       
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css">
-           <form method='post' name='form2' id="form2">
-       <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
-	   
-       			<div class="col-md-12 col-sm-12 col-xs-12">
-               
-                	<div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>GSTR-2 Filing</h1></div>
+<link type="text/css" rel="stylesheet" href="<?php echo THEME_URL; ?>/css/bootstrap-multiselect.css"/>
+<script type="text/javascript" src="<?php echo THEME_URL; ?>/js/bootstrap-multiselect.js"></script>
+
+<div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
+
+ 
+                   <div class="col-md-12 col-sm-12 col-xs-12">
+                  	<div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>GSTR-2 Filing</h1></div>
                     <div class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav"><a href="#">Home</a>  <i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GSTR-2 Filing</span> </div>
-                     <div class="whitebg formboxcontainer">
-					  <div class="pull-right rgtdatetxt">
-                      
+			      <div class="whitebg formboxcontainer">
+				  <div class="pull-right rgtdatetxt">
+                   
 							Month Of Return 
                                     <?php
                                     $dataQuery = "SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS niceDate FROM gst_client_invoice group by nicedate";
@@ -62,11 +75,12 @@ if (isset($_POST['returnmonth']))
 							
 						</div>
                      
-                    	<div class="col-md-12 col-sm-12 col-xs-12 tablistnav padleft0">
-<?php
-                              include(PROJECT_ROOT."/modules/return/include/tab.php");
+             <div class="col-md-12 col-sm-12 col-xs-12 heading">
+            <div class="tab col-md-12 col-sm-12 col-xs-12">
+              <?php
+                        include(PROJECT_ROOT."/modules/return/include/tab.php");
                ?>
-                            </div><br>
+            </div></div><br>
 							<?php $obj_client->showErrorMessage(); ?>
                                 <?php $obj_client->showSuccessMessge(); ?>
                                 <?php $obj_client->unsetMessage(); ?>
@@ -76,6 +90,7 @@ if (isset($_POST['returnmonth']))
 					 <a href="<?php echo PROJECT_URL . '/?page=purchase_invoice_create' ?>" class="btngreen"><i class="fa fa-cloud-download" aria-hidden="true"></i>Add New Invoice</a> 
 					
 					 </div>
+					 <form method="post" name="form2">
 							  <div class="invoice-types"><div class="invoice-types__heading">Types</div>
                                     <div class="invoice-types__content">
                                         <label for="invoice-types__invoice"><input type="radio" id="invoice-types__invoice" name="invoice_type" value="invoice" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='invoice'){ echo 'checked=""';}else{echo 'checked=""';}?>>Invoice</label>
@@ -84,8 +99,9 @@ if (isset($_POST['returnmonth']))
 <!--                                        <label for="invoice-types__aggregate"><input type="radio" id="invoice-types__aggregate" name="invoice_type" value="nill" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='nill') echo 'checked=""';?>>Agg. Nil/Exempt/Non GST</label>-->
                                         <label for="invoice-types__summary"><input type="radio" id="invoice-types__summary" name="invoice_type" value="all" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='all') echo 'checked=""';?>>All Type Summary</label>
                                     </div>
-                                </div><br>
-							 
+                                </div></form>
+								<br>
+							
 							 <table width="100%" border="0" cellspacing="0" cellpadding="0"  class="table table-striped invoice-filter-table" id="mainTable1">
                                          <?php
                                         $invCount= 0;
@@ -265,9 +281,9 @@ if (isset($_POST['returnmonth']))
                         </div> 
                     
        	  </div>
- 		 <div class="clear height40"></div>      
+ 		<div class="clear height40"></div>      
     </div>
-  <div class="clear"></div></form>
+  <div class="clear"></div>
   <script type="text/javascript">
     $(document).ready(function () {
         $('#multiple-checkboxes').multiselect();

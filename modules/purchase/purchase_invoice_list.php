@@ -1,5 +1,6 @@
 <?php
 $obj_purchase = new purchase();
+$dataCurrentUserArr = $obj_purchase->getUserDetailsById( $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) );
 
 if(!$obj_purchase->can_read('client_invoice')) {
 
@@ -18,7 +19,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'downloadPurchaseInvoice' && is
 		exit();
 	}
 
-	$obj_mpdf = new mPDF();
+	$obj_mpdf = new mPDF('utf-8', 'A4');
 	$obj_mpdf->SetHeader('Purchase Tax Invoice');
 	$obj_mpdf->WriteHTML($htmlResponse);
 
@@ -38,7 +39,6 @@ if( isset($_GET['action']) && $_GET['action'] == 'emailPurchaseInvoice' && isset
 		exit();
 	}
 
-	$dataCurrentUserArr = $obj_purchase->getUserDetailsById( $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) );
 	$sendmail = $dataCurrentUserArr['data']->kyc->email;
 
 	$mail = new PHPMailer();
@@ -87,7 +87,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'printPurchaseInvoice' && isset
 		exit();
 	}
 
-	$obj_mpdf = new mPDF();
+	$obj_mpdf = new mPDF('utf-8', 'A4');
 	$obj_mpdf->SetHeader('Purchase Tax Invoice');
 	$obj_mpdf->WriteHTML($htmlResponse);
 
@@ -147,6 +147,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 																	cii.purchase_invoice_item_id, 
 																	cii.item_id, 
 																	cii.item_name, 
+																	cii.item_description, 
 																	cii.item_hsncode, 
 																	cii.item_quantity, 
 																	cii.item_unit, 
@@ -174,6 +175,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 																	cii.item_id, 
 																	cii.item_name, 
 																	cii.item_hsncode, 
+																	cii.item_description, 
 																	cii.item_quantity, 
 																	cii.item_unit, 
 																	cii.item_unit_price, 
@@ -200,7 +202,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 				<!--INVOICE PRINT RIGHT  START HERE-->
 				<?php if(isset($invoiceData[0]->purchase_invoice_id)) { ?>
 
-					<div class="col-md-8 col-sm-12 mobdisplaynone invoicergtcol" style="padding-right:0px;">
+					<div class="col-md-8 col-sm-12 mobdisplaynone invoicergtcol">
 
 						<!---INVOICE TOP ICON START HERE-->
 						<div class="inovicergttop">
@@ -225,8 +227,8 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 							<div class="height20"></div>
 							<div class="clearfix"></div>
 
-							<div class="invoice-box" style="width:650px;overflow-x:scroll;overflow-y:hidden;">
-								<table cellpadding="0" cellspacing="0" style="width:625px;">
+							<div class="invoice-box" style="overflow-x:scroll;overflow-y:hidden;">
+								<table cellpadding="0" cellspacing="0">
 									<tr class="top">
 										<td colspan="2">
 											<table>
@@ -239,8 +241,8 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                                                         <?php } ?>
                                                     </td>
 													
-													<td>
-                                                        <b>Invoice #</b>: <?php echo $invoiceData[0]->serial_number; ?><br>
+													<td style="text-align:right;vertical-align:top;">
+														<b>Invoice #</b>: <?php echo $invoiceData[0]->serial_number; ?><br>
                                                         <b>Reference #</b>: <?php echo $invoiceData[0]->reference_number; ?><br>
                                                         <b>Type:</b> <?php if($invoiceData[0]->invoice_type == "importinvoice") { echo "Import Invoice"; } else if($invoiceData[0]->invoice_type == "sezunitinvoic") { echo "SEZ Unit Invoice"; } else if($invoiceData[0]->invoice_type == "deemedimportinvoice") { echo "Deemed Import Invoice"; } else { echo "Tax Invoice"; } ?><br>
                                                         <b>Nature:</b> <?php echo "Purchase Invoice"; ?><br>
@@ -256,18 +258,24 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 									<tr class="information">
 										<td colspan="2">
 											<table>
-												<tr>													
-													<td>
+												<tr>
+													<td style="text-align:left;vertical-align:top;width:48%;padding-right:2%;">
                                                         <?php echo $invoiceData[0]->company_name; ?><br>
                                                         <?php echo $invoiceData[0]->company_address; ?><br>
-                                                        <b>GSTIN:</b> <?php echo $invoiceData[0]->company_gstin_number; ?>
+														<?php if(!empty($invoiceData[0]->company_email)) { ?><b>Email:</b> <?php echo $invoiceData[0]->company_email; ?><br><?php } ?>
+														<?php if(!empty($invoiceData[0]->company_phone_number)) { ?><b>Phone:</b> <?php echo $invoiceData[0]->company_phone_number; ?><br><?php } ?>
+														<?php $panFromGTIN = substr(substr($invoiceData[0]->company_gstin_number, 2), 0, -3); ?>
+														<b>PAN:</b> <?php echo $panFromGTIN; ?><br>
+														<b>GSTIN:</b> <?php echo $invoiceData[0]->company_gstin_number; ?>
                                                     </td>
 
-													<td>
+													<td style="text-align:right;vertical-align:top;width:48%;padding-left:2%;">
                                                         <?php if($invoiceData[0]->invoice_type === "importinvoice") { ?>
 
                                                             <b>Import Supply Meant:</b> <?php if($invoiceData[0]->import_supply_meant == "withpayment") { echo "Payment of Integrated Tax"; } else { echo "Without Payment of Integrated Tax"; } ?><br>
                                                             <?php if ($invoiceData[0]->is_canceled == 1) { ?> <b>Canceled Invoice:</b> <?php echo "Canceled"; ?><br> <?php } ?>
+															<?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php if($supply_place_data['data']->state_tin == 97) { echo $supply_place_data['data']->state_name; } else { echo $supply_place_data['data']->state_name . "(" . $supply_place_data['data']->state_tin . ")"; } ?><br> <?php } ?>
+															<?php if ($invoiceData[0]->is_canceled == 1) { ?> <b>Canceled Invoice:</b> <?php echo "Canceled"; ?><br> <?php } ?>
                                                             <?php if ($invoiceData[0]->advance_adjustment == 1) { ?> <b>Advance Adjustment:</b> <?php echo "Yes"; ?><br> <?php } ?>
 
                                                             <?php if ($invoiceData[0]->advance_adjustment == 1) { ?>
@@ -282,7 +290,8 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                                                         <?php } else if($invoiceData[0]->invoice_type === "sezunitinvoice" || $invoiceData[0]->invoice_type === "deemedimportinvoice") { ?>
 
 															<b>Import Supply Meant:</b> <?php if($invoiceData[0]->import_supply_meant == "withpayment") { echo "Payment of Integrated Tax"; } else { echo "Without Payment of Integrated Tax"; } ?><br>
-                                                            <?php if ($invoiceData[0]->is_canceled == 1) { ?> <b>Canceled Invoice:</b> <?php echo "Canceled"; ?><br> <?php } ?>
+															<?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php if($supply_place_data['data']->state_tin == 97) { echo $supply_place_data['data']->state_name; } else { echo $supply_place_data['data']->state_name . "(" . $supply_place_data['data']->state_tin . ")"; } ?><br> <?php } ?>
+															<?php if ($invoiceData[0]->is_canceled == 1) { ?> <b>Canceled Invoice:</b> <?php echo "Canceled"; ?><br> <?php } ?>
                                                             <?php if ($invoiceData[0]->advance_adjustment == 1) { ?> <b>Advance Adjustment:</b> <?php echo "Yes"; ?><br> <?php } ?>
 
                                                             <?php if ($invoiceData[0]->advance_adjustment == 1) { ?>
@@ -293,7 +302,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 														<?php } else { ?>
 
                                                             <b>Supply Type:</b> <?php if($invoiceData[0]->supply_type == "reversecharge") { echo "Reverse Charge"; } else { echo "Normal"; } ?><br>
-                                                            <?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php echo $supply_place_data['data']->state_name; ?><br> <?php } ?>
+															<?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php if($supply_place_data['data']->state_tin == 97) { echo $supply_place_data['data']->state_name; } else { echo $supply_place_data['data']->state_name . "(" . $supply_place_data['data']->state_tin . ")"; } ?><br> <?php } ?>
 
 															<?php if ($invoiceData[0]->is_canceled == 1) { ?> <b>Canceled Invoice:</b> <?php echo "Canceled"; ?><br> <?php } ?>
                                                             <?php if ($invoiceData[0]->advance_adjustment == 1) { ?> <b>Advance Adjustment:</b> <?php echo "Yes"; ?><br> <?php } ?>
@@ -311,11 +320,10 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 									</tr>
 
 									<tr class="information">
-										<td colspan="2">
-											<table>
-												<tr>
-												
-													<td>
+                                        <td colspan="2">
+                                            <table>
+                                                <tr>
+                                                    <td style="vertical-align:top;text-align:left;width:48%;padding-right:2%;">
                                                         <b>Supplier Detail</b><br>
                                                         <?php echo html_entity_decode($invoiceData[0]->supplier_billing_name); ?><br>
                                                         <?php if($invoiceData[0]->supplier_billing_company_name) { ?> <?php echo $invoiceData[0]->supplier_billing_company_name; ?><br> <?php } ?>
@@ -323,25 +331,25 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 														<?php $supplier_billing_vendor_data = $obj_purchase->getVendorDetailByVendorId($invoiceData[0]->supplier_billing_vendor_type); ?>
 														<?php echo $supplier_billing_vendor_data['data']->vendor_name; ?><br>
 														<?php if(!empty($invoiceData[0]->supplier_billing_gstin_number)) { ?>
-															<b>GSTIN:</b> <?php echo $invoiceData[0]->supplier_billing_gstin_number; ?>
+															<b>GSTIN/UIN:</b> <?php echo $invoiceData[0]->supplier_billing_gstin_number; ?>
                                                         <?php } ?>
                                                     </td>
 
-													<td>
-                                                        <b>Address Of Recipient / Shipping Detail</b><br>
+                                                    <td style="vertical-align:top;text-align:right;width:48%;padding-left:2%;">
+														<b>Address Of Recipient / Shipping Detail</b><br>
                                                         <?php echo html_entity_decode($invoiceData[0]->recipient_shipping_name); ?><br>
                                                         <?php if($invoiceData[0]->recipient_shipping_company_name) { ?> <?php echo $invoiceData[0]->recipient_shipping_company_name; ?><br> <?php } ?>
                                                         <?php echo $invoiceData[0]->recipient_shipping_address; ?><br>
 														<?php $recipient_shipping_vendor_data = $obj_purchase->getVendorDetailByVendorId($invoiceData[0]->recipient_shipping_vendor_type); ?>
 														<?php echo $recipient_shipping_vendor_data['data']->vendor_name; ?><br>
 														<?php if(!empty($invoiceData[0]->recipient_shipping_gstin_number)) { ?>
-															<b>GSTIN:</b> <?php echo $invoiceData[0]->recipient_shipping_gstin_number; ?>
+															<b>GSTIN/UIN:</b> <?php echo $invoiceData[0]->recipient_shipping_gstin_number; ?>
                                                         <?php } ?>
                                                     </td>
-												</tr>
-											</table>
-										</td>
-									</tr>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
 
 									<tr>
 										<td colspan="2">
@@ -351,12 +359,13 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                                                     <td rowspan="2">S.No</td>
                                                     <td rowspan="2">Goods/Services</td>
                                                     <td rowspan="2">HSN/SAC Code</td>
+													<td rowspan="2">Item Description</td>
                                                     <td rowspan="2">Qty</td>
                                                     <td rowspan="2">Unit</td>
                                                     <td rowspan="2">Rate<br>(<i class="fa fa-inr"></i>)</td>
                                                     <td rowspan="2">Total<br>(<i class="fa fa-inr"></i>)</td>
                                                     <td rowspan="2">Discount(%)</td>
-                                                    <td rowspan="2" class="advancecol" <?php if ($invoiceData[0]->advance_adjustment == 1) { echo 'style="display:table-cell;"'; } ?>>Advance<br>(<i class="fa fa-inr"></i>)</td>
+                                                    <td rowspan="2" class="advancecol" <?php if ($invoiceData[0]->advance_adjustment == 1) { echo 'style="display:table-cell;"'; } ?>>Advance (<i class="fa fa-inr"></i>)</td>
                                                     <td rowspan="2">Taxable Value<br>(<i class="fa fa-inr"></i>)</td>
                                                     <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">CGST</td>
                                                     <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">SGST</td>
@@ -365,18 +374,19 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                                                 </tr>
 
 												<tr class="heading">
-													<td>(%)</td>
-													<td>Amt (<i class="fa fa-inr"></i>)</td>
-													<td>(%)</td>
-													<td>Amt (<i class="fa fa-inr"></i>)</td>
-													<td>(%)</td>
-													<td>Amt (<i class="fa fa-inr"></i>)</td>
-													<td>(%)</td>
-													<td>Amt (<i class="fa fa-inr"></i>)</td>
-												</tr>
+                                                    <td>(%)</td>
+                                                    <td>Amt (<i class="fa fa-inr"></i>)</td>
+                                                    <td>(%)</td>
+                                                    <td>Amt (<i class="fa fa-inr"></i>)</td>
+                                                    <td>(%)</td>
+                                                    <td>Amt (<i class="fa fa-inr"></i>)</td>
+                                                    <td>(%)</td>
+                                                    <td>Amt (<i class="fa fa-inr"></i>)</td>
+                                                </tr>
 
 												<?php $counter = 1; ?>
                                                 <?php $total_taxable_subtotal = 0.00; ?>
+												<?php $total_advance_subtotal = 0.00; ?>
                                                 <?php $total_cgst_amount = 0.00; ?>
                                                 <?php $total_sgst_amount = 0.00; ?>
                                                 <?php $total_igst_amount = 0.00; ?>
@@ -387,6 +397,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                                                         <td><?php echo $counter; ?></td>
                                                         <td><?php echo $invData->item_name; ?></td>
                                                         <td><?php echo $invData->item_hsncode; ?></td>
+														<td><?php echo $invData->item_description; ?></td>
                                                         <td><?php echo $invData->item_quantity; ?></td>
                                                         <td><?php echo $invData->item_unit; ?></td>
                                                         <td><?php echo $invData->item_unit_price; ?></td>
@@ -403,8 +414,9 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                                                         <td><?php echo $invData->cess_rate; ?></td>
                                                         <td><?php echo $invData->cess_amount; ?></td>
                                                     </tr>
-
+													
 													<?php $total_taxable_subtotal += $invData->taxable_subtotal; ?>
+													<?php $total_advance_subtotal += $invData->advance_amount; ?>													
                                                     <?php $total_cgst_amount += $invData->cgst_amount; ?>
                                                     <?php $total_sgst_amount += $invData->sgst_amount; ?>
                                                     <?php $total_igst_amount += $invData->igst_amount; ?>
@@ -412,54 +424,68 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 													<?php $counter++; ?>
 
 												<?php } ?>
-
-												<tr class="total">
-													<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="18"'; } else { echo 'colspan="17"'; } ?>>
-													   Total Invoice Value (In Figure): <i class="fa fa-inr"></i><?php echo $invoiceData[0]->invoice_total_value; ?>
-													</td>
+												
+												<tr class="total lightblue">
+													<td colspan="9" align="right" class="fontbold textsmall">Total Invoice Value:</td>
+													<?php if($invoiceData[0]->advance_adjustment == 1) { echo '<td style="text-align:center;"><span>'.$total_advance_subtotal.'</span></td>'; } ?>
+													<td style="text-align:center;"><span><?php echo $total_taxable_subtotal; ?></span></td>
+													<td><span>&nbsp;</span></td>
+													<td style="text-align:center;"><span><?php echo $total_cgst_amount; ?></span></td>
+													<td><span>&nbsp;</span></td>
+													<td style="text-align:center;"><span><?php echo $total_sgst_amount; ?></span></td>
+													<td><span>&nbsp;</span></td>
+													<td style="text-align:center;"><span><?php echo $total_igst_amount; ?></span></td>
+													<td><span>&nbsp;</span></td>
+													<td style="text-align:center;"><span><?php echo $total_cess_amount; ?></span></td>
 												</tr>
-
-												<?php $invoice_total_value_words = $obj_purchase->convert_number_to_words($invoiceData[0]->invoice_total_value); ?>
-
-												<tr class="total">
-													<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="18"'; } else { echo 'colspan="17"'; } ?>>
-													   Total Invoice Value (In Words): <?php echo ucwords($invoice_total_value_words); ?>
-													</td>
-												</tr>
-
+												
 												<?php if ($invoiceData[0]->supply_type === "reversecharge") { ?>
 
 													<?php if($invoiceData[0]->supplier_billing_state === $invoiceData[0]->supply_place) { ?>
 
-														<tr class="lightgreen">
-															<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="10"'; } else { echo 'colspan="9"'; } ?> align="right" class="fontbold textsmall">Amount of Tax Subject to Reverse Charge</td>
+														<tr class="total lightgreen">
+															<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="11"'; } else { echo 'colspan="10"'; } ?> align="right" class="fontbold textsmall">Amount of Tax Subject to Reverse Charge</td>
 															<td>-</td>
-															<td><i class="fa fa-inr"></i><?php echo $total_cgst_amount; ?></td>
+															<td><?php echo $total_cgst_amount; ?></td>
 															<td>-</td>
-															<td><i class="fa fa-inr"></i><?php echo $total_sgst_amount; ?></td>
+															<td><?php echo $total_sgst_amount; ?></td>
 															<td>-</td>
-															<td><i class="fa fa-inr"></i>0.00</td>
+															<td>0.00</td>
 															<td>-</td>
-															<td><i class="fa fa-inr"></i><?php echo $total_cess_amount; ?></td>
+															<td><?php echo $total_cess_amount; ?></td>
 														</tr>
 
 													<?php } else { ?>
 
 														<tr class="lightgreen">
-															<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="10"'; } else { echo 'colspan="9"'; } ?> align="right" class="fontbold textsmall">Amount of Tax Subject to Reverse Charge</td>
+															<td <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="11"'; } else { echo 'colspan="10"'; } ?> align="right" class="fontbold textsmall">Amount of Tax Subject to Reverse Charge</td>
 															<td>-</td>
-															<td><i class="fa fa-inr"></i>0.00</td>
+															<td>0.00</td>
 															<td>-</td>
-															<td><i class="fa fa-inr"></i>0.00</td>
+															<td>0.00</td>
 															<td>-</td>
-															<td><i class="fa fa-inr"></i><?php echo $total_igst_amount; ?></td>
+															<td><?php echo $total_igst_amount; ?></td>
 															<td>-</td>
-															<td><i class="fa fa-inr"></i><?php echo $total_cess_amount; ?></td>
+															<td><?php echo $total_cess_amount; ?></td>
 														</tr>
 
 													<?php } ?>
 
 												<?php } ?>
+												
+												<tr class="total lightyellow">
+                                                    <td <?php if ($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="19"'; } else { echo 'colspan="18"'; } ?>>
+                                                        Total Invoice Value (In Figure): <i class="fa fa-inr"></i><?php echo $invoiceData[0]->invoice_total_value; ?>
+                                                    </td>
+                                                </tr>
+
+                                                <?php $invoice_total_value_words = $obj_purchase->convert_number_to_words($invoiceData[0]->invoice_total_value); ?>
+
+                                                <tr class="total lightpink">
+                                                    <td <?php if ($invoiceData[0]->advance_adjustment == 1) { echo 'colspan="19"'; } else { echo 'colspan="18"'; } ?>>
+                                                        Total Invoice Value (In Words): <?php echo ucwords($invoice_total_value_words); ?>
+                                                    </td>
+                                                </tr>
 
 											</table>
 
@@ -469,11 +495,11 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 									<?php if(!empty($invoiceData[0]->description)) { ?>
 										<tr class="description">
 											<td colspan="2">
-												<p><b>Description:</b> <?php echo $invoiceData[0]->description; ?></p>
+												<p><b>Additional Notes:</b> <?php echo $invoiceData[0]->description; ?></p>
 											</td>
 										</tr>
                                     <?php } ?>
-									
+
 								</table>			
 							</div>
 							<!--INVOICE DIV PRINT END  HERE-->

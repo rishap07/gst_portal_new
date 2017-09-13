@@ -73,6 +73,7 @@ class validation extends upload {
 			'return_subcat'=>TAB_PREFIX.'return_subcategories',
 			'returnfile_dates'=>TAB_PREFIX.'returnfile_dates',
             'otp_request'=>TAB_PREFIX.'otp_request',
+            'user_api_summary'=>TAB_PREFIX.'user_api_summary',
         );
 
         $this->checkUserPortalAccess();
@@ -365,11 +366,12 @@ class validation extends upload {
     }
 
 
-    public function getB2CLInvoices($user_id,$returnmonth,$type='',$ids=''){
+    public function getB2CLInvoices($user_id,$returnmonth,$type='',$ids='',$group_by='',$order_by=''){
         //echo $ids;
         $queryB2CL =  "select a.invoice_id,
         a.invoice_type,
         a.billing_gstin_number,
+        a.invoice_date,
         a.reference_number,
         a.billing_name,
         a.is_gstr1_uploaded,
@@ -390,12 +392,29 @@ class validation extends upload {
             $queryB2CL .=  " and a.invoice_id in (".$ids.") ";
         }
 
-        $queryB2CL .= "and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number='' and a.invoice_total_value>'250000' and a.supply_place!=a.company_state and (a.invoice_type='taxinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice') and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' group by a.reference_number, b.consolidate_rate order by a.supply_place ";
-        //echo '<br/>b2cl '.$queryB2CL.'<br/>';
+        $queryB2CL .= "and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number='' and a.invoice_total_value>'250000' and a.supply_place!=a.company_state and (a.invoice_type='taxinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice') and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0'  group by ";
+        if($group_by=='')
+        {
+            $queryB2CL.=' a.reference_number, b.consolidate_rate ';
+        }
+        else
+        {
+            $queryB2CL.=$group_by;
+        }
+        $queryB2CL.='  order by  ';
+        if($order_by=='')
+        {
+            $queryB2CL.=' a.supply_place ';
+        }
+        else
+        {
+            $queryB2CL.=$order_by;
+        }
+        
         return $this->get_results($queryB2CL); 
     }
 
-    public function getB2CSInvoices($user_id,$returnmonth,$type='',$ids=''){
+    public function getB2CSInvoices($user_id,$returnmonth,$type='',$ids='',$group_by='',$order_by=''){
         $queryB2CS =  "select a.invoice_id,
         a.invoice_type,
         a.billing_gstin_number,
@@ -420,7 +439,24 @@ class validation extends upload {
             $queryB2CS .=  " and a.invoice_id in (".$ids.") ";
         }
 
-        $queryB2CS .= " and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number='' and (a.supply_place=a.company_state  or (a.supply_place!=a.company_state and a.invoice_total_value<='250000')) and (a.invoice_type='taxinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice') and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' group by a.reference_number, b.consolidate_rate order by a.supply_place ";
+        $queryB2CS .= " and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number='' and (a.supply_place=a.company_state  or (a.supply_place!=a.company_state and a.invoice_total_value<='250000')) and (a.invoice_type='taxinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice') and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' group by ";
+        if($group_by=='')
+        {
+            $queryB2CS.=' a.reference_number, b.consolidate_rate ';
+        }
+        else
+        {
+            $queryB2CS.=$group_by;
+        }
+        $queryB2CS.='  order by  ';
+        if($order_by=='')
+        {
+            $queryB2CS.=' a.supply_place ';
+        }
+        else
+        {
+            $queryB2CS.=$order_by;
+        }
         //echo '<br/>b2cs '.$queryB2CS.'<br/>';
         return $this->get_results($queryB2CS);
     }
@@ -457,7 +493,7 @@ class validation extends upload {
         return $this->get_results($queryCDNR);
     }
 
-    public function getCDNURInvoices($user_id,$returnmonth,$type='',$ids=''){
+    public function getCDNURInvoices($user_id,$returnmonth,$type='',$ids='',$group_by='',$order_by=''){
         $queryCDNUR =  "select a.invoice_id,
         a.billing_name,a.invoice_type,a.reference_number,c.reference_number as corresponding_document_number,c.export_supply_meant,
         c.invoice_type as original_type,
@@ -487,12 +523,30 @@ class validation extends upload {
             and a.billing_gstin_number=''
            
             and (c.invoice_type='exportinvoice' or c.invoice_type='sezunitinvoice' or c.invoice_type='deemedexportinvoice' or c.invoice_type='taxinvoice') 
-            and a.is_canceled='0' and a.is_deleted='0' group by a.reference_number, b.consolidate_rate order by a.supply_place ";
+            and a.is_canceled='0' and a.is_deleted='0' group by ";
        //echo 'CDNUR: '.$queryCDNUR;
+        if($group_by=='')
+        {
+            $queryCDNUR.=' a.reference_number, b.consolidate_rate ';
+        }
+        else
+        {
+            $queryCDNUR.=$group_by;
+        }
+        $queryCDNUR.='  order by  ';
+        if($order_by=='')
+        {
+            $queryCDNUR.=' a.supply_place ';
+        }
+        else
+        {
+            $queryCDNUR.=$order_by;
+        }
         return $this->get_results($queryCDNUR);
     }
 
-    public function getATInvoices($user_id,$returnmonth,$type='',$ids=''){
+    public function getATInvoices($user_id,$returnmonth,$type='',$ids='',$group_by='',$order_by=''){
+
        $queryAt =  "select a.invoice_id,a.billing_name,a.invoice_type,
        a.reference_number,
        a.billing_gstin_number,
@@ -510,18 +564,36 @@ class validation extends upload {
             
         }
         else if($type == '') {
-            $queryAt .=  "and a.is_gstr1_uploaded='0' ";
+            $queryAt .=  "and a.is_gstr1_uploaded='0'";
         }
         if(!empty($ids)) {
             $queryAt .=  " and a.invoice_id in (".$ids.") ";
         }
 
-        $queryAt .= " and a.status='1'  and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.invoice_type='receiptvoucherinvoice' and a.is_canceled='0' and a.is_deleted='0' group by a.supply_place ,b.consolidate_rate order by a.supply_place ";
-        //echo 'AT====='.$queryAt.'<br/>';
+        $queryAt .= " and a.status='1'  and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.invoice_type='receiptvoucherinvoice' and a.is_canceled='0' and a.is_deleted='0' group by  ";
+        if($group_by=='')
+        {
+            $queryAt .= " a.supply_place ,b.consolidate_rate ";
+            
+        }
+        else
+        {
+            $queryAt .= $group_by;
+        }
+        $queryAt .= "  order by ";
+        if($order_by=='')
+        {
+            $queryAt .=" a.supply_place ";
+        }
+        else
+        {
+            $queryAt .= $order_by;
+        }
+        //echo '<br>AT====='.$queryAt.'<br/>';
         return $this->get_results($queryAt);
     }
 
-    public function getEXPInvoices($user_id,$returnmonth,$type='',$ids=''){
+    public function getEXPInvoices($user_id,$returnmonth,$type='',$ids='',$group_by='',$order_by=''){
        $queryExp =  "select a.export_bill_number,
        a.invoice_type,
        a.billing_name,
@@ -551,7 +623,25 @@ class validation extends upload {
             $queryExp .=  " and a.invoice_id in (".$ids.") ";
         }
 
-       $queryExp .= " and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and ((a.invoice_type='exportinvoice' and a.export_bill_number !='' and a.export_bill_date != '' and a.export_bill_port_code != '')) and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0'  group by a.invoice_id,b.consolidate_rate order by a.export_supply_meant";
+       $queryExp .= " and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and ((a.invoice_type='exportinvoice' and a.export_bill_number !='' and a.export_bill_date != '' and a.export_bill_port_code != '')) and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0'  group by ";
+       if($group_by=='')
+        {
+            $queryExp .= " a.supply_place ,b.consolidate_rate ";
+            
+        }
+        else
+        {
+            $queryExp .= $group_by;
+        }
+        $queryExp .= "  order by ";
+        if($order_by=='')
+        {
+            $queryExp .=" a.export_supply_meant ";
+        }
+        else
+        {
+            $queryExp .= $order_by;
+        }
         //echo 'Exp=>>>>>>'.$queryExp.'<br/>';
         return $this->get_results($queryExp); 
     }

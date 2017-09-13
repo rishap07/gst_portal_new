@@ -47,15 +47,14 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
 
         <div class="clear"></div>
         <div class="whitebg formboxcontainer">
-          
-                <h2 class="greyheading">
+         <h2 class="greyheading">
                     <?php
                     if (isset($_GET["action"]) && ($_GET["action"] == "editReturnFile") && (isset($_GET["id"]))) {
                         echo 'Update';
                     } else {
                         echo 'Create New';
                     }
-                    ?>ReturnSubCategory Setting</h2>                                                                                                                                                                                                                                                                                                                                         
+                    ?>Return SubCategory Setting</h2>                                                                                                                                                                                                                                                                                                                                         
 <form method="post" name="return-form" id="return-form">
       <div class="row">
 	    <div class="col-md-4 col-sm-4 col-xs-12 form-group">

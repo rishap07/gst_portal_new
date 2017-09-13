@@ -138,7 +138,6 @@ final class gstr extends validation {
             $this->app_key=base64_encode($encrypted);  
             $_SESSION['app_key']=$this->app_key;
         } 
-        
     }
     
     public function aes256_ecb_encrypt($key, $data, $iv) {
@@ -151,7 +150,6 @@ final class gstr extends validation {
     
     public function getOTPEncypt($otp)
     {
-        
         if(empty($_SESSION['hkey'])) {
             $key = pack('H*', $_SESSION['hexcode']);
             //echo 'key: '. $key ;
@@ -170,10 +168,13 @@ final class gstr extends validation {
         return $ciphertext_enc;
         //return base64_encode($ciphertext_enc);
     }
+    
     public function requestOTP($code='')
     {
-        //echo 'otp';
+        //return true;
         $this->gstr_session_destroy();
+        //$this->pr($_SESSION);
+       
         $this->keyGeneration();
         $this->getCertificateKey();
        
@@ -186,8 +187,13 @@ final class gstr extends validation {
             'Content-Length: ' . strlen($data_string).'',
         );
         $header = $this->header($header_array);
-       // $this->pr($header);
         //End code for create header
+
+        $url = 'https://gspapi.karvygst.com/Authenticate';
+        //$url=  'http://devapi.gstsystem.co.in/taxpayerapi/v0.2/authenticate';
+        
+        $result_data= $this->hitUrl($url,$data_string,$header);
+        $data = json_decode($result_data);
 
         $dataGST1['user_id'] = $_SESSION['user_detail']['user_id'];
         $dataGST1['header'] = json_encode(array('header' =>$header, 'data' => $data_string));
@@ -196,16 +202,7 @@ final class gstr extends validation {
         $dataGST1['code'] =  $code;
         $dataGST1['inserted_date'] =  date('Y-m-d H:i:s');
         $this->insert($this->getTableName('otp_request'), $dataGST1);
-        return true;
-
-        $url = 'https://gspapi.karvygst.com/Authenticate';
-        //$url=  'http://devapi.gstsystem.co.in/taxpayerapi/v0.2/authenticate';
-        //echo $url;
-
-        $result_data= $this->hitUrl($url,$data_string,$header);
-        $data = json_decode($result_data);
-        //$this->pr($data);
-
+        
         if(isset($data->status_cd) && $data->status_cd=='1')
         {
             return true;
@@ -213,14 +210,14 @@ final class gstr extends validation {
         else {
             $this->array_key_search('message', $data);
             $msg = $this->error_msg;
+            $this->setError($msg);
             return false;
         }
-        
     }
     
     public function authenticateToken($otp,$code='')
-    {
-        $otp_code = $_SESSION['otp'] = $otp; //'643592';//'575757'
+    { 
+        $otp_code = $_SESSION['otp'] = $otp;
         //$hkey = $_SESSION['hkey'] = pack('H*', $hexcode);
         $ciphertext_enc = $this->getOTPEncypt($_SESSION['otp']);
         $otp = base64_encode($ciphertext_enc);
@@ -235,7 +232,10 @@ final class gstr extends validation {
         );
         $header = $this->header($header_array);
         //End code for create header
-        //$this->pr($header);
+
+        $url = 'https://gspapi.karvygst.com/Authenticate';
+        $result_data= $this->hitUrl($url,$data_string,$header);
+        $data = json_decode($result_data);
 
         $dataGST1['user_id'] = $_SESSION['user_detail']['user_id'];
         $dataGST1['header'] = json_encode(array('header' =>$header, 'data' => $data_string));
@@ -244,15 +244,8 @@ final class gstr extends validation {
         $dataGST1['code'] =  $code;
         $dataGST1['inserted_date'] =  date('Y-m-d H:i:s');
         $this->insert($this->getTableName('otp_request'), $dataGST1);
-        return true;
-
-        // $url=  'http://devapi.gstsystem.co.in/taxpayerapi/v0.2/authenticate';
-        $url = 'https://gspapi.karvygst.com/Authenticate';
-        $result_data= $this->hitUrl($url,$data_string,$header);
-        $data = json_decode($result_data);
-        /*$this->pr($data);
-        die;*/
-
+       
+        
         if(isset($data->status_cd) && $data->status_cd=='1')
         {
             $session_key = $data->sek;
@@ -263,37 +256,44 @@ final class gstr extends validation {
 
            
             $savedata = array();
-            $encode['otp'] = $_SESSION['otp'];
-            $encode['hexcode'] = $_SESSION['hexcode'];
-            $encode['app_key'] = $_SESSION['app_key'];
-            $encode['auth_token'] = $_SESSION['auth_token'];
-            $encode['decrypt_sess_key'] = $_SESSION['decrypt_sess_key'];
+
             $encode['inputToken'] = $_SESSION['inputToken'];
             $encode['keyhash'] = $_SESSION['keyhash'];
             $encode['key'] = $_SESSION['key'];
             $encode['iv'] = $_SESSION['iv'];
             $encode['ciphertext'] = $_SESSION['ciphertext'];
+            $encode['hexcode'] = $_SESSION['hexcode'];
             $encode['public_key'] = $_SESSION['public_key'];
+            $encode['hkey'] = $_SESSION['hkey'];
+            $encode['app_key'] = $_SESSION['app_key'];
+            $encode['otp'] = $_SESSION['otp'];
+            $encode['decrypt_sess_key'] = $_SESSION['decrypt_sess_key'];
+            $encode['auth_token'] = $_SESSION['auth_token'];
 
             $savedata['params'] = base64_encode(serialize($encode));
             $savedata['added_date'] = $_SESSION['auth_date'];
-            $savedata['otp_date'] = $_SESSION['auth_date'];
             //$this->pr($savedata);
             $this->save_user_gstr1($savedata);
             return true;
         }
         else {
-            $this->setError($data->error->message);
-            return false;
-        }
+            $this->array_key_search('message', $data);
+            $msg = $this->error_msg;
+            $error_cd = isset($data->error->error_cd)?$data->error->error_cd:'';
+
+            if($error_cd == 'AUTH4033' || $error_cd == 'AUTH4034' || $error_cd == 'AUTH4038') {
+                return $error_cd;
+            }
+            else {
+               $this->setError($msg); 
+               return false;
+            }
             
+        }     
     }
     
     public function returnSave($dataArr,$returnmonth,$jstr) {
-        if($this->authenticateToken() == false) {
-            return false;
-        }
-        //$this->pr($_SESSION);die;
+
         $msg = $return_encode = '';
         $error = 1;
         $response = array();
@@ -309,9 +309,6 @@ final class gstr extends validation {
     }
 
     public function returnSubmit($returnmonth) {
-        if($this->authenticateToken() == false) {
-            return false;
-        }
         $error =1;
         $msg = '';
         $api_return_period = $this->getRetrunPeriodFormat($returnmonth);
@@ -320,7 +317,7 @@ final class gstr extends validation {
 
         $sub_data='{
           "gstin": "'.$gstin.'",
-          "ret_period": "'.$api_return_period.'"
+          "ret_prd": "'.$api_return_period.'"
         }';
         $encodejson = base64_encode(openssl_encrypt(base64_encode($sub_data),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
         $sdata1 = array("action" => 'RETSUBMIT', "data" => $encodejson);
@@ -332,7 +329,7 @@ final class gstr extends validation {
             'Content-Length: ' . strlen($data_string).'',
             'auth-token:' . $_SESSION['auth_token'] . '',
             'gstin:' . $gstin . '',
-            'ret_period: '.$api_return_period.' ',
+            'ret_prd: '.$api_return_period.' ',
             'username:' . $username . '',
             'accept:application/json',
             'action:RETSUBMIT'
@@ -363,9 +360,7 @@ final class gstr extends validation {
     }
 
     public function returnFiling($returnmonth) {
-        if($this->authenticateToken() == false) {
-            return false;
-        }
+
         $error =1;
         $msg = '';
         $api_return_period = $this->getRetrunPeriodFormat($returnmonth);
@@ -383,7 +378,7 @@ final class gstr extends validation {
             'Content-Length: ' . strlen($data_string).'',
             'auth-token:' . $_SESSION['auth_token'] . '',
             'gstin:' . $gstin . '',
-            'ret_period: '.$api_return_period.' ',
+            'ret_prd: '.$api_return_period.' ',
             'username:' . $username . '',
             'accept:application/json',
             'action:RETFILE'
@@ -412,11 +407,8 @@ final class gstr extends validation {
         return $response;
     }
 
-    public function returnSummary($returnmonth,$type='',$jstr='gstr1') 
+    public function returnSummary($returnmonth,$type='',$jstr='gstr1')
     {
-        /*if($this->authenticateToken() == false) {
-            return false;
-        }*/
         if(!empty($_SESSION['auth_token'])) {
             $gstin = $this->gstin();
             $username = $this->username();
@@ -426,7 +418,7 @@ final class gstr extends validation {
             $header2_array = array(
                 'auth-token:' . $_SESSION['auth_token'] . '',
                 'gstin:' . $gstin . '',
-                'ret_period: '.$api_return_period.' ',
+                'ret_prd: '.$api_return_period.' ',
                 'username:' . $username . '',
                 'accept:application/json',
                 'action:' . 'RETSTATUS' . ''
@@ -493,7 +485,7 @@ final class gstr extends validation {
                     $header3_array = array(
                         'auth-token:' . $_SESSION['auth_token'] . '',
                         'gstin:' . $gstin . '',
-                        'ret_period: '.$api_return_period.' ',
+                        'ret_prd: '.$api_return_period.' ',
                         'username:' . $username . '',
                         'accept:application/json',
                         'action:' . 'FILEDET' . ''
@@ -505,7 +497,7 @@ final class gstr extends validation {
                         $dataGST1where['user_id'] =  $_SESSION['user_detail']['user_id'];
                         $this->update($this->getTableName('user_gstr1'),  $dataGST1, $dataGST1where);
                     }
-                    $filedetUrl='https://gspapi.karvygst.com/returns/'.$jstr.'?token=677b0e10557a4f56b2236387cfc24060&action=FILEDET&gstin='.$gstin.'&ret_period='.$api_return_period.'';
+                    $filedetUrl='https://gspapi.karvygst.com/returns/'.$jstr.'?token=677b0e10557a4f56b2236387cfc24060&action=FILEDET&gstin='.$gstin.'&ret_prd='.$api_return_period.'';
                     //echo $filedetUrl;
                     $result_data_sum1 = $this->hitGetUrl($filedetUrl, '', $header3);
                     $retDta1 = json_decode($result_data_sum1);
@@ -547,8 +539,153 @@ final class gstr extends validation {
             }
         }
         else {
-            $this->setError($this->validationMessage['gstinservererror']);
+            $this->setError("Invalid Auth Token");
         }
+    }
+
+    public function modalHtml() {
+        ?>
+        <div id="otpModalBox" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">       
+              
+              <div class="modal-body">
+              <label>OTP:</label>
+               <input id="otp_code" type="textbox" name="otp" class="form-control" data-bind="numeric">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="otpModalBoxSubmit" type="button" value="OTP" class="btn btn-success" >Submit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript">
+        $( "#otpModalBoxSubmit" ).click(function( event ) {
+              var otp = $('#otp_code').val();
+              //event.preventDefault();
+              if(otp != " ") {
+                $.ajax({
+                    url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_otp_request",
+                    type: "post",
+                    data: {otp:otp},
+                    success: function (response) {
+                        alert(response);
+                        var arr = $.parseJSON(response);
+                        if(arr.error_code == 0) {
+                            $("#otpModalBox").modal("hide");
+                            document.form4.submit();
+                        }
+                        else {
+                            location.reload();
+                            return false;
+                        }
+                    },
+                    error: function() {
+                        alert("Enter OTP First");
+                        return false;
+                    }
+                });
+                return false;
+              }
+              else {
+                alert("Enter OTP First");
+                return false;
+              }
+              return false;
+            });
+        </script>
+        <?php
+    }
+
+    public function uploadOtpPopupJs() {
+        $this->modalHtml();
+        ?>
+        <script type="text/javascript">
+            $("#up").on("click", function (event) {
+                flag=0;
+                $(".name").each(function(){
+                    if ($(this).prop("checked")==true){ 
+                        flag=1;
+                    }
+                });
+                if(flag==1)
+                {
+                    //event.preventDefault();
+                    $.ajax({
+                        url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_details_check",
+                        type: "json",
+                        success: function (response) {
+                            alert(response);
+                            if(response == 1) {
+                                $("#otpModalBox").modal("show");
+                                return false;
+                            }
+                            else if(response == 0) {
+                               document.form4.submit();
+                            }
+                            else {
+                                location.reload();
+                                return false;
+                            }
+                        },
+                        error: function() {
+                            alert("Please try again.");
+                            return false;
+                        }
+                    });
+                    return false;
+                    
+                }
+                else
+                {
+                    alert("No Invoices are selected?");
+                    return false;
+                }
+                return false;
+
+            });
+        </script>
+        <?php
+    }
+
+    public function DownloadSummaryOtpPopupJs() {
+        $this->modalHtml();
+        ?>
+        <script type="text/javascript">
+        $(document).ready(function () {
+            $("#gstr1_summary_download").on("click", function (event) {
+                //event.preventDefault();
+                $.ajax({
+                    url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_details_check",
+                    type: "json",
+                    success: function (response) {
+                        alert(response);
+                        if(response == 1) {
+                            $("#otpModalBox").modal("show");
+                            return false;
+                        }
+                        else if(response == 0) {
+                           document.form4.submit();
+                        }
+                        else {
+                           location.reload();
+                           return false;
+                        }
+                    },
+                    error: function() {
+                        alert("Please try again.");
+                        return false;
+                    }
+                });
+                return false;
+
+            });
+        });
+
+        </script>
+        <?php
     }
 
     public function gstr1UploadSummary($returnmonth,$jstr='gstr1',$encodeJson,$rek) {
@@ -572,10 +709,8 @@ final class gstr extends validation {
 
     }
 
-    public function returnDeleteItems($deleteData, $returnmonth, $jstr) {
-        if($this->authenticateToken() == false) {
-            return false;
-        }
+    public function returnDeleteItems($deleteData, $returnmonth, $jstr) 
+    {
         $action = 'RETSAVE';
         $deleteData = json_encode($deleteData);
         //echo $deleteData;
@@ -587,121 +722,7 @@ final class gstr extends validation {
 
     }
 
-    public function gstCommonRetunSave($encodejson,$hmac,$returnmonth,$jstr) {
-        $error =1;
-        $msg = '';
-        $api_return_period = $this->getRetrunPeriodFormat($returnmonth);
-
-        $gstin = $this->gstin();
-        $username = $this->username();
-        $action = 'RETSAVE';
-
-        $data = array(
-          "action" => $action,
-          "data" => $encodejson,
-          "hmac" => $hmac
-        );
-        $data_string = json_encode($data);
-        //Start code for create header
-        $header_array = array(
-            'Content-Length: ' . strlen($data_string).'',
-            'auth-token:' . $_SESSION['auth_token'] . '',
-            'gstin:' . $gstin . '',
-            'ret_period: '.$api_return_period.' ',
-            'username:' . $username . '',
-            'accept:application/json',
-        );
-        $header = $this->header($header_array);
-        //End code for create header
-       // $this->pr($header);
-
-        //$url = 'http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns/'.$jstr;
-        $url = 'https://gspapi.karvygst.com/returns/'.$jstr;
-        
-        $result_data = $this->hitPulUrl($url, $data_string, $header);
-        $datasave = json_decode($result_data);
-        //$this->pr($datasave);
-        if(isset($datasave->status_cd) && $datasave->status_cd=='1' && $msg == '')
-        {
-            $retData=$datasave->data;
-            $rek=$datasave->rek;
-            $apiEk=openssl_decrypt(base64_decode($rek),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
-            $decodejson= base64_decode(openssl_decrypt(base64_decode($retData),"aes-256-ecb",$apiEk, OPENSSL_RAW_DATA));
-            $ref = json_decode($decodejson);
-
-            $refId = $ref->reference_id;
-            sleep(5);
-            
-            //Start code for create header
-            $header2_array = array(
-                'auth-token:' . $_SESSION['auth_token'] . '',
-                'gstin:' . $gstin . '',
-                'ret_period: '.$api_return_period.' ',
-                'username:' . $username . '',
-                'accept:application/json',
-                'action:' . 'RETSTATUS' . ''
-            );
-            
-            $header2 = $this->header($header2_array);
-            //$this->pr($header2);
-            //End code for create header
-           // $url2 = 'http://devapi.gstsystem.co.in/taxpayerapi/v0.3/returns?action=RETSTATUS&gstin='.$gstin. '&ret_period='.$api_return_period.'&ref_id='.$refId.'';
-
-            $url2 = 'https://gspapi.karvygst.com/returns/RETSTATUS?gstin='.$gstin. '&ret_period='.$api_return_period.'&ref_id='.$refId.'';
-            $result_data1 = $this->hitGetUrl($url2, '', $header2);
-            
-            $retDta = json_decode($result_data1);
-            //$this->pr($retDta);
-            if(isset($retDta->status_cd) && $retDta->status_cd=='1' && $msg == '')
-            {
-                $retRek=$retDta->rek;
-                $retData1=$retDta->data;
-
-                $apiEk1=openssl_decrypt(base64_decode($retRek),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
-                $decodejson1= base64_decode(openssl_decrypt(base64_decode($retData1),"aes-256-ecb",$apiEk1, OPENSSL_RAW_DATA));
-                ;
-                if(!empty($decodejson1) && $msg == '') {
-                    $jstr1_status = json_decode($decodejson1,true);
-                    //$this->pr($jstr1_status);
-                    
-                    if(isset($jstr1_status['status_cd']) && $jstr1_status['status_cd']=='P' && $msg == '') {
-
-                        $error = 0;
-                    }
-                    /*elseif(isset($jstr1_status['status_cd']) && $jstr1_status['status_cd']=='IP' && $msg == ''){
-                        $msg = "Invoices are under procces, kindly wait for some time.";
-                        $error = 2;
-                    }*/
-                    else {
-                        $this->array_key_search('error_msg', $jstr1_status);
-                        $msg = $this->error_msg;
-                        //$this->pr($msg);
-                    }
-                }
-                else {
-                   $msg = "Sorry! Invalid proccess";
-                }
-            }
-            else {
-                $msg = "Sorry! Invalid proccess";
-            }
-        }
-        else {
-            if(isset($datasave->error)) {
-                $this->array_key_search('message', $datasave->error);
-                $msg = $this->error_msg;;
-            }
-           
-            if(!$msg) {
-                $msg = "Sorry! Unable to authenticate";
-            }
-            
-        }
-
-        $response['message'] = $msg;
-        $response['error'] = $error;
-        return $response;
-    }
+    
     public function getRetrunPeriodFormat($returnmonth) {
         $api_return_period = '';
         if(!empty($returnmonth)) {
@@ -760,6 +781,18 @@ final class gstr extends validation {
         if(isset($_SESSION['auth_token'])) {
            unset($_SESSION['auth_token']); 
         }
+        if(isset($_SESSION['decrypt_sess_key'])) {
+           unset($_SESSION['decrypt_sess_key']); 
+        }
+        if(isset($_SESSION['auth_date'])) {
+           unset($_SESSION['auth_date']); 
+        }
+        if(isset($_SESSION['hkey'])) {
+           unset($_SESSION['hkey']); 
+        }
+        if(isset($_SESSION['otp'])) {
+           unset($_SESSION['otp']); 
+        }
         if(isset($_SESSION['inputToken'])) {
            unset($_SESSION['inputToken']); 
         }
@@ -778,6 +811,7 @@ final class gstr extends validation {
         if(isset($_SESSION['public_key'])) {
            unset($_SESSION['public_key']); 
         }
+        
     }
 
     public function gst_is_expired($last_auth_date='') {
@@ -803,10 +837,11 @@ final class gstr extends validation {
         if(isset($_SESSION['user_detail']['user_id'])) {
             $user_gstr = $this->get_results("select * from " . $this->getTableName('user_gstr1') ." where user_id = '".$_SESSION['user_detail']['user_id']."'");
             if(!empty($user_gstr)) {
+
                 $decodeData = unserialize(base64_decode($user_gstr[0]->params));
                 $_SESSION['otp'] = $decodeData['otp'];
                 $_SESSION['hexcode'] = $decodeData['hexcode'];
-                $_SESSION['hexcode'] = $decodeData['hexcode']; 
+                $_SESSION['hkey'] = $decodeData['hkey']; 
                 $_SESSION['app_key'] = $decodeData['app_key'];
                 $_SESSION['auth_token'] = $decodeData['auth_token'];
                 $_SESSION['decrypt_sess_key'] = $decodeData['decrypt_sess_key'];
@@ -816,7 +851,8 @@ final class gstr extends validation {
                 $_SESSION['iv'] = $decodeData['iv'];
                 $_SESSION['ciphertext'] = $decodeData['ciphertext'];
                 $_SESSION['public_key'] = $decodeData['public_key'];
-                $_SESSION['auth_date'] = $user_gstr[0]->added_date;
+                $_SESSION['auth_date'] = $user_gstr[0]->updated_date;
+                
                 return true;
             }
             
@@ -840,12 +876,47 @@ final class gstr extends validation {
             else {
                 $dataGST1['params'] = $data['params'];
                 $dataGST1['added_date'] = $data['added_date'];
+                $dataGST1['updated_date'] =  $data['added_date'];
+                $dataGST1['otp_date'] =  $data['added_date'];
                 $dataGST1['user_id'] =  $data['user_id'];
-                $dataGST1['otp_date'] =  $data['otp_date'];
 
                 $this->insert($this->getTableName('user_gstr1'), $dataGST1);
             } 
         }   
+    }
+
+    public function save_user_summary($data) {
+        if(isset($_SESSION['user_detail']['user_id'])) {
+            $user_ustr = $this->get_results("select * from " . $this->getTableName('user_api_summary') ." where 1=1 and  user_id = ".$_SESSION['user_detail']['user_id']." ");
+
+            if (!empty($user_ustr)) {
+                $dataGST1['json'] = $data['json'];
+                $dataGST1['updated_date'] =  date('Y-m-d H:i:s');
+
+                $dataGST1where['user_id'] =  $_SESSION['user_detail']['user_id'];
+                $this->update($this->getTableName('user_api_summary'),  $dataGST1, $dataGST1where);
+
+            } 
+            else {
+                $dataGST1['gst_key'] =  $data['gst_key'];
+                $dataGST1['json'] = $data['json'];
+                $dataGST1['added_date'] = date('Y-m-d H:i:s');
+                $dataGST1['user_id'] =  $_SESSION['user_detail']['user_id'];
+                $this->insert($this->getTableName('user_api_summary'), $dataGST1);
+            } 
+        }   
+    }
+    public function get_user_summary($key) {
+        $json = '';
+        if(isset($_SESSION['user_detail']['user_id'])) {
+            $user_gstr = $this->get_results("select `   json` from " . $this->getTableName('user_api_summary') ." where user_id = '".$_SESSION['user_detail']['user_id']."' and gst_key = '".$key."'");
+
+            if(!empty($user_gstr)) {
+                $json = unserialize(base64_decode($user_gstr[0]->json));
+            }
+            
+        }
+        return $json;
     }
 
     public function header($fields= array()) {

@@ -25,10 +25,33 @@ $returnmonth = '2017-07';
 if ($_REQUEST['returnmonth'] != '') {
   $returnmonth = $_REQUEST['returnmonth'];
 }
+$json = '';
+/***** Start Get Summray from DB of gstr1 *****/
+$response = $obj_api->get_user_summary('gstr1');
+/***** End Get Summray from DB of gstr1 *****/
 
-$response = $obj_api->returnSummary($returnmonth);
+if(isset($_POST['summary_type']) && $_POST['summary_type']=='Download GSTR1 Summary')
+{
+    if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])) 
+    {
+        $obj_gstr1->setError('Invalid access to files');
+    } 
+    else 
+    {
+        $obj_gstr1->pr($_POST);
+        $obj_gstr1->pr($response);
+        /***** Start GSTR1 API Call *****/
+        $json = $obj_api->returnSummary($returnmonth);
+        /***** End GSTR1 API Call *****/
 
+        /***** Start Code Insert/update to summary *****/
+        $savedata['json'] = base64_encode(serialize($json));
+        $savedata['gst_key'] = 'gstr1';
+        $obj_api->save_user_summary($savedata);
+        /***** End Code Insert/update to summary *****/
 
+    }
+}
 
 ?>
 <?php 
@@ -95,7 +118,17 @@ $response = $obj_api->returnSummary($returnmonth);
                         <?php $obj_gstr1->showErrorMessage(); ?>
                         <?php $obj_gstr1->showSuccessMessge(); ?>
                         <?php $obj_gstr1->unsetMessage(); ?>
-                        <div id="display_json"></div>
+
+                        <form method="post" name="form4" id="SummaryForm" action="">
+
+                            <input type="submit" name="submit_summary" id="gstr1_summary_download" value="Download GSTR1 Summary" class="btn  btn-success " >
+                            <input type="hidden" name="summary_type"  value="Download GSTR1 Summary"  >
+                        </form>
+                        <?php
+                        if(!empty($response)) { ?>
+                            <div id="display_json"></div>
+                        <?php }  ?>
+                        
                     </div>
                 </div>
             </div>
@@ -103,6 +136,9 @@ $response = $obj_api->returnSummary($returnmonth);
     </div>
   </div>
 </div>
+<?php 
+$obj_api->DownloadSummaryOtpPopupJs();
+?>
 <script>
     get_summary();
     $(document).ready(function () {
@@ -140,7 +176,7 @@ $response = $obj_api->returnSummary($returnmonth);
     }
     /******* To get Summary of GSTR1 ********/
 
-     /******* To delele invoice of GSTR1 ********/
+    /******* To delele invoice of GSTR1 ********/
     function delete_item_invoice(type,returnmonth) {
         if(type!= '') {
             $.ajax({

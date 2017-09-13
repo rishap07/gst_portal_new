@@ -20,6 +20,8 @@ if(isset($_POST['itemData']) && isset($_POST['action']) && $_POST['action'] == "
 	$_POST['item_unit'] = $params['item_unit'];
 	$_POST['unit_price'] = $params['unit_price'];
 	$_POST['status'] = $params['status'];
+	$_POST['item_description'] = $params['item_description'];
+	$_POST['is_applicable'] = $params['is_applicable'];
 
 	if($obj_client->addClientItem()) {
 		$result['status'] = "success";

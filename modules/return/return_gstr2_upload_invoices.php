@@ -55,11 +55,12 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'Upload TO GSTN') {
                     ?>
                 </form>
             </div>
-            <div class="col-md-12 col-sm-12 col-xs-12 tablistnav padleft0">
-<?php
-                              include(PROJECT_ROOT."/modules/return/include/tab.php");
+           <div class="col-md-12 col-sm-12 col-xs-12 heading">
+            <div class="tab col-md-12 col-sm-12 col-xs-12">
+              <?php
+                        include(PROJECT_ROOT."/modules/return/include/tab.php");
                ?>
-            </div>
+            </div></div>
             <div class="clearfix"></div>
             <?php $obj_gstr2->showErrorMessage(); ?>
             <?php $obj_gstr2->showSuccessMessge(); ?>

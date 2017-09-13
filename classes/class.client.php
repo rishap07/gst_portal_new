@@ -1677,6 +1677,7 @@ final class client extends validation {
                         $InsertArray['invoice_total_value'] = number_format($invoiceTotalAmount, 2, '.', '');
                         $InsertArray['financial_year'] = $this->generateFinancialYear();
                         $InsertArray['status'] = 1;
+						$InsertArray['created_from'] = 'E';
                         $InsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
                         $InsertArray['added_date'] = date('Y-m-d H:i:s');
 
@@ -2039,6 +2040,8 @@ final class client extends validation {
 					$invoiceArray[$arrayKey]['reference_number'] = $dataArray['reference_number'];
 					$invoiceArray[$arrayKey]['company_name'] = $dataCurrentUserArr['data']->kyc->name;
 					$invoiceArray[$arrayKey]['company_address'] = $dataCurrentUserArr['data']->kyc->full_address;
+					$invoiceArray[$arrayKey]['company_email'] = $dataCurrentUserArr['data']->kyc->email;
+					$invoiceArray[$arrayKey]['company_phone_number'] = $dataCurrentUserArr['data']->kyc->phone_number;
 					$invoiceArray[$arrayKey]['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
 					$invoiceArray[$arrayKey]['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
 					$invoiceArray[$arrayKey]['invoice_date'] = $dataArray['invoice_date'];
@@ -2194,6 +2197,8 @@ final class client extends validation {
                         $InsertArray['serial_number'] = $this->generateInvoiceNumber($this->sanitize($_SESSION['user_detail']['user_id']));
                         $InsertArray['company_name'] = $invoiceRow['company_name'];
                         $InsertArray['company_address'] = $invoiceRow['company_address'];
+						$InsertArray['company_email'] = $invoiceRow['company_email'];
+						$InsertArray['company_phone_number'] = $invoiceRow['company_phone_number'];
                         $InsertArray['company_state'] = $invoiceRow['company_state'];
                         $InsertArray['gstin_number'] = $invoiceRow['gstin_number'];
                         $InsertArray['invoice_date'] = $invoiceRow['invoice_date'];
@@ -2231,6 +2236,7 @@ final class client extends validation {
 						$InsertArray['invoice_total_value'] = number_format($invoiceTotalAmount, 2, '.', '');
                         $InsertArray['financial_year'] = $this->generateFinancialYear();
                         $InsertArray['status'] = 1;
+						$InsertArray['created_from'] = 'E';
                         $InsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
                         $InsertArray['added_date'] = date('Y-m-d H:i:s');
 
@@ -2522,6 +2528,8 @@ final class client extends validation {
 					$invoiceArray[$arrayKey]['reference_number'] = $dataArray['reference_number'];
 					$invoiceArray[$arrayKey]['company_name'] = $dataCurrentUserArr['data']->kyc->name;
 					$invoiceArray[$arrayKey]['company_address'] = $dataCurrentUserArr['data']->kyc->full_address;
+					$invoiceArray[$arrayKey]['company_email'] = $dataCurrentUserArr['data']->kyc->email;
+					$invoiceArray[$arrayKey]['company_phone_number'] = $dataCurrentUserArr['data']->kyc->phone_number;
 					$invoiceArray[$arrayKey]['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
 					$invoiceArray[$arrayKey]['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
 					$invoiceArray[$arrayKey]['invoice_date'] = $dataArray['invoice_date'];
@@ -2625,6 +2633,8 @@ final class client extends validation {
 						$InsertArray['serial_number'] = $this->generateBillInvoiceNumber($this->sanitize($_SESSION['user_detail']['user_id']));
 						$InsertArray['company_name'] = $invoiceRow['company_name'];
 						$InsertArray['company_address'] = $invoiceRow['company_address'];
+						$InsertArray['company_email'] = $invoiceRow['company_email'];
+						$InsertArray['company_phone_number'] = $invoiceRow['company_phone_number'];
 						$InsertArray['company_state'] = $invoiceRow['company_state'];
 						$InsertArray['gstin_number'] = $invoiceRow['gstin_number'];
 						$InsertArray['invoice_date'] = $invoiceRow['invoice_date'];
@@ -2648,6 +2658,7 @@ final class client extends validation {
 						$InsertArray['invoice_total_value'] = number_format($invoiceTotalAmount, 2, '.', '');
 						$InsertArray['financial_year'] = $this->generateFinancialYear();
 						$InsertArray['status'] = 1;
+						$InsertArray['created_from'] = 'E';
 						$InsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
 						$InsertArray['added_date'] = date('Y-m-d H:i:s');
 
@@ -2961,6 +2972,8 @@ final class client extends validation {
 					$invoiceArray[$arrayKey]['reference_number'] = $dataArray['reference_number'];
 					$invoiceArray[$arrayKey]['company_name'] = $dataCurrentUserArr['data']->kyc->name;
 					$invoiceArray[$arrayKey]['company_address'] = $dataCurrentUserArr['data']->kyc->full_address;
+					$invoiceArray[$arrayKey]['company_email'] = $dataCurrentUserArr['data']->kyc->email;
+					$invoiceArray[$arrayKey]['company_phone_number'] = $dataCurrentUserArr['data']->kyc->phone_number;
 					$invoiceArray[$arrayKey]['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
 					$invoiceArray[$arrayKey]['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
 					$invoiceArray[$arrayKey]['invoice_date'] = $dataArray['invoice_date'];
@@ -3089,6 +3102,8 @@ final class client extends validation {
 						$InsertArray['serial_number'] = $this->generateRVInvoiceNumber($this->sanitize($_SESSION['user_detail']['user_id']));
 						$InsertArray['company_name'] = $invoiceRow['company_name'];
 						$InsertArray['company_address'] = $invoiceRow['company_address'];
+						$InsertArray['company_email'] = $invoiceRow['company_email'];
+						$InsertArray['company_phone_number'] = $invoiceRow['company_phone_number'];
 						$InsertArray['company_state'] = $invoiceRow['company_state'];
 						$InsertArray['gstin_number'] = $invoiceRow['gstin_number'];
 						$InsertArray['invoice_date'] = $invoiceRow['invoice_date'];
@@ -3114,6 +3129,7 @@ final class client extends validation {
 						$InsertArray['invoice_total_value'] = number_format($invoiceTotalAmount, 2, '.', '');
 						$InsertArray['financial_year'] = $this->generateFinancialYear();
 						$InsertArray['status'] = 1;
+						$InsertArray['created_from'] = 'E';
 						$InsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
 						$InsertArray['added_date'] = date('Y-m-d H:i:s');
 
@@ -3482,6 +3498,8 @@ final class client extends validation {
 					$invoiceArray[$arrayKey]['reference_number'] = $dataArray['reference_number'];
 					$invoiceArray[$arrayKey]['company_name'] = $dataCurrentUserArr['data']->kyc->name;
 					$invoiceArray[$arrayKey]['company_address'] = $dataCurrentUserArr['data']->kyc->full_address;
+					$invoiceArray[$arrayKey]['company_email'] = $dataCurrentUserArr['data']->kyc->email;
+					$invoiceArray[$arrayKey]['company_phone_number'] = $dataCurrentUserArr['data']->kyc->phone_number;
 					$invoiceArray[$arrayKey]['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
 					$invoiceArray[$arrayKey]['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
 					$invoiceArray[$arrayKey]['invoice_date'] = $dataArray['invoice_date'];
@@ -3620,6 +3638,8 @@ final class client extends validation {
 						$InsertArray['serial_number'] = $this->generateRTInvoiceNumber($this->sanitize($_SESSION['user_detail']['user_id']));
 						$InsertArray['company_name'] = $invoiceRow['company_name'];
 						$InsertArray['company_address'] = $invoiceRow['company_address'];
+						$InsertArray['company_email'] = $invoiceRow['company_email'];
+						$InsertArray['company_phone_number'] = $invoiceRow['company_phone_number'];
 						$InsertArray['company_state'] = $invoiceRow['company_state'];
 						$InsertArray['gstin_number'] = $invoiceRow['gstin_number'];
 						$InsertArray['invoice_date'] = $invoiceRow['invoice_date'];
@@ -3648,6 +3668,7 @@ final class client extends validation {
 						$InsertArray['invoice_total_value'] = number_format($invoiceTotalAmount, 2, '.', '');
 						$InsertArray['financial_year'] = $this->generateFinancialYear();
 						$InsertArray['status'] = 1;
+						$InsertArray['created_from'] = 'E';
 						$InsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
 						$InsertArray['added_date'] = date('Y-m-d H:i:s');
 
@@ -3929,6 +3950,8 @@ final class client extends validation {
 					$invoiceArray[$arrayKey]['reference_number'] = $dataArray['reference_number'];
 					$invoiceArray[$arrayKey]['company_name'] = $dataCurrentUserArr['data']->kyc->name;
 					$invoiceArray[$arrayKey]['company_address'] = $dataCurrentUserArr['data']->kyc->full_address;
+					$invoiceArray[$arrayKey]['company_email'] = $dataCurrentUserArr['data']->kyc->email;
+					$invoiceArray[$arrayKey]['company_phone_number'] = $dataCurrentUserArr['data']->kyc->phone_number;
 					$invoiceArray[$arrayKey]['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
 					$invoiceArray[$arrayKey]['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
 					$invoiceArray[$arrayKey]['invoice_date'] = $dataArray['invoice_date'];
@@ -4056,6 +4079,8 @@ final class client extends validation {
 						$InsertArray['serial_number'] = $this->generateDCInvoiceNumber($this->sanitize($_SESSION['user_detail']['user_id']));
 						$InsertArray['company_name'] = $invoiceRow['company_name'];
 						$InsertArray['company_address'] = $invoiceRow['company_address'];
+						$InsertArray['company_email'] = $invoiceRow['company_email'];
+						$InsertArray['company_phone_number'] = $invoiceRow['company_phone_number'];
 						$InsertArray['company_state'] = $invoiceRow['company_state'];
 						$InsertArray['gstin_number'] = $invoiceRow['gstin_number'];
 						$InsertArray['invoice_date'] = $invoiceRow['invoice_date'];
@@ -4073,6 +4098,7 @@ final class client extends validation {
 						$InsertArray['invoice_total_value'] = number_format($invoiceTotalAmount, 2, '.', '');
 						$InsertArray['financial_year'] = $this->generateFinancialYear();
 						$InsertArray['status'] = 1;
+						$InsertArray['created_from'] = 'E';
 						$InsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
 						$InsertArray['added_date'] = date('Y-m-d H:i:s');
 

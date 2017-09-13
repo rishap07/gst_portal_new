@@ -1,4 +1,11 @@
 <?php
+/*
+    * 
+    *  Developed By        :   Monika Deswal
+    *  Date Created        :   July 27, 2017
+    *  Last Modification   :   Summary of JSTR1
+    * 
+*/
 $obj_gst1 = new gstr1();
 $obj_api =  new gstr();
 

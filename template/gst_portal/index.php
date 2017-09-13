@@ -95,7 +95,7 @@ if (isset($_POST['register_me']) && $_POST['register_me'] == 'REGISTER') {
             <a class="adminlogo" href="" target="_blank"><img src="<?php echo PROJECT_URL;?>/image/logo.png" title="GST Keeper" alt="GST Keeper" /></a>
 			<div class="logincontainer">
 				<ul class="admintab">
-					<li class="userlogin <?php if(isset($_POST['login_me']) && $_POST['login_me'] == 'LOGIN') { echo "active"; } if(!isset($_POST['login_me']) && $_POST['login_me'] != 'LOGIN' && !isset($_POST['register_me']) && $_POST['register_me'] != 'REGISTER'){ echo 'active'; } ?>">
+					<li class="userlogin <?php if(isset($_POST['login_me']) && $_POST['login_me'] == 'LOGIN') { echo "active"; } if(!isset($_POST['login_me']) && !isset($_POST['register_me'])){ echo 'active'; } ?>">
 						<a href="javascript:void(0)">SIGN IN</a>
 					</li>
 					<li class="userregister <?php if(isset($_POST['register_me']) && $_POST['register_me'] == 'REGISTER') { echo "active"; } ?>">

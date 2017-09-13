@@ -15,8 +15,16 @@ if((isset($_POST['submit']) && $_POST['submit']=='Download GSTR1')||(isset($_POS
         {
             $ids = implode(',',  $_POST['name']);
         }
-        if ($obj_gstr1->gstr1PayloadDownload($ids)) 
-        {
+        if(!empty($ids)) {
+            if ($obj_gstr1->gstr1PayloadDownload($ids,'all')) 
+            {
+            } 
         }
+        else {
+            if ($obj_gstr1->gstr1PayloadDownload()) 
+            {
+            }
+        }
+        
     }
 }

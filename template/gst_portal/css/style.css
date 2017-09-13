@@ -93,7 +93,7 @@ input[type='submit'] {text-transform:capitalize;}
 
 /*-----------------------------LOGIN CSS START HERE------------------------------*/
 .loginpage{background:#f0f0f0;background-size:cover;width:100%; box-sizing:border-box;float:left;height:100%;position:fixed;top:0px;bottom:0px; padding:0px 0px;}
-.loginbx{background:#fff; width:50%; border-left:1px solid #d3d3d3; height:100%;  box-sizing:border-box; position:relative;overflow:hidden; padding:40px 70px; margin:0px;}
+.loginbx{background:#fff; width:50%; border-left:1px solid #d3d3d3; min-height:100%;height:auto;box-sizing:border-box; position:relative;overflow:hidden; padding:40px 70px; margin:0px;}
 .loginbx .adminlogo{display:block;text-align:center;width:100%;}
 .loginbx .adminlogo img { width:300px;}
 .logincontainer{padding:25px 0px;background:#fff;}
@@ -184,7 +184,7 @@ input[type='submit'] {text-transform:capitalize;}
 .dashleftbox .listcontent { min-height:140px;}
 .dashleftbox .listcontent .inovicelefttable{margin-top:30px;}
 .lightpink { background-color: #f2dede; color:#a94442; border:1px solid #ebccd1;}
-.lightgreen { background:#dff0d8; color:#3c763d; border:1px solid #d6e9c6;}
+.lightgreen { background:#dff0d8; color:#3c763d; border:1px solid #d6e9c6;text-align:center;}
 .lightblue { background:#d9edf7; color:#31708f; border:1px solid #bce8f1; }
 .lightyellowbg { background:#fcf8e3; color:#8a6d5b; border:1px solid #faebcc;}
 .pinkbg { background-color: #f2dede; color:#a94442; border:1px solid #ebccd1;}

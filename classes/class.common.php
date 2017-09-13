@@ -1399,6 +1399,16 @@ class common extends db {
         $decimal = ' and ';
 
         $dictionary = array(
+			00 => 'zero',
+            01 => 'one',
+            02 => 'two',
+            03 => 'three',
+            04 => 'four',
+            05 => 'five',
+            06 => 'six',
+            07 => 'seven',
+            08 => 'eight',
+            09 => 'nine',
             0 => 'zero',
             1 => 'one',
             2 => 'two',

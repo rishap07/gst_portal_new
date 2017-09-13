@@ -180,7 +180,9 @@ if ($_REQUEST['returnmonth'] != '') {
                                         </tr>
                                         <tr>
                                             <?php
-                                            $b2clData = $obj_gstr1->getB2CLInvoices($_SESSION['user_detail']['user_id'], $returnmonth);
+                                            $group_by = "";
+                                            $order_by = 'a.reference_number';
+                                            $b2clData = $obj_gstr1->getB2CLInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'','',$group_by,$order_by);
                                             $b2cl_total = $b2cl_invoice_total_value = $b2cl_sumTotal = 0;
                                             $b2clCount = $tempTotVal = $tempInvTot = 0;
                                             if (!empty($b2clData)) {
@@ -215,7 +217,9 @@ if ($_REQUEST['returnmonth'] != '') {
                                         </tr>
                                         <tr>
                                             <?php
-                                            $b2csData = $obj_gstr1->getB2CSInvoices($_SESSION['user_detail']['user_id'], $returnmonth);
+                                            $group_by = "";
+                                            $order_by = 'a.reference_number';
+                                            $b2csData = $obj_gstr1->getB2CSInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'','',$group_by,$order_by);
                                             $b2cs_total = $b2cs_invoice_total_value = $b2cs_sumTotal = 0;
                                             $b2csCount = $tempTotVal = $tempInvTot = 0;
                                             if (!empty($b2csData)) {
@@ -286,7 +290,9 @@ if ($_REQUEST['returnmonth'] != '') {
                                         </tr>
                                         <tr>
                                             <?php
-                                            $expData = $obj_gstr1->getEXPInvoices($_SESSION['user_detail']['user_id'], $returnmonth);
+                                            $group_by = " a.reference_number ,b.consolidate_rate ";
+                                            $order_by = 'a.reference_number';
+                                            $expData = $obj_gstr1->getEXPInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'','',$group_by,$order_by);
 
                                             $exp_total = $exp_invoice_total_value = $exp_sumTotal = 0;
                                             $expCount = $tempTotVal = $tempInvTot = 0;
@@ -321,7 +327,9 @@ if ($_REQUEST['returnmonth'] != '') {
                                         </tr>
                                         <tr>
                                             <?php
-                                            $atData = $obj_gstr1->getATInvoices($_SESSION['user_detail']['user_id'], $returnmonth);
+                                            $group_by = " a.reference_number ,b.consolidate_rate ";
+                                            $order_by = 'a.reference_number';
+                                            $atData = $obj_gstr1->getATInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'','',$group_by,$order_by);
 
                                             $at_total = $at_invoice_total_value = $at_sumTotal = 0;
                                             $atCount = $tempTotVal = $tempInvTot = 0;
@@ -356,7 +364,9 @@ if ($_REQUEST['returnmonth'] != '') {
                                         </tr>
                                         <tr>
                                             <?php
-                                            $cdnurData = $obj_gstr1->getCDNURInvoices($_SESSION['user_detail']['user_id'], $returnmonth);
+                                            $group_by = "";
+                                            $order_by = 'a.reference_number';
+                                            $cdnurData = $obj_gstr1->getCDNURInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'','',$group_by,$order_by);
                                             $cdnur_total = $cdnur_invoice_total_value = $cdnur_sumTotal = 0;
                                             $cdnurCount = $tempTotVal = $tempInvTot = 0;
                                             if (!empty($cdnurData)) {

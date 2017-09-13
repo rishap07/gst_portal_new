@@ -138,7 +138,7 @@ $query="select count(invoice_id) as monthcount, sum(invoice_total_value) as tota
 <?php $db_obj->unsetMessage(); ?>
         <div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Dashboard Overview</h1></div>
         <div class="col-md-12 col-sm-12 col-xs-12">
-            <div class=" whitebg dashleftbox">
+         <div class=" whitebg dashleftbox">
 <?php
 /* code for push data in a array for totalinvoices created in current financial_year */
 $data[0] = array("Month", "Total Invoices");

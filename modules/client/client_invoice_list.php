@@ -1,6 +1,5 @@
 <?php
 $obj_client = new client();
-$dataCurrentUserArr = $obj_client->getUserDetailsById($obj_client->sanitize($_SESSION['user_detail']['user_id']));
 
 if(!$obj_client->can_read('client_invoice')) {
 
@@ -31,6 +30,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 if (isset($_GET['action']) && $_GET['action'] == 'emailInvoice' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
 
     $htmlResponse = $obj_client->generateInvoiceHtml($_GET['id']);
+	
+	$dataCurrentUserArr = $obj_client->getUserDetailsById($obj_client->sanitize($_SESSION['user_detail']['user_id']));
     $sendmail = $dataCurrentUserArr['data']->kyc->email;
 	
 	$mail = new PHPMailer();
@@ -293,7 +294,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 
                                                             <b>Supply Type:</b> <?php if($invoiceData[0]->supply_type == "reversecharge") { echo "Reverse Charge"; } else if($invoiceData[0]->supply_type == "tds") { echo "TDS"; } else if($invoiceData[0]->supply_type == "tcs") { echo "TCS"; } else { echo "Normal"; } ?><br>
                                                             <?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php if($supply_place_data['data']->state_tin == 97) { echo $supply_place_data['data']->state_name; } else { echo $supply_place_data['data']->state_name . "(" . $supply_place_data['data']->state_tin . ")"; } ?><br> <?php } ?>
-                                                            
+
 															<?php if ($invoiceData[0]->supply_type === "tcs") { ?>
 																<b>Ecommerce GSTIN Number:</b> <?php echo $invoiceData[0]->ecommerce_gstin_number; ?><br>
 																<b>Ecommerce Vendor Code:</b> <?php echo $invoiceData[0]->ecommerce_vendor_code; ?><br>
@@ -422,7 +423,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 
 												<tr class="total lightblue">
 													<td colspan="9" align="right" class="fontbold textsmall">Total Invoice Value:</td>
-													<?php if($invoiceData[0]->advance_adjustment == 1) { echo '<td style="text-align:left;"><span>'.$total_advance_subtotal.'</span></td>'; } ?>
+													<?php if($invoiceData[0]->advance_adjustment == 1) { echo '<td style="text-align:center;"><span>'.$total_advance_subtotal.'</span></td>'; } ?>
 													<td style="text-align:center;"><span><?php echo $total_taxable_subtotal; ?></span></td>
 													<td><span>&nbsp;</span></td>
 													<td style="text-align:center;"><span><?php echo $total_cgst_amount; ?></span></td>
