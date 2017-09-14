@@ -22,10 +22,36 @@ if ($_REQUEST['returnmonth'] != '') {
   $returnmonth = $_REQUEST['returnmonth'];
 }
 
-//echo $_REQUEST['type'];
-$response = $obj_api->returnSummary($returnmonth,$_REQUEST['type']);
-//$obj_api->pr($response);
-if(!empty($response->ek) && isset($response->ek))   { 
+$response = '';
+if(isset($_POST['summary_type']) && $_POST['summary_type']=='Download GSTR1 Summary')
+{
+    if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])) 
+    {
+        $obj_gstr1->setError('Invalid access to files');
+    } 
+    else 
+    {
+        //$obj_gstr1->pr($_POST);
+        /***** Start GSTR1 API Call *****/
+        $callReturnSummary = $obj_api->returnSummary($returnmonth,$_REQUEST['type']);
+        /***** End GSTR1 API Call *****/
+
+        if($callReturnSummary != false) {
+            /***** Start Code Insert/update to summary *****/
+            $savedata['json'] = base64_encode(serialize($callReturnSummary));
+            //$obj_api->pr($savedata);
+            $obj_api->save_user_summary($savedata,'gstr1'.$type,$returnmonth);
+            /***** End Code Insert/update to summary *****/
+        }
+        
+
+    }
+}
+/***** Start Get Summray from DB of gstr1 Type *****/
+$response = $obj_api->get_user_summary('gstr1'.$type,$returnmonth);
+/***** End Get Summray from DB of gstr1 Type *****/
+
+/*if(!empty($response->ek) && isset($response->ek))   { 
     if(isset($_POST['submit']) && $_POST['submit']=='Upload GSTR JSON')
     {
         // /$obj_api->pr($_FILES);
@@ -57,8 +83,7 @@ if(!empty($response->ek) && isset($response->ek))   {
             return false;
         }
     }
-}
-
+}*/
 
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr">
@@ -121,7 +146,7 @@ if(!empty($response->ek) && isset($response->ek))   {
                             <?php $obj_gstr1->showErrorMessage(); ?>
                             <?php $obj_gstr1->showSuccessMessge(); ?>
                             <?php $obj_gstr1->unsetMessage(); ?>
-                            <?php if(!empty($response->urls) && isset($response->urls))   { ?>
+                            <?php /*if(!empty($response->urls) && isset($response->urls))   { ?>
                                 <div class="col-md-12 col-sm-12 col-xs-12 text-center">
                                     <form method="post" style="width:auto; display: inline-block;" enctype="multipart/form-data">
                                         <input type="file" name="json" class="btn btn-default  btnwidth">
@@ -134,8 +159,7 @@ if(!empty($response->ek) && isset($response->ek))   {
                                 <div class="clearfix"></div>
                                 <?php
                                 $i=1;
-                                foreach ($response->urls as $key => $value) { 
-                                    //$obj_gstr1->pr($value);die;?>
+                                foreach ($response->urls as $key => $value) { ?>
                                     Download Encode URL : <a href="<?php echo 'http://sbfiles.gstsystem.co.in'.$value->ul;?>"><button class="btn btn-primary">GSTR1 Json Data <?php echo $i++;?> </button></a><br/><br/>
                                     <?php 
                                 } 
@@ -143,7 +167,12 @@ if(!empty($response->ek) && isset($response->ek))   {
                             }
                             else { ?>
                                 
-                            <?php } ?>
+                            <?php }*/ ?>
+                                <form method="post" name="form4" id="SummaryForm" action="">
+
+                                <input type="submit" name="submit_summary" id="gstr1_summary_download" value="Download GSTR1 <?php echo $type;?> Summary" class="btn  btn-success " >
+                                <input type="hidden" name="summary_type"  value="Download GSTR1 Summary"  >
+                            </form>
                             <div id="display_json"></div>
                             
                         </div>
@@ -153,6 +182,9 @@ if(!empty($response->ek) && isset($response->ek))   {
         </div>
     </div>
 </div>
+<?php 
+$obj_api->DownloadSummaryOtpPopupJs();
+?>
 <script>
     
     $(document).ready(function () {

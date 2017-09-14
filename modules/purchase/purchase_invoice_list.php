@@ -113,20 +113,29 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 			<?php $obj_purchase->showErrorMessage(); ?>
 			<?php $obj_purchase->showSuccessMessge(); ?>
 			<?php $obj_purchase->unsetMessage(); ?>
+			
+			
 
 			<div class="row">
 
 				<!--INVOICE LEFT TABLE START HERE-->
-				<div class="fixed-left-col col-sm-12 col-xs-12" style="padding-right:0px; padding-left:0px;">
+				<div class="fixed-left-col col-sm-12 col-xs-12" style="padding-right:0px;padding-left:0px;">
 
 					<div class="invoiceheaderfixed">
-						<div class="col-md-8">
+						<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="padding-right:5px;padding-left:10px;">
                             <a href='javascript:void(0)' class="btn btn-warning pull-left checkAll">Check All</a>
                             <a href='javascript:void(0)' class="btn btn-danger pull-left cancelAll" data-toggle="tooltip" title="Cancel All"><i class="fa fa-times" aria-hidden="true"></i></a>
 							<a href='javascript:void(0)' class="btn btn-success pull-left revokeAll" data-toggle="tooltip" title="Revoke All"><i class="fa fa-undo" aria-hidden="true"></i></a>
                         </div>
 
-						<div class="col-md-4">
+						<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="padding-right:5px;padding-left:5px;">
+							<select class="date-dropdown">
+								<option value="all">All</option>
+								<option value="2017-07"><?php echo date("M-y", strtotime("2017-07")); ?></option>
+							</select>
+						</div>
+
+						<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="padding-right:10px;padding-left:5px;">
 							<a href='<?php echo PROJECT_URL;?>/?page=purchase_invoice_create' class="btn btn-success pull-right"><i class="fa fa-plus" aria-hidden="true"></i> New</a>
 						</div>
 					</div>
@@ -500,7 +509,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 										</tr>
                                     <?php } ?>
 
-								</table>			
+								</table>
 							</div>
 							<!--INVOICE DIV PRINT END  HERE-->
 						</div>

@@ -157,6 +157,8 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                     <label for="invoice-types__CDNUR"><input type="radio" id="invoice-types__CDNUR" name="invoice_type" value="CDNUR" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='CDNUR') echo 'checked=""';?>>CDNUR</label>
                                     <label for="invoice-types__AT"><input type="radio" id="invoice-types__AT" name="invoice_type" value="AT" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='AT') echo 'checked=""';?>>AT</label>
                                     <label for="invoice-types__EXP"><input type="radio" id="invoice-types__EXP" name="invoice_type" value="EXP" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='EXP') echo 'checked=""';?>>EXP</label>
+                                    <label for="invoice-types__HSN"><input type="radio" id="invoice-types__HSN" name="invoice_type" value="HSN" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='HSN') echo 'checked=""';?>>HSN</label>
+                                    <label for="invoice-types__DOCISSUE"><input type="radio" id="invoice-types__DOCISSUE" name="invoice_type" value="DOCISSUE" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='DOCISSUE') echo 'checked=""';?>>DOCISSUE</label>
                                     <!-- <label for="invoice-types__summary"><input type="radio" id="invoice-types__summary" name="invoice_type" value="all" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='all') echo 'checked=""';?>>All Type Summary</label> -->
 
                                 </div>
@@ -379,6 +381,41 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
 
                                 }
                                 if($type=='EXP')
+                                {
+                                    $group_by = " a.reference_number ,b.consolidate_rate ";
+                                    $order_by = 'a.reference_number';
+                                    $Data = $expData = $obj_gstr1->getEXPInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
+                                    $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
+                                    $sumTotal_temp = '';
+                                    $invoice_temp = '';
+                                    $invCount = 0;
+                                    if (!empty($expData)) {
+                                        $invoice_temp='';
+                                        foreach ($expData as $key => $expDatavalue) {
+                                            if($invoice_temp!='' and $invoice_temp!=$expDatavalue->invoice_id)
+                                            {
+                                                $invCount++;
+                                                $invoice_total_value +=$invoice_total_value_temp;
+                                                $sumTotal +=$sumTotal_temp;
+                                            }
+                                            $invoice_total_value_temp = isset($expDatavalue->taxable_subtotal)?$expDatavalue->taxable_subtotal:0;
+                                            $total += $expDatavalue->cgst_amount + $expDatavalue->sgst_amount + $expDatavalue->igst_amount + $expDatavalue->cess_amount;
+                                            $igstTotal += $expDatavalue->igst_amount;
+                                            $sgstTotal += $expDatavalue->sgst_amount;
+                                            $cgstTotal += $expDatavalue->cgst_amount;
+                                            $cessTotal += $expDatavalue->cess_amount;
+                                            $sumTotal_temp = isset($expDatavalue->invoice_total_value)?$expDatavalue->invoice_total_value:0;
+                                            $invoice_temp=$expDatavalue->invoice_id;
+                                        }
+                                        if($invoice_temp!='')
+                                        {
+                                            $invCount++;
+                                            $invoice_total_value +=$invoice_total_value_temp;
+                                            $sumTotal +=$sumTotal_temp;
+                                        }
+                                    }
+                                }
+                                if($type=='HSN')
                                 {
                                     $group_by = " a.reference_number ,b.consolidate_rate ";
                                     $order_by = 'a.reference_number';

@@ -234,7 +234,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
       <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
       <div class="col-md-12 col-sm-12 col-xs-12">
            
-      <div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>GST-Document Series Summary</h1></div>
+      <div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>GSTR1-Document Summary</h1></div>
                     <div class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav"><a href="#">Home</a>
 					<i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GST-Transition Form</span> </div>
                 <div class="whitebg formboxcontainer">
@@ -280,7 +280,9 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
                 </a>
               
             </div>
-					  <div class="pull-right rgtdatetxt">
+			   <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_summary&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-danger" class="redbtn marlef10"/>
+							
+			  <div class="pull-right rgtdatetxt">
                                 <form method='post' name='form2'>
                                     Month Of Return
                                     <?php
@@ -312,9 +314,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 							{
 								?>
 							<div class="inovicergttop">
-                            <ul class="iconlist">
-
-                                
+                            <ul class="iconlist">                               
                                
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=return_document_summary&action=downloadInvoice&id=<?php echo $returndata[0]->financial_month; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=return_document_summary&action=printInvoice&id=<?php echo $returndata[0]->financial_month; ?>&returnmonth=<?php echo $returnmonth; ?>" target="_blank"><div data-toggle="tooltip" data-placement="bottom" title="PRINT"><i class="fa fa-print" aria-hidden="true"></i></div></a></li>
@@ -379,8 +379,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 						    for($i=0;$i < sizeof($start); $i++) {
 								 $sno =0;
 								 $sno = $i+1;
-							if($table1_srno_from[$i]!='' && $table1_srno_to[$i]!='' || $table1_totalno[$i]!='' || $table1_netissued[$i]!='' || $table1_cancelled[$i]!='')
-							{	   
+							   
                            ?>
                                 <tr>
                                  <td>
@@ -459,7 +458,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
                                 </tr>
 								
 								
-							<?php } else { ?> <tr id="trtable1"><td colspan="5" align="center">Nothing data to display here</td></tr> <?php } }  } else {  ?>
+							<?php  }  } else {  ?>
 
 								<tr id="trtable1"><td colspan="5" align="center">Nothing found here</td></tr>
 								<?php } ?>                              

@@ -63,10 +63,14 @@ if((isset($_GET["id"])) && (!empty($_GET["id"])))
 			{
 //return false;
 			}
-    
+        if($_SESSION["user_detail"]["user_group"]==2)
+	{
+		$flag=1; 
+	}
 		if($flag==1)
 		{
-		$query ="select * from " . $db_obj->getTableName('notification') . " as n where notification_id='".$_GET["id"]."' and status='1'";
+			
+	    $query ="select * from " . $db_obj->getTableName('notification') . " as n where notification_id='".$_GET["id"]."' and status='1'";
 		$rResult = $db_obj->get_results($query);
 		$dataConditionArray=array();
 		$dataArr=array();

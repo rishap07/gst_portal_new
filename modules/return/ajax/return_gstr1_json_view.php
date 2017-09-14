@@ -78,9 +78,9 @@ if(!empty($jstr1_array)) {
                                     <td align="center">'.$txval.'</td>
                                     <td align="center">'.$iamt.'</td>
                                     <td align="center">'.$updby.'</td>
-                                    <td align="center">'.$rchrg.'</td>
-                                    <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" ctin = '.$ctin.' idt = '.$idt.' inum = '.$inum.' type="B2B"><i class="fa fa-trash"></i></a></td>
-                                </tr>';
+                                    <td align="center">'.$rchrg.'</td>';
+                                    /*<td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" ctin = '.$ctin.' idt = '.$idt.' inum = '.$inum.' type="B2B"><i class="fa fa-trash"></i></a></td>*/
+                                $response .= '</tr>';
                             }
                         }
                     }

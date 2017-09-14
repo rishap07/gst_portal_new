@@ -9,7 +9,7 @@ $returnmonth = date('Y-m');
 if(isset($_POST['returnmonth']))
 {
     $returnmonth = $_POST['returnmonth'];
-	$obj_transition->redirect(PROJECT_URL."/?page=return_hsnwise_summary&returnmonth=".$returnmonth);
+	$obj_transition->redirect(PROJECT_URL."/?page=return_nilexempt_summary&returnmonth=".$returnmonth);
 	exit();
 }
 $returnmonth= date('Y-m');
@@ -108,9 +108,9 @@ if(isset($_POST['autoname']) && $_POST['autoname']==1) {
       <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
       <div class="col-md-12 col-sm-12 col-xs-12">
        
-      <div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>HSN-wise summary</h1></div>
+      <div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>Nil rated, exempted and Non-GST supplies</h1></div>
                     <div class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav"><a href="#">Home</a>
-					<i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GST-Transition Form</span> </div>
+					<i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GST-Nil rated, exempted and Non-GST supplies</span> </div>
                 <div class="whitebg formboxcontainer">
 				<?php $obj_transition->showErrorMessage(); ?>
 			    <?php if(isset($_POST['finalsubmit']) && $_POST['finalsubmit']=='final submit') {
@@ -149,7 +149,7 @@ if(isset($_POST['autoname']) && $_POST['autoname']==1) {
                 <a href="<?php echo PROJECT_URL . '/?page=transition_gstr&returnmonth='.$returnmonth ?>">
                     Transition Form1
                 </a>
-                <a href="<?php echo PROJECT_URL . '/?page=return_hsnwise_summary&returnmonth='.$returnmonth ?>" class="active" >
+                <a href="<?php echo PROJECT_URL . '/?page=return_nilexempt_summary&returnmonth='.$returnmonth ?>" class="active" >
                     Transition Form2
                 </a>
               
@@ -199,9 +199,9 @@ if(isset($_POST['autoname']) && $_POST['autoname']==1) {
 							<div class="inovicergttop">
                             <ul class="iconlist">                               
                                
-                                <li><a href="<?php echo PROJECT_URL; ?>/?page=return_hsnwise_summary&action=downloadInvoice&id=<?php echo $returndata1[0]->financial_month; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
-                                <li><a href="<?php echo PROJECT_URL; ?>/?page=return_hsnwise_summary&action=printInvoice&id=<?php echo $returndata1[0]->financial_month; ?>&returnmonth=<?php echo $returnmonth; ?>" target="_blank"><div data-toggle="tooltip" data-placement="bottom" title="PRINT"><i class="fa fa-print" aria-hidden="true"></i></div></a></li>
-                                <li><a href="<?php echo PROJECT_URL; ?>/?page=return_hsnwise_summary&action=emailInvoice&id=<?php echo $returndata1[0]->financial_month; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></div></a></li>
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=return_nilexempt_summary&action=downloadInvoice&id=<?php echo $returndata1[0]->financial_month; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=return_nilexempt_summary&action=printInvoice&id=<?php echo $returndata1[0]->financial_month; ?>&returnmonth=<?php echo $returnmonth; ?>" target="_blank"><div data-toggle="tooltip" data-placement="bottom" title="PRINT"><i class="fa fa-print" aria-hidden="true"></i></div></a></li>
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=return_nilexempt_summary&action=emailInvoice&id=<?php echo $returndata1[0]->financial_month; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></div></a></li>
                                 <!--<li><a href="#"><div data-toggle="tooltip" data-placement="bottom" title="Attached File"><i class="fa fa-paperclip" aria-hidden="true"></i></div></a></li>-->
                          </ul>
 							</div><?php } ?>
@@ -212,16 +212,12 @@ if(isset($_POST['autoname']) && $_POST['autoname']==1) {
                             <table  class="table  tablecontent tablecontent2 bordernone" id='table1a'>
                                 <thead>
                                 <tr>
-                                <th>HSN</th>
+                             
                                 <th>Description</th>
-                                <th>Unit</th>
-                                <th>TotalQty</th>
-                                <th>TotalValue(<i class="fa fa-inr"></i>)</th>
-                                <th>TaxableValue(<i class="fa fa-inr"></i>)</th>
-								<th>IGST Amount(<i class="fa fa-inr"></i>)</th>
-								<th>CGST Amount(<i class="fa fa-inr"></i>)</th>
-								<th>SGST Amount(<i class="fa fa-inr"></i>)</th>
-								<th>CESS Amount(<i class="fa fa-inr"></i>)</th>
+                                <th>Nil Rated Supplies(<i class="fa fa-inr"></i>)</th>
+                                <th>Exempted(Other Than Nil Rated/Non-GST Supply)(<i class="fa fa-inr"></i>)</th>
+                                 <th>Exempted(Other Than Nil Rated/Non-GST Supply)(<i class="fa fa-inr"></i>)</th>
+                             
                                 </tr>
                                 </thead>
                                 
@@ -625,7 +621,7 @@ if(isset($_POST['autoname']) && $_POST['autoname']==1) {
 								?>
                                 <div class="adminformbxsubmit" style="width:100%;"> 
                             <div class="tc">
-                               <input type="button" value="<?php echo ucfirst('Edit'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_hsnwise_summary_submit&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/>
+                               <input type="button" value="<?php echo ucfirst('Edit'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_nilexempt_summary_submit&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/>
 							  <input type='submit' class="btn btn-danger" name='cleardata' value='clear data' id='cleardata'>
 							  <input type='hidden' name="returnid" id="returnid" value="<?php echo $returndata1[0]->return_id; ?>" />
 									
@@ -709,7 +705,7 @@ if(isset($_POST['autoname']) && $_POST['autoname']==1) {
 <script>
     $(document).ready(function () {
         $('#returnmonth').on('change', function () {
-            document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_hsnwise_summary&returnmonth=<?php echo $returnmonth; ?>';
+            document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_nilexempt_summary&returnmonth=<?php echo $returnmonth; ?>';
                         document.form2.submit();
                     });
                 });
@@ -718,7 +714,7 @@ if(isset($_POST['autoname']) && $_POST['autoname']==1) {
 <script>
     $(document).ready(function () {
         $('#returnmonth').on('change', function () {
-            document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_hsnwise_summary&returnmonth=<?php echo $returnmonth; ?>';
+            document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_nilexempt_summary&returnmonth=<?php echo $returnmonth; ?>';
                         document.form2.submit();
                     });
                 });
@@ -859,7 +855,7 @@ $(document).ready(function(){
       //$("body").append('<div>Callback from confirm ' + e + '</div>');
 	  if(e==true)
 	  {
-		   document.auto.action = '<?php echo PROJECT_URL; ?>/?page=return_hsnwise_summary&returnmonth=<?php echo $returnmonth; ?>';
+		   document.auto.action = '<?php echo PROJECT_URL; ?>/?page=return_nilexempt_summary&returnmonth=<?php echo $returnmonth; ?>';
            document.auto.submit();
 	  }
     });

@@ -59,7 +59,7 @@ if(!empty($jstr1_array)) {
                                     <td align="right"><a class="gstr1ViewBtn" href="'.PROJECT_URL.'?page=return_get_summary_view&type='.$jstr1_value['sec_nm'].'&returnmonth='.$returnmonth.'" target="_blank">view</a></td>
                                     <td align="right">';
                                     if($invoice_number>0) {
-                                        $response .= '<a href="javascript:;" class="gstr1ViewDeleteBtn" type="'.$jstr1_value['sec_nm'].'" deleteall="all"><i class="fa fa-trash"></i></a>';
+                                        //$response .= '<a href="javascript:;" class="gstr1ViewDeleteBtn" type="'.$jstr1_value['sec_nm'].'" deleteall="all"><i class="fa fa-trash"></i></a>';
                                     }
                                    
                                     $response .= '</td>

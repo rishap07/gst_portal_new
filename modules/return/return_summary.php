@@ -49,23 +49,27 @@ else
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr">
     <div class="col-md-11 col-sm-12 col-xs-12 mobpadlr">
         <div class="col-md-12 col-sm-12 col-xs-12 heading">
+		<div class="clear"></div>
             <div class="tab col-md-12 col-sm-12 col-xs-12">
-                
+               
                 <a href="<?php echo PROJECT_URL . '/?page=return_summary&returnmonth=' . $returnmonth ?>" class="active">
-                    View GSTR1 Summary
+                    1.View GSTR1 Summary
                 </a>
                 <a href="<?php echo PROJECT_URL . '/?page=return_view_invoices&returnmonth=' . $returnmonth ?>" >
-                    View My Invoice
+                    2.View My Invoice
                 </a>
-                <a href="<?php echo PROJECT_URL . '/?page=return_upload_invoices&returnmonth=' . $returnmonth ?>">
+				<?php
+				/*
+                <a  href="<?php echo PROJECT_URL . '/?page=return_upload_invoices&returnmonth=' . $returnmonth ?>">
                     Upload To GSTN
                 </a>
-                </a>
+				*/ ?>
+               
                 <a href="<?php echo PROJECT_URL . '/?page=return_get_summary&returnmonth=' . $returnmonth ?>">
-                    GSTR1 SUMMARY
+                    3.GSTR1 SUMMARY
                 </a>
                 <a href="<?php echo PROJECT_URL . '/?page=return_filling_summary&returnmonth=' . $returnmonth ?>">
-                    File GSTr-1
+                    4.File GSTr-1
                 </a>
                 
             </div>
@@ -73,9 +77,18 @@ else
                 <div class="col-md-12 col-sm-12 col-xs-12">
                     <div class="col-md-6 col-sm-12 col-xs-12"><h3>GSTR1 Summary</h3></div>
                 </div>
+				
                 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
                     <div class="col-md-12 col-sm-12 col-xs-12">
                         <div class="whitebg formboxcontainer">
+						<div class="tab col-md-12 col-sm-12 col-xs-12">
+						
+						 <input type="button" value="<?php echo ucfirst('Update document summary'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_document_summary&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/>
+				         <input type="button" value="<?php echo ucfirst('Update hsn summary'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_hsnwise_summary&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/>
+				
+						
+              
+                          </div>
                             <div class="pull-right rgtdatetxt">
                                 <form method='post' name='form2'>
                                     Month Of Return

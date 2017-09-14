@@ -145,8 +145,9 @@ foreach($rResult as $aRow) {
    
     $row[] = $temp_x;
     $row[] = utf8_decode($aRow->notification_name);
-	//$message=$obj_notification->strip_tags_content(html_entity_decode($aRow->notification_message));
-	$row[] = utf8_decode($aRow->notification_message);
+	$message=$obj_notification->strip_tags_content(html_entity_decode($aRow->notification_message));
+	$readmore='<a href="'.PROJECT_URL.'/?page=notification_view&id='.$aRow->notification_id.'" class="iconedit hint--bottom" data-hint="Edit" >&nbsp&nbspRead more</a>';
+   	$row[] = utf8_decode($message.$readmore);
     $row[] = utf8_decode($type);
     $row[] = utf8_decode($aRow->start_date);
 	$row[] = utf8_decode($aRow->end_date);
