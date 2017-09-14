@@ -166,3 +166,10 @@ table.dataTable tbody tr.even {
 .fontbold {
     font-weight: bold;
 }
+.date-dropdown {
+	font-size: 14px;
+	background: #fff;
+	border: 1px solid #ccc;
+	padding: 5px;
+	border-radius:2px;
+}
