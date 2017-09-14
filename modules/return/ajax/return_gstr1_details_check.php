@@ -14,20 +14,19 @@ else
         $diff =  strtotime(date("Y-m-d H:i:s")) - strtotime($updated_date);
         /*** OTP Exprire after 120 MIn ****/
         if($diff <= 7200) {
+            $response = 0;
             /*** upload return will call ****/
-            $authTokenReturn = $obj_gstr->authenticateToken($otp,'otp_from_table');
+            /*$authTokenReturn = $obj_gstr->authenticateToken($otp,'otp_from_table');
 
             if($authTokenReturn ==  true) {
                 $response = 0;
             }
             if($authTokenReturn == 'AUTH4033' || $authTokenReturn == 'AUTH4034' || $authTokenReturn == 'AUTH4038') {
-                /*** OTP Popup page ****/ 
                 $response = 1;
             }
             else {
-               /*** Reload page ****/ 
                $response = 2; 
-            }
+            }*/
         }
     }
 

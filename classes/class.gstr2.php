@@ -1600,6 +1600,157 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 	 	
 	   return $dataArr;
    }
+   public function gstHsnSummaryData()
+   {
+	    $dataArr = array();
+		$data = array();
+		$data['table1_hsn']='';
+		$data['table1_description']='';
+		$data['table1_unit']='';
+		$data['table1_qty']='';
+		$data['table1_totalvalue']='';
+        $data['table1_taxablevalue']='';
+		$data['table1_igst']='';
+		$data['table1_cgst']='';
+		$data['table1_sgst']='';
+		$data['table1_cess']='';
+        
+		if(!empty($_POST['table1_hsn'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table1_hsn'] as $selected){
+			 
+             $data['table1_hsn'] = $data['table1_hsn'].$selected.',';
+			
+			} 
+			$data['table1_hsn'] = rtrim($data['table1_hsn'],",");
+			}
+			
+		 if(!empty($_POST['table1_description'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table1_description'] as $selected){
+			 
+             $data['table1_description'] = $data['table1_description'].$selected.',';
+			
+			} 
+			$data['table1_description'] = rtrim($data['table1_description'],",");
+			}
+	  if(!empty($_POST['table1_unit'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table1_unit'] as $selected){
+			 
+             $data['table1_unit'] = $data['table1_unit'].$selected.',';
+			
+			} 
+			$data['table1_unit'] = rtrim($data['table1_unit'],",");
+			}
+			if(!empty($_POST['table1_qty'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table1_qty'] as $selected){
+			 
+             $data['table1_qty'] = $data['table1_qty'].$selected.',';
+			
+			} 
+			$data['table1_qty'] = rtrim($data['table1_qty'],",");
+			}
+			if(!empty($_POST['table1_totalvalue'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table1_totalvalue'] as $selected){
+			 
+             $data['table1_totalvalue'] = $data['table1_totalvalue'].$selected.',';
+			
+			} 
+			$data['table1_totalvalue'] = rtrim($data['table1_totalvalue'],",");
+			}
+			if(!empty($_POST['table1_taxablevalue'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table1_taxablevalue'] as $selected){
+			 
+             $data['table1_taxablevalue'] = $data['table1_taxablevalue'].$selected.',';
+			
+			} 
+			$data['table1_taxablevalue'] = rtrim($data['table1_taxablevalue'],",");
+			}
+			if(!empty($_POST['table1_igst'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table1_igst'] as $selected){
+			 
+             $data['table1_igst'] = $data['table1_igst'].$selected.',';
+			
+			} 
+			$data['table1_igst'] = rtrim($data['table1_igst'],",");
+			}
+			if(!empty($_POST['table1_cgst'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table1_cgst'] as $selected){
+			 
+             $data['table1_cgst'] = $data['table1_cgst'].$selected.',';
+			
+			} 
+			$data['table1_cgst'] = rtrim($data['table1_cgst'],",");
+			}
+			if(!empty($_POST['table1_sgst'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table1_sgst'] as $selected){
+			 
+             $data['table1_sgst'] = $data['table1_sgst'].$selected.',';
+			
+			} 
+			$data['table1_sgst'] = rtrim($data['table1_sgst'],",");
+			}
+			if(!empty($_POST['table1_cess'])){
+     // Loop to store and display values of individual checked checkbox.
+			foreach($_POST['table1_cess'] as $selected){
+			 
+             $data['table1_cess'] = $data['table1_cess'].$selected.',';
+			
+			} 
+			$data['table1_cess'] = rtrim($data['table1_cess'],",");
+			}
+			
+	  $data5a[]=array("table1_hsn"=>$data['table1_hsn'],"table1_description"=>$data['table1_description'],"table1_unit"=>$data['table1_unit'],"table1_qty"=>$data['table1_qty'],"table1_totalvalue"=>$data['table1_totalvalue'],"table1_taxablevalue"=>$data['table1_taxablevalue'],"table1_igst"=>$data['table1_igst'],"table1_cgst"=>$data['table1_cgst'],"table1_sgst"=>$data['table1_sgst'],"table1_cess"=>$data['table1_cess']);
+	 $dataArr['gstr1_hsnwise_data'] = base64_encode(json_encode($data5a));
+	 	
+	   return $dataArr;
+	}
+    public function saveGstr1HsnSummary()
+    {
+	    $data = $this->get_results("select * from gst_gstr1_hsnwise_summary where added_by='".$_SESSION['user_detail']['user_id']."' and financial_month='".$this->sanitize($_GET['returnmonth'])."'");
+		$dataArr = $this->gstHsnSummaryData();
+	    $returnmonth = $this->sanitize($_GET['returnmonth']);
+		if(empty($data))
+		{
+			$dataArr['financial_month']=$this->sanitize($_GET['returnmonth']);
+			$dataArr['added_by']=$this->sanitize($_SESSION["user_detail"]["user_id"]);
+			
+			if ($this->insert('gst_gstr1_hsnwise_summary', $dataArr)) {
+				$this->setSuccess('GSTR1 hsn summary form Saved Successfully');
+				$this->logMsg("GSTR1 hsn summary Inserted financial month : " . $returnmonth,"gstr1");
+				return true;
+			}
+			else
+			{
+				$this->setError('Failed to save GSTR1 document summary data');
+			   return false;    	   
+		   }
+
+		}
+		else
+		{
+			
+			if ($this->update('gst_gstr1_hsnwise_summary', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
+			  
+				$this->setSuccess('GSTR1 hsn summary month of '.$returnmonth."updated Successfully");
+				//$this->logMsg("GSTR3B updated financial month : " . $returnmonth,"gstr_3b");
+				return true;
+			}
+			else
+			{
+				$this->setError('Failed to save GSTR3B data');
+			   return false;    	   
+		   }
+	    }
+	  
+   }
     public function saveGstr1DocumentSummary()
     {
 	    $data = $this->get_results("select * from gst_gstr1_document_summary where added_by='".$_SESSION['user_detail']['user_id']."' and financial_month='".$this->sanitize($_GET['returnmonth'])."'");

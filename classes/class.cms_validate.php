@@ -382,7 +382,7 @@ class cms_validate {
 
     protected static function invoicetypeValidation($input, $name, $lableName) {
         if (self::isBlankField($input) === false) {
-            if (preg_match("/^(?:taxinvoice|exportinvoice|importinvoice|sezunitinvoice|deemedexportinvoice|deemedimportinvoice|billofsupplyinvoice|receiptvoucherinvoice|refundvoucherinvoice|revisedtaxinvoice|creditnote|debitnote|deliverychallaninvoice)$/", $input)) {
+            if (preg_match("/^(?:taxinvoice|exportinvoice|importinvoice|sezunitinvoice|deemedexportinvoice|deemedimportinvoice|billofsupplyinvoice|receiptvoucherinvoice|paymentvoucherinvoice|refundvoucherinvoice|revisedtaxinvoice|creditnote|debitnote|deliverychallaninvoice)$/", $input)) {
                 return true;
             } else {
                 self::setMessage($name, 'invoicetype', $lableName . " should be valid");

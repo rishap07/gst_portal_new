@@ -154,9 +154,9 @@ if(!empty($response->ek) && isset($response->ek))   {
     </div>
 </div>
 <script>
-    get_summary();
     
     $(document).ready(function () {
+        get_summary();
         $('#returnmonth').on('change', function () {
             //alert(<?php echo $returnmonth; ?>);
             document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_get_summary_view&type=<?php echo $type; ?>&returnmonth=<?php echo $returnmonth; ?>';

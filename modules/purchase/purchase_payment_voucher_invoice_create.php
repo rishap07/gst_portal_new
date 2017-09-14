@@ -11,12 +11,12 @@
 	if(!$obj_purchase->can_create('client_invoice')) {
 
 		$obj_purchase->setError($obj_purchase->getValMsg('can_create'));
-		$obj_purchase->redirect(PROJECT_URL."/?page=purchase_receipt_voucher_invoice_list");
+		$obj_purchase->redirect(PROJECT_URL."/?page=purchase_payment_voucher_invoice_list");
 		exit();
 	}
 
 	$dataCurrentUserArr = $obj_purchase->getUserDetailsById( $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) );		
-	$rvPurchaseInvoiceNumber = $obj_purchase->generatePurchaseRVInvoiceNumber( $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) );
+	$rvPurchaseInvoiceNumber = $obj_purchase->generatePurchasePVInvoiceNumber( $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) );
 ?>
 <!--========================admincontainer start=========================-->
 <form name="create-invoice" id="create-invoice" method="POST">
@@ -24,7 +24,7 @@
 	<div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
 		<div class="col-md-12 col-sm-12 col-xs-12">
 
-			<div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Receipt Voucher Invoice</h1></div>
+			<div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Payment Voucher Invoice</h1></div>
 
 			<div class="clear"></div>
 
@@ -38,7 +38,7 @@
 
 				 <div class="row">
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Receipt Voucher <span class="starred">*</span></label>
+						<label>Payment Voucher <span class="starred">*</span></label>
 						<input type="text" placeholder="Invoice Serial Number" readonly="true" class="form-control required" value="<?php echo $rvPurchaseInvoiceNumber; ?>" name="invoice_serial_number" id="invoice_serial_number" />
 					</div>
 
@@ -78,11 +78,6 @@
 				 </div>
 
 				 <div class="row">
-					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Tax Is Payable On Reverse Charge <span class="starred">*</span></label><br/>
-						<label class="radio-inline"><input type="radio" name="tax_reverse_charge" value="1" />Yes</label>
-						<label class="radio-inline"><input type="radio" name="tax_reverse_charge" value="0" checked="checked" />No</label>
-                    </div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group placeofsupply">
 						<label>Place Of Supply <span class="starred">*</span></label>
@@ -361,7 +356,7 @@
 							<td class="lightblue fontbold textsmall" align="center"></td>
 						</tr>
 
-						<tr class="rvcamount">
+						<tr class="rvcamount" style="display:table-row;">
 							<td colspan="5" align="right" class="lightgreen fontbold textsmall rvcamountftd">Amount of Tax Subject to Reverse Charge:</td>
 							<td class="lightgreen fontbold textsmall rvccgst" align="center"><span>-</span></td>
 							<td class="lightgreen fontbold textsmall rvccgstamount" align="center"><span>0.00</span></td>
@@ -871,12 +866,6 @@
             return validateTaxValue(event, this);
         });
         /* end of validate invoice tax decimal values allow only numbers or decimals */
-		
-		/* on change supply type */
-		$('input[type=radio][name=tax_reverse_charge]').change(function() {
-			supplyTypeChange();
-		});
-		/* end of on change supply type */
 
 		/* autocomplete for select items for invoice */
         $(".invoicetable").on("keypress", ".autocompleteitemname", function(){
@@ -1019,10 +1008,10 @@
 				
 				$("#loading").show();
 				$.ajax({
-					data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewPurchaseRVInvoice"},
+					data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewPurchasePVInvoice"},
 					dataType: 'json',
 					type: 'post',
-					url: "<?php echo PROJECT_URL; ?>/?ajax=purchase_receipt_voucher_invoice_save",
+					url: "<?php echo PROJECT_URL; ?>/?ajax=purchase_payment_voucher_invoice_save",
 					success: function(response){
 
 						$("#loading").hide();
@@ -1035,7 +1024,7 @@
 							
 							$(".errorValidationContainer").html("");
 							$(".errorValidationContainer").hide();
-							window.location.href = '<?php echo PROJECT_URL; ?>/?page=purchase_receipt_voucher_invoice_create';
+							window.location.href = '<?php echo PROJECT_URL; ?>/?page=purchase_payment_voucher_invoice_create';
 						}
 					}
 				});
@@ -1056,10 +1045,10 @@
 
 			$("#loading").show();
 			$.ajax({
-                data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewPurchaseRVInvoice"},
+                data: {invoiceData:$("#create-invoice").serialize(), action:"saveNewPurchasePVInvoice"},
                 dataType: 'json',
                 type: 'post',
-                url: "<?php echo PROJECT_URL; ?>/?ajax=purchase_receipt_voucher_invoice_save",
+                url: "<?php echo PROJECT_URL; ?>/?ajax=purchase_payment_voucher_invoice_save",
                 success: function(response){
 
 					$("#loading").hide();
@@ -1072,26 +1061,12 @@
 
                         $(".errorValidationContainer").html("");
                         $(".errorValidationContainer").hide();
-                        window.location.href = '<?php echo PROJECT_URL; ?>/?page=purchase_receipt_voucher_invoice_list';
+                        window.location.href = '<?php echo PROJECT_URL; ?>/?page=purchase_payment_voucher_invoice_list';
                     }
                 }
             });
         });
         /* end of save new item */
-		
-		function supplyTypeChange() {
-
-			var supplyType = $('input[name=tax_reverse_charge]:checked', '#create-invoice').val();
-
-			if(supplyType == "1") {
-				$(".rvcamount").show();
-			} else {
-				$(".rvcamount").hide();
-			}
-
-			/* calculate row invoice and invoice total on receiver state change */
-            rowInvoiceCalculationOnStateChnage();
-		}
 
 		/* calculate row invoice on state change function */
         function rowInvoiceCalculationOnStateChnage() {
@@ -1252,7 +1227,6 @@
 			var totalInvoiceSGSTValue = 0.00;
 			var totalInvoiceIGSTValue = 0.00;
 			var totalInvoiceCESSValue = 0.00;
-			var invsupplyType = $('input[name=tax_reverse_charge]:checked', '#create-invoice').val();
 			$( "tr.invoice_tr" ).each(function( index ) {
 
                 var rowid = $(this).attr("data-row-id");
@@ -1270,11 +1244,7 @@
 					totalInvoiceIGSTValue += igstamount;
 					totalInvoiceCESSValue += cessamount;
 
-					if(invsupplyType == "1") {
-						totalInvoiceValue += taxablevalue;
-					} else {
-						totalInvoiceValue += (taxablevalue + cgstamount + sgstamount + igstamount + cessamount);
-					}
+					totalInvoiceValue += taxablevalue;
                 }
             });
 
@@ -1285,21 +1255,15 @@
 				$("#amountValidationModal").modal("show");
 				return false;
 			}
-			
-			if(invsupplyType == "1") {
 
-				$(".rvcamount .rvccgst span").html("-");
-				$(".rvcamount .rvccgstamount span").html(totalInvoiceCGSTValue.toFixed(2));
-
-				$(".rvcamount .rvcsgst span").html("-");
-				$(".rvcamount .rvcsgstamount span").html(totalInvoiceSGSTValue.toFixed(2));
-
-				$(".rvcamount .rvcigst span").html("-");
-				$(".rvcamount .rvcigstamount span").html(totalInvoiceIGSTValue.toFixed(2));
-
-				$(".rvcamount .rvccess span").html("-");
-				$(".rvcamount .rvccessamount span").html(totalInvoiceCESSValue.toFixed(2));
-			}
+			$(".rvcamount .rvccgst span").html("-");
+			$(".rvcamount .rvccgstamount span").html(totalInvoiceCGSTValue.toFixed(2));
+			$(".rvcamount .rvcsgst span").html("-");
+			$(".rvcamount .rvcsgstamount span").html(totalInvoiceSGSTValue.toFixed(2));
+			$(".rvcamount .rvcigst span").html("-");
+			$(".rvcamount .rvcigstamount span").html(totalInvoiceIGSTValue.toFixed(2));
+			$(".rvcamount .rvccess span").html("-");
+			$(".rvcamount .rvccessamount span").html(totalInvoiceCESSValue.toFixed(2));
 
 			$.ajax({
                 data: {totalInvoiceValue:totalFinalInvoiceValue, action:"numberToWords"},

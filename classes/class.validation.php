@@ -519,7 +519,7 @@ class validation extends upload {
             $queryCDNUR .=  " and a.invoice_id in (".$ids.") ";
         }
         $queryCDNUR .= " and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '".$returnmonth."%' 
-            and a.supply_place!=a.company_state and a.invoice_corresponding_type='taxinvoice' 
+            and a.invoice_corresponding_type='taxinvoice' 
             and a.billing_gstin_number=''
            
             and (c.invoice_type='exportinvoice' or c.invoice_type='sezunitinvoice' or c.invoice_type='deemedexportinvoice' or c.invoice_type='taxinvoice') 
@@ -674,7 +674,7 @@ class validation extends upload {
         }
 
         $queryHsn .= " and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and (a.invoice_type='creditnote' or a.invoice_type='debitnote' or a.invoice_type='taxinvoice' or  a.invoice_type='exportinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice' ) and a.is_canceled='0' and a.is_deleted='0' group by b.item_hsncode";
-        //echo "<br>HSN<br><br>".$queryHsn.'<br/>';
+       // echo "<br>HSN<br><br>".$queryHsn.'<br/>';
         return $this->get_results($queryHsn); 
     }
     

@@ -322,6 +322,9 @@
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_receipt_voucher_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Receipt Voucher Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_receipt_voucher_invoice_create'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Receipt Voucher Invoice</a></li><?php } ?>
 							
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_payment_voucher_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Payment Voucher Invoice</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_payment_voucher_invoice_create'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Payment Voucher Invoice</a></li><?php } ?>
+							
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_refund_voucher_invoice_list'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Refund Voucher Invoice</a></li><?php } ?>
 							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_refund_voucher_invoice_create'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Add Refund Voucher Invoice</a></li><?php } ?>
 							

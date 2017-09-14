@@ -9,7 +9,7 @@ $returnmonth = date('Y-m');
 if(isset($_POST['returnmonth']))
 {
     $returnmonth = $_POST['returnmonth'];
-	$obj_transition->redirect(PROJECT_URL."/?page=transition_gstr2&returnmonth=".$returnmonth);
+	$obj_transition->redirect(PROJECT_URL."/?page=return_document_summary&returnmonth=".$returnmonth);
 	exit();
 }
 $returnmonth= date('Y-m');
@@ -275,7 +275,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
                 <a href="<?php echo PROJECT_URL . '/?page=transition_gstr&returnmonth='.$returnmonth ?>">
                     Transition Form1
                 </a>
-                <a href="<?php echo PROJECT_URL . '/?page=transition_gstr2&returnmonth='.$returnmonth ?>" class="active" >
+                <a href="<?php echo PROJECT_URL . '/?page=return_document_summary&returnmonth='.$returnmonth ?>" class="active" >
                     Transition Form2
                 </a>
               
@@ -316,9 +316,9 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 
                                 
                                
-                                <li><a href="<?php echo PROJECT_URL; ?>/?page=transition_gstr2&action=downloadInvoice&id=<?php echo $returndata[0]->financial_month; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
-                                <li><a href="<?php echo PROJECT_URL; ?>/?page=transition_gstr2&action=printInvoice&id=<?php echo $returndata[0]->financial_month; ?>&returnmonth=<?php echo $returnmonth; ?>" target="_blank"><div data-toggle="tooltip" data-placement="bottom" title="PRINT"><i class="fa fa-print" aria-hidden="true"></i></div></a></li>
-                                <li><a href="<?php echo PROJECT_URL; ?>/?page=transition_gstr2&action=emailInvoice&id=<?php echo $returndata[0]->financial_month; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></div></a></li>
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=return_document_summary&action=downloadInvoice&id=<?php echo $returndata[0]->financial_month; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=return_document_summary&action=printInvoice&id=<?php echo $returndata[0]->financial_month; ?>&returnmonth=<?php echo $returnmonth; ?>" target="_blank"><div data-toggle="tooltip" data-placement="bottom" title="PRINT"><i class="fa fa-print" aria-hidden="true"></i></div></a></li>
+                                <li><a href="<?php echo PROJECT_URL; ?>/?page=return_document_summary&action=emailInvoice&id=<?php echo $returndata[0]->financial_month; ?>&returnmonth=<?php echo $returnmonth; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></div></a></li>
                                 <!--<li><a href="#"><div data-toggle="tooltip" data-placement="bottom" title="Attached File"><i class="fa fa-paperclip" aria-hidden="true"></i></div></a></li>-->
                          </ul>
 							</div><?php } ?>
@@ -2091,9 +2091,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								?>
                                 <div class="adminformbxsubmit" style="width:100%;"> 
                             <div class="tc">
-                               <input type="button" value="<?php echo ucfirst('Edit'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=transition_gstr2_submit&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/>
+                               <input type="button" value="<?php echo ucfirst('Edit'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_document_summary_submit&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/>
 							    <input type='submit' class="btn btn-danger" name='cleardata' value='clear data' id='cleardata'>
-							  <input type='submit' class="btn btn-success" name='finalsubmit' value='final submit' id='finalsubmit'>
 							  <input type='hidden' name="returnid" id="returnid" value="<?php echo $returndata[0]->return_id; ?>" />
 									
                                
@@ -2110,8 +2109,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								<?php 
 								if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 0))
 							{?>
-							  <input type='submit' class="btn btn-success" name='finalsubmit' value='final submit' id='finalsubmit'>
-						
+							
 							<?php } ?>
 								
                                
@@ -2137,7 +2135,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
     $(document).ready(function(){
 		
         $(".add-table1a").click(function(){
-           document.getElementById('trtable1').style.display = 'none';
+          var element = document.getElementById('trtable1');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable1').style.display = 'none';
+			}
             var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table1_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table1_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table1_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table1_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table1_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table1a').append(markup);
@@ -2155,7 +2156,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
     $(document).ready(function(){
 		
         $(".add-table2a").click(function(){
-           document.getElementById('trtable2').style.display = 'none';
+          var element = document.getElementById('trtable2');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable2').style.display = 'none';
+			}
             var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table2_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table2_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table2_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table2_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table2_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table2a').append(markup);
@@ -2171,7 +2175,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
     $(document).ready(function(){
 		
         $(".add-table3a").click(function(){
-           document.getElementById('trtable3').style.display = 'none';
+           var element = document.getElementById('trtable3');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable3').style.display = 'none';
+			}
             var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table3_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table3_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table3_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table3_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table3_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table3a').append(markup);
@@ -2187,7 +2194,11 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
     $(document).ready(function(){
 		
         $(".add-table4a").click(function(){
-           document.getElementById('trtable4').style.display = 'none';
+		var element = document.getElementById('trtable4');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable4').style.display = 'none';
+			}
+         
             var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table4_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table4_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table4_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table4_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table4_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table4a').append(markup);
@@ -2203,7 +2214,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
     $(document).ready(function(){
 		
         $(".add-table5a").click(function(){
-           document.getElementById('trtable5').style.display = 'none';
+           var element = document.getElementById('trtable5');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable5').style.display = 'none';
+			}
             var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table5_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table5_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table5_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table5_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table5_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table5a').append(markup);
@@ -2219,7 +2233,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
     $(document).ready(function(){
 		
         $(".add-table6a").click(function(){
-           document.getElementById('trtable6').style.display = 'none';
+           var element = document.getElementById('trtable6');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable6').style.display = 'none';
+			}
             var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table6_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table6_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table6_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table6_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table6_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table6a').append(markup);
@@ -2235,7 +2252,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
     $(document).ready(function(){
 		
         $(".add-table7a").click(function(){
-           document.getElementById('trtable7').style.display = 'none';
+           var element = document.getElementById('trtable7');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable7').style.display = 'none';
+			}
             var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table7_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table7_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table7_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table7_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table7_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table7a').append(markup);
@@ -2251,7 +2271,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
     $(document).ready(function(){
 		
         $(".add-table8a").click(function(){
-           document.getElementById('trtable8').style.display = 'none';
+           var element = document.getElementById('trtable8');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable8').style.display = 'none';
+			}
             var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table8_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table8_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table8_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table8_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table8_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table8a').append(markup);
@@ -2267,7 +2290,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
     $(document).ready(function(){
 		
         $(".add-table9a").click(function(){
-           document.getElementById('trtable9').style.display = 'none';
+           var element = document.getElementById('trtable9');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable9').style.display = 'none';
+			}
             var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table9_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table9_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table9_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table9_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table9_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table9a').append(markup);
@@ -2283,7 +2309,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
     $(document).ready(function(){
 		
         $(".add-table10a").click(function(){
-           document.getElementById('trtable10').style.display = 'none';
+          var element = document.getElementById('trtable10');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable10').style.display = 'none';
+			}
             var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table10_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table10_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table10_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table10_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table10_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table10a').append(markup);
@@ -2298,7 +2327,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
     $(document).ready(function(){
 		
         $(".add-table11a").click(function(){
-           document.getElementById('trtable11').style.display = 'none';
+           var element = document.getElementById('trtable11');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable11').style.display = 'none';
+			}
             var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table11_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table11_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table11_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table11_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table11_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table11a').append(markup);
@@ -2313,7 +2345,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
     $(document).ready(function(){
 		
         $(".add-table12a").click(function(){
-           document.getElementById('trtable12').style.display = 'none';
+           var element = document.getElementById('trtable12');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable12').style.display = 'none';
+			}
             var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table12_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table12_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table12_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table12_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table12_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table12a').append(markup);
@@ -2330,7 +2365,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 <script>
     $(document).ready(function () {
         $('#returnmonth').on('change', function () {
-            document.form2.action = '<?php echo PROJECT_URL; ?>/?page=transition_gstr2&returnmonth=<?php echo $returnmonth; ?>';
+            document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_document_summary&returnmonth=<?php echo $returnmonth; ?>';
                         document.form2.submit();
                     });
                 });
@@ -2355,7 +2390,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 <script>
     $(document).ready(function () {
         $('#returnmonth').on('change', function () {
-            document.form2.action = '<?php echo PROJECT_URL; ?>/?page=transition_gstr2&returnmonth=<?php echo $returnmonth; ?>';
+            document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_document_summary&returnmonth=<?php echo $returnmonth; ?>';
                         document.form2.submit();
                     });
                 });

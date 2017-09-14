@@ -13,7 +13,7 @@ $invoiceErrorMessage = array();
 $invoiceErrorMessageContent = '';
 $counter = 0;
 $errorcounter = 1;
-if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] == "saveUpdatePurchaseRVInvoice" && isset($_GET['ajax']) && $_GET['ajax'] == "purchase_receipt_voucher_invoice_save_update") {
+if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] == "saveUpdatePurchasePVInvoice" && isset($_GET['ajax']) && $_GET['ajax'] == "purchase_payment_voucher_invoice_save_update") {
 
 	/* get current user data */
 	$dataCurrentUserArr = $obj_purchase->getUserDetailsById( $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) );
@@ -28,12 +28,12 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 		die;
 	}
 
-	$dataArr['invoice_type'] = 'receiptvoucherinvoice';
+	$dataArr['invoice_type'] = 'paymentvoucherinvoice';
 	$dataArr['invoice_nature'] = 'purchaseinvoice';
 	$dataArr['invoice_date'] = isset($params['invoice_date']) ? $params['invoice_date'] : '';
 	$dataArr['reference_number'] = isset($params['invoice_reference_number']) ? $params['invoice_reference_number'] : '';
 	$dataArr['company_state'] = isset($params['company_state']) ? $params['company_state'] : '';
-	$dataArr['is_tax_payable'] = isset($params['tax_reverse_charge']) ? $params['tax_reverse_charge'] : '';
+	$dataArr['is_tax_payable'] = '1';
 	$dataArr['description'] = isset($params['description']) ? trim($params['description']) : '';
 
 	$supply_place = isset($params['place_of_supply']) ? $params['place_of_supply'] : '';
@@ -182,15 +182,8 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 					$invoiceItemCESSTaxAmount = ($itemCESSTax/100) * $invoiceItemTaxableAmount;
 				}
 
-				if($dataArr['is_tax_payable'] == "1") {
-
-					$invoiceItemTotalAmount = $invoiceItemTaxableAmount;
-					$invoiceTotalAmount += $invoiceItemTotalAmount;
-				} else {
-
-					$invoiceItemTotalAmount = ($invoiceItemTaxableAmount + $invoiceItemCSGTTaxAmount + $invoiceItemSGSTTaxAmount + $invoiceItemIGSTTaxAmount + $invoiceItemCESSTaxAmount);
-					$invoiceTotalAmount += $invoiceItemTotalAmount;
-				}
+				$invoiceItemTotalAmount = $invoiceItemTaxableAmount;
+				$invoiceTotalAmount += $invoiceItemTotalAmount;
 
 				$ItemArray = array(
 								"item_id" => $clientMasterItem->item_id,

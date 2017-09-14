@@ -1,7 +1,7 @@
 <?php
 $obj_gstr1 = new gstr1();
 $obj_api =  new gstr();
-
+//session_destroy();
 $dataCurrentUserArr = $obj_gstr1->getUserDetailsById( $obj_gstr1->sanitize($_SESSION['user_detail']['user_id']) );
 //$obj_gstr1->pr($dataCurrentUserArr['data']);die;
 if($dataCurrentUserArr['data']->kyc->vendor_type!='1'){
@@ -25,11 +25,7 @@ $returnmonth = '2017-07';
 if ($_REQUEST['returnmonth'] != '') {
   $returnmonth = $_REQUEST['returnmonth'];
 }
-$json = '';
-/***** Start Get Summray from DB of gstr1 *****/
-$response = $obj_api->get_user_summary('gstr1');
-/***** End Get Summray from DB of gstr1 *****/
-
+$response = '';
 if(isset($_POST['summary_type']) && $_POST['summary_type']=='Download GSTR1 Summary')
 {
     if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])) 
@@ -38,21 +34,25 @@ if(isset($_POST['summary_type']) && $_POST['summary_type']=='Download GSTR1 Summ
     } 
     else 
     {
-        $obj_gstr1->pr($_POST);
-        $obj_gstr1->pr($response);
+        //$obj_gstr1->pr($_POST);
         /***** Start GSTR1 API Call *****/
-        $json = $obj_api->returnSummary($returnmonth);
+        $callReturnSummary = $obj_api->returnSummary($returnmonth);
         /***** End GSTR1 API Call *****/
 
-        /***** Start Code Insert/update to summary *****/
-        $savedata['json'] = base64_encode(serialize($json));
-        $savedata['gst_key'] = 'gstr1';
-        $obj_api->save_user_summary($savedata);
-        /***** End Code Insert/update to summary *****/
+        if($callReturnSummary != false) {
+            /***** Start Code Insert/update to summary *****/
+            $savedata['json'] = base64_encode(serialize($callReturnSummary));
+            $obj_api->save_user_summary($savedata,'gstr1',$returnmonth);
+            /***** End Code Insert/update to summary *****/
+        }
+        
 
     }
 }
+/***** Start Get Summray from DB of gstr1 *****/
+$response = $obj_api->get_user_summary('gstr1',$returnmonth);
 
+/***** End Get Summray from DB of gstr1 *****/
 ?>
 <?php 
 
@@ -125,9 +125,10 @@ if(isset($_POST['summary_type']) && $_POST['summary_type']=='Download GSTR1 Summ
                             <input type="hidden" name="summary_type"  value="Download GSTR1 Summary"  >
                         </form>
                         <?php
-                        if(!empty($response)) { ?>
-                            <div id="display_json"></div>
-                        <?php }  ?>
+                        /*if(!empty($response)) { ?>
+                            
+                        <?php } */ ?>
+                        <div id="display_json"></div>
                         
                     </div>
                 </div>
@@ -140,8 +141,9 @@ if(isset($_POST['summary_type']) && $_POST['summary_type']=='Download GSTR1 Summ
 $obj_api->DownloadSummaryOtpPopupJs();
 ?>
 <script>
-    get_summary();
+    
     $(document).ready(function () {
+        get_summary();
         $('#returnmonth').on('change', function () {
             document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_get_summary&returnmonth=<?php echo $returnmonth; ?>';
             document.form2.submit();            

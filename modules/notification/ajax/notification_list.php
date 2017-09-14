@@ -11,6 +11,7 @@
 
 $obj_plan = new plan();
 $obj_master = new master();
+$obj_notification = new notification();
 extract($_POST);
 
 //Columns to fetch from database
@@ -144,7 +145,8 @@ foreach($rResult as $aRow) {
    
     $row[] = $temp_x;
     $row[] = utf8_decode($aRow->notification_name);
-    $row[] = utf8_decode($aRow->notification_message);
+	//$message=$obj_notification->strip_tags_content(html_entity_decode($aRow->notification_message));
+	$row[] = utf8_decode($aRow->notification_message);
     $row[] = utf8_decode($type);
     $row[] = utf8_decode($aRow->start_date);
 	$row[] = utf8_decode($aRow->end_date);

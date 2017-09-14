@@ -1358,6 +1358,21 @@ class common extends db {
         }
     }
 	
+	public function generatePurchasePVInvoiceNumber($clientId) {
+
+        $currentFinancialYear = $this->generateFinancialYear();
+        $query = "select purchase_invoice_id  from " . $this->tableNames['client_purchase_invoice'] . " where 1=1 AND invoice_type = 'paymentvoucherinvoice' AND financial_year = '" . $currentFinancialYear . "' AND added_by=" . $clientId;
+        $invoices = $this->get_results($query);
+
+        if (!empty($invoices)) {
+
+            $nextInvoice = count($invoices) + 1;
+            return "PPV-" . str_pad($nextInvoice, 12, "0", STR_PAD_LEFT);
+        } else {
+            return "PPV-000000000001";
+        }
+    }
+	
 	public function generatePurchaseRFInvoiceNumber($clientId) {
 
         $currentFinancialYear = $this->generateFinancialYear();
