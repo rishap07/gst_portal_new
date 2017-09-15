@@ -131,15 +131,15 @@
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Receipt Voucher Number <span class="starred">*</span></label>
 						<select name='receipt_voucher_number' id='receipt_voucher_number' class="required form-control">
-							<option value=''>Select Receipt Voucher</option>								
+							<option value=''>Select Receipt Voucher</option>
 							<?php $dataReceiptVoucherArrs = $obj_client->get_results("select invoice_id, serial_number, reference_number, invoice_date, supply_place, is_canceled from ".$obj_client->getTableName('client_invoice')." where status='1' and invoice_type = 'receiptvoucherinvoice' AND is_deleted='0' AND financial_year = '".$currentFinancialYear."' AND added_by = ".$obj_client->sanitize($_SESSION['user_detail']['user_id'])." order by serial_number asc"); ?>
 							<?php if(!empty($dataReceiptVoucherArrs)) { ?>
 								<?php foreach($dataReceiptVoucherArrs as $dataReceiptVoucherArr) { ?>
 
 									<?php if($invoiceData[0]->refund_voucher_receipt === $dataReceiptVoucherArr->invoice_id) { ?>
-										<option value='<?php echo $dataReceiptVoucherArr->invoice_id; ?>' data-reference="<?php echo $dataReceiptVoucherArr->reference_number; ?>" data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>" selected="selected"><?php echo $dataReceiptVoucherArr->serial_number; ?></option>
+										<option value='<?php echo $dataReceiptVoucherArr->invoice_id; ?>' data-serial="<?php echo $dataReceiptVoucherArr->serial_number; ?>" data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>" selected="selected"><?php echo $dataReceiptVoucherArr->reference_number; ?></option>
 									<?php } else { ?>
-										<option value='<?php echo $dataReceiptVoucherArr->invoice_id; ?>' data-reference="<?php echo $dataReceiptVoucherArr->reference_number; ?>" data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>"><?php echo $dataReceiptVoucherArr->serial_number; ?></option>
+										<option value='<?php echo $dataReceiptVoucherArr->invoice_id; ?>' data-serial="<?php echo $dataReceiptVoucherArr->serial_number; ?>" data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>"><?php echo $dataReceiptVoucherArr->reference_number; ?></option>
 									<?php } ?>
 
 								<?php } ?>

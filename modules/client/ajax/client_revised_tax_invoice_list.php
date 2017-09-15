@@ -52,7 +52,11 @@ if (isset($_POST['iSortCol_0'])) {
  * on very large tables, and MySQL's regex functionality is very limited
 */
 
-$uWhere = " where ci.invoice_type IN('revisedtaxinvoice','creditnote','debitnote') AND ci.is_deleted='0' AND ci.added_by='".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."' ";
+if(isset($_GET['invoiceDate']) && strtoupper($_GET['invoiceDate']) != "ALL") {
+	$uWhere = " where ci.invoice_type IN('revisedtaxinvoice','creditnote','debitnote') AND ci.is_deleted='0' AND ci.added_by='".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."' AND DATE_FORMAT(invoice_date, '%Y-%m') = '".$_GET['invoiceDate']."' ";
+} else {
+	$uWhere = " where ci.invoice_type IN('revisedtaxinvoice','creditnote','debitnote') AND ci.is_deleted='0' AND ci.added_by='".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."' ";
+}
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
 
     $uWhere .= 'AND (';
@@ -123,8 +127,8 @@ if(isset($rResult) && !empty($rResult)) {
             $cancelLink = '<a class="revokeSalesInvoice" data-invoice-id="'.$aRow->invoice_id.'" href="javascript:void(0)">Revoke</a>';
         }
 
-		$row[]= '<tr><td valign="top"><input name="sales_invoice[]" value="'.$aRow->invoice_id.'" class="salesInvoice" type="checkbox"></td></td>';
-		$row[] = '<td><div class="list-primary pull-left"><div class="name"><a href="'.PROJECT_URL.'/?page=client_revised_tax_invoice_list&action=viewRTInvoice&id='.$aRow->invoice_id.'">'.$aRow->billing_name.'</a></div><a href="'.PROJECT_URL.'/?page=client_revised_tax_invoice_list&action=viewRTInvoice&id='.$aRow->invoice_id.'">'.$aRow->serial_number.'</a> | ' . $aRow->invoice_date . '</div><span class="pull-right"><div class="amount"><i class="fa fa-inr" aria-hidden="true"></i>'.$aRow->invoice_total_value.'</div><div class="greylinktext"><a href="'.PROJECT_URL.'/?page=client_update_revised_tax_invoice&action=editRTInvoice&id='.$aRow->invoice_id.'">Edit</a>&nbsp;&nbsp;'.$cancelLink.'</div></span></td></tr>';
+		$row[] = '<tr><td valign="top"><input name="sales_invoice[]" value="'.$aRow->invoice_id.'" class="salesInvoice" type="checkbox"></td></td>';
+		$row[] = '<td><div class="list-primary pull-left"><div class="name"><a href="'.PROJECT_URL.'/?page=client_revised_tax_invoice_list&action=viewRTInvoice&id='.$aRow->invoice_id.'">'.$aRow->billing_name.'</a></div><a href="'.PROJECT_URL.'/?page=client_revised_tax_invoice_list&action=viewRTInvoice&id='.$aRow->invoice_id.'">'.$aRow->reference_number.'</a> | ' . $aRow->invoice_date . '</div><span class="pull-right"><div class="amount"><i class="fa fa-inr" aria-hidden="true"></i>'.$aRow->invoice_total_value.'</div><div class="greylinktext"><a href="'.PROJECT_URL.'/?page=client_update_revised_tax_invoice&action=editRTInvoice&id='.$aRow->invoice_id.'">Edit</a>&nbsp;&nbsp;'.$cancelLink.'</div></span></td></tr>';
 
 		$output['aaData'][] = $row;
         $temp_x++;

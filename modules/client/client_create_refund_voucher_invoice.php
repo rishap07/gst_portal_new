@@ -99,7 +99,7 @@
 							<?php $dataReceiptVoucherArrs = $obj_client->get_results("select invoice_id, serial_number, reference_number, invoice_date, supply_place, is_canceled from ".$obj_client->getTableName('client_invoice')." where status='1' and invoice_type = 'receiptvoucherinvoice' AND is_deleted='0' AND financial_year = '".$currentFinancialYear."' AND added_by = ".$obj_client->sanitize($_SESSION['user_detail']['user_id'])." order by serial_number asc"); ?>
 							<?php if(!empty($dataReceiptVoucherArrs)) { ?>
 								<?php foreach($dataReceiptVoucherArrs as $dataReceiptVoucherArr) { ?>
-									<option value='<?php echo $dataReceiptVoucherArr->invoice_id; ?>' data-reference="<?php echo $dataReceiptVoucherArr->reference_number; ?>" data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>"><?php echo $dataReceiptVoucherArr->serial_number; ?></option>
+									<option value='<?php echo $dataReceiptVoucherArr->invoice_id; ?>' data-serial="<?php echo $dataReceiptVoucherArr->serial_number; ?>" data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>"><?php echo $dataReceiptVoucherArr->reference_number; ?></option>
 								<?php } ?>
 							<?php } ?>
 						</select>

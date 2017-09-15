@@ -129,7 +129,7 @@ foreach($rResult as $aRow) {
     $row[] = utf8_decode($aRow->notification_name);
    // $row[] = utf8_decode(html_entity_decode(mb_substr($aRow->notification_message, 0, 100).$readmore));
     $message=$obj_notification->strip_tags_content(html_entity_decode($aRow->notification_message));
-	$readmore='<a href="'.PROJECT_URL.'/?page=notification_view&id='.$aRow->notification_id.'" class="iconedit hint--bottom" data-hint="Edit" >&nbsp&nbspRead more</a>';
+	$readmore='<a href="'.PROJECT_URL.'/?page=notification_view&id='.$aRow->notification_id.'" class="iconedit hint--bottom" data-hint="Edit" >Read more</a>';
     $row[] = utf8_decode(html_entity_decode(implode(' ', array_slice(str_word_count($message, 2), 0,20)).$readmore));
   
     $output['aaData'][] = $row;

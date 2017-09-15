@@ -10,20 +10,16 @@ if((isset($_POST['submit']) && $_POST['submit']=='Download GSTR1')||(isset($_POS
     else 
     {
         $ids = '';
+        $type = '';
+        $invoice_type = isset($_REQUEST['type'])?$_REQUEST['type']:'';
         
         if(isset($_POST['name']))
         {
             $ids = implode(',',  $_POST['name']);
+            $type = 'all';
         }
-        if(!empty($ids)) {
-            if ($obj_gstr1->gstr1PayloadDownload($ids,'all')) 
-            {
-            } 
-        }
-        else {
-            if ($obj_gstr1->gstr1PayloadDownload()) 
-            {
-            }
+        if ($obj_gstr1->gstr1PayloadDownload($ids,$type,$invoice_type)) 
+        {
         }
         
     }

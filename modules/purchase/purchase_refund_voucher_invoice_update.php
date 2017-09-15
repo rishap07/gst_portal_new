@@ -137,9 +137,9 @@
 								<?php foreach($dataReceiptVoucherArrs as $dataReceiptVoucherArr) { ?>
 
 									<?php if($invoiceData[0]->refund_voucher_receipt === $dataReceiptVoucherArr->purchase_invoice_id) { ?>
-										<option value='<?php echo $dataReceiptVoucherArr->purchase_invoice_id; ?>' data-reference="<?php echo $dataReceiptVoucherArr->reference_number; ?>" data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>" selected="selected"><?php echo $dataReceiptVoucherArr->serial_number; ?></option>
+										<option value='<?php echo $dataReceiptVoucherArr->purchase_invoice_id; ?>' data-serial="<?php echo $dataReceiptVoucherArr->serial_number; ?>" data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>" selected="selected"><?php echo $dataReceiptVoucherArr->reference_number; ?></option>
 									<?php } else { ?>
-										<option value='<?php echo $dataReceiptVoucherArr->purchase_invoice_id; ?>' data-reference="<?php echo $dataReceiptVoucherArr->reference_number; ?>" data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>"><?php echo $dataReceiptVoucherArr->serial_number; ?></option>
+										<option value='<?php echo $dataReceiptVoucherArr->purchase_invoice_id; ?>' data-serial="<?php echo $dataReceiptVoucherArr->serial_number; ?>" data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>"><?php echo $dataReceiptVoucherArr->reference_number; ?></option>
 									<?php } ?>
 
 								<?php } ?>

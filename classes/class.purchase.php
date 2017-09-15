@@ -377,6 +377,10 @@ final class purchase extends validation {
         if (array_key_exists("item_hsncode", $dataArr)) {
             $rules['item_hsncode'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Item HSN Code';
         }
+		
+		if (array_key_exists("item_description", $dataArr)) {
+            $rules['item_description'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Item Description';
+        }
 
 		if (array_key_exists("item_quantity", $dataArr)) {
 			$rules['item_quantity'] = 'required||numeric||decimal|#|lable_name:Item Quantity';

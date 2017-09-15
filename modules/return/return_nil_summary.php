@@ -7,7 +7,7 @@ $returnmonth = date('Y-m');
 
 if (isset($_POST['returnmonth'])) {
     $returnmonth = $_POST['returnmonth'];
-    $obj_transition->redirect(PROJECT_URL . "/?page=return_hsnwise_summary&returnmonth=" . $returnmonth);
+    $obj_transition->redirect(PROJECT_URL . "/?page=return_nil_summary&returnmonth=" . $returnmonth);
     exit();
 }
 $returnmonth = date('Y-m');
@@ -23,32 +23,112 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
     if ($flag == 'notverify') {
         
     } else {
-        if ($obj_gstr2->saveGstr1HsnSummary()) {
+        if ($obj_gstr2->saveGstr1nilexemptSummary()) {
             //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
         }
     }
 }
 
-
-$hsn = '';
-$description = '';
-$unit = '';
-$qty = '';
-$taxable_subtotal = '';
-$invoice_total_value = '';
-$igst = '';
-$cgst = '';
-$sgst = '';
-$cess = '';
-
 $autoflag = 0;
+$intra_reg_nil_amt1='';
+	$intra_unreg_nil_amt2='';
+	$inter_reg_nil_amt3='';
+	$inter_unreg_nil_amt4='';
+	$intra_reg_expt_amt1='';
+	$intra_unreg_expt_amt2='';
+	$inter_reg_expt_amt3='';
+	$inter_unreg_expt_amt4='';
+	$intra_reg_ngsup_amt1='';
+	$intra_unreg_ngsup_amt2='';
+	$inter_reg_ngsup_amt3='';
+	$inter_unreg_ngsup_amt4='';
 if (isset($_POST['autoname']) && $_POST['autoname'] == 1) {
-    $returndata1 = $db_obj->getHSNInvoices($_SESSION["user_detail"]["user_id"], $returnmonth);
-    $autoflag = 1;
+   $obj_gstr1 = new gstr1();
+	$nil_data = $obj_gstr1->getNilFinalArray($_SESSION["user_detail"]["user_id"],$returnmonth);
+	//$obj_gstr1->pr($nil_data);
+	
+    $autoflag=1;
+	for($i=0;$i<sizeof($nil_data);$i++)
+	{
+		if(isset($nil_data[$i]['sply_ty']) && $i==0 && ($nil_data[$i]['sply_ty']=='INTERB2B'))
+		{
+			
+		$inter_reg_nil_amt1 =!empty($nil_data[$i]['nil_amt'])?$nil_data[$i]['nil_amt']:'';
+		$inter_reg_ngsup_amt1 =!empty($nil_data[$i]['ngsup_amt'])?$nil_data[$i]['ngsup_amt']:'';
+		$inter_reg_expt_amt1 =!empty($nil_data[$i]['expt_amt'])?$nil_data[$i]['expt_amt']:'';
+		
+		}
+		if(isset($nil_data[$i]['sply_ty']) && $i==1 && $nil_data[$i]['sply_ty']=='INTRAB2B')
+		{
+		$intra_reg_nil_amt2 =!empty($nil_data[$i]['nil_amt'])?$nil_data[$i]['nil_amt']:'';
+		$intra_reg_ngsup_amt2 =!empty($nil_data[$i]['ngsup_amt'])?$nil_data[$i]['ngsup_amt']:'';
+		$intra_reg_expt_amt2 =!empty($nil_data[$i]['expt_amt'])?$nil_data[$i]['expt_amt']:'';
+		
+		
+		}
+		if(isset($nil_data[$i]['sply_ty']) && $i==2 && $nil_data[$i]['sply_ty']=='INTERB2C')
+		{
+		$inter_unreg_nil_amt3 =!empty($nil_data[$i]['nil_amt'])?$nil_data[$i]['nil_amt']:'';
+		$inter_unreg_ngsup_amt3 =!empty($nil_data[$i]['ngsup_amt'])?$nil_data[$i]['ngsup_amt']:'';
+		$inter_unreg_expt_amt3 =!empty($nil_data[$i]['expt_amt'])?$nil_data[$i]['expt_amt']:'';
+			
+		
+		}
+		if(isset($nil_data[$i]['sply_ty']) && $i==3 && $nil_data[$i]['sply_ty']=='INTRAB2C')
+		{
+		$intra_unreg_nil_amt4 =!empty($nil_data[$i]['nil_amt'])?$nil_data[$i]['nil_amt']:'';
+		$intra_unreg_ngsup_amt4 =!empty($nil_data[$i]['ngsup_amt'])?$nil_data[$i]['ngsup_amt']:'';
+		$intra_unreg_expt_amt4 =!empty($nil_data[$i]['expt_amt'])?$nil_data[$i]['expt_amt']:'';
+		
+		}
+		
+	}
 }
 else {
-    $sql = "select  * from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0' and type='gstr1hsn' order by id desc limit 0,1";
+    $sql = "select  *,count(id) as totalinvoice from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0' and type='gstr1nil'  order by id desc limit 0,1";
     $returndata1 = $obj_transition->get_results($sql);
+	$arr = $returndata1[0]->return_data;
+    $arr1= base64_decode($arr);
+	
+	$nil_data = json_decode($arr1);
+	//$obj_transition->pr($nil_data);
+	for($i=0;$i<sizeof($nil_data);$i++)
+	{
+		if(isset($nil_data[$i]->sply_ty) && $i==0 && ($nil_data[$i]->sply_ty=='INTERB2B'))
+		{
+	    
+		$inter_reg_nil_amt1 =$nil_data[$i]->nil_amt;
+		$inter_reg_ngsup_amt1 =$nil_data[$i]->ngsup_amt;
+		$inter_reg_expt_amt1 =$nil_data[$i]->expt_amt;
+		
+		}
+		if(isset($nil_data[$i]->sply_ty) && $i==1 && ($nil_data[$i]->sply_ty=='INTRAB2B'))
+		{
+		
+		$intra_reg_nil_amt2 =$nil_data[$i]->nil_amt;
+		$intra_reg_ngsup_amt2 =$nil_data[$i]->ngsup_amt;
+		$intra_reg_expt_amt2 =$nil_data[$i]->expt_amt;
+		
+		}
+		if(isset($nil_data[$i]->sply_ty) && $i==2 && ($nil_data[$i]->sply_ty=='INTERB2C'))
+		{
+		
+		
+		$inter_unreg_nil_amt3 =$nil_data[$i]->nil_amt;
+		$inter_unreg_ngsup_amt3 =$nil_data[$i]->ngsup_amt;
+		$inter_unreg_expt_amt3 =$nil_data[$i]->expt_amt;
+			
+		}
+		if(isset($nil_data[$i]->sply_ty) && $i==3 && ($nil_data[$i]->sply_ty=='INTRAB2C'))
+		{
+		
+		
+		$intra_unreg_nil_amt4 =$nil_data[$i]->nil_amt;
+		$intra_unreg_ngsup_amt4 =$nil_data[$i]->ngsup_amt;
+		$intra_unreg_expt_amt4 =$nil_data[$i]->expt_amt;
+		}
+		
+	}
 }
 
 ?>
@@ -121,156 +201,82 @@ if (!empty($dataRes)) {
             </div>
                    
             <form method="post" enctype="multipart/form-data" id='form'> 
-                <div class="greyheading">1.HSN-wise summary of outward supplies</div>
+                <div class="greyheading">1.Nil rated, exempted and Non-GST supplies</div>
                 <div class="tableresponsive">
                     <form method="post" enctype="multipart/form-data" id='form'>
                         <table  class="table  tablecontent tablecontent2 bordernone" id='table1a'>
                             <thead>
                                 <tr>
                                     <th>HSN</th>
-                                    <th>Description</th>
-                                    <th>Unit</th>
-                                    <th>TotalQty</th>
-									<th>TaxableValue(<i class="fa fa-inr"></i>)</th>
-                                    <th>TotalValue(<i class="fa fa-inr"></i>)</th>
-                                    <th>IGST Amount(<i class="fa fa-inr"></i>)</th>
-                                    <th>CGST Amount(<i class="fa fa-inr"></i>)</th>
-                                    <th>SGST Amount(<i class="fa fa-inr"></i>)</th>
-                                    <th>CESS Amount(<i class="fa fa-inr"></i>)</th>
+                                    <th>Nil Rated Supplies (<i class="fa fa-inr"></i>)</th>
+                                    <th>Exempted(Other Than Nil Rated/Non-GST Supply)(<i class="fa fa-inr"></i>)</th>
+                                    <th>Non-GST Supplies (<i class="fa fa-inr"></i>)</th>
+                                   
                                 </tr>
                             </thead>
 
                             <tbody>
-<?php
 
-if (!empty($returndata1)) {
-	if($autoflag!=1)
-	{
-	$arr = $returndata1[0]->return_data;
-    $arr1= base64_decode($arr);
-	$summary_arr = json_decode($arr1);	
-				
-    foreach ($summary_arr as $data) {
-        ?>
-  
-                                        
-                     <tr>
+                               <tr>    
+                                        <td class="lftheading">
+                                              Inter-state supplies to registered person</td>                                          </td>
                                            <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='hsn[]' value="<?php  echo (isset($data->hsn)) ? $data->hsn : '' ?>"/>
+                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='inter_reg_nil_amt' value="<?php  echo (isset($inter_reg_nil_amt1)) ? $inter_reg_nil_amt1 : '' ?>"/>
                                             </td>
                                             <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='description[]' value="<?php  echo (isset($data->description)) ? $data->description : '' ?>"/></td>
-                                            <td><select  name="unit[]"   id='unit' class="required form-control">
-							<?php $dataSupplyStateArrs = $obj_transition->get_results("select * from ".$obj_transition->getTableName('unit')." where status='1' and is_deleted='0' order by unit_name asc"); ?>
-							<?php if(!empty($dataSupplyStateArrs)) { ?>
-								<option value=''>Select unit</option>
-								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
-								<option value='<?php echo $dataSupplyStateArr->unit_code; ?>' <?php
-                                    
-										
-										if($dataSupplyStateArr->unit_code==$data->unit)
-										{
-                                        echo "selected='selected'";
-                                        }
-									
-                                    ?>><?php echo $dataSupplyStateArr->unit_name; ?></option>
-								<?php } ?>
-							<?php } ?>
-						</select>  
+                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='inter_reg_expt_amt' value="<?php  echo (isset($inter_reg_expt_amt1)) ? $inter_reg_expt_amt1 : '' ?>"/>
                                             </td>
                                             <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='qty[]' value="<?php  echo (isset($data->qty)) ? $data->qty : '' ?>"/>
+                                                <input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='inter_reg_ngsup_amt' value="<?php  echo (isset($inter_reg_ngsup_amt1)) ? $inter_reg_ngsup_amt1 : '' ?>"/>
+                                            </td>
+                                  </tr>
+                                   <tr>    
+                                        <td class="lftheading">
+                                              Intra-state supplies to registered person</td>                                          </td>
+                                           <td>
+                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='intra_reg_nil_amt' value="<?php  echo (isset($intra_reg_nil_amt2)) ? $intra_reg_nil_amt2 : '' ?>"/>
                                             </td>
                                             <td>
-                                                <input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='taxable_subtotal[]' value="<?php  echo (isset($data->taxable_subtotal)) ? $data->taxable_subtotal : '' ?>"/>
+                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='intra_reg_expt_amt' value="<?php  echo (isset($intra_reg_expt_amt2)) ? $intra_reg_expt_amt2 : '' ?>"/>
                                             </td>
                                             <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='invoice_total_value[]' value="<?php  echo (isset($data->invoice_total_value)) ? $data->invoice_total_value : '' ?>"/>
+                                                <input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='intra_reg_ngsup_amt' value="<?php  echo (isset($intra_reg_ngsup_amt2)) ? $intra_reg_ngsup_amt2 : '' ?>"/>
+                                            </td>
+                                  </tr>
+								    
+								 
+								  <tr>    
+                                        <td class="lftheading">
+                                              Inter-state supplies to unregistered person</td>                                          </td>
+                                           <td>
+                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='inter_unreg_nil_amt' value="<?php  echo (isset($inter_unreg_nil_amt3)) ? $inter_unreg_nil_amt3 : '' ?>"/>
                                             </td>
                                             <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='igst[]' value="<?php  echo (isset($data->igst)) ? $data->igst : '' ?>"/>
+                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='inter_unreg_expt_amt' value="<?php  echo (isset($inter_unreg_expt_amt3)) ? $inter_unreg_expt_amt3 : '' ?>"/>
                                             </td>
                                             <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='cgst[]' value="<?php  echo (isset($data->cgst)) ? $data->cgst : '' ?>"/>
+                                                <input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='inter_unreg_ngsup_amt' value="<?php  echo (isset($inter_unreg_ngsup_amt3)) ? $inter_unreg_ngsup_amt3 : '' ?>"/>
+                                            </td>
+                               </tr> 
+							   <tr>    
+                                        <td class="lftheading">
+                                              Intra-state supplies to unregistered person</td>                                          </td>
+                                           <td>
+                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='intra_unreg_nil_amt' value="<?php  echo (isset($intra_unreg_nil_amt4)) ? $intra_unreg_nil_amt4 : '' ?>"/>
                                             </td>
                                             <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='sgst[]' value="<?php  echo (isset($data->sgst)) ? $data->sgst : '' ?>"/>
+                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='intra_unreg_expt_amt' value="<?php  echo (isset($intra_unreg_expt_amt4)) ? $intra_unreg_expt_amt4 : '' ?>"/>
                                             </td>
                                             <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='cess[]' value="<?php  echo (isset($data->cess)) ? $data->cess : '' ?>"/>
+                                                <input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='intra_unreg_ngsup_amt' value="<?php  echo (isset($intra_unreg_ngsup_amt4)) ? $intra_unreg_ngsup_amt4 : '' ?>"/>
                                             </td>
-                                            <td>
-                                                <a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a>
-                                            </td>
-                                        </tr>
-                                        <?php
-                                    }
-                                   
-	   }
-	   else
-	   {
-		   foreach ($returndata1 as $data) {
-        ?>
-  
-                                        
-                     <tr>
-                       <td>
-                       <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='hsn[]' value="<?php  echo (isset($data->item_hsncode)) ? $data->item_hsncode : '' ?>"/>
-                                            </td>
-                                            <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='description[]' value="<?php  echo (isset($data->item_hsncode)) ? $data->item_hsncode.'_'.$data->item_unit : '' ?>"/></td>
-                                            <td><select  name="unit[]"   id='unit' class="required form-control">
-							<?php $dataSupplyStateArrs = $obj_transition->get_results("select * from ".$obj_transition->getTableName('unit')." where status='1' and is_deleted='0' order by unit_name asc"); ?>
-							<?php if(!empty($dataSupplyStateArrs)) { ?>
-								<option value=''>Select unit</option>
-								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
-								<option value='<?php echo $dataSupplyStateArr->unit_code; ?>' <?php
-                                    
-										
-										if($dataSupplyStateArr->unit_code==$data->item_unit)
-										{
-                                        echo "selected='selected'";
-                                        }
-									
-                                    ?>><?php echo $dataSupplyStateArr->unit_name; ?></option>
-								<?php } ?>
-							<?php } ?>
-						</select>  
-                                            </td>
-                                            <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='qty[]' value="<?php  echo (isset($data->item_quantity)) ? $data->item_quantity : '' ?>"/>
-                                            </td>
-                                            <td>
-                                                <input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='taxable_subtotal[]' value="<?php  echo (isset($data->taxable_subtotal)) ? $data->taxable_subtotal : '' ?>"/>
-                                            </td>
-                                            <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='invoice_total_value[]' value="<?php  echo (isset($data->invoice_total_value)) ? $data->invoice_total_value : '' ?>"/>
-                                            </td>
-                                            <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='igst[]' value="<?php  echo (isset($data->igst_amount)) ? $data->igst_amount : '' ?>"/>
-                                            </td>
-                                            <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='cgst[]' value="<?php  echo (isset($data->cgst_amount)) ? $data->cgst_amount : '' ?>"/>
-                                            </td>
-                                            <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='sgst[]' value="<?php  echo (isset($data->sgst_amount)) ? $data->sgst_amount : '' ?>"/>
-                                            </td>
-                                            <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='cess[]' value="<?php  echo (isset($data->cess_amount)) ? $data->cess_amount : '' ?>"/>
-                                            </td>
-                                            <td>
-                                                <a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a>
-                                            </td>
-                                        </tr>
-                                        <?php
-                                    }
-	   }
-   } 
-                            ?>
+                                  </tr>
+				  				  
+                                      
+                    
                             </tbody>
                         </table>
-                        <input type="button" value="Add New Row" class="btn btn-success add-table1a"  href="javascript:void(0)">
-
+                        
                         </div>                						
 
 
@@ -338,7 +344,7 @@ if (!empty($returndata1)) {
 <script>
     $(document).ready(function () {
         $('#returnmonth').on('change', function () {
-            document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_hsnwise_summary&returnmonth=<?php echo $returnmonth; ?>';
+            document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_nil_summary&returnmonth=<?php echo $returnmonth; ?>';
                         document.form2.submit();
                     });
                 });
@@ -347,7 +353,7 @@ if (!empty($returndata1)) {
 <script>
     $(document).ready(function () {
         $('#returnmonth').on('change', function () {
-            document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_hsnwise_summary&returnmonth=<?php echo $returnmonth; ?>';
+            document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_nil_summary&returnmonth=<?php echo $returnmonth; ?>';
                         document.form2.submit();
                     });
                 });
@@ -482,13 +488,13 @@ if (!empty($returndata1)) {
         $("#btnConfirm").on("click", function () {
             ezBSAlert({
                 type: "confirm",
-                messageText: "Auto-compute for HSN summary is based only on Invoices data.<br><br>Your current data for this section will be erased and it will be reset based on summary computed from Invoice level data.",
+                messageText: "Auto-compute for Nil rated, exempted and Non-GST supplies is based only on Invoices data.<br><br>Your current data for this section will be erased and it will be reset based on summary computed from Invoice level data.",
                 alertType: "danger"
             }).done(function (e) {
                 //$("body").append('<div>Callback from confirm ' + e + '</div>');
                 if (e == true)
                 {
-                    document.auto.action = '<?php echo PROJECT_URL; ?>/?page=return_hsnwise_summary&returnmonth=<?php echo $returnmonth; ?>';
+                    document.auto.action = '<?php echo PROJECT_URL; ?>/?page=return_nil_summary&returnmonth=<?php echo $returnmonth; ?>';
                                         document.auto.submit();
                                     }
                                 });

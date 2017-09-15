@@ -18,6 +18,7 @@ if (isset($_POST['returnmonth']))
     $obj_gstr1->redirect(PROJECT_URL . "/?page=return_upload_invoices&returnmonth=" . $returnmonth);
     exit();
 }
+
 if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
 {
     if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])) 
@@ -26,6 +27,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
     } 
     else 
     {
+        $obj_gstr1->pr($_REQUEST);
         if ($obj_gstr1->gstr1Upload()) 
         {
         }
@@ -112,9 +114,9 @@ if ($_REQUEST['returnmonth'] != '') {
                             ?>
                             <div class="col-md-12 col-sm-12 col-xs-12 text-center">
                                 
-								<!-- <form method="post" style="width:auto; display: inline-block;" id="UploadForm">
-                                   <input id="otpModalBoxBtn" type="submit" name="submit" value="Upload TO GSTN" class="btn btn-default btn-success btnwidth" data-toggle="modal" data-target="#otpModalBox">
-                                </form> -->
+								<form method="post" style="width:auto; display: inline-block;" id="UploadForm" name="form4">
+                                    <input type="submit" name="submit" id="uploadBtn" value="Upload TO GSTN" class="btn btn-default btn-success btnwidth" >
+                                </form>
 								
                                 <form style="width:auto; display: inline-block;margin-bottom:10px;" method="post" action ="<?php echo PROJECT_URL.'/?ajax=return_gstr_payload';?>&returnmonth=<?php echo $returnmonth; ?>">
                                     <input type="submit" name="submit" value="Download GSTR1" class="btn btn-default btn-warning btnwidth">
@@ -230,11 +232,11 @@ if ($_REQUEST['returnmonth'] != '') {
                                                     {
                                                         $b2csCount++;
                                                         $b2cs_sumTotal +=$tempTotVal;
-                                                        $b2cl_invoice_total_value +=$tempInvTot;
+                                                        $b2cs_invoice_total_value +=$tempInvTot;
                                                     }
-                                                    $b2cs_invoice_total_value = isset($b2csDatavalue->taxable_subtotal)?$b2csDatavalue->taxable_subtotal:0;
+                                                    $tempInvTot = isset($b2csDatavalue->taxable_subtotal)?$b2csDatavalue->taxable_subtotal:0;
                                                     $b2cs_total += $b2csDatavalue->cgst_amount + $b2csDatavalue->sgst_amount + $b2csDatavalue->igst_amount + $b2csDatavalue->cess_amount;
-                                                    $b2cs_sumTotal =isset($b2csDatavalue->invoice_total_value)?$b2csDatavalue->invoice_total_value:0;
+                                                    $tempTotVal =isset($b2csDatavalue->invoice_total_value)?$b2csDatavalue->invoice_total_value:0;
                                                     $tempInv=$b2csDatavalue->invoice_id;
                                                 }
                                                 if($tempInv!='')
@@ -458,7 +460,9 @@ if ($_REQUEST['returnmonth'] != '') {
         </div>
     </div>
 </div>
-
+<?php $obj_gstr = new gstr();
+$obj_gstr->allUploadOtpPopupJs();
+?>
 <script>
     $(document).ready(function () {
         $('#returnmonth').on('change', function () {

@@ -112,13 +112,23 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
 				<div class="fixed-left-col col-sm-12 col-xs-12" style="padding-right:0px; padding-left:0px;">
 
                     <div class="invoiceheaderfixed">
-                        <div class="col-md-8">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="padding-right:5px;padding-left:10px;">
                             <a href='javascript:void(0)' class="btn btn-warning pull-left checkAll">Check All</a>
                             <a href='javascript:void(0)' class="btn btn-danger pull-left cancelAll" data-toggle="tooltip" title="Cancel All"><i class="fa fa-times" aria-hidden="true"></i></a>
 							<a href='javascript:void(0)' class="btn btn-success pull-left revokeAll" data-toggle="tooltip" title="Revoke All"><i class="fa fa-undo" aria-hidden="true"></i></a>
                         </div>
+						
+						<?php $invoiceMonthYear = $obj_client->getInvoiceMonthList($obj_client->getTableName('client_invoice'), "'billofsupplyinvoice'"); ?>
+						<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="padding-right:5px;padding-left:5px;">
+							<select name="invoiceDateOption" id="invoiceDateOption" class="date-dropdown">
+								<option value="all">All</option>
+								<?php foreach($invoiceMonthYear as $monthYear) { ?>
+									<option value="<?php echo $monthYear->invoiceDate; ?>"><?php echo date("M-y", strtotime($monthYear->invoiceDate)); ?></option>
+								<?php } ?>
+							</select>
+						</div>
 
-                        <div class="col-md-4">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="padding-right:10px;padding-left:5px;">
                             <a href='<?php echo PROJECT_URL; ?>/?page=client_create_bill_of_supply_invoice' class="btn btn-success pull-right"><i class="fa fa-plus" aria-hidden="true"></i> New</a>
                         </div>
                     </div>
@@ -493,6 +503,10 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
         });
 
         TableManaged.init();
+		
+		$("#invoiceDateOption").change(function(){
+			TableManaged.init();
+		});
     });
 
 	var TableManaged = function () {
@@ -520,7 +534,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                     "bDestroy": true,
                     "searching": false,
                     "bLengthChange": false,
-                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=client_bill_of_supply_invoice_list",
+                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=client_bill_of_supply_invoice_list&invoiceDate=" + $("#invoiceDateOption option:selected").val(),
                     "fnServerParams": function (aoData) {
                     },
                     "iDisplayLength": 6

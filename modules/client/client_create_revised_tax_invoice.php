@@ -112,10 +112,10 @@
 						<label>Corresponding Document Number <span class="starred">*</span></label>
 						<select name='corresponding_document_number' id='corresponding_document_number' class="form-control required">
 							<option value=''>Select Document Number</option>
-							<?php $dataDocumentNumberArrs = $obj_client->get_results("select invoice_id, serial_number, invoice_date, supply_place, is_canceled from ".$obj_client->getTableName('client_invoice')." where 1=1 AND invoice_type = 'taxinvoice' AND is_canceled='0' AND status='1' AND is_deleted='0' AND financial_year = '".$currentFinancialYear."' AND added_by = ".$obj_client->sanitize($_SESSION['user_detail']['user_id'])." order by serial_number ASC"); ?>
+							<?php $dataDocumentNumberArrs = $obj_client->get_results("select invoice_id, serial_number, reference_number, invoice_date, supply_place, is_canceled from ".$obj_client->getTableName('client_invoice')." where 1=1 AND invoice_type = 'taxinvoice' AND is_canceled='0' AND status='1' AND is_deleted='0' AND financial_year = '".$currentFinancialYear."' AND added_by = ".$obj_client->sanitize($_SESSION['user_detail']['user_id'])." order by serial_number ASC"); ?>
 							<?php if(!empty($dataDocumentNumberArrs)) { ?>
 								<?php foreach($dataDocumentNumberArrs as $dataDocumentNumberArr) { ?>
-									<option value='<?php echo $dataDocumentNumberArr->invoice_id; ?>' data-date="<?php echo $dataDocumentNumberArr->invoice_date; ?>"><?php echo $dataDocumentNumberArr->serial_number; ?></option>
+									<option value='<?php echo $dataDocumentNumberArr->invoice_id; ?>' data-date="<?php echo $dataDocumentNumberArr->invoice_date; ?>"><?php echo $dataDocumentNumberArr->reference_number; ?></option>
 								<?php } ?>
 							<?php } ?>
 						</select>

@@ -33,73 +33,21 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
     }
   }
 }
-if(isset($_POST['finalsubmit']) && $_POST['finalsubmit']=='final submit') {
- 
-  $flag = $obj_transition->checkVerifyUser();
-  if($flag=='notverify')
-{
-						  
-} else{
- 				  
-    if($obj_transition->finalSaveGstrTransition2()){
-        //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
-    }
-}
-}
-if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['id'])) {
 
-    
-    $htmlResponse = $obj_transition->generategst_transitionForm2Html($_GET['id'],$_GET['returnmonth']);
 
-    if ($htmlResponse === false) {
-
-        $obj_transition->setError("No Transition form found.");
-        $obj_transition->redirect(PROJECT_URL . "?page=client_invoice_list");
-        exit();
-    }
-
-    $obj_mpdf = new mPDF();
-    $obj_mpdf->SetHeader('Tax Invoice');
-    $obj_mpdf->WriteHTML($htmlResponse);
-
-    
-}
-if (isset($_GET['action']) && $_GET['action'] == 'emailInvoice' && isset($_GET['id'])) {
-
-    $htmlResponse = $obj_transition->generategst_transitionHtml($_GET['id'],$_GET['returnmonth']);
-    
-    
-   
-}
-if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GET['id'])) {
-
-    $htmlResponse = $obj_transition->generategst_transitionHtml($_GET['id'],$_GET['returnmonth']);
-    if ($htmlResponse === false) {
-
-        $obj_transition->setError("No Transition form found.");
-        $obj_transition->redirect(PROJECT_URL . "?page=trasition_gstr");
-        exit();
-    }
-
-    $obj_mpdf = new mPDF();
-    $obj_mpdf->SetHeader('GST-Transition');
-    $obj_mpdf->WriteHTML($htmlResponse);
-
-  
-}
 
 
        
 	  // $sql = "select  *,count(return_id) as totalinvoice from ".TAB_PREFIX."client_return_gstr3b where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by return_id desc limit 0,1";
-       $sql = "select  *,count(id) as totalinvoice from gst_gstr1_document_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
+       $sql = "select  *,count(id) as totalinvoice from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0' and type='gstr1document'  order by id desc limit 0,1";
        $returndata = $obj_transition->get_results($sql);
-	   $sql = "select  *,count(id) as totalinvoice from gst_gstr1_document_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
+	   $sql = "select  *,count(id) as totalinvoice from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0' and type='gstr1document'  order by id desc limit 0,1";
        $returndata1 = $obj_transition->get_results($sql);
 	   
 	   
 		if($returndata1[0]->totalinvoice > 0)
 		{
-		$arr = $returndata1[0]->gstr1_summary_data;
+		$arr = $returndata1[0]->return_data;
 		$arr1= base64_decode($arr);
 		$summary_arr = json_decode($arr1);	
 		$table1_srno_from='';
@@ -233,55 +181,16 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 	   ?>
       <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
       <div class="col-md-12 col-sm-12 col-xs-12">
-           
+        
       <div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>GSTR1-Document Summary</h1></div>
                     <div class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav"><a href="#">Home</a>
 					<i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GST-Transition Form</span> </div>
                 <div class="whitebg formboxcontainer">
 				<?php $obj_transition->showErrorMessage(); ?>
-			    <?php if(isset($_POST['finalsubmit']) && $_POST['finalsubmit']=='final submit') {
-				echo "<div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>GST_Transition form month of ".$returnmonth." successfully submitted </div>";
-		    
-				}else{
-				$obj_transition->showSuccessMessge(); }?>
+				<?php $obj_transition->showSuccessMessge(); ?>
 				<?php $obj_transition->unsetMessage(); ?>
-				<?php
-				if(isset($_POST['submit']) && $_POST['submit']=='submit') {
-                  
-					  if($flag=='notverify')
-					  {
-						  
-					  } else{
- 
-					 //echo "<div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>GSTR3B successfully submitted </div>";
-					  }
-                 }
-				if(isset($_POST['finalsubmit']) && $_POST['finalsubmit']=='final submit') {
-                  
-					  if($flag=='notverify')
-					  {
-						  
-					  } else{
- 
-				 //echo "<div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>GSTR3B month of return ".$returnmonth." successfully submitted </div>";
-		      // echo $obj_transition->showSuccessMessge(); 
-				} }
-				else{
-				 if($returndata[0]->final_submit == 1){
-		    echo "<div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>GST-Transition month of  ".$returnmonth." already submitted </div>";
-					
-				} }?>
-				<div class="tab" style="display:none;">
-                <a href="<?php echo PROJECT_URL . '/?page=transition_gstr&returnmonth='.$returnmonth ?>">
-                    Transition Form1
-                </a>
-                <a href="<?php echo PROJECT_URL . '/?page=return_document_summary&returnmonth='.$returnmonth ?>" class="active" >
-                    Transition Form2
-                </a>
-              
-            </div>
 			   <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_summary&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-danger" class="redbtn marlef10"/>
-							
+			
 			  <div class="pull-right rgtdatetxt">
                                 <form method='post' name='form2'>
                                     Month Of Return
@@ -341,6 +250,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								<?php
 								if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								{
+									
 								$table1_srno_from=(explode(",",$table1_srno_from));
 								$table1_srno_to=(explode(",",$table1_srno_to));
 								$table1_totalno=(explode(",",$table1_totalno));
@@ -377,6 +287,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								
 									
 						    for($i=0;$i < sizeof($start); $i++) {
+								
 								 $sno =0;
 								 $sno = $i+1;
 							   
@@ -451,7 +362,14 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 {   
 							        if($i==0){
 									 ?>
-                                            <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+                               <td>
+									 <a class="addMoreInvoice add-table1a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+										</td>    
 						<?php } else { ?>
                                <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
 							  <?php } }  ?>								 
@@ -460,13 +378,87 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								
 							<?php  }  } else {  ?>
 
-								<tr id="trtable1"><td colspan="5" align="center">Nothing found here</td></tr>
+								<tr>
+                               <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table1_srno_from[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table1_srno_to[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table1_totalno[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table1_cancelled[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table1_netissued[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 
+								 
+                                                                         <td>
+									 <a class="addMoreInvoice add-table1a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+								</td>                  
+                                </tr>
 								<?php } ?>                              
 							
                                 </tbody>
                             </table>
-                           <input type="button" value="Add New Row" class="btn btn-success add-table1a"  href="javascript:void(0)">
-											
+                          				
                         </div>
 				   <div class="greyheading">2. Invoice for inward supply from unregistered person</div>
 					       <div class="tableresponsive">
@@ -524,15 +516,13 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 						    for($i=0;$i < sizeof($start); $i++) {
 								 $sno =0;
 								 $sno = $i+1;
-							if($table2_srno_from[$i]!='' && $table2_srno_to[$i]!='' || $table2_totalno[$i]!='' || $table2_netissued[$i]!='' || $table2_cancelled[$i]!='')
-							{	   
+							   
                            ?>
                                 <tr>
-                                 <td>
-								 <?php
+                                 <td> <?php
 								 if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
 								 {
-									 ?>
+									 ?>								
 									 <label><?php if(isset($table2_srno_from[$i])) { echo $table2_srno_from[$i]; } else { echo ''; } ?><span class="starred"></span></label>
 								 <?php } else
 								 {
@@ -597,22 +587,101 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 {   
 							        if($i==0){
 									 ?>
-                                            <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+                                    <td>
+									 <a class="addMoreInvoice add-table2a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+										</td>   
 						<?php } else { ?>
                                <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
 							  <?php } }  ?>								 
                                 </tr>
 								
 								
-							<?php } else { ?> <tr id="trtable2"><td colspan="5" align="center">Nothing data to display here</td></tr> <?php } }  } else {  ?>
+							 <?php  }  } else {  ?>
 
-								<tr id="trtable2"><td colspan="5" align="center">Nothing found here</td></tr>
+								<tr>
+                               <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table2_srno_from[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table2_srno_to[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table2_totalno[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table2_cancelled[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table2_netissued[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 							 
+                                                                         <td>
+									 <a class="addMoreInvoice add-table2a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+								</td>                  
+                                </tr>
 								<?php } ?>                              
 							
                                 </tbody>
-                            </table>
-                           <input type="button" value="Add New Row" class="btn btn-success add-table2a"  href="javascript:void(0)">
-											
+                            </table>                          			
                         </div>
 					 <div class="greyheading">3. Revised Invoice</div>
 					       <div class="tableresponsive">
@@ -669,9 +738,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 									
 						    for($i=0;$i < sizeof($start); $i++) {
 								 $sno =0;
-								 $sno = $i+1;
-							if($table3_srno_from[$i]!='' && $table3_srno_to[$i]!='' || $table3_totalno[$i]!='' || $table3_netissued[$i]!='' || $table3_cancelled[$i]!='')
-							{	   
+								 $sno = $i+1;							   
                            ?>
                                 <tr>
                                  <td>
@@ -743,22 +810,102 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 {   
 							        if($i==0){
 									 ?>
-                                           <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+                                     <td>
+									 <a class="addMoreInvoice add-table3a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+										</td>   
 						<?php } else { ?>
                                <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
 							  <?php } }  ?>								 
-                                </tr>
+                                </tr>								
 								
-								
-							<?php } else { ?> <tr id="trtable3"><td colspan="5" align="center">Nothing data to display here</td></tr> <?php } }  } else {  ?>
+							<?php }  } else {  ?>
 
-								<tr id="trtable3"><td colspan="5" align="center">Nothing found here</td></tr>
+								<tr>
+                               <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table3_srno_from[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table3_srno_to[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table3_totalno[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table3_cancelled[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table3_netissued[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 
+								 
+                                                                         <td>
+									 <a class="addMoreInvoice add-table3a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+								</td>                  
+                                </tr>
 								<?php } ?>                              
 							
                                 </tbody>
                             </table>
-                           <input type="button" value="Add New Row" class="btn btn-success add-table3a"  href="javascript:void(0)">
-											
+                          				
                         </div>
 						 <div class="greyheading">4.Debit Note</div>
 					       <div class="tableresponsive">
@@ -816,8 +963,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 						    for($i=0;$i < sizeof($start); $i++) {
 								 $sno =0;
 								 $sno = $i+1;
-							if($table4_srno_from[$i]!='' && $table4_srno_to[$i]!='' || $table4_totalno[$i]!='' || $table4_netissued[$i]!='' || $table4_cancelled[$i]!='')
-							{	   
+						   
                            ?>
                                 <tr>
                                  <td>
@@ -889,22 +1035,102 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 {   
 							        if($i==0){
 									 ?>
-                                            <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+                         <td>
+									 <a class="addMoreInvoice add-table4a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+										</td>     
 						<?php } else { ?>
                                <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
 							  <?php } }  ?>								 
                                 </tr>
 								
 								
-							<?php } else { ?> <tr id="trtable4"><td colspan="5" align="center">Nothing data to display here</td></tr> <?php } }  } else {  ?>
+							<?php  }  } else {  ?>
 
-								<tr id="trtable4"><td colspan="5" align="center">Nothing found here</td></tr>
+								<tr>
+                               <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table4_srno_from[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table4_srno_to[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table4_totalno[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table4_cancelled[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table4_netissued[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 
+								 
+                                                                         <td>
+									 <a class="addMoreInvoice add-table4a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+								</td>                  
+                                </tr>
 								<?php } ?>                              
 							
                                 </tbody>
-                            </table>
-                           <input type="button" value="Add New Row" class="btn btn-success add-table4a"  href="javascript:void(0)">
-										
+                            </table>                          			
                         </div>
 					 <div class="greyheading">5. Credit Note</div>
 					       <div class="tableresponsive">
@@ -962,8 +1188,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 						    for($i=0;$i < sizeof($start); $i++) {
 								 $sno =0;
 								 $sno = $i+1;
-							if($table5_srno_from[$i]!='' && $table5_srno_to[$i]!='' || $table5_totalno[$i]!='' || $table5_netissued[$i]!='' || $table5_cancelled[$i]!='')
-							{	   
+							   
                            ?>
                                 <tr>
                                  <td>
@@ -1035,22 +1260,103 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 {   
 							        if($i==0){
 									 ?>
-                                            <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+                                 <td>
+									 <a class="addMoreInvoice add-table5a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+										</td>  
 						<?php } else { ?>
                                <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
 							  <?php } }  ?>								 
                                 </tr>
 								
 								
-							<?php } else { ?> <tr id="trtable5"><td colspan="5" align="center">Nothing data to display here</td></tr> <?php } }  } else {  ?>
+						   <?php }  } else {  ?>
 
-								<tr id="trtable5"><td colspan="5" align="center">Nothing found here</td></tr>
+								<tr>
+                               <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table5_srno_from[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table5_srno_to[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table5_totalno[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table5_cancelled[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table5_netissued[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 
+								 
+                                                                         <td>
+									 <a class="addMoreInvoice add-table5a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+								</td>                  
+                                </tr>
 								<?php } ?>                              
 							
                                 </tbody>
                             </table>
-                           <input type="button" value="Add New Row" class="btn btn-success add-table5a"  href="javascript:void(0)">
-										
+                          			
                         </div>
                <div class="greyheading">6. Receipt voucher</div>
 					       <div class="tableresponsive">
@@ -1064,8 +1370,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
                                 <th>Cancelled</th>
                                 <th>Net Issued</th>                             					
                                 </tr>
-                                </thead>
-                                
+                                </thead>                                
                                 <tbody>
 								<?php
 								if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
@@ -1108,8 +1413,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 						    for($i=0;$i < sizeof($start); $i++) {
 								 $sno =0;
 								 $sno = $i+1;
-							if($table6_srno_from[$i]!='' && $table6_srno_to[$i]!='' || $table6_totalno[$i]!='' || $table6_netissued[$i]!='' || $table6_cancelled[$i]!='')
-							{	   
+							  
                            ?>
                                 <tr>
                                  <td>
@@ -1181,22 +1485,102 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 {   
 							        if($i==0){
 									 ?>
-                                            <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+                        <td>
+									 <a class="addMoreInvoice add-table6a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+								</td>      								 
 						<?php } else { ?>
                                <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
 							  <?php } }  ?>								 
-                                </tr>
+                                </tr>								
 								
-								
-							<?php } else { ?> <tr id="trtable6"><td colspan="5" align="center">Nothing data to display here</td></tr> <?php } }  } else {  ?>
+							<?php }  } else {  ?>
 
-								<tr id="trtable6"><td colspan="5" align="center">Nothing found here</td></tr>
+								<tr>
+                               <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table6_srno_from[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table6_srno_to[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table6_totalno[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table6_cancelled[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table6_netissued[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 
+								 
+                                                                         <td>
+									 <a class="addMoreInvoice add-table6a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+								</td>                  
+                                </tr>
 								<?php } ?>                              
 							
                                 </tbody>
                             </table>
-                           <input type="button" value="Add New Row" class="btn btn-success add-table6a"  href="javascript:void(0)">
-										
+                           			
                         </div>
 				<div class="greyheading">7. Payment Voucher</div>
 					       <div class="tableresponsive">
@@ -1254,8 +1638,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 						    for($i=0;$i < sizeof($start); $i++) {
 								 $sno =0;
 								 $sno = $i+1;
-							if($table7_srno_from[$i]!='' && $table7_srno_to[$i]!='' || $table7_totalno[$i]!='' || $table7_netissued[$i]!='' || $table7_cancelled[$i]!='')
-							{	   
+						   
                            ?>
                                 <tr>
                                  <td>
@@ -1327,22 +1710,102 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 {   
 							        if($i==0){
 									 ?>
-                                           <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+                          <td>
+									 <a class="addMoreInvoice add-table7a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+								</td>       
 						<?php } else { ?>
                                <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
 							  <?php } }  ?>								 
-                                </tr>
+                                </tr>							
 								
-								
-							<?php } else { ?> <tr id="trtable7"><td colspan="5" align="center">Nothing data to display here</td></tr> <?php } }  } else {  ?>
+							 <?php }  } else {  ?>
 
-								<tr id="trtable7"><td colspan="5" align="center">Nothing found here</td></tr>
+								<tr>
+                               <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table7_srno_from[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table7_srno_to[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table7_totalno[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table7_cancelled[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table7_netissued[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 
+								 
+                                                                         <td>
+									 <a class="addMoreInvoice add-table7a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+								</td>                  
+                                </tr>
 								<?php } ?>                              
 							
                                 </tbody>
                             </table>
-                           <input type="button" value="Add New Row" class="btn btn-success add-table7a"  href="javascript:void(0)">
-										
+                          			
                         </div>
 						<div class="greyheading">8. Refund voucher</div>
 					       <div class="tableresponsive">
@@ -1400,8 +1863,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 						    for($i=0;$i < sizeof($start); $i++) {
 								 $sno =0;
 								 $sno = $i+1;
-							if($table8_srno_from[$i]!='' && $table8_srno_to[$i]!='' || $table8_totalno[$i]!='' || $table8_netissued[$i]!='' || $table8_cancelled[$i]!='')
-							{	   
+							   
                            ?>
                                 <tr>
                                  <td>
@@ -1473,22 +1935,102 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 {   
 							        if($i==0){
 									 ?>
-                                           <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+                       <td>
+									 <a class="addMoreInvoice add-table8a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+								</td>     
 						<?php } else { ?>
                                <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
 							  <?php } }  ?>								 
                                 </tr>
 								
 								
-							<?php } else { ?> <tr id="trtable8"><td colspan="5" align="center">Nothing data to display here</td></tr> <?php } }  } else {  ?>
-
-								<tr id="trtable8"><td colspan="5" align="center">Nothing found here</td></tr>
-								<?php } ?>                              
+							 <?php }   } else {  ?>
+					<tr>
+                               <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table8_srno_from[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table8_srno_to[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table8_totalno[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table8_cancelled[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table8_netissued[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 
+								 
+                                                                         <td>
+									 <a class="addMoreInvoice add-table8a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+								</td>                  
+                                </tr>
+					<?php } ?>                              
 							
-                                </tbody>
+             </tbody>
                             </table>
-                           <input type="button" value="Add New Row" class="btn btn-success add-table8a"  href="javascript:void(0)">
-						
+                          
                         </div>
 						<div class="greyheading">9. Delivery Challan for job work</div>
 					       <div class="tableresponsive">
@@ -1546,8 +2088,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 						    for($i=0;$i < sizeof($start); $i++) {
 								 $sno =0;
 								 $sno = $i+1;
-							if($table9_srno_from[$i]!='' && $table9_srno_to[$i]!='' || $table9_totalno[$i]!='' || $table9_netissued[$i]!='' || $table9_cancelled[$i]!='')
-							{	   
+							   
                            ?>
                                 <tr>
                                  <td>
@@ -1619,22 +2160,103 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 {   
 							        if($i==0){
 									 ?>
-                                           <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+                                 <td>
+									 <a class="addMoreInvoice add-table9a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+								</td>       
 						<?php } else { ?>
                                <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
 							  <?php } }  ?>								 
                                 </tr>
 								
 								
-							<?php } else { ?> <tr id="trtable9"><td colspan="5" align="center">Nothing data to display here</td></tr> <?php } }  } else {  ?>
+						 <?php } } else {  ?>
 
-								<tr id="trtable9"><td colspan="5" align="center">Nothing found here</td></tr>
+								<tr>
+                               <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table9_srno_from[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table9_srno_to[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table9_totalno[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table9_cancelled[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table9_netissued[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 
+								 
+                                                                         <td>
+									 <a class="addMoreInvoice add-table9a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+								</td>                  
+                                </tr>
 								<?php } ?>                              
 							
                                 </tbody>
                             </table>
-                           <input type="button" value="Add New Row" class="btn btn-success add-table9a"  href="javascript:void(0)">
-										
+                          			
                         </div>
 						<div class="greyheading">10. Delivery Challan for supply on approval</div>
 					       <div class="tableresponsive">
@@ -1692,8 +2314,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 						    for($i=0;$i < sizeof($start); $i++) {
 								 $sno =0;
 								 $sno = $i+1;
-							if($table10_srno_from[$i]!='' && $table10_srno_to[$i]!='' || $table10_totalno[$i]!='' || $table10_netissued[$i]!='' || $table10_cancelled[$i]!='')
-							{	   
+						   
                            ?>
                                 <tr>
                                  <td>
@@ -1765,22 +2386,103 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 {   
 							        if($i==0){
 									 ?>
-                                           <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+                    <td>
+									 <a class="addMoreInvoice add-table10a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+								</td>     
 						<?php } else { ?>
                                <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
 							  <?php } }  ?>								 
                                 </tr>
 								
 								
-							<?php } else { ?> <tr id="trtable10"><td colspan="5" align="center">Nothing data to display here</td></tr> <?php } }  } else {  ?>
+							<?php } }  else {  ?>
 
-								<tr id="trtable10"><td colspan="5" align="center">Nothing found here</td></tr>
+								<tr>
+                               <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table10_srno_from[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table10_srno_to[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table10_totalno[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table10_cancelled[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table10_netissued[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 
+								 
+                                                                         <td>
+									 <a class="addMoreInvoice add-table10a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+								</td>                  
+                                </tr>
 								<?php } ?>                              
 							
                                 </tbody>
                             </table>
-                           <input type="button" value="Add New Row" class="btn btn-success add-table10a"  href="javascript:void(0)">
-										
+                           			
                         </div>
 						<div class="greyheading">11. Delivery Challan in case of liquid gas</div>
 					       <div class="tableresponsive">
@@ -1838,8 +2540,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 						    for($i=0;$i < sizeof($start); $i++) {
 								 $sno =0;
 								 $sno = $i+1;
-							if($table11_srno_from[$i]!='' && $table11_srno_to[$i]!='' || $table11_totalno[$i]!='' || $table11_netissued[$i]!='' || $table11_cancelled[$i]!='')
-							{	   
+						   
                            ?>
                                 <tr>
                                  <td>
@@ -1911,22 +2612,103 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 {   
 							        if($i==0){
 									 ?>
-                                           <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+                           <td>
+									 <a class="addMoreInvoice add-table11a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+								</td>      
 						<?php } else { ?>
                                <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
 							  <?php } }  ?>								 
                                 </tr>
 								
 								
-							<?php } else { ?> <tr id="trtable11"><td colspan="5" align="center">Nothing data to display here</td></tr> <?php } }  } else {  ?>
+							<?php } }  else {  ?>
 
-								<tr id="trtable11"><td colspan="5" align="center">Nothing found here</td></tr>
+								<tr>
+                               <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table11_srno_from[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table11_srno_to[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table11_totalno[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table11_cancelled[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table11_netissued[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td> 
+								 
+                                                                         <td>
+									 <a class="addMoreInvoice add-table11a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+								</td>                  
+                                </tr>
 								<?php } ?>                              
 							
                                 </tbody>
                             </table>
-                           <input type="button" value="Add New Row" class="btn btn-success add-table11a"  href="javascript:void(0)">
-										
+                          			
                         </div>
 						<div class="greyheading">12. Delivery Challan in cases other than by way of supply (excluding at S no. 9 to 11)</div>
 					       <div class="tableresponsive">
@@ -1984,8 +2766,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 						    for($i=0;$i < sizeof($start); $i++) {
 								 $sno =0;
 								 $sno = $i+1;
-							if($table12_srno_from[$i]!='' && $table12_srno_to[$i]!='' || $table12_totalno[$i]!='' || $table12_netissued[$i]!='' || $table12_cancelled[$i]!='')
-							{	   
+								   
                            ?>
                                 <tr>
                                  <td>
@@ -2057,26 +2838,70 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 {   
 							        if($i==0){
 									 ?>
-                                           <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+                                  <td>
+									 <a class="addMoreInvoice add-table12a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+								</td>         
 						<?php } else { ?>
                                <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
 							  <?php } }  ?>								 
                                 </tr>
 								
 								
-							<?php } else { ?> <tr id="trtable12"><td colspan="5" align="center">Nothing data to display here</td></tr> <?php } }  } else {  ?>
+							<?php } } else {  ?>
 
 								<tr id="trtable12"><td colspan="5" align="center">Nothing found here</td></tr>
+								<tr>
+                               <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table12_srno_from[]" class="form-control"  placeholder="" /> </td> 
+							                         
+							   <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table12_srno_to[]" class="form-control"  placeholder="" /> </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table12_totalno[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+								 <td>
+								 <?php
+								  if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 1))
+								 {
+									 ?>
+									 <label><?php echo $returndata[0]->total_tax_value_supplya; ?><span class="starred"></span></label>
+								 <?php } else
+								 {
+									 ?>
+									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table12_cancelled[]"
+ class="form-control"  placeholder="" /> 
+								 <?php } ?>
+                                 </td>
+                                 <td> <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table12_netissued[]" class="form-control"  placeholder="" /></td> 
+  						 
+                                <td>
+									 <a class="addMoreInvoice add-table12a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+								</td>                  
+                                </tr>
 								<?php } ?>                              
 							
                                 </tbody>
                             </table>
-                           <input type="button" value="Add New Row" class="btn btn-success add-table12a"  href="javascript:void(0)">
-										
-                        </div>
-				
-						
-                    						
+                      			
+                        </div>  						
                     	
                         
 							

@@ -38,14 +38,21 @@ if($type=="B2B")
 
 if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isset($_POST['name']))
 {
-
-   if(isset($_POST['name']) && $_POST['name']!='')
-    {
-        $ids = implode(',',  $_POST['name']);
+    
+    $invoice_type = isset($_REQUEST['type'])?$_REQUEST['type']:'';
+    if ($invoice_type == 'HSN' || $invoice_type == 'NIL' || $invoice_type == 'DOCISSUE') {
+        if ($obj_gstr1->gstr1Upload('',$invoice_type)) 
+        {
+            return true;
+        }
+    }
+    if(isset($_POST['name']) && $_POST['name']!='')
+    {   
+        $ids = implode(',',  $_POST['name']);  
         if(!empty($ids)) {
-            if ($obj_gstr1->gstr1Upload($ids)) 
+            if ($obj_gstr1->gstr1Upload($ids,$invoice_type)) 
             {
-
+                return true;
             }
         }   
     }
@@ -158,7 +165,8 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                     <label for="invoice-types__AT"><input type="radio" id="invoice-types__AT" name="invoice_type" value="AT" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='AT') echo 'checked=""';?>>AT</label>
                                     <label for="invoice-types__EXP"><input type="radio" id="invoice-types__EXP" name="invoice_type" value="EXP" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='EXP') echo 'checked=""';?>>EXP</label>
                                     <label for="invoice-types__HSN"><input type="radio" id="invoice-types__HSN" name="invoice_type" value="HSN" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='HSN') echo 'checked=""';?>>HSN</label>
-                                    <label for="invoice-types__DOCISSUE"><input type="radio" id="invoice-types__DOCISSUE" name="invoice_type" value="DOCISSUE" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='DOCISSUE') echo 'checked=""';?>>DOCISSUE</label>
+                                    <label for="invoice-types__NIL"><input type="radio" id="invoice-types__NIL" name="invoice_type" value="NIL" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='NIL') echo 'checked=""';?>>NIL</label>
+                                    <label for="invoice-types__DOCISSUE"><input type="radio" id="invoice-types__DOCISSUE" name="invoice_type" value="DOCISSUE" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='DOCISSUE') echo 'checked=""';?>>DOC</label>
                                     <!-- <label for="invoice-types__summary"><input type="radio" id="invoice-types__summary" name="invoice_type" value="all" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='all') echo 'checked=""';?>>All Type Summary</label> -->
 
                                 </div>
@@ -417,37 +425,71 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                 }
                                 if($type=='HSN')
                                 {
-                                    $group_by = " a.reference_number ,b.consolidate_rate ";
-                                    $order_by = 'a.reference_number';
-                                    $Data = $expData = $obj_gstr1->getEXPInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
+                                    $hsnData = $obj_gstr1->getReturnUploadSummary($_SESSION['user_detail']['user_id'], $returnmonth,'gstr1hsn');
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
-                                    $sumTotal_temp = '';
-                                    $invoice_temp = '';
                                     $invCount = 0;
-                                    if (!empty($expData)) {
-                                        $invoice_temp='';
-                                        foreach ($expData as $key => $expDatavalue) {
-                                            if($invoice_temp!='' and $invoice_temp!=$expDatavalue->invoice_id)
-                                            {
+                                    if (!empty($hsnData)) {
+                                        $json = $hsnData[0]->return_data;
+                                        $hsn_is_uploaded =  (isset($hsnData[0]->is_uploaded) && $hsnData[0]->is_uploaded=='0') ? 'Pending':'Uploaded';
+                                        if(!empty($json)) {
+                                            $Data = $decodeJson = json_decode(base64_decode($json));
+                                            //$obj_gstr1->pr($decodeJson);
+                                            //die;
+                                            foreach ($decodeJson as $key => $hsnDatavalue) {  
+                                                $invoice_total_value +=isset($hsnDatavalue->taxable_subtotal)?$hsnDatavalue->taxable_subtotal:0;
+                                                
+                                                $igstTotal += isset($hsnDatavalue->igst)?$hsnDatavalue->igst:0;
+                                                $sgstTotal += isset($hsnDatavalue->sgst)?$hsnDatavalue->sgst:0;
+                                                $cgstTotal += isset($hsnDatavalue->cgst)?$hsnDatavalue->cgst:0;
+                                                $cessTotal += isset($hsnDatavalue->cess)?$hsnDatavalue->cess:0;
+                                                $sumTotal +=isset($hsnDatavalue->invoice_total_value)?$hsnDatavalue->invoice_total_value:0;
                                                 $invCount++;
-                                                $invoice_total_value +=$invoice_total_value_temp;
-                                                $sumTotal +=$sumTotal_temp;
                                             }
-                                            $invoice_total_value_temp = isset($expDatavalue->taxable_subtotal)?$expDatavalue->taxable_subtotal:0;
-                                            $total += $expDatavalue->cgst_amount + $expDatavalue->sgst_amount + $expDatavalue->igst_amount + $expDatavalue->cess_amount;
-                                            $igstTotal += $expDatavalue->igst_amount;
-                                            $sgstTotal += $expDatavalue->sgst_amount;
-                                            $cgstTotal += $expDatavalue->cgst_amount;
-                                            $cessTotal += $expDatavalue->cess_amount;
-                                            $sumTotal_temp = isset($expDatavalue->invoice_total_value)?$expDatavalue->invoice_total_value:0;
-                                            $invoice_temp=$expDatavalue->invoice_id;
                                         }
-                                        if($invoice_temp!='')
-                                        {
-                                            $invCount++;
-                                            $invoice_total_value +=$invoice_total_value_temp;
-                                            $sumTotal +=$sumTotal_temp;
+                                        
+                                    }
+                                }
+                                if($type=='DOCISSUE')
+                                {
+                                    $docissueData = $obj_gstr1->getDocSummary($_SESSION['user_detail']['user_id'], $returnmonth);
+                                    $total = $totnum = $totcancel = $net_issue = 0;
+                                    $invCount = 0;
+                                    if (!empty($docissueData)) {
+                                        $json = $docissueData[0]->gstr1_summary_data;
+                                        $docissue_is_uploaded =  (isset($docissueData[0]->is_uploaded) && $docissueData[0]->is_uploaded=='0') ? 'Pending':'Uploaded';
+                                        if(!empty($json)) {
+                                            $Data = $decodeJson = json_decode(base64_decode($json));
+                                            $obj_gstr1->pr($decodeJson);
+                                            die;
+                                            foreach ($decodeJson as $key => $docDatavalue) {  
+                                                $totnum += isset($docDatavalue->totnum)?$docDatavalue->totnum:0;
+                                                $totcancel += isset($docDatavalue->cancel)?$docDatavalue->cancel:0;
+                                                $net_issue += isset($docDatavalue->net_issue)?$docDatavalue->net_issue:0;
+                                                $invCount++;
+                                            }
                                         }
+                                        
+                                    }
+                                }
+                                if($type=='NIL')
+                                {
+                                    $nilData = $obj_gstr1->getReturnUploadSummary($_SESSION['user_detail']['user_id'], $returnmonth,'gstr1nil');
+                                    $tot_expt_amt = $tot_nil_amt = $tot_ngsup_amt = 0;
+                                    $invCount = 0;
+                                    if (!empty($nilData)) {
+                                        $json = $nilData[0]->return_data;
+                                        $nil_is_uploaded =  (isset($nilData[0]->is_uploaded) && $nilData[0]->is_uploaded=='0') ? 'Pending':'Uploaded';
+                                        if(!empty($json)) {
+                                            $Data = $decodeJson = json_decode(base64_decode($json));
+                                            
+                                            foreach ($decodeJson as $key => $nilDatavalue) {  
+                                                $tot_expt_amt += isset($nilDatavalue->expt_amt)?$nilDatavalue->expt_amt:0;
+                                                $tot_nil_amt += isset($nilDatavalue->nil_amt)?$nilDatavalue->nil_amt:0;
+                                                $tot_ngsup_amt += isset($nilDatavalue->ngsup_amt)?$nilDatavalue->ngsup_amt:0;
+                                                $invCount++;
+                                            }
+                                        }
+                                        
                                     }
                                 }
                                 if($invCount >0) 
@@ -456,184 +498,335 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                     {
                                     ?>
                                         <div style="text-align: center;">
-                                            <input type="submit" name="submit_up" id="up" value="Upload TO GSTN" class="btn  btn-success " >
-                                            <input type="submit" name="submit_dwn" id="down" value="Download GSTR1" class="btn btn-warning ">
+                                            <input type="hidden" name="type" value="<?php echo $type;?>" readonly>
+                                            <input itype="<?php echo $type?>" type="submit" name="submit_up" id="up" value="Upload TO GSTN" class="btn  btn-success " >
+                                            <input itype="<?php echo $type?>" type="submit" name="submit_dwn" id="down" value="Download GSTR1" class="btn btn-warning ">
                                         </div>
                                         <div class="clear"></div><br>
                                     <?php } 
                                 }
                                 ?>
-                                <table width="100%" border="0" cellspacing="0" cellpadding="0"  class="table table-striped invoice-filter-table" id="mainTable1">
-                                    <thead>
-                                        <tr>
-                                            <th align='left'>Total Transactions</th>
-                                            <th align='left'>Taxable Amount </th>
-                                            <th align='left'>Total IGST</th>
-                                            <th align='left'>Total SGST</th>
-                                            <th align='left'>Total CGST</th>
-                                            <th align='left'>Total Cess</th>
-                                            <th align='left'>Total Amount</th>
-                                        </tr>
-                                        <tr>
-                                            <td><?php echo $invCount;?></td>
-                                            <td><?php echo $invoice_total_value;?></td>
-                                            <td><?php echo $igstTotal; ?></td>
-                                            <td><?php echo $sgstTotal; ?></td>
-                                            <td><?php echo $cgstTotal; ?></td>
-                                            <td><?php echo $cessTotal; ?></td>
-                                            <td><?php echo $sumTotal; ?></td>
-                                        </tr>
-                                    </thead>
-                                </table>
+                                <?php 
+                                if($type=='DOCISSUE') { ?>
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0"  class="table table-striped invoice-filter-table" id="mainTable1">
+                                        <thead>
+                                            <tr>
+                                                <th align='left'>Total Transactions</th>
+                                                <th align='left'>Total Number</th>
+                                                <th align='left'>Total Cancelled</th>
+                                                <th align='left'>Net Issued</th>
+                                            </tr>
+                                            <tr>
+                                                <td><?php echo $invCount;?></td>
+                                                <td><?php echo $totnum; ?></td>
+                                                <td><?php echo $totcancel; ?></td>
+                                                <td><?php echo $net_issue; ?></td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                <?php 
+                                }
+                                else if($type=='NIL') { ?>
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0"  class="table table-striped invoice-filter-table" id="mainTable1">
+                                        <thead>
+                                            <tr>
+                                                <th align='left'>Total Transactions</th>
+                                                <th align='left'>Total Exempted outward supplies</th>
+                                                <th align='left'>Total Non GST outward supplies</th>
+                                                <th align='left'>Total Nil rated outward supplies</th>
+                                            </tr>
+                                            <tr>
+                                                <td><?php echo $invCount;?></td>
+                                                <td><?php echo $tot_expt_amt; ?></td>
+                                                <td><?php echo $tot_nil_amt; ?></td>
+                                                <td><?php echo $tot_ngsup_amt; ?></td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                <?php 
+                                }
+                                else { ?>
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0"  class="table table-striped invoice-filter-table" id="mainTable1">
+                                        <thead>
+                                            <tr>
+                                                <th align='left'>Total Transactions</th>
+                                                <th align='left'>Taxable Amount </th>
+                                                <th align='left'>Total IGST</th>
+                                                <th align='left'>Total SGST</th>
+                                                <th align='left'>Total CGST</th>
+                                                <th align='left'>Total Cess</th>
+                                                <th align='left'>Total Amount</th>
+                                            </tr>
+                                            <tr>
+                                                <td><?php echo $invCount;?></td>
+                                                <td><?php echo $invoice_total_value;?></td>
+                                                <td><?php echo $igstTotal; ?></td>
+                                                <td><?php echo $sgstTotal; ?></td>
+                                                <td><?php echo $cgstTotal; ?></td>
+                                                <td><?php echo $cessTotal; ?></td>
+                                                <td><?php echo $sumTotal; ?></td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                <?php } ?>
                                 <br/>
                                     <div class="adminformbx">
                                         <table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
                                             <thead>
-                                                <tr>
-                                                    <th align='left'><input name="select_all" value="1" id="example-select-all" type="checkbox" /></th>
-                                                    <th align='left'>No.</th>
-                                                    <th align='left'>Date</th>
-                                                    <th align='left'>Invoice Number</th>
-                                                    <th align='left'>Customer</th>
-                                                    <?php
-                                                    if($type!='B2CL' && $type!='B2CS' && $type!='CDNUR')
-                                                    {
-                                                    ?>
-                                                    <th align='left'>GSTIN</th>
-                                                    <?php
-                                                    }
-                                                    ?>
-                                                    <th style='text-align:right'>Taxable AMT</th>
-                                                    <th style='text-align:right'>Total Tax</th>
-                                                    <th style='text-align:right'>Total Amt</th>
-                                                    <th align='center'>Type</th>
-                                                    <th align='center'>Status</th>
-                                                    <th align='center'></th>
-                                                </tr>
+                                                <?php 
+                                                if ($type == 'HSN') { ?>
+                                                    <tr>
+                                                        <th align='left'>No.</th>
+                                                        <th align='left'>HSN Code</th>
+                                                        <th align='left'>Description</th>
+                                                        <th align='left'>Unit</th>
+                                                        <th align='left'>Qty</th>
+                                                        <th style='text-align:right'>Taxable AMT</th>
+                                                        <th style='text-align:right'>Total Tax</th>
+                                                        <th style='text-align:right'>Total Amt</th>
+                                                        <th align='center'>Status</th>
+                                                    </tr>
+                                                <?php }
+                                                else if ($type == 'DOCISSUE') { ?>
+                                                    <tr>
+                                                        <th align='left'>No.</th>
+                                                        <th align='left'>From serial number</th>
+                                                        <th align='left'>To serial number</th>
+                                                        <th style='text-align:right'>Total Number</th>
+                                                        <th style='text-align:right'>Cancelled</th>
+                                                        <th style='text-align:right'>Net issued</th>
+                                                        <th align='center'>Status</th>
+                                                    </tr>
+                                                <?php }
+                                                else if ($type == 'NIL') { ?>
+                                                    <tr>
+                                                        <th align='left'>No.</th>
+                                                        <th align='left'>Supply Type</th>
+                                                        <th style='text-align:right'>Exempted Amount</th>
+                                                        <th style='text-align:right'>Nil Amount</th>
+                                                        <th style='text-align:right'>Non Gst Amount</th>
+                                                        <th align='center'>Status</th>
+                                                    </tr>
+                                                <?php }
+                                                else { ?>
+                                                    <tr>
+                                                        <th align='left'><input name="select_all" value="1" id="example-select-all" type="checkbox" /></th>
+                                                        <th align='left'>No.</th>
+                                                        <th align='left'>Date</th>
+                                                        <th align='left'>Invoice Number</th>
+                                                        <th align='left'>Customer</th>
+                                                        <?php
+                                                        if($type!='B2CL' && $type!='B2CS' && $type!='CDNUR')
+                                                        {
+                                                        ?>
+                                                        <th align='left'>GSTIN</th>
+                                                        <?php
+                                                        }
+                                                        ?>
+                                                        <th style='text-align:right'>Taxable AMT</th>
+                                                        <th style='text-align:right'>Total Tax</th>
+                                                        <th style='text-align:right'>Total Amt</th>
+                                                        <?php if($type == 'AT') { ?>
+                                                            <th align='center'>Pos</th>
+                                                        <?php } 
+                                                        else { ?>
+                                                            <th align='center'>Type</th>
+                                                        <?php } ?>
+                                                        <th align='center'>Status</th>
+                                                        <th align='center'></th>
+                                                    </tr>
                                                 <?php
+                                                }
                                                 if($invCount >0) {
                                                     if(!empty($type))
                                                     {
                                                         if(!empty($Data))
                                                         {
-                                                            $flag=1;
-                                                            $i=1;
-                                                            $temp_inv = '';
-                                                            $tax = 0;
-                                                            foreach($Data as $Item)
-                                                            {
-                                                                
-                                                                if($temp_inv!='' and $temp_inv!=$Item->invoice_id)   
+                                                            
+                                                            if($type == 'HSN') {
+                                                                $i=1;
+                                                                foreach($Data as $Item)
+                                                                { 
+                                                                    $total = 0;
+                                                                    $total += $Item->cgst + $Item->sgst + $Item->igst + $Item->cess;
+                                                                    ?>
+                                                                    <tr>
+                                                                        <td align='left'><?php echo $i++;?></td>
+                                                                        <td align='left'><?php echo $Item->hsn;?></td>
+                                                                        <td align='left'><?php echo $Item->description;?></td>
+                                                                        <td align='left'><?php echo $Item->unit;?></td>
+                                                                        <td align='left'><?php echo $Item->qty;?></td>
+                                                                        <td style='text-align:right'><?php echo $Item->taxable_subtotal;?></td>
+                                                                        <td style='text-align:right'><?php echo $total;?></td>
+                                                                        <td style='text-align:right'><?php echo $Item->invoice_total_value;?></td>
+                                                                        <td align='center'><?php echo $hsn_is_uploaded;?></td>
+                                                        
+                                                                    </tr>
+                                                                <?php }
+                                                            }
+                                                            else if($type == 'DOCISSUE') {
+                                                                $i=1;
+                                                                foreach($Data as $Item)
+                                                                { 
+                                                                    $total = 0;
+                                                                    ?>
+                                                                    <tr>
+                                                                        <td align='left'><?php echo $i++;?></td>
+                                                                        <td align='left'><?php echo $Item->from;?></td>
+                                                                        <td align='left'><?php echo $Item->to;?></td>
+                                                                        <td style='text-align:right'><?php echo $Item->totalnum;?></td>
+                                                                        <td style='text-align:right'><?php echo $Item->cancle;?></td>
+                                                                        <td style='text-align:right'><?php echo $Item->net_issue;?></td>
+                                                                        <td align='center'><?php echo $docissue_is_uploaded;?></td>
+                                                        
+                                                                    </tr>
+                                                                <?php }
+                                                            }
+                                                            else if($type == 'NIL') {
+                                                                $i=1;
+                                                                foreach($Data as $Item)
+                                                                { 
+                                                                    $total = 0;
+                                                                    ?>
+                                                                    <tr>
+                                                                        <td align='left'><?php echo $i++;?></td>
+                                                                        <td align='left'><?php echo $Item->sply_ty;?></td>
+                                                                        <td style='text-align:right'><?php echo $Item->expt_amt;?></td>
+                                                                        <td style='text-align:right'><?php echo $Item->nil_amt;?></td>
+                                                                        <td style='text-align:right'><?php echo $Item->ngsup_amt;?></td>
+                                                                        <td align='center'><?php echo $nil_is_uploaded;?></td>
+                                                        
+                                                                    </tr>
+                                                                <?php }
+                                                            }
+                                                            else {
+                                                                $status = $type;
+                                                                $flag=1;
+                                                                $i=1;
+                                                                $temp_inv = '';
+                                                                $tax = 0;
+                                                                foreach($Data as $Item)
+                                                                {
+                                                                    if($temp_inv!='' and $temp_inv!=$Item->invoice_id)   
+                                                                    {
+                                                                    ?>
+                                                                    <tr>
+                                                                        <td align="center" bgcolor="#FFFFFF">
+                                                                           <input type="checkbox" class="name" name="name[]" value="<?php echo $temp_inv;?>"/> 
+                                                                        </td>
+                                                                        <td align='left'><?php echo $i++;?></td>
+                                                                        <td align='left'><?php echo $invoice_date;?></td>
+                                                                        <td align='left'><?php echo $reference_number;?></td>
+                                                                        <td align='left'><?php echo $billing_name;?></td>
+                                                                        <td align='left'><?php echo $billing_gstin_number;?></td>
+                                                                        <td style='text-align:right'><?php echo $taxable_subtotal;?></td>
+                                                                        <td style='text-align:right'><?php echo $tax?></td>
+                                                                        <td style='text-align:right'><?php echo $invoice_total_value;?></td>
+                                                                        <?php if($type == 'AT') {
+                                                                            $status = $pos;
+                                                                        }
+                                                                        ?>
+                                                                        <td align='center'><?php echo $status; ?></td>
+                                                                        <td align='center'><?php echo $is_uploaded;?></td>
+                                                                        <?php 
+                                                                        //$obj_gstr1->pr($Item->is_gstr1_uploaded);
+                                                                        $url = 'javascript:;';
+                                                                        if($type == 'B2B' || $type == 'B2CL' || $type == 'B2CS') {
+                                                                            if($invoice_type == 'taxinvoice') {
+                                                                                $url = PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$temp_inv;
+                                                                            }
+                                                                            if($invoice_type == 'sezunitinvoice' || $invoice_type == 'deemedexportinvoice' ) {
+                                                                                $url = PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$temp_inv;
+                                                                            }
+                                                                            
+                                                                        }
+                                                                        if($type == 'AT') {
+                                                                            $url = PROJECT_URL.'/?page=client_update_receipt_voucher_invoice&action=editRVInvoice&id='.$temp_inv;
+                                                                        }
+                                                                        if($type == 'EXP') {
+                                                                            $url = PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$temp_inv;
+                                                                        }
+                                                                        if($type == 'CDNR' || $type == 'CDNUR'  ) {
+                                                                            if($invoice_type == 'creditnote' || $invoice_type == 'debitnote') {
+                                                                                $url = PROJECT_URL.'/?page=client_update_revised_tax_invoice&action=editRTInvoice&id='.$temp_inv;
+                                                                            }
+                                                                            if($invoice_type == 'refundvoucherinvoice') {
+                                                                                $url = PROJECT_URL.'/?page=client_refund_voucher_invoice_list&action=viewRFInvoice&id='.$temp_inv;
+                                                                            }
+                                                                            
+                                                                        }
+                                                                        
+                                                                        ?>
+                                                                        <td align='center'><a href="<?php echo $url; ?>" target="_blank">View</a></td>
+                                                                    </tr>
+                                                                    <?php
+                                                                     $tax=0;
+                                                                    }
+                                                                    $invoice_date = $Item->invoice_date;
+                                                                    $reference_number = $Item->reference_number;
+                                                                    $billing_name = $Item->billing_name;
+                                                                    $billing_gstin_number = $Item->billing_gstin_number;
+                                                                    $taxable_subtotal = $Item->taxable_subtotal;
+                                                                    $invoice_total_value = $Item->invoice_total_value;
+                                                                    $is_uploaded =  (isset($Item->is_gstr1_uploaded) && $Item->is_gstr1_uploaded=='0') ? 'Pending':'Uploaded';
+                                                                    $invoice_type = $Item->invoice_type;
+                                                                    $tax += $Item->cgst_amount + $Item->sgst_amount + $Item->igst_amount + $Item->cess_amount;
+                                                                    $temp_inv=$Item->invoice_id;
+                                                                    $pos = $Item->supply_place;
+                                                                }
+                                                                if($temp_inv!='')   
                                                                 {
                                                                 ?>
-                                                                <tr>
-                                                                    <td align="center" bgcolor="#FFFFFF">
-                                                                       <input type="checkbox" class="name" name="name[]" value="<?php echo $temp_inv;?>"/> 
-                                                                    </td>
-                                                                    <td align='left'><?php echo $i++;?></td>
-                                                                    <td align='left'><?php echo $invoice_date;?></td>
-                                                                    <td align='left'><?php echo $reference_number;?></td>
-                                                                    <td align='left'><?php echo $billing_name;?></td>
-                                                                    <td align='left'><?php echo $billing_gstin_number;?></td>
-                                                                    <td style='text-align:right'><?php echo $taxable_subtotal;?></td>
-                                                                    <td style='text-align:right'><?php echo $tax?></td>
-                                                                    <td style='text-align:right'><?php echo $invoice_total_value;?></td>
-                                                                    <td align='center'><?php echo $type; ?></td>
-                                                                    <td align='center'><?php echo $is_uploaded;?></td>
-                                                                    <?php 
-                                                                    //$obj_gstr1->pr($Item->is_gstr1_uploaded);
-                                                                    $url = 'javascript:;';
-                                                                    if($type == 'B2B' || $type == 'B2CL' || $type == 'B2CS') {
-                                                                        if($invoice_type == 'taxinvoice') {
-                                                                            $url = PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$temp_inv;
+                                                                    <tr>
+                                                                        <td align="center" bgcolor="#FFFFFF">
+                                                                           <input type="checkbox" class="name" name="name[]" value="<?php echo $temp_inv;?>"/> 
+                                                                        </td>
+                                                                        <td align='left'><?php echo $i++;?></td>
+                                                                        <td align='left'><?php echo $invoice_date;?></td>
+                                                                        <td align='left'><?php echo $reference_number;?></td>
+                                                                        <td align='left'><?php echo $billing_name;?></td>
+                                                                        <td align='left'><?php echo $billing_gstin_number;?></td>
+                                                                        <td style='text-align:right'><?php echo $taxable_subtotal;?></td>
+                                                                        <td style='text-align:right'><?php echo $tax?></td>
+                                                                        <td style='text-align:right'><?php echo $invoice_total_value;?></td>
+                                                                        <?php if($type == 'AT') {
+                                                                            $status = $pos;
                                                                         }
-                                                                        if($invoice_type == 'sezunitinvoice' || $invoice_type == 'deemedexportinvoice' ) {
+                                                                        ?>
+                                                                        <td align='center'><?php echo $status; ?></td>
+                                                                        <td align='center'><?php echo $is_uploaded;?></td>
+                                                                        <?php 
+                                                                        //$obj_gstr1->pr($Item->is_gstr1_uploaded);
+                                                                        $url = 'javascript:;';
+                                                                        if($type == 'B2B' || $type == 'B2CL' || $type == 'B2CS') {
+                                                                            if($invoice_type == 'taxinvoice') {
+                                                                                $url = PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$temp_inv;
+                                                                            }
+                                                                            if($invoice_type == 'sezunitinvoice' || $invoice_type == 'deemedexportinvoice' ) {
+                                                                                $url = PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$temp_inv;
+                                                                            }
+                                                                        }
+                                                                        if($type == 'AT') {
+                                                                            $url = PROJECT_URL.'/?page=client_update_receipt_voucher_invoice&action=editRVInvoice&id='.$temp_inv;
+                                                                        }
+                                                                        if($type == 'EXP') {
                                                                             $url = PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$temp_inv;
                                                                         }
-                                                                        
-                                                                    }
-                                                                    if($type == 'AT') {
-                                                                        $url = PROJECT_URL.'/?page=client_update_receipt_voucher_invoice&action=editRVInvoice&id='.$temp_inv;
-                                                                    }
-                                                                    if($type == 'EXP') {
-                                                                        $url = PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$temp_inv;
-                                                                    }
-                                                                    if($type == 'CDNR' || $type == 'CDNUR'  ) {
-                                                                        if($invoice_type == 'creditnote' || $invoice_type == 'debitnote') {
-                                                                            $url = PROJECT_URL.'/?page=client_update_revised_tax_invoice&action=editRTInvoice&id='.$temp_inv;
-                                                                        }
-                                                                        if($invoice_type == 'refundvoucherinvoice') {
-                                                                            $url = PROJECT_URL.'/?page=client_refund_voucher_invoice_list&action=viewRFInvoice&id='.$temp_inv;
+                                                                        if($type == 'CDNR' || $type == 'CDNUR'  ) {
+                                                                            if($invoice_type == 'creditnote' || $invoice_type == 'debitnote') {
+                                                                                $url = PROJECT_URL.'/?page=client_update_revised_tax_invoice&action=editRTInvoice&id='.$temp_inv;
+                                                                            }
+                                                                            if($invoice_type == 'refundvoucherinvoice') {
+                                                                                $url = PROJECT_URL.'/?page=client_refund_voucher_invoice_list&action=viewRFInvoice&id='.$temp_inv;
+                                                                            }
+                                                                            
                                                                         }
                                                                         
-                                                                    }
-                                                                    
-                                                                    ?>
-                                                                    <td align='center'><a href="<?php echo $url; ?>" target="_blank">View</a></td>
-                                                                </tr>
+                                                                        ?>
+                                                                        <td align='center'><a href="<?php echo $url; ?>" target="_blank">View</a></td>
+                                                                    </tr>
                                                                 <?php
-                                                                 $tax=0;
                                                                 }
-                                                                $invoice_date = $Item->invoice_date;
-                                                                $reference_number = $Item->reference_number;
-                                                                $billing_name = $Item->billing_name;
-                                                                $billing_gstin_number = $Item->billing_gstin_number;
-                                                                $taxable_subtotal = $Item->taxable_subtotal;
-                                                                $invoice_total_value = $Item->invoice_total_value;
-                                                                $is_uploaded =  (isset($Item->is_gstr1_uploaded) && $Item->is_gstr1_uploaded=='0') ? 'Pending':'Uploaded';
-                                                                $invoice_type = $Item->invoice_type;
-                                                                $tax += $Item->cgst_amount + $Item->sgst_amount + $Item->igst_amount + $Item->cess_amount;
-                                                                $temp_inv=$Item->invoice_id;
-                                                            }
-                                                            if($temp_inv!='')   
-                                                            {
-                                                            ?>
-                                                            <tr>
-                                                                    <td align="center" bgcolor="#FFFFFF">
-                                                                       <input type="checkbox" class="name" name="name[]" value="<?php echo $temp_inv;?>"/> 
-                                                                    </td>
-                                                                    <td align='left'><?php echo $i++;?></td>
-                                                                    <td align='left'><?php echo $invoice_date;?></td>
-                                                                    <td align='left'><?php echo $reference_number;?></td>
-                                                                    <td align='left'><?php echo $billing_name;?></td>
-                                                                    <td align='left'><?php echo $billing_gstin_number;?></td>
-                                                                    <td style='text-align:right'><?php echo $taxable_subtotal;?></td>
-                                                                    <td style='text-align:right'><?php echo $tax?></td>
-                                                                    <td style='text-align:right'><?php echo $invoice_total_value;?></td>
-                                                                    <td align='center'><?php echo $type; ?></td>
-                                                                    <td align='center'><?php echo $is_uploaded;?></td>
-                                                                    <?php 
-                                                                    //$obj_gstr1->pr($Item->is_gstr1_uploaded);
-                                                                    $url = 'javascript:;';
-                                                                    if($type == 'B2B' || $type == 'B2CL' || $type == 'B2CS') {
-                                                                        if($invoice_type == 'taxinvoice') {
-                                                                            $url = PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$temp_inv;
-                                                                        }
-                                                                        if($invoice_type == 'sezunitinvoice' || $invoice_type == 'deemedexportinvoice' ) {
-                                                                            $url = PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$temp_inv;
-                                                                        }
-                                                                        
-                                                                    }
-                                                                    if($type == 'AT') {
-                                                                        $url = PROJECT_URL.'/?page=client_update_receipt_voucher_invoice&action=editRVInvoice&id='.$temp_inv;
-                                                                    }
-                                                                    if($type == 'EXP') {
-                                                                        $url = PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$temp_inv;
-                                                                    }
-                                                                    if($type == 'CDNR' || $type == 'CDNUR'  ) {
-                                                                        if($invoice_type == 'creditnote' || $invoice_type == 'debitnote') {
-                                                                            $url = PROJECT_URL.'/?page=client_update_revised_tax_invoice&action=editRTInvoice&id='.$temp_inv;
-                                                                        }
-                                                                        if($invoice_type == 'refundvoucherinvoice') {
-                                                                            $url = PROJECT_URL.'/?page=client_refund_voucher_invoice_list&action=viewRFInvoice&id='.$temp_inv;
-                                                                        }
-                                                                        
-                                                                    }
-                                                                    
-                                                                    ?>
-                                                                    <td align='center'><a href="<?php echo $url; ?>" target="_blank">View</a></td>
-                                                                </tr>
-                                                            <?php
                                                             }
                                                         }
                                                         
@@ -667,21 +860,29 @@ $obj_gstr->uploadOtpPopupJs();
     $(document).ready(function () {
         $('#down').click(function () {
             flag=0;
-             $(".name").each(function(){
-                if ($(this).prop('checked')==true){ 
-                    flag=1;
-                }
-            });
-            if(flag==1)
-            {
-                document.form4.action = '<?php echo PROJECT_URL.'/?ajax=return_gstr_payload';?>&returnmonth=<?php echo $returnmonth; ?>';
+            var itype =  $(this).attr('itype');
+            if(itype == 'HSN' || itype == 'NIL' || itype == 'DOCISSUE') {
+                document.form4.action = '<?php echo PROJECT_URL.'/?ajax=return_gstr_payload';?>&returnmonth=<?php echo $returnmonth; ?>&type='+itype;
                 document.form4.submit();
             }
-            else
-            {
-                alert('No Invoices are selected?');
-                return false;
+            else {
+                $(".name").each(function(){
+                    if ($(this).prop('checked')==true){ 
+                        flag=1;
+                    }
+                });
+                if(flag==1)
+                {
+                    document.form4.action = '<?php echo PROJECT_URL.'/?ajax=return_gstr_payload';?>&returnmonth=<?php echo $returnmonth; ?>&type='+itype;
+                    document.form4.submit();
+                }
+                else
+                {
+                    alert('No Invoices are selected?');
+                    return false;
+                }   
             }
+            
         });
         /*$('#up').on('click', function () {
             document.form4.action = '<?php echo PROJECT_URL.'/?page=return_view_invoices';?>&returnmonth=<?php echo $returnmonth; ?>';
@@ -696,15 +897,17 @@ $obj_gstr->uploadOtpPopupJs();
             document.form3.action = '<?php echo PROJECT_URL; ?>/?page=return_view_invoices&returnmonth=<?php echo $returnmonth; ?>';
             document.form3.submit();
         });
+        $('#example-select-all').on('change', function(){
+            $('input[type="checkbox"]').prop('checked', this.checked);
+            if ($('#example-select-all').is(':checked')) {
+                
+               // $('#uploadchecked').removeAttr('disabled');
+            } else {
+                // $('#uploadchecked').attr('disabled', 'disabled');
+            }
+        });
     });
-    $('#example-select-all').on('change', function(){
-        $('input[type="checkbox"]').prop('checked', this.checked);
-        if ($('#example-select-all').is(':checked')) {
-           // $('#uploadchecked').removeAttr('disabled');
-        } else {
-            // $('#uploadchecked').attr('disabled', 'disabled');
-        }
-    });
+    
     $(function () {
         $("#selectall").click(function () {
             $('.name').attr('checked', this.checked);

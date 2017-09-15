@@ -161,8 +161,8 @@
 					</div>
 				</div>
 
-				<div class="row" style="display:none;">
-					<div class="col-md-4 col-sm-4 col-xs-12 form-group" <?php if($invoiceData[0]->advance_adjustment == "1") { echo 'style="display:block;"'; } ?>>
+				<div class="row">
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Advance Adjustment <span class="starred">*</span></label><br>
 						<label class="radio-inline"><input type="radio" name="advance_adjustment" value="1" <?php if($invoiceData[0]->advance_adjustment == 1) { echo 'checked="checked"'; } ?> />Yes</label>
 						<label class="radio-inline"><input type="radio" name="advance_adjustment" value="0" <?php if($invoiceData[0]->advance_adjustment == 0) { echo 'checked="checked"'; } ?> />No</label>
@@ -172,14 +172,14 @@
 						<label>Receipt Voucher Number <span class="starred">*</span></label>
 						<select name='receipt_voucher_number' id='receipt_voucher_number' class="form-control">
 							<option value=''>Select Receipt Voucher</option>
-							<?php $dataReceiptVoucherArrs = $obj_purchase->get_results("select purchase_invoice_id, serial_number, invoice_date, supply_place, is_canceled from ".$obj_purchase->getTableName('client_purchase_invoice')." where 1=1 AND invoice_type = 'receiptvoucherinvoice' AND is_canceled='0' AND status='1' AND is_deleted='0' AND financial_year = '".$currentFinancialYear."' AND added_by = ".$obj_purchase->sanitize($_SESSION['user_detail']['user_id'])." order by serial_number ASC"); ?>
+							<?php $dataReceiptVoucherArrs = $obj_purchase->get_results("select purchase_invoice_id, serial_number, reference_number, invoice_date, supply_place, is_canceled from ".$obj_purchase->getTableName('client_purchase_invoice')." where 1=1 AND invoice_type = 'receiptvoucherinvoice' AND is_canceled='0' AND status='1' AND is_deleted='0' AND financial_year = '".$currentFinancialYear."' AND added_by = ".$obj_purchase->sanitize($_SESSION['user_detail']['user_id'])." order by serial_number ASC"); ?>
 							<?php if(!empty($dataReceiptVoucherArrs)) { ?>
 								<?php foreach($dataReceiptVoucherArrs as $dataReceiptVoucherArr) { ?>
 
 									<?php if($invoiceData[0]->receipt_voucher_number === $dataReceiptVoucherArr->purchase_invoice_id) { ?>
-										<option value='<?php echo $dataReceiptVoucherArr->purchase_invoice_id; ?>' data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>" selected="selected"><?php echo $dataReceiptVoucherArr->serial_number; ?></option>
+										<option value='<?php echo $dataReceiptVoucherArr->purchase_invoice_id; ?>' data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>" selected="selected"><?php echo $dataReceiptVoucherArr->reference_number; ?></option>
 									<?php } else { ?>
-										<option value='<?php echo $dataReceiptVoucherArr->purchase_invoice_id; ?>' data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>"><?php echo $dataReceiptVoucherArr->serial_number; ?></option>
+										<option value='<?php echo $dataReceiptVoucherArr->purchase_invoice_id; ?>' data-date="<?php echo $dataReceiptVoucherArr->invoice_date; ?>"><?php echo $dataReceiptVoucherArr->reference_number; ?></option>
 									<?php } ?>
 
 								<?php } ?>

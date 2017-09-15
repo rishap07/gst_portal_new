@@ -85,6 +85,7 @@ else
 						
 						 <input type="button" value="<?php echo ucfirst('Update document summary'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_document_summary&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/>
 				         <input type="button" value="<?php echo ucfirst('Update hsn summary'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_hsnwise_summary&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/>
+				         <input type="button" value="<?php echo ucfirst('Update nil summary'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_nil_summary&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/>
 				
 						
               
@@ -93,7 +94,7 @@ else
                                 <form method='post' name='form2'>
                                     Month Of Return
                                     <?php
-                                    $dataQuery = "SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS niceDate FROM gst_client_invoice group by nicedate";
+                                    $dataQuery = "SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS niceDate FROM gst_client_invoice group by nicedate ";
                                     $dataRes = $obj_gstr1->get_results($dataQuery);
                                     if (!empty($dataRes)) {
                                         ?>
@@ -220,11 +221,11 @@ else
                                                     {
                                                         $b2csCount++;
                                                         $b2cs_sumTotal +=$tempTotVal;
-                                                        $b2cl_invoice_total_value +=$tempInvTot;
+                                                        $b2cs_invoice_total_value +=$tempInvTot;
                                                     }
-                                                    $b2cs_invoice_total_value = isset($b2csDatavalue->taxable_subtotal)?$b2csDatavalue->taxable_subtotal:0;
+                                                    $tempInvTot = isset($b2csDatavalue->taxable_subtotal)?$b2csDatavalue->taxable_subtotal:0;
                                                     $b2cs_total += $b2csDatavalue->cgst_amount + $b2csDatavalue->sgst_amount + $b2csDatavalue->igst_amount + $b2csDatavalue->cess_amount;
-                                                    $b2cs_sumTotal =isset($b2csDatavalue->invoice_total_value)?$b2csDatavalue->invoice_total_value:0;
+                                                    $tempTotVal =isset($b2csDatavalue->invoice_total_value)?$b2csDatavalue->invoice_total_value:0;
                                                     $tempInv=$b2csDatavalue->invoice_id;
                                                 }
                                                 if($tempInv!='')

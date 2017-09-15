@@ -113,8 +113,6 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 			<?php $obj_purchase->showErrorMessage(); ?>
 			<?php $obj_purchase->showSuccessMessge(); ?>
 			<?php $obj_purchase->unsetMessage(); ?>
-			
-			
 
 			<div class="row">
 
@@ -128,10 +126,13 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 							<a href='javascript:void(0)' class="btn btn-success pull-left revokeAll" data-toggle="tooltip" title="Revoke All"><i class="fa fa-undo" aria-hidden="true"></i></a>
                         </div>
 
+						<?php $invoiceMonthYear = $obj_purchase->getInvoiceMonthList($obj_purchase->getTableName('client_purchase_invoice'), "'taxinvoice','importinvoice','sezunitinvoice','deemedimportinvoice'"); ?>
 						<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="padding-right:5px;padding-left:5px;">
-							<select class="date-dropdown">
+							<select name="invoiceDateOption" id="invoiceDateOption" class="date-dropdown">
 								<option value="all">All</option>
-								<option value="2017-07"><?php echo date("M-y", strtotime("2017-07")); ?></option>
+								<?php foreach($invoiceMonthYear as $monthYear) { ?>
+									<option value="<?php echo $monthYear->invoiceDate; ?>"><?php echo date("M-y", strtotime($monthYear->invoiceDate)); ?></option>
+								<?php } ?>
 							</select>
 						</div>
 
@@ -640,6 +641,10 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 		});
 
         TableManaged.init();
+		
+		$("#invoiceDateOption").change(function(){
+			TableManaged.init();
+		});
     });
 
     var TableManaged = function () {
@@ -667,7 +672,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                     "bDestroy": true,
 					"searching": false,
 					"bLengthChange": false,
-                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=purchase_invoice_list",
+                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=purchase_invoice_list&invoiceDate=" + $("#invoiceDateOption option:selected").val(),
                     "fnServerParams": function (aoData) {
 					},
                     "iDisplayLength": 6

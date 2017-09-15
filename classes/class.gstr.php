@@ -166,6 +166,9 @@ final class gstr extends validation {
         else {
             $this->array_key_search('message', $data);
             $msg = $this->error_msg;
+            if(!$msg) {
+                $msg = 'Sorry! Invalid OTP Request.';
+            }
             $this->setError($msg);
             return false;
         }
@@ -173,7 +176,6 @@ final class gstr extends validation {
     
     public function authenticateToken($otp,$code='')
     { 
-
         $otp_code = $_SESSION['otp'] = $otp;
         if(empty($_SESSION['ciphertext_enc'])) {
             $ciphertext_enc = $this->getOTPEncypt($_SESSION['otp']);
@@ -240,8 +242,11 @@ final class gstr extends validation {
                 return $error_cd;
             }
             else {
-               $this->setError($msg); 
-               return false;
+                if(!$msg) {
+                    $msg = 'Sorry! Invalid AuthToken Request.';
+                }
+                $this->setError($msg); 
+                return false;
             }
             
         }
@@ -750,7 +755,9 @@ final class gstr extends validation {
 
     public function save_user_summary($data,$key,$returnmonth) {
         if(isset($_SESSION['user_detail']['user_id'])) {
-            $user_ustr = $this->get_results("select * from " . $this->getTableName('user_api_summary') ." where 1=1 and  user_id = ".$_SESSION['user_detail']['user_id']." and gst_key = '".$key."' and fmonth = '".$returnmonth."'  ");
+           $sql = "select id from " . $this->getTableName('user_api_summary') ." where user_id = ".$_SESSION['user_detail']['user_id']." and gst_key = '".$key."' and fmonth = '".$returnmonth."'  ";
+
+            $user_ustr = $this->get_results($sql);
 
             if (!empty($user_ustr)) {
                 $dataGST1['json'] = $data['json'];
@@ -1013,49 +1020,70 @@ final class gstr extends validation {
         $this->modalHtml();
         ?>
         <script type="text/javascript">
-            $("#up").on("click", function (event) {
-                flag=0;
-                $(".name").each(function(){
-                    if ($(this).prop("checked")==true){ 
-                        flag=1;
+            $(document).ready(function () {
+                $("#up").on("click", function (event) {
+                    flag=0;
+                    var itype =  $(this).attr('itype');
+                    if(itype == 'HSN' || itype == 'NIL' || itype == 'DOCISSUE' ) {
+                        fun_upload_json();
                     }
-                });
-                if(flag==1)
-                {
-                    //event.preventDefault();
-                    $.ajax({
-                        url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_details_check",
-                        type: "json",
-                        success: function (response) {
-                            //alert(response);
-                            if(response == 1) {
-                                $("#otpModalBox").modal("show");
-                                return false;
+                    else {
+                        var checkCount =0;
+                        $(".name").each(function(){
+                            if ($(this).prop("checked")==true){ 
+                                flag=1;
+                                checkCount++;
                             }
-                            else if(response == 0) {
-                               document.form4.submit();
+                        });
+                        
+                        if(flag==1)
+                        {
+                            if(checkCount <= 10) {
+                              fun_upload_json();  
                             }
                             else {
-                                location.reload();
-                                return false;
+                               alert("Sorry! Select 10 invoices For Upload To GSTN.");
+                                return false; 
                             }
-                        },
-                        error: function() {
-                            alert("Please try again.");
+                            
+                        }
+                        else
+                        {
+                            alert("No Invoices are selected?");
                             return false;
                         }
-                    });
+                        return false;
+                    } 
                     return false;
-                    
-                }
-                else
-                {
-                    alert("No Invoices are selected?");
-                    return false;
-                }
-                return false;
-
+                });
+                
             });
+            function fun_upload_json() {
+                $.ajax({
+                    url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_details_check",
+                    type: "json",
+                    success: function (response) {
+                        alert(response);
+                        if(response == 1) {
+                            $("#otpModalBox").modal("show");
+                            return false;
+                        }
+                        else if(response == 0) {
+                           document.form4.submit();
+                        }
+                        else {
+                            location.reload();
+                            return false;
+                        }
+                    },
+                    error: function() {
+
+                        alert("Please try again.");
+                        return false;
+                    }
+                });
+                return false;
+            }
         </script>
         <?php
     }
@@ -1065,7 +1093,7 @@ final class gstr extends validation {
         ?>
         <script type="text/javascript">
         $(document).ready(function () {
-            $("#gstr1_summary_download",'.gstr1ViewBtn','.gstr1ViewBtn').on("click", function (event) {
+            $("#gstr1_summary_download").on("click", function (event) {
                 //event.preventDefault();
                 $.ajax({
                     url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_details_check",
@@ -1094,6 +1122,49 @@ final class gstr extends validation {
             });
         });
 
+        </script>
+        <?php
+    }
+
+    public function allUploadOtpPopupJs() {
+        $this->modalHtml();
+        ?>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#uploadBtn").on("click", function () {
+                    
+                    alert('d');
+                    fun_upload_json();
+                });
+                return false;
+
+            });
+            function fun_upload_json() {
+                $.ajax({
+                    url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_details_check",
+                    type: "json",
+                    success: function (response) {
+                        alert(response);
+                        if(response == 1) {
+                            $("#otpModalBox").modal("show");
+                            return false;
+                        }
+                        else if(response == 0) {
+                           document.form4.submit();
+                        }
+                        else {
+                            //location.reload();
+                            return false;
+                        }
+                    },
+                    error: function() {
+
+                        alert("Please try again.");
+                        return false;
+                    }
+                });
+                return false;
+            }
         </script>
         <?php
     }

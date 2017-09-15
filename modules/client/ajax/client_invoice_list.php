@@ -12,9 +12,9 @@ $obj_client = new client();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('ci.invoice_id', 'ci.invoice_type', 'ci.invoice_nature', 'ci.serial_number', 'ci.company_name', 'ci.company_address', 'ci.gstin_number', 'ci.supply_type', 'ci.invoice_date', 'ci.is_canceled', 'ci.invoice_total_value', 'ci.billing_name', 'ci.shipping_name');
+$aColumns = array('ci.invoice_id', 'ci.invoice_type', 'ci.invoice_nature', 'ci.serial_number', 'ci.reference_number', 'ci.company_name', 'ci.company_address', 'ci.gstin_number', 'ci.supply_type', 'ci.invoice_date', 'ci.is_canceled', 'ci.invoice_total_value', 'ci.billing_name', 'ci.shipping_name');
 
-$aSearchColumns = array('ci.invoice_type', 'ci.invoice_nature', 'ci.serial_number', 'ci.invoice_date', 'ci.invoice_total_value', 'ci.billing_name', 'ci.shipping_name');
+$aSearchColumns = array('ci.invoice_type', 'ci.invoice_nature', 'ci.serial_number', 'ci.reference_number', 'ci.invoice_date', 'ci.invoice_total_value', 'ci.billing_name', 'ci.shipping_name');
 $sIndexColumn = "invoice_id";
 
 /* DB table to use */
@@ -52,7 +52,11 @@ if (isset($_POST['iSortCol_0'])) {
  * on very large tables, and MySQL's regex functionality is very limited
 */
 
-$uWhere = " where ci.invoice_type IN('taxinvoice','exportinvoice','sezunitinvoice','deemedexportinvoice') AND ci.is_deleted='0' AND ci.added_by='".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."' ";
+if(isset($_GET['invoiceDate']) && strtoupper($_GET['invoiceDate']) != "ALL") {
+	$uWhere = " where ci.invoice_type IN('taxinvoice','exportinvoice','sezunitinvoice','deemedexportinvoice') AND ci.is_deleted='0' AND ci.added_by='".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."' AND DATE_FORMAT(invoice_date, '%Y-%m') = '".$_GET['invoiceDate']."' ";
+} else {
+	$uWhere = " where ci.invoice_type IN('taxinvoice','exportinvoice','sezunitinvoice','deemedexportinvoice') AND ci.is_deleted='0' AND ci.added_by='".$obj_client->sanitize($_SESSION['user_detail']['user_id'])."' ";
+}
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
     
     $uWhere .= 'AND (';
@@ -127,9 +131,9 @@ if(isset($rResult) && !empty($rResult)) {
 		$row[]= '<tr><td valign="top"><input name="sales_invoice[]" value="'.$aRow->invoice_id.'" class="salesInvoice" type="checkbox"></td></td>';
 
 		if($aRow->invoice_type == 'taxinvoice') {
-			$row[] = '<td><div class="list-primary pull-left"><div class="name"><a href="'.PROJECT_URL.'/?page=client_invoice_list&action=viewInvoice&id='.$aRow->invoice_id.'">'.$aRow->billing_name.'</a></div><a href="'.PROJECT_URL.'/?page=client_invoice_list&action=viewInvoice&id='.$aRow->invoice_id.'">'.$aRow->serial_number.'</a> | ' . $aRow->invoice_date . '</div><span class="pull-right"><div class="amount"><i class="fa fa-inr" aria-hidden="true"></i>'.$aRow->invoice_total_value.'</div><div class="greylinktext"><a href="'.PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$aRow->invoice_id.'">Edit</a>&nbsp;&nbsp;'.$cancelLink.'</div></span></td></tr>';
+			$row[] = '<td><div class="list-primary pull-left"><div class="name"><a href="'.PROJECT_URL.'/?page=client_invoice_list&action=viewInvoice&id='.$aRow->invoice_id.'">'.$aRow->billing_name.'</a></div><a href="'.PROJECT_URL.'/?page=client_invoice_list&action=viewInvoice&id='.$aRow->invoice_id.'">'.$aRow->reference_number.'</a> | ' . $aRow->invoice_date . '</div><span class="pull-right"><div class="amount"><i class="fa fa-inr" aria-hidden="true"></i>'.$aRow->invoice_total_value.'</div><div class="greylinktext"><a href="'.PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$aRow->invoice_id.'">Edit</a>&nbsp;&nbsp;'.$cancelLink.'</div></span></td></tr>';
 		} else {
-			$row[] = '<td><div class="list-primary pull-left"><div class="name"><a href="'.PROJECT_URL.'/?page=client_invoice_list&action=viewInvoice&id='.$aRow->invoice_id.'">'.$aRow->billing_name.'</a></div><a href="'.PROJECT_URL.'/?page=client_invoice_list&action=viewInvoice&id='.$aRow->invoice_id.'">'.$aRow->serial_number.'</a> | ' . $aRow->invoice_date . '</div><span class="pull-right"><div class="amount"><i class="fa fa-inr" aria-hidden="true"></i>'.$aRow->invoice_total_value.'</div><div class="greylinktext"><a href="'.PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$aRow->invoice_id.'">Edit</a>&nbsp;&nbsp;'.$cancelLink.'</div></span></td></tr>';
+			$row[] = '<td><div class="list-primary pull-left"><div class="name"><a href="'.PROJECT_URL.'/?page=client_invoice_list&action=viewInvoice&id='.$aRow->invoice_id.'">'.$aRow->billing_name.'</a></div><a href="'.PROJECT_URL.'/?page=client_invoice_list&action=viewInvoice&id='.$aRow->invoice_id.'">'.$aRow->reference_number.'</a> | ' . $aRow->invoice_date . '</div><span class="pull-right"><div class="amount"><i class="fa fa-inr" aria-hidden="true"></i>'.$aRow->invoice_total_value.'</div><div class="greylinktext"><a href="'.PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$aRow->invoice_id.'">Edit</a>&nbsp;&nbsp;'.$cancelLink.'</div></span></td></tr>';
 		}
 
         $output['aaData'][] = $row;

@@ -29,7 +29,7 @@ if(isset($_POST['correspondingType']) && isset($_POST['action']) && $_POST['acti
 		$correspondingTypeItem .= '<option value="">Select Document Number</option>';
 
 		foreach($correspondingTypeData as $correspondingType) {
-			$correspondingTypeItem .= '<option value="'. $correspondingType->purchase_invoice_id .'" data-reference="'. $correspondingType->reference_number .'" data-date="'. $correspondingType->invoice_date .'">'. $correspondingType->serial_number .'</option>';
+			$correspondingTypeItem .= '<option value="'. $correspondingType->purchase_invoice_id .'" data-serial="'. $correspondingType->serial_number .'" data-date="'. $correspondingType->invoice_date .'">'. $correspondingType->reference_number .'</option>';
 		}
 
 		$result['message'] = $correspondingTypeItem;

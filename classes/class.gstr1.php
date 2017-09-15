@@ -16,18 +16,18 @@ final class gstr1 extends validation {
         parent::__construct();
     }
 
-    public function gstr1Upload($ids= '') {
+    public function gstr1Upload($ids= '',$invoice_type='') {
         //session_destroy();
 
         $fmonth = isset($_GET['returnmonth']) ? $_GET['returnmonth'] : date('Y-m');
-        $this->getGSTR1Data($fmonth,$ids);
+        return $this->getGSTR1Data($fmonth,$ids,$invoice_type);
     }
 
-    public function gstr1PayloadDownload($ids='',$type='') {
+    public function gstr1PayloadDownload($ids='',$type='',$invoice_type='') {
         //session_destroy();
         
         $fmonth = isset($_GET['returnmonth']) ? $_GET['returnmonth'] : date('Y-m');
-        $payload = $this->gstCreatePayload($_SESSION['user_detail']['user_id'], $fmonth,$ids,$type);
+        $payload = $this->gstCreatePayload($_SESSION['user_detail']['user_id'], $fmonth,$ids,$type,$invoice_type);
         $dataArr = json_encode($payload['data_arr']);
         header("Content-type: text/json");
         header("Content-Disposition: attachment; filename=gstr1.json");
@@ -109,7 +109,7 @@ final class gstr1 extends validation {
         return false;
     }
 
-    private function getGSTR1Data($fmonth,$ids='') {
+    private function getGSTR1Data($fmonth,$ids='',$invoice_type='') {
         $obj_gst = new gstr();
         //$obj_gst->gstr_session_destroy();
         $is_gross_turnover_check = (float)$obj_gst->is_gross_turnover_check($_SESSION['user_detail']['user_id']);
@@ -121,10 +121,10 @@ final class gstr1 extends validation {
         if(!empty($is_username_check)) {
             if (!empty($is_gross_turnover_check) && !empty($cur_gt)) {
                 if (!empty($dataRes)) {
-                    $payload = $this->gstCreatePayload($_SESSION['user_detail']['user_id'], $fmonth,$ids);
+                    $payload = $this->gstCreatePayload($_SESSION['user_detail']['user_id'], $fmonth,$ids,$invoice_type);
                     $dataArr = $payload['data_arr'];
                     $data_ids = $payload['data_ids'];
-                    //$this->pr($payload);die;
+                    $this->pr($payload);die;
                     $response = $obj_gst->returnSave($dataArr, $fmonth,'gstr1');
                     
                     if (!empty($response['error'] == 0)) {
@@ -268,108 +268,211 @@ final class gstr1 extends validation {
         return $dataArr;
     }
 
-    public function gstCreatePayload($user_id, $returnmonth,$ids='',$type='') {
+    public function gstCreatePayload($user_id, $returnmonth,$ids='',$type='',$invoice_type='') {
         $data_ids = array();
         $dataArr = $this->gstPayloadHeader($user_id, $returnmonth);
-        /***** Start Code For B2B Payload ********** */
-        $b2b_data = $this->gstB2BPayload($user_id, $returnmonth,'',$ids,$type);
-        if (!empty($b2b_data)) {
-            $data_ids[] = $b2b_ids = $b2b_data['b2b_ids'];
-            $b2b_arr = $b2b_data['b2b_arr'];
-            $dataArr = array_merge($dataArr, $b2b_arr);
+
+        if($invoice_type == '') {
+            /***** Start Code For B2B Payload ********** */
+            $b2b_data = $this->gstB2BPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($b2b_data)) {
+                $data_ids[] = $b2b_ids = $b2b_data['b2b_ids'];
+                $b2b_arr = $b2b_data['b2b_arr'];
+                $dataArr = array_merge($dataArr, $b2b_arr);
+            }
+            /***** End Code For B2B Payload ********** */
+
+            /***** Start Code For B2CL Payload ********** */
+            $b2cl_data = $this->gstB2CLPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($b2cl_data)) {
+                $data_ids[] = $b2cl_ids = $b2cl_data['b2cl_ids'];
+                $b2cl_arr = $b2cl_data['b2cl_arr'];
+                $dataArr = array_merge($dataArr, $b2cl_arr);
+            }
+            /***** End Code For B2CL Payload ********** */
+
+            /***** Start Code For B2CS Payload ********** */
+            $b2cs_data = $this->gstB2CSPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($b2cs_data)) {
+                $data_ids[] = $b2cs_ids = $b2cs_data['b2cs_ids'];
+                $b2cs_arr = $b2cs_data['b2cs_arr'];
+                $dataArr = array_merge($dataArr, $b2cs_arr);
+            }
+            /***** End Code For B2CS Payload ********** */
+
+            /** *** Start Code For CDNR Payload ********** */
+            $cdnr_data = $this->gstCDNRPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($cdnr_data)) {
+                $data_ids[] = $cdnr_ids = $cdnr_data['cdnr_ids'];
+                $cdnr_arr = $cdnr_data['cdnr_arr'];
+                $dataArr = array_merge($dataArr, $cdnr_arr);
+            }
+            /****** End Code For CDNR Payload ********** */
+
+            /** *** Start Code For CDNUR Payload ********** */
+            $cdnur_data = $this->gstCDNURPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($cdnur_data)) {
+                $data_ids[] = $cdnur_ids = $cdnur_data['cdnur_ids'];
+                $cdnur_arr = $cdnur_data['cdnur_arr'];
+                $dataArr = array_merge($dataArr, $cdnur_arr);
+            }
+            /***** End Code For CDNUR Payload ********** */
+
+            /***** Start Code For HSN Summary Payload ********** */
+            $hsn_data = $this->gstHSNPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($hsn_data)) {
+                //$data_ids[] = $hsn_ids = $hsn_data['hsn_ids'];
+                $hsn_arr = $hsn_data['hsn_arr'];
+                $dataArr = array_merge($dataArr, $hsn_arr);
+            }
+            /***** END Code For HSN Summary Payload ********** */
+
+            /***** Start Code For AT Payload ********** */
+            $at_data = $this->gstATPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($at_data)) {
+                $data_ids[] = $at_ids = $at_data['at_ids'];
+                $at_arr = $at_data['at_arr'];
+                $dataArr = array_merge($dataArr, $at_arr);
+            }
+            /***** End Code For AT Payload ********** */
+
+            /***** Start Code For NIL Payload ********** */
+            $nil_data = $this->getNILPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($nil_data)) {
+                $data_ids[] = $nil_ids = $nil_data['nil_ids'];
+                $nil_arr = $nil_data['nil_arr'];
+                $dataArr = array_merge($dataArr, $nil_arr);
+            }
+            /***** End Code For NIL Payload ********** */
+
+            /***** Start Code For Doc Issue Payload ********** */
+            $doc_data = $this->getDOCISSUEPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($doc_data)) {
+                //$data_ids[] = $doc_ids = $doc_data['doc_ids'];
+                $doc_arr = $doc_data['doc_arr'];
+                $dataArr = array_merge($dataArr, $doc_arr);
+            }
+            /***** End Code For Doc Issue Payload ********** */
+
+            /***** Start Code For Exp Payload ********** */
+            $exp_data = $this->getEXPPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($exp_data)) {
+                $data_ids[] = $exp_ids = $exp_data['exp_ids'];
+                $exp_arr = $exp_data['exp_arr'];
+                $dataArr = array_merge($dataArr, $exp_arr);
+            }
+            /***** End Code For Exp Payload ********** */
+
+            /***** Start Code For TXPD  Payload ********** */
+            // $txpd_data = $this->getTXPDPayload($user_id, $returnmonth,,'',$ids);
+            // if (!empty($txpd_data)) {
+            //     $data_ids[] = $txpd_ids = $txpd_data['txpd_ids'];
+            //     $txpd_arr = $txpd_data['txpd_arr'];
+            //     $dataArr = array_merge($dataArr, $txpd_arr);
+            // }
+            /***** End Code For TXPD Payload ********** */ 
         }
-        /***** End Code For B2B Payload ********** */
 
-        /***** Start Code For B2CL Payload ********** */
-        $b2cl_data = $this->gstB2CLPayload($user_id, $returnmonth,'',$ids,$type);
-        if (!empty($b2cl_data)) {
-            $data_ids[] = $b2cl_ids = $b2cl_data['b2cl_ids'];
-            $b2cl_arr = $b2cl_data['b2cl_arr'];
-            $dataArr = array_merge($dataArr, $b2cl_arr);
+        if($invoice_type == 'B2B') {
+            /***** Start Code For B2B Payload ********** */
+            $b2b_data = $this->gstB2BPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($b2b_data)) {
+                $data_ids[] = $b2b_ids = $b2b_data['b2b_ids'];
+                $b2b_arr = $b2b_data['b2b_arr'];
+                $dataArr = array_merge($dataArr, $b2b_arr);
+            }
+            /***** End Code For B2B Payload ********** */
         }
-        /***** End Code For B2CL Payload ********** */
-
-        /***** Start Code For B2CS Payload ********** */
-        $b2cs_data = $this->gstB2CSPayload($user_id, $returnmonth,'',$ids,$type);
-        if (!empty($b2cs_data)) {
-            $data_ids[] = $b2cs_ids = $b2cs_data['b2cs_ids'];
-            $b2cs_arr = $b2cs_data['b2cs_arr'];
-            $dataArr = array_merge($dataArr, $b2cs_arr);
+        if($invoice_type == 'B2CL') {
+            /***** Start Code For B2CL Payload ********** */
+            $b2cl_data = $this->gstB2CLPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($b2cl_data)) {
+                $data_ids[] = $b2cl_ids = $b2cl_data['b2cl_ids'];
+                $b2cl_arr = $b2cl_data['b2cl_arr'];
+                $dataArr = array_merge($dataArr, $b2cl_arr);
+            }
+            /***** End Code For B2CL Payload ********** */
         }
-        /***** End Code For B2CS Payload ********** */
-
-        /** *** Start Code For CDNR Payload ********** */
-        $cdnr_data = $this->gstCDNRPayload($user_id, $returnmonth,'',$ids,$type);
-        if (!empty($cdnr_data)) {
-            $data_ids[] = $cdnr_ids = $cdnr_data['cdnr_ids'];
-            $cdnr_arr = $cdnr_data['cdnr_arr'];
-            $dataArr = array_merge($dataArr, $cdnr_arr);
+        if($invoice_type == 'B2CS') {
+            /***** Start Code For B2CS Payload ********** */
+            $b2cs_data = $this->gstB2CSPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($b2cs_data)) {
+                $data_ids[] = $b2cs_ids = $b2cs_data['b2cs_ids'];
+                $b2cs_arr = $b2cs_data['b2cs_arr'];
+                $dataArr = array_merge($dataArr, $b2cs_arr);
+            }
+            /***** End Code For B2CS Payload ********** */
         }
-        /****** End Code For CDNR Payload ********** */
-
-        /** *** Start Code For CDNUR Payload ********** */
-        $cdnur_data = $this->gstCDNURPayload($user_id, $returnmonth,'',$ids,$type);
-        if (!empty($cdnur_data)) {
-            $data_ids[] = $cdnur_ids = $cdnur_data['cdnur_ids'];
-            $cdnur_arr = $cdnur_data['cdnur_arr'];
-            $dataArr = array_merge($dataArr, $cdnur_arr);
+        if($invoice_type == 'CDNR') {
+            /** *** Start Code For CDNR Payload ********** */
+            $cdnr_data = $this->gstCDNRPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($cdnr_data)) {
+                $data_ids[] = $cdnr_ids = $cdnr_data['cdnr_ids'];
+                $cdnr_arr = $cdnr_data['cdnr_arr'];
+                $dataArr = array_merge($dataArr, $cdnr_arr);
+            }
+            /****** End Code For CDNR Payload ********** */
         }
-        /***** End Code For CDNUR Payload ********** */
-
-        /***** Start Code For HSN Summary Payload ********** */
-        $hsn_data = $this->gstHSNPayload($user_id, $returnmonth,'',$ids,$type);
-        if (!empty($hsn_data)) {
-            //$data_ids[] = $hsn_ids = $hsn_data['hsn_ids'];
-            $hsn_arr = $hsn_data['hsn_arr'];
-            $dataArr = array_merge($dataArr, $hsn_arr);
+        if($invoice_type == 'CDNUR') {
+            /** *** Start Code For CDNUR Payload ********** */
+            $cdnur_data = $this->gstCDNURPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($cdnur_data)) {
+                $data_ids[] = $cdnur_ids = $cdnur_data['cdnur_ids'];
+                $cdnur_arr = $cdnur_data['cdnur_arr'];
+                $dataArr = array_merge($dataArr, $cdnur_arr);
+            }
+            /***** End Code For CDNUR Payload ********** */
         }
-        /***** END Code For HSN Summary Payload ********** */
-
-        /***** Start Code For AT Payload ********** */
-        $at_data = $this->gstATPayload($user_id, $returnmonth,'',$ids,$type);
-        if (!empty($at_data)) {
-            $data_ids[] = $at_ids = $at_data['at_ids'];
-            $at_arr = $at_data['at_arr'];
-            $dataArr = array_merge($dataArr, $at_arr);
+        if($invoice_type == 'AT') {
+            /***** Start Code For AT Payload ********** */
+            $at_data = $this->gstATPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($at_data)) {
+                $data_ids[] = $at_ids = $at_data['at_ids'];
+                $at_arr = $at_data['at_arr'];
+                $dataArr = array_merge($dataArr, $at_arr);
+            }
+            /***** End Code For AT Payload ********** */
         }
-        /***** End Code For AT Payload ********** */
-
-        /***** Start Code For NIL Payload ********** */
-        $nil_data = $this->getNILPayload($user_id, $returnmonth,'',$ids,$type);
-        if (!empty($nil_data)) {
-            $data_ids[] = $nil_ids = $nil_data['nil_ids'];
-            $nil_arr = $nil_data['nil_arr'];
-            $dataArr = array_merge($dataArr, $nil_arr);
+        if($invoice_type == 'EXP') {
+            /***** Start Code For Exp Payload ********** */
+            $exp_data = $this->getEXPPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($exp_data)) {
+                $data_ids[] = $exp_ids = $exp_data['exp_ids'];
+                $exp_arr = $exp_data['exp_arr'];
+                $dataArr = array_merge($dataArr, $exp_arr);
+            }
+            /***** End Code For Exp Payload ********** */
         }
-        /***** End Code For NIL Payload ********** */
-
-        /***** Start Code For Doc Issue Payload ********** */
-        $doc_data = $this->getDOCISSUEPayload($user_id, $returnmonth,'',$ids,$type);
-        if (!empty($doc_data)) {
-            //$data_ids[] = $doc_ids = $doc_data['doc_ids'];
-            $doc_arr = $doc_data['doc_arr'];
-            $dataArr = array_merge($dataArr, $doc_arr);
+        if($invoice_type == 'HSN') {
+            /***** Start Code For HSN Summary Payload ********** */
+            $hsn_data = $this->gstHSNPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($hsn_data)) {
+                //$data_ids[] = $hsn_ids = $hsn_data['hsn_ids'];
+                $hsn_arr = $hsn_data['hsn_arr'];
+                $dataArr = array_merge($dataArr, $hsn_arr);
+            }
+            /***** END Code For HSN Summary Payload ********** */
         }
-        /***** End Code For Doc Issue Payload ********** */
-
-        /***** Start Code For Exp Payload ********** */
-        $exp_data = $this->getEXPPayload($user_id, $returnmonth,'',$ids,$type);
-        if (!empty($exp_data)) {
-            $data_ids[] = $exp_ids = $exp_data['exp_ids'];
-            $exp_arr = $exp_data['exp_arr'];
-            $dataArr = array_merge($dataArr, $exp_arr);
+        if($invoice_type == 'DOCISSUE') {
+            /***** Start Code For Doc Issue Payload ********** */
+            $doc_data = $this->getDOCISSUEPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($doc_data)) {
+                //$data_ids[] = $doc_ids = $doc_data['doc_ids'];
+                $doc_arr = $doc_data['doc_arr'];
+                $dataArr = array_merge($dataArr, $doc_arr);
+            }
+            /***** End Code For Doc Issue Payload ********** */
         }
-        /***** End Code For Exp Payload ********** */
-
-        /***** Start Code For TXPD  Payload ********** */
-        // $txpd_data = $this->getTXPDPayload($user_id, $returnmonth,,'',$ids);
-        // if (!empty($txpd_data)) {
-        //     $data_ids[] = $txpd_ids = $txpd_data['txpd_ids'];
-        //     $txpd_arr = $txpd_data['txpd_arr'];
-        //     $dataArr = array_merge($dataArr, $txpd_arr);
-        // }
-        /***** End Code For TXPD Payload ********** */
-
+        if($invoice_type == 'NIL') {
+            /***** Start Code For NIL Payload ********** */
+            $nil_data = $this->getNILPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($nil_data)) {
+                $data_ids[] = $nil_ids = $nil_data['nil_ids'];
+                $nil_arr = $nil_data['nil_arr'];
+                $dataArr = array_merge($dataArr, $nil_arr);
+            }
+            /***** End Code For NIL Payload ********** */
+        }
         
         /*$this->pr($dataArr);       
         die; */
@@ -1257,30 +1360,34 @@ final class gstr1 extends validation {
 
     public function gstHSNPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $hsn_array = $hsn_ids = array();
-        $dataInvHsn = $this->getHSNInvoices($user_id, $returnmonth,$type,$ids);
+        $dataInvHsn = $this->getReturnUploadSummary($user_id, $returnmonth,'gstr1hsn');
         if (isset($dataInvHsn) && !empty($dataInvHsn)) {
             $y = 0;
             $a = 1;
-            foreach ($dataInvHsn as $dataIn) {
+            $json = $dataInvHsn[0]->return_data;
+            if(!empty($json)) {
+                $dataInvHsn = json_decode(base64_decode($json));
+                foreach ($dataInvHsn as $dataIn) {
 
-                $dataArr['hsn']['data'][$y]['num'] = (int) $a;
-                $dataArr['hsn']['data'][$y]['hsn_sc'] = $dataIn->item_hsncode;
-                $dataArr['hsn']['data'][$y]['desc'] = substr($dataIn->item_name,0,30);
-                $dataArr['hsn']['data'][$y]['uqc'] = $dataIn->item_unit;
-                $dataArr['hsn']['data'][$y]['qty'] = (float) $dataIn->item_quantity;
-                $dataArr['hsn']['data'][$y]['val'] = (float) $dataIn->invoice_total_value;
-                $dataArr['hsn']['data'][$y]['txval'] = (float) $dataIn->taxable_subtotal;
-                $dataArr['hsn']['data'][$y]['iamt'] = (float) $dataIn->igst_amount;
-                $dataArr['hsn']['data'][$y]['samt'] = (float) $dataIn->sgst_amount;
-                $dataArr['hsn']['data'][$y]['camt'] = (float) $dataIn->cgst_amount;
-                $dataArr['hsn']['data'][$y]['csamt'] = (float) $dataIn->cess_amount;
-                $a++;
-                $y++;
-                $hsn_array[] = (array) $dataIn;
-            }
+                    $dataArr['hsn']['data'][$y]['num'] = (int) $a;
+                    $dataArr['hsn']['data'][$y]['hsn_sc'] = $dataIn->hsn;
+                    $dataArr['hsn']['data'][$y]['desc'] = substr($dataIn->description,0,30);
+                    $dataArr['hsn']['data'][$y]['uqc'] = $dataIn->unit;
+                    $dataArr['hsn']['data'][$y]['qty'] = (float) $dataIn->qty;
+                    $dataArr['hsn']['data'][$y]['val'] = (float) $dataIn->invoice_total_value;
+                    $dataArr['hsn']['data'][$y]['txval'] = (float) $dataIn->taxable_subtotal;
+                    $dataArr['hsn']['data'][$y]['iamt'] = (float) $dataIn->igst;
+                    $dataArr['hsn']['data'][$y]['samt'] = (float) $dataIn->sgst;
+                    $dataArr['hsn']['data'][$y]['camt'] = (float) $dataIn->cgst;
+                    $dataArr['hsn']['data'][$y]['csamt'] = (float) $dataIn->cess;
+                    $a++;
+                    $y++;
+                    $hsn_array[] = (array) $dataIn;
+                }
 
-            if (!empty($hsn_array)) {
-                $hsn_ids = array_unique(array_column($hsn_array, 'invoice_id'));
+                if (!empty($hsn_array)) {
+                    $hsn_ids = array_unique(array_column($hsn_array, 'invoice_id'));
+                }
             }
         }
         //$this->pr($dataInvHsn);
@@ -1339,6 +1446,7 @@ final class gstr1 extends validation {
         $response['at_arr'] = $dataArr;
         return $response;
     }
+
 
     public function getNILPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $nil_array = $nil_ids = array();
@@ -1834,6 +1942,130 @@ final class gstr1 extends validation {
         $response['txpd_ids'] = $txpd_ids;
         $response['txpd_arr'] = $dataArr;
         return $response;
+    }
+
+    public function getNilFinalArray($user_id, $returnmonth) {
+        $dataArr = $response = $nil_array = $nil_ids = array();
+        $dataInvNil = $this->getNilInvoices($user_id, $returnmonth);
+        //$this->pr($dataInvNil);
+        if (!empty($dataInvNil)) {
+            $dataInv1 = $dataInvNil[0];
+            $dataInv2 = $dataInvNil[1];
+            $nill_inv_array_b2b = $nill_inv_array_b2c = array();
+            $totalExmp=$totalNonGst= $totalNil= $totalExmpInt=$totalNonGstInt= $totalNilInt = 0;
+
+            if (isset($dataInv1)) {
+                foreach ($dataInv1 as $dataIn) {
+                    if ($dataIn->company_state != $dataIn->supply_place) {
+                        $nill_inv_array_b2b[0]['sply_ty'] = 'INTERB2B';
+                        if($dataIn->is_applicable =='0')
+                        {
+                            $totalNil += isset($dataIn->invoice_total_value)?$dataIn->invoice_total_value:0;
+                        }
+                        if($dataIn->is_applicable =='1')
+                        {
+                            $totalNonGst += isset($dataIn->invoice_total_value)?$dataIn->invoice_total_value:0;
+                        }
+                        if($dataIn->is_applicable =='2')
+                        {
+                            $totalExmp += isset($dataIn->invoice_total_value)?$dataIn->invoice_total_value:0;
+                        }
+                    }
+                    else {
+                        $nill_inv_array_b2b[0]['sply_ty'] = 'INTERB2B';
+                        if($dataIn->is_applicable =='0')
+                        {
+                            $totalNilInt += isset($dataIn->invoice_total_value)?$dataIn->invoice_total_value:0;
+                        }
+                        if($dataIn->is_applicable =='1')
+                        {
+                            $totalNonGstInt += isset($dataIn->invoice_total_value)?$dataIn->invoice_total_value:0;
+                        }
+                        if($dataIn->is_applicable =='2')
+                        {
+                            $totalExmpInt += isset($dataIn->invoice_total_value)?$dataIn->invoice_total_value:0;
+                        }
+                    }
+                    
+                    $nil_array[] = (array) $dataIn;
+                } 
+                foreach ($dataInv1 as $dataIn) {   
+                    if ($dataIn->company_state != $dataIn->supply_place) {
+                        $nill_inv_array_b2b[0]['sply_ty'] = 'INTERB2B';
+                        $nill_inv_array_b2b[0]['nil_amt'] = $totalNil;
+                        $nill_inv_array_b2b[0]['ngsup_amt'] = $totalNonGst;
+                        $nill_inv_array_b2b[0]['expt_amt'] = $totalExmp;
+                        
+                    } else {
+                        $nill_inv_array_b2b[1]['sply_ty'] = 'INTRAB2B';
+                        $nill_inv_array_b2b[1]['nil_amt'] = $totalNilInt;
+                        $nill_inv_array_b2b[1]['ngsup_amt'] = $totalNonGstInt;
+                        $nill_inv_array_b2b[1]['expt_amt'] = $totalExmpInt;
+                    }
+                }   
+                  
+            }
+            if (isset($dataInv2)) {
+                $totalExmp=$totalNonGst= $totalNil= $totalExmpInt=$totalNonGstInt= $totalNilInt = 0;
+                foreach ($dataInv2 as $dataIn) {
+                    if ($dataIn->company_state != $dataIn->supply_place) {
+                        $nill_inv_array_b2b[0]['sply_ty'] = 'INTERB2B';
+                        if($dataIn->is_applicable =='0')
+                        {
+                            $totalNil += isset($dataIn->invoice_total_value)?$dataIn->invoice_total_value:0;
+                        }
+                        if($dataIn->is_applicable =='1')
+                        {
+                            $totalNonGst += isset($dataIn->invoice_total_value)?$dataIn->invoice_total_value:0;
+                        }
+                        if($dataIn->is_applicable =='2')
+                        {
+                            $totalExmp += isset($dataIn->invoice_total_value)?$dataIn->invoice_total_value:0;
+                        }
+                    }
+                    else {
+                        $nill_inv_array_b2b[0]['sply_ty'] = 'INTERB2B';
+                        if($dataIn->is_applicable =='0')
+                        {
+                            $totalNilInt += isset($dataIn->invoice_total_value)?$dataIn->invoice_total_value:0;
+                        }
+                        if($dataIn->is_applicable =='1')
+                        {
+                            $totalNonGstInt += isset($dataIn->invoice_total_value)?$dataIn->invoice_total_value:0;
+                        }
+                        if($dataIn->is_applicable =='2')
+                        {
+                            $totalExmpInt += isset($dataIn->invoice_total_value)?$dataIn->invoice_total_value:0;
+                        }
+                    }
+                    
+                    $nil_array[] = (array) $dataIn;
+                } 
+                foreach ($dataInv2 as $dataIn) {
+                    if ($dataIn->company_state != $dataIn->supply_place) {
+                        $nill_inv_array_b2c[0]['sply_ty'] = 'INTERB2C';
+                        $nill_inv_array_b2c[0]['nil_amt'] = $totalNil;
+                        $nill_inv_array_b2c[0]['ngsup_amt'] = $totalNonGst;
+                        $nill_inv_array_b2c[0]['expt_amt'] = $totalExmp;
+
+                        
+                    } else {
+                        $nill_inv_array_b2c[1]['sply_ty'] = 'INTRAB2C';
+                        $nill_inv_array_b2c[1]['nil_amt'] = $totalNilInt;
+                        $nill_inv_array_b2c[1]['ngsup_amt'] = $totalNonGstInt;
+                        $nill_inv_array_b2c[1]['expt_amt'] = $totalExmpInt;
+                    }
+
+                    $nil_array[] = (array) $dataIn;
+                }
+            }
+            if (!empty($nill_inv_array_b2c)) {
+                $nill_inv_array_b2b = array_merge($nill_inv_array_b2b, $nill_inv_array_b2c);
+            }
+            
+        }
+
+        return $nill_inv_array_b2b;
     }
 
     public function startGstr1() {

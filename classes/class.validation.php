@@ -74,6 +74,7 @@ class validation extends upload {
             'returnfile_dates'=>TAB_PREFIX.'returnfile_dates',
             'otp_request'=>TAB_PREFIX.'otp_request',
             'user_api_summary'=>TAB_PREFIX.'user_api_summary',
+            'return_upload_summary'=>TAB_PREFIX.'return_upload_summary'
         );
 
         $this->checkUserPortalAccess();
@@ -674,9 +675,10 @@ class validation extends upload {
         }
 
         $queryHsn .= " and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and (a.invoice_type='creditnote' or a.invoice_type='debitnote' or a.invoice_type='taxinvoice' or  a.invoice_type='exportinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice' ) and a.is_canceled='0' and a.is_deleted='0' group by b.item_hsncode";
-       // echo "<br>HSN<br><br>".$queryHsn.'<br/>';
+       //echo "<br>HSN<br><br>".$queryHsn.'<br/>';
         return $this->get_results($queryHsn); 
     }
+
     
     public function getNILTotalInvoices($user_id,$returnmonth,$type='',$ids=''){
         $query1 =  "select a.invoice_id,a.billing_name,
@@ -796,6 +798,12 @@ class validation extends upload {
         $data = array($dataInv1,$dataInv2);
         return $data;
 
+    }
+
+    public function getReturnUploadSummary($user_id,$returnmonth,$type) {
+        $queryHsn =  "select a.return_data, a.financial_month, a.is_uploaded 
+         from ".$this->getTableName('return_upload_summary')." a  where 1 and a.added_by='".$user_id."' and a.financial_month like '%".$returnmonth."%' and a.is_deleted='0' and type= '".$type."' ";
+        return $this->get_results($queryHsn); 
     }
 
     protected function getDOCSalesInvoices($user_id,$returnmonth,$type='',$ids=''){
@@ -1226,6 +1234,15 @@ class validation extends upload {
         $data = array($dataInvDeliverySupplyOther,$dataInvCancleDeliverySupplyOther);
         return $data;
     }
-
+    
+    final public function getInvoiceMonthList($type, $invoiceType = ''){
+		
+		if($invoiceType != '') {
+			$invoiceMonthYear = $this->get_results("SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS invoiceDate FROM ".$type." where 1=1 AND invoice_type IN(".$invoiceType.") AND added_by='".$this->sanitize($_SESSION['user_detail']['user_id'])."' group by invoiceDate");
+		} else {
+			$invoiceMonthYear = $this->get_results("SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS invoiceDate FROM ".$type." where 1=1 AND added_by='".$this->sanitize($_SESSION['user_detail']['user_id'])."' group by invoiceDate");
+        }
+		return $invoiceMonthYear;
+    }
 }
 
