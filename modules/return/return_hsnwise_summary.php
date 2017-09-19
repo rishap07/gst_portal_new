@@ -21,7 +21,8 @@ if ($_REQUEST['returnmonth'] != '') {
 if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
     $flag = $obj_transition->checkVerifyUser();
     if ($flag == 'notverify') {
-        
+         $obj_transition->setError("To save hsn summary first verify your email and mobile number");
+		
     } else {
         if ($obj_gstr2->saveGstr1HsnSummary()) {
             //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
@@ -149,8 +150,9 @@ if (!empty($returndata1)) {
 	$arr = $returndata1[0]->return_data;
     $arr1= base64_decode($arr);
 	$summary_arr = json_decode($arr1);	
-				
+	//$obj_transition->pr($summary_arr);
     foreach ($summary_arr as $data) {
+		
         ?>
   
                                         
@@ -204,11 +206,12 @@ if (!empty($returndata1)) {
                                             </td>
                                         </tr>
                                         <?php
-                                    }
+	}
                                    
 	   }
 	   else
 	   {
+		  
 		   foreach ($returndata1 as $data) {
         ?>
   

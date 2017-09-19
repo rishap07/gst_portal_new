@@ -199,6 +199,7 @@ class processpayment extends validation
 			$dataInvoice['taxes'] = ($plan_price * $dataInvoice['tax_percentage']) / 100;
 			$dataInvoice['total'] = $plan_price + $dataInvoice['taxes'];
 			$dataInvoice['payment_status'] = 1;
+			$dataInvoice['plan_subscription_id'] = $dataPl[0]->id;
 			$dataInvoice['invoice_date'] = date('Y-m-d H:i:s');
 			$dataInvoice['invoice_paid_date'] = date('Y-m-d H:i:s');
 			$this->insert(TAB_PREFIX.'invoices',$dataInvoice);
@@ -233,7 +234,7 @@ class processpayment extends validation
             $to        = $email[0]->email;
 			$from = 'noreply@gstkeeper.com';
 			$cc='';
-			$bcc  = 'rishap.gandhi@cyfuture.com,aditya.kumar@cyfuture.com,sheetal.prasad@cyfuture.com,Manish.sarthak@cyfuture.com,jagat.singh@cyfuture.com';
+			$bcc  = 'rishap.gandhi@cyfuture.com,aditya.kumar@cyfuture.com,ishwar.ghiya@cyfuture.com,Manish.sarthak@cyfuture.com,jagat.singh@cyfuture.com';
 			$attachment=$path;
             $subject   = 'Thank you for Purchasing a Plan on GSTKeeper!';
             $body=$this->getMailBody();

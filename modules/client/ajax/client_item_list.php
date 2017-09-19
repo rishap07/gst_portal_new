@@ -11,8 +11,8 @@ $obj_client = new client();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('cm.item_id','cm.item_name', 'cm.item_category','CONCAT(UCASE(LEFT(m.item_name,1)),LCASE(SUBSTRING(m.item_name,2))) as category_name','m.hsn_code', 'cm.unit_price', 'cm.item_description', 'cm.status');
-$aSearchColumns = array('cm.item_name', 'm.item_name', 'm.hsn_code', 'cm.unit_price', 'cm.item_description');
+$aColumns = array('cm.item_id','cm.item_name', 'cm.item_category','CONCAT(UCASE(LEFT(m.item_name,1)),LCASE(SUBSTRING(m.item_name,2))) as category_name','m.hsn_code', 'cm.unit_price', 'cm.unit_purchase_price', 'cm.item_description', 'cm.status');
+$aSearchColumns = array('cm.item_name', 'm.item_name', 'm.hsn_code', 'cm.unit_price', 'cm.unit_purchase_price', 'cm.item_description');
 $sIndexColumn = "cm.item_id";
 
 /* DB table to use */
@@ -128,6 +128,7 @@ if(isset($rResult) && !empty($rResult))
 		$row[] = utf8_decode($aRow->item_description);
         $row[] = utf8_decode($aRow->hsn_code);
         $row[] = utf8_decode($aRow->unit_price);
+		$row[] = utf8_decode($aRow->unit_purchase_price);
         $row[] = $status;
         $row[] = '<a href="'.PROJECT_URL.'/?page=client_item_update&action=editItem&id='.$aRow->item_id.'" class="iconedit hint--bottom" data-hint="Edit"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_item_list&action=deleteItem&id='.$aRow->item_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
         $output['aaData'][] = $row;

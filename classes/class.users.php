@@ -213,10 +213,93 @@ final class users extends validation {
             return false;
         }
     }
+	
+	public function saveUserInvoiceSetting() {
+
+		$dataArr['invoice_label'] = isset($_POST['invoice_label']) ? $_POST['invoice_label'] : '';
+		$dataArr['reference_label'] = isset($_POST['reference_label']) ? $_POST['reference_label'] : '';
+		$dataArr['type_label'] = isset($_POST['type_label']) ? $_POST['type_label'] : '';
+		$dataArr['nature_label'] = isset($_POST['nature_label']) ? $_POST['nature_label'] : '';
+		$dataArr['date_label'] = isset($_POST['date_label']) ? $_POST['date_label'] : '';
+
+        if (empty($dataArr)) {
+            $this->setError($this->validationMessage['mandatory']);
+            return false;
+        }
+
+		if (!$this->validateInvoiceSetting($dataArr)) {
+            return false;
+        }
+
+        if ($this->checkUserInvoiceSettingExist($_SESSION['user_detail']['user_id'])) {
+
+            $dataArr['updated_by'] = $_SESSION['user_detail']['user_id'];
+            $dataArr['updated_date'] = date('Y-m-d H:i:s');
+
+            $dataConditionArray['added_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);
+            if ($this->update($this->tableNames['client_invoice_setting'], $dataArr, $dataConditionArray)) {
+
+                $this->setSuccess($this->validationMessage['invoicesettingsaved']);
+                $this->logMsg("Invoice Label Setting Updated By ID : " . $_SESSION['user_detail']['user_id'] . " in invoice setting.","client_invoice_setting");
+                return true;
+            } else {
+
+                $this->setError($this->validationMessage['failed']);
+                return false;
+            }
+        } else {
+
+            $dataArr['added_by'] = $_SESSION['user_detail']['user_id'];
+            $dataArr['added_date'] = date('Y-m-d H:i:s');
+
+            if ($this->insert($this->tableNames['client_invoice_setting'], $dataArr)) {
+
+                $this->setSuccess($this->validationMessage['invoicesettingsaved']);
+                $insertid = $this->getInsertID();
+                $this->logMsg("Invoice Label Setting Added. ID : " . $insertid . ".","client_invoice_setting");
+                return true;
+            } else {
+                $this->setError($this->validationMessage['failed']);
+                return false;
+            }
+        }
+    }
+	
+	public function validateInvoiceSetting($dataArr) {
+
+        $rules = array('invoice_label' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Invoice Label');
+
+		if( array_key_exists("reference_label",$dataArr) ) {
+			$rules['reference_label'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Reference Label';
+		}
+
+		if( array_key_exists("type_label",$dataArr) ) {
+			$rules['type_label'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Type Label';
+		}
+
+		if( array_key_exists("nature_label",$dataArr) ) {
+			$rules['nature_label'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Nature Label';
+		}
+
+		if( array_key_exists("date_label",$dataArr) ) {
+			$rules['date_label'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Date Label';
+		}
+
+        $valid = $this->vali_obj->validate($dataArr, $rules);
+        if ($valid->hasErrors()) {
+            $err_arr = $valid->allErrors();
+            $this->setError($err_arr);
+            $valid->clearMessages();
+            return false;
+        }
+        return true;
+    }
 
     public function saveUserThemeSetting() {
 
         $dataArr['theme_style'] = isset($_POST['theme_style']) ? $_POST['theme_style'] : 'theme-color.css';
+		$dataArr['show_logo'] = isset($_POST['show_logo']) ? $_POST['show_logo'] : '1';
+		$dataArr['show_signature'] = isset($_POST['show_signature']) ? $_POST['show_signature'] : '0';
 		$dataArr['gross_turnover'] = isset($_POST['gross_turnover']) ? $_POST['gross_turnover'] : '';
 		$dataArr['cur_gross_turnover'] = isset($_POST['cur_gross_turnover']) ? $_POST['cur_gross_turnover'] : '';
 		$dataArr['isd_number'] = isset($_POST['isd_number']) ? $_POST['isd_number'] : '';
@@ -240,14 +323,30 @@ final class users extends validation {
                 $dataArr['theme_logo'] = $theme_logo;
             }
         }
+		
+		if ($_FILES['theme_signature']['name'] != '') {
+
+            $theme_signature = $this->imageUploads($_FILES['theme_signature'], 'theme-signature', 'upload', $this->allowImageExt, 1048576, 'Max file Size 1 MB');
+            if ($theme_signature == FALSE) {
+                return false;
+            } else {
+                $dataArr['theme_signature'] = $theme_signature;
+            }
+        }
 
 		if (!$this->validateThemeSetting($dataArr)) {
             return false;
         }
 		
 		$dataInsertArray['theme_style'] = $dataArr['theme_style'];
+		$dataInsertArray['show_logo'] = $dataArr['show_logo'];
+		$dataInsertArray['show_signature'] = $dataArr['show_signature'];
 		if( array_key_exists("theme_logo",$dataArr) ) {
 			$dataInsertArray['theme_logo'] = $dataArr['theme_logo'];
+		}
+
+		if( array_key_exists("theme_signature",$dataArr) ) {
+			$dataInsertArray['theme_signature'] = $dataArr['theme_signature'];
 		}
 
 		/* update kyc turnover data */
@@ -305,6 +404,10 @@ final class users extends validation {
 
         if (array_key_exists("theme_logo", $dataArr)) {
             $rules['theme_logo'] = 'image|#|lable_name:Theme Logo';
+        }
+		
+		if (array_key_exists("theme_signature", $dataArr)) {
+            $rules['theme_signature'] = 'image|#|lable_name:Theme Signature';
         }
 
 		if( array_key_exists("gross_turnover",$dataArr) ) {

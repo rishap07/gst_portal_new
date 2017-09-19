@@ -91,6 +91,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printDCInvoice' && isset($_GET
 
 $currentFinancialYear = $obj_client->generateFinancialYear();
 $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
+$dataInvoiceSettingArr = $obj_client->getUserInvoiceSetting( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
 ?>
 <style>
     #mainTable thead{display:none;}
@@ -112,13 +113,23 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                 <div class="fixed-left-col col-sm-12 col-xs-12" style="padding-right:0px; padding-left:0px;">
 
                     <div class="invoiceheaderfixed">
-                        <div class="col-md-8">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="padding-right:5px;padding-left:10px;">
                             <a href='javascript:void(0)' class="btn btn-warning pull-left checkAll">Check All</a>
                             <a href='javascript:void(0)' class="btn btn-danger pull-left cancelAll" data-toggle="tooltip" title="Cancel All"><i class="fa fa-times" aria-hidden="true"></i></a>
 							<a href='javascript:void(0)' class="btn btn-success pull-left revokeAll" data-toggle="tooltip" title="Revoke All"><i class="fa fa-undo" aria-hidden="true"></i></a>
                         </div>
+						
+						<?php $invoiceMonthYear = $obj_client->getInvoiceMonthList($obj_client->getTableName('client_invoice'), "'deliverychallaninvoice'"); ?>
+						<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="padding-right:5px;padding-left:5px;">
+							<select name="invoiceDateOption" id="invoiceDateOption" class="date-dropdown">
+								<option value="all">All</option>
+								<?php foreach($invoiceMonthYear as $monthYear) { ?>
+									<option value="<?php echo $monthYear->invoiceDate; ?>"><?php echo date("M-y", strtotime($monthYear->invoiceDate)); ?></option>
+								<?php } ?>
+							</select>
+						</div>
 
-                        <div class="col-md-4">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="padding-right:10px;padding-left:5px;">
                             <a href='<?php echo PROJECT_URL; ?>/?page=client_create_delivery_challan_invoice' class="btn btn-success pull-right"><i class="fa fa-plus" aria-hidden="true"></i> New</a>
                         </div>
                     </div>
@@ -221,19 +232,17 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                             <table>
                                                 <tr>
                                                     <td class="title">
-                                                        <?php if (isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") { ?>
+                                                        <?php if(isset($dataThemeSettingArr['data']->show_logo) && $dataThemeSettingArr['data']->show_logo == '1' && isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") { ?>
                                                             <img src="<?php echo PROJECT_URL . '/upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo; ?>" style="width:100%;max-width:300px;">
-                                                        <?php } else { ?>
-                                                            <img src="<?php echo PROJECT_URL; ?>/image/gst-k-logo.png" style="width:100%;max-width:300px;">
                                                         <?php } ?>
                                                     </td>
 
-                                                    <td style="text-align:right;vertical-align:top;">
-                                                        <b>Invoice #</b>: <?php echo $invoiceData[0]->serial_number; ?><br>
-                                                        <b>Reference #</b>: <?php echo $invoiceData[0]->reference_number; ?><br>
-                                                        <b>Type:</b> Delivery Challan Invoices<br>
-                                                        <b>Nature:</b> <?php echo "Sales Invoice"; ?><br>
-                                                        <b>Invoice Date:</b> <?php echo $invoiceData[0]->invoice_date; ?>
+													<td style="text-align:right;vertical-align:top;">
+                                                        <b><?php if(isset($dataInvoiceSettingArr['data']->invoice_label) && !empty($dataInvoiceSettingArr['data']->invoice_label)) { echo $dataInvoiceSettingArr['data']->invoice_label; } else { echo "Invoice #"; } ?></b>: <?php echo $invoiceData[0]->serial_number; ?><br>
+                                                        <b><?php if(isset($dataInvoiceSettingArr['data']->reference_label) && !empty($dataInvoiceSettingArr['data']->reference_label)) { echo $dataInvoiceSettingArr['data']->reference_label; } else { echo "Reference #"; } ?></b>: <?php echo $invoiceData[0]->reference_number; ?><br>
+                                                        <b><?php if(isset($dataInvoiceSettingArr['data']->type_label) && !empty($dataInvoiceSettingArr['data']->type_label)) { echo $dataInvoiceSettingArr['data']->type_label; } else { echo "Type"; } ?></b>: <?php echo "Delivery Challan"; ?><br>
+                                                        <b><?php if(isset($dataInvoiceSettingArr['data']->nature_label) && !empty($dataInvoiceSettingArr['data']->nature_label)) { echo $dataInvoiceSettingArr['data']->nature_label; } else { echo "Nature"; } ?></b>: <?php echo "Sales Invoice"; ?><br>
+                                                        <b><?php if(isset($dataInvoiceSettingArr['data']->date_label) && !empty($dataInvoiceSettingArr['data']->date_label)) { echo $dataInvoiceSettingArr['data']->date_label; } else { echo "Invoice Date"; } ?></b>: <?php echo $invoiceData[0]->invoice_date; ?>
                                                     </td>
                                                 </tr>
                                             </table>
@@ -247,8 +256,8 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                             <table>
                                                 <tr>
                                                     <td style="text-align:left;vertical-align:top;width:48%;padding-right:2%;">
-                                                        <?php echo $invoiceData[0]->company_name; ?><br>
-                                                        <?php echo $invoiceData[0]->company_address; ?><br>
+                                                        <?php echo html_entity_decode($invoiceData[0]->company_name); ?><br>
+                                                        <?php echo html_entity_decode($invoiceData[0]->company_address); ?><br>
 														<?php if(!empty($invoiceData[0]->company_email)) { ?><b>Email:</b> <?php echo $invoiceData[0]->company_email; ?><br><?php } ?>
 														<?php if(!empty($invoiceData[0]->company_phone_number)) { ?><b>Phone:</b> <?php echo $invoiceData[0]->company_phone_number; ?><br><?php } ?>
 														<?php $panFromGTIN = substr(substr($invoiceData[0]->gstin_number, 2), 0, -3); ?>
@@ -299,7 +308,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                                     <td rowspan="2">Unit</td>
                                                     <td rowspan="2">Rate<br>(<i class="fa fa-inr"></i>)</td>
                                                     <td rowspan="2">Total<br>(<i class="fa fa-inr"></i>)</td>
-                                                    <td rowspan="2">Discount(%)</td>
+                                                    <td rowspan="2">Discount<br>(%)</td>
                                                     <td rowspan="2">Taxable Value<br>(<i class="fa fa-inr"></i>)</td>
                                                     <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">CGST</td>
                                                     <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">SGST</td>
@@ -526,6 +535,10 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
         });
 
         TableManaged.init();
+		
+		$("#invoiceDateOption").change(function(){
+			TableManaged.init();
+		});
     });
 
     var TableManaged = function () {
@@ -553,7 +566,7 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                     "bDestroy": true,
                     "searching": false,
                     "bLengthChange": false,
-                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=client_delivery_challan_invoice_list",
+                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=client_delivery_challan_invoice_list&invoiceDate=" + $("#invoiceDateOption option:selected").val(),
                     "fnServerParams": function (aoData) {
                     },
                     "iDisplayLength": 6

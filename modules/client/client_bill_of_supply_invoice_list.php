@@ -91,6 +91,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printBOSInvoice' && isset($_GE
 
 $currentFinancialYear = $obj_client->generateFinancialYear();
 $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
+$dataInvoiceSettingArr = $obj_client->getUserInvoiceSetting( $obj_client->sanitize($_SESSION['user_detail']['user_id']) );
 ?>
 <style>
     #mainTable thead{display:none;}
@@ -230,19 +231,17 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                             <table>
                                                 <tr>
                                                     <td class="title">
-                                                        <?php if (isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") { ?>
+                                                        <?php if(isset($dataThemeSettingArr['data']->show_logo) && $dataThemeSettingArr['data']->show_logo == '1' && isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") { ?>
                                                             <img src="<?php echo PROJECT_URL . '/upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo; ?>" style="width:100%;max-width:300px;">
-                                                        <?php } else { ?>
-                                                            <img src="<?php echo PROJECT_URL; ?>/image/gst-k-logo.png" style="width:100%;max-width:300px;">
                                                         <?php } ?>
                                                     </td>
 
-                                                    <td style="text-align:right;vertical-align:top;">
-                                                        <b>Invoice #</b>: <?php echo $invoiceData[0]->serial_number; ?><br>
-                                                        <b>Reference #</b>: <?php echo $invoiceData[0]->reference_number; ?><br>
-                                                        <b>Type:</b> Bill of Supply Invoice<br>
-                                                        <b>Nature:</b> <?php echo "Sales Invoice"; ?><br>
-                                                        <b>Invoice Date:</b> <?php echo $invoiceData[0]->invoice_date; ?>
+													<td style="text-align:right;vertical-align:top;">
+                                                        <b><?php if(isset($dataInvoiceSettingArr['data']->invoice_label) && !empty($dataInvoiceSettingArr['data']->invoice_label)) { echo $dataInvoiceSettingArr['data']->invoice_label; } else { echo "Invoice #"; } ?></b>: <?php echo $invoiceData[0]->serial_number; ?><br>
+                                                        <b><?php if(isset($dataInvoiceSettingArr['data']->reference_label) && !empty($dataInvoiceSettingArr['data']->reference_label)) { echo $dataInvoiceSettingArr['data']->reference_label; } else { echo "Reference #"; } ?></b>: <?php echo $invoiceData[0]->reference_number; ?><br>
+                                                        <b><?php if(isset($dataInvoiceSettingArr['data']->type_label) && !empty($dataInvoiceSettingArr['data']->type_label)) { echo $dataInvoiceSettingArr['data']->type_label; } else { echo "Type"; } ?></b>: <?php echo "Bill of Supply Invoice"; ?><br>
+                                                        <b><?php if(isset($dataInvoiceSettingArr['data']->nature_label) && !empty($dataInvoiceSettingArr['data']->nature_label)) { echo $dataInvoiceSettingArr['data']->nature_label; } else { echo "Nature"; } ?></b>: <?php echo "Sales Invoice"; ?><br>
+                                                        <b><?php if(isset($dataInvoiceSettingArr['data']->date_label) && !empty($dataInvoiceSettingArr['data']->date_label)) { echo $dataInvoiceSettingArr['data']->date_label; } else { echo "Invoice Date"; } ?></b>: <?php echo $invoiceData[0]->invoice_date; ?>
                                                     </td>
                                                 </tr>
                                             </table>
@@ -254,8 +253,8 @@ $dataThemeSettingArr = $obj_client->getUserThemeSetting( $obj_client->sanitize($
                                             <table>
                                                 <tr>
                                                     <td style="text-align:left;vertical-align:top;width:48%;padding-right:2%;">
-                                                        <?php echo $invoiceData[0]->company_name; ?><br>
-                                                        <?php echo $invoiceData[0]->company_address; ?><br>
+                                                        <?php echo html_entity_decode($invoiceData[0]->company_name); ?><br>
+                                                        <?php echo html_entity_decode($invoiceData[0]->company_address); ?><br>
 														<?php if(!empty($invoiceData[0]->company_email)) { ?><b>Email:</b> <?php echo $invoiceData[0]->company_email; ?><br><?php } ?>
 														<?php if(!empty($invoiceData[0]->company_phone_number)) { ?><b>Phone:</b> <?php echo $invoiceData[0]->company_phone_number; ?><br><?php } ?>
 														<?php $panFromGTIN = substr(substr($invoiceData[0]->gstin_number, 2), 0, -3); ?>

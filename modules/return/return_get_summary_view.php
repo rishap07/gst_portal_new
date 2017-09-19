@@ -92,20 +92,19 @@ $response = $obj_api->get_user_summary('gstr1'.$type,$returnmonth);
             <div class="tab col-md-12 col-sm-12 col-xs-12">
               
                 <a href="<?php echo PROJECT_URL . '/?page=return_summary&returnmonth=' . $returnmonth ?>" >
-                    View GSTR1 Summary
+                    1.View GSTR1 Summary
                 </a>
                 <a href="<?php echo PROJECT_URL . '/?page=return_view_invoices&returnmonth=' . $returnmonth ?>">
-                    View My Invoice
+                    2.View My Invoice
                 </a>
-                <a href="<?php echo PROJECT_URL . '/?page=return_upload_invoices&returnmonth=' . $returnmonth ?>"  >
+                <!-- <a href="<?php echo PROJECT_URL . '/?page=return_upload_invoices&returnmonth=' . $returnmonth ?>"  >
                     Upload To GSTN
-                </a>
-                </a>
+                </a> -->
                  <a href="<?php echo PROJECT_URL . '/?page=return_get_summary&returnmonth=' . $returnmonth ?>" class="active">
-                    GSTR1 SUMMARY
+                    3.GSTR1 SUMMARY
                 </a>  
                 <a href="<?php echo PROJECT_URL . '/?page=return_filling_summary&returnmonth=' . $returnmonth ?>">
-                    File GSTr-1
+                    4.File GSTr-1
                 </a>            
             </div>
             <div id="get_summary" class="tabcontent">

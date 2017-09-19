@@ -7,7 +7,7 @@ $returnmonth = date('Y-m');
 
 if (isset($_POST['returnmonth'])) {
     $returnmonth = $_POST['returnmonth'];
-    $obj_transition->redirect(PROJECT_URL . "/?page=return_nil_summary&returnmonth=" . $returnmonth);
+    $obj_transition->redirect(PROJECT_URL . "/?page=return_gstr2_mydata&returnmonth=" . $returnmonth);
     exit();
 }
 $returnmonth = date('Y-m');
@@ -30,140 +30,15 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
     }
 }
 
-$autoflag = 0;
-$intra_reg_nil_amt1='';
-	$intra_unreg_nil_amt2='';
-	$inter_reg_nil_amt3='';
-	$inter_unreg_nil_amt4='';
-	$intra_reg_expt_amt1='';
-	$intra_unreg_expt_amt2='';
-	$inter_reg_expt_amt3='';
-	$inter_unreg_expt_amt4='';
-	$intra_reg_ngsup_amt1='';
-	$intra_unreg_ngsup_amt2='';
-	$inter_reg_ngsup_amt3='';
-	$inter_unreg_ngsup_amt4='';
-if (isset($_POST['autoname']) && $_POST['autoname'] == 1) {
-   $obj_gstr1 = new gstr1();
-	$nil_data = $obj_gstr1->getNilFinalArray($_SESSION["user_detail"]["user_id"],$returnmonth);
-	//$obj_gstr1->pr($nil_data);
-	
-    $autoflag=1;
-	for($i=0;$i<sizeof($nil_data);$i++)
-	{
-		if(isset($nil_data[$i]['sply_ty']) && $i==0 && ($nil_data[$i]['sply_ty']=='INTERB2B'))
-		{
-			
-		$inter_reg_nil_amt1 =!empty($nil_data[$i]['nil_amt'])?$nil_data[$i]['nil_amt']:'';
-		$inter_reg_ngsup_amt1 =!empty($nil_data[$i]['ngsup_amt'])?$nil_data[$i]['ngsup_amt']:'';
-		$inter_reg_expt_amt1 =!empty($nil_data[$i]['expt_amt'])?$nil_data[$i]['expt_amt']:'';
-		
-		}
-		if(isset($nil_data[$i]['sply_ty']) && $i==1 && $nil_data[$i]['sply_ty']=='INTRAB2B')
-		{
-		$intra_reg_nil_amt2 =!empty($nil_data[$i]['nil_amt'])?$nil_data[$i]['nil_amt']:'';
-		$intra_reg_ngsup_amt2 =!empty($nil_data[$i]['ngsup_amt'])?$nil_data[$i]['ngsup_amt']:'';
-		$intra_reg_expt_amt2 =!empty($nil_data[$i]['expt_amt'])?$nil_data[$i]['expt_amt']:'';
-		
-		
-		}
-		if(isset($nil_data[$i]['sply_ty']) && $i==2 && $nil_data[$i]['sply_ty']=='INTERB2C')
-		{
-		$inter_unreg_nil_amt3 =!empty($nil_data[$i]['nil_amt'])?$nil_data[$i]['nil_amt']:'';
-		$inter_unreg_ngsup_amt3 =!empty($nil_data[$i]['ngsup_amt'])?$nil_data[$i]['ngsup_amt']:'';
-		$inter_unreg_expt_amt3 =!empty($nil_data[$i]['expt_amt'])?$nil_data[$i]['expt_amt']:'';
-			
-		
-		}
-		if(isset($nil_data[$i]['sply_ty']) && $i==3 && $nil_data[$i]['sply_ty']=='INTRAB2C')
-		{
-		$intra_unreg_nil_amt4 =!empty($nil_data[$i]['nil_amt'])?$nil_data[$i]['nil_amt']:'';
-		$intra_unreg_ngsup_amt4 =!empty($nil_data[$i]['ngsup_amt'])?$nil_data[$i]['ngsup_amt']:'';
-		$intra_unreg_expt_amt4 =!empty($nil_data[$i]['expt_amt'])?$nil_data[$i]['expt_amt']:'';
-		
-		}
-		
-	}
-}
-else {
-    $sql = "select  *,count(id) as totalinvoice from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0' and type='gstr1nil'  order by id desc limit 0,1";
-    $returndata1 = $obj_transition->get_results($sql);
-	$arr = $returndata1[0]->return_data;
-    $arr1= base64_decode($arr);
-	
-	$nil_data = json_decode($arr1);
-	//$obj_transition->pr($nil_data);
-	for($i=0;$i<sizeof($nil_data);$i++)
-	{
-		if(isset($nil_data[$i]->sply_ty) && $i==0 && ($nil_data[$i]->sply_ty=='INTERB2B'))
-		{
-	    
-		$inter_reg_nil_amt1 =$nil_data[$i]->nil_amt;
-		$inter_reg_ngsup_amt1 =$nil_data[$i]->ngsup_amt;
-		$inter_reg_expt_amt1 =$nil_data[$i]->expt_amt;
-		
-		}
-		if(isset($nil_data[$i]->sply_ty) && $i==1 && ($nil_data[$i]->sply_ty=='INTRAB2B'))
-		{
-		
-		$intra_reg_nil_amt2 =$nil_data[$i]->nil_amt;
-		$intra_reg_ngsup_amt2 =$nil_data[$i]->ngsup_amt;
-		$intra_reg_expt_amt2 =$nil_data[$i]->expt_amt;
-		
-		}
-		if(isset($nil_data[$i]->sply_ty) && $i==2 && ($nil_data[$i]->sply_ty=='INTERB2C'))
-		{
-		
-		
-		$inter_unreg_nil_amt3 =$nil_data[$i]->nil_amt;
-		$inter_unreg_ngsup_amt3 =$nil_data[$i]->ngsup_amt;
-		$inter_unreg_expt_amt3 =$nil_data[$i]->expt_amt;
-			
-		}
-		if(isset($nil_data[$i]->sply_ty) && $i==3 && ($nil_data[$i]->sply_ty=='INTRAB2C'))
-		{
-		
-		
-		$intra_unreg_nil_amt4 =$nil_data[$i]->nil_amt;
-		$intra_unreg_ngsup_amt4 =$nil_data[$i]->ngsup_amt;
-		$intra_unreg_expt_amt4 =$nil_data[$i]->expt_amt;
-		}
-		
-	}
-}
-
 ?>
-
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
         <div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>HSN-wise summary</h1></div>
         <div class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav"><a href="#">Home</a>
             <i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GST-Transition Form</span> </div>
-        <div class="whitebg formboxcontainer">
-<?php $obj_transition->showErrorMessage(); ?>
-<?php
-if (isset($_POST['finalsubmit']) && $_POST['finalsubmit'] == 'final submit') {
-    echo "<div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>GST_Transition form month of " . $returnmonth . " successfully submitted </div>";
-} else {
-    $obj_transition->showSuccessMessge();
-}
-?>
-<?php $obj_transition->unsetMessage(); ?>
-<?php
-if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
-
-    if ($flag == 'notverify') {
-        
-    } else {
-
-        //echo "<div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>GSTR3B successfully submitted </div>";
-    }
-}
-
-?>
-           
-            <form method="post" id="auto" name="auto">
+        <div class="whitebg formboxcontainer">          
+           <form method="post" id="auto" name="auto">
                 <button  type="button"  class="btn btn-success" id="btnConfirm">autopopulate</button>
                 <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_summary&returnmonth=" . $_REQUEST["returnmonth"]; ?>';" class="btn btn-danger" class="redbtn marlef10"/>
 
@@ -202,91 +77,141 @@ if (!empty($dataRes)) {
             </div>
                    
             <form method="post" enctype="multipart/form-data" id='form'> 
-                <div class="greyheading">1.Nil rated, exempted and Non-GST supplies</div>
+                <div class="greyheading">1.Inward supplies received by the Taxpayer</div>
                 <div class="tableresponsive">
                     <form method="post" enctype="multipart/form-data" id='form'>
-                        <table  class="table  tablecontent tablecontent2 bordernone" id='table1a'>
+                        <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0"  class="table  tablecontent tablecontent2 bordernone" id='table1a'>
                             <thead>
                                 <tr>
-                                    <th>HSN</th>
-                                    <th>Nil Rated Supplies (<i class="fa fa-inr"></i>)</th>
-                                    <th>Exempted(Other Than Nil Rated/Non-GST Supply)(<i class="fa fa-inr"></i>)</th>
-                                    <th>Non-GST Supplies (<i class="fa fa-inr"></i>)</th>
-                                   
-                                </tr>
+                                    <th>Type Of Invoice</th>
+									<th>Number Of Transactions</th>
+                                    <th>Taxable Amount(A)(<i class="fa fa-inr"></i>)</th>
+									 <th>Taxable Amount(B)(<i class="fa fa-inr"></i>)</th>
+                                    <th>Invoice Value<br>(Total Of Previous Columns<br> May Not Match) (B(<i class="fa fa-inr"></i>)</th>
+                                    <th>ITC Available (<i class="fa fa-inr"></i>)</th>
+									<th>&nbsp;&nbsp;</th>
+                              </tr>
                             </thead>
 
                             <tbody>
+						<tr>    
+						<td class="lftheading">Inward Supplies received from Registered person including reverse charge supplies  3 | 4A</td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><div class="tc"><input type="button" value="View/Edit" onclick="" class="btn btn-success" class="redbtn marlef10"/></div></td>
+						</tr>  
+                       <tr>    
+						<td class="lftheading">Import of Inputs/Capital Goods and Supplies received from SEZ 5</td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><div class="tc"><input type="button" value="View/Edit" onclick="" class="btn btn-success" class="redbtn marlef10"/></div></td>
+						</tr> 
+                        <tr>    
+						<td class="lftheading">Import of Service (Reverse charge)</td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><div class="tc"><input type="button" value="View/Edit" onclick="" class="btn btn-success" class="redbtn marlef10"/></div></td>
+						</tr> 
+                        <tr>    
+						<td class="lftheading">Debit/Credit Notes for supplies from Registered person 6C</td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><div class="tc"><input type="button" value="View/Edit" onclick="" class="btn btn-success" class="redbtn marlef10"/></div></td>
+						</tr>  
+                        <tr>    
+						<td class="lftheading">Inward Supplies from Unregistered supplier (Reverse charge) 4B</td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><div class="tc"><input type="button" value="View/Edit" onclick="" class="btn btn-success" class="redbtn marlef10"/></div></td>
+						</tr> 
+                         <tr>    
+						<td class="lftheading">Debit/Credit Notes for Unregistered supplier 6C</td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><div class="tc"><input type="button" value="View/Edit" onclick="" class="btn btn-success" class="redbtn marlef10"/></div></td>
+						</tr>  							
+                        </tbody>
+                        </table>                        
+                        </div>
+    <div class="greyheading">2.Other details (summary level)</div>
+	            <div class="tableresponsive">
+                    <form method="post" enctype="multipart/form-data" id='form'>
+                        <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0"  class="table  tablecontent tablecontent2 bordernone" id='table1a'>
+                            <thead>
+                                <tr>
+                                    <th>Type Of Invoice</th>
+									<th>Taxable Amount(A)(<i class="fa fa-inr"></i>)</th>
+									 <th>Tax Amount(B)(<i class="fa fa-inr"></i>)</th>
+                                    <th>Invoice Value<br>(Total Of Previous Columns<br> May Not Match) (B(<i class="fa fa-inr"></i>)</th>
+                                   <th>&nbsp;&nbsp;</th>
+                              </tr>
+                            </thead>
 
-                               <tr>    
-                                        <td class="lftheading">
-                                              Inter-state supplies to registered person</td>                                          </td>
-                                           <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='inter_reg_nil_amt' value="<?php  echo (isset($inter_reg_nil_amt1)) ? $inter_reg_nil_amt1 : '' ?>"/>
-                                            </td>
-                                            <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='inter_reg_expt_amt' value="<?php  echo (isset($inter_reg_expt_amt1)) ? $inter_reg_expt_amt1 : '' ?>"/>
-                                            </td>
-                                            <td>
-                                                <input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='inter_reg_ngsup_amt' value="<?php  echo (isset($inter_reg_ngsup_amt1)) ? $inter_reg_ngsup_amt1 : '' ?>"/>
-                                            </td>
-                                  </tr>
-                                   <tr>    
-                                        <td class="lftheading">
-                                              Intra-state supplies to registered person</td>                                          </td>
-                                           <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='intra_reg_nil_amt' value="<?php  echo (isset($intra_reg_nil_amt2)) ? $intra_reg_nil_amt2 : '' ?>"/>
-                                            </td>
-                                            <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='intra_reg_expt_amt' value="<?php  echo (isset($intra_reg_expt_amt2)) ? $intra_reg_expt_amt2 : '' ?>"/>
-                                            </td>
-                                            <td>
-                                                <input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='intra_reg_ngsup_amt' value="<?php  echo (isset($intra_reg_ngsup_amt2)) ? $intra_reg_ngsup_amt2 : '' ?>"/>
-                                            </td>
-                                  </tr>
-								    
-								 
-								  <tr>    
-                                        <td class="lftheading">
-                                              Inter-state supplies to unregistered person</td>                                          </td>
-                                           <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='inter_unreg_nil_amt' value="<?php  echo (isset($inter_unreg_nil_amt3)) ? $inter_unreg_nil_amt3 : '' ?>"/>
-                                            </td>
-                                            <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='inter_unreg_expt_amt' value="<?php  echo (isset($inter_unreg_expt_amt3)) ? $inter_unreg_expt_amt3 : '' ?>"/>
-                                            </td>
-                                            <td>
-                                                <input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='inter_unreg_ngsup_amt' value="<?php  echo (isset($inter_unreg_ngsup_amt3)) ? $inter_unreg_ngsup_amt3 : '' ?>"/>
-                                            </td>
-                               </tr> 
-							   <tr>    
-                                        <td class="lftheading">
-                                              Intra-state supplies to unregistered person</td>                                          </td>
-                                           <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='intra_unreg_nil_amt' value="<?php  echo (isset($intra_unreg_nil_amt4)) ? $intra_unreg_nil_amt4 : '' ?>"/>
-                                            </td>
-                                            <td>
-                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='intra_unreg_expt_amt' value="<?php  echo (isset($intra_unreg_expt_amt4)) ? $intra_unreg_expt_amt4 : '' ?>"/>
-                                            </td>
-                                            <td>
-                                                <input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='intra_unreg_ngsup_amt' value="<?php  echo (isset($intra_unreg_ngsup_amt4)) ? $intra_unreg_ngsup_amt4 : '' ?>"/>
-                                            </td>
-                                  </tr>
-				  				  
-                                      
-                    
-                            </tbody>
-                        </table>
-                        
-                        </div>                						
-
-
-
+                            <tbody>
+						<tr>    
+						<td class="lftheading">Supplies from composition taxable person and other exempt/nil rated/non GST supplies 7</td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><div class="tc"><input type="button" value="View/Edit" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_gstr2nil_summary&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/></div></td>
+						</tr>
+                        <tr>    
+						<td class="lftheading">Advance amount paid for reverse charge supplies 10A</td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><div class="tc"><input type="button" value="View/Edit" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_gstr2advance_amount&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/></div></td>
+						</tr>
+                        <tr>    
+						<td class="lftheading">Adjustment of advance amount paid earlier for reverse charge supplies</td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><div class="tc"><input type="button" value="View/Edit" onclick="" class="btn btn-success" class="redbtn marlef10"/></div></td>
+						</tr>
+                        <tr>    
+						<td class="lftheading">Input Tax Credit Reversal/Reclaim</td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><label><span class="starred"></span></label></td>
+						<td><div class="tc"><input type="button" value="View/Edit" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_gstr2itc_summary&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/></div></td>
+						</tr>                        
+                        </tbody>
+                        </table>                        
+                        </div><div class="clear"></div>
+				   <div class="panel-group">
+					<div class="panel panel-default">
+					  <div class="panel-heading">HSN summary of inward supplies 13</div>
+					  <div class="panel-body" style="text-align:left;">
+					  As per GSTR-2 you need to provide HSN-wise summary of inward supplies made during the tax period.<br> Please enter and verify details of HSN-wise summary before filing.
+					  </div>
+					    <div class="panel-body" style="text-align:right;">
+					  <div style="float: right;margin-top: -65px;" class="tc"><input type="button" value="View/Edit" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_gstr2hsnwise_summary&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/></div>
+					  </div>
+					</div><div class="clear"></div><br>						
                         <div class="tableresponsive">
                                 <div class="adminformbxsubmit" style="width:100%;"> 
                                     <div class="tc">
                                         <input type='submit' class="btn btn-success" name='submit' value='submit' id='submit'>
-                                        </div>
+                                     </div>
                                 </div>
     
                        </div>
@@ -345,7 +270,7 @@ if (!empty($dataRes)) {
 <script>
     $(document).ready(function () {
         $('#returnmonth').on('change', function () {
-            document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_nil_summary&returnmonth=<?php echo $returnmonth; ?>';
+            document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_gstr2_mydata&returnmonth=<?php echo $returnmonth; ?>';
                         document.form2.submit();
                     });
                 });
@@ -354,7 +279,7 @@ if (!empty($dataRes)) {
 <script>
     $(document).ready(function () {
         $('#returnmonth').on('change', function () {
-            document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_nil_summary&returnmonth=<?php echo $returnmonth; ?>';
+            document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_gstr2_mydata&returnmonth=<?php echo $returnmonth; ?>';
                         document.form2.submit();
                     });
                 });
@@ -495,7 +420,7 @@ if (!empty($dataRes)) {
                 //$("body").append('<div>Callback from confirm ' + e + '</div>');
                 if (e == true)
                 {
-                    document.auto.action = '<?php echo PROJECT_URL; ?>/?page=return_nil_summary&returnmonth=<?php echo $returnmonth; ?>';
+                    document.auto.action = '<?php echo PROJECT_URL; ?>/?page=return_gstr2_mydata&returnmonth=<?php echo $returnmonth; ?>';
                                         document.auto.submit();
                                     }
                                 });

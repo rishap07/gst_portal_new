@@ -62,21 +62,21 @@ $response = $obj_api->get_user_summary('gstr1',$returnmonth);
     <div class="col-md-12 col-sm-12 col-xs-12 heading">
         <div class="tab col-md-12 col-sm-12 col-xs-12">
             <a href="<?php echo PROJECT_URL . '/?page=return_summary&returnmonth=' . $returnmonth ?>" >
-                View GSTR1 Summary
+                1.View GSTR1 Summary
             </a>   
             <a href="<?php echo PROJECT_URL . '/?page=return_view_invoices&returnmonth=' . $returnmonth ?>">
-                View My Invoice
+                2.View My Invoice
             </a>
-            <a href="<?php echo PROJECT_URL . '/?page=return_upload_invoices&returnmonth=' . $returnmonth ?>"  >
+           <!--  <a href="<?php echo PROJECT_URL . '/?page=return_upload_invoices&returnmonth=' . $returnmonth ?>"  >
                 Upload To GSTN
-            </a>
+            </a> -->
             <a href="<?php echo PROJECT_URL . '/?page=return_get_summary&returnmonth=' . $returnmonth ?>" class="active">
-                GSTR1 SUMMARY
+                3.GSTR1 SUMMARY
             </a> 
             
             </a>
             <a href="<?php echo PROJECT_URL . '/?page=return_filling_summary&returnmonth=' . $returnmonth ?>">
-                File GSTr-1
+                4.File GSTr-1
             </a>
                       
         </div>
@@ -140,6 +140,20 @@ $response = $obj_api->get_user_summary('gstr1',$returnmonth);
 <?php 
 $obj_api->DownloadSummaryOtpPopupJs();
 ?>
+<div id="DeleteotpModalBox" class="modal fade" role="dialog" style="z-index: 999999;top: 78px;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <label>Enter OTP</label>
+                <input id="all_sum_otp_code" type="textbox" name="otp" class="form-control" data-bind="numeric">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="DeleteotpModalBoxSubmit" type="button" value="OTP" class="btn btn-success" >Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     
     $(document).ready(function () {
@@ -150,16 +164,75 @@ $obj_api->DownloadSummaryOtpPopupJs();
         });
 
         $('body').delegate('.gstr1ViewDeleteBtn','click', function () {
-            if(!confirm("Are you sure you want to delete?"))
-            {
+            $.ajax({
+                url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_details_check",
+                type: "json",
+                success: function (response) {
+                    //alert(response);
+                    if(response == 1) {
+                        $("#DeleteotpModalBox").modal("show");
+                        return false;
+                    }
+                    else if(response == 0) {
+                       common_function_part();
+                    }
+                    else {
+                       location.reload();
+                       return false;
+                    }
+                },
+                error: function() {
+                    alert("Please try again.");
+                    return false;
+                }
+            });     
+        });
+        $( "#DeleteotpModalBoxSubmit" ).click(function( event ) {
+            var otp = $('#all_sum_otp_code').val();
+            //alert(otp);
+            //event.preventDefault();
+            if(otp != " ") {
+                $.ajax({
+                    url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_otp_request",
+                    type: "post",
+                    data: {otp:otp},
+                    success: function (response) {
+                        //alert(response);
+                        var arr = $.parseJSON(response);
+                        if(arr.error_code == 0) {
+                            $("#DeleteotpModalBox").modal("hide");
+                            common_function_part();
+                        }
+                        else {
+                            location.reload();
+                            return false;
+                        }
+                    },
+                    error: function() {
+                        alert("Enter OTP First");
+                        return false;
+                    }
+                });
                 return false;
             }
-            $("#loading").show();
-            var type = $(this).attr('type');
-            var returnmonth = "<?php echo $returnmonth;?>";
-            delete_item_invoice(type,returnmonth);          
+            else {
+                alert("Enter OTP First");
+                return false;
+            }
+            return false;
         });
     });
+
+    function common_function_part(){
+        if(!confirm("Are you sure you want to delete?"))
+        {
+            return false;
+        }
+        $("#loading").show();
+        var type = $(this).attr('type');
+        var returnmonth = "<?php echo $returnmonth;?>";
+        delete_item_invoice(type,returnmonth); 
+    }
 
     /******* To get Summary of GSTR1 ********/
     function get_summary() {

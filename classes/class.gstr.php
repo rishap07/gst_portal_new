@@ -133,6 +133,7 @@ final class gstr extends validation {
     
     public function requestOTP($code='')
     {
+        //return true;
         $this->gstr_session_destroy();
         $this->keyGeneration();
         $this->getCertificateKey();
@@ -176,6 +177,7 @@ final class gstr extends validation {
     
     public function authenticateToken($otp,$code='')
     { 
+        //return true;
         $otp_code = $_SESSION['otp'] = $otp;
         if(empty($_SESSION['ciphertext_enc'])) {
             $ciphertext_enc = $this->getOTPEncypt($_SESSION['otp']);
@@ -569,7 +571,10 @@ final class gstr extends validation {
 
         $reqPayLoad= $this->returnSummary($returnmonth);
         $encodejson=base64_encode(openssl_encrypt(base64_encode($reqPayLoad),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
-        $sdata1 = array("action" => 'RETFILE', "data" => $encodejson);
+        $sdata1 = array(
+            "action" => 'RETFILE', 
+            "data" => $encodejson
+        );
 
         $data_string = json_encode($sdata1);
         
@@ -625,10 +630,8 @@ final class gstr extends validation {
         $hmac = $this->hmac($_SESSION['decrypt_sess_key'],$deleteData);
         $response = $this->gstCommonRetunSave($encodejson,$hmac,$returnmonth,$jstr); 
         return $response;
-
     }
 
-    
     public function getRetrunPeriodFormat($returnmonth) {
         $api_return_period = '';
         if(!empty($returnmonth)) {
@@ -639,7 +642,6 @@ final class gstr extends validation {
     }
 
     public function gstr_session_destroy() {
-
         if(isset($_SESSION['hexcode'])) {
            unset($_SESSION['hexcode']); 
         }
@@ -766,6 +768,7 @@ final class gstr extends validation {
 
                 $dataGST1where['user_id'] =  $_SESSION['user_detail']['user_id'];
                 $dataGST1where['fmonth'] =  $returnmonth;
+                $dataGST1where['gst_key'] =  $key;
                 $this->update($this->getTableName('user_api_summary'),  $dataGST1, $dataGST1where);
 
             } 
@@ -957,60 +960,118 @@ final class gstr extends validation {
                 
             }
         }
-        
+    }
+    public function doc_issue_key_name($key) {
+        switch ($key) {
+            case ($key == 'doc_num1'): 
+                echo 'Invoices for outward supply';
+            break; 
+            case ($key == 'doc_num2'): 
+                echo 'Invoices for inward supply from unregistered person ';
+            break; 
+            case ($key == 'doc_num3'): 
+                echo 'Revised Invoice';
+            break; 
+            case ($key == 'doc_num4'): 
+                echo 'Debit Note';
+            break; 
+            case ($key == 'doc_num5'): 
+                echo 'Credit Note';
+            break; 
+            case ($key == 'doc_num6'): 
+                echo 'Receipt voucher';
+            break; 
+            case ($key == 'doc_num7'): 
+                echo 'Payment Voucher';
+            break; 
+            case ($key == 'doc_num8'): 
+                echo 'Refund voucher';
+            break; 
+            case ($key == 'doc_num9'): 
+                echo 'Delivery Challan for job work';
+            break; 
+            case ($key == 'doc_num10'): 
+                echo 'Delivery Challan for supply on approval';
+            break; 
+            case ($key == 'doc_num11'): 
+                echo 'Delivery Challan in case of liquid gas';
+            break; 
+            case ($key == 'doc_num12'): 
+                echo 'Delivery Challan in cases other than by way of supply';
+            break; 
+        }
+    }
+    public function commaonOTPModal() {
+        ?>
+        <div id="otpModalBox" class="modal fade" role="dialog" style="z-index: 999999;top: 78px;">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <label>Enter OTP </label>
+                        <input id="otp_code" type="textbox" name="otp" class="form-control" data-bind="numeric">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button id="otpModalBoxSubmit" type="button" value="OTP" class="btn btn-success" >Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php
     }
 
     public function modalHtml() {
         ?>
-        <div id="otpModalBox" class="modal fade" role="dialog">
-          <div class="modal-dialog">
-            <!-- Modal content-->
-            <div class="modal-content">       
-              
-              <div class="modal-body">
-              <label>OTP:</label>
-               <input id="otp_code" type="textbox" name="otp" class="form-control" data-bind="numeric">
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button id="otpModalBoxSubmit" type="button" value="OTP" class="btn btn-success" >Submit</button>
-              </div>
+
+        <div id="otpModalBox" class="modal fade" role="dialog" style="z-index: 999999;top: 78px;">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <label>Enter OTP </label>
+                        <input id="otp_code" type="textbox" name="otp" class="form-control" data-bind="numeric">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button id="otpModalBoxSubmit" type="button" value="OTP" class="btn btn-success" >Submit</button>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
         <script type="text/javascript">
-        $( "#otpModalBoxSubmit" ).click(function( event ) {
-              var otp = $('#otp_code').val();
-              //event.preventDefault();
-              if(otp != " ") {
-                $.ajax({
-                    url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_otp_request",
-                    type: "post",
-                    data: {otp:otp},
-                    success: function (response) {
-                        //alert(response);
-                        var arr = $.parseJSON(response);
-                        if(arr.error_code == 0) {
-                            $("#otpModalBox").modal("hide");
-                            document.form4.submit();
-                        }
-                        else {
-                            location.reload();
+            $( "#otpModalBoxSubmit" ).click(function( event ) {
+                var otp = $('#otp_code').val();
+                //event.preventDefault();
+                if(otp != " ") {
+                    $.ajax({
+                        url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_otp_request",
+                        type: "post",
+                        data: {otp:otp},
+                        success: function (response) {
+                            //alert(response);
+                            var arr = $.parseJSON(response);
+                            if(arr.error_code == 0) {
+                                $("#otpModalBox").modal("hide");
+                                document.form4.submit();
+                            }
+                            else {
+                                location.reload();
+                                return false;
+                            }
+                        },
+                        error: function() {
+                            alert("Enter OTP First");
                             return false;
                         }
-                    },
-                    error: function() {
-                        alert("Enter OTP First");
-                        return false;
-                    }
-                });
+                    });
+                    return false;
+                }
+                else {
+                    alert("Enter OTP First");
+                    return false;
+                }
                 return false;
-              }
-              else {
-                alert("Enter OTP First");
-                return false;
-              }
-              return false;
             });
         </script>
         <?php
@@ -1063,7 +1124,7 @@ final class gstr extends validation {
                     url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_details_check",
                     type: "json",
                     success: function (response) {
-                        alert(response);
+                        //alert(response);
                         if(response == 1) {
                             $("#otpModalBox").modal("show");
                             return false;
@@ -1132,8 +1193,6 @@ final class gstr extends validation {
         <script type="text/javascript">
             $(document).ready(function () {
                 $("#uploadBtn").on("click", function () {
-                    
-                    alert('d');
                     fun_upload_json();
                 });
                 return false;
@@ -1144,7 +1203,7 @@ final class gstr extends validation {
                     url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_details_check",
                     type: "json",
                     success: function (response) {
-                        alert(response);
+                        //alert(response);
                         if(response == 1) {
                             $("#otpModalBox").modal("show");
                             return false;
@@ -1153,7 +1212,7 @@ final class gstr extends validation {
                            document.form4.submit();
                         }
                         else {
-                            //location.reload();
+                            location.reload();
                             return false;
                         }
                     },
@@ -1165,6 +1224,77 @@ final class gstr extends validation {
                 });
                 return false;
             }
+        </script>
+        <?php
+    }
+
+    public function Gstr2DownloadOtpPopupJs() {
+        $this->commaonOTPModal();
+        ?>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#gstr2Download").on("click", function () {
+                    $.ajax({
+                        url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_details_check",
+                        type: "json",
+                        success: function (response) {
+                            //alert(response);
+                            if(response == 1) {
+                                $("#otpModalBox").modal("show");
+                                return false;
+                            }
+                            else if(response == 0) {
+                               document.form4.submit();
+                            }
+                            else {
+                                location.reload();
+                                return false;
+                            }
+                        },
+                        error: function() {
+
+                            alert("Please try again.");
+                            return false;
+                        }
+                    });
+                    return false;
+                });
+                return false;
+
+            });
+            $( "#otpModalBoxSubmit" ).click(function( event ) {
+                var otp = $('#otp_code').val();
+                //event.preventDefault();
+                if(otp != " ") {
+                    $.ajax({
+                        url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_otp_request",
+                        type: "post",
+                        data: {otp:otp},
+                        success: function (response) {
+                            //alert(response);
+                            var arr = $.parseJSON(response);
+                            if(arr.error_code == 0) {
+                                $("#otpModalBox").modal("hide");
+                                document.form4.submit();
+                            }
+                            else {
+                                location.reload();
+                                return false;
+                            }
+                        },
+                        error: function() {
+                            alert("Enter OTP First");
+                            return false;
+                        }
+                    });
+                    return false;
+                }
+                else {
+                    alert("Enter OTP First");
+                    return false;
+                }
+                return false;
+            });
         </script>
         <?php
     }

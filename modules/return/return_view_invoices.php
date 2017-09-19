@@ -1,5 +1,6 @@
 <?php
 //session_destroy();
+$obj_gstr = new gstr();
 $obj_gstr1 = new gstr1();
 $dataCurrentUserArr = $obj_gstr1->getUserDetailsById( $obj_gstr1->sanitize($_SESSION['user_detail']['user_id']) );
 //$obj_gstr1->pr($dataCurrentUserArr['data']);die;
@@ -35,7 +36,6 @@ if($type=="B2B")
 }
 
 //$obj_gstr1->pr($_POST);
-
 if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isset($_POST['name']))
 {
     
@@ -43,16 +43,17 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
     if ($invoice_type == 'HSN' || $invoice_type == 'NIL' || $invoice_type == 'DOCISSUE') {
         if ($obj_gstr1->gstr1Upload('',$invoice_type)) 
         {
-            return true;
+           
         }
     }
-    if(isset($_POST['name']) && $_POST['name']!='')
+    elseif(isset($_POST['name']) && $_POST['name']!='')
     {   
         $ids = implode(',',  $_POST['name']);  
         if(!empty($ids)) {
             if ($obj_gstr1->gstr1Upload($ids,$invoice_type)) 
             {
-                return true;
+                
+                
             }
         }   
     }
@@ -74,20 +75,20 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
         <div class="col-md-12 col-sm-12 col-xs-12 heading">
             <div class="tab col-md-12 col-sm-12 col-xs-12">
                 <a href="<?php echo PROJECT_URL . '/?page=return_summary&returnmonth=' . $returnmonth ?>" >
-                    View GSTR1 Summary
+                    1.View GSTR1 Summary
                 </a>
                 <a href="<?php echo PROJECT_URL . '/?page=return_view_invoices&returnmonth=' . $returnmonth ?>" class="active">
-                    View My Invoice
+                    2.View My Invoice
                 </a>
-                <a href="<?php echo PROJECT_URL . '/?page=return_upload_invoices&returnmonth=' . $returnmonth ?>">
+                <!-- <a href="<?php echo PROJECT_URL . '/?page=return_upload_invoices&returnmonth=' . $returnmonth ?>">
                     Upload To GSTN
-                </a>
+                </a> -->
                 <a href="<?php echo PROJECT_URL . '/?page=return_get_summary&returnmonth=' . $returnmonth ?>">
-                    GSTR1 SUMMARY
+                    3.GSTR1 SUMMARY
                 </a>
                 
                 <a href="<?php echo PROJECT_URL . '/?page=return_filling_summary&returnmonth=' . $returnmonth ?>">
-                    File GSTr-1
+                    4.File GSTr-1
                 </a>
             </div>
             <div id="view_invoice" class="tabcontent">
@@ -451,21 +452,22 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                 }
                                 if($type=='DOCISSUE')
                                 {
-                                    $docissueData = $obj_gstr1->getDocSummary($_SESSION['user_detail']['user_id'], $returnmonth);
+                                    $docissueData = $obj_gstr1->getReturnUploadSummary($_SESSION['user_detail']['user_id'], $returnmonth,'gstr1document');
                                     $total = $totnum = $totcancel = $net_issue = 0;
                                     $invCount = 0;
                                     if (!empty($docissueData)) {
-                                        $json = $docissueData[0]->gstr1_summary_data;
+                                        $json = $docissueData[0]->return_data;
                                         $docissue_is_uploaded =  (isset($docissueData[0]->is_uploaded) && $docissueData[0]->is_uploaded=='0') ? 'Pending':'Uploaded';
+                                        
                                         if(!empty($json)) {
                                             $Data = $decodeJson = json_decode(base64_decode($json));
-                                            $obj_gstr1->pr($decodeJson);
-                                            die;
-                                            foreach ($decodeJson as $key => $docDatavalue) {  
-                                                $totnum += isset($docDatavalue->totnum)?$docDatavalue->totnum:0;
-                                                $totcancel += isset($docDatavalue->cancel)?$docDatavalue->cancel:0;
-                                                $net_issue += isset($docDatavalue->net_issue)?$docDatavalue->net_issue:0;
-                                                $invCount++;
+                                            foreach ($decodeJson as $key => $arr_value) {
+                                                foreach ($arr_value as $key => $value) {
+                                                    $totnum += isset($value->totnum)?$value->totnum:0;
+                                                    $totcancel += isset($value->cancel)?$value->cancel:0;
+                                                    $net_issue += isset($value->net_issue)?$value->net_issue:0;
+                                                    $invCount++;
+                                                }
                                             }
                                         }
                                         
@@ -499,7 +501,9 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                     ?>
                                         <div style="text-align: center;">
                                             <input type="hidden" name="type" value="<?php echo $type;?>" readonly>
+                                            <?php //if($_SESSION['user_detail']['user_id'] == '896') { ?>
                                             <input itype="<?php echo $type?>" type="submit" name="submit_up" id="up" value="Upload TO GSTN" class="btn  btn-success " >
+                                            <?php //} ?>
                                             <input itype="<?php echo $type?>" type="submit" name="submit_dwn" id="down" value="Download GSTR1" class="btn btn-warning ">
                                         </div>
                                         <div class="clear"></div><br>
@@ -585,17 +589,20 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                                         <th style='text-align:right'>Total Tax</th>
                                                         <th style='text-align:right'>Total Amt</th>
                                                         <th align='center'>Status</th>
+                                                        <th align='center'></th>
                                                     </tr>
                                                 <?php }
                                                 else if ($type == 'DOCISSUE') { ?>
                                                     <tr>
                                                         <th align='left'>No.</th>
+                                                        <th align='left'>Type</th>
                                                         <th align='left'>From serial number</th>
                                                         <th align='left'>To serial number</th>
                                                         <th style='text-align:right'>Total Number</th>
                                                         <th style='text-align:right'>Cancelled</th>
                                                         <th style='text-align:right'>Net issued</th>
                                                         <th align='center'>Status</th>
+                                                        <th align='center'></th>
                                                     </tr>
                                                 <?php }
                                                 else if ($type == 'NIL') { ?>
@@ -606,6 +613,7 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                                         <th style='text-align:right'>Nil Amount</th>
                                                         <th style='text-align:right'>Non Gst Amount</th>
                                                         <th align='center'>Status</th>
+                                                        <th align='center'></th>
                                                     </tr>
                                                 <?php }
                                                 else { ?>
@@ -642,13 +650,14 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                                     {
                                                         if(!empty($Data))
                                                         {
-                                                            
                                                             if($type == 'HSN') {
                                                                 $i=1;
+                                                                $url = PROJECT_URL.'/?page=return_hsnwise_summary&returnmonth='.$returnmonth;
                                                                 foreach($Data as $Item)
                                                                 { 
                                                                     $total = 0;
                                                                     $total += $Item->cgst + $Item->sgst + $Item->igst + $Item->cess;
+
                                                                     ?>
                                                                     <tr>
                                                                         <td align='left'><?php echo $i++;?></td>
@@ -660,30 +669,34 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                                                         <td style='text-align:right'><?php echo $total;?></td>
                                                                         <td style='text-align:right'><?php echo $Item->invoice_total_value;?></td>
                                                                         <td align='center'><?php echo $hsn_is_uploaded;?></td>
-                                                        
+                                                                        <td align='center'><a href="<?php echo $url; ?>" target="_blank">View</a></td>
                                                                     </tr>
                                                                 <?php }
                                                             }
                                                             else if($type == 'DOCISSUE') {
                                                                 $i=1;
-                                                                foreach($Data as $Item)
+                                                                $url = PROJECT_URL.'/?page=return_document_summary&returnmonth='.$returnmonth;
+                                                                foreach($Data as $doc => $arr_value)
                                                                 { 
-                                                                    $total = 0;
-                                                                    ?>
-                                                                    <tr>
-                                                                        <td align='left'><?php echo $i++;?></td>
-                                                                        <td align='left'><?php echo $Item->from;?></td>
-                                                                        <td align='left'><?php echo $Item->to;?></td>
-                                                                        <td style='text-align:right'><?php echo $Item->totalnum;?></td>
-                                                                        <td style='text-align:right'><?php echo $Item->cancle;?></td>
-                                                                        <td style='text-align:right'><?php echo $Item->net_issue;?></td>
-                                                                        <td align='center'><?php echo $docissue_is_uploaded;?></td>
-                                                        
-                                                                    </tr>
-                                                                <?php }
+                                                                    foreach ($arr_value as $key => $Item) {  ?>
+                                                                        <tr>
+                                                                            <td align='left'><?php echo $i++;?></td>
+                                                                            <td align='left'><?php echo $obj_gstr->doc_issue_key_name($doc);?></td>
+                                                                            <td align='left'><?php echo $Item->from;?></td>
+                                                                            <td align='left'><?php echo $Item->to;?></td>
+                                                                            <td style='text-align:right'><?php echo $Item->totnum;?></td>
+                                                                            <td style='text-align:right'><?php echo $Item->cancel;?></td>
+                                                                            <td style='text-align:right'><?php echo $Item->net_issue;?></td>
+                                                                            <td align='center'><?php echo $docissue_is_uploaded;?></td>
+                                                                            <td align='center'><a href="<?php echo $url; ?>" target="_blank">View</a></td>
+                                                            
+                                                                        </tr>
+                                                                    <?php }
+                                                                }
                                                             }
                                                             else if($type == 'NIL') {
                                                                 $i=1;
+                                                                $url = PROJECT_URL.'/?page=return_nil_summary&returnmonth='.$returnmonth;
                                                                 foreach($Data as $Item)
                                                                 { 
                                                                     $total = 0;
@@ -695,6 +708,7 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                                                         <td style='text-align:right'><?php echo $Item->nil_amt;?></td>
                                                                         <td style='text-align:right'><?php echo $Item->ngsup_amt;?></td>
                                                                         <td align='center'><?php echo $nil_is_uploaded;?></td>
+                                                                        <td align='center'><a href="<?php echo $url; ?>" target="_blank">View</a></td>
                                                         
                                                                     </tr>
                                                                 <?php }
@@ -853,7 +867,7 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
         </div>
     </div>
 </div>
-<?php $obj_gstr = new gstr();
+<?php 
 $obj_gstr->uploadOtpPopupJs();
 ?>
 <script type="text/javascript">

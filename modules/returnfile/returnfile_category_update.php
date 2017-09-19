@@ -153,7 +153,17 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
                     </div>
 					
 					 <div class="clear"></div>
-					  
+					   <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                      <label>Order Value<span class="starred">*</span></label>
+                       <input type="text" name="order_value" id="order_value" placeholder="Enter return order value" class="required form-control" data-bind="content" value="<?php
+                        if (isset($_POST['order_value'])) {
+                            echo $_POST['order_value'];
+                        } else if (isset($dataCurrentArr[0]->order_value)) {
+                            echo $dataCurrentArr[0]->order_value;
+                        }
+                        ?>" />
+                    </div>
+					<div class="clear"></div>
                  <div class="adminformbxsubmit" style="width:100%;">                     
                         <div class="tc">
                             <input type='submit' class="btn btn-default btn-success" name='submit' value='<?php

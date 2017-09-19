@@ -1867,7 +1867,7 @@ final class transition extends validation {
 	}
     public function saveGstrTransition()
     {
-		$data = $this->get_results("select * from ".TAB_PREFIX."transition_form1 where added_by='".$_SESSION['user_detail']['user_id']."' and financial_month='".$this->sanitize($_GET['returnmonth'])."'");
+		$data = $this->get_results("select * from ".TAB_PREFIX."transition_form where added_by='".$_SESSION['user_detail']['user_id']."' and type='transitionform1' and financial_month='".$this->sanitize($_GET['returnmonth'])."'");
 		$dataArr = $this->gstTransitionData();
 		 $dataArr['trader_name'] = isset($_POST['trader_name']) ? $_POST['trader_name'] : ''; 
 	     $dataArr['transition_status'] = isset($_POST['transition_status']) ? $_POST['transition_status'] : '';
@@ -1896,8 +1896,9 @@ final class transition extends validation {
 		{
 			$dataArr['financial_month']=$this->sanitize($_GET['returnmonth']);
 			$dataArr['added_by']=$this->sanitize($_SESSION["user_detail"]["user_id"]);
+			$dataArr['type']='transitionform1';
 			
-			if ($this->insert($this->tableNames['transition_form1'], $dataArr)) {
+			if ($this->insert($this->tableNames['transition_form'], $dataArr)) {
 				//$this->getPlaceOfSupplyUnregistered();
 				//$this->getPlaceOfSupplyComposition();
 				//$this->getPlaceOfSupplyUinHolder();
@@ -1907,7 +1908,7 @@ final class transition extends validation {
 			}
 			else
 			{
-				$this->setError('Failed to save GSTR3B data');
+				$this->setError('Failed to save transition form data');
 			   return false;    	   
 		   }
 
@@ -1915,7 +1916,7 @@ final class transition extends validation {
 		else
 		{
 			
-			if ($this->update($this->tableNames['transition_form1'], $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
+			if ($this->update($this->tableNames['transition_form'], $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
 				//$this->getPlaceOfSupplyUnregistered();
 				//$this->getPlaceOfSupplyComposition();
 				//$this->getPlaceOfSupplyUinHolder();
@@ -1926,7 +1927,7 @@ final class transition extends validation {
 			}
 			else
 			{
-				$this->setError('Failed to save GSTR3B data');
+				$this->setError('Failed to save transition form data');
 			   return false;    	   
 		   }
 		}
@@ -2127,7 +2128,7 @@ final class transition extends validation {
    }
    public function saveGstrTransition2()
     {
-		$data = $this->get_results("select * from ".TAB_PREFIX."transition_form2 where added_by='".$_SESSION['user_detail']['user_id']."' and financial_month='".$this->sanitize($_GET['returnmonth'])."'");
+		$data = $this->get_results("select * from ".TAB_PREFIX."transition_form where added_by='".$_SESSION['user_detail']['user_id']."' and type='transitionform2' and financial_month='".$this->sanitize($_GET['returnmonth'])."'");
 		$dataArr = $this->gstTransitionData2();
 		 $dataArr['taxable_name'] = isset($_POST['taxable_name']) ? $_POST['taxable_name'] : ''; 
 	     $dataArr['transition_status'] = isset($_POST['transition_status']) ? $_POST['transition_status'] : '';
@@ -2156,8 +2157,8 @@ final class transition extends validation {
 		{
 			$dataArr['financial_month']=$this->sanitize($_GET['returnmonth']);
 			$dataArr['added_by']=$this->sanitize($_SESSION["user_detail"]["user_id"]);
-			
-			if ($this->insert($this->tableNames['transition_form2'], $dataArr)) {
+			$dataArr['type']='transitionform2';
+			if ($this->insert($this->tableNames['transition_form'], $dataArr)) {
 				//$this->getPlaceOfSupplyUnregistered();
 				//$this->getPlaceOfSupplyComposition();
 				//$this->getPlaceOfSupplyUinHolder();
@@ -2167,7 +2168,7 @@ final class transition extends validation {
 			}
 			else
 			{
-				$this->setError('Failed to save GSTR3B data');
+				$this->setError('Failed to save transition form data');
 			   return false;    	   
 		   }
 
@@ -2175,7 +2176,7 @@ final class transition extends validation {
 		else
 		{
 			
-			if ($this->update($this->tableNames['transition_form2'], $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
+			if ($this->update($this->tableNames['transition_form'], $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
 				//$this->getPlaceOfSupplyUnregistered();
 				//$this->getPlaceOfSupplyComposition();
 				//$this->getPlaceOfSupplyUinHolder();
@@ -2186,7 +2187,7 @@ final class transition extends validation {
 			}
 			else
 			{
-				$this->setError('Failed to save GSTR3B data');
+				$this->setError('Failed to save transition form data');
 			   return false;    	   
 		   }
 		}
@@ -2206,7 +2207,7 @@ final class transition extends validation {
 	        $obj_mpdf->WriteHTML($htmlResponse);
 	        $datetime=date('Y-m-d-His');
 	       
-	       $taxInvoicePdf = 'gsttransitionform-' . $_SESSION['user_detail']['user_id'] . '_' .$datetime. '.pdf';
+	       $taxInvoicePdf = 'gsttransitionform2-' . $_SESSION['user_detail']['user_id'] . '_' .$datetime. '.pdf';
 		   $filepath ="/upload/transition-form/".$taxInvoicePdf;
 	        ob_clean();
 	        //$proof_photograph = $this->gstr3bUploads($taxInvoicePdf, 'plan-invoice', 'upload','.pdf');
@@ -2232,11 +2233,11 @@ final class transition extends validation {
 			 if ($this->sendMail('Email GST-Transitionfile', 'User ID : ' . $userid . ' email GST-Transition', $sendmail, 'noreply@gstkeeper.com', '', 'rishap07@gmail.com,sheetalprasad95@gmail.com', $filepath, 'GST-Transition form month of '.$returnmonth.'',$mpdfHtml )) {
 
 					$this->setSuccess('Kindly check your email');
-					$this->redirect(PROJECT_URL . "?page=transition_gstr&returnmonth=" . $returnmonth);
+					$this->redirect(PROJECT_URL . "?page=transition_gstr2&returnmonth=" . $returnmonth);
 	               // return true;
 	            } else {
 	                $this->setError('Try again some issue in sending in email.');
-						$this->redirect(PROJECT_URL . "?page=transition_gstr&returnmonth=" . $returnmonth);
+						$this->redirect(PROJECT_URL . "?page=transition_gstr2&returnmonth=" . $returnmonth);
 	               // return false;
 	            }
 			  }
@@ -2313,9 +2314,9 @@ final class transition extends validation {
 		return $mpdfHtml;
 	}
 	private function generategst_transitionForm2Pdf($invid,$returnid,$returnmonth) {
-	   $sql = "select  *,count(id) as totalinvoice from ".TAB_PREFIX."transition_form2 where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
+	   $sql = "select  *,count(id) as totalinvoice from ".TAB_PREFIX."transition_form where added_by='" . $_SESSION['user_detail']['user_id'] . "' and type='transitionform2' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
        $returndata = $this->get_results($sql);
-	   $sql = "select  *,count(id) as totalinvoice from ".TAB_PREFIX."transition_form2 where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
+	   $sql = "select  *,count(id) as totalinvoice from ".TAB_PREFIX."transition_form where added_by='" . $_SESSION['user_detail']['user_id'] . "' and type='transitionform2' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
        $returndata1 = $this->get_results($sql);
 	   $sql = "select * from " . TAB_PREFIX . "client_kyc where added_by='" . $_SESSION['user_detail']['user_id'] . "' order by id desc limit 0,1";
 	   $clientdata = $this->get_results($sql);
@@ -2611,9 +2612,9 @@ final class transition extends validation {
 	
 	}
 	private function generategst_transitionPdf($invid,$returnid,$returnmonth) {
-		$sql = "select  *,count(id) as totalinvoice from ".TAB_PREFIX."transition_form1 where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
+		$sql = "select  *,count(id) as totalinvoice from ".TAB_PREFIX."transition_form where added_by='" . $_SESSION['user_detail']['user_id'] . "' and type='transitionform1' and  financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
        $returndata = $this->get_results($sql);
-	   $sql = "select  *,count(id) as totalinvoice from ".TAB_PREFIX."transition_form1 where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
+	   $sql = "select  *,count(id) as totalinvoice from ".TAB_PREFIX."transition_form where added_by='" . $_SESSION['user_detail']['user_id'] . "' and type='transitionform1' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
  
        $returndata1 = $this->get_results($sql);
 	    $sql = "select * from " . TAB_PREFIX . "client_kyc where added_by='" . $_SESSION['user_detail']['user_id'] . "' order by id desc limit 0,1";
@@ -5007,7 +5008,7 @@ $mpdfHtml .= '<br><div class="greyheading" style="float: left;width: 100%;font-s
 		$fmonth =   $this->sanitize($_GET['returnmonth']);
 		$userid = $_SESSION['user_detail']['user_id'];
 	
-		 if($this->update($this->tableNames['transition_form1'], array('final_submit' => 1), array('financial_month' => $fmonth)))
+		 if($this->update($this->tableNames['transition_form'], array('final_submit' => 1), array('financial_month' => $fmonth)))
 		 {
 		 $this->setSuccess('GST-Transition submitted successfully');
 		 $this->logMsg("GST-Transition form final submit month :".$this->sanitize($_GET['returnmonth']),"gst_transition");
@@ -5021,101 +5022,28 @@ $mpdfHtml .= '<br><div class="greyheading" style="float: left;width: 100%;font-s
 		$fmonth =   $this->sanitize($_GET['returnmonth']);
 		$userid = $_SESSION['user_detail']['user_id'];
 	
-		 if($this->update($this->tableNames['transition_form2'], array('final_submit' => 1), array('financial_month' => $fmonth)))
+		 if($this->update($this->tableNames['transition_form'], array('final_submit' => 1), array('financial_month' => $fmonth)))
 		 {
 		 $this->setSuccess('GST-Transition submitted successfully');
 		 $this->logMsg("GST-Transition form final submit month :".$this->sanitize($_GET['returnmonth']),"gst_transition");
    
 		 return true;
 		 }
-   }
-   
-   
-  
-   
-  
-   private function getPlaceOfSupplyUnregistered()
-   {    $dataArr = array();
-	     $dataArr['place_of_supply']='';
-	     if(!empty($_POST['place_of_supply_unregistered_person'])){
-// Loop to store and display values of individual checked checkbox.
-			foreach($_POST['place_of_supply_unregistered_person'] as $selected){
-			 
-             $dataArr['place_of_supply'] = $dataArr['place_of_supply'].$selected.',';
-			
-			} 
-			}
-			$dataArr['totaltaxable_value']='';
-			  if(!empty($_POST['total_taxable_value_unregistered_person'])){
-// Loop to store and display values of individual checked checkbox.
-			foreach($_POST['total_taxable_value_unregistered_person'] as $selected){
-			 
-             $dataArr['totaltaxable_value'] = $dataArr['totaltaxable_value'].$selected.',';
-			
-			} 
-			}
-			$dataArr['amount_of_integrated_tax']='';
-			  if(!empty($_POST['amount_of_integrated_tax_unregistered_person'])){
-// Loop to store and display values of individual checked checkbox.
-			foreach($_POST['amount_of_integrated_tax_unregistered_person'] as $selected){
-			 
-             $dataArr['amount_of_integrated_tax'] = $dataArr['amount_of_integrated_tax'].$selected.',';
-			
-			} 
-			}
-	  $sql="select * from gst_place_of_supply where added_by='".$_SESSION['user_detail']['user_id']."' and financial_month='".$this->sanitize($_GET['returnmonth'])."' and type='0'";		
-	   $data = $this->get_results($sql);
-		if(empty($data))
-		{
-			$dataArr['financial_month']=$this->sanitize($_GET['returnmonth']);
-			$dataArr['type']=0;
-			$dataArr['added_by']=$_SESSION["user_detail"]["user_id"];
-			
-			if ($this->insert('gst_place_of_supply', $dataArr)) {
-			
-				$this->setSuccess('GSTR3B Saved Successfully');
-			
-				//return true;
-			}
-			else
-			{
-				$this->setError('Failed to save GSTR3B data');
-				
-			   return false;    	   
-		   }
-
-		}
-		else
-		{
-			if ($this->update('gst_place_of_supply', $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'type'=>'0','financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
-				
-		                      
-				$this->setSuccess('GSTR3B Saved Successfully');
-				
-				return true;
-			}
-			else
-			{
-				$this->setError('Failed to save GSTR3B data');
-			   return false;    	   
-		   }
-		}
-	    
-			 			
-   }
+   }    
    public function checkVerifyUser() {
         if (isset($_SESSION['user_detail']['user_id']) && $_SESSION['user_detail']['user_id'] != '') {
 			$data = $this->get_results("select * from " . TAB_PREFIX . "user where user_id='" . $_SESSION['user_detail']['user_id'] . "'");
           
                 if ($data[0]->email_verify == '0' || $data[0]->mobileno_verify == '0') {
 					
-					 $this->setError("GSTR-3B File first verify your email and mobile number");
+					//$this->setError("GSTR-3B File first verify your email and mobile number");
 					return "notverify";
 				}
 				return 'verify';
          
         }
     }
+	
    
     private function getGSTR3bData()
 	{

@@ -79,7 +79,7 @@ if(!empty($jstr1_array)) {
                                     <td align="center">'.$iamt.'</td>
                                     <td align="center">'.$updby.'</td>
                                     <td align="center">'.$rchrg.'</td>';
-                                    /*<td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" ctin = '.$ctin.' idt = '.$idt.' inum = '.$inum.' type="B2B"><i class="fa fa-trash"></i></a></td>*/
+                                    //$response .= '<td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" ctin = '.$ctin.' idt = '.$idt.' inum = '.$inum.' type="B2B"><i class="fa fa-trash"></i></a></td>';
                                 $response .= '</tr>';
                             }
                         }
@@ -180,9 +180,9 @@ if(!empty($jstr1_array)) {
                                             <td align="center">'.$csamt.'</td>
                                             <td align="center">'.$rt.'</td>
                                             <td align="center">'.$txval.'</td>
-                                            <td align="center">'.$iamt.'</td>
-                                            <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" pos = '.$pos.' idt = '.$idt.' inum = '.$inum.' type="B2CL"><i class="fa fa-trash"></i></a></td>
-                                        </tr>';
+                                            <td align="center">'.$iamt.'</td>';
+                                            //$response .='<td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" pos = '.$pos.' idt = '.$idt.' inum = '.$inum.' type="B2CL"><i class="fa fa-trash"></i></a></td>';
+                                        $response .='</tr>';
                                     }
                                 }
 
@@ -240,9 +240,9 @@ if(!empty($jstr1_array)) {
                                 <td align="center">'.$csamt.'</td>
                                 <td align="center">'.$camt.'</td>
                                 <td align="center">'.$iamt.'</td>
-                                <td align="center">'.$desc.'</td>
-                                <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" hsn_sc = '.$hsn_sc.'  type="HSN" chksum = '.$chksum.' ><i class="fa fa-trash"></i></a></td>
-                            </tr>';
+                                <td align="center">'.$desc.'</td>';
+                                //$response .='<td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" hsn_sc = '.$hsn_sc.'  type="HSN" chksum = '.$chksum.' ><i class="fa fa-trash"></i></a></td>';
+                            $response .='</tr>';
                         }   
                     }
                     $response .= '
@@ -318,9 +318,9 @@ if(!empty($jstr1_array)) {
                                     <td align="center">'.$txval.'</td>
                                     <td align="center">'.$iamt.'</td>
                                     <td align="center">'.$updby.'</td>
-                                    <td align="center">'.$ntty.'</td>
-                                    <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" ctin = '.$ctin.' idt = '.$idt.' inum = '.$inum.' nt_num = '.$nt_num.' nt_dt = '.$nt_dt.' type="CDNR"><i class="fa fa-trash"></i></a></td>
-                                </tr>';
+                                    <td align="center">'.$ntty.'</td>';
+                                    //$response .='<td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" ctin = '.$ctin.' idt = '.$idt.' inum = '.$inum.' nt_num = '.$nt_num.' nt_dt = '.$nt_dt.' type="CDNR"><i class="fa fa-trash"></i></a></td>';
+                                $response .='</tr>';
                             }
                         }
 
@@ -397,9 +397,9 @@ if(!empty($jstr1_array)) {
                             <td align="center">'.$txval.'</td>
                             <td align="center">'.$iamt.'</td>
                             <td align="center">'.$rsn.'</td>
-                            <td align="center">'.$ntty.'</td>
-                            <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn"  idt = '.$idt.' inum = '.$inum.' nt_num = '.$nt_num.' nt_dt = '.$nt_dt.' type="CDNUR" typ= '.$typ.'><i class="fa fa-trash"></i></a></td>
-                        </tr>';
+                            <td align="center">'.$ntty.'</td>';
+                            //$response .='<td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn"  idt = '.$idt.' inum = '.$inum.' nt_num = '.$nt_num.' nt_dt = '.$nt_dt.' type="CDNUR" typ= '.$typ.'><i class="fa fa-trash"></i></a></td>';
+                        $response .='</tr>';
                     }
                 }
 
@@ -542,9 +542,9 @@ if(!empty($jstr1_array)) {
                                             <td align="center">'.$val.'</td>
                                             <td align="center">'.$rt.'</td>
                                             <td align="center">'.$txval.'</td>
-                                            <td align="center">'.$iamt.'</td>
-                                            <td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" idt = '.$idt.' inum = '.$inum.' exp_typ = '.$exp_typ.' type="EXP" ><i class="fa fa-trash"></i></a></td>
-                                        </tr>';
+                                            <td align="center">'.$iamt.'</td>';
+                                            //$response .='<td align="center"><a href="javascript:;" class="gstr1ViewDeleteBtn" idt = '.$idt.' inum = '.$inum.' exp_typ = '.$exp_typ.' type="EXP" ><i class="fa fa-trash"></i></a></td>';
+                                        $response .='</tr>';
                                     }
                                 }
 
@@ -562,62 +562,140 @@ else {
     echo 'No Record found';
 }
 echo $response;
-
 ?>
+<div id="DeleteotpModalBox" class="modal fade" role="dialog" style="z-index: 999999;top: 78px;">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+                <label>Enter OTP</label>
+                <input id="otp_code" type="textbox" name="otp" class="form-control" data-bind="numeric">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="DeleteotpModalBoxSubmit" type="button" value="OTP" class="btn btn-success" >Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript">    
     $(document).ready(function () {
         $('body').delegate('.gstr1ViewDeleteBtn','click', function () {
-            if(!confirm("Are you sure you want to delete?"))
-            {
+            //alert('dhn');
+            $.ajax({
+                url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_details_check",
+                type: "json",
+                success: function (response) {
+                    //alert(response);
+                    if(response == 1) {
+                        $("#DeleteotpModalBox").modal("show");
+                        return false;
+                    }
+                    else if(response == 0) {
+                       common_part();
+                    }
+                    else {
+                       location.reload();
+                       return false;
+                    }
+                },
+                error: function() {
+                    alert("Please try again.");
+                    return false;
+                }
+            });
+                    
+        });
+        $( "#DeleteotpModalBoxSubmit" ).click(function( event ) {
+            var otp = $('#otp_code').val();
+            //event.preventDefault();
+            if(otp != " ") {
+                $.ajax({
+                    url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_otp_request",
+                    type: "post",
+                    data: {otp:otp},
+                    success: function (response) {
+                        //alert(response);
+                        var arr = $.parseJSON(response);
+                        if(arr.error_code == 0) {
+                            $("#DeleteotpModalBox").modal("hide");
+                            common_part();
+                        }
+                        else {
+                            location.reload();
+                            return false;
+                        }
+                    },
+                    error: function() {
+                        alert("Enter OTP First");
+                        return false;
+                    }
+                });
                 return false;
             }
-            $("#loading").show();
-            var type = $(this).attr('type');
-            var returnmonth = "<?php echo $returnmonth;?>";
-
-            var arrValues = [];
-            if(type == 'B2B') {
-                var ctin = $(this).attr('ctin');
-                var inum = $(this).attr('inum');
-                var idt = $(this).attr('idt');
-                arrValues = [ctin,inum,idt];
+            else {
+                alert("Enter OTP First");
+                return false;
             }
-            if(type == 'B2CL') {
-                var pos = $(this).attr('pos');
-                var inum = $(this).attr('inum');
-                var idt = $(this).attr('idt');
-                arrValues = [pos,inum,idt];
-            }
-            if(type == 'CDNR') {
-                var ctin = $(this).attr('ctin');
-                var inum = $(this).attr('inum');
-                var idt = $(this).attr('idt');
-                var nt_num = $(this).attr('nt_num');
-                var nt_dt = $(this).attr('nt_dt');
-                arrValues = [ctin,inum,idt,nt_num,nt_dt];
-            }
-            if(type == 'CDNUR') {
-                var inum = $(this).attr('inum');
-                var idt = $(this).attr('idt');
-                var nt_num = $(this).attr('nt_num');
-                var nt_dt = $(this).attr('nt_dt');
-                var typ = $(this).attr('typ');
-                arrValues = [inum,idt,nt_num,nt_dt,typ];
-            }
-            if(type == 'EXP') {
-                var inum = $(this).attr('inum');
-                var idt = $(this).attr('idt');
-                var exp_typ = $(this).attr('exp_typ');
-                arrValues = [inum,idt,exp_typ];
-            }
-            if(type == 'HSN') {
-                var hsn_sc = $(this).attr('hsn_sc');
-                var chksum = $(this).attr('chksum');
-                arrValues = [hsn_sc,chksum];
-            }                        
-            delete_item_invoice(type,returnmonth,arrValues);          
+            return false;
         });
+        return false;
     });
+
+    function common_part() {
+        if(!confirm("Are you sure you want to delete?"))
+        {
+            return false;
+        }
+                    
+        $("#loading").show();
+        var type = $(this).attr('type');
+        var returnmonth = "<?php echo $returnmonth;?>";
+
+        var arrValues = [];
+        if(type == 'B2B') {
+            var ctin = $(this).attr('ctin');
+            var inum = $(this).attr('inum');
+            var idt = $(this).attr('idt');
+            arrValues = [ctin,inum,idt];
+        }
+        if(type == 'B2CL') {
+            var pos = $(this).attr('pos');
+            var inum = $(this).attr('inum');
+            var idt = $(this).attr('idt');
+            arrValues = [pos,inum,idt];
+        }
+        if(type == 'CDNR') {
+            var ctin = $(this).attr('ctin');
+            var inum = $(this).attr('inum');
+            var idt = $(this).attr('idt');
+            var nt_num = $(this).attr('nt_num');
+            var nt_dt = $(this).attr('nt_dt');
+            arrValues = [ctin,inum,idt,nt_num,nt_dt];
+        }
+        if(type == 'CDNUR') {
+            var inum = $(this).attr('inum');
+            var idt = $(this).attr('idt');
+            var nt_num = $(this).attr('nt_num');
+            var nt_dt = $(this).attr('nt_dt');
+            var typ = $(this).attr('typ');
+            arrValues = [inum,idt,nt_num,nt_dt,typ];
+        }
+        if(type == 'EXP') {
+            var inum = $(this).attr('inum');
+            var idt = $(this).attr('idt');
+            var exp_typ = $(this).attr('exp_typ');
+            arrValues = [inum,idt,exp_typ];
+        }
+        if(type == 'HSN') {
+            var hsn_sc = $(this).attr('hsn_sc');
+            var chksum = $(this).attr('chksum');
+            arrValues = [hsn_sc,chksum];
+        }                        
+        delete_item_invoice(type,returnmonth,arrValues); 
+        return false; 
+    }
 
     /******* To delele invoice of GSTR1 ********/
     function delete_item_invoice(type,returnmonth,arrValues) {

@@ -10,6 +10,7 @@ if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER']))
 } 
 else 
 {
+    //$obj_gstr1->pr($_POST);
     $otp = isset($_POST['otp'])?$_POST['otp']:'';
     if(!empty($otp)) {
         if (is_numeric($otp)) {

@@ -10,11 +10,7 @@ final class returnfile extends validation {
     
     function __construct() {
         parent::__construct();
-    } 
-   
-   
-  
-  
+    }  
    
 	 
 	private function getreturnfiledata()
@@ -70,6 +66,8 @@ final class returnfile extends validation {
 		  $dataArr['returntofile_vendor_id'] = isset($_POST['vendor_type']) ? $_POST['vendor_type'] : '';
           $dataArr['return_subheading'] = isset($_POST['return_subheading']) ? $_POST['return_subheading'] : '';
 		  $dataArr['return_url'] = isset($_POST['return_url']) ? $_POST['return_url'] : '';
+		  $dataArr['order_value'] = isset($_POST['order_value']) ? $_POST['order_value'] : '';
+		  
 		  return $dataArr;
 		      
 	}
@@ -87,7 +85,15 @@ final class returnfile extends validation {
 				$dataConditionArray['id'] = $_GET["id"];
 				 $dataArr['updated_date'] = date('Y-m-d H:i:s');
 				 $dataArr['updated_by'] = $_SESSION["user_detail"]["user_id"];
+				 
 				//var_dump($dataArr);
+				$sql="select count(id) as numcount from ".TAB_PREFIX."return_categories WHERE id <> '".$_GET["id"]."' and order_value='".$dataArr["order_value"]."'";
+				$dataCurrentArr = $this->get_results($sql);
+				if($dataCurrentArr[0]->numcount > 0)
+				{
+					$this->setError('This order value already exists');
+					 return false; 
+				}
 				if ($this->update(TAB_PREFIX.'return_categories', $dataArr, $dataConditionArray)) {
 
 					$this->setSuccess("Return category information updated successfully");

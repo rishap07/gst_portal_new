@@ -13,7 +13,9 @@ $jstr1_array = json_decode($getSummary,true);
 
 $response = $response_doc = '';
 $doc_issue_array = array();
-//echo '<pre>';print_r($jstr1_array);
+/*if($_SESSION['user_detail']['user_id'] == '896') {
+echo '<pre>';print_r($jstr1_array);
+}*/
 //echo $getSummary;
 
 if(!empty($jstr1_array)) {
@@ -35,7 +37,6 @@ if(!empty($jstr1_array)) {
                        
                         aasort($jstr1_array['sec_sum'],"sec_nm");
                         foreach ($jstr1_array['sec_sum'] as $key1 => $jstr1_value) {
-
                             if($jstr1_value['sec_nm'] == 'DOC_ISSUE') {
                                 $doc_issue_array = $jstr1_value;
                             }
@@ -56,8 +57,12 @@ if(!empty($jstr1_array)) {
                                     <td align="right">'.$ttl_cess.'</td>
                                     <td align="right">'.$ttl_sgst.'</td>
                                     <td align="right">'.$ttl_val.'</td>
-                                    <td align="right"><a class="gstr1ViewBtn" href="'.PROJECT_URL.'?page=return_get_summary_view&type='.$jstr1_value['sec_nm'].'&returnmonth='.$returnmonth.'" target="_blank">view</a></td>
                                     <td align="right">';
+                                    if($invoice_number>0) {
+                                        $response .= ' <a class="gstr1ViewBtn" href="'.PROJECT_URL.'?page=return_get_summary_view&type='.$jstr1_value['sec_nm'].'&returnmonth='.$returnmonth.'" target="_blank">view</a>';
+                                    }
+                                   
+                                    $response .= '</td><td align="right">';
                                     if($invoice_number>0) {
                                         //$response .= '<a href="javascript:;" class="gstr1ViewDeleteBtn" type="'.$jstr1_value['sec_nm'].'" deleteall="all"><i class="fa fa-trash"></i></a>';
                                     }
@@ -101,8 +106,7 @@ if(!empty($doc_issue_array)) {
                             <span class="boxpricetxt">'.(isset($doc_issue_array['ttl_doc_cancelled'])?$doc_issue_array['ttl_doc_cancelled']:'0').'</span><br><div class="txtyear">Cancelled Doc</div>
                         </div>
                     </div>
-                </div>
-                        ';
+                </div>';
 }
 
 else {

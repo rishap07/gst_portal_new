@@ -105,7 +105,7 @@
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Recipient Address <span class="starred">*</span></label>
-						<textarea placeholder="IT Park Rd, Sitapura Industrial Area, Sitapura" data-bind="content" readonly="true" class="form-control required" name="company_address" id="company_address"><?php echo $invoiceData[0]->company_address; ?></textarea>
+						<textarea placeholder="IT Park Rd, Sitapura Industrial Area, Sitapura" data-bind="content" readonly="true" class="form-control required" name="company_address" id="company_address"><?php echo html_entity_decode($invoiceData[0]->company_address); ?></textarea>
 					</div>
 					
 					<?php $company_state_data = $obj_purchase->getStateDetailByStateId($invoiceData[0]->company_state); ?>
@@ -125,6 +125,20 @@
 				 </div>
 
 				 <div class="row">
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>Reason For Issuing Document <span class="starred">*</span></label><br/>
+						<select name='reason_issuing_document' id='reason_issuing_document' class="form-control required">
+							<option value=''>Select Reason</option>
+							<option value='01-Sales Return' <?php if($invoiceData[0]->reason_issuing_document === "01-Sales Return") { echo 'selected="selected"'; } ?>>Sales Return</option>
+							<option value='02-Post Sale Discount' <?php if($invoiceData[0]->reason_issuing_document === "02-Post Sale Discount") { echo 'selected="selected"'; } ?>>Post Sale Discount</option>
+							<option value='03-Deficiency in services' <?php if($invoiceData[0]->reason_issuing_document === "03-Deficiency in services") { echo 'selected="selected"'; } ?>>Deficiency in services</option>
+							<option value='04-Correction in Invoice' <?php if($invoiceData[0]->reason_issuing_document === "04-Correction in Invoice") { echo 'selected="selected"'; } ?>>Correction in Invoice</option>
+							<option value='05-Change in POS' <?php if($invoiceData[0]->reason_issuing_document === "05-Change in POS") { echo 'selected="selected"'; } ?>>Change in POS</option>
+							<option value='06-Finalization of Provisional assessment' <?php if($invoiceData[0]->reason_issuing_document === "06-Finalization of Provisional assessment") { echo 'selected="selected"'; } ?>>Finalization of Provisional assessment</option>
+							<option value='07-Others' <?php if($invoiceData[0]->reason_issuing_document === "07-Others") { echo 'selected="selected"'; } ?>>Others</option>
+						</select>
+					</div>
+					
 					<div class="col-md-6 col-sm-6 col-xs-12 form-group">
 						<label>Nature of Document <span class="starred">*</span></label><br/>
 						<label class="radio-inline"><input type="radio" name="invoice_type" value="revisedtaxinvoice" <?php if($invoiceData[0]->invoice_type === "revisedtaxinvoice") { echo 'checked="checked"'; } ?> />Revised Tax Invoice</label>

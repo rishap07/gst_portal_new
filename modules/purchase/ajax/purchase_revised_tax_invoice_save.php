@@ -42,7 +42,8 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	$dataArr['corresponding_document_number'] = isset($params['corresponding_document_number']) ? trim($params['corresponding_document_number']) : '';
 	$dataArr['corresponding_document_date'] = isset($params['corresponding_document_date']) ? trim($params['corresponding_document_date']) : '';
 	$dataArr['description'] = isset($params['description']) ? trim($params['description']) : '';
-
+	$dataArr['reason_issuing_document'] = isset($params['reason_issuing_document']) ? trim($params['reason_issuing_document']) : '';
+	
 	$supply_place = isset($params['place_of_supply']) ? $params['place_of_supply'] : '';
 	$supply_state_data = $obj_purchase->getStateDetailByStateId($supply_place);
 

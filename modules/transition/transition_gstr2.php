@@ -65,14 +65,14 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
 }
 if (isset($_GET['action']) && $_GET['action'] == 'emailInvoice' && isset($_GET['id'])) {
 
-    $htmlResponse = $obj_transition->generategst_transitionHtml($_GET['id'],$_GET['returnmonth']);
+    $htmlResponse = $obj_transition->generategst_transitionForm2Html($_GET['id'],$_GET['returnmonth']);
     
     
    
 }
 if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GET['id'])) {
 
-    $htmlResponse = $obj_transition->generategst_transitionHtml($_GET['id'],$_GET['returnmonth']);
+    $htmlResponse = $obj_transition->generategst_transitionForm2Html($_GET['id'],$_GET['returnmonth']);
     if ($htmlResponse === false) {
 
         $obj_transition->setError("No Transition form found.");
@@ -90,9 +90,9 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 
        
 	  // $sql = "select  *,count(return_id) as totalinvoice from ".TAB_PREFIX."client_return_gstr3b where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by return_id desc limit 0,1";
-       $sql = "select  *,count(id) as totalinvoice from ".TAB_PREFIX."transition_form2 where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
+       $sql = "select  *,count(id) as totalinvoice from ".TAB_PREFIX."transition_form where added_by='" . $_SESSION['user_detail']['user_id'] . "' and type='transitionform2' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
        $returndata = $obj_transition->get_results($sql);
-	   $sql = "select  *,count(id) as totalinvoice from ".TAB_PREFIX."transition_form2 where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
+	   $sql = "select  *,count(id) as totalinvoice from ".TAB_PREFIX."transition_form where added_by='" . $_SESSION['user_detail']['user_id'] . "' and type='transitionform2' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
        $returndata1 = $obj_transition->get_results($sql);
 	   $sql = "select * from " . TAB_PREFIX . "client_kyc where added_by='" . $_SESSION['user_detail']['user_id'] . "' order by id desc limit 0,1";
 	   $clientdata = $obj_transition->get_results($sql);
@@ -393,7 +393,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4a_unit[]"
+									 <input type="text" maxlength="15"  name="4a_unit[]"
  class="form-control" value="<?php if(isset($a4_unit[$i])) { echo $a4_unit[$i]; } else { echo ''; }?>"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -756,7 +756,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4b_unit[]"
+									 <input type="text" maxlength="15"  name="4b_unit[]"
  class="form-control" value="<?php if(isset($b4_unit[$i])) { echo $b4_unit[$i]; } else { echo ''; }?>"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -891,7 +891,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="4b_unit[]"
+									 <input type="text" maxlength="15"  name="4b_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1074,7 +1074,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
        
 			
 		    
-            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='4a_hsn[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_unit[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_qty1[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_qty2[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_value[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_centraltax[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_integrated[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_itcallowed[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_qty[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='4a_hsn[]'/></td><td><input type='text'  class='required form-control' name='4a_unit[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_qty1[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_qty2[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_value[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_centraltax[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_integrated[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_itcallowed[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4a_qty[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table4a').append(markup);
         });
@@ -1094,7 +1094,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
        
 			
 		    
-            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='4b_hsn[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_unit[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_qty1[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_qty2[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_value[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_centraltax[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_integrated[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_itcallowed[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_qty[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='4b_hsn[]'/></td><td><input type='text'  class='required form-control' name='4b_unit[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_qty1[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_qty2[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_value[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_centraltax[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_integrated[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_itcallowed[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='4b_qty[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
           // $("table tbody").append(markup);
 		   $('#table4b').append(markup);
         });

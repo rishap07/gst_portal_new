@@ -859,6 +859,14 @@ class common extends db {
             return true;
         }
     }
+	
+	public function checkUserInvoiceSettingExist($user_id = '') {
+
+        $checkSetting = $this->get_row("select * from " . $this->tableNames['client_invoice_setting'] . " where 1=1 AND added_by = " . $user_id);
+        if (count($checkSetting) == 1) {
+            return true;
+        }
+    }
 
     public function checkGSTINNumberExist($gstinnumber, $user_id = '') {
 
@@ -876,6 +884,21 @@ class common extends db {
     public function getUserThemeSetting($user_id = '') {
 
         $data = $this->get_row("select * from " . $this->tableNames['user_theme_setting'] . " where 1=1 AND added_by = " . $user_id);
+        $dataArr = array();
+        if (!empty($data)) {
+            $dataArr['data'] = $data;
+            $dataArr['status'] = 'success';
+        } else {
+            $dataArr['data'] = '';
+            $dataArr['status'] = 'error';
+        }
+
+        return $dataArr;
+    }
+	
+	public function getUserInvoiceSetting($user_id = '') {
+
+        $data = $this->get_row("select * from " . $this->tableNames['client_invoice_setting'] . " where 1=1 AND added_by = " . $user_id);
         $dataArr = array();
         if (!empty($data)) {
             $dataArr['data'] = $data;

@@ -19,8 +19,8 @@ if((isset($_GET["id"])) && (!empty($_GET["id"])))
 			foreach($dataNotification as $dataItem)
 					  {
 					 
-						  if((date('Y-m-d H:i:s')>=$dataItem->start_date) && (date('Y-m-d H:i:s') <= $dataItem->end_date))
-						  {
+						 // if((date('Y-m-d H:i:s')>=$dataItem->start_date) && (date('Y-m-d H:i:s') <= $dataItem->end_date))
+						  //{
 								 
 							  if($dataItem->vendor_list==0)
 							  {
@@ -48,7 +48,7 @@ if((isset($_GET["id"])) && (!empty($_GET["id"])))
 									 $count = $count+1;
 									
 							   }
-						  }
+						  //}
 						 
 						
 					     }

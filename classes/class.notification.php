@@ -106,7 +106,7 @@ final class notification extends validation {
 		$message="<ul class='noti-ul'>";
 	    $count=1;
 		$flag=0;
-		$sql="select *,u.status as nstatus  from " . $this->getTableName('notification') . " as n INNER join " . $this->getTableName('user_notification') . " as u on u.notification_id=n.notification_id  where n.status='1' and u.user_id='".$_SESSION["user_detail"]["user_id"]."' order by u.notification_id desc limit 0,1";
+		$sql="select *,u.status as nstatus  from " . $this->getTableName('notification') . " as n INNER join " . $this->getTableName('user_notification') . " as u on u.notification_id=n.notification_id  where n.status='1' and u.user_id='".$_SESSION["user_detail"]["user_id"]."' order by u.notification_id desc limit 0,2";
 			
 		$dataNotification = $this->get_results($sql);
         if(!empty($dataNotification))
@@ -250,14 +250,14 @@ final class notification extends validation {
 				  }
 					
 	}
-	public function totalNotificationShow()
+	public function totalNotificationCount()
 	{
 		$dataArr = array();
         $dataArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
 		$message="";
 	    $count=1;
 		$flag=0;
-		 $sql="select * from " . $this->getTableName('notification') . " as n INNER join " . $this->getTableName('user_notification') . " as u on u.notification_id=n.notification_id  where n.status='1' and u.user_id='".$_SESSION["user_detail"]["user_id"]."' order by u.notification_id desc";
+		 $sql="select * from " . $this->getTableName('notification') . " as n INNER join " . $this->getTableName('user_notification') . " as u on u.notification_id=n.notification_id  where u.user_id='".$_SESSION["user_detail"]["user_id"]."' order by u.notification_id desc";
 		$dataNotification = $this->get_results($sql);
         if(!empty($dataNotification))
 				{
@@ -265,8 +265,8 @@ final class notification extends validation {
 			foreach($dataNotification as $dataItem)
 					  {
 					 
-						  if((date('Y-m-d H:i:s')>=$dataItem->start_date) && (date('Y-m-d H:i:s') <= $dataItem->end_date))
-						  {
+						  //if((date('Y-m-d H:i:s')>=$dataItem->start_date) && (date('Y-m-d H:i:s') <= $dataItem->end_date))
+						  //{
 								  $flag=1;
 							  if($dataItem->vendor_list==0)
 							  {
@@ -290,13 +290,75 @@ final class notification extends validation {
 									 $count = $count+1;
 									
 							   }
-						  }
+						  //}
 						 
 						
 					  }
 			   if($flag==1)
 			   {
 				return $count;
+			   }
+			   return 1;
+				
+				  } else{
+					  return 1;
+				  }
+					
+	}
+	public function totalNotificationShow()
+	{
+		$dataArr = array();
+        $dataArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
+		//$message="";
+		$message="<ul class='noti-ul'>";
+	    $count=1;
+		$flag=0;
+		 $sql="select * from " . $this->getTableName('notification') . " as n INNER join " . $this->getTableName('user_notification') . " as u on u.notification_id=n.notification_id  where n.status='1' and u.user_id='".$_SESSION["user_detail"]["user_id"]."' order by u.notification_id desc limit 0,2";
+		$dataNotification = $this->get_results($sql);
+        if(!empty($dataNotification))
+				{
+					
+			foreach($dataNotification as $dataItem)
+					  {
+					 
+						  //if((date('Y-m-d H:i:s')>=$dataItem->start_date) && (date('Y-m-d H:i:s') <= $dataItem->end_date))
+						  //{
+								  $flag=1;
+							  if($dataItem->vendor_list==0)
+							  {
+								 if( $this->checkNotificationDetail($dataItem->notification_id))
+								 {
+								 }
+								 
+								 // $message= $message.$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name));
+								  //$message = $message."<br>";
+								  $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name)). "</a></li>";
+								
+								  $count = $count+1;
+							  }
+							 if(isset($dataArr['data']->kyc->vendor_type) && $dataArr['data']->kyc->vendor_type==$dataItem->vendor_list)
+							  {
+								  
+								if( $this->checkNotificationDetail($dataItem->notification_id))
+								 {
+								 }
+						
+							
+								   //$message= $message.$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name));
+									//$message = $message."<br>";
+									$message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name)). "</a></li>";
+								 $count = $count+1;
+									
+							   }
+						  //}
+						 
+						
+					  }
+			   if($flag==1)
+			   {
+				//return $count;
+				 $message .="</ul>";  
+				return $message;
 			   }
 			   return 1;
 				

@@ -1,6 +1,24 @@
 <?php
 $obj_user = new users();
 
+if (!$obj_user->can_read('client_kyc')) {
+	$obj_user->setError($obj_user->getValMsg('can_read'));
+	$obj_user->redirect(PROJECT_URL . "/?page=dashboard");
+	exit();
+}
+
+if (!$obj_user->can_create('client_kyc')) {
+	$obj_user->setError($obj_user->getValMsg('can_create'));
+	$obj_user->redirect(PROJECT_URL . "/?page=dashboard");
+	exit();
+}
+
+if (!$obj_user->can_update('client_kyc')) {
+	$obj_user->setError($obj_user->getValMsg('can_update'));
+	$obj_user->redirect(PROJECT_URL . "/?page=dashboard");
+	exit();
+}
+
 if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
 
     if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])) {
@@ -9,7 +27,6 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
     } else {
 
         if ($obj_user->saveUserThemeSetting()) {
-
             $obj_user->redirect(PROJECT_URL . "?page=user_themesetting");
         }
     }
@@ -21,7 +38,7 @@ $dataCurrentUserArr = $obj_user->getUserDetailsById( $obj_user->sanitize($_SESSI
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
-		<div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Business Setting</h1></div>
+		<div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Company Setting</h1></div>
 		<hr class="headingborder">
 		<div class="clear height10"></div>
 		<?php $obj_user->showErrorMessage(); ?>
@@ -49,6 +66,44 @@ $dataCurrentUserArr = $obj_user->getUserDetailsById( $obj_user->sanitize($_SESSI
                             <div class="clear"></div>
                         <?php } ?>
                     </div>
+
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>Show Logo</label>
+						<div class="onoffswitch">
+							<input type="checkbox" value="1" name="show_logo" id="show_logo" class="onoffswitch-checkbox" <?php if(isset($dataThemeSettingArr['data']->show_logo) && $dataThemeSettingArr['data']->show_logo == '1') { echo 'checked="checked"'; } ?>>
+							<label class="onoffswitch-label" for="show_logo">
+								<span class="onoffswitch-inner"></span>
+								<span class="onoffswitch-switch"></span>
+							</label>
+						</div>
+					</div>
+                    <div class="clear height10"></div>
+
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                        <label>Upload Signature</label>
+                        <div class="clear"></div>
+                        <input type="file" name="theme_signature" id="theme_signature">
+                        <div class="clear"></div>
+                        <small>(Max Width=300 and Max Height=50)</small>
+                    </div>
+
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                        <?php if (isset($dataThemeSettingArr['data']->theme_signature) && $dataThemeSettingArr['data']->theme_signature != "") { ?>
+                            <img src="<?php echo PROJECT_URL . '/upload/theme-signature/' . $dataThemeSettingArr['data']->theme_signature; ?>">
+                            <div class="clear"></div>
+                        <?php } ?>
+                    </div>
+
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>Show Signature</label>
+						<div class="onoffswitch">
+							<input type="checkbox" value="1" name="show_signature" id="show_signature" class="onoffswitch-checkbox" <?php if(isset($dataThemeSettingArr['data']->show_signature) && $dataThemeSettingArr['data']->show_signature == '1') { echo 'checked="checked"'; } ?>>
+							<label class="onoffswitch-label" for="show_signature">
+								<span class="onoffswitch-inner"></span>
+								<span class="onoffswitch-switch"></span>
+							</label>
+						</div>
+					</div>
                     <div class="clear height10"></div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">

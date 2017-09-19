@@ -94,9 +94,9 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
   
 }  
 	  // $sql = "select  *,count(return_id) as totalinvoice from ".TAB_PREFIX."client_return_gstr3b where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by return_id desc limit 0,1";
-       $sql = "select  *,count(id) as totalinvoice from ".TAB_PREFIX."transition_form1 where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
+       $sql = "select  *,count(id) as totalinvoice from ".TAB_PREFIX."transition_form where added_by='" . $_SESSION['user_detail']['user_id'] . "' and type='transitionform1' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
        $returndata = $obj_transition->get_results($sql);
-	   $sql = "select  *,count(id) as totalinvoice from ".TAB_PREFIX."transition_form1 where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
+	    $sql = "select  *,count(id) as totalinvoice from ".TAB_PREFIX."transition_form where added_by='" . $_SESSION['user_detail']['user_id'] . "' and type='transitionform1' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by id desc limit 0,1";
  
        $returndata1 = $obj_transition->get_results($sql);
 	    $sql = "select * from " . TAB_PREFIX . "client_kyc where added_by='" . $_SESSION['user_detail']['user_id'] . "' order by id desc limit 0,1";
@@ -110,7 +110,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 		   $client_name = $clientdata[0]->name;
 		   
 	   }
-		if($returndata1[0]->totalinvoice > 0)
+	  
+		if(!empty($returndata1))
 		{
 		$arr = $returndata1[0]->gstr_transition_data;
 		$arr1= base64_decode($arr);
@@ -274,169 +275,171 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 		$b10b_value='';
 		$b10b_inputtax='';
 		
-
-		
+       
+		if(!empty($transition_arr))
+		{
 		foreach($transition_arr as $item)
 		{
 			//echo $item->a5_taxperiod_last_return;
 			//var_dump($item);
-			$a5_taxperiod_last_return=$item->a5_taxperiod_last_return;
-			$a5_registration_no=$item->a5_registration_no;
-			$a5_taxperiod_last_return=$item->a5_taxperiod_last_return;
-			$a5_dateoffilling_return=$item->a5_dateoffilling_return;
-			$a5_balance_cenvat_credit=$item->a5_balance_cenvat_credit;
-			$a5_cenvat_credit_admissible=$item->a5_cenvat_credit_admissible;
-			$b5bcform_tin_issuer=$item->b5bcform_tin_issuer;
-			$b5bcform_nameof_issuer=$item->b5bcform_nameof_issuer;
-			$b5bcform_no_of_item=$item->b5bcform_no_of_item;
-			$b5bcform_amount=$item->b5bcform_amount;
-			$b5bcform_applicable_vat_rate=$item->b5bcform_applicable_vat_rate;
-		    $b5bfform_tin_issuer=$item->b5bfform_tin_issuer;
-			$b5bfform_nameof_issuer=$item->b5bfform_nameof_issuer;
-			$b5bfform_no_of_form=$item->b5bfform_no_of_form;
-			$b5bfform_amount=$item->b5bfform_amount;
-			$b5bfform_applicable_vat_rate=$item->b5bfform_applicable_vat_rate;
-			$b5bhiform_tin_issuer=$item->b5bhiform_tin_issuer;
-			$b5bhiform_nameof_issuer=$item->b5bhiform_nameof_issuer;
-			$b5bhiform_no_of_form=$item->b5bhiform_no_of_form;
-			$b5bhiform_amount=$item->b5bhiform_amount;
-			$b5bhiform_applicable_vat_rate=$item->b5bhiform_applicable_vat_rate;
-			$c5cform_registration_no=$item->c5cform_registration_no;
-			$c5cform_balanceof_itc_val=$item->c5cform_balanceof_itc_val;
-			$c5cform_cform_turnover_form_pending=$item->c5cform_cform_turnover_form_pending;
-			$c5cform_cform_taxpayable=$item->c5cform_cform_taxpayable;
-			$c5cform_fform_turnover_form_pending=$item->c5cform_fform_turnover_form_pending;
-			$c5cform_fform_taxpayable=$item->c5cform_fform_taxpayable;
-			$c5cform_itcreversal_relatable=$item->c5cform_itcreversal_relatable;
-			$c5cform_hiform_turnover_form_pending=$item->c5cform_hiform_turnover_form_pending;
-			$c5cform_hiform_taxpayable=$item->c5cform_hiform_taxpayable;
-			$c5cform_hiform_transitionitc2=$item->c5cform_cform_taxpayable;
-			$a6ainvoice_document_no=$item->a6ainvoice_document_no;
-			$a6ainvoice_document_date=$item->a6ainvoice_document_date;
-		    $a6asupplier_registration_no=$item->a6asupplier_registration_no;
-			$a6arecipients_registration_no=$item->a6arecipients_registration_no;
-				$a6a_value=$item->a6a_value;
-				$a6a_ed_cvd=$item->a6a_ed_cvd;
-				$a6a_sad=$item->a6a_sad;
-				$a6a_totaleligible_cenvat=$item->a6a_totaleligible_cenvat;
-				$a6a_totalcenvat_credit=$item->a6a_totalcenvat_credit;
-				$a6a_totalcenvat_credit_unavailed=$item->a6a_totalcenvat_credit_unavailed;
-				$b6binvoice_document_no=$item->b6binvoice_document_no;
-				$b6binvoice_document_date=$item->b6binvoice_document_date;
-				$b6bsupplier_registration_no=$item->b6bsupplier_registration_no;
-				$b6breceipients_registration_no=$item->b6breceipients_registration_no;
-				$b6b_value=$item->b6b_value;
-				$b6b_taxpaid_vat=$item->b6b_taxpaid_vat;
-				$b6b_totaleligible_vat=$item->b6b_totaleligible_vat;
-				$b6b_totalvat_creditavailed=$item->b6b_totalvat_creditavailed;
-				$b6b_totalvat_creditunavailed=$item->b6b_totalvat_creditunavailed;			
-			$a7a1_hsncode=$item->a7a1_hsncode;
-			$a7a1_unit=$item->a7a1_unit;
-			$a7a1_qty=$item->a7a1_qty;
-			$a7a1_value=$item->a7a1_value;
-			$a7a1_eligible_duties=$item->a7a1_eligible_duties;
-			$b7b_nameof_supplier=$item->b7b_nameof_supplier;
-			$b7b_invoice_number=$item->b7b_invoice_number;
-			$b7b_invoice_date=$item->b7b_invoice_date;
-			$b7b_description=$item->b7b_description;
-			$b7b_quantity=$item->b7b_quantity;
-			$b7b_uqc=$item->b7b_uqc;
-			$b7b_value=$item->b7b_value;
-			$b7b_eligible_duties=$item->b7b_eligible_duties;
-			$b7b_vat=$item->b7b_vat;
-			$b7b_dateonwhich_receipients=$item->b7b_dateonwhich_receipients;
-			$c7c1_description=$item->c7c1_description;
-			$c7c1_unit=$item->c7c1_unit;
-			$c7c1_qty=$item->c7c1_qty;
-			$c7c1_value=$item->c7c1_value;
-			$c7c1_vat=$item->c7c1_vat;
-			$c7c1_totalinput_taxcredit=$item->c7c1_totalinput_taxcredit;
-			$c7c1_totalinput_taxcredit_exempt=$item->c7c1_totalinput_taxcredit_exempt;
-			$c7c1_totalinput_taxcredit_admissible=$item->c7c1_totalinput_taxcredit_admissible;				
-			$d7d_description=$item->d7d_description;
-			$d7d_unit=$item->d7d_unit;
-			$d7d_qty=$item->d7d_qty;
-			$d7d_value=$item->d7d_value;
-			$d7d_vatentry_taxpad=$item->d7d_vatentry_taxpad;
-			$a7a2_hsncode=$item->a7a2_hsncode;
-			$a7a2_unit=$item->a7a2_unit;
-			$a7a2_qty=$item->a7a2_qty;
-			$a7a2_value=$item->a7a2_value;
-			$a7a2_eligible_duties=$item->a7a2_eligible_duties;
-			$a7a3_hsncode=$item->a7a3_hsncode;
-			$a7a3_unit=$item->a7a3_unit;
-			$a7a3_qty=$item->a7a3_qty;
-			$a7a3_value=$item->a7a3_value;
-			$a7a3_eligible_duties=$item->a7a3_eligible_duties;
-			$b7b_nameof_supplier=$item->b7b_nameof_supplier;
-			$b7b_invoice_number=$item->b7b_invoice_number;
-			$b7b_invoice_date=$item->b7b_invoice_date;
-			$b7b_description=$item->b7b_description;
-			$b7b_quantity=$item->b7b_quantity;
-			$b7b_uqc=$item->b7b_uqc;
-			$b7b_value=$item->b7b_value;
-			$b7b_eligible_duties=$item->b7b_eligible_duties;
-			$b7b_vat=$item->b7b_vat;
-			$b7b_dateonwhich_receipients=$item->b7b_dateonwhich_receipients;
-			$c7c2_description=$item->c7c2_description;
-			$c7c2_unit=$item->c7c2_unit;
-			$c7c2_qty=$item->c7c2_qty;
-			$c7c2_value=$item->c7c2_value;
-			$c7c2_vat=$item->c7c2_vat;
-			$c7c2_totalinput_taxcredit=$item->c7c2_totalinput_taxcredit;
-			$c7c2_totalinput_taxcredit_exempt=$item->c7c2_totalinput_taxcredit_exempt;
-			$c7c2_totalinput_taxcredit_admissible=$item->c7c2_totalinput_taxcredit_admissible;
-			$a8registration_no=$item->a8registration_no;
-			$a8taxperiod_lastreturn=$item->a8taxperiod_lastreturn;
-			$a8dateoffilling_return=$item->a8dateoffilling_return;
-			$a8balanceeligible_cenvat_credit=$item->a8balanceeligible_cenvat_credit;
-			$a8gstnof_receiver=$item->a8gstnof_receiver;
-			$a8distributionno=$item->a8distributionno;
-			$a8distributiondate=$item->a8distributiondate;
-			$a8itcofcentral=$item->a8itcofcentral;
-			$a9a1challan_no=$item->a9a1challan_no;
-			$a9a1challan_date=$item->a9a1challan_date;
-			$a9a1typeof_goods=$item->a9a1typeof_goods;
-			$a9a1_hsn=$item->a9a1_hsn;
-			$a9a1_description=$item->a9a1_description;
-			$a9a1_unit=$item->a9a1_unit;
-			$a9a1_quantity=$item->a9a1_quantity;
-			$a9a1_value=$item->a9a1_value;
-			$b9b1challan_no=$item->b9b1challan_no;
-			$b9b1challan_date=$item->b9b1challan_date;
-			$b9b1typeof_goods=$item->b9b1typeof_goods;
-			$b9b1_hsn=$item->b9b1_hsn;
-			$b9b1_description=$item->b9b1_description;
-			$b9b1_unit=$item->b9b1_unit;
-			$b9b1_quantity=$item->b9b1_quantity;
-			$b9b1_value=$item->b9b1_value;
-			$a11aregistration_no=$item->a11aregistration_no;
-			$a11aservicetax_no=$item->a11aservicetax_no;
-			$a11ainvoice_documentno=$item->a11ainvoice_documentno;
-			$a11ainvoice_document_date=$item->a11ainvoice_document_date;
-			$a11atax_paid=$item->a11atax_paid;
-			$a11avatpaid_sgst=$item->a11avatpaid_sgst;
-			$a12a_document_no=$item->a12a_document_no;
-			$a12a_document_date=$item->a12a_document_date;
-			$a12a_gstinno_receipient=$item->a12a_gstinno_receipient;
-			$a12a_name_receipient=$item->a12a_name_receipient;
-			$a12a_hsn=$item->a12a_hsn;
-			$a12a_description=$item->a12a_description;
-			$a12a_unit=$item->a12a_unit;
-			$a12a_quantity=$item->a12a_quantity;
-			$a12a_value=$item->a12a_value;
-			$a10a_gstn=$item->a10a_gstn;
-			$a10a_description=$item->a10a_description;
-			$a10a_unit=$item->a10a_unit;
-			$a10a_quantity=$item->a10a_quantity;
-			$a10a_value=$item->a10a_value;
-			$a10a_inputtax=$item->a10a_inputtax;
-			$b10b_gstn=$item->b10b_gstn;
-			$b10b_description=$item->b10b_description;
-			$b10b_unit=$item->b10b_unit;
-			$b10b_quantity=$item->b10b_quantity;
-			$b10b_value=$item->b10b_value;
-			$b10b_inputtax=$item->b10b_inputtax;
+			$a5_taxperiod_last_return=!empty($item->a5_taxperiod_last_return)?$item->a5_taxperiod_last_return:'';
+			$a5_registration_no=!empty($item->a5_registration_no)?$item->a5_registration_no:'';
+			$a5_taxperiod_last_return=!empty($item->a5_taxperiod_last_return)?$item->a5_taxperiod_last_return:'';
+			$a5_dateoffilling_return=!empty($item->a5_dateoffilling_return)?$item->a5_dateoffilling_return:'';
+			$a5_balance_cenvat_credit=!empty($item->a5_balance_cenvat_credit)?$item->a5_balance_cenvat_credit:'';
+			$a5_cenvat_credit_admissible=!empty($item->a5_cenvat_credit_admissible)?$item->a5_cenvat_credit_admissible:'';
+			$b5bcform_tin_issuer=!empty($item->b5bcform_tin_issuer)?$item->b5bcform_tin_issuer:'';
+			$b5bcform_nameof_issuer=!empty($item->b5bcform_nameof_issuer)?$item->b5bcform_nameof_issuer:'';
+			$b5bcform_no_of_item=!empty($item->b5bcform_no_of_item)?$item->b5bcform_no_of_item:'';
+			$b5bcform_amount=!empty($item->b5bcform_amount)?$item->b5bcform_amount:'';
+			$b5bcform_applicable_vat_rate=!empty($item->b5bcform_applicable_vat_rate)?$item->b5bcform_applicable_vat_rate:'';
+		    $b5bfform_tin_issuer=!empty($item->b5bfform_tin_issuer)?$item->b5bfform_tin_issuer:'';
+			$b5bfform_nameof_issuer=!empty($item->b5bfform_nameof_issuer)?$item->b5bfform_nameof_issuer:'';
+			$b5bfform_no_of_form=!empty($item->b5bfform_no_of_form)?$item->b5bfform_no_of_form:'';
+			$b5bfform_amount=!empty($item->b5bfform_amount)?$item->b5bfform_amount:'';
+			$b5bfform_applicable_vat_rate=!empty($item->b5bfform_applicable_vat_rate)?$item->b5bfform_applicable_vat_rate:'';
+			$b5bhiform_tin_issuer=!empty($item->b5bhiform_tin_issuer)?$item->b5bhiform_tin_issuer:'';
+			$b5bhiform_nameof_issuer=!empty($item->b5bhiform_nameof_issuer)?$item->b5bhiform_nameof_issuer:'';
+			$b5bhiform_no_of_form=!empty($item->b5bhiform_no_of_form)?$item->b5bhiform_no_of_form:'';
+			$b5bhiform_amount=!empty($item->b5bhiform_amount)?$item->b5bhiform_amount:'';
+			$b5bhiform_applicable_vat_rate=!empty($item->b5bhiform_applicable_vat_rate)?$item->b5bhiform_applicable_vat_rate:'';
+			$c5cform_registration_no=!empty($item->c5cform_registration_no)?$item->c5cform_registration_no:'';
+			$c5cform_balanceof_itc_val=!empty($item->c5cform_balanceof_itc_val)?$item->c5cform_balanceof_itc_val:'';
+			$c5cform_cform_turnover_form_pending=!empty($item->c5cform_cform_turnover_form_pending)?$item->c5cform_cform_turnover_form_pending:'';
+			$c5cform_cform_taxpayable=!empty($item->c5cform_cform_taxpayable)?$item->c5cform_cform_taxpayable:'';
+			$c5cform_fform_turnover_form_pending=!empty($item->c5cform_fform_turnover_form_pending)?$item->c5cform_fform_turnover_form_pending:'';
+			$c5cform_fform_taxpayable=!empty($item->c5cform_fform_taxpayable)?$item->c5cform_fform_taxpayable:'';
+			$c5cform_itcreversal_relatable=!empty($item->c5cform_itcreversal_relatable)?$item->c5cform_itcreversal_relatable:'';
+			$c5cform_hiform_turnover_form_pending=!empty($item->c5cform_hiform_turnover_form_pending)?$item->c5cform_hiform_turnover_form_pending:'';
+			$c5cform_hiform_taxpayable=!empty($item->c5cform_hiform_taxpayable)?$item->c5cform_hiform_taxpayable:'';
+			$c5cform_hiform_transitionitc2=!empty($item->c5cform_hiform_transitionitc2)?$item->c5cform_hiform_transitionitc2:'';
+			$a6ainvoice_document_no=!empty($item->a6ainvoice_document_no)?$item->a6ainvoice_document_no:'';
+			$a6ainvoice_document_date=!empty($item->a6ainvoice_document_date)?$item->a6ainvoice_document_date:'';
+		    $a6asupplier_registration_no=!empty($item->a6asupplier_registration_no)?$item->a6asupplier_registration_no:'';
+			$a6arecipients_registration_no=!empty($item->a6arecipients_registration_no)?$item->a6arecipients_registration_no:'';
+				$a6a_value=!empty($item->a6a_value)?$item->a6a_value:'';
+				$a6a_ed_cvd=!empty($item->b5bhiform_tin_issuer)?$item->b5bhiform_tin_issuer:'';
+				$a6a_sad=!empty($item->b5bhiform_tin_issuer)?$item->b5bhiform_tin_issuer:'';
+				$a6a_totaleligible_cenvat=!empty($item->b5bhiform_tin_issuer)?$item->b5bhiform_tin_issuer:'';
+				$a6a_totalcenvat_credit=!empty($item->a6a_totalcenvat_credit)?$item->a6a_totalcenvat_credit:'';
+				$a6a_totalcenvat_credit_unavailed=!empty($item->a6a_totalcenvat_credit_unavailed)?$item->a6a_totalcenvat_credit_unavailed:'';
+				$b6binvoice_document_no=!empty($item->b6binvoice_document_no)?$item->b6binvoice_document_no:'';
+				$b6binvoice_document_date=!empty($item->b6binvoice_document_date)?$item->b6binvoice_document_date:'';
+				$b6bsupplier_registration_no=!empty($item->b6bsupplier_registration_no)?$item->b6bsupplier_registration_no:'';
+				$b6breceipients_registration_no=!empty($item->b6breceipients_registration_no)?$item->b6breceipients_registration_no:'';
+				$b6b_value=!empty($item->b6b_value)?$item->b6b_value:'';
+				$b6b_taxpaid_vat=!empty($item->b6b_taxpaid_vat)?$item->b6b_taxpaid_vat:'';
+				$b6b_totaleligible_vat=!empty($item->b6b_totaleligible_vat)?$item->b6b_totaleligible_vat:'';
+				$b6b_totalvat_creditavailed=!empty($item->b6b_totalvat_creditavailed)?$item->b6b_totalvat_creditavailed:'';
+				$b6b_totalvat_creditunavailed=!empty($item->b6b_totalvat_creditunavailed)?$item->b6b_totalvat_creditunavailed:'';			
+			$a7a1_hsncode=!empty($item->a7a1_hsncode)?$item->a7a1_hsncode:'';
+			$a7a1_unit=!empty($item->a7a1_unit)?$item->a7a1_unit:'';
+			$a7a1_qty=!empty($item->a7a1_qty)?$item->a7a1_qty:'';
+			$a7a1_value=!empty($item->a7a1_value)?$item->a7a1_value:'';
+			$a7a1_eligible_duties=!empty($item->a7a1_eligible_duties)?$item->a7a1_eligible_duties:'';
+			$b7b_nameof_supplier=!empty($item->b7b_nameof_supplier)?$item->b7b_nameof_supplier:'';
+			$b7b_invoice_number=!empty($item->b7b_invoice_number)?$item->b7b_invoice_number:'';
+			$b7b_invoice_date=!empty($item->b7b_invoice_date)?$item->b7b_invoice_date:'';
+			$b7b_description=!empty($item->b7b_description)?$item->b7b_description:'';
+			$b7b_quantity=!empty($item->b7b_quantity)?$item->b7b_quantity:'';
+			$b7b_uqc=!empty($item->b7b_uqc)?$item->b7b_uqc:'';
+			$b7b_value=!empty($item->b7b_value)?$item->b7b_value:'';
+			$b7b_eligible_duties=!empty($item->b7b_eligible_duties)?$item->b7b_eligible_duties:'';
+			$b7b_vat=!empty($item->b7b_vat)?$item->b7b_vat:'';
+			$b7b_dateonwhich_receipients=!empty($item->b7b_dateonwhich_receipients)?$item->b7b_dateonwhich_receipients:'';
+			$c7c1_description=!empty($item->c7c1_description)?$item->c7c1_description:'';
+			$c7c1_unit=!empty($item->c7c1_unit)?$item->c7c1_unit:'';
+			$c7c1_qty=!empty($item->c7c1_qty)?$item->c7c1_qty:'';
+			$c7c1_value=!empty($item->c7c1_value)?$item->c7c1_value:'';
+			$c7c1_vat=!empty($item->c7c1_vat)?$item->c7c1_vat:'';
+			$c7c1_totalinput_taxcredit=!empty($item->c7c1_totalinput_taxcredit)?$item->c7c1_totalinput_taxcredit:'';
+			$c7c1_totalinput_taxcredit_exempt=!empty($item->c7c1_totalinput_taxcredit_exempt)?$item->c7c1_totalinput_taxcredit_exempt:'';
+			$c7c1_totalinput_taxcredit_admissible=!empty($item->c7c1_totalinput_taxcredit_admissible)?$item->c7c1_totalinput_taxcredit_admissible:'';				
+			$d7d_description=!empty($item->d7d_description)?$item->d7d_description:'';
+			$d7d_unit=!empty($item->d7d_unit)?$item->d7d_unit:'';
+			$d7d_qty=!empty($item->d7d_qty)?$item->d7d_qty:'';
+			$d7d_value=!empty($item->d7d_value)?$item->d7d_value:'';
+			$d7d_vatentry_taxpad=!empty($item->d7d_vatentry_taxpad)?$item->d7d_vatentry_taxpad:'';
+			$a7a2_hsncode=!empty($item->a7a2_hsncode)?$item->a7a2_hsncode:'';
+			$a7a2_unit=!empty($item->a7a2_unit)?$item->a7a2_unit:'';
+			$a7a2_qty=!empty($item->a7a2_qty)?$item->a7a2_qty:'';
+			$a7a2_value=!empty($item->a7a2_value)?$item->a7a2_value:'';
+			$a7a2_eligible_duties=!empty($item->a7a2_eligible_duties)?$item->a7a2_eligible_duties:'';
+			$a7a3_hsncode=!empty($item->a7a3_hsncode)?$item->a7a3_hsncode:'';
+			$a7a3_unit=!empty($item->a7a3_unit)?$item->a7a3_unit:'';
+			$a7a3_qty=!empty($item->a7a3_qty)?$item->a7a3_qty:'';
+			$a7a3_value=!empty($item->a7a3_value)?$item->a7a3_value:'';
+			$a7a3_eligible_duties=!empty($item->a7a3_eligible_duties)?$item->a7a3_eligible_duties:'';
+			$b7b_nameof_supplier=!empty($item->b7b_nameof_supplier)?$item->b7b_nameof_supplier:'';
+			$b7b_invoice_number=!empty($item->b7b_invoice_number)?$item->b7b_invoice_number:'';
+			$b7b_invoice_date=!empty($item->b7b_invoice_date)?$item->b7b_invoice_date:'';
+			$b7b_description=!empty($item->b7b_description)?$item->b7b_description:'';
+			$b7b_quantity=!empty($item->b7b_quantity)?$item->b7b_quantity:'';
+			$b7b_uqc=!empty($item->b7b_uqc)?$item->b7b_uqc:'';
+			$b7b_value=!empty($item->b7b_value)?$item->b7b_value:'';
+			$b7b_eligible_duties=!empty($item->b7b_eligible_duties)?$item->b7b_eligible_duties:'';
+			$b7b_vat=!empty($item->b7b_vat)?$item->b7b_vat:'';
+			$b7b_dateonwhich_receipients=!empty($item->b7b_dateonwhich_receipients)?$item->b7b_dateonwhich_receipients:'';
+			$c7c2_description=!empty($item->c7c2_description)?$item->c7c2_description:'';
+			$c7c2_unit=!empty($item->c7c2_unit)?$item->c7c2_unit:'';
+			$c7c2_qty=!empty($item->c7c2_qty)?$item->c7c2_qty:'';
+			$c7c2_value=!empty($item->c7c2_value)?$item->c7c2_value:'';
+			$c7c2_vat=!empty($item->c7c2_vat)?$item->c7c2_vat:'';
+			$c7c2_totalinput_taxcredit=!empty($item->c7c2_totalinput_taxcredit)?$item->c7c2_totalinput_taxcredit:'';
+			$c7c2_totalinput_taxcredit_exempt=!empty($item->c7c2_totalinput_taxcredit_exempt)?$item->c7c2_totalinput_taxcredit_exempt:'';
+			$c7c2_totalinput_taxcredit_admissible=!empty($item->c7c2_totalinput_taxcredit_admissible)?$item->c7c2_totalinput_taxcredit_admissible:'';
+			$a8registration_no=!empty($item->a8registration_no)?$item->a8registration_no:'';
+			$a8taxperiod_lastreturn=!empty($item->a8taxperiod_lastreturn)?$item->a8taxperiod_lastreturn:'';
+			$a8dateoffilling_return=!empty($item->a8dateoffilling_return)?$item->a8dateoffilling_return:'';
+			$a8balanceeligible_cenvat_credit=!empty($item->a8balanceeligible_cenvat_credit)?$item->a8balanceeligible_cenvat_credit:'';
+			$a8gstnof_receiver=!empty($item->a8gstnof_receiver)?$item->a8gstnof_receiver:'';
+			$a8distributionno=!empty($item->a8distributionno)?$item->a8distributionno:'';
+			$a8distributiondate=!empty($item->a8distributiondate)?$item->a8distributiondate:'';
+			$a8itcofcentral=!empty($item->a8itcofcentral)?$item->a8itcofcentral:'';
+			$a9a1challan_no=!empty($item->a9a1challan_no)?$item->a9a1challan_no:'';
+			$a9a1challan_date=!empty($item->a9a1challan_date)?$item->a9a1challan_date:'';
+			$a9a1typeof_goods=!empty($item->a9a1typeof_goods)?$item->a9a1typeof_goods:'';
+			$a9a1_hsn=!empty($item->a9a1_hsn)?$item->a9a1_hsn:'';
+			$a9a1_description=!empty($item->a9a1_description)?$item->a9a1_description:'';
+			$a9a1_unit=!empty($item->a9a1_unit)?$item->a9a1_unit:'';
+			$a9a1_quantity=!empty($item->a9a1_quantity)?$item->a9a1_quantity:'';
+			$a9a1_value=!empty($item->a9a1_value)?$item->a9a1_value:'';
+			$b9b1challan_no=!empty($item->b9b1challan_no)?$item->b9b1challan_no:'';
+			$b9b1challan_date=!empty($item->b9b1challan_date)?$item->b9b1challan_date:'';
+			$b9b1typeof_goods=!empty($item->b9b1typeof_goods)?$item->b9b1typeof_goods:'';
+			$b9b1_hsn=!empty($item->b9b1_hsn)?$item->b9b1_hsn:'';
+			$b9b1_description=!empty($item->b9b1_description)?$item->b9b1_description:'';
+			$b9b1_unit=!empty($item->b9b1_unit)?$item->b9b1_unit:'';
+			$b9b1_quantity=!empty($item->b9b1_quantity)?$item->b9b1_quantity:'';
+			$b9b1_value=!empty($item->b9b1_value)?$item->b9b1_value:'';
+			$a11aregistration_no=!empty($item->a11aregistration_no)?$item->a11aregistration_no:'';
+			$a11aservicetax_no=!empty($item->a11aservicetax_no)?$item->a11aservicetax_no:'';
+			$a11ainvoice_documentno=!empty($item->a11ainvoice_documentno)?$item->a11ainvoice_documentno:'';
+			$a11ainvoice_document_date=!empty($item->a11ainvoice_document_date)?$item->a11ainvoice_document_date:'';
+			$a11atax_paid=!empty($item->a11atax_paid)?$item->a11atax_paid:'';
+			$a11avatpaid_sgst=!empty($item->a11avatpaid_sgst)?$item->a11avatpaid_sgst:'';
+			$a12a_document_no=!empty($item->a12a_document_no)?$item->a12a_document_no:'';
+			$a12a_document_date=!empty($item->a12a_document_date)?$item->a12a_document_date:'';
+			$a12a_gstinno_receipient=!empty($item->a12a_gstinno_receipient)?$item->a12a_gstinno_receipient:'';
+			$a12a_name_receipient=!empty($item->a12a_name_receipient)?$item->a12a_name_receipient:'';
+			$a12a_hsn=!empty($item->a12a_hsn)?$item->a12a_hsn:'';
+			$a12a_description=!empty($item->a12a_description)?$item->a12a_description:'';
+			$a12a_unit=!empty($item->a12a_unit)?$item->a12a_unit:'';
+			$a12a_quantity=!empty($item->a12a_quantity)?$item->a12a_quantity:'';
+			$a12a_value=!empty($item->a12a_value)?$item->a12a_value:'';
+			$a10a_gstn=!empty($item->a10a_gstn)?$item->a10a_gstn:'';
+			$a10a_description=!empty($item->a10a_description)?$item->a10a_description:'';
+			$a10a_unit=!empty($item->a10a_unit)?$item->a10a_unit:'';
+			$a10a_quantity=!empty($item->a10a_quantity)?$item->a10a_quantity:'';
+			$a10a_value=!empty($item->a10a_value)?$item->a10a_value:'';
+			$a10a_inputtax=!empty($item->a10a_inputtax)?$item->a10a_inputtax:'';
+			$b10b_gstn=!empty($item->b10b_gstn)?$item->b10b_gstn:'';
+			$b10b_description=!empty($item->b10b_description)?$item->b10b_description:'';
+			$b10b_unit=!empty($item->b10b_unit)?$item->b10b_unit:'';
+			$b10b_quantity=!empty($item->b10b_quantity)?$item->b10b_quantity:'';
+			$b10b_value=!empty($item->b10b_value)?$item->b10b_value:'';
+			$b10b_inputtax=!empty($item->b10b_inputtax)?$item->b10b_inputtax:'';
+		}
 		}
 		}
 		 
@@ -653,7 +656,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5a_registration_no[]"
+									 <input type="text" maxlength="15"  name="5a_registration_no[]"
  class="form-control" value="<?php if(isset($a5_registration_no[$i])) { echo $a5_registration_no[$i]; } else { echo ''; }?>"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -666,7 +669,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5a_taxperiod_last_return[]"
+								 <input type="text" maxlength="15"  name="5a_taxperiod_last_return[]"
  class="form-control" value="<?php if(isset($a5_taxperiod_last_return[$i])) { echo $a5_taxperiod_last_return[$i]; } else { echo ''; }?>"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -679,7 +682,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);"  name="5a_dateoffilling_return[]"
+								 <input type="text" maxlength="15"   name="5a_dateoffilling_return[]"
  class="form-control" value="<?php if(isset($a5_dateoffilling_return[$i])) { echo $a5_dateoffilling_return[$i]; } else { echo ''; }?>"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -692,7 +695,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5a_balance_cenvat_credit[]" value="<?php if(isset($a5_balance_cenvat_credit[$i])) { echo $a5_balance_cenvat_credit[$i]; } else { echo ''; }?>"  class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="5a_balance_cenvat_credit[]" value="<?php if(isset($a5_balance_cenvat_credit[$i])) { echo $a5_balance_cenvat_credit[$i]; } else { echo ''; }?>"  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -704,7 +707,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a5_cenvat_credit_admissible[$i])) { echo $a5_cenvat_credit_admissible[$i]; } else { echo ''; }?>" name="5a_cenvat_credit_admissible[]"  class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  value="<?php if(isset($a5_cenvat_credit_admissible[$i])) { echo $a5_cenvat_credit_admissible[$i]; } else { echo ''; }?>" name="5a_cenvat_credit_admissible[]"  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								 <?php if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 0))
@@ -740,7 +743,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5a_registration_no[]"
+									 <input type="text" maxlength="15"  name="5a_registration_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -753,7 +756,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5a_taxperiod_last_return[]"
+								 <input type="text" maxlength="15"  name="5a_taxperiod_last_return[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -766,7 +769,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5a_dateoffilling_return[]"
+								 <input type="text" maxlength="15"  name="5a_dateoffilling_return[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -779,7 +782,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5a_balance_cenvat_credit[]"  class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="5a_balance_cenvat_credit[]"  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -791,7 +794,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5a_cenvat_credit_admissible[]"  class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="5a_cenvat_credit_admissible[]"  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
                                     <td>
@@ -889,7 +892,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" value="<?php if(isset($b5bcform_tin_issuer[$i])) { echo $b5bcform_tin_issuer[$i]; } else { echo ''; } ?>" onKeyPress="return  isNumberKey(event,this);" name="5bcform_tin_issuer[]"
+								 <input type="text" maxlength="15" value="<?php if(isset($b5bcform_tin_issuer[$i])) { echo $b5bcform_tin_issuer[$i]; } else { echo ''; } ?>"  name="5bcform_tin_issuer[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -902,7 +905,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" value="<?php if(isset($b5bcform_nameof_issuer[$i])) { echo $b5bcform_nameof_issuer[$i]; } else { echo ''; } ?>" onKeyPress="return  isNumberKey(event,this);" name="5bcform_nameof_issuer[]"
+								 <input type="text" maxlength="15" value="<?php if(isset($b5bcform_nameof_issuer[$i])) { echo $b5bcform_nameof_issuer[$i]; } else { echo ''; } ?>"  name="5bcform_nameof_issuer[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -915,7 +918,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b5bcform_no_of_item[$i])) { echo $b5bcform_no_of_item[$i]; } else { echo ''; } ?>" name="5bcform_no_of_item[]" 
+								 <input type="text" maxlength="15"  value="<?php if(isset($b5bcform_no_of_item[$i])) { echo $b5bcform_no_of_item[$i]; } else { echo ''; } ?>" name="5bcform_no_of_item[]" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -928,7 +931,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" value="<?php if(isset($b5bcform_amount[$i])) { echo $b5bcform_amount[$i]; } else { echo ''; } ?>" onKeyPress="return  isNumberKey(event,this);" name="5bcform_amount[]" 
+								 <input type="text" maxlength="15" value="<?php if(isset($b5bcform_amount[$i])) { echo $b5bcform_amount[$i]; } else { echo ''; } ?>"  name="5bcform_amount[]" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -941,7 +944,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" value="<?php if(isset($b5bcform_applicable_vat_rate[$i])) { echo $b5bcform_applicable_vat_rate[$i]; } else { echo ''; } ?>" onKeyPress="return  isNumberKey(event,this);" name="5bcform_applicable_vat_rate[]" 
+								 <input type="text" maxlength="15" value="<?php if(isset($b5bcform_applicable_vat_rate[$i])) { echo $b5bcform_applicable_vat_rate[$i]; } else { echo ''; } ?>"  name="5bcform_applicable_vat_rate[]" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -978,7 +981,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5bcform_tin_issuer[]"
+								 <input type="text" maxlength="15"  name="5bcform_tin_issuer[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -991,7 +994,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5bcform_nameof_issuer[]"
+								 <input type="text" maxlength="15"  name="5bcform_nameof_issuer[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1004,7 +1007,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5bcform_no_of_item[]" 
+								 <input type="text" maxlength="15"  name="5bcform_no_of_item[]" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1017,7 +1020,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5bcform_amount[]" 
+								 <input type="text" maxlength="15"  name="5bcform_amount[]" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1030,7 +1033,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5bcform_applicable_vat_rate[]" 
+								 <input type="text" maxlength="15"  name="5bcform_applicable_vat_rate[]" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1105,7 +1108,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" value="<?php if(isset($b5bfform_tin_issuer[$i])) { echo $b5bfform_tin_issuer[$i]; } else { echo ''; } ?>" onKeyPress="return  isNumberKey(event,this);" name="5bfform_tin_issuer[]" 
+								 <input type="text" maxlength="15" value="<?php if(isset($b5bfform_tin_issuer[$i])) { echo $b5bfform_tin_issuer[$i]; } else { echo ''; } ?>"  name="5bfform_tin_issuer[]" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1118,7 +1121,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b5bfform_nameof_issuer[$i])) { echo $b5bfform_nameof_issuer[$i]; } else { echo ''; } ?>" name="5bfform_nameof_issuer[]" 
+								 <input type="text" maxlength="15"  value="<?php if(isset($b5bfform_nameof_issuer[$i])) { echo $b5bfform_nameof_issuer[$i]; } else { echo ''; } ?>" name="5bfform_nameof_issuer[]" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1131,7 +1134,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b5bfform_no_of_form[$i])) { echo $b5bfform_no_of_form[$i]; } else { echo ''; } ?>" name="5bfform_no_of_form[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b5bfform_no_of_form[$i])) { echo $b5bfform_no_of_form[$i]; } else { echo ''; } ?>" name="5bfform_no_of_form[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1144,7 +1147,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b5bfform_amount[$i])) { echo $b5bfform_amount[$i]; } else { echo ''; } ?>" name="5bfform_amount[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b5bfform_amount[$i])) { echo $b5bfform_amount[$i]; } else { echo ''; } ?>" name="5bfform_amount[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1157,7 +1160,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b5bfform_applicable_vat_rate[$i])) { echo $b5bfform_applicable_vat_rate[$i]; } else { echo ''; } ?>" name="5bfform_applicable_vat_rate[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b5bfform_applicable_vat_rate[$i])) { echo $b5bfform_applicable_vat_rate[$i]; } else { echo ''; } ?>" name="5bfform_applicable_vat_rate[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1191,7 +1194,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5bfform_tin_issuer[]" 
+								 <input type="text" maxlength="15"  name="5bfform_tin_issuer[]" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1204,7 +1207,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5bfform_nameof_issuer[]" 
+								 <input type="text" maxlength="15"  name="5bfform_nameof_issuer[]" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1217,7 +1220,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5bfform_no_of_form[]"
+								 <input type="text" maxlength="15"  name="5bfform_no_of_form[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1230,7 +1233,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5bfform_amount[]"
+								 <input type="text" maxlength="15"  name="5bfform_amount[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1243,7 +1246,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5bfform_applicable_vat_rate[]"
+								 <input type="text" maxlength="15"  name="5bfform_applicable_vat_rate[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1314,7 +1317,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b5bhiform_tin_issuer[$i])) { echo $b5bhiform_tin_issuer[$i]; } else { echo ''; }?>" name="5bhiform_tin_issuer[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b5bhiform_tin_issuer[$i])) { echo $b5bhiform_tin_issuer[$i]; } else { echo ''; }?>" name="5bhiform_tin_issuer[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1327,7 +1330,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b5bhiform_nameof_issuer[$i])) { echo $b5bhiform_nameof_issuer[$i]; } else { echo ''; }?>" name="5bhiform_nameof_issuer[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b5bhiform_nameof_issuer[$i])) { echo $b5bhiform_nameof_issuer[$i]; } else { echo ''; }?>" name="5bhiform_nameof_issuer[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1340,7 +1343,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b5bhiform_no_of_form[$i])) { echo $b5bhiform_no_of_form[$i]; } else { echo ''; }?>" name="5bhiform_no_of_form[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b5bhiform_no_of_form[$i])) { echo $b5bhiform_no_of_form[$i]; } else { echo ''; }?>" name="5bhiform_no_of_form[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1353,7 +1356,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b5bhiform_amount[$i])) { echo $b5bhiform_amount[$i]; } else { echo ''; }?>" name="5bhiform_amount[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b5bhiform_amount[$i])) { echo $b5bhiform_amount[$i]; } else { echo ''; }?>" name="5bhiform_amount[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1366,7 +1369,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b5bhiform_applicable_vat_rate[$i])) { echo $b5bhiform_applicable_vat_rate[$i]; } else { echo ''; }?>" name="5bhiform_applicable_vat_rate[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b5bhiform_applicable_vat_rate[$i])) { echo $b5bhiform_applicable_vat_rate[$i]; } else { echo ''; }?>" name="5bhiform_applicable_vat_rate[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1398,7 +1401,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5bhiform_tin_issuer[]"
+								 <input type="text" maxlength="15"  name="5bhiform_tin_issuer[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1411,7 +1414,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5bhiform_name_of_issuer[]"
+								 <input type="text" maxlength="15"  name="5bhiform_name_of_issuer[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1424,7 +1427,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5bhiform_no_of_form[]"
+								 <input type="text" maxlength="15"  name="5bhiform_no_of_form[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1437,7 +1440,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5bhiform_amount[]"
+								 <input type="text" maxlength="15"  name="5bhiform_amount[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1450,7 +1453,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5bhiform_applicable_vat_rate[]"
+								 <input type="text" maxlength="15"  name="5bhiform_applicable_vat_rate[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1574,7 +1577,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5cform_registration_no[]" value="<?php if(isset($c5cform_registration_no[$i])) { echo $c5cform_registration_no[$i]; } else { echo ''; }?>" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="5cform_registration_no[]" value="<?php if(isset($c5cform_registration_no[$i])) { echo $c5cform_registration_no[$i]; } else { echo ''; }?>" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -1586,7 +1589,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c5cform_balanceof_itc_val[$i])) { echo $c5cform_balanceof_itc_val[$i]; } else { echo ''; }?>" name="5cform_balanceof_itc_vat[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c5cform_balanceof_itc_val[$i])) { echo $c5cform_balanceof_itc_val[$i]; } else { echo ''; }?>" name="5cform_balanceof_itc_vat[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1599,7 +1602,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c5cform_cform_turnover_form_pending[$i])) { echo $c5cform_cform_turnover_form_pending[$i]; } else { echo ''; }?>" name="5cform_cform_turnover_form_pending[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c5cform_cform_turnover_form_pending[$i])) { echo $c5cform_cform_turnover_form_pending[$i]; } else { echo ''; }?>" name="5cform_cform_turnover_form_pending[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1612,7 +1615,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c5cform_cform_taxpayable[$i])) { echo $c5cform_cform_taxpayable[$i]; } else { echo ''; }?>" name="5cform_cform_taxpayable[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c5cform_cform_taxpayable[$i])) { echo $c5cform_cform_taxpayable[$i]; } else { echo ''; }?>" name="5cform_cform_taxpayable[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1625,7 +1628,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c5cform_fform_turnover_form_pending[$i])) { echo $c5cform_fform_turnover_form_pending[$i]; } else { echo ''; }?>" name="5cform_fform_turnover_form_pending[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c5cform_fform_turnover_form_pending[$i])) { echo $c5cform_fform_turnover_form_pending[$i]; } else { echo ''; }?>" name="5cform_fform_turnover_form_pending[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -1637,7 +1640,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c5cform_fform_taxpayable[$i])) { echo $c5cform_fform_taxpayable[$i]; } else { echo ''; }?>" name="5cform_fform_taxpayable[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c5cform_fform_taxpayable[$i])) { echo $c5cform_fform_taxpayable[$i]; } else { echo ''; }?>" name="5cform_fform_taxpayable[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -1649,7 +1652,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c5cform_itcreversal_relatable[$i])) { echo $c5cform_itcreversal_relatable[$i]; } else { echo ''; }?>" name="5cform_itcreversal_relatable[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c5cform_itcreversal_relatable[$i])) { echo $c5cform_itcreversal_relatable[$i]; } else { echo ''; }?>" name="5cform_itcreversal_relatable[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -1661,7 +1664,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c5cform_hiform_turnover_form_pending[$i])) { echo $c5cform_hiform_turnover_form_pending[$i]; } else { echo ''; }?>" name="5cform_hiform_turnover_form_pending[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c5cform_hiform_turnover_form_pending[$i])) { echo $c5cform_hiform_turnover_form_pending[$i]; } else { echo ''; }?>" name="5cform_hiform_turnover_form_pending[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -1673,7 +1676,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c5cform_hiform_taxpayable[$i])) { echo $c5cform_hiform_taxpayable[$i]; } else { echo ''; }?>" name="5cform_hiform_taxpayable[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c5cform_hiform_taxpayable[$i])) { echo $c5cform_hiform_taxpayable[$i]; } else { echo ''; }?>" name="5cform_hiform_taxpayable[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -1685,7 +1688,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c5cform_hiform_transitionitc2[$i])) { echo $c5cform_hiform_transitionitc2[$i]; } else { echo ''; }?>" name="5cform_hiform_transitionitc2[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c5cform_hiform_transitionitc2[$i])) { echo $c5cform_hiform_transitionitc2[$i]; } else { echo ''; }?>" name="5cform_hiform_transitionitc2[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td><?php
@@ -1715,7 +1718,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5cform_registration_no[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="5cform_registration_no[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -1727,7 +1730,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5cform_balanceof_itc_vat[]"
+								 <input type="text" maxlength="15"  name="5cform_balanceof_itc_vat[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1740,7 +1743,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5cform_cform_turnover_form_pending[]"
+								 <input type="text" maxlength="15"  name="5cform_cform_turnover_form_pending[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1753,7 +1756,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5cform_cform_taxpayable[]"
+								 <input type="text" maxlength="15"  name="5cform_cform_taxpayable[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1766,7 +1769,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5cform_fform_turnover_form_pending[]"
+								 <input type="text" maxlength="15"  name="5cform_fform_turnover_form_pending[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -1778,7 +1781,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5cform_fform_taxpayable[]"
+								 <input type="text" maxlength="15"  name="5cform_fform_taxpayable[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -1790,7 +1793,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5cform_itcreversal_relatable[]"
+								 <input type="text" maxlength="15"  name="5cform_itcreversal_relatable[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -1802,7 +1805,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5cform_hiform_turnover_form_pending[]"
+								 <input type="text" maxlength="15"  name="5cform_hiform_turnover_form_pending[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -1814,7 +1817,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5cform_hiform_taxpayable[]"
+								 <input type="text" maxlength="15"  name="5cform_hiform_taxpayable[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -1826,7 +1829,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="5cform_hiform_transitionitc2[]"
+								 <input type="text" maxlength="15"  name="5cform_hiform_transitionitc2[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -1947,7 +1950,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a6ainvoice_document_no[$i])) { echo $a6ainvoice_document_no[$i]; } else { echo ''; } ?>" name="6ainvoice_document_no[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a6ainvoice_document_no[$i])) { echo $a6ainvoice_document_no[$i]; } else { echo ''; } ?>" name="6ainvoice_document_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1960,7 +1963,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a6ainvoice_document_date[$i])) { echo $a6ainvoice_document_date[$i]; } else { echo ''; } ?>" name="6ainvoice_document_date[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  value="<?php if(isset($a6ainvoice_document_date[$i])) { echo $a6ainvoice_document_date[$i]; } else { echo ''; } ?>" name="6ainvoice_document_date[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -1972,7 +1975,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a6asupplier_registration_no[$i])) { echo $a6asupplier_registration_no[$i]; } else { echo ''; } ?>" name="6asupplier_registration_no[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a6asupplier_registration_no[$i])) { echo $a6asupplier_registration_no[$i]; } else { echo ''; } ?>" name="6asupplier_registration_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1985,7 +1988,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a6arecipients_registration_no[$i])) { echo $a6arecipients_registration_no[$i]; } else { echo ''; } ?>" name="6arecipients_registration_no[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a6arecipients_registration_no[$i])) { echo $a6arecipients_registration_no[$i]; } else { echo ''; } ?>" name="6arecipients_registration_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1998,7 +2001,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a6a_value[$i])) { echo $a6a_value[$i]; } else { echo ''; } ?>" name="6a_value[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a6a_value[$i])) { echo $a6a_value[$i]; } else { echo ''; } ?>" name="6a_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2010,7 +2013,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a6a_ed_cvd[$i])) { echo $a6a_ed_cvd[$i]; } else { echo ''; } ?>" name="6a_ed_cvd[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  value="<?php if(isset($a6a_ed_cvd[$i])) { echo $a6a_ed_cvd[$i]; } else { echo ''; } ?>" name="6a_ed_cvd[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -2021,7 +2024,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a6a_sad[$i])) { echo $a6a_sad[$i]; } else { echo ''; } ?>" name="6a_sad[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a6a_sad[$i])) { echo $a6a_sad[$i]; } else { echo ''; } ?>" name="6a_sad[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2033,7 +2036,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a6a_totaleligible_cenvat[$i])) { echo $a6a_totaleligible_cenvat[$i]; } else { echo ''; } ?>" name="6a_totaleligible_cenvat[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  value="<?php if(isset($a6a_totaleligible_cenvat[$i])) { echo $a6a_totaleligible_cenvat[$i]; } else { echo ''; } ?>" name="6a_totaleligible_cenvat[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -2044,7 +2047,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a6a_totalcenvat_credit[$i])) { echo $a6a_totalcenvat_credit[$i]; } else { echo ''; } ?>" name="6a_totalcenvat_credit1[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a6a_totalcenvat_credit[$i])) { echo $a6a_totalcenvat_credit[$i]; } else { echo ''; } ?>" name="6a_totalcenvat_credit1[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2056,7 +2059,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a6a_totalcenvat_credit_unavailed[$i])) { echo $a6a_totalcenvat_credit_unavailed[$i]; } else { echo ''; } ?>" name="6a_totalcenvat_credit_unavailed[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  value="<?php if(isset($a6a_totalcenvat_credit_unavailed[$i])) { echo $a6a_totalcenvat_credit_unavailed[$i]; } else { echo ''; } ?>" name="6a_totalcenvat_credit_unavailed[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
                                      <?php if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 0))
@@ -2085,7 +2088,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6ainvoice_document_no[]"
+								 <input type="text" maxlength="15"  name="6ainvoice_document_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -2098,7 +2101,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6ainvoice_document_date[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="6ainvoice_document_date[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -2110,7 +2113,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6asupplier_registration_no[]"
+								 <input type="text" maxlength="15"  name="6asupplier_registration_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -2123,7 +2126,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6arecipients_registration_no[]"
+								 <input type="text" maxlength="15"  name="6arecipients_registration_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -2136,7 +2139,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6a_value[]"
+								 <input type="text" maxlength="15"  name="6a_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2148,7 +2151,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6a_ed_cvd[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="6a_ed_cvd[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -2159,7 +2162,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6a_sad[]"
+								 <input type="text" maxlength="15"  name="6a_sad[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2171,7 +2174,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6a_totaleligible_cenvat[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="6a_totaleligible_cenvat[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -2182,7 +2185,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6a_totalcenvat_credit1[]"
+								 <input type="text" maxlength="15"  name="6a_totalcenvat_credit1[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2194,7 +2197,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6a_totalcenvat_credit_unavailed[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="6a_totalcenvat_credit_unavailed[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
                                      <td>
@@ -2313,7 +2316,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b6binvoice_document_no[$i])) { echo $b6binvoice_document_no[$i]; } else { echo ''; }?>" name="6binvoice_document_no[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  value="<?php if(isset($b6binvoice_document_no[$i])) { echo $b6binvoice_document_no[$i]; } else { echo ''; }?>" name="6binvoice_document_no[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -2325,7 +2328,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b6binvoice_document_date[$i])) { echo $b6binvoice_document_date[$i]; } else { echo ''; }?>" name="6binvoice_document_date[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b6binvoice_document_date[$i])) { echo $b6binvoice_document_date[$i]; } else { echo ''; }?>" name="6binvoice_document_date[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -2338,7 +2341,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b6bsupplier_registration_no[$i])) { echo $b6bsupplier_registration_no[$i]; } else { echo ''; }?>" name="6bsupplier_registration_no[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b6bsupplier_registration_no[$i])) { echo $b6bsupplier_registration_no[$i]; } else { echo ''; }?>" name="6bsupplier_registration_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -2351,7 +2354,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b6breceipients_registration_no[$i])) { echo $b6breceipients_registration_no[$i]; } else { echo ''; }?>"  name="6breceipients_registration_no[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b6breceipients_registration_no[$i])) { echo $b6breceipients_registration_no[$i]; } else { echo ''; }?>"  name="6breceipients_registration_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2363,7 +2366,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b6b_value[$i])) { echo $b6b_value[$i]; } else { echo ''; }?>" name="6b_value[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b6b_value[$i])) { echo $b6b_value[$i]; } else { echo ''; }?>" name="6b_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2375,7 +2378,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b6b_taxpaid_vat[$i])) { echo $b6b_taxpaid_vat[$i]; } else { echo ''; }?>" name="6b_taxpaid_vat[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b6b_taxpaid_vat[$i])) { echo $b6b_taxpaid_vat[$i]; } else { echo ''; }?>" name="6b_taxpaid_vat[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2387,7 +2390,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6b_totaleligible_vat[]" value="<?php if(isset($b6b_totaleligible_vat[$i])) { echo $b6b_taxpaid_vat[$i]; } else { echo ''; }?>"
+								 <input type="text" maxlength="15"  name="6b_totaleligible_vat[]" value="<?php if(isset($b6b_totaleligible_vat[$i])) { echo $b6b_taxpaid_vat[$i]; } else { echo ''; }?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2399,7 +2402,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6b_totalvat_creditavailed[]" value="<?php if(isset($b6b_totalvat_creditavailed[$i])) { echo $b6b_totalvat_creditavailed[$i]; } else { echo ''; }?>"
+								 <input type="text" maxlength="15"  name="6b_totalvat_creditavailed[]" value="<?php if(isset($b6b_totalvat_creditavailed[$i])) { echo $b6b_totalvat_creditavailed[$i]; } else { echo ''; }?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2411,7 +2414,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b6b_totalvat_creditunavailed[$i])) { echo $b6b_totalvat_creditunavailed[$i]; } else { echo ''; }?>" name="6b_totalvat_creditunavailed[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b6b_totalvat_creditunavailed[$i])) { echo $b6b_totalvat_creditunavailed[$i]; } else { echo ''; }?>" name="6b_totalvat_creditunavailed[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -2443,7 +2446,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6binvoice_document_no[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="6binvoice_document_no[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -2455,7 +2458,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6binvoice_document_date[]"
+								 <input type="text" maxlength="15"  name="6binvoice_document_date[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -2468,7 +2471,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6bsupplier_registration_no[]"
+								 <input type="text" maxlength="15"  name="6bsupplier_registration_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -2481,7 +2484,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6breceipients_registration_no[]"
+								 <input type="text" maxlength="15"  name="6breceipients_registration_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2493,7 +2496,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6b_value[]"
+								 <input type="text" maxlength="15"  name="6b_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2505,7 +2508,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6b_taxpaid_vat[]"
+								 <input type="text" maxlength="15"  name="6b_taxpaid_vat[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2517,7 +2520,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6b_totaleligible_vat[]" value="<?php if(isset($nature_of_supply_a_TotData[0]->cess_amount)) { echo $nature_of_supply_a_TotData[0]->cess_amount; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15"  name="6b_totaleligible_vat[]" value="<?php if(isset($nature_of_supply_a_TotData[0]->cess_amount)) { echo $nature_of_supply_a_TotData[0]->cess_amount; } else { echo ''; } ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2529,7 +2532,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6b_totalvat_creditavailed[]"
+								 <input type="text" maxlength="15"  name="6b_totalvat_creditavailed[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2541,7 +2544,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="6b_totalvat_creditunavailed[]"
+								 <input type="text" maxlength="15"  name="6b_totalvat_creditunavailed[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -2636,7 +2639,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a1_hsncode[]" value="<?php if(isset($a7a1_hsncode[$i])) { echo $a7a1_hsncode[$i]; } else { echo ''; }?>" 
+								 <input type="text" maxlength="15"  name="7a1_hsncode[]" value="<?php if(isset($a7a1_hsncode[$i])) { echo $a7a1_hsncode[$i]; } else { echo ''; }?>" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2648,7 +2651,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a1_unit[]" value="<?php if(isset($a7a1_unit[$i])) { echo $a7a1_unit[$i]; } else { echo ''; }?>" 
+								 <input type="text" maxlength="15"  name="7a1_unit[]" value="<?php if(isset($a7a1_unit[$i])) { echo $a7a1_unit[$i]; } else { echo ''; }?>" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2660,7 +2663,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a1_qty[]" value="<?php if(isset($a7a1_qty[$i])) { echo $a7a1_qty[$i]; } else { echo ''; }?>"
+								 <input type="text" maxlength="15"  name="7a1_qty[]" value="<?php if(isset($a7a1_qty[$i])) { echo $a7a1_qty[$i]; } else { echo ''; }?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2672,7 +2675,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a1_value[]" value="<?php if(isset($a7a1_value[$i])) { echo $a7a1_value[$i]; } else { echo ''; }?>"
+								 <input type="text" maxlength="15"  name="7a1_value[]" value="<?php if(isset($a7a1_value[$i])) { echo $a7a1_value[$i]; } else { echo ''; }?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2684,7 +2687,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a1_eligible_duties[]" value="<?php if(isset($a7a1_eligible_duties[$i])) { echo $a7a1_eligible_duties[$i]; } else { echo ''; }?>"
+								 <input type="text" maxlength="15"  name="7a1_eligible_duties[]" value="<?php if(isset($a7a1_eligible_duties[$i])) { echo $a7a1_eligible_duties[$i]; } else { echo ''; }?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -2716,7 +2719,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a1_hsncode[]"
+								 <input type="text" maxlength="15"  name="7a1_hsncode[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2728,7 +2731,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a1_unit[]"
+								 <input type="text" maxlength="15"  name="7a1_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2740,7 +2743,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a1_qty[]"
+								 <input type="text" maxlength="15"  name="7a1_qty[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2752,7 +2755,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a1_value[]"
+								 <input type="text" maxlength="15"  name="7a1_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2764,7 +2767,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a1_eligible_duties[]"
+								 <input type="text" maxlength="15"  name="7a1_eligible_duties[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -2833,7 +2836,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a7a2_hsncode[$i])) { echo $a7a2_hsncode[$i]; } else { echo ''; }?>" name="7a2_hsncode[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a7a2_hsncode[$i])) { echo $a7a2_hsncode[$i]; } else { echo ''; }?>" name="7a2_hsncode[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2845,7 +2848,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a2_unit[]" value="<?php if(isset($a7a2_unit[$i])) { echo $a7a2_unit[$i]; } else { echo ''; }?>" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="7a2_unit[]" value="<?php if(isset($a7a2_unit[$i])) { echo $a7a2_unit[$i]; } else { echo ''; }?>" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -2856,7 +2859,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a2_qty[]" value="<?php if(isset($a7a2_qty[$i])) { echo $a7a2_qty[$i]; } else { echo ''; }?>"
+								 <input type="text" maxlength="15"  name="7a2_qty[]" value="<?php if(isset($a7a2_qty[$i])) { echo $a7a2_qty[$i]; } else { echo ''; }?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2868,7 +2871,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a2_value[]" value="<?php if(isset($a7a2_value[$i])) { echo $a7a2_value[$i]; } else { echo ''; }?>"
+								 <input type="text" maxlength="15"  name="7a2_value[]" value="<?php if(isset($a7a2_value[$i])) { echo $a7a2_value[$i]; } else { echo ''; }?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2880,7 +2883,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a2_eligible_duties[]" value="<?php if(isset($a7a2_eligible_duties[$i])) { echo $a7a2_eligible_duties[$i]; } else { echo ''; }?>"
+								 <input type="text" maxlength="15"  name="7a2_eligible_duties[]" value="<?php if(isset($a7a2_eligible_duties[$i])) { echo $a7a2_eligible_duties[$i]; } else { echo ''; }?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -2910,7 +2913,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a2_hsncode[]"
+								 <input type="text" maxlength="15"  name="7a2_hsncode[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2922,7 +2925,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a2_unit[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="7a2_unit[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -2933,7 +2936,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a2_unit[]"
+								 <input type="text" maxlength="15"  name="7a2_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2945,7 +2948,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a2_value[]"
+								 <input type="text" maxlength="15"  name="7a2_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -2957,7 +2960,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a2_eligible_duties[]"
+								 <input type="text" maxlength="15"  name="7a2_eligible_duties[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -3026,7 +3029,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a3_hsncode[]" value="<?php if(isset($a7a3_hsncode[$i])) { echo $a7a3_hsncode[$i]; } else { echo ''; } ?>" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="7a3_hsncode[]" value="<?php if(isset($a7a3_hsncode[$i])) { echo $a7a3_hsncode[$i]; } else { echo ''; } ?>" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -3037,7 +3040,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);"  value="<?php if(isset($a7a3_unit[$i])) { echo $a7a3_unit[$i]; } else { echo ''; } ?>"  name="7a3_unit[]"
+								 <input type="text" maxlength="15"   value="<?php if(isset($a7a3_unit[$i])) { echo $a7a3_unit[$i]; } else { echo ''; } ?>"  name="7a3_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3049,7 +3052,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a7a3_qty[$i])) { echo $a7a3_qty[$i]; } else { echo ''; } ?>" name="7a3_qty[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a7a3_qty[$i])) { echo $a7a3_qty[$i]; } else { echo ''; } ?>" name="7a3_qty[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3061,7 +3064,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a7a3_value[$i])) { echo $a7a3_value[$i]; } else { echo ''; } ?>" name="7a3_value[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a7a3_value[$i])) { echo $a7a3_value[$i]; } else { echo ''; } ?>" name="7a3_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3073,7 +3076,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a7a3_eligible_duties[$i])) { echo $a7a3_eligible_duties[$i]; } else { echo ''; } ?>" name="7a3_eligible_duties[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a7a3_eligible_duties[$i])) { echo $a7a3_eligible_duties[$i]; } else { echo ''; } ?>" name="7a3_eligible_duties[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -3103,7 +3106,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7a3_hsncode[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="7a3_hsncode[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -3114,7 +3117,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplya" name="7a3_unit[]"
+								 <input type="text" maxlength="15"  name="cess_tax_value_supplya" name="7a3_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3126,7 +3129,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplya" name="7a3_qty[]"
+								 <input type="text" maxlength="15"  name="cess_tax_value_supplya" name="7a3_qty[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3138,7 +3141,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplya" name="7a3_value[]"
+								 <input type="text" maxlength="15"  name="cess_tax_value_supplya" name="7a3_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3150,7 +3153,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplya" name="7a3_eligible_duties[]"
+								 <input type="text" maxlength="15"  name="cess_tax_value_supplya" name="7a3_eligible_duties[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -3267,7 +3270,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b7b_nameof_supplier[$i])) { echo $b7b_nameof_supplier[$i]; } else { echo ''; } ?>" name="7b_nameof_supplier[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b7b_nameof_supplier[$i])) { echo $b7b_nameof_supplier[$i]; } else { echo ''; } ?>" name="7b_nameof_supplier[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -3280,7 +3283,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b7b_invoice_number[$i])) { echo $b7b_invoice_number[$i]; } else { echo ''; } ?>"  name="7b_invoice_number[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b7b_invoice_number[$i])) { echo $b7b_invoice_number[$i]; } else { echo ''; } ?>"  name="7b_invoice_number[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -3293,7 +3296,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b7b_invoice_date[$i])) { echo $b7b_invoice_date[$i]; } else { echo ''; } ?>" name="7b_invoice_date[]" 
+								 <input type="text" maxlength="15"  value="<?php if(isset($b7b_invoice_date[$i])) { echo $b7b_invoice_date[$i]; } else { echo ''; } ?>" name="7b_invoice_date[]" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -3306,7 +3309,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b7b_description[$i])) { echo $b7b_description[$i]; } else { echo ''; } ?>" name="7b_description[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b7b_description[$i])) { echo $b7b_description[$i]; } else { echo ''; } ?>" name="7b_description[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -3319,7 +3322,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7b_quantity[]" value="<?php if(isset($b7b_quantity[$i])) { echo $b7b_quantity[$i]; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15"  name="7b_quantity[]" value="<?php if(isset($b7b_quantity[$i])) { echo $b7b_quantity[$i]; } else { echo ''; } ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3331,7 +3334,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7b_uqc[]" value="<?php if(isset($b7b_uqc[$i])) { echo $b7b_uqc[$i]; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15"  name="7b_uqc[]" value="<?php if(isset($b7b_uqc[$i])) { echo $b7b_uqc[$i]; } else { echo ''; } ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3343,7 +3346,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7b_value[]" value="<?php if(isset($b7b_value[$i])) { echo $b7b_value[$i]; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15"  name="7b_value[]" value="<?php if(isset($b7b_value[$i])) { echo $b7b_value[$i]; } else { echo ''; } ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3355,7 +3358,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7b_eligible_duties[]" value="<?php if(isset($b7b_eligible_duties[$i])) { echo $b7b_eligible_duties[$i]; } else { echo ''; } ?>" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="7b_eligible_duties[]" value="<?php if(isset($b7b_eligible_duties[$i])) { echo $b7b_eligible_duties[$i]; } else { echo ''; } ?>" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -3366,7 +3369,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b7b_vat[$i])) { echo $b7b_vat[$i]; } else { echo ''; } ?>" name="7b_vat[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b7b_vat[$i])) { echo $b7b_vat[$i]; } else { echo ''; } ?>" name="7b_vat[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3378,7 +3381,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7b_dateonwhich_receipients[]" value="<?php if(isset($b7b_dateonwhich_receipients[$i])) { echo $b7b_dateonwhich_receipients[$i]; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15"  name="7b_dateonwhich_receipients[]" value="<?php if(isset($b7b_dateonwhich_receipients[$i])) { echo $b7b_dateonwhich_receipients[$i]; } else { echo ''; } ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -3408,7 +3411,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7b_nameof_supplier[]"
+								 <input type="text" maxlength="15"  name="7b_nameof_supplier[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -3421,7 +3424,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7b_invoice_number[]"
+								 <input type="text" maxlength="15"  name="7b_invoice_number[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -3434,7 +3437,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7b_invoice_date[]" 
+								 <input type="text" maxlength="15"  name="7b_invoice_date[]" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -3447,7 +3450,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7b_description[]"
+								 <input type="text" maxlength="15"  name="7b_description[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -3460,7 +3463,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7b_quantity[]"
+								 <input type="text" maxlength="15"  name="7b_quantity[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3472,7 +3475,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7b_uqc[]"
+								 <input type="text" maxlength="15"  name="7b_uqc[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3484,7 +3487,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7b_value[]"
+								 <input type="text" maxlength="15"  name="7b_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3496,7 +3499,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7b_eligible_duties[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="7b_eligible_duties[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -3507,7 +3510,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7b_vat[]"
+								 <input type="text" maxlength="15"  name="7b_vat[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3519,7 +3522,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7b_dateonwhich_receipients[]"
+								 <input type="text" maxlength="15"  name="7b_dateonwhich_receipients[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -3629,7 +3632,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c7c1_description[$i])) { echo $c7c1_description[$i]; } else { echo ''; } ?>"  name="7c1_description[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  value="<?php if(isset($c7c1_description[$i])) { echo $c7c1_description[$i]; } else { echo ''; } ?>"  name="7c1_description[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -3641,7 +3644,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c7c1_unit[$i])) { echo $c7c1_unit[$i]; } else { echo ''; } ?>" name="7c1_unit[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c7c1_unit[$i])) { echo $c7c1_unit[$i]; } else { echo ''; } ?>" name="7c1_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -3654,7 +3657,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7c1_qty[]" value="<?php if(isset($c7c1_qty[$i])) { echo $c7c1_qty[$i]; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15"  name="7c1_qty[]" value="<?php if(isset($c7c1_qty[$i])) { echo $c7c1_qty[$i]; } else { echo ''; } ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3666,7 +3669,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7c1_value[]" value="<?php if(isset($c7c1_value[$i])) { echo $c7c1_value[$i]; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15"  name="7c1_value[]" value="<?php if(isset($c7c1_value[$i])) { echo $c7c1_value[$i]; } else { echo ''; } ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3678,7 +3681,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7c1_vat[]" value="<?php if(isset($c7c1_vat[$i])) { echo $c7c1_vat[$i]; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15"  name="7c1_vat[]" value="<?php if(isset($c7c1_vat[$i])) { echo $c7c1_vat[$i]; } else { echo ''; } ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3690,7 +3693,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c7c1_totalinput_taxcredit[$i])) { echo $c7c1_totalinput_taxcredit[$i]; } else { echo ''; } ?>" name="7c1_totalinput_taxcredit[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c7c1_totalinput_taxcredit[$i])) { echo $c7c1_totalinput_taxcredit[$i]; } else { echo ''; } ?>" name="7c1_totalinput_taxcredit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3702,7 +3705,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c7c1_totalinput_taxcredit_exempt[$i])) { echo $c7c1_totalinput_taxcredit_exempt[$i]; } else { echo ''; } ?>" name="7c1_totalinput_taxcredit_exempt[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c7c1_totalinput_taxcredit_exempt[$i])) { echo $c7c1_totalinput_taxcredit_exempt[$i]; } else { echo ''; } ?>" name="7c1_totalinput_taxcredit_exempt[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3714,7 +3717,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c7c1_totalinput_taxcredit_admissible[$i])) { echo $c7c1_totalinput_taxcredit_admissible[$i]; } else { echo ''; } ?>" name="7c1_totalinput_taxcredit_admissible[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c7c1_totalinput_taxcredit_admissible[$i])) { echo $c7c1_totalinput_taxcredit_admissible[$i]; } else { echo ''; } ?>" name="7c1_totalinput_taxcredit_admissible[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -3744,7 +3747,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);"  name="7c1_description[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"   name="7c1_description[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -3756,7 +3759,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7c1_unit[]"
+								 <input type="text" maxlength="15"  name="7c1_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -3769,7 +3772,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7c1_qty[]"
+								 <input type="text" maxlength="15"  name="7c1_qty[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3781,7 +3784,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7c1_value[]"
+								 <input type="text" maxlength="15"  name="7c1_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3793,7 +3796,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7c1_vat[]"
+								 <input type="text" maxlength="15"  name="7c1_vat[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3805,7 +3808,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7c1_totalinput_taxcredit[]"
+								 <input type="text" maxlength="15"  name="7c1_totalinput_taxcredit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3817,7 +3820,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7c1_totalinput_taxcredit_exempt[]"
+								 <input type="text" maxlength="15"  name="7c1_totalinput_taxcredit_exempt[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3829,7 +3832,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7c1_totalinput_taxcredit_admissible[]"
+								 <input type="text" maxlength="15"  name="7c1_totalinput_taxcredit_admissible[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -3912,7 +3915,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c7c2_description[$i])) { echo $c7c2_description[$i]; } else { echo ''; }?>" name="7c2_description[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c7c2_description[$i])) { echo $c7c2_description[$i]; } else { echo ''; }?>" name="7c2_description[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -3925,7 +3928,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c7c2_unit[$i])) { echo $c7c2_unit[$i]; } else { echo ''; }?>" name="7c2_unit[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c7c2_unit[$i])) { echo $c7c2_unit[$i]; } else { echo ''; }?>" name="7c2_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -3938,7 +3941,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c7c2_qty[$i])) { echo $c7c2_qty[$i]; } else { echo ''; }?>" name="7c2_qty[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c7c2_qty[$i])) { echo $c7c2_qty[$i]; } else { echo ''; }?>" name="7c2_qty[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3950,7 +3953,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c7c2_value[$i])) { echo $c7c2_value[$i]; } else { echo ''; }?>" name="7c2_value[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c7c2_value[$i])) { echo $c7c2_value[$i]; } else { echo ''; }?>" name="7c2_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3962,7 +3965,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c7c2_vat[$i])) { echo $c7c2_vat[$i]; } else { echo ''; }?>" name="7c2_vat[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c7c2_vat[$i])) { echo $c7c2_vat[$i]; } else { echo ''; }?>" name="7c2_vat[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3974,7 +3977,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c7c2_totalinput_taxcredit[$i])) { echo $c7c2_totalinput_taxcredit[$i]; } else { echo ''; }?>" name="7c2_totalinput_taxcredit[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c7c2_totalinput_taxcredit[$i])) { echo $c7c2_totalinput_taxcredit[$i]; } else { echo ''; }?>" name="7c2_totalinput_taxcredit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3986,7 +3989,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c7c2_totalinput_taxcredit_exempt[$i])) { echo $c7c2_totalinput_taxcredit_exempt[$i]; } else { echo ''; }?>" name="7c2_totalinput_taxcredit_exempt[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c7c2_totalinput_taxcredit_exempt[$i])) { echo $c7c2_totalinput_taxcredit_exempt[$i]; } else { echo ''; }?>" name="7c2_totalinput_taxcredit_exempt[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -3998,7 +4001,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($c7c2_totalinput_taxcredit_admissible[$i])) { echo $c7c2_totalinput_taxcredit_admissible[$i]; } else { echo ''; }?>" name="7c2_totalinput_admissible[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($c7c2_totalinput_taxcredit_admissible[$i])) { echo $c7c2_totalinput_taxcredit_admissible[$i]; } else { echo ''; }?>" name="7c2_totalinput_admissible[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -4027,7 +4030,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7c2_description[]"
+								 <input type="text" maxlength="15"  name="7c2_description[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -4040,7 +4043,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7c2_unit[]"
+								 <input type="text" maxlength="15"  name="7c2_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -4053,7 +4056,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7c2_qty[]"
+								 <input type="text" maxlength="15"  name="7c2_qty[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4065,7 +4068,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7c2_value[]"
+								 <input type="text" maxlength="15"  name="7c2_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4077,7 +4080,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7c2_vat[]"
+								 <input type="text" maxlength="15"  name="7c2_vat[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4089,7 +4092,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7c2_totalinput_taxcredit[]"
+								 <input type="text" maxlength="15"  name="7c2_totalinput_taxcredit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4101,7 +4104,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7c2_totalinput_taxcredit_exempt[]"
+								 <input type="text" maxlength="15"  name="7c2_totalinput_taxcredit_exempt[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4113,7 +4116,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7c2_totalinput_admissible[]"
+								 <input type="text" maxlength="15"  name="7c2_totalinput_admissible[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -4202,7 +4205,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($d7d_description[$i])) { echo $d7d_description[$i]; } else { echo ''; } ?>" name="7d_description[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($d7d_description[$i])) { echo $d7d_description[$i]; } else { echo ''; } ?>" name="7d_description[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4214,7 +4217,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($d7d_unit[$i])) { echo $d7d_unit[$i]; } else { echo ''; } ?>" name="7d_unit[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($d7d_unit[$i])) { echo $d7d_unit[$i]; } else { echo ''; } ?>" name="7d_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4226,7 +4229,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($d7d_qty[$i])) { echo $d7d_qty[$i]; } else { echo ''; } ?>" name="7d_qty[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($d7d_qty[$i])) { echo $d7d_qty[$i]; } else { echo ''; } ?>" name="7d_qty[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4238,7 +4241,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($d7d_value[$i])) { echo $d7d_value[$i]; } else { echo ''; } ?>" name="7d_value[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($d7d_value[$i])) { echo $d7d_value[$i]; } else { echo ''; } ?>" name="7d_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4250,7 +4253,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($d7d_vatentry_taxpad[$i])) { echo $d7d_vatentry_taxpad[$i]; } else { echo ''; } ?>" name="7d_vatentry_taxpad[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($d7d_vatentry_taxpad[$i])) { echo $d7d_vatentry_taxpad[$i]; } else { echo ''; } ?>" name="7d_vatentry_taxpad[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -4280,7 +4283,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7d_description[]"
+								 <input type="text" maxlength="15"  name="7d_description[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4292,7 +4295,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7d_unit[]"
+								 <input type="text" maxlength="15"  name="7d_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4304,7 +4307,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7d_qty[]"
+								 <input type="text" maxlength="15"  name="7d_qty[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4316,7 +4319,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7d_value[]"
+								 <input type="text" maxlength="15"  name="7d_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4328,7 +4331,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="7d_vatentry_taxpad[]"
+								 <input type="text" maxlength="15"  name="7d_vatentry_taxpad[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -4437,7 +4440,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a8registration_no[$i])) { echo $a8registration_no[$i]; } else { echo ''; } ?>" name="8registration_no[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a8registration_no[$i])) { echo $a8registration_no[$i]; } else { echo ''; } ?>" name="8registration_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -4450,7 +4453,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a8taxperiod_lastreturn[$i])) { echo $a8taxperiod_lastreturn[$i]; } else { echo ''; } ?>" name="8taxperiod_lastreturn[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a8taxperiod_lastreturn[$i])) { echo $a8taxperiod_lastreturn[$i]; } else { echo ''; } ?>" name="8taxperiod_lastreturn[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -4463,7 +4466,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a8dateoffilling_return[$i])) { echo $a8dateoffilling_return[$i]; } else { echo ''; } ?>" name="8dateoffilling_return[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a8dateoffilling_return[$i])) { echo $a8dateoffilling_return[$i]; } else { echo ''; } ?>" name="8dateoffilling_return[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4475,7 +4478,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a8balanceeligible_cenvat_credit[$i])) { echo $a8balanceeligible_cenvat_credit[$i]; } else { echo ''; } ?>" name="8balanceeligible_cenvat_credit[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a8balanceeligible_cenvat_credit[$i])) { echo $a8balanceeligible_cenvat_credit[$i]; } else { echo ''; } ?>" name="8balanceeligible_cenvat_credit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4487,7 +4490,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a8gstnof_receiver[$i])) { echo $a8gstnof_receiver[$i]; } else { echo ''; } ?>" name="8gstnof_receiver[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a8gstnof_receiver[$i])) { echo $a8gstnof_receiver[$i]; } else { echo ''; } ?>" name="8gstnof_receiver[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4499,7 +4502,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a8distributionno[$i])) { echo $a8distributionno[$i]; } else { echo ''; } ?>" name="8distributionno[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a8distributionno[$i])) { echo $a8distributionno[$i]; } else { echo ''; } ?>" name="8distributionno[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4511,7 +4514,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a8distributiondate[$i])) { echo $a8distributiondate[$i]; } else { echo ''; } ?>" name="8distributiondate[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a8distributiondate[$i])) { echo $a8distributiondate[$i]; } else { echo ''; } ?>" name="8distributiondate[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4523,7 +4526,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a8itcofcentral[$i])) { echo $a8itcofcentral[$i]; } else { echo ''; } ?>" name="8itcofcentral[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  value="<?php if(isset($a8itcofcentral[$i])) { echo $a8itcofcentral[$i]; } else { echo ''; } ?>" name="8itcofcentral[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
                                     <?php if(($returndata[0]->totalinvoice > 0) && ($returndata[0]->final_submit == 0))
@@ -4553,7 +4556,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="8registration_no[]"
+								 <input type="text" maxlength="15"  name="8registration_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -4566,7 +4569,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="8taxperiod_lastreturn[]"
+								 <input type="text" maxlength="15"  name="8taxperiod_lastreturn[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -4579,7 +4582,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="8dateoffilling_return[]"
+								 <input type="text" maxlength="15"  name="8dateoffilling_return[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4591,7 +4594,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="8balanceeligible_cenvat_credit[]"
+								 <input type="text" maxlength="15"  name="8balanceeligible_cenvat_credit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4603,7 +4606,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="8gstnof_receiver[]"
+								 <input type="text" maxlength="15"  name="8gstnof_receiver[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4615,7 +4618,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="8distributionno[]"
+								 <input type="text" maxlength="15"  name="8distributionno[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4627,7 +4630,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="8distributiondate[]"
+								 <input type="text" maxlength="15"  name="8distributiondate[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4639,7 +4642,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="8itcofcentral[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="8itcofcentral[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
                                     <td>
@@ -4747,7 +4750,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 {
 									 
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a9a1challan_no[$i])) { echo $a9a1challan_no[$i]; } else { echo ''; } ?>" name="9a1challan_no[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a9a1challan_no[$i])) { echo $a9a1challan_no[$i]; } else { echo ''; } ?>" name="9a1challan_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -4760,7 +4763,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a9a1challan_date[$i])) { echo $a9a1challan_date[$i]; } else { echo ''; } ?>" name="9a1challan_date[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a9a1challan_date[$i])) { echo $a9a1challan_date[$i]; } else { echo ''; } ?>" name="9a1challan_date[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -4773,7 +4776,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a9a1typeof_goods[$i])) { echo $a9a1typeof_goods[$i]; } else { echo ''; } ?>" name="9a1typeof_goods[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  value="<?php if(isset($a9a1typeof_goods[$i])) { echo $a9a1typeof_goods[$i]; } else { echo ''; } ?>" name="9a1typeof_goods[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -4784,7 +4787,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a9a1_hsn[$i])) { echo $a9a1_hsn[$i]; } else { echo ''; } ?>" name="9a1_hsn[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  value="<?php if(isset($a9a1_hsn[$i])) { echo $a9a1_hsn[$i]; } else { echo ''; } ?>" name="9a1_hsn[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -4795,7 +4798,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a9a1_description[$i])) { echo $a9a1_description[$i]; } else { echo ''; } ?>" name="9a1_description[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a9a1_description[$i])) { echo $a9a1_description[$i]; } else { echo ''; } ?>" name="9a1_description[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4807,7 +4810,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a9a1_unit[$i])) { echo $a9a1_unit[$i]; } else { echo ''; } ?>" name="9a1_unit[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a9a1_unit[$i])) { echo $a9a1_unit[$i]; } else { echo ''; } ?>" name="9a1_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4819,7 +4822,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a9a1_quantity[$i])) { echo $a9a1_quantity[$i]; } else { echo ''; } ?>" name="9a1_quantity[]"  class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  value="<?php if(isset($a9a1_quantity[$i])) { echo $a9a1_quantity[$i]; } else { echo ''; } ?>" name="9a1_quantity[]"  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -4830,7 +4833,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a9a1_value[$i])) { echo $a9a1_value[$i]; } else { echo ''; } ?>" name="9a1_value[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a9a1_value[$i])) { echo $a9a1_value[$i]; } else { echo ''; } ?>" name="9a1_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -4862,7 +4865,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="9a1challan_no[]"
+								 <input type="text" maxlength="15"  name="9a1challan_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -4875,7 +4878,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="9a1challan_date[]"
+								 <input type="text" maxlength="15"  name="9a1challan_date[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -4888,7 +4891,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="9a1typeof_goods[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="9a1typeof_goods[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -4899,7 +4902,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="9a1_hsn[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="9a1_hsn[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -4910,7 +4913,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="9a1_description[]"
+								 <input type="text" maxlength="15"  name="9a1_description[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4922,7 +4925,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="9a1_unit[]"
+								 <input type="text" maxlength="15"  name="9a1_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -4934,7 +4937,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="9a1_quantity[]"  class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="9a1_quantity[]"  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -4945,7 +4948,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="9a1_value[]"
+								 <input type="text" maxlength="15"  name="9a1_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -5062,7 +5065,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 								?>								 
-								  <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1challan_no[$i])) { echo $b9b1challan_no[$i]; } else { echo ''; } ?>" name="9b1challan_no[]"
+								  <input type="text" maxlength="15"  value="<?php if(isset($b9b1challan_no[$i])) { echo $b9b1challan_no[$i]; } else { echo ''; } ?>" name="9b1challan_no[]"
 								class="form-control"  placeholder="" />    
 								 <?php } ?>
                                  </td>
@@ -5074,7 +5077,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 									 <label><?php if(isset($b9b1challan_date[$i])) { echo $b9b1challan_date[$i]; } else { echo ''; } ?><span class="starred"></span></label>
 								 <?php } else
 								 { ?>
-									 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1challan_date[$i])) { echo $b9b1challan_date[$i]; } else { echo ''; } ?>" name="9b1challan_date[]"
+									 <input type="text" maxlength="15"  value="<?php if(isset($b9b1challan_date[$i])) { echo $b9b1challan_date[$i]; } else { echo ''; } ?>" name="9b1challan_date[]"
 								class="form-control"  placeholder="" />  
 								 <?php } ?>
                                  </td>
@@ -5087,7 +5090,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 								 ?>
-								   <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1typeof_goods[$i])) { echo $b9b1typeof_goods[$i]; } else { echo ''; } ?>" name="9b1typeof_goods[]"
+								   <input type="text" maxlength="15"  value="<?php if(isset($b9b1typeof_goods[$i])) { echo $b9b1typeof_goods[$i]; } else { echo ''; } ?>" name="9b1typeof_goods[]"
 								class="form-control"  placeholder="" />   
 								 <?php } ?>
 								
@@ -5100,7 +5103,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								  <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_hsn[$i])) { echo $b9b1_hsn[$i]; } else { echo ''; } ?>" name="9b1_hsn[]"
+								  <input type="text" maxlength="15"  value="<?php if(isset($b9b1_hsn[$i])) { echo $b9b1_hsn[$i]; } else { echo ''; } ?>" name="9b1_hsn[]"
 								class="form-control"  placeholder="" />   
 								 <?php } ?>
                                  </td> <td>
@@ -5112,7 +5115,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								   <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_description[$i])) { echo $b9b1_description[$i]; } else { echo ''; } ?>" name="9b1_description[]"
+								   <input type="text" maxlength="15"  value="<?php if(isset($b9b1_description[$i])) { echo $b9b1_description[$i]; } else { echo ''; } ?>" name="9b1_description[]"
 								class="form-control"  placeholder="" />   
 								 <?php } ?>
                                  </td> <td>
@@ -5124,7 +5127,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								  <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_unit[$i])) { echo $b9b1_unit[$i]; } else { echo ''; } ?>" name="9b1_unit[]"
+								  <input type="text" maxlength="15"  value="<?php if(isset($b9b1_unit[$i])) { echo $b9b1_unit[$i]; } else { echo ''; } ?>" name="9b1_unit[]"
 								class="form-control"  placeholder="" />  
 								 <?php } ?>
                                  </td> <td>
@@ -5136,7 +5139,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								  <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_quantity[$i])) { echo $b9b1_quantity[$i]; } else { echo ''; } ?>" name="9b1_quantity[]"
+								  <input type="text" maxlength="15"  value="<?php if(isset($b9b1_quantity[$i])) { echo $b9b1_quantity[$i]; } else { echo ''; } ?>" name="9b1_quantity[]"
 								class="form-control"  placeholder="" />  
 								 <?php } ?>
                                  </td> <td>
@@ -5148,7 +5151,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								  <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b9b1_value[$i])) { echo $b9b1_value[$i]; } else { echo ''; } ?>" name="9b1_value[]"
+								  <input type="text" maxlength="15"  value="<?php if(isset($b9b1_value[$i])) { echo $b9b1_value[$i]; } else { echo ''; } ?>" name="9b1_value[]"
 								class="form-control"  placeholder="" />  
 								 <?php } ?>
                                  </td>
@@ -5179,7 +5182,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);"  name="9b1challan_no[]"
+								 <input type="text" maxlength="15"   name="9b1challan_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -5192,7 +5195,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);"  name="9b1challan_date[]"
+								 <input type="text" maxlength="15"   name="9b1challan_date[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -5205,7 +5208,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);"  name="9b1typeof_goods[]"
+								 <input type="text" maxlength="15"   name="9b1typeof_goods[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5217,7 +5220,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);"  name="9b1_hsn[]"
+								 <input type="text" maxlength="15"   name="9b1_hsn[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5229,7 +5232,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="9b1_description[]"
+								 <input type="text" maxlength="15"  name="9b1_description[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5241,7 +5244,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);"  name="9b1_quantity[]"
+								 <input type="text" maxlength="15"   name="9b1_quantity[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5253,7 +5256,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);"  name="9b1_value[]"
+								 <input type="text" maxlength="15"   name="9b1_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5265,7 +5268,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" 
+								 <input type="text" maxlength="15"  
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -5363,7 +5366,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a10a_gstn[$i])) { echo $a10a_gstn[$i]; } else { echo ''; }?>" name="10a_gstn[]" 
+								 <input type="text" maxlength="15"  value="<?php if(isset($a10a_gstn[$i])) { echo $a10a_gstn[$i]; } else { echo ''; }?>" name="10a_gstn[]" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5375,7 +5378,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a10a_description[$i])) { echo $a10a_description[$i]; } else { echo ''; } ?>" name="10a_description[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a10a_description[$i])) { echo $a10a_description[$i]; } else { echo ''; } ?>" name="10a_description[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5387,7 +5390,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a10a_unit[$i])) { echo $a10a_unit[$i]; } else { echo ''; } ?>" name="10a_unit[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a10a_unit[$i])) { echo $a10a_unit[$i]; } else { echo ''; } ?>" name="10a_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5399,7 +5402,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10a_quantity[]" value="<?php if(isset($a10a_quantity[$i])) { echo $a10a_quantity[$i]; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15"  name="10a_quantity[]" value="<?php if(isset($a10a_quantity[$i])) { echo $a10a_quantity[$i]; } else { echo ''; } ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5411,7 +5414,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10a_value[]" value="<?php if(isset($a10a_value[$i])) { echo $a10a_value[$i]; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15"  name="10a_value[]" value="<?php if(isset($a10a_value[$i])) { echo $a10a_value[$i]; } else { echo ''; } ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5423,7 +5426,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10a_inputtax[]" value="<?php if(isset($a10a_inputtax[$i])) { echo $a10a_inputtax[$i]; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15"  name="10a_inputtax[]" value="<?php if(isset($a10a_inputtax[$i])) { echo $a10a_inputtax[$i]; } else { echo ''; } ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -5456,7 +5459,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10a_gstn[]" 
+								 <input type="text" maxlength="15"  name="10a_gstn[]" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5468,7 +5471,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10a_description[]"
+								 <input type="text" maxlength="15"  name="10a_description[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5480,7 +5483,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10a_unit[]"
+								 <input type="text" maxlength="15"  name="10a_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5492,7 +5495,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10a_quantity[]"
+								 <input type="text" maxlength="15"  name="10a_quantity[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5504,7 +5507,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10a_value[]"
+								 <input type="text" maxlength="15"  name="10a_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5516,7 +5519,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10a_inputtax[]"
+								 <input type="text" maxlength="15"  name="10a_inputtax[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -5612,7 +5615,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10b_gstn[]" value="<?php  if(isset($b10b_gstn[$i])) { echo $b10b_gstn[$i]; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15"  name="10b_gstn[]" value="<?php  if(isset($b10b_gstn[$i])) { echo $b10b_gstn[$i]; } else { echo ''; } ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5624,7 +5627,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b10b_description[$i])) { echo $b10b_description[$i]; } else { echo ''; } ?>" name="10b_description[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b10b_description[$i])) { echo $b10b_description[$i]; } else { echo ''; } ?>" name="10b_description[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5636,7 +5639,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b10b_unit[$i])) { echo $b10b_unit[$i]; } else { echo ''; } ?>" name="10b_unit[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b10b_unit[$i])) { echo $b10b_unit[$i]; } else { echo ''; } ?>" name="10b_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5648,7 +5651,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b10b_quantity[$i])) { echo $b10b_quantity[$i]; } else { echo ''; } ?>" name="10b_quantity[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b10b_quantity[$i])) { echo $b10b_quantity[$i]; } else { echo ''; } ?>" name="10b_quantity[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5660,7 +5663,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($b10b_value[$i])) { echo $b10b_value[$i]; } else { echo ''; } ?>" name="10b_value[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($b10b_value[$i])) { echo $b10b_value[$i]; } else { echo ''; } ?>" name="10b_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5672,7 +5675,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10b_inputtax[]" value="<?php if(isset($b10b_inputtax[$i])) { echo $b10b_inputtax[$i]; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15"  name="10b_inputtax[]" value="<?php if(isset($b10b_inputtax[$i])) { echo $b10b_inputtax[$i]; } else { echo ''; } ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -5705,7 +5708,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10b_gstn[]"
+								 <input type="text" maxlength="15"  name="10b_gstn[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5717,7 +5720,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10b_description[]"
+								 <input type="text" maxlength="15"  name="10b_description[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5729,7 +5732,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10b_unit[]"
+								 <input type="text" maxlength="15"  name="10b_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5741,7 +5744,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10b_quantity[]"
+								 <input type="text" maxlength="15"  name="10b_quantity[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5753,7 +5756,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10b_value[]"
+								 <input type="text" maxlength="15"  name="10b_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5765,7 +5768,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="10b_inputtax[]"
+								 <input type="text" maxlength="15"  name="10b_inputtax[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -5856,7 +5859,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a11aregistration_no[$i])) { echo $a11aregistration_no[$i]; } else { echo ''; } ?>" name="11aregistration_no[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a11aregistration_no[$i])) { echo $a11aregistration_no[$i]; } else { echo ''; } ?>" name="11aregistration_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -5869,7 +5872,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a11aservicetax_no[$i])) { echo $a11aservicetax_no[$i]; } else { echo ''; } ?>" name="11aservicetax_no[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a11aservicetax_no[$i])) { echo $a11aservicetax_no[$i]; } else { echo ''; } ?>" name="11aservicetax_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5881,7 +5884,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a11ainvoice_documentno[$i])) { echo $a11ainvoice_documentno[$i]; } else { echo ''; } ?>" name="11ainvoice_documentno[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  value="<?php if(isset($a11ainvoice_documentno[$i])) { echo $a11ainvoice_documentno[$i]; } else { echo ''; } ?>" name="11ainvoice_documentno[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -5892,7 +5895,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a11ainvoice_document_date[$i])) { echo $a11ainvoice_document_date[$i]; } else { echo ''; } ?>" name="11ainvoice_document_date[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a11ainvoice_document_date[$i])) { echo $a11ainvoice_document_date[$i]; } else { echo ''; } ?>" name="11ainvoice_document_date[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5904,7 +5907,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a11atax_paid[$i])) { echo $a11atax_paid[$i]; } else { echo ''; } ?>" name="11atax_paid[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a11atax_paid[$i])) { echo $a11atax_paid[$i]; } else { echo ''; } ?>" name="11atax_paid[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5916,7 +5919,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a11avatpaid_sgst[$i])) { echo $a11avatpaid_sgst[$i]; } else { echo ''; } ?>" name="11avatpaid_sgst[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a11avatpaid_sgst[$i])) { echo $a11avatpaid_sgst[$i]; } else { echo ''; } ?>" name="11avatpaid_sgst[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -5948,7 +5951,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="11aregistration_no[]"
+								 <input type="text" maxlength="15"  name="11aregistration_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -5961,7 +5964,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="11aservicetax_no[]"
+								 <input type="text" maxlength="15"  name="11aservicetax_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5973,7 +5976,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="11ainvoice_documentno[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="11ainvoice_documentno[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
 								 <?php
@@ -5984,7 +5987,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="11ainvoice_document_date[]"
+								 <input type="text" maxlength="15"  name="11ainvoice_document_date[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -5996,7 +5999,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="11atax_paid[]"
+								 <input type="text" maxlength="15"  name="11atax_paid[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -6008,7 +6011,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="11avatpaid_sgst[]"
+								 <input type="text" maxlength="15"  name="11avatpaid_sgst[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 
@@ -6116,7 +6119,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a12a_document_no[$i])) { echo $a12a_document_no[$i]; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a12a_document_no[$i])) { echo $a12a_document_no[$i]; } else { echo ''; } ?>"
 			 name="12a_document_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
@@ -6129,7 +6132,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a12a_document_date[$i])) { echo $a12a_document_date[$i]; } else { echo ''; } ?>" name="12a_document_date[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a12a_document_date[$i])) { echo $a12a_document_date[$i]; } else { echo ''; } ?>" name="12a_document_date[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -6143,7 +6146,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a12a_gstinno_receipient[$i])) { echo $a12a_gstinno_receipient[$i]; } else { echo ''; } ?>" name="12a_gstinno_receipient[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  value="<?php if(isset($a12a_gstinno_receipient[$i])) { echo $a12a_gstinno_receipient[$i]; } else { echo ''; } ?>" name="12a_gstinno_receipient[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -6155,7 +6158,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a12a_name_receipient[$i])) { echo $a12a_name_receipient[$i]; } else { echo ''; } ?>" name="12a_name_receipient[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a12a_name_receipient[$i])) { echo $a12a_name_receipient[$i]; } else { echo ''; } ?>" name="12a_name_receipient[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -6167,7 +6170,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a12a_hsn[$i])) { echo $a12a_hsn[$i]; } else { echo ''; } ?>" name="12a_hsn[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a12a_hsn[$i])) { echo $a12a_hsn[$i]; } else { echo ''; } ?>" name="12a_hsn[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -6179,7 +6182,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a12a_description[$i])) { echo $a12a_description[$i]; } else { echo ''; } ?>" name="12a_description[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a12a_description[$i])) { echo $a12a_description[$i]; } else { echo ''; } ?>" name="12a_description[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -6191,7 +6194,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a12a_unit[$i])) { echo $a12a_unit[$i]; } else { echo ''; } ?>" name="12a_unit[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a12a_unit[$i])) { echo $a12a_unit[$i]; } else { echo ''; } ?>" name="12a_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -6203,7 +6206,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a12a_quantity[$i])) { echo $a12a_quantity[$i]; } else { echo ''; } ?>" name="12a_quantity[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a12a_quantity[$i])) { echo $a12a_quantity[$i]; } else { echo ''; } ?>" name="12a_quantity[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -6215,7 +6218,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" value="<?php if(isset($a12a_value[$i])) { echo $a12a_value[$i]; } else { echo ''; } ?>" name="12a_value[]"
+								 <input type="text" maxlength="15"  value="<?php if(isset($a12a_value[$i])) { echo $a12a_value[$i]; } else { echo ''; } ?>" name="12a_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -6245,7 +6248,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="12a_document_no[]"
+								 <input type="text" maxlength="15"  name="12a_document_no[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td><td>
@@ -6257,7 +6260,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="12a_document_date[]"
+								 <input type="text" maxlength="15"  name="12a_document_date[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -6271,7 +6274,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="12a_gstinno_receipient[]" class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15"  name="12a_gstinno_receipient[]" class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
 								  <td>
@@ -6283,7 +6286,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="12a_hsn[]"
+								 <input type="text" maxlength="15"  name="12a_hsn[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -6295,7 +6298,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="12a_description[]"
+								 <input type="text" maxlength="15"  name="12a_description[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -6307,7 +6310,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="12a_unit[]"
+								 <input type="text" maxlength="15"  name="12a_unit[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -6319,7 +6322,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="12a_quantity[]"
+								 <input type="text" maxlength="15"  name="12a_quantity[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -6331,7 +6334,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="12a_value[]"
+								 <input type="text" maxlength="15"  name="12a_value[]"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> <td>
@@ -6343,7 +6346,7 @@ if(!empty($returndata1[0]->totalinvoice) && ($returndata1[0]->totalinvoice > 0))
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="cess_tax_value_supplya" value="<?php if(isset($nature_of_supply_a_TotData[0]->cess_amount)) { echo $nature_of_supply_a_TotData[0]->cess_amount; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15"  name="cess_tax_value_supplya" value="<?php if(isset($nature_of_supply_a_TotData[0]->cess_amount)) { echo $nature_of_supply_a_TotData[0]->cess_amount; } else { echo ''; } ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>

@@ -32,27 +32,23 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
 			
 			$uploadInvoice = $obj_purchase->uploadPurchaseClientImportInvoice();
 			$redirectPath = "purchase_invoice_list";
-		}
+		} else if($_POST['invoice_type'] == "bosinvoice") {
 
-		/*else if($_POST['invoice_type'] == "bosinvoice") {
-
-			$uploadInvoice = $obj_purchase->uploadClientBOSInvoice();
-			$redirectPath = "client_bill_of_supply_invoice_list";
+			$uploadInvoice = $obj_purchase->uploadPurchaseClientBOSInvoice();
+			$redirectPath = "purchase_bill_of_supply_invoice_list";
 		} else if($_POST['invoice_type'] == "rvinvoice") {
 
-			$uploadInvoice = $obj_purchase->uploadClientRVInvoice();
-			$redirectPath = "client_receipt_voucher_invoice_list";
+			$uploadInvoice = $obj_purchase->uploadPurchaseClientRVInvoice();
+			$redirectPath = "purchase_receipt_voucher_invoice_list";
+		} else if($_POST['invoice_type'] == "pvinvoice") {
+
+			$uploadInvoice = $obj_purchase->uploadPurchaseClientPVInvoice();
+			$redirectPath = "purchase_payment_voucher_invoice_list";
 		} else if($_POST['invoice_type'] == "rtinvoice") {
 
-			$uploadInvoice = $obj_purchase->uploadClientRTInvoice();
-			$redirectPath = "client_revised_tax_invoice_list";
-		} else if($_POST['invoice_type'] == "dcinvoice") {
-
-			$uploadInvoice = $obj_purchase->uploadClientDCInvoice();
-			$redirectPath = "client_delivery_challan_invoice_list";
-		}*/
-
-		else {
+			$uploadInvoice = $obj_purchase->uploadPurchaseClientRTInvoice();
+			$redirectPath = "purchase_revised_tax_invoice_list";
+		} else {
 			$obj_purchase->redirect(PROJECT_URL."?page=purchase_upload_invoice");
 		}
 
@@ -99,13 +95,10 @@ $dataCurrentArr = $obj_purchase->getUserDetailsById( $obj_purchase->sanitize($_S
 							<option value=''>Select Invoice Type</option>
 							<option value='taxinvoice'>Tax Invoice</option>
 							<option value='taximportinvoice'>Tax Import Invoice</option>
-
-							<!--
 							<option value='bosinvoice'>Bill of Supply Invoice</option>
 							<option value='rvinvoice'>Receipt Voucher Invoice</option>
+							<option value='pvinvoice'>Payment Voucher Invoice</option>
 							<option value='rtinvoice'>Revised Tax Invoice</option>
-							<option value='dcinvoice'>Delivery Challan Invoice</option>
-							-->
 						</select>
 					</div>
 									 

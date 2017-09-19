@@ -36,7 +36,6 @@ if(isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '')
 }
 else
 {
-	
 	$dataQuery = "SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS niceDate FROM gst_client_invoice group by nicedate ORDER by invoice_date desc LIMIT 0,1";
 	$dataRes = $obj_gstr1->get_results($dataQuery);
 	if(!empty($dataRes))

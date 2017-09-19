@@ -27,7 +27,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='Upload TO GSTN')
     } 
     else 
     {
-        $obj_gstr1->pr($_REQUEST);
+        //$obj_gstr1->pr($_REQUEST);
         if ($obj_gstr1->gstr1Upload()) 
         {
         }
@@ -43,20 +43,20 @@ if ($_REQUEST['returnmonth'] != '') {
         <div class="col-md-12 col-sm-12 col-xs-12 heading">
             <div class="tab col-md-12 col-sm-12 col-xs-12">
                 <a href="<?php echo PROJECT_URL . '/?page=return_summary&returnmonth=' . $returnmonth ?>" >
-                    View GSTR1 Summary
+                    1.View GSTR1 Summary
                 </a>   
                 <a href="<?php echo PROJECT_URL . '/?page=return_view_invoices&returnmonth=' . $returnmonth ?>">
-                    View My Invoice
+                    2.View My Invoice
                 </a>
-                <a href="<?php echo PROJECT_URL . '/?page=return_upload_invoices&returnmonth=' . $returnmonth ?>" class="active" >
+                <!-- <a href="<?php echo PROJECT_URL . '/?page=return_upload_invoices&returnmonth=' . $returnmonth ?>" class="active" >
                     Upload To GSTN
-                </a>
+                </a> -->
                 </a>
                 <a href="<?php echo PROJECT_URL . '/?page=return_get_summary&returnmonth=' . $returnmonth ?>">
-                    GSTR1 SUMMARY
+                    3.GSTR1 SUMMARY
                 </a>
                 <a href="<?php echo PROJECT_URL . '/?page=return_filling_summary&returnmonth=' . $returnmonth ?>">
-                    File GSTr-1
+                    4.File GSTr-1
                 </a>
                
                              
@@ -114,9 +114,9 @@ if ($_REQUEST['returnmonth'] != '') {
                             ?>
                             <div class="col-md-12 col-sm-12 col-xs-12 text-center">
                                 
-								<form method="post" style="width:auto; display: inline-block;" id="UploadForm" name="form4">
+								<!-- <form method="post" style="width:auto; display: inline-block;" id="UploadForm" name="form4">
                                     <input type="submit" name="submit" id="uploadBtn" value="Upload TO GSTN" class="btn btn-default btn-success btnwidth" >
-                                </form>
+                                </form> -->
 								
                                 <form style="width:auto; display: inline-block;margin-bottom:10px;" method="post" action ="<?php echo PROJECT_URL.'/?ajax=return_gstr_payload';?>&returnmonth=<?php echo $returnmonth; ?>">
                                     <input type="submit" name="submit" value="Download GSTR1" class="btn btn-default btn-warning btnwidth">

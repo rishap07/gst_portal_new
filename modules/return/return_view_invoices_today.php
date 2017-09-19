@@ -6,10 +6,8 @@
 	if(isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
 		$returnmonth= $_REQUEST['returnmonth'];
 	}
-	
-	if(isset($_POST['flag']) && strtoupper($_POST['flag']) === "DOWNLOAD") {
+	if(isset($_POST['gstr2Download']) && $_POST['gstr2Download'] === "Download" && isset($_POST['flag']) && strtoupper($_POST['flag']) === "DOWNLOAD") {
 
-		//$obj_gstr2->pr($_POST);
 		if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
 			$obj_gstr2->setError('Invalid access to files');
 		} else {
@@ -60,7 +58,7 @@
 			<div class="col-md-12 col-sm-12 col-xs-12 heading">
             <div class="tab col-md-12 col-sm-12 col-xs-12">
               <?php
-                include(PROJECT_ROOT."/modules/return/include/tab.php");
+                        include(PROJECT_ROOT."/modules/return/include/tab.php");
                ?>
             </div>
 			</div>
@@ -79,7 +77,7 @@
 					<?php
 				} else {
 					?>
-					<form name="form4" id="gstr2-download" method="post">
+					<form name="gstr2-download" id="gstr2-download" method="post">
 						<input type="hidden" name="gstr2ReturnMonth" value="<?php if(isset($_GET['returnmonth'])) { echo $_GET['returnmonth']; } ?>">
 						<input type="hidden" name="flag" value="download">
 						<button type="submit" name="gstr2Download" id="gstr2Download" value="Download" class="btngreen btn"><i class="fa fa-cloud-download" aria-hidden="true"></i> Download GSTR-2A</button>
@@ -97,7 +95,7 @@
 					$responseTableB2B .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
 					        <thead>
 					        <tr>
-					            <th>Sr.No</th>
+					            <th>Num</th>
 					            <th style="text-align:center">Invoice number</th> 
 					            <th style="text-align:center">Ctin</th> 
 					            <th style="text-align:center">Pos </th> 
@@ -115,17 +113,11 @@
 					            
 					            <th style="text-align:center">Rchrg</th>            
 					        </tr>';
-			            $i1=1;
 			            $i=1;
-			            $temp = '';
                         foreach ($responseB2B as $key3 => $value) {
-                        	if($temp!='' && $temp!=$value->reference_number)
-                        	{
-                        		$i=1;
-                        	}
                         	$idt = $value->invoice_date > 0 ? date('d-m-Y', strtotime($value->invoice_date)) : '';
                     		$responseTableB2B .='<tr>
-                               	<td align="center">'.$i1++.'</td>
+                               	<td align="center">'.$value->itms.'</td>
                                 <td align="center">'.$value->reference_number.'</td>
                                 <td align="center">'.$value->company_gstin_number.'</td>
                                 <td align="center">'.$value->pos.'</td>
@@ -141,7 +133,6 @@
                                 <td align="right">'.$value->invoice_total_value.'</td>
                                 <td align="center">'.$value->rchrg.'</td>
                             </tr>';
-                            $temp=$value->reference_number;
                           
                         }
 			            $responseTableB2B .= '
@@ -154,7 +145,7 @@
 					$responseTableCDN .= '<table width="80%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
 			            <thead>
 			            <tr>
-			                <th>Sr.No</th>
+			                <th>Num</th>
 			                <th style="text-align:center">Credit/Debit Note Number</th>    
 			                <th style="text-align:center">Credit/Debit Note  Date</th>
 			                <th style="text-align:center">Ctin </th>
@@ -173,18 +164,12 @@
 			                <th style="text-align:center">Ntty</th>
 			                
 			            </tr>';
-			            $j=1;
-			            $temp='';
 			            $i=1;
                         foreach ($responseCDN as $key3 => $value) {
-                        	if($temp!='' && $temp=!$value->reference_number)
-                        	{
-                        		$i=1;
-                        	}
                         	$idt = $value->invoice_date > 0 ? date('d-m-Y', strtotime($value->invoice_date)) : '';
                         	$nt_dt = $value->nt_dt > 0 ? date('d-m-Y', strtotime($value->nt_dt)) : '';
                         		$responseTableCDN .='<tr>
-                        			<td align="center">'.$j++.'</td>
+                        			<td align="center">'.$value->itms.'</td>
                         			<td align="center">'.$value->nt_num.'</td>
                         			 <td align="center">'.$value->company_gstin_number.'</td>
                         			<td align="center">'.$nt_dt.'</td>
@@ -202,7 +187,6 @@
 	                                <td align="center">'.$value->rsn.'</td>
 	                                <td align="center">'.$value->ntty.'</td>
 	                            </tr>';
-	                             $temp=$value->reference_number;
                           
                         }
 			            $responseTableCDN .= '
@@ -221,10 +205,6 @@
 	</div>
 	<div class="clear"></div>
 </div>
-<?php 
-$obj_gstr1 = new gstr();
-$obj_gstr1->Gstr2DownloadOtpPopupJs();
-?>
 <script>
 	$(document).ready(function () {
 		$('#returnmonth').on('change', function () {

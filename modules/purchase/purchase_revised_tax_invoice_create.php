@@ -62,7 +62,7 @@
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Recipient Address <span class="starred">*</span></label>					
-						<textarea placeholder="IT Park Rd, Sitapura Industrial Area, Sitapura" data-bind="content" readonly="true" class="form-control required" name="company_address" id="company_address"><?php if(isset($dataCurrentUserArr['data']->kyc->full_address)) { echo $dataCurrentUserArr['data']->kyc->full_address; } ?></textarea>
+						<textarea placeholder="IT Park Rd, Sitapura Industrial Area, Sitapura" data-bind="content" readonly="true" class="form-control required" name="company_address" id="company_address"><?php if(isset($dataCurrentUserArr['data']->kyc->full_address)) { echo html_entity_decode($dataCurrentUserArr['data']->kyc->full_address); } ?></textarea>
 					</div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
@@ -79,6 +79,20 @@
 				 </div>
 
 				 <div class="row">
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>Reason For Issuing Document <span class="starred">*</span></label><br/>
+						<select name='reason_issuing_document' id='reason_issuing_document' class="form-control required">
+							<option value=''>Select Reason</option>
+							<option value='01-Sales Return'>Sales Return</option>
+							<option value='02-Post Sale Discount'>Post Sale Discount</option>
+							<option value='03-Deficiency in services'>Deficiency in services</option>
+							<option value='04-Correction in Invoice'>Correction in Invoice</option>
+							<option value='05-Change in POS'>Change in POS</option>
+							<option value='06-Finalization of Provisional assessment'>Finalization of Provisional assessment</option>
+							<option value='07-Others'>Others</option>
+						</select>
+					</div>
+					
 					<div class="col-md-6 col-sm-6 col-xs-12 form-group">
 						<label>Nature of Document <span class="starred">*</span></label><br/>
 						<label class="radio-inline"><input type="radio" name="invoice_type" value="revisedtaxinvoice" checked="checked" />Revised Tax Invoice</label>

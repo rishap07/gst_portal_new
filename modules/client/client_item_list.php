@@ -42,10 +42,11 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteItem' && isset($_GET['id
 						<tr>
 							<th align='left' style="width:5%;">#</th>
 							<th align='left' style="width:15%;">Item</th>
-							<th align='left' style="width:25%;">HSN/SAC Category</th>
-							<th align='left' style="width:25%;">Description</th>
+							<th align='left' style="width:20%;">HSN/SAC Category</th>
+							<th align='left' style="width:20%;">Description</th>
 							<th align='left' style="width:10%;">HSN/SAC Code</th>
-							<th align='left' style="width:10%;">Unit Price(Rs)</th>
+							<th align='left' style="width:10%;">Sales Price(<i class="fa fa-inr"></i>)</th>
+							<th align='left' style="width:10%;">Purchase Price(<i class="fa fa-inr"></i>)</th>
 							<th align='left' style="width:5%;">Status</th>
 							<th align='left' style="width:5%;">Action</th>
 						</tr>
@@ -80,6 +81,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteItem' && isset($_GET['id
                         {"bSortable": false},
 						{"bSortable": false},
                         {"bSortable": false},
+						{"bSortable": false},
                         {"bSortable": false}
                     ],
                     "sDom": "lfrtip",

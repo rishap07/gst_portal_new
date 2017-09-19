@@ -40,8 +40,9 @@ if(!$obj_plan->can_read('returnfile_list')) {
                         <th align='left'>#</th>                                        
                         <th align='left'>Category</th>
 						<th align='left'>Vendorto File</th>
-						<th align='left'>ReturnType</th>									
-					    <th align='left'>Status</th>
+						<th align='left'>ReturnType</th>
+						<th align='left'>Ordervalue</th>
+						<th align='left'>Status</th>
                         <th align='left'>Action</th>
                     </tr>
                 </thead>
@@ -74,6 +75,7 @@ if(!$obj_plan->can_read('returnfile_list')) {
                         {"bSortable": false},
                         {"bSortable": false},
                         {"bSortable": false},
+						{"bSortable": false},
 						{"bSortable": false},
 						{"bSortable": false}
 						

@@ -91,6 +91,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printPurchaseRTInvoice' && iss
 
 $currentFinancialYear = $obj_purchase->generateFinancialYear();
 $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) );
+$dataInvoiceSettingArr = $obj_purchase->getUserInvoiceSetting( $obj_purchase->sanitize($_SESSION['user_detail']['user_id']) );
 ?>
 <style>
     #mainTable thead{display:none;}
@@ -221,18 +222,17 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 											<table>
 												<tr>
 													<td class="title">
-                                                        <?php if (isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") { ?>
+                                                        <?php if(isset($dataThemeSettingArr['data']->show_logo) && $dataThemeSettingArr['data']->show_logo == '1' && isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") { ?>
                                                             <img src="<?php echo PROJECT_URL . '/upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo; ?>" style="width:100%;max-width:300px;">
-                                                        <?php } else { ?>
-                                                            <img src="<?php echo PROJECT_URL; ?>/image/gst-k-logo.png" style="width:100%;max-width:300px;">
                                                         <?php } ?>
                                                     </td>
 
 													<td style="text-align:right;vertical-align:top;">
-                                                        <b>Invoice #</b>: <?php echo $invoiceData[0]->serial_number; ?><br>
-                                                        <b>Reference #</b>: <?php echo $invoiceData[0]->reference_number; ?><br>
-                                                        <b>Nature:</b> <?php echo "Sales Invoice"; ?><br>
-                                                        <b>Invoice Date:</b> <?php echo $invoiceData[0]->invoice_date; ?>
+                                                        <b><?php if(isset($dataInvoiceSettingArr['data']->invoice_label) && !empty($dataInvoiceSettingArr['data']->invoice_label)) { echo $dataInvoiceSettingArr['data']->invoice_label; } else { echo "Invoice #"; } ?></b>: <?php echo $invoiceData[0]->serial_number; ?><br>
+                                                        <b><?php if(isset($dataInvoiceSettingArr['data']->reference_label) && !empty($dataInvoiceSettingArr['data']->reference_label)) { echo $dataInvoiceSettingArr['data']->reference_label; } else { echo "Reference #"; } ?></b>: <?php echo $invoiceData[0]->reference_number; ?><br>
+                                                        <b><?php if(isset($dataInvoiceSettingArr['data']->type_label) && !empty($dataInvoiceSettingArr['data']->type_label)) { echo $dataInvoiceSettingArr['data']->type_label; } else { echo "Type"; } ?></b>: <?php if($invoiceData[0]->invoice_type == "creditnote") { echo "Credit Note"; } else if($invoiceData[0]->invoice_type == "debitnote") { echo "Debit Note"; } else { echo "Revised Tax Invoice"; } ?><br>
+                                                        <b><?php if(isset($dataInvoiceSettingArr['data']->nature_label) && !empty($dataInvoiceSettingArr['data']->nature_label)) { echo $dataInvoiceSettingArr['data']->nature_label; } else { echo "Nature"; } ?></b>: <?php echo "Purchase Invoice"; ?><br>
+                                                        <b><?php if(isset($dataInvoiceSettingArr['data']->date_label) && !empty($dataInvoiceSettingArr['data']->date_label)) { echo $dataInvoiceSettingArr['data']->date_label; } else { echo "Invoice Date"; } ?></b>: <?php echo $invoiceData[0]->invoice_date; ?>
                                                     </td>
                                                 </tr>
                                             </table>
@@ -246,8 +246,8 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 											<table>
 												<tr>
 													<td style="text-align:left;vertical-align:top;width:48%;padding-right:2%;">
-                                                        <?php echo $invoiceData[0]->company_name; ?><br>
-                                                        <?php echo $invoiceData[0]->company_address; ?><br>
+                                                        <?php echo html_entity_decode($invoiceData[0]->company_name); ?><br>
+                                                        <?php echo html_entity_decode($invoiceData[0]->company_address); ?><br>
 														<?php if(!empty($invoiceData[0]->company_email)) { ?><b>Email:</b> <?php echo $invoiceData[0]->company_email; ?><br><?php } ?>
 														<?php if(!empty($invoiceData[0]->company_phone_number)) { ?><b>Phone:</b> <?php echo $invoiceData[0]->company_phone_number; ?><br><?php } ?>
 														<?php $panFromGTIN = substr(substr($invoiceData[0]->company_gstin_number, 2), 0, -3); ?>
@@ -257,7 +257,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
 
 													<td style="text-align:right;vertical-align:top;width:48%;padding-left:2%;">
                                                         <?php if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) { ?><b>Place Of Supply:</b> <?php if($supply_place_data['data']->state_tin == 97) { echo $supply_place_data['data']->state_name; } else { echo $supply_place_data['data']->state_name . "(" . $supply_place_data['data']->state_tin . ")"; } ?><br> <?php } ?>
-                                                        <b>Document Nature:</b> <?php if($invoiceData[0]->invoice_type == "creditnote") { echo "Credit Note"; } else if($invoiceData[0]->invoice_type == "debitnote") { echo "Debit Note"; } else { echo "Revised Tax Invoice"; } ?><br>
+														<b>Reason Issuing Document:</b> <?php echo $invoiceData[0]->reason_issuing_document; ?><br>
 														<b>Corresponding Type:</b> <?php if($invoiceData[0]->invoice_corresponding_type == "taxinvoice") { echo "Tax Invoice" . "<br>"; } else if($invoiceData[0]->invoice_corresponding_type == "billofsupplyinvoice") { echo "Bill of Supply Invoice" . "<br>"; } ?>
 
 														<?php $dataCorresDocumentRow = $obj_purchase->get_row("select * from ".$obj_purchase->getTableName('client_purchase_invoice')." where purchase_invoice_id = '".$invoiceData[0]->corresponding_document_number."' AND invoice_type = '".$invoiceData[0]->invoice_corresponding_type."' AND is_deleted='0' AND added_by = ".$obj_purchase->sanitize($_SESSION['user_detail']['user_id'])); ?>
@@ -320,7 +320,7 @@ $dataThemeSettingArr = $obj_purchase->getUserThemeSetting( $obj_purchase->saniti
                                                     <td rowspan="2">Unit</td>
                                                     <td rowspan="2">Rate<br>(<i class="fa fa-inr"></i>)</td>
                                                     <td rowspan="2">Total<br>(<i class="fa fa-inr"></i>)</td>
-                                                    <td rowspan="2">Discount(%)</td>
+                                                    <td rowspan="2">Discount<br>(%)</td>
                                                     <td rowspan="2">Taxable Value<br>(<i class="fa fa-inr"></i>)</td>
                                                     <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">CGST</td>
                                                     <td colspan="2" style="border-bottom:1px solid #808080;text-align:center;">SGST</td>

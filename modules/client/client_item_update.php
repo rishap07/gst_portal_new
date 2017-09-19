@@ -59,18 +59,19 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
         $obj_client->redirect(PROJECT_URL."?page=client_item_list");
 	}
 	
-	$dataArr = $obj_client->get_results("select cm.is_applicable, cm.item_id,cm.item_name, cm.item_category, cm.unit_price, cm.item_description, cm.item_unit, cm.status, CONCAT(UCASE(LEFT(m.item_name,1)),LCASE(SUBSTRING(m.item_name,2))) as category_name, m.hsn_code, u.unit_name, u.unit_code from ".$obj_client->getTableName('client_master_item')." as cm, ".$obj_client->getTableName('item')." as m, ".$obj_client->getTableName('unit')." as u WHERE cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.is_deleted='0' and cm.item_id = '".$obj_client->sanitize($_GET['id'])."'");
+	$dataArr = $obj_client->get_results("select cm.item_id, cm.item_name, cm.item_category, cm.unit_price, cm.unit_purchase_price, cm.cgst_tax_rate, cm.sgst_tax_rate, cm.igst_tax_rate, cm.cess_tax_rate, cm.is_applicable, cm.item_description, cm.item_unit, cm.status, CONCAT(UCASE(LEFT(m.item_name,1)),LCASE(SUBSTRING(m.item_name,2))) as category_name, m.hsn_code, u.unit_name, u.unit_code from ".$obj_client->getTableName('client_master_item')." as cm, ".$obj_client->getTableName('item')." as m, ".$obj_client->getTableName('unit')." as u WHERE cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.is_deleted='0' and cm.item_id = '".$obj_client->sanitize($_GET['id'])."'");
 }
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
 	<div class="col-md-12 col-sm-12 col-xs-12">
 		<div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Item</h1></div>
 		<hr class="headingborder">
-		
+
+		<div class="clear"></div>
 		<?php $obj_client->showErrorMessage(); ?>
 		<?php $obj_client->showSuccessMessge(); ?>
 		<?php $obj_client->unsetMessage(); ?>
-		
+
 		<div class="whitebg formboxcontainer">
 			<h2 class="greyheading"><?php if(isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] == "editItem") { echo 'Edit Item'; } else { echo 'Add New Item'; } ?></h2>
 
@@ -94,7 +95,8 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
 						<div class="readonly-section" id="item_hsn_code"><?php if(isset($dataArr[0]->hsn_code)){ echo $dataArr[0]->hsn_code; } else { echo "HSN/SAC Code"; } ?></div>						
 					</div>
 					<div class="clear"></div>
-                     <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                    
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Applicable Taxes <span class="starred">*</span></label>
 						<select name="is_applicable" class="required form-control">
 							<option value="0" <?php if(isset($_POST['is_applicable']) && $_POST['is_applicable']==='0'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->is_applicable) && $dataArr[0]->is_applicable==='0'){ echo 'selected="selected"'; } ?>>Applicable</option>
@@ -102,11 +104,39 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
 							<option value="2" <?php if(isset($_POST['is_applicable']) && $_POST['is_applicable']==='2'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->is_applicable) && $dataArr[0]->is_applicable==='2'){ echo 'selected="selected"'; } ?>>Exempted</option>
 						</select>
                     </div>
+
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Unit Price (Rs.)</label>
-						<input type="text" placeholder="Item Unit Price" name='unit_price' id="unit_price" class="requred itemUnitPrice form-control" data-bind="decimal" value='<?php if(isset($_POST['unit_price'])) { echo $_POST['unit_price']; } else if(isset($dataArr[0]->unit_price)){ echo $dataArr[0]->unit_price; } ?>'/>
+						<label>Sales Unit Price (Rs.)</label>
+						<input type="text" placeholder="Item Sales Unit Price" name='unit_price' id="unit_price" class="itemUnitPrice form-control" data-bind="decimal" value='<?php if(isset($_POST['unit_price'])) { echo $_POST['unit_price']; } else if(isset($dataArr[0]->unit_price)){ echo $dataArr[0]->unit_price; } ?>'/>
 					</div>
 
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>Purchase Unit Price (Rs.)</label>
+						<input type="text" placeholder="Item Purchase Unit Price" name='unit_purchase_price' id="unit_purchase_price" class="itemUnitPrice form-control" data-bind="decimal" value='<?php if(isset($_POST['unit_purchase_price'])) { echo $_POST['unit_purchase_price']; } else if(isset($dataArr[0]->unit_purchase_price)){ echo $dataArr[0]->unit_purchase_price; } ?>'/>
+					</div>
+					<div class="clear"></div>
+
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>CGST Tax Rate(%)</label>
+						<input type="text" placeholder="CGST Tax Rate(%)" name='cgst_tax_rate' id="cgst_tax_rate" class="validateTaxValue form-control cgstrate" data-bind="valtax" value='<?php if(isset($_POST['cgst_tax_rate'])) { echo $_POST['cgst_tax_rate']; } else if(isset($dataArr[0]->cgst_tax_rate)){ echo $dataArr[0]->cgst_tax_rate; } ?>'/>
+					</div>
+
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>SGST Tax Rate(%)</label>
+						<input type="text" placeholder="SGST Tax Rate(%)" name='sgst_tax_rate' id="sgst_tax_rate" class="validateTaxValue form-control sgstrate" data-bind="valtax" value='<?php if(isset($_POST['sgst_tax_rate'])) { echo $_POST['sgst_tax_rate']; } else if(isset($dataArr[0]->sgst_tax_rate)){ echo $dataArr[0]->sgst_tax_rate; } ?>'/>
+					</div>
+
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>IGST Tax Rate(%)</label>
+						<input type="text" placeholder="IGST Tax Rate(%)" name='igst_tax_rate' id="igst_tax_rate" class="validateTaxValue form-control igstrate" data-bind="valtax" value='<?php if(isset($_POST['igst_tax_rate'])) { echo $_POST['igst_tax_rate']; } else if(isset($dataArr[0]->igst_tax_rate)){ echo $dataArr[0]->igst_tax_rate; } ?>'/>
+					</div>
+					<div class="clear"></div>
+					
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>CESS Tax Rate(%)</label>
+						<input type="text" placeholder="CESS Tax Rate(%)" name='cess_tax_rate' id="cess_tax_rate" class="validateTaxValue form-control cessrate" data-bind="valtax" value='<?php if(isset($_POST['cess_tax_rate'])) { echo $_POST['cess_tax_rate']; } else if(isset($dataArr[0]->cess_tax_rate)){ echo $dataArr[0]->cess_tax_rate; } ?>'/>
+					</div>
+					
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Item Unit <span class="starred">*</span></label>
 						<select name="item_unit" id="item_unit" class="required form-control" data-bind="numnzero">
@@ -119,7 +149,7 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
 							<?php } ?>
 						</select>
 					</div>
-                       <div class="clear"></div>
+					
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Status<span class="starred">*</span></label>
 						<select name="status" id="status" class="required form-control">
@@ -127,6 +157,7 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
 							<option value="0" <?php if(isset($_POST['status']) && $_POST['status'] === '0'){ echo 'selected="selected"'; } else if(isset($dataArr[0]->status) && $dataArr[0]->status === '0') { echo 'selected="selected"'; } ?>>Inactive</option>
 						</select>
 					</div>
+					<div class="clear"></div>
 					
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label for="itemDescription">Description</label>
@@ -171,6 +202,12 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
 			return validateInvoiceAmount(event, this);
 		});
 		/* end of validate item unit price allow only numbers or decimals */
+
+		/* validate invoice tax decimal values allow only numbers or decimals */
+        $(".formboxcontainer").on("keypress input paste", ".validateTaxValue", function (event) {
+            return validateTaxValue(event, this);
+        });
+        /* end of validate invoice tax decimal values allow only numbers or decimals */
         
         /* select2 js for item unit */
         $("#item_unit").select2();

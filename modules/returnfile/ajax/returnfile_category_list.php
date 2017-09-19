@@ -14,7 +14,7 @@ $obj_master = new master();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('g.return_name','g.returntofile_vendor_id','g.returnfile_type','g.return_subheading','g.return_url','g.id','g.status');
+$aColumns = array('g.return_name','g.order_value','g.returntofile_vendor_id','g.returnfile_type','g.return_subheading','g.return_url','g.id','g.status');
 $aSearchColumns = array('g.return_name', 'g.status');
 $sIndexColumn = "g.id";
 
@@ -92,7 +92,6 @@ $spQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", "
             $spOrder
             $spLimit
 	"; 
-
 $rResult = $obj_plan->get_results($spQuery);
 // echo "<pre>";
 //        print_r($rResult);
@@ -157,6 +156,7 @@ foreach($rResult as $aRow) {
     $row[] = utf8_decode($aRow->return_name);
 	$row[] = utf8_decode($vendor_name);
 	$row[] = utf8_decode($return_type);
+	$row[] = utf8_decode($aRow->order_value);
 	$row[] = utf8_decode($status);
 	
    
