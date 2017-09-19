@@ -1618,6 +1618,52 @@ class common extends db {
         return $dataArr;
     }
     
-    
+    final public function searchSalesClientInvoice() {
+
+		if(isset($_POST['from_date']) && !empty($_POST['from_date']) && isset($_POST['to_date']) && !empty($_POST['to_date'])) {
+			
+			if($_POST['to_date'] <= $_POST['from_date']){
+				$this->setError('To date should be greater than from date.');
+				return false;
+			}
+		}
+
+		$query = "select * from " . $this->tableNames['client_invoice'] . " where 1=1 ";
+
+        if(isset($_POST['from_date']) && !empty($_POST['from_date'])) {
+            $query .= " and invoice_date >= '" . $_POST['from_date'] ."'";
+        }
+
+		if(isset($_POST['to_date']) && !empty($_POST['to_date'])) {
+            $query .= " and invoice_date <= '" . $_POST['to_date'] ."'";
+        }
+
+		if(isset($_POST['invoice_type']) && !empty($_POST['invoice_type'])) {
+            $query .= " and invoice_type = '" . $_POST['invoice_type'] ."'";
+        }
+
+		if(isset($_POST['supply_type']) && !empty($_POST['supply_type'])) {
+            $query .= " and supply_type = '" . $_POST['supply_type'] ."'";
+        }
+
+		if(isset($_POST['reference_number']) && !empty($_POST['reference_number'])) {
+            $query .= " and reference_number = '" . $_POST['reference_number'] ."'";
+        }
+
+		if(isset($_POST['place_of_supply']) && !empty($_POST['place_of_supply'])) {
+            $query .= " and supply_place = " . $_POST['place_of_supply'];
+        }
+
+		if(isset($_POST['billing_state']) && !empty($_POST['billing_state'])) {
+            $query .= " and billing_state = " . $_POST['billing_state'];
+        }
+
+		if(isset($_POST['billing_gstin_number']) && !empty($_POST['billing_gstin_number'])) {
+            $query .= " and billing_gstin_number LIKE '%" . $_POST['billing_gstin_number'] ."%'";
+        }
+
+        $query .= " and added_by = '" . $_SESSION['user_detail']['user_id'] . "' and is_deleted = '0' ORDER BY serial_number ASC";		
+        return $this->get_results($query);
+	}
 }
 ?>

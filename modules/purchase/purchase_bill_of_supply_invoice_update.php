@@ -925,10 +925,10 @@
 					$("#invoice_tr_"+rowid+"_description").val(ui.item.item_description);
 					$("#invoice_tr_"+rowid+"_quantity").val(1);
 					$("#invoice_tr_"+rowid+"_unit").val(ui.item.unit_code);
-					$("#invoice_tr_"+rowid+"_rate").val(ui.item.unit_price);
-					$("#invoice_tr_"+rowid+"_total").val(ui.item.unit_price);
+					$("#invoice_tr_"+rowid+"_rate").val(ui.item.unit_purchase_price);
+					$("#invoice_tr_"+rowid+"_total").val(ui.item.unit_purchase_price);
 					$("#invoice_tr_"+rowid+"_discount").val(0);
-					$("#invoice_tr_"+rowid+"_taxablevalue").val(ui.item.unit_price);
+					$("#invoice_tr_"+rowid+"_taxablevalue").val(ui.item.unit_purchase_price);
 
                     /* current row invoice calculation */
                     rowInvoiceCalculation(ui.item.item_id, rowid);

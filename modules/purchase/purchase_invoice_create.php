@@ -1022,10 +1022,10 @@
 					$("#invoice_tr_"+rowid+"_description").val(ui.item.item_description);
                     $("#invoice_tr_"+rowid+"_quantity").val(1);
                     $("#invoice_tr_"+rowid+"_unit").val(ui.item.unit_code);
-                    $("#invoice_tr_"+rowid+"_rate").val(ui.item.unit_price);
-                    $("#invoice_tr_"+rowid+"_total").val(ui.item.unit_price);
+                    $("#invoice_tr_"+rowid+"_rate").val(ui.item.unit_purchase_price);
+                    $("#invoice_tr_"+rowid+"_total").val(ui.item.unit_purchase_price);
                     $("#invoice_tr_"+rowid+"_discount").val(0);
-                    $("#invoice_tr_"+rowid+"_taxablevalue").val(ui.item.unit_price);
+                    $("#invoice_tr_"+rowid+"_taxablevalue").val(ui.item.unit_purchase_price);
 					$("#invoice_tr_"+rowid+"_cgstrate").val(ui.item.csgt_tax_rate);
 					$("#invoice_tr_"+rowid+"_sgstrate").val(ui.item.sgst_tax_rate);
 					$("#invoice_tr_"+rowid+"_igstrate").val(ui.item.igst_tax_rate);

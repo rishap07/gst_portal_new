@@ -112,18 +112,92 @@ if (!empty($dataRes)) {
 					 <option value='2'>Intra-State</option>
 					 </select>
 					 </td> 
-                    <td><button type="button" class="btn btn-success add-collapse">collapse</button></td>					 
+                    <td>
+					<button type='button' class='btn btn-success del'>collapse</button>
+					</td>					 
                      </tr>
-           
-		   <tr id="expanddemo" class="expanddemo"><td><input type="text" readonly="true" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_rate" value="0" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_grossamount" value="" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_igst_amount" value="" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_cgst_amount" value="" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_sgst_amount" value="" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_cess_amount" value="" /></td></tr>
-           			 
+            
+		   <tr id="expanddemo" class="expanddemo">
+		   <table class="table  tablecontent tablecontent2 bordernone">
+		   
+                            <thead>
+                                <tr>
+                                    <th>Rate(%)</th>
+                                    <th>Gross Advance Amount (Excluding Tax)(<i class="fa fa-inr"></i>) </th>
+                                    <th>IGST Amount(<i class="fa fa-inr"></i>) </th>
+									<th>CGST Amount(<i class="fa fa-inr"></i>) </th>
+									<th>SGST Amount(<i class="fa fa-inr"></i>) </th>
+									<th>CESS Amount(<i class="fa fa-inr"></i>) </th>
+                                 
+                                </tr>
+                            </thead>
+
+             <tbody>
+
+                   <tr>
+                  <td><input type='text' readonly="true" class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate0_rate' value="0" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate0_grossamount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate0_igst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate0_cgst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate0_sgst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate0_cess_amount' value="" /></td>
+				  </tr>
+				  <tr>
+                  <td><input type='text' readonly="true" class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate3_rate' value="3" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate3_grossamount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate3_igst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate3_cgst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate3_sgst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate3_cess_amount' value="" /></td>
+				  </tr>
+				   <tr>
+                  <td><input type='text' readonly="true" class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate5_rate' value="5" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate5_grossamount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate5_igst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate5_cgst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate5_sgst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate5_cess_amount' value="" /></td>
+				  </tr>
+				   <tr>
+                  <td><input type='text' readonly="true" class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate12_rate' value="12" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate12_grossamount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate12_igst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate12_cgst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate12_sgst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate12_cess_amount' value="" /></td>
+				  </tr>
+				   <tr>
+                  <td><input type='text' readonly="true" class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate18_rate' value="18" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate18_grossamount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate18_igst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate18_cgst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate18_sgst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate18_cess_amount' value="" /></td>
+				  </tr>
+				   <tr>
+                  <td><input type='text' readonly="true" class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate28_rate' value="28" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate28_grossamount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate28_igst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate28_cgst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate28_sgst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate28_cess_amount' value="" /></td>
+				  </tr>
+				   <tr>
+                  <td><input type='text' readonly="true" class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate0.25_rate' value="0.25" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate0.25_grossamount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate0.25_igst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate0.25_cgst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate0.25_sgst_amount' value="" /></td>
+				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate0.25_cess_amount' value="" /></td>
+				  </tr>
+                  </tbody>
+                  </table>
+		  </div> </tr>          			 
 					 </tbody>
 					 </table>
-			
 					
                         <input type="button" value="Add New Row" class="btn btn-success add-table1a"  href="javascript:void(0)">
-                        </div>
-				
+                      
 
 
 
@@ -166,12 +240,12 @@ if (!empty($dataRes)) {
 			
 			 datasupply +='<option value="1">Inter-State</option><option value="2">Intra-State</option></select>';
 
-        var markup = "<tr><td>" + data + "</td><td>" + datasupply + "</td> <td><button type='button' class='btn btn-success add-collapse'>collapse</button></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+        var markup = "<tr><td>" + data + "</td><td>" + datasupply + "</td> <td><button type='button' class='btn btn-success del'>collapse</button></td></tr>";
         var markup1='<tr id="expanddemo" class="expanddemo"><td><input type="text" readonly="true" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_rate" value="0" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_grossamount" value="" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_igst_amount" value="" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_cgst_amount" value="" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_sgst_amount" value="" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_cess_amount" value="" /></td></tr>';     
         $('#table1a').append(markup+markup1);
         });
         $('body').delegate('.del', 'click', function () {
-           // $(this).closest('tr').remove();
+            //$(this).closest('tr').remove();
 		    $(this).closest('tr').next('.expanddemo').toggle();
 			
         });
@@ -185,7 +259,7 @@ if (!empty($dataRes)) {
     $(document).ready(function () {
 
         $(".add-expand").click(function () {
-                 
+           
 			document.getElementById('trexpand').style.display = 'block';
 			
 			});
@@ -196,7 +270,6 @@ if (!empty($dataRes)) {
     $(document).ready(function () {
  
         $(".add-collapse").click(function () {
-         alert('working');
 			//document.getElementById('trexpand').style.display = 'none';
 			 $(this).closest('tr').next('.expanddemo').toggle();
 			

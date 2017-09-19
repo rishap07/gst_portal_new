@@ -18,6 +18,39 @@ $returnmonth = date('Y-m');
 if ($_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
 }
+if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
+    $flag = $obj_transition->checkVerifyUser();
+    if ($flag == 'notverify') {
+         $obj_transition->setError("To save hsn summary first verify your email and mobile number");
+		
+    } else {
+        if ($obj_gstr2->saveGstr2HsnSummary()) {
+            //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
+        }
+    }
+}
+
+
+$hsn = '';
+$description = '';
+$unit = '';
+$qty = '';
+$taxable_subtotal = '';
+$invoice_total_value = '';
+$igst = '';
+$cgst = '';
+$sgst = '';
+$cess = '';
+
+$autoflag = 0;
+if (isset($_POST['autoname']) && $_POST['autoname'] == 1) {
+    //$returndata1 = $db_obj->getHSNInvoices($_SESSION["user_detail"]["user_id"], $returnmonth);
+    //$autoflag = 1;
+}
+else {
+    $sql = "select  * from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0' and type='gstr2hsn' order by id desc limit 0,1";
+    $returndata1 = $obj_transition->get_results($sql);
+}
 
 ?>
 
@@ -36,10 +69,22 @@ if (isset($_POST['finalsubmit']) && $_POST['finalsubmit'] == 'final submit') {
     $obj_transition->showSuccessMessge();
 }
 ?>
+<?php $obj_transition->unsetMessage(); ?>
+<?php
+if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
 
+    if ($flag == 'notverify') {
+        
+    } else {
+
+        //echo "<div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>GSTR3B successfully submitted </div>";
+    }
+}
+
+?>
            
             <form method="post" id="auto" name="auto">
-                <button  type="button"  class="btn btn-success" id="btnConfirm">autopopulate</button>
+                <button  type="button" style="display:none;" class="btn btn-success" id="btnConfirm">autopopulate</button>
                 <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_gstr2_mydata&returnmonth=" . $_REQUEST["returnmonth"]; ?>';" class="btn btn-danger" class="redbtn marlef10"/>
 
                 <input type="hidden" name="autoname" id="autoname" value="1" />
@@ -97,7 +142,20 @@ if (!empty($dataRes)) {
                             </thead>
 
                             <tbody>
-                               
+<?php
+
+if (!empty($returndata1)) {
+	if($autoflag!=1)
+	{
+	$arr = $returndata1[0]->return_data;
+    $arr1= base64_decode($arr);
+	$summary_arr = json_decode($arr1);	
+	//$obj_transition->pr($summary_arr);
+    foreach ($summary_arr as $data) {
+		
+        ?>
+  
+                                        
                      <tr>
                                            <td>
                                                 <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='hsn[]' value="<?php  echo (isset($data->hsn)) ? $data->hsn : '' ?>"/>
@@ -112,7 +170,7 @@ if (!empty($dataRes)) {
 								<option value='<?php echo $dataSupplyStateArr->unit_code; ?>' <?php
                                     
 										
-										if($dataSupplyStateArr->unit_code==0)
+										if($dataSupplyStateArr->unit_code==$data->unit)
 										{
                                         echo "selected='selected'";
                                         }
@@ -147,7 +205,71 @@ if (!empty($dataRes)) {
                                                 <a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a>
                                             </td>
                                         </tr>
+                                        <?php
+	}
+                                   
+	   }
+	   else
+	   {
+		  
+		   foreach ($returndata1 as $data) {
+        ?>
+  
                                         
+                     <tr>
+                       <td>
+                       <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='hsn[]' value="<?php  echo (isset($data->item_hsncode)) ? $data->item_hsncode : '' ?>"/>
+                                            </td>
+                                            <td>
+                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='description[]' value="<?php  echo (isset($data->item_hsncode)) ? $data->item_hsncode.'_'.$data->item_unit : '' ?>"/></td>
+                                            <td><select  name="unit[]"   id='unit' class="required form-control">
+							<?php $dataSupplyStateArrs = $obj_transition->get_results("select * from ".$obj_transition->getTableName('unit')." where status='1' and is_deleted='0' order by unit_name asc"); ?>
+							<?php if(!empty($dataSupplyStateArrs)) { ?>
+								<option value=''>Select unit</option>
+								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
+								<option value='<?php echo $dataSupplyStateArr->unit_code; ?>' <?php
+                                    
+										
+										if($dataSupplyStateArr->unit_code==$data->item_unit)
+										{
+                                        echo "selected='selected'";
+                                        }
+									
+                                    ?>><?php echo $dataSupplyStateArr->unit_name; ?></option>
+								<?php } ?>
+							<?php } ?>
+						</select>  
+                                            </td>
+                                            <td>
+                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='qty[]' value="<?php  echo (isset($data->item_quantity)) ? $data->item_quantity : '' ?>"/>
+                                            </td>
+                                            <td>
+                                                <input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='taxable_subtotal[]' value="<?php  echo (isset($data->taxable_subtotal)) ? $data->taxable_subtotal : '' ?>"/>
+                                            </td>
+                                            <td>
+                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='invoice_total_value[]' value="<?php  echo (isset($data->invoice_total_value)) ? $data->invoice_total_value : '' ?>"/>
+                                            </td>
+                                            <td>
+                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='igst[]' value="<?php  echo (isset($data->igst_amount)) ? $data->igst_amount : '' ?>"/>
+                                            </td>
+                                            <td>
+                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='cgst[]' value="<?php  echo (isset($data->cgst_amount)) ? $data->cgst_amount : '' ?>"/>
+                                            </td>
+                                            <td>
+                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='sgst[]' value="<?php  echo (isset($data->sgst_amount)) ? $data->sgst_amount : '' ?>"/>
+                                            </td>
+                                            <td>
+                                                <input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='cess[]' value="<?php  echo (isset($data->cess_amount)) ? $data->cess_amount : '' ?>"/>
+                                            </td>
+                                            <td>
+                                                <a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a>
+                                            </td>
+                                        </tr>
+                                        <?php
+                                    }
+	   }
+   } 
+                            ?>
                             </tbody>
                         </table>
                         <input type="button" value="Add New Row" class="btn btn-success add-table1a"  href="javascript:void(0)">

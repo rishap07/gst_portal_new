@@ -1126,6 +1126,39 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 
         return $dataArr;
     }
+	public function getGstr2HsnSummaryData() {
+        $dataArr = array();
+        $data = array();
+        $data[0]['hsn'] = '';
+        $data[0]['description'] = '';
+        $data[0]['unit'] = '';
+        $data[0]['qty'] = '';
+        $data[0]['taxable_subtotal'] = '';
+        $data[0]['invoice_total_value'] = '';
+        $data[0]['igst'] = '';
+        $data[0]['cgst'] = '';
+        $data[0]['sgst'] = '';
+        $data[0]['cess'] = '';
+
+        if (!empty($_POST['hsn'])) {
+            for ($x = 0; $x < count($_POST['hsn']); $x++) {
+                $data[$x]['hsn'] = isset($_POST['hsn'][$x]) ? $_POST['hsn'][$x] : '';
+                $data[$x]['description'] = isset($_POST['description'][$x]) ? $_POST['description'][$x] : '';
+                $data[$x]['unit'] = isset($_POST['unit'][$x]) ? $_POST['unit'][$x] : '';
+                $data[$x]['qty'] = isset($_POST['qty'][$x]) ? $_POST['qty'][$x] : '';
+                $data[$x]['taxable_subtotal'] = isset($_POST['taxable_subtotal'][$x]) ? $_POST['taxable_subtotal'][$x] : '';
+                $data[$x]['invoice_total_value'] = isset($_POST['invoice_total_value'][$x]) ? $_POST['invoice_total_value'][$x] : '';
+                $data[$x]['igst'] = isset($_POST['igst'][$x]) ? $_POST['igst'][$x] : '';
+                $data[$x]['cgst'] = isset($_POST['cgst'][$x]) ? $_POST['cgst'][$x] : '';
+                $data[$x]['sgst'] = isset($_POST['sgst'][$x]) ? $_POST['sgst'][$x] : '';
+                $data[$x]['cess'] = isset($_POST['cess'][$x]) ? $_POST['cess'][$x] : '';
+            }
+        }
+        //$this->pr($data);
+        $dataArr['return_data'] = base64_encode(json_encode($data));
+
+        return $dataArr;
+    }
 	public function gstNilExemptSummaryData() {
         $dataArr = array();
         $data = array();
@@ -1175,6 +1208,36 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 
         return $dataArr;
     }
+	public function gstr2NilExemptSummaryData() {
+        $dataArr = array();
+        $data1 = array();
+		$data2 = array();
+            
+      
+          		 
+			   $data1[0]['cpddr'] = isset($_POST['inter_valueofsupply_compound']) ? $_POST['inter_valueofsupply_compound'] : 0.00;
+			   $data1[0]['exptdsply'] = isset($_POST['inter_valueofexempt']) ? $_POST['inter_valueofexempt'] : 0.00;
+			   $data1[0]['ngsply'] = isset($_POST['inter_totalnongst']) ? $_POST['inter_totalnongst'] : 0.00;
+			   $data1[0]['nilsply'] = isset($_POST['inter_nilrated']) ? $_POST['inter_nilrated'] : 0.00;
+			    $data2[0]['cpddr'] = isset($_POST['intra_valueofsupply_compound']) ? $_POST['intra_valueofsupply_compound'] : 0.00;
+                $data2[0]['exptdsply'] = isset($_POST['intra_valueofexempt']) ? $_POST['intra_valueofexempt'] : 0.00;
+                $data2[0]['ngsply'] = isset($_POST['intra_totalnongst']) ? $_POST['intra_totalnongst'] : 0.00;
+                $data2[0]['nilsply'] = isset($_POST['intra_nilrated']) ? $_POST['intra_nilrated'] : 0.00;
+			   
+		       
+	
+			
+            			 
+           
+        
+       //$this->pr($data);die;
+	    $data=array("inter"=>$data1,"intra"=>$data2);    
+		//$this->pr($data);
+		//die;
+		$dataArr['return_data'] = base64_encode(json_encode($data));
+
+        return $dataArr;
+    }
 
     public function saveGstr1nilexemptSummary() {
         $data = $this->get_results("select * from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month='" . $this->sanitize($_GET['returnmonth']) . "' and type='gstr1nil'");
@@ -1209,6 +1272,39 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
             }
         }
     }
+	public function saveGstr2nilexemptSummary() {
+        $data = $this->get_results("select * from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month='" . $this->sanitize($_GET['returnmonth']) . "' and type='gstr2nil'");
+        $dataArr = $this->gstr2NilExemptSummaryData();
+        $returnmonth = $this->sanitize($_GET['returnmonth']);
+        if (empty($data)) {
+            $dataArr['financial_month'] = $this->sanitize($_GET['returnmonth']);
+            $dataArr['added_by'] = $this->sanitize($_SESSION["user_detail"]["user_id"]);
+            $dataArr['type'] = 'gstr2nil';
+			$dataArr['added_date']=  date('Y-m-d h:i:s');
+
+            if ($this->insert('gst_return_upload_summary', $dataArr)) {
+                $this->setSuccess('GSTR2 nilexempt summary form Saved Successfully');
+                $this->logMsg("GSTR2 nilexempt summary Inserted financial month : " . $returnmonth, "gstr1");
+                return true;
+            } else {
+                $this->setError('Failed to save GSTR2 nil summary data');
+                return false;
+            }
+        } else {
+            $dataArr['updated_date']=  date('Y-m-d h:i:s');
+			$dataArr['updated_by'] = $this->sanitize($_SESSION["user_detail"]["user_id"]);
+          
+            if ($this->update('gst_return_upload_summary', $dataArr, array('added_by' => $_SESSION['user_detail']['user_id'],'type' => 'gstr2nil','financial_month' => $this->sanitize($_GET['returnmonth'])))) {
+
+                $this->setSuccess('GSTR1 nilexempt summary month of ' . $returnmonth . "updated Successfully");
+                //$this->logMsg("GSTR3B updated financial month : " . $returnmonth,"gstr_3b");
+                return true;
+            } else {
+                $this->setError('Failed to save nilexempt data');
+                return false;
+            }
+        }
+    }
     public function saveGstr1HsnSummary() {
         $data = $this->get_results("select * from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month='" . $this->sanitize($_GET['returnmonth']) . "' and type='gstr1hsn'");
         $dataArr = $this->gstHsnSummaryData();
@@ -1237,6 +1333,38 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
                 return true;
             } else {
                 $this->setError('Failed to save GSTR3B data');
+                return false;
+            }
+        }
+    }
+	 public function saveGstr2HsnSummary() {
+        $data = $this->get_results("select * from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month='" . $this->sanitize($_GET['returnmonth']) . "' and type='gstr2hsn'");
+        $dataArr = $this->getGstr2HsnSummaryData();
+        $returnmonth = $this->sanitize($_GET['returnmonth']);
+        if (empty($data)) {
+            $dataArr['financial_month'] = $this->sanitize($_GET['returnmonth']);
+            $dataArr['added_by'] = $this->sanitize($_SESSION["user_detail"]["user_id"]);
+            $dataArr['type'] = 'gstr2hsn';
+			$dataArr['added_date']=  date('Y-m-d h:i:s');
+            if ($this->insert('gst_return_upload_summary', $dataArr)) {
+                $this->setSuccess('GSTR2 hsn summary data Saved Successfully');
+                $this->logMsg("GSTR2 hsn summary Inserted financial month : " . $returnmonth, "gstr1");
+                return true;
+            } else {
+                $this->setError('Failed to save GSTR2 hsn summary data');
+                return false;
+            }
+        } else {
+            $dataArr['updated_date']=  date('Y-m-d h:i:s');
+			$dataArr['updated_by'] = $this->sanitize($_SESSION["user_detail"]["user_id"]);
+          
+            if ($this->update('gst_return_upload_summary', $dataArr, array('added_by' => $_SESSION['user_detail']['user_id'],'type' => 'gstr2hsn', 'financial_month' => $this->sanitize($_GET['returnmonth'])))) {
+
+                $this->setSuccess('GSTR2 hsn summary month of ' . $returnmonth . "updated Successfully");
+                //$this->logMsg("GSTR3B updated financial month : " . $returnmonth,"gstr_3b");
+                return true;
+            } else {
+                $this->setError('Failed to save GSTR2 hsn data');
                 return false;
             }
         }

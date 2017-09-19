@@ -28,6 +28,7 @@ if(isset($_GET['ajax']) && $_GET['ajax'] == "client_get_item" && isset($_GET['te
 			$item[$counter]['value'] = $clientMasterItem->item_name;
 			$item[$counter]['item_description'] = $clientMasterItem->item_description;
 			$item[$counter]['unit_price'] = $clientMasterItem->unit_price;
+			$item[$counter]['unit_purchase_price'] = $clientMasterItem->unit_purchase_price;
 			$item[$counter]['category_id'] = $clientMasterItem->category_id;
 			$item[$counter]['category_name'] = $clientMasterItem->category_name;
 			$item[$counter]['hsn_code'] = $clientMasterItem->hsn_code;
