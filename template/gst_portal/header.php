@@ -76,7 +76,8 @@
 						  $count=$obj_notification->totalNotification(); 
 						  if($count==1)
 						  {
-							  $count=$obj_notification->totalNotificationShow();
+							 $count = $obj_notification->totalNotificationCount(); 
+							 $message=$obj_notification->totalNotificationShow();
 						  }
 						  $notification_status=$obj_notification->checkNotificationStatus();
 						  
@@ -94,7 +95,7 @@
 				$dataArrSetting = $db_obj->getAdminSetting();
 			  if (!empty($dataArrSetting)) {
                  echo  html_entity_decode($dataArrSetting[0]->tollfree_setting);
-				 echo  html_entity_decode($dataArrSetting[0]->livechat_setting);			 
+				// echo  html_entity_decode($dataArrSetting[0]->livechat_setting);			 
 				}
 				
 				 ?>				
@@ -146,9 +147,9 @@
 		<div class="column col-md-2 col-sm-3 col-xs-6 sidebar-offcanvas  padlr0" id="sidebar"> 
 
 			<ul class="nav" id="menu">
-				
+
 				<li><a href="<?php echo PROJECT_URL . "?page=dashboard"; ?>"><i class="fa fa-tachometer" aria-hidden="true"></i><span class="collapse in hidden-xs">Dashboard</span></a></li>
-				
+
 				<?php if ($db_obj->can_read('client_list')) { ?>
 					<li>
 						<a href="#" data-target="#item2" data-toggle="collapse"><i class="fa fa-user-o" aria-hidden="true"></i> 
@@ -235,6 +236,7 @@
 							?>
 							<li><a href="<?php echo PROJECT_URL; ?>/?page=client_kycupdate"><i class="fa fa-circle" aria-hidden="true"></i>Company Profile</a></li>
 							<li><a href="<?php echo PROJECT_URL; ?>/?page=user_themesetting"><i class="fa fa-circle" aria-hidden="true"></i>Company Setting</a></li>
+							<li><a href="<?php echo PROJECT_URL; ?>/?page=user_invoice_setting"><i class="fa fa-circle" aria-hidden="true"></i>Invoice Setting</a></li>
 							<?php
 							}
 							if ($db_obj->can_read('subscriber_update'))
