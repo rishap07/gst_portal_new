@@ -192,7 +192,7 @@ if (!empty($dataRes)) {
 				  </tr>
                   </tbody>
                   </table>
-		  </div> </tr>          			 
+		  </tr>          			 
 					 </tbody>
 					 </table>
 					

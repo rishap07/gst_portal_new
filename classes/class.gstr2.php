@@ -1212,25 +1212,15 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
         $dataArr = array();
         $data1 = array();
 		$data2 = array();
-            
-      
-          		 
-			   $data1[0]['cpddr'] = isset($_POST['inter_valueofsupply_compound']) ? $_POST['inter_valueofsupply_compound'] : 0.00;
-			   $data1[0]['exptdsply'] = isset($_POST['inter_valueofexempt']) ? $_POST['inter_valueofexempt'] : 0.00;
-			   $data1[0]['ngsply'] = isset($_POST['inter_totalnongst']) ? $_POST['inter_totalnongst'] : 0.00;
-			   $data1[0]['nilsply'] = isset($_POST['inter_nilrated']) ? $_POST['inter_nilrated'] : 0.00;
-			    $data2[0]['cpddr'] = isset($_POST['intra_valueofsupply_compound']) ? $_POST['intra_valueofsupply_compound'] : 0.00;
-                $data2[0]['exptdsply'] = isset($_POST['intra_valueofexempt']) ? $_POST['intra_valueofexempt'] : 0.00;
-                $data2[0]['ngsply'] = isset($_POST['intra_totalnongst']) ? $_POST['intra_totalnongst'] : 0.00;
-                $data2[0]['nilsply'] = isset($_POST['intra_nilrated']) ? $_POST['intra_nilrated'] : 0.00;
-			   
-		       
-	
-			
-            			 
-           
-        
-       //$this->pr($data);die;
+        $data1[0]['cpddr'] = isset($_POST['inter_valueofsupply_compound']) ? $_POST['inter_valueofsupply_compound'] : 0.00;
+	    $data1[0]['exptdsply'] = isset($_POST['inter_valueofexempt']) ? $_POST['inter_valueofexempt'] : 0.00;
+	    $data1[0]['ngsply'] = isset($_POST['inter_totalnongst']) ? $_POST['inter_totalnongst'] : 0.00;
+		$data1[0]['nilsply'] = isset($_POST['inter_nilrated']) ? $_POST['inter_nilrated'] : 0.00;
+	    $data2[0]['cpddr'] = isset($_POST['intra_valueofsupply_compound']) ? $_POST['intra_valueofsupply_compound'] : 0.00;
+        $data2[0]['exptdsply'] = isset($_POST['intra_valueofexempt']) ? $_POST['intra_valueofexempt'] : 0.00;
+        $data2[0]['ngsply'] = isset($_POST['intra_totalnongst']) ? $_POST['intra_totalnongst'] : 0.00;
+        $data2[0]['nilsply'] = isset($_POST['intra_nilrated']) ? $_POST['intra_nilrated'] : 0.00;
+	    //$this->pr($data);die;
 	    $data=array("inter"=>$data1,"intra"=>$data2);    
 		//$this->pr($data);
 		//die;
