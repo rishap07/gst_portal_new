@@ -341,7 +341,7 @@
 						<a href="#" data-target="#itemSalesInvoices" data-toggle="collapse"><i class="fa fa-list"></i> 
 						<span class="collapse in hidden-xs">Search Invoices <span class="navrgtarrow"><i class="fa fa-chevron-right" aria-hidden="true"></i></span></span></a>
 						<ul class="nav nav-stacked collapse left-submenu" id="itemSalesInvoices">
-							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=purchase_upload_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Upload Invoices</a></li><?php } ?>
+							<?php if ($db_obj->can_read('client_invoice')) { ?><li><a href="<?php echo PROJECT_URL . '/?page=search_sales_invoice'; ?>"><i class="fa fa-circle" aria-hidden="true"></i>Search Sales Invoices</a></li><?php } ?>
 						</ul>
 					</li>
 				 <?php } ?>
