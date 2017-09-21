@@ -391,7 +391,7 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                 }
                                 if($type=='EXP')
                                 {
-                                    $group_by = " a.reference_number ,b.consolidate_rate ";
+                                    $group_by = " a.reference_number";
                                     $order_by = 'a.reference_number';
                                     $Data = $expData = $obj_gstr1->getEXPInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;

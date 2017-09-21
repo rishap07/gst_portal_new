@@ -5,29 +5,6 @@ if(!$db_obj->can_read('client_invoice')) {
     $db_obj->redirect(PROJECT_URL."/?page=dashboard");
     exit();
 }
-
-if( isset($_POST['submit']) && $_POST['submit'] == 'Search Invoice' ) {
-
-    if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
-
-        $db_obj->setError('Invalid access to files');
-    } else {
-
-		if(!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])){
-			$obj_purchase->setError('Invalid access to files');
-		} else {
-			$salesClientInvoice = $db_obj->searchSalesClientInvoice();
-			
-			echo "<pre>";
-			print_r($salesClientInvoice);
-			echo "</pre>";
-			die;
-		}
-    }
-}
-
-$dataCurrentArr = array();
-$dataCurrentArr = $db_obj->getUserDetailsById( $db_obj->sanitize($_SESSION['user_detail']['user_id']) );
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
@@ -149,14 +126,15 @@ $dataCurrentArr = $db_obj->getUserDetailsById( $db_obj->sanitize($_SESSION['user
 					<table width="100%" border="0" cellspacing="0" cellpadding="0" id="mainTable" class="invoice-itemtable searchInvoiceTable">
 						<thead>
 							<tr>
-								<th align='left' width="72">#</th>
-								<th align='left'>Reference Number</th>
-								<th align='left'>Invoice Date</th>
-								<th align='left'>Place Of Supply</th>
-								<th align='left'>Billing Name</th>
-								<th align='left'>Billing GSTIN</th>
-								<th align='left'>Billing State</th>
-								<th width="72">Action</th>
+								<th align='center' width="50">#</th>
+								<th align='center'>Invoice Type</th>
+								<th align='center'>Reference Number</th>
+								<th align='center'>Invoice Date</th>
+								<th align='center'>Place Of Supply</th>
+								<th align='center'>Billing Name</th>
+								<th align='center'>Billing GSTIN</th>
+								<th align='center'>Billing State</th>
+								<th width="120">Action</th>
 							</tr>
 						</thead>
 					</table>
@@ -230,6 +208,7 @@ $dataCurrentArr = $db_obj->getUserDetailsById( $db_obj->sanitize($_SESSION['user
                         {"bSortable": false},
                         {"bSortable": false},
                         {"bSortable": false},
+						{"bSortable": false},
                         {"bSortable": false},
 						{"bSortable": false},
                         {"bSortable": false}

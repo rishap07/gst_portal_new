@@ -1228,6 +1228,51 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 
         return $dataArr;
     }
+	public function gstr2ItcReversalData() {
+           $dataArr = array();
+        $data1 = array();
+		$data2 = array();
+		$data3 = array();
+		$data4 = array();
+		$data5 = array();
+		$data6 = array();
+		$data7 = array();
+        $data1[0]['iamt'] = isset($_POST['rule2_2_igst']) ? $_POST['rule2_2_igst'] : 0.00;
+	    $data1[0]['camt'] = isset($_POST['rule2_2_cgst']) ? $_POST['rule2_2_cgst'] : 0.00;
+	    $data1[0]['samt'] = isset($_POST['rule2_2_sgst']) ? $_POST['rule2_2_sgst'] : 0.00;
+		$data1[0]['csamt'] = isset($_POST['rule2_2_cess']) ? $_POST['rule2_2_cess'] : 0.00;
+	    $data2[0]['iamt'] = isset($_POST['rule7_1_m_igst']) ? $_POST['rule7_1_m_igst'] : 0.00;
+        $data2[0]['camt'] = isset($_POST['rule7_1_m_cgst']) ? $_POST['rule7_1_m_cgst'] : 0.00;
+        $data2[0]['samt'] = isset($_POST['rule7_1_m_sgst']) ? $_POST['rule7_1_m_sgst'] : 0.00;
+        $data2[0]['csamt'] = isset($_POST['rule7_1_m_cess']) ? $_POST['rule7_1_m_cess'] : 0.00;
+		$data3[0]['iamt'] = isset($_POST['rule8_1_h_igst']) ? $_POST['rule8_1_h_igst'] : 0.00;
+	    $data3[0]['camt'] = isset($_POST['rule8_1_h_cgst']) ? $_POST['rule8_1_h_cgst'] : 0.00;
+	    $data3[0]['samt'] = isset($_POST['rule8_1_h_sgst']) ? $_POST['rule8_1_h_sgst'] : 0.00;
+		$data3[0]['csamt'] = isset($_POST['rule8_1_h_cess']) ? $_POST['rule8_1_h_cess'] : 0.00;
+		$data4[0]['iamt'] = isset($_POST['rule7_2_a_igst']) ? $_POST['rule7_2_a_igst'] : 0.00;
+	    $data4[0]['camt'] = isset($_POST['rule7_2_a_cgst']) ? $_POST['rule7_2_a_cgst'] : 0.00;
+	    $data4[0]['samt'] = isset($_POST['rule7_2_a_sgst']) ? $_POST['rule7_2_a_sgst'] : 0.00;
+		$data4[0]['csamt'] = isset($_POST['rule7_2_a_cess']) ? $_POST['rule7_2_a_cess'] : 0.00;
+	    $data5[0]['iamt'] = isset($_POST['rule7_2_b_igst']) ? $_POST['rule7_2_b_igst'] : 0.00;
+	    $data5[0]['camt'] = isset($_POST['rule7_2_b_cgst']) ? $_POST['rule7_2_b_cgst'] : 0.00;
+	    $data5[0]['samt'] = isset($_POST['rule7_2_b_sgst']) ? $_POST['rule7_2_b_sgst'] : 0.00;
+		$data5[0]['csamt'] = isset($_POST['rule7_2_b_cess']) ? $_POST['rule7_2_b_cess'] : 0.00;
+	    $data6[0]['iamt'] = isset($_POST['revitc_igst']) ? $_POST['revitc_igst'] : 0.00;
+	    $data6[0]['camt'] = isset($_POST['revitc_cgst']) ? $_POST['revitc_cgst'] : 0.00;
+	    $data6[0]['samt'] = isset($_POST['revitc_sgst']) ? $_POST['revitc_sgst'] : 0.00;
+		$data6[0]['csamt'] = isset($_POST['revitc_cess']) ? $_POST['revitc_cess'] : 0.00;
+	    $data7[0]['iamt'] = isset($_POST['other_igst']) ? $_POST['other_igst'] : 0.00;
+	    $data7[0]['camt'] = isset($_POST['other_cgst']) ? $_POST['other_cgst'] : 0.00;
+	    $data7[0]['samt'] = isset($_POST['other_sgst']) ? $_POST['other_sgst'] : 0.00;
+		$data7[0]['csamt'] = isset($_POST['other_cess']) ? $_POST['other_cess'] : 0.00;
+	
+	   
+	    $data=array("rule2_2"=>$data1,"rule7_1_m"=>$data2,"rule8_1_h"=>$data3,"rule7_2_a"=>$data4,"rule7_2_b"=>$data5,"revitc"=>$data6,"other"=>$data7);    
+		$dataArr['return_data'] = base64_encode(json_encode($data));
+
+        return $dataArr;
+    }
+	
 
     public function saveGstr1nilexemptSummary() {
         $data = $this->get_results("select * from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month='" . $this->sanitize($_GET['returnmonth']) . "' and type='gstr1nil'");
@@ -1286,7 +1331,7 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
           
             if ($this->update('gst_return_upload_summary', $dataArr, array('added_by' => $_SESSION['user_detail']['user_id'],'type' => 'gstr2nil','financial_month' => $this->sanitize($_GET['returnmonth'])))) {
 
-                $this->setSuccess('GSTR1 nilexempt summary month of ' . $returnmonth . "updated Successfully");
+                $this->setSuccess('GSTR2 nilexempt summary month of ' . $returnmonth . "updated Successfully");
                 //$this->logMsg("GSTR3B updated financial month : " . $returnmonth,"gstr_3b");
                 return true;
             } else {
@@ -1295,6 +1340,40 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
             }
         }
     }
+	public function saveGstr2itcreversalSummary() {
+        $data = $this->get_results("select * from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month='" . $this->sanitize($_GET['returnmonth']) . "' and type='gstr2itcreversal'");
+        $dataArr = $this->gstr2ItcReversalData();
+        $returnmonth = $this->sanitize($_GET['returnmonth']);
+        if (empty($data)) {
+            $dataArr['financial_month'] = $this->sanitize($_GET['returnmonth']);
+            $dataArr['added_by'] = $this->sanitize($_SESSION["user_detail"]["user_id"]);
+            $dataArr['type'] = 'gstr2itcreversal';
+			$dataArr['added_date']=  date('Y-m-d h:i:s');
+
+            if ($this->insert('gst_return_upload_summary', $dataArr)) {
+                $this->setSuccess('GSTR2 itc reversal summary form Saved Successfully');
+                $this->logMsg("GSTR2 itc reversal summary Inserted financial month : " . $returnmonth, "gstr1");
+                return true;
+            } else {
+                $this->setError('Failed to save GSTR2 itc reversal summary data');
+                return false;
+            }
+        } else {
+            $dataArr['updated_date']=  date('Y-m-d h:i:s');
+			$dataArr['updated_by'] = $this->sanitize($_SESSION["user_detail"]["user_id"]);
+          
+            if ($this->update('gst_return_upload_summary', $dataArr, array('added_by' => $_SESSION['user_detail']['user_id'],'type' => 'gstr2itcreversal','financial_month' => $this->sanitize($_GET['returnmonth'])))) {
+
+                $this->setSuccess('GSTR2 itc reversal summary month of ' . $returnmonth . "updated Successfully");
+                //$this->logMsg("GSTR3B updated financial month : " . $returnmonth,"gstr_3b");
+                return true;
+            } else {
+                $this->setError('Failed to save nilexempt data');
+                return false;
+            }
+        }
+    }
+	
     public function saveGstr1HsnSummary() {
         $data = $this->get_results("select * from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month='" . $this->sanitize($_GET['returnmonth']) . "' and type='gstr1hsn'");
         $dataArr = $this->gstHsnSummaryData();

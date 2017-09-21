@@ -957,6 +957,10 @@ final class purchase extends validation {
 						$InsertArray['created_from'] = 'E';
                         $InsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
                         $InsertArray['added_date'] = date('Y-m-d H:i:s');
+						
+						if($invoiceRow['supply_type'] == "reversecharge") {
+							$InsertArray['is_tax_payable'] = "1";
+						}
 
                         if ($this->insert($this->tableNames['client_purchase_invoice'], $InsertArray)) {
 
@@ -2415,6 +2419,10 @@ final class purchase extends validation {
 						$InsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
 						$InsertArray['added_date'] = date('Y-m-d H:i:s');
 
+						if($invoiceRow['is_tax_payable'] == "1") {
+							$InsertArray['supply_type'] = "reversecharge";
+						}
+
 						if ($this->insert($this->tableNames['client_purchase_invoice'], $InsertArray)) {
 
 							$insertid = $this->getInsertID();
@@ -2720,7 +2728,7 @@ final class purchase extends validation {
 					$invoiceArray[$arrayKey]['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
 					$invoiceArray[$arrayKey]['company_gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
 					$invoiceArray[$arrayKey]['invoice_date'] = $dataArray['invoice_date'];
-					$invoiceArray[$arrayKey]['supply_place'] = $dataArray['supply_place'];				
+					$invoiceArray[$arrayKey]['supply_place'] = $dataArray['supply_place'];
 					$invoiceArray[$arrayKey]['supplier_billing_name'] = $dataArray['supplier_billing_name'];
 					$invoiceArray[$arrayKey]['supplier_billing_company_name'] = $dataArray['supplier_billing_company_name'];
 					$invoiceArray[$arrayKey]['supplier_billing_address'] = $dataArray['supplier_billing_address'];
@@ -2830,7 +2838,7 @@ final class purchase extends validation {
 					}
 
                     if (!empty($invoiceItemArray) && count($invoiceItemArray) > 0) {
-						
+
 						$InsertArray['invoice_type'] = $invoiceRow['invoice_type'];
 						$InsertArray['invoice_nature'] = $invoiceRow['invoice_nature'];
 						$InsertArray['reference_number'] = $invoiceRow['reference_number'];
@@ -2866,11 +2874,13 @@ final class purchase extends validation {
 						$InsertArray['created_from'] = 'E';
 						$InsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
 						$InsertArray['added_date'] = date('Y-m-d H:i:s');
+						$InsertArray['is_tax_payable'] = "1";
+						$InsertArray['supply_type'] = "reversecharge";
 
 						if ($this->insert($this->tableNames['client_purchase_invoice'], $InsertArray)) {
 
 							$insertid = $this->getInsertID();
-							$this->logMsg("Purchase RV Invoice Added. ID : " . $insertid . ".","client_create_purchase_rv_invoice");
+							$this->logMsg("Purchase PV Invoice Added. ID : " . $insertid . ".","client_create_purchase_pv_invoice");
 
 							$processedInvoiceItemArray = array();
 							foreach ($invoiceItemArray as $itemArr) {
@@ -2882,7 +2892,7 @@ final class purchase extends validation {
 							if ($this->insertMultiple($this->tableNames['client_purchase_invoice_item'], $processedInvoiceItemArray)) {
 
 								$iteminsertid = $this->getInsertID();
-								$this->logMsg("Purchase RV Invoice Item Added. ID : " . $iteminsertid . ".", "client_create_purchase_rv_invoice_item");
+								$this->logMsg("Purchase PV Invoice Item Added. ID : " . $iteminsertid . ".", "client_create_purchase_pv_invoice_item");
 							}
 						}
                     }
@@ -2893,7 +2903,7 @@ final class purchase extends validation {
             }
         }
     }
-	
+
 	/* upload client purchase Revised tax invoices / debit note / credit note invoice */
     public function uploadPurchaseClientRTInvoice() {
 
@@ -3486,7 +3496,7 @@ final class purchase extends validation {
 								$mpdfHtml .= '<td style="font-size:45px;line-height:45px;color:#333;padding:5px;vertical-align:top;padding-bottom:20px;">';
 
 									if (isset($dataThemeSettingArr['data']->show_logo) && $dataThemeSettingArr['data']->show_logo == '1' && isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") {
-										$mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="width:100%;max-width:300px;">';
+										$mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="max-width:300px;">';
 									}
 
 								$mpdfHtml .= '</td>';
@@ -3927,7 +3937,7 @@ final class purchase extends validation {
 								$mpdfHtml .= '<td style="font-size:45px;line-height:45px;color:#333;padding:5px;vertical-align:top;padding-bottom:20px;">';
 
 									if (isset($dataThemeSettingArr['data']->show_logo) && $dataThemeSettingArr['data']->show_logo == '1' && isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") {
-										$mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="width:100%;max-width:300px;">';
+										$mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="max-width:300px;">';
 									}
 
 								$mpdfHtml .= '</td>';
@@ -4153,7 +4163,7 @@ final class purchase extends validation {
 								$mpdfHtml .= '<td style="font-size:45px;line-height:45px;color:#333;padding:5px;vertical-align:top;padding-bottom:20px;">';
 
 									if (isset($dataThemeSettingArr['data']->show_logo) && $dataThemeSettingArr['data']->show_logo == '1' && isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") {
-										$mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="width:100%;max-width:300px;">';
+										$mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="max-width:300px;">';
 									}
 
 								$mpdfHtml .= '</td>';
@@ -4466,7 +4476,7 @@ final class purchase extends validation {
 								$mpdfHtml .= '<td style="font-size:45px;line-height:45px;color:#333;padding:5px;vertical-align:top;padding-bottom:20px;">';
 
 									if (isset($dataThemeSettingArr['data']->show_logo) && $dataThemeSettingArr['data']->show_logo == '1' && isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") {
-										$mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="width:100%;max-width:300px;">';
+										$mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="max-width:300px;">';
 									}
 
 								$mpdfHtml .= '</td>';
@@ -4771,7 +4781,7 @@ final class purchase extends validation {
 								$mpdfHtml .= '<td style="font-size:45px;line-height:45px;color:#333;padding:5px;vertical-align:top;padding-bottom:20px;">';
 
 									if (isset($dataThemeSettingArr['data']->show_logo) && $dataThemeSettingArr['data']->show_logo == '1' && isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") {
-										$mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="width:100%;max-width:300px;">';
+										$mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="max-width:300px;">';
 									}
 
 								$mpdfHtml .= '</td>';
@@ -5100,7 +5110,7 @@ final class purchase extends validation {
 									$mpdfHtml .= '<td style="font-size:45px;line-height:45px;color:#333;padding:5px;vertical-align:top;padding-bottom:20px;">';
 
 										if (isset($dataThemeSettingArr['data']->show_logo) && $dataThemeSettingArr['data']->show_logo == '1' && isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") {
-											$mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="width:100%;max-width:300px;">';
+											$mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="max-width:300px;">';
 										}
 
 									$mpdfHtml .= '</td>';

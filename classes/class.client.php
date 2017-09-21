@@ -628,6 +628,14 @@ final class client extends validation {
         $dataUpdateArray['deleted_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);
         $dataUpdateArray['deleted_date'] = date('Y-m-d H:i:s');
 
+		$clientSalesInvoiceItem = $this->get_results("select * from ".$this->tableNames['client_invoice_item']." where 1=1 AND item_id = '".$itemid."' AND added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
+		$clientPurchaseInvoiceItem = $this->get_results("select * from ".$this->tableNames['client_purchase_invoice_item']." where 1=1 AND item_id = '".$itemid."' AND added_by = '" . $this->sanitize($_SESSION['user_detail']['user_id']) . "'");
+
+		if(count($clientSalesInvoiceItem) != 0 || count($clientPurchaseInvoiceItem) != 0) {
+			$this->setError("This item is already used in invoice so you can't delete.");
+			return false;
+		}
+
         if ($this->update($this->tableNames['client_master_item'], $dataUpdateArray, $dataConditionArray)) {
 
             $this->setSuccess($this->validationMessage['itemdeleted']);
@@ -1727,6 +1735,10 @@ final class client extends validation {
 						$InsertArray['created_from'] = 'E';
                         $InsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
                         $InsertArray['added_date'] = date('Y-m-d H:i:s');
+
+						if($invoiceRow['supply_type'] == "reversecharge") {
+							$InsertArray['is_tax_payable'] = "1";
+						}
 
                         if ($this->insert($this->tableNames['client_invoice'], $InsertArray)) {
 
@@ -3185,6 +3197,10 @@ final class client extends validation {
 						$InsertArray['added_by'] = $_SESSION['user_detail']['user_id'];
 						$InsertArray['added_date'] = date('Y-m-d H:i:s');
 
+						if($invoiceRow['is_tax_payable'] == "1") {
+							$InsertArray['supply_type'] = "reversecharge";
+						}
+
 						if ($this->insert($this->tableNames['client_invoice'], $InsertArray)) {
 
 							$insertid = $this->getInsertID();
@@ -4238,7 +4254,7 @@ final class client extends validation {
         $mpdfHtml .= '<td style="font-size:45px;line-height:45px;color:#333;padding:5px;vertical-align:top;padding-bottom:20px;">';
 
         if (isset($dataThemeSettingArr['data']->show_logo) && $dataThemeSettingArr['data']->show_logo == '1' && isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") {
-            $mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="width:100%;max-width:300px;">';
+            $mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="max-width:300px;">';
         }
 
         $mpdfHtml .= '</td>';
@@ -4762,10 +4778,14 @@ final class client extends validation {
 
 								$mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:center;">';
 									$mpdfHtml .= '<tr class="signature">';
-										$mpdfHtml .= '<td style="vertical-align:top;">';
+										if (isset($dataThemeSettingArr['data']->show_signature) && $dataThemeSettingArr['data']->show_signature == '1' && isset($dataThemeSettingArr['data']->theme_signature) && $dataThemeSettingArr['data']->theme_signature != "") {
+											$mpdfHtml .= '<td style="vertical-align:top;">';
+										} else {
+											$mpdfHtml .= '<td style="padding-top:50px;vertical-align:top;">';
+										}
 
 											if (isset($dataThemeSettingArr['data']->show_signature) && $dataThemeSettingArr['data']->show_signature == '1' && isset($dataThemeSettingArr['data']->theme_signature) && $dataThemeSettingArr['data']->theme_signature != "") {
-												$mpdfHtml .= '<img src="upload/theme-signature/' . $dataThemeSettingArr['data']->theme_signature . '" style="width:100%;max-width:300px;">';
+												$mpdfHtml .= '<img src="upload/theme-signature/' . $dataThemeSettingArr['data']->theme_signature . '" style="max-width:300px;">';
 											}
 
 											$mpdfHtml .= '<p style="text-align:right;">';
@@ -4837,7 +4857,7 @@ final class client extends validation {
         $mpdfHtml .= '<td style="font-size:45px;line-height:45px;color:#333;padding:5px;vertical-align:top;padding-bottom:20px;">';
 
         if (isset($dataThemeSettingArr['data']->show_logo) && $dataThemeSettingArr['data']->show_logo == '1' && isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") {
-            $mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="width:100%;max-width:300px;">';
+            $mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="max-width:300px;">';
         }
 
         $mpdfHtml .= '</td>';
@@ -5087,10 +5107,14 @@ final class client extends validation {
 
 								$mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:center;">';
 									$mpdfHtml .= '<tr class="signature">';
-										$mpdfHtml .= '<td style="vertical-align:top;">';
+										if (isset($dataThemeSettingArr['data']->show_signature) && $dataThemeSettingArr['data']->show_signature == '1' && isset($dataThemeSettingArr['data']->theme_signature) && $dataThemeSettingArr['data']->theme_signature != "") {
+											$mpdfHtml .= '<td style="vertical-align:top;">';
+										} else {
+											$mpdfHtml .= '<td style="padding-top:50px;vertical-align:top;">';
+										}
 
 											if (isset($dataThemeSettingArr['data']->show_signature) && $dataThemeSettingArr['data']->show_signature == '1' && isset($dataThemeSettingArr['data']->theme_signature) && $dataThemeSettingArr['data']->theme_signature != "") {
-												$mpdfHtml .= '<img src="upload/theme-signature/' . $dataThemeSettingArr['data']->theme_signature . '" style="width:100%;max-width:300px;">';
+												$mpdfHtml .= '<img src="upload/theme-signature/' . $dataThemeSettingArr['data']->theme_signature . '" style="max-width:300px;">';
 											}
 
 											$mpdfHtml .= '<p style="text-align:right;">';
@@ -5170,7 +5194,7 @@ final class client extends validation {
         $mpdfHtml .= '<td style="font-size:45px;line-height:45px;color:#333;padding:5px;vertical-align:top;padding-bottom:20px;">';
 
         if (isset($dataThemeSettingArr['data']->show_logo) && $dataThemeSettingArr['data']->show_logo == '1' && isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") {
-            $mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="width:100%;max-width:300px;">';
+            $mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="max-width:300px;">';
         }
 
         $mpdfHtml .= '</td>';
@@ -5510,10 +5534,14 @@ final class client extends validation {
 
 								$mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:center;">';
 									$mpdfHtml .= '<tr class="signature">';
-										$mpdfHtml .= '<td style="vertical-align:top;">';
+										if (isset($dataThemeSettingArr['data']->show_signature) && $dataThemeSettingArr['data']->show_signature == '1' && isset($dataThemeSettingArr['data']->theme_signature) && $dataThemeSettingArr['data']->theme_signature != "") {
+											$mpdfHtml .= '<td style="vertical-align:top;">';
+										} else {
+											$mpdfHtml .= '<td style="padding-top:50px;vertical-align:top;">';
+										}
 
 											if (isset($dataThemeSettingArr['data']->show_signature) && $dataThemeSettingArr['data']->show_signature == '1' && isset($dataThemeSettingArr['data']->theme_signature) && $dataThemeSettingArr['data']->theme_signature != "") {
-												$mpdfHtml .= '<img src="upload/theme-signature/' . $dataThemeSettingArr['data']->theme_signature . '" style="width:100%;max-width:300px;">';
+												$mpdfHtml .= '<img src="upload/theme-signature/' . $dataThemeSettingArr['data']->theme_signature . '" style="max-width:300px;">';
 											}
 
 											$mpdfHtml .= '<p style="text-align:right;">';
@@ -5589,7 +5617,7 @@ final class client extends validation {
         $mpdfHtml .= '<td style="font-size:45px;line-height:45px;color:#333;padding:5px;vertical-align:top;padding-bottom:20px;">';
 
         if (isset($dataThemeSettingArr['data']->show_logo) && $dataThemeSettingArr['data']->show_logo == '1' && isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") {
-            $mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="width:100%;max-width:300px;">';
+            $mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="max-width:300px;">';
         }
 
         $mpdfHtml .= '</td>';
@@ -5936,10 +5964,14 @@ final class client extends validation {
 
 								$mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:center;">';
 									$mpdfHtml .= '<tr class="signature">';
-										$mpdfHtml .= '<td style="vertical-align:top;">';
+										if (isset($dataThemeSettingArr['data']->show_signature) && $dataThemeSettingArr['data']->show_signature == '1' && isset($dataThemeSettingArr['data']->theme_signature) && $dataThemeSettingArr['data']->theme_signature != "") {
+											$mpdfHtml .= '<td style="vertical-align:top;">';
+										} else {
+											$mpdfHtml .= '<td style="padding-top:50px;vertical-align:top;">';
+										}
 										
 											if (isset($dataThemeSettingArr['data']->show_signature) && $dataThemeSettingArr['data']->show_signature == '1' && isset($dataThemeSettingArr['data']->theme_signature) && $dataThemeSettingArr['data']->theme_signature != "") {
-												$mpdfHtml .= '<img src="upload/theme-signature/' . $dataThemeSettingArr['data']->theme_signature . '" style="width:100%;max-width:300px;">';
+												$mpdfHtml .= '<img src="upload/theme-signature/' . $dataThemeSettingArr['data']->theme_signature . '" style="max-width:300px;">';
 											}
 										
 											$mpdfHtml .= '<p style="text-align:right;">';
@@ -6019,7 +6051,7 @@ final class client extends validation {
         $mpdfHtml .= '<td style="font-size:45px;line-height:45px;color:#333;padding:5px;vertical-align:top;padding-bottom:20px;">';
 
         if (isset($dataThemeSettingArr['data']->show_logo) && $dataThemeSettingArr['data']->show_logo == '1' && isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") {
-            $mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="width:100%;max-width:300px;">';
+            $mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="max-width:300px;">';
         }
 
         $mpdfHtml .= '</td>';
@@ -6366,10 +6398,14 @@ final class client extends validation {
 
 								$mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:center;">';
 									$mpdfHtml .= '<tr class="signature">';
-										$mpdfHtml .= '<td style="vertical-align:top;">';
+										if (isset($dataThemeSettingArr['data']->show_signature) && $dataThemeSettingArr['data']->show_signature == '1' && isset($dataThemeSettingArr['data']->theme_signature) && $dataThemeSettingArr['data']->theme_signature != "") {
+											$mpdfHtml .= '<td style="vertical-align:top;">';
+										} else {
+											$mpdfHtml .= '<td style="padding-top:50px;vertical-align:top;">';
+										}
 
 											if (isset($dataThemeSettingArr['data']->show_signature) && $dataThemeSettingArr['data']->show_signature == '1' && isset($dataThemeSettingArr['data']->theme_signature) && $dataThemeSettingArr['data']->theme_signature != "") {
-												$mpdfHtml .= '<img src="upload/theme-signature/' . $dataThemeSettingArr['data']->theme_signature . '" style="width:100%;max-width:300px;">';
+												$mpdfHtml .= '<img src="upload/theme-signature/' . $dataThemeSettingArr['data']->theme_signature . '" style="max-width:300px;">';
 											}
 
 											$mpdfHtml .= '<p style="text-align:right;">';
@@ -6449,7 +6485,7 @@ final class client extends validation {
         $mpdfHtml .= '<td style="font-size:45px;line-height:45px;color:#333;padding:5px;vertical-align:top;padding-bottom:20px;">';
 
         if (isset($dataThemeSettingArr['data']->show_logo) && $dataThemeSettingArr['data']->show_logo == '1' && isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") {
-            $mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="width:100%;max-width:300px;">';
+            $mpdfHtml .= '<img src="upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo . '" style="max-width:300px;">';
         }
 
         $mpdfHtml .= '</td>';
@@ -6771,10 +6807,14 @@ final class client extends validation {
 
 								$mpdfHtml .= '<table style="width:100%;line-height:inherit;text-align:center;">';
 									$mpdfHtml .= '<tr class="signature">';
-										$mpdfHtml .= '<td style="vertical-align:top;">';
+										if (isset($dataThemeSettingArr['data']->show_signature) && $dataThemeSettingArr['data']->show_signature == '1' && isset($dataThemeSettingArr['data']->theme_signature) && $dataThemeSettingArr['data']->theme_signature != "") {
+											$mpdfHtml .= '<td style="vertical-align:top;">';
+										} else {
+											$mpdfHtml .= '<td style="padding-top:50px;vertical-align:top;">';
+										}
 
 											if (isset($dataThemeSettingArr['data']->show_signature) && $dataThemeSettingArr['data']->show_signature == '1' && isset($dataThemeSettingArr['data']->theme_signature) && $dataThemeSettingArr['data']->theme_signature != "") {
-												$mpdfHtml .= '<img src="upload/theme-signature/' . $dataThemeSettingArr['data']->theme_signature . '" style="width:100%;max-width:300px;">';
+												$mpdfHtml .= '<img src="upload/theme-signature/' . $dataThemeSettingArr['data']->theme_signature . '" style="max-width:300px;">';
 											}
 
 											$mpdfHtml .= '<p style="text-align:right;">';

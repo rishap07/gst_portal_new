@@ -39,6 +39,10 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	$dataArr['refund_voucher_receipt'] = isset($params['receipt_voucher_number']) ? $params['receipt_voucher_number'] : '';
 	$dataArr['corresponding_document_date'] = isset($params['receipt_voucher_date']) ? $params['receipt_voucher_date'] : '';
 
+	if($dataArr['is_tax_payable'] == "1") {
+		$dataArr['supply_type'] = "reversecharge";
+	}
+	
 	$supply_place = isset($params['place_of_supply']) ? $params['place_of_supply'] : '';
 	$supply_state_data = $obj_purchase->getStateDetailByStateId($supply_place);
 

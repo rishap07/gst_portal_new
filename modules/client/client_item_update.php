@@ -186,6 +186,10 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
             select: function( event, ui ) {
 				$("#item_category").val(ui.item.item_id);
 				$("#item_hsn_code").text(ui.item.hsn_code);
+				$("#cgst_tax_rate").val(ui.item.cgst_tax_rate);
+				$("#sgst_tax_rate").val(ui.item.sgst_tax_rate);
+				$("#igst_tax_rate").val(ui.item.igst_tax_rate); 
+				$("#cess_tax_rate").val(ui.item.cess_tax_rate);
             }
         });
         /* End of Get HSN/SAC Code */

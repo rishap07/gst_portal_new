@@ -39,6 +39,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	$dataArr['company_state'] = $dataCurrentUserArr['data']->kyc->state_id;
 	$dataArr['company_gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
 	$dataArr['is_tax_payable'] = '1';
+	$dataArr['supply_type'] = "reversecharge";
 	$dataArr['description'] = isset($params['description']) ? trim($params['description']) : '';
 
 	$supply_place = isset($params['place_of_supply']) ? $params['place_of_supply'] : '';

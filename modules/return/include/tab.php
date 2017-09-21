@@ -1,5 +1,7 @@
  <a href="<?php echo PROJECT_URL . '/?page=return_gstr2&returnmonth=' . $returnmonth ?>" <?php if(isset($_REQUEST['page']) && $_REQUEST['page']=='return_gstr2') { echo 'class="active"';} ?>>View Purchase Summary</a>
  <a href="<?php echo PROJECT_URL . '/?page=return_vendor_invoices&returnmonth=' . $returnmonth ?>" <?php if(isset($_REQUEST['page']) && $_REQUEST['page']=='return_vendor_invoices') { echo 'class="active"';} ?>>Download GSTR-2A</a>
+ <a href="<?php echo PROJECT_URL . '/?page=return_gstr2_mydata&returnmonth=' . $returnmonth ?>" <?php if(isset($_REQUEST['page']) && $_REQUEST['page']=='return_gstr2_mydata') { echo 'class="active"';} ?>>View mydata</a>
+
  <?php
  /*
  <a href="<?php echo PROJECT_URL . '/?page=return_reconcile&returnmonth=' . $returnmonth ?>" <?php if(isset($_REQUEST['page']) && $_REQUEST['page']=='return_reconcile') { echo 'class="active"';} ?>>GSTR-2 Reconcile</a>

@@ -24,7 +24,7 @@ if ($_REQUEST['returnmonth'] != '') {
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
-        <div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>HSN-wise summary</h1></div>
+        <div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>Adjustment of Advances</h1></div>
         <div class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav"><a href="#">Home</a>
             <i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GST-Transition Form</span> </div>
         <div class="whitebg formboxcontainer">
@@ -117,10 +117,9 @@ if (!empty($dataRes)) {
 					</td>					 
                      </tr>
             
-		   <tr id="expanddemo" class="expanddemo">
-		   <table class="table  tablecontent tablecontent2 bordernone">
-		   
-                            <thead>
+		   <tr>
+		   <table id="expanddemo" class="expanddemo" class="table  tablecontent tablecontent2 bordernone">
+           <thead>
                                 <tr>
                                     <th>Rate(%)</th>
                                     <th>Gross Advance Amount (Excluding Tax)(<i class="fa fa-inr"></i>) </th>
@@ -133,8 +132,7 @@ if (!empty($dataRes)) {
                             </thead>
 
              <tbody>
-
-                   <tr>
+                  <tr>
                   <td><input type='text' readonly="true" class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate0_rate' value="0" /></td>
 				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate0_grossamount' value="" /></td>
 				  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='rate0_igst_amount' value="" /></td>
@@ -241,12 +239,12 @@ if (!empty($dataRes)) {
 			 datasupply +='<option value="1">Inter-State</option><option value="2">Intra-State</option></select>';
 
         var markup = "<tr><td>" + data + "</td><td>" + datasupply + "</td> <td><button type='button' class='btn btn-success del'>collapse</button></td></tr>";
-        var markup1='<tr id="expanddemo" class="expanddemo"><td><input type="text" readonly="true" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_rate" value="0" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_grossamount" value="" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_igst_amount" value="" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_cgst_amount" value="" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_sgst_amount" value="" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_cess_amount" value="" /></td></tr>';     
-        $('#table1a').append(markup+markup1);
+       // var markup1='<tr id="expanddemo" class="expanddemo"><td><input type="text" readonly="true" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_rate" value="0" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_grossamount" value="" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_igst_amount" value="" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_cgst_amount" value="" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_sgst_amount" value="" /></td><td><input type="text" class="required form-control" onKeyPress="return  isNumberKey(event,this);" name="rate0_cess_amount" value="" /></td></tr>';     
+	     $('#table1a').append(markup+markup1);
         });
         $('body').delegate('.del', 'click', function () {
             //$(this).closest('tr').remove();
-		    $(this).closest('tr').next('.expanddemo').toggle();
+		    $(this).closest('table').next('.expanddemo').toggle();
 			
         });
 

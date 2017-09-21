@@ -19,23 +19,23 @@ if ($_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
 }
 if(isset($_POST['submit']) && $_POST['submit']=='submit') {
-    $flag = $obj_return->checkVerifyUser();
-    if($flag=='verify')
-    {
+    //$flag = $obj_return->checkVerifyUser();
+    //if($flag=='verify')
+    //{
         if($obj_return->saveGstr3b()){
             //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
         } 
-    }
+   // }
 }
 if(isset($_POST['finalsubmit']) && $_POST['finalsubmit']=='final submit') {
  
-  $flag = $obj_return->checkVerifyUser();
-  if($flag=='verify')
-    {
+  //$flag = $obj_return->checkVerifyUser();
+ // if($flag=='verify')
+   // {
     	if($obj_return->finalSaveGstr3b()){
             //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
         }					  
-    } 
+   // } 
 }
 if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 	
@@ -99,7 +99,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
        $returndata = $obj_return->get_results($sql);
 	    
 		
-	     $tdsTotquery = "SELECT COUNT(i.invoice_id) as numcount,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and supply_type='tds' and  invoice_date like '%" . $returnmonth . "%'";
+	    $tdsTotquery = "SELECT COUNT(i.invoice_id) as numcount,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and supply_type='tds' and  invoice_date like '%" . $returnmonth . "%'";
       // echo "<br>";
 	    $tdsTotData = $obj_return->get_results($tdsTotquery);
         $total = 0;
@@ -121,7 +121,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
         if (!empty($nature_of_supply_a_TotData)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
-	   $nature_of_supply_b_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(item.taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and invoice_type in('exportinvoice','sezunitinvoice','deemedexportinvoice') and export_supply_meant = 'withoutpayment' and invoice_date like '" . $returnmonth . "%'";
+	   $nature_of_supply_b_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(item.taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and invoice_type in('exportinvoice','sezunitinvoice','deemedexportinvoice') and export_supply_meant = 'withpayment' and invoice_date like '" . $returnmonth . "%'";
 
 	     $nature_of_supply_b_TotData = $obj_return->get_results($nature_of_supply_b_Totquery);
         $total = 0;
@@ -129,7 +129,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
 		//echo "<br>";
-	   $nature_of_supply_c_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and item.igst_rate = 0 and item.sgst_rate = 0 and item.cgst_rate = 0 and invoice_date like '%" . $returnmonth . "%'";
+	    $nature_of_supply_c_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and ((item.is_applicable='2') OR (item.igst_rate = 0 and item.sgst_rate = 0 and item.cgst_rate = 0)) and invoice_date like '" . $returnmonth . "%'";
    
 	    $nature_of_supply_c_TotData = $obj_return->get_results($nature_of_supply_c_Totquery);
         $total = 0;
@@ -146,7 +146,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
 	
-	 $nature_of_supply_e_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id INNER join gst_client_master_item as ci on ci.item_id=item.item_id WHERE i.invoice_nature='salesinvoice' and  i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and ci.is_applicable='1' and invoice_date like '%" . $returnmonth . "%'";
+	   $nature_of_supply_e_Totquery = "SELECT COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id INNER join gst_client_master_item as ci on ci.item_id=item.item_id WHERE i.invoice_nature='salesinvoice' and  i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and ci.is_applicable='1' and invoice_date like '%" . $returnmonth . "%'";
    
 	    $nature_of_supply_e_TotData = $obj_return->get_results($nature_of_supply_e_Totquery);
         $total = 0;
@@ -182,15 +182,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
 		 
-	// echo  $nature_of_supply_a_5aTotquery = "SELECT COUNT(i.invoice_id) as numcount,sum(taxable_subtotal) as taxable_subtotal,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='purchaseinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and item.igst_rate = 0 and item.sgst_rate = 0 and item.cgst_rate = 0 and invoice_date like '%" . $returnmonth . "%'";
-   /*
-	   $nature_of_supply_a_5a_TotData = $obj_return->get_results($nature_of_supply_a_5aTotquery);
-        $total = 0;
-        if (!empty($nature_of_supply_a_5a_TotData)) {
-         // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
-         }
-	*/
-       $flag = $db_obj->getVendorName('Composition vendor');
+	    $flag = $db_obj->getVendorName('Composition vendor');
 	   $vendor_id1=0;
 		if($flag!=0)
 		{

@@ -1099,11 +1099,11 @@ final class gstr extends validation {
                         
                         if(flag==1)
                         {
-                            if(checkCount <= 10) {
+                            if(checkCount <= 50) {
                               fun_upload_json();  
                             }
                             else {
-                               alert("Sorry! Select 10 invoices For Upload To GSTN.");
+                               alert("Sorry! Select 50 invoices For Upload To GSTN.");
                                 return false; 
                             }
                             

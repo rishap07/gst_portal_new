@@ -30,16 +30,63 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
     }
 }
 
-     $autoflag = 0;
-	$inter_reg_nil_amt1='';
-	$inter_reg_expt_amt1='';
-	$inter_reg_ngsup_amt1='';
-    $intra_reg_nil_amt2='';
-	$intra_reg_expt_amt2='';
-	$intra_reg_ngsup_amt2='';
+    $autoflag = 0;
+    $intra_reg_nil_amt1='';
+	$intra_unreg_nil_amt2='';
+	$inter_reg_nil_amt3='';
+	$inter_unreg_nil_amt4='';
+	$intra_reg_expt_amt1='';
+	$intra_unreg_expt_amt2='';
+	$inter_reg_expt_amt3='';
+	$inter_unreg_expt_amt4='';
+	$intra_reg_ngsup_amt1='';
+	$intra_unreg_ngsup_amt2='';
+	$inter_reg_ngsup_amt3='';
+	$inter_unreg_ngsup_amt4='';
+if (isset($_POST['autoname']) && $_POST['autoname'] == 1) {
+   $obj_gstr1 = new gstr1();
+	$nil_data = $obj_gstr1->getNilFinalArray($_SESSION["user_detail"]["user_id"],$returnmonth);
+	//$obj_gstr1->pr($nil_data);
 	
-
-    $sql = "select  *,count(id) as totalinvoice from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0' and type='gstr2nil'  order by id desc limit 0,1";
+    $autoflag=1;
+	for($i=0;$i<sizeof($nil_data);$i++)
+	{
+		if(isset($nil_data[$i]['sply_ty']) && $i==0 && ($nil_data[$i]['sply_ty']=='INTERB2B'))
+		{
+			
+		$inter_reg_nil_amt1 =!empty($nil_data[$i]['nil_amt'])?$nil_data[$i]['nil_amt']:'';
+		$inter_reg_ngsup_amt1 =!empty($nil_data[$i]['ngsup_amt'])?$nil_data[$i]['ngsup_amt']:'';
+		$inter_reg_expt_amt1 =!empty($nil_data[$i]['expt_amt'])?$nil_data[$i]['expt_amt']:'';
+		
+		}
+		if(isset($nil_data[$i]['sply_ty']) && $i==1 && $nil_data[$i]['sply_ty']=='INTRAB2B')
+		{
+		$intra_reg_nil_amt2 =!empty($nil_data[$i]['nil_amt'])?$nil_data[$i]['nil_amt']:'';
+		$intra_reg_ngsup_amt2 =!empty($nil_data[$i]['ngsup_amt'])?$nil_data[$i]['ngsup_amt']:'';
+		$intra_reg_expt_amt2 =!empty($nil_data[$i]['expt_amt'])?$nil_data[$i]['expt_amt']:'';
+		
+		
+		}
+		if(isset($nil_data[$i]['sply_ty']) && $i==2 && $nil_data[$i]['sply_ty']=='INTERB2C')
+		{
+		$inter_unreg_nil_amt3 =!empty($nil_data[$i]['nil_amt'])?$nil_data[$i]['nil_amt']:'';
+		$inter_unreg_ngsup_amt3 =!empty($nil_data[$i]['ngsup_amt'])?$nil_data[$i]['ngsup_amt']:'';
+		$inter_unreg_expt_amt3 =!empty($nil_data[$i]['expt_amt'])?$nil_data[$i]['expt_amt']:'';
+			
+		
+		}
+		if(isset($nil_data[$i]['sply_ty']) && $i==3 && $nil_data[$i]['sply_ty']=='INTRAB2C')
+		{
+		$intra_unreg_nil_amt4 =!empty($nil_data[$i]['nil_amt'])?$nil_data[$i]['nil_amt']:'';
+		$intra_unreg_ngsup_amt4 =!empty($nil_data[$i]['ngsup_amt'])?$nil_data[$i]['ngsup_amt']:'';
+		$intra_unreg_expt_amt4 =!empty($nil_data[$i]['expt_amt'])?$nil_data[$i]['expt_amt']:'';
+		
+		}
+		
+	}
+}
+else {
+    $sql = "select  *,count(id) as totalinvoice from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0' and type='gstr1nil'  order by id desc limit 0,1";
     $returndata1 = $obj_transition->get_results($sql);
 	$arr = $returndata1[0]->return_data;
     $arr1= base64_decode($arr);
@@ -64,6 +111,23 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
 		$intra_reg_expt_amt2 =$nil_data[$i]->expt_amt;
 		
 		}
+		if(isset($nil_data[$i]->sply_ty) && $i==2 && ($nil_data[$i]->sply_ty=='INTERB2C'))
+		{
+		
+		
+		$inter_unreg_nil_amt3 =$nil_data[$i]->nil_amt;
+		$inter_unreg_ngsup_amt3 =$nil_data[$i]->ngsup_amt;
+		$inter_unreg_expt_amt3 =$nil_data[$i]->expt_amt;
+			
+		}
+		if(isset($nil_data[$i]->sply_ty) && $i==3 && ($nil_data[$i]->sply_ty=='INTRAB2C'))
+		{
+		
+		
+		$intra_unreg_nil_amt4 =$nil_data[$i]->nil_amt;
+		$intra_unreg_ngsup_amt4 =$nil_data[$i]->ngsup_amt;
+		$intra_unreg_expt_amt4 =$nil_data[$i]->expt_amt;
+		}
 		
 	}
 }
@@ -73,7 +137,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
-        <div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>HSN-wise summary</h1></div>
+        <div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>Nil summary details</h1></div>
         <div class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav"><a href="#">Home</a>
             <i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GST-Transition Form</span> </div>
         <div class="whitebg formboxcontainer">

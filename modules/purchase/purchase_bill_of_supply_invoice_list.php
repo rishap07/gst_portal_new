@@ -192,7 +192,7 @@ $dataInvoiceSettingArr = $obj_purchase->getUserInvoiceSetting( $obj_purchase->sa
                         <!---INVOICE TOP ICON START HERE-->
                         <div class="inovicergttop">
                             <ul class="iconlist">
-								<li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_receipt_voucher_invoice_update&action=editPurchaseBOSInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Edit"><i class="fa fa-pencil" aria-hidden="true"></i></div></a></li>
+								<li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_bill_of_supply_invoice_update&action=editPurchaseBOSInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Edit"><i class="fa fa-pencil" aria-hidden="true"></i></div></a></li>
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_bill_of_supply_invoice_list&action=downloadPurchaseBOSInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="PDF"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></div></a></li>
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_bill_of_supply_invoice_list&action=printPurchaseBOSInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>" target="_blank"><div data-toggle="tooltip" data-placement="bottom" title="PRINT"><i class="fa fa-print" aria-hidden="true"></i></div></a></li>
                                 <li><a href="<?php echo PROJECT_URL; ?>/?page=purchase_bill_of_supply_invoice_list&action=emailPurchaseBOSInvoice&id=<?php echo $invoiceData[0]->purchase_invoice_id; ?>"><div data-toggle="tooltip" data-placement="bottom" title="Email"><i class="fa fa-envelope-o" aria-hidden="true"></i></div></a></li>
@@ -214,7 +214,7 @@ $dataInvoiceSettingArr = $obj_purchase->getUserInvoiceSetting( $obj_purchase->sa
                                                 <tr>
                                                     <td class="title">
                                                         <?php if(isset($dataThemeSettingArr['data']->show_logo) && $dataThemeSettingArr['data']->show_logo == '1' && isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") { ?>
-                                                            <img src="<?php echo PROJECT_URL . '/upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo; ?>" style="width:100%;max-width:300px;">
+                                                            <img src="<?php echo PROJECT_URL . '/upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo; ?>" style="max-width:300px;">
                                                         <?php } ?>
                                                     </td>
 

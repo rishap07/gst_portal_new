@@ -1,5 +1,6 @@
 <?php
 $obj_gstr2 = new gstr2();
+$obj_transition = new transition();
 
 //$obj_login->sendMobileMessage
 $returnmonth = date('Y-m');
@@ -17,13 +18,121 @@ $returnmonth = date('Y-m');
 if ($_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
 }
+if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
+    $flag = $obj_transition->checkVerifyUser();
+    if ($flag == 'notverify') {
+      $obj_transition->setError("To save itc reversal summary first verify your email and mobile number");
+			
+    } else {
+        if ($obj_gstr2->saveGstr2itcreversalSummary()) {
+            //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
+        }
+    }
+}
+       $sql = "select  *,count(id) as totalinvoice from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0' and type='gstr2itcreversal'  order by id desc limit 0,1";
+       $returndata1 = $obj_transition->get_results($sql);
+	 
+		if($returndata1[0]->totalinvoice > 0)
+		{
+			$arr = $returndata1[0]->return_data;
+			$arr1= base64_decode($arr);
+			$summary_arr = json_decode($arr1);
+			//$obj_transition->pr($summary_arr);
+			$rule2_2=array(); 
+			$rule7_1_m=array();
+            $rule8_1_h=array(); 
+            $rule7_2_a=array(); 			
+			$rule7_2_b=array();
+			$revitc=array();
+			$other=array();
+			$rule2_2=!empty($summary_arr->rule2_2)?$summary_arr->rule2_2:'';
+		    $rule7_1_m=!empty($summary_arr->rule7_1_m)?$summary_arr->rule7_1_m:'';
+			$rule8_1_h=!empty($summary_arr->rule8_1_h)?$summary_arr->rule8_1_h:'';
+		    $rule7_2_a=!empty($summary_arr->rule7_2_a)?$summary_arr->rule7_2_a:'';
+			$rule7_2_b=!empty($summary_arr->rule7_2_b)?$summary_arr->rule7_2_b:'';
+		    $revitc=!empty($summary_arr->revitc)?$summary_arr->revitc:'';
+			$other=!empty($summary_arr->other)?$summary_arr->other:'';
+		
+			if(!empty($rule2_2))
+			{
+				foreach($rule2_2 as $item)
+				{
+					$rule2_2_igst=$item->iamt;
+					$rule2_2_cgst=$item->camt;
+					$rule2_2_sgst=$item->samt;
+					$rule2_2_cess=$item->csamt;
+				}
+			}
+			if(!empty($rule7_1_m))
+			{
+				foreach($rule7_1_m as $item)
+				{
+					$rule7_1_m_igst=$item->iamt;
+					$rule7_1_m_cgst=$item->camt;
+					$rule7_1_m_sgst=$item->samt;
+					$rule7_1_m_cess=$item->csamt;
+				}
+			}
+			if(!empty($rule8_1_h))
+			{
+				foreach($rule8_1_h as $item)
+				{
+					$rule8_1_h_igst=$item->iamt;
+					$rule8_1_h_cgst=$item->camt;
+					$rule8_1_h_sgst=$item->samt;
+					$rule8_1_h_cess=$item->csamt;
+				}
+			}
+			if(!empty($rule7_2_a))
+			{
+				foreach($rule7_2_a as $item)
+				{
+					$rule7_2_a_igst=$item->iamt;
+					$rule7_2_a_cgst=$item->camt;
+					$rule7_2_a_sgst=$item->samt;
+					$rule7_2_a_cess=$item->csamt;
+				}
+			}
+			if(!empty($rule7_2_b))
+			{
+				foreach($rule7_2_b as $item)
+				{
+					$rule7_2_b_igst=$item->iamt;
+					$rule7_2_b_cgst=$item->camt;
+					$rule7_2_b_sgst=$item->samt;
+					$rule7_2_b_cess=$item->csamt;
+				}
+			}
+			if(!empty($revitc))
+			{
+				foreach($revitc as $item)
+				{
+					$revitc_igst=$item->iamt;
+					$revitc_cgst=$item->camt;
+					$revitc_sgst=$item->samt;
+					$revitc_cess=$item->csamt;
+				}
+			}
+			if(!empty($other))
+			{
+				foreach($other as $item)
+				{
+					$other_igst=$item->iamt;
+					$other_cgst=$item->camt;
+					$other_sgst=$item->samt;
+					$other_cess=$item->csamt;
+				}
+			}
+			
+			
+		}
 
 ?>
 
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
-        <div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>HSN-wise summary</h1></div>
+        <div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>ITC Reversal</h1></div>
         <div class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav"><a href="#">Home</a>
             <i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GST-Transition Form</span> </div>
         <div class="whitebg formboxcontainer">
@@ -31,7 +140,7 @@ if ($_REQUEST['returnmonth'] != '') {
 		    <?php $obj_gstr2->showSuccessMessge(); ?>
 		    <?php $obj_gstr2->unsetMessage(); ?>
              <form method="post" id="auto" name="auto">
-                <button  type="button"  class="btn btn-success" id="btnConfirm">autopopulate</button>
+                <button  type="button" style="display:none;"  class="btn btn-success" id="btnConfirm">autopopulate</button>
                 <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_gstr2_mydata&returnmonth=" . $_REQUEST["returnmonth"]; ?>';" class="btn btn-danger" class="redbtn marlef10"/>
                 <input type="hidden" name="autoname" id="autoname" value="1" />
                 <input style="display:none;" type='submit' class="btn btn-success" name='autopopulate' value='autopopulate'>

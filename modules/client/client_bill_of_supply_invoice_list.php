@@ -232,7 +232,7 @@ $dataInvoiceSettingArr = $obj_client->getUserInvoiceSetting( $obj_client->saniti
                                                 <tr>
                                                     <td class="title">
                                                         <?php if(isset($dataThemeSettingArr['data']->show_logo) && $dataThemeSettingArr['data']->show_logo == '1' && isset($dataThemeSettingArr['data']->theme_logo) && $dataThemeSettingArr['data']->theme_logo != "") { ?>
-                                                            <img src="<?php echo PROJECT_URL . '/upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo; ?>" style="width:100%;max-width:300px;">
+                                                            <img src="<?php echo PROJECT_URL . '/upload/theme-logo/' . $dataThemeSettingArr['data']->theme_logo; ?>" style="max-width:300px;">
                                                         <?php } ?>
                                                     </td>
 

@@ -279,7 +279,7 @@ else
                                         </tr>
                                         <tr>
                                             <?php
-                                            $group_by = "";
+                                            $group_by = "a.reference_number";
                                             $order_by = 'a.reference_number';
                                             $expData = $obj_gstr1->getEXPInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
 											
@@ -316,7 +316,7 @@ else
                                         </tr>
                                         <tr>
                                             <?php
-                                            $group_by = " a.reference_number ,b.consolidate_rate ";
+                                            $group_by = " a.reference_number  ";
                                             $order_by = 'a.reference_number';
                                             $atData = $obj_gstr1->getATInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
                                             $at_total = $at_invoice_total_value = $at_sumTotal = 0;
@@ -371,7 +371,7 @@ else
                                                     $tempTotVal =isset($cdnurDatavalue->invoice_total_value)?$cdnurDatavalue->invoice_total_value:0;
                                                     $tempInv=$cdnurDatavalue->invoice_id;
                                                 }
-                                                if($tempInv!='' && $tempInv!=$atDatavalue->invoice_id )
+                                                if($tempInv!='' && $tempInv!=$cdnurDatavalue->invoice_id )
                                                 {
                                                     $cdnurCount++;
                                                     $cdnur_sumTotal +=$tempTotVal;

@@ -298,8 +298,19 @@ final class users extends validation {
     public function saveUserThemeSetting() {
 
         $dataArr['theme_style'] = isset($_POST['theme_style']) ? $_POST['theme_style'] : 'theme-color.css';
-		$dataArr['show_logo'] = isset($_POST['show_logo']) ? $_POST['show_logo'] : '1';
-		$dataArr['show_signature'] = isset($_POST['show_signature']) ? $_POST['show_signature'] : '0';
+
+		if(isset($_POST['show_logo']) && $_POST['show_logo'] == '1') {
+			$dataArr['show_logo'] = '1';
+		} else {
+			$dataArr['show_logo'] = '0';
+		}
+
+		if(isset($_POST['show_signature']) && $_POST['show_signature'] == '1') {
+			$dataArr['show_signature'] = '1';
+		} else {
+			$dataArr['show_signature'] = '0';
+		}
+
 		$dataArr['gross_turnover'] = isset($_POST['gross_turnover']) ? $_POST['gross_turnover'] : '';
 		$dataArr['cur_gross_turnover'] = isset($_POST['cur_gross_turnover']) ? $_POST['cur_gross_turnover'] : '';
 		$dataArr['isd_number'] = isset($_POST['isd_number']) ? $_POST['isd_number'] : '';

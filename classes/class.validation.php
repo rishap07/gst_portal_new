@@ -654,7 +654,7 @@ class validation extends upload {
         a.billing_name,
         a.is_gstr1_uploaded,
         a.invoice_date,sum(a.invoice_total_value) as invoice_total_value,b.item_name,s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_type,
-        b.item_hsncode,b.item_quantity,
+        b.item_hsncode,sum(b.item_quantity) as item_quantity,
         b.item_unit,
         (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
         (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id)  as taxable_subtotal,

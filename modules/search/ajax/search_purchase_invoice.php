@@ -9,16 +9,16 @@
 */
 
 extract($_POST);
-parse_str($_POST['salesSearchData'], $params);
+parse_str($_POST['purchaseSearchData'], $params);
 
 //Columns to fetch from database
-$aColumns = array('ci.invoice_id', 'ci.invoice_type', 'ci.invoice_nature', 'ci.serial_number', 'ci.reference_number', 'ci.supply_type', 'ci.export_supply_meant', 'ci.invoice_date', 'ci.supply_place', 'ci.billing_name', 'ci.billing_state', 'ci.billing_state_name', 'ci.billing_gstin_number', 'ci.is_canceled', 'ci.invoice_total_value', 'ci.financial_year');
+$aColumns = array('ci.purchase_invoice_id', 'ci.invoice_type', 'ci.invoice_nature', 'ci.serial_number', 'ci.reference_number', 'ci.supply_type', 'ci.import_supply_meant', 'ci.invoice_date', 'ci.supply_place', 'ci.supplier_billing_name', 'ci.supplier_billing_state', 'ci.supplier_billing_state_name', 'ci.supplier_billing_gstin_number', 'ci.is_canceled', 'ci.invoice_total_value', 'ci.financial_year');
 
-$aSearchColumns = array('ci.invoice_type', 'ci.invoice_nature', 'ci.serial_number', 'ci.reference_number', 'ci.supply_type', 'ci.export_supply_meant', 'ci.invoice_date', 'ci.supply_place', 'ci.billing_name', 'ci.billing_state', 'ci.billing_state_name', 'ci.billing_gstin_number', 'ci.is_canceled', 'ci.invoice_total_value', 'ci.financial_year');
-$sIndexColumn = "invoice_id";
+$aSearchColumns = array('ci.invoice_type', 'ci.invoice_nature', 'ci.serial_number', 'ci.reference_number', 'ci.supply_type', 'ci.import_supply_meant', 'ci.invoice_date', 'ci.supply_place', 'ci.supplier_billing_name', 'ci.supplier_billing_state', 'ci.supplier_billing_state_name', 'ci.supplier_billing_gstin_number', 'ci.is_canceled', 'ci.invoice_total_value', 'ci.financial_year');
+$sIndexColumn = "purchase_invoice_id";
 
 /* DB table to use */
-$ciTable = $db_obj->getTableName('client_invoice');
+$ciTable = $db_obj->getTableName('client_purchase_invoice');
 
 /*
  * Paging
@@ -78,12 +78,12 @@ if(isset($params['place_of_supply']) && !empty($params['place_of_supply'])) {
 	$uWhere .= " AND ci.supply_place = " . $params['place_of_supply'];
 }
 
-if(isset($params['billing_state']) && !empty($params['billing_state'])) {
-	$uWhere .= " AND ci.billing_state = " . $params['billing_state'];
+if(isset($params['supplier_billing_state']) && !empty($params['supplier_billing_state'])) {
+	$uWhere .= " AND ci.supplier_billing_state = " . $params['supplier_billing_state'];
 }
 
-if(isset($params['billing_gstin_number']) && !empty($params['billing_gstin_number'])) {
-	$uWhere .= " AND ci.billing_gstin_number LIKE '%" . $params['billing_gstin_number'] ."%'";
+if(isset($params['supplier_billing_gstin_number']) && !empty($params['supplier_billing_gstin_number'])) {
+	$uWhere .= " AND ci.supplier_billing_gstin_number LIKE '%" . $params['supplier_billing_gstin_number'] ."%'";
 }
 
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
@@ -163,12 +163,12 @@ if(isset($rResult) && !empty($rResult)) {
 		
 		if($aRow->invoice_type == "taxinvoice") {
 			$invoice_type = "Tax";
-		} else if($aRow->invoice_type == "exportinvoice") {
-			$invoice_type = "Export";
+		} else if($aRow->invoice_type == "importinvoice") {
+			$invoice_type = "Import";
 		} else if($aRow->invoice_type == "sezunitinvoice") {
 			$invoice_type = "SEZ Unit";
-		} else if($aRow->invoice_type == "deemedexportinvoice") {
-			$invoice_type = "Deemed Export";
+		} else if($aRow->invoice_type == "deemedimportinvoice") {
+			$invoice_type = "Deemed Import";
 		} else if($aRow->invoice_type == "billofsupplyinvoice") {
 			$invoice_type = "Bill Of Supply";
 		} else if($aRow->invoice_type == "receiptvoucherinvoice") {
@@ -181,8 +181,8 @@ if(isset($rResult) && !empty($rResult)) {
 			$invoice_type = "Credit Note";
 		} else if($aRow->invoice_type == "debitnote") {
 			$invoice_type = "Debit Note";
-		} else if($aRow->invoice_type == "deliverychallaninvoice") {
-			$invoice_type = "Delivery Challan";
+		} else if($aRow->invoice_type == "paymentvoucherinvoice") {
+			$invoice_type = "Payment Voucher";
 		}
 
 		$row[] = $temp_x;
@@ -190,32 +190,32 @@ if(isset($rResult) && !empty($rResult)) {
 		$row[] = $aRow->reference_number;
 		$row[] = $aRow->invoice_date;
 		$row[] = html_entity_decode($supply_place);
-		$row[] = html_entity_decode($aRow->billing_name);
-		$row[] = $aRow->billing_gstin_number;
-		$row[] = $aRow->billing_state_name;
-		
+		$row[] = html_entity_decode($aRow->supplier_billing_name);
+		$row[] = $aRow->supplier_billing_gstin_number;
+		$row[] = $aRow->supplier_billing_state_name;
+
 		if($aRow->invoice_type == "taxinvoice") {
-			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=client_invoice_list&action=printInvoice&id='.$aRow->invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$aRow->invoice_id.'" class="btn btn-warning">Edit</a>';
-		} else if($aRow->invoice_type == "exportinvoice") {
-			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=client_invoice_list&action=printInvoice&id='.$aRow->invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$aRow->invoice_id.'" class="btn btn-warning">Edit</a>';
+			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=purchase_invoice_list&action=printPurchaseInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=purchase_invoice_update&action=editPurchaseInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-warning">Edit</a>';
+		} else if($aRow->invoice_type == "importinvoice") {
+			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=purchase_invoice_list&action=printPurchaseInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=purchase_import_invoice_update&action=editPurchaseInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-warning">Edit</a>';
 		} else if($aRow->invoice_type == "sezunitinvoice") {
-			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=client_invoice_list&action=printInvoice&id='.$aRow->invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$aRow->invoice_id.'" class="btn btn-warning">Edit</a>';
-		} else if($aRow->invoice_type == "deemedexportinvoice") {
-			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=client_invoice_list&action=printInvoice&id='.$aRow->invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=client_update_export_invoice&action=editInvoice&id='.$aRow->invoice_id.'" class="btn btn-warning">Edit</a>';
+			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=purchase_invoice_list&action=printPurchaseInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=purchase_import_invoice_update&action=editPurchaseInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-warning">Edit</a>';
+		} else if($aRow->invoice_type == "deemedimportinvoice") {
+			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=purchase_invoice_list&action=printPurchaseInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=purchase_import_invoice_update&action=editPurchaseInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-warning">Edit</a>';
 		} else if($aRow->invoice_type == "billofsupplyinvoice") {
-			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=client_bill_of_supply_invoice_list&action=printBOSInvoice&id='.$aRow->invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=client_update_bill_of_supply_invoice&action=editBOSInvoice&id='.$aRow->invoice_id.'" class="btn btn-warning">Edit</a>';
+			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=purchase_bill_of_supply_invoice_list&action=printPurchaseBOSInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=purchase_bill_of_supply_invoice_update&action=editPurchaseBOSInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-warning">Edit</a>';
 		} else if($aRow->invoice_type == "receiptvoucherinvoice") {
-			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=client_receipt_voucher_invoice_list&action=printRVInvoice&id='.$aRow->invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=client_update_receipt_voucher_invoice&action=editRVInvoice&id='.$aRow->invoice_id.'" class="btn btn-warning">Edit</a>';
+			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=purchase_receipt_voucher_invoice_list&action=printPurchaseRVInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=purchase_receipt_voucher_invoice_update&action=editPurchaseRVInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-warning">Edit</a>';
 		} else if($aRow->invoice_type == "refundvoucherinvoice") {
-			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=client_refund_voucher_invoice_list&action=printRFInvoice&id='.$aRow->invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=client_update_refund_voucher_invoice&action=editRFInvoice&id='.$aRow->invoice_id.'" class="btn btn-warning">Edit</a>';
+			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=purchase_refund_voucher_invoice_list&action=printPurchaseRFInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=purchase_refund_voucher_invoice_update&action=editPurchaseRFInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-warning">Edit</a>';
 		} else if($aRow->invoice_type == "revisedtaxinvoice") {
-			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=client_revised_tax_invoice_list&action=printRTInvoice&id='.$aRow->invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=client_update_revised_tax_invoice&action=editRTInvoice&id='.$aRow->invoice_id.'" class="btn btn-warning">Edit</a>';
+			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=purchase_revised_tax_invoice_list&action=printPurchaseRTInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=purchase_revised_tax_invoice_update&action=editPurchaseRTInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-warning">Edit</a>';
 		} else if($aRow->invoice_type == "creditnote") {
-			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=client_revised_tax_invoice_list&action=printRTInvoice&id='.$aRow->invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=client_update_revised_tax_invoice&action=editRTInvoice&id='.$aRow->invoice_id.'" class="btn btn-warning">Edit</a>';
+			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=purchase_revised_tax_invoice_list&action=printPurchaseRTInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=purchase_revised_tax_invoice_update&action=editPurchaseRTInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-warning">Edit</a>';
 		} else if($aRow->invoice_type == "debitnote") {
-			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=client_revised_tax_invoice_list&action=printRTInvoice&id='.$aRow->invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=client_update_revised_tax_invoice&action=editRTInvoice&id='.$aRow->invoice_id.'" class="btn btn-warning">Edit</a>';
-		} else if($aRow->invoice_type == "deliverychallaninvoice") {
-			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=client_delivery_challan_invoice_list&action=printDCInvoice&id='.$aRow->invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=client_update_delivery_challan_invoice&action=editDCInvoice&id='.$aRow->invoice_id.'" class="btn btn-warning">Edit</a>';
+			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=purchase_revised_tax_invoice_list&action=printPurchaseRTInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=purchase_revised_tax_invoice_update&action=editPurchaseRTInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-warning">Edit</a>';
+		} else if($aRow->invoice_type == "paymentvoucherinvoice") {
+			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=purchase_payment_voucher_invoice_list&action=printPurchasePVInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=purchase_payment_voucher_invoice_update&action=editPurchasePVInvoice&id='.$aRow->purchase_invoice_id.'" class="btn btn-warning">Edit</a>';
 		}
 
 		$output['aaData'][] = $row;
