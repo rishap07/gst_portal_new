@@ -246,3 +246,12 @@ table.dataTable tbody tr.even {
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
     right: 0px; 
 }
+.mr-r-5 {
+	margin-right:5px;
+}
+form#search-sales-invoice {
+    margin-bottom: 15px;
+}
+form#search-purchase-invoice {
+    margin-bottom: 15px;
+}
