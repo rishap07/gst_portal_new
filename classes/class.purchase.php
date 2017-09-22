@@ -63,7 +63,7 @@ final class purchase extends validation {
         }
 
 		if (array_key_exists("import_bill_port_code", $dataArr)) {
-            $rules['import_bill_port_code'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||max:6|#|lable_name:Import Bill Port Code';
+            $rules['import_bill_port_code'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/||max:6|#|lable_name:Import Bill Port Code';
         }
 
 		if (array_key_exists("import_bill_date", $dataArr)) {
@@ -263,7 +263,7 @@ final class purchase extends validation {
 		}
 
 		if (array_key_exists("import_bill_port_code", $dataArr)) {
-			$rules['import_bill_port_code'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||max:6|#|lable_name:Import Bill Port Code';
+			$rules['import_bill_port_code'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/||max:6|#|lable_name:Import Bill Port Code';
 		}
 
 		if (array_key_exists("import_bill_date", $dataArr)) {

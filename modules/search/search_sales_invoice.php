@@ -130,10 +130,11 @@ if(!$db_obj->can_read('client_invoice')) {
 								<th align='center'>Invoice Type</th>
 								<th align='center'>Reference Number</th>
 								<th align='center'>Invoice Date</th>
-								<th align='center'>Place Of Supply</th>
+								<th align='center'>Supply Place</th>
 								<th align='center'>Billing Name</th>
 								<th align='center'>Billing GSTIN</th>
 								<th align='center'>Billing State</th>
+								<th align='center'>Invoice Value(<i class="fa fa-inr" aria-hidden="true"></i>)</th>
 								<th width="120">Action</th>
 							</tr>
 						</thead>
@@ -207,6 +208,7 @@ if(!$db_obj->can_read('client_invoice')) {
                         {"bSortable": false},
                         {"bSortable": false},
                         {"bSortable": false},
+						{"bSortable": false},
                         {"bSortable": false},
 						{"bSortable": false},
                         {"bSortable": false},

@@ -148,7 +148,7 @@ final class gstr extends validation {
         );
         $header = $this->header($header_array);
         //End code for create header
-        $url = 'https://gspapi.karvygst.com/Authenticate';
+        $url = API_OTP_URL;
         $result_data= $this->hitUrl($url,$data_string,$header);
         $data = json_decode($result_data);
 
@@ -196,7 +196,7 @@ final class gstr extends validation {
         $header = $this->header($header_array);
         //End code for create header
 
-        $url = 'https://gspapi.karvygst.com/Authenticate';
+        $url = API_AUTH_URL;
         $result_data= $this->hitUrl($url,$data_string,$header);
         $data = json_decode($result_data);
 
@@ -293,7 +293,7 @@ final class gstr extends validation {
         //End code for create header
         //$this->pr($header);
 
-        $url = 'https://gspapi.karvygst.com/returns/'.$jstr;
+        $url = API_RETURN_URL.'/'.$jstr;
         
         $result_data = $this->hitPulUrl($url, $data_string, $header);
         $datasave = json_decode($result_data);
@@ -322,7 +322,7 @@ final class gstr extends validation {
             $header2 = $this->header($header2_array);
             //$this->pr($header2);
             //End code for create header
-            $url2 = 'https://gspapi.karvygst.com/returns?action=RETSTATUS&gstin='.$gstin. '&ret_period='.$api_return_period.'&ref_id='.$refId.'';
+            $url2 = API_RETURN_URL.'?action=RETSTATUS&gstin='.$gstin. '&ret_period='.$api_return_period.'&ref_id='.$refId.'';
             $result_data1 = $this->hitGetUrl($url2, '', $header2);
             
             $retDta = json_decode($result_data1);
@@ -398,26 +398,26 @@ final class gstr extends validation {
             //End code for create header
 
             if($type=='') {
-                $getReturnUrl='https://gspapi.karvygst.com/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=RETSUM';
+                $getReturnUrl=API_RETURN_URL.'/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=RETSUM';
             }
             else {
-                $getReturnUrl='https://gspapi.karvygst.com/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type;
+                $getReturnUrl=API_RETURN_URL.'/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type;
             }
 
             if($type=='B2B') {
-                $getReturnUrl='https://gspapi.karvygst.com/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type;
+                $getReturnUrl=API_RETURN_URL.'/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type;
             }
             if($type=='HSN') {
-                $getReturnUrl='https://gspapi.karvygst.com/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=HSNSUM';
+                $getReturnUrl=API_RETURN_URL.'/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=HSNSUM';
             }
             if($type=='CDNR') {
-                $getReturnUrl='https://gspapi.karvygst.com/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type.'&action_required=Y&from_time='.$api_return_period;
+                $getReturnUrl=API_RETURN_URL.'/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action='.$type.'&action_required=Y&from_time='.$api_return_period;
             }
             if($type=='TXPD') {
-                $getReturnUrl='https://gspapi.karvygst.com/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=TXP';
+                $getReturnUrl=API_RETURN_URL.'/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=TXP';
             }
             if($type=='CDN') {
-                $getReturnUrl='https://gspapi.karvygst.com/returns/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=CDN';
+                $getReturnUrl=API_RETURN_URL.'/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=CDN';
             }
             
             $result_data_sum = $this->hitGetUrl($getReturnUrl, '', $header2);
@@ -462,7 +462,7 @@ final class gstr extends validation {
                         $dataGST1where['user_id'] =  $_SESSION['user_detail']['user_id'];
                         $this->update($this->getTableName('user_gstr1'),  $dataGST1, $dataGST1where);
                     }
-                    $filedetUrl='https://gspapi.karvygst.com/returns/'.$jstr.'?token=677b0e10557a4f56b2236387cfc24060&action=FILEDET&gstin='.$gstin.'&ret_prd='.$api_return_period.'';
+                    $filedetUrl=API_RETURN_URL.'/'.$jstr.'?token=677b0e10557a4f56b2236387cfc24060&action=FILEDET&gstin='.$gstin.'&ret_prd='.$api_return_period.'';
                     //echo $filedetUrl;
                     $result_data_sum1 = $this->hitGetUrl($filedetUrl, '', $header3);
                     $retDta1 = json_decode($result_data_sum1);
@@ -538,7 +538,7 @@ final class gstr extends validation {
         );
         $header3 = $this->header($header_array);
         //End code for create header
-        $getSubmitUrl = 'https://gspapi.karvygst.com/returns/gstr1';
+        $getSubmitUrl = API_RETURN_URL.'/gstr1';
         $submit_data1 = $this->hitUrl($getSubmitUrl, $data_string, $header3);
         $retDta1 = json_decode($submit_data1);
         if(isset($retDta1->status_cd) && $retDta1->status_cd=='1'  && $msg == '')
@@ -591,7 +591,7 @@ final class gstr extends validation {
         $header3 = $this->header($header_array);
         //End code for create header
 
-        $getSubmitUrl='https://gspapi.karvygst.com/returns/gstr1';
+        $getSubmitUrl=API_RETURN_URL.'/gstr1';
         $submit_data1 = $this->hitUrl($getSubmitUrl, $data_string, $header3);
         $retDta1 = json_decode($submit_data1);
         if(isset($retDta1->status_cd) && $retDta1->status_cd=='1'  && $msg == '')

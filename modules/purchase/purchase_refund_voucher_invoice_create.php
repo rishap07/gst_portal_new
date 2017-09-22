@@ -360,12 +360,49 @@
 
 						<div class='col-sm-4'>
 							<div class='form-group'>
-								<label for="unit_price">Unit Price(Rs.) </label>
-								<input type="text" placeholder="Item Unit Price" name='unit_price' id="unit_price" data-bind="demical" class="form-control itemUnitPrice" />
+								<label for="unit_price">Sales Unit Price(Rs.) </label>
+								<input type="text" placeholder="Item Sales Unit Price" name='unit_price' id="unit_price" data-bind="demical" class="form-control itemUnitPrice" />
+							</div>
+						</div>
+						
+						<div class='col-sm-4'>
+							<div class='form-group'>
+								<label for="unit_purchase_price">Purchase Unit Price(Rs.) </label>
+								<input type="text" placeholder="Item Purchase Unit Price" name='unit_purchase_price' id="unit_purchase_price" data-bind="demical" class="form-control itemUnitPrice" />
+							</div>
+						</div>
+					</div>
+					
+					<div class='row'>
+						<div class='col-sm-4'>
+							<div class='form-group'>
+								<label for="cgst_tax_rate">CGST Tax Rate(%)</label>
+								<input type="text" placeholder="CGST Tax Rate(%)" name='cgst_tax_rate' id="cgst_tax_rate" class="validateTaxValue form-control" data-bind="valtax" />
 							</div>
 						</div>
 
-						<div class='col-sm-4'>    
+						<div class='col-sm-4'>
+							<div class='form-group'>
+								<label for="sgst_tax_rate">SGST Tax Rate(%)</label>
+								<input type="text" placeholder="SGST Tax Rate(%)" name='sgst_tax_rate' id="sgst_tax_rate" class="validateTaxValue form-control" data-bind="valtax" />
+							</div>
+						</div>
+
+						<div class='col-sm-4'>
+							<div class='form-group'>
+								<label for="igst_tax_rate">IGST Tax Rate(%)</label>
+								<input type="text" placeholder="IGST Tax Rate(%)" name='igst_tax_rate' id="igst_tax_rate" class="validateTaxValue form-control" data-bind="valtax" />
+							</div>
+						</div>
+					</div>
+
+					<div class='row'>
+						<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+							<label>CESS Tax Rate(%)</label>
+							<input type="text" placeholder="CESS Tax Rate(%)" name='cess_tax_rate' id="cess_tax_rate" class="validateTaxValue form-control" data-bind="valtax" />
+						</div>
+
+						<div class='col-sm-4'>
 							<div class='form-group'>
 								<label for="item_unit">Unit <span class="starred">*</span></label>
 								<select name="item_unit" id="item_unit" class="required form-control" data-bind="numnzero">
@@ -380,10 +417,6 @@
 							</div>
 						</div>
 						
-					</div>
-					
-					<div class='row'>
-						
 						<div class='col-sm-4'>
 							<label for="status">Status <span class="starred">*</span></label>
 							<select name="status" id="status" class="required form-control">
@@ -391,16 +424,16 @@
 								<option value="0">Inactive</option>
 							</select>
 						</div>
-
+					</div>
+					
+					<div class='row'>
 						<div class='col-sm-4'>
 							<div class='form-group'>
 								<label for="item_description">Description </label>
 								<textarea placeholder="Item Unit Price" name='item_description' id="item_description" data-bind="content" class="form-control" /></textarea>
 							</div>
 						</div>
-
 					</div>
-
 				</div>
 				
 				<div class="modal-footer">
@@ -445,6 +478,10 @@
             select: function( event, ui ) {
 				$("#item_category").val(ui.item.item_id);
 				$("#item_hsn_code").val(ui.item.hsn_code);
+				$("#cgst_tax_rate").val(ui.item.cgst_tax_rate);
+				$("#sgst_tax_rate").val(ui.item.sgst_tax_rate);
+				$("#igst_tax_rate").val(ui.item.igst_tax_rate);
+				$("#cess_tax_rate").val(ui.item.cess_tax_rate);
             }
         });
         /* End of Get HSN/SAC Code */
@@ -453,6 +490,10 @@
 		$("#item_category_name").on("input", function() {
 			$("#item_category").val("");
 			$("#item_hsn_code").val("");
+			$("#cgst_tax_rate").val("");
+			$("#sgst_tax_rate").val("");
+			$("#igst_tax_rate").val("");
+			$("#cess_tax_rate").val("");
 		});
 		/* End of on chnage of item category */
 
@@ -461,6 +502,12 @@
             return validateDecimalValue(event, this);
         });
         /* end of validate item unit price allow only numbers or decimals */
+
+		/* validate invoice tax decimal values allow only numbers or decimals */
+        $("#addItemModal").on("keypress input paste", ".validateTaxValue", function (event) {
+            return validateTaxValue(event, this);
+        });
+        /* end of validate invoice tax decimal values allow only numbers or decimals */
 
 		/* validate add item form */
         $('#add-item-submit').click(function () {

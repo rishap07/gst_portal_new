@@ -19,6 +19,11 @@ if(isset($_POST['itemData']) && isset($_POST['action']) && $_POST['action'] == "
 	$_POST['item_category'] = $params['item_category'];
 	$_POST['item_unit'] = $params['item_unit'];
 	$_POST['unit_price'] = $params['unit_price'];
+	$_POST['unit_purchase_price'] = $params['unit_purchase_price'];
+	$_POST['cgst_tax_rate'] = $params['cgst_tax_rate'];
+	$_POST['sgst_tax_rate'] = $params['sgst_tax_rate'];
+	$_POST['igst_tax_rate'] = $params['igst_tax_rate'];
+	$_POST['cess_tax_rate'] = $params['cess_tax_rate'];
 	$_POST['status'] = $params['status'];
 	$_POST['item_description'] = $params['item_description'];
 	$_POST['is_applicable'] = $params['is_applicable'];

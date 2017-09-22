@@ -609,7 +609,7 @@
 							<input type="text" placeholder="CESS Tax Rate(%)" name='cess_tax_rate' id="cess_tax_rate" class="validateTaxValue form-control" data-bind="valtax" />
 						</div>
 
-						<div class='col-sm-4'>    
+						<div class='col-sm-4'>
 							<div class='form-group'>
 								<label for="item_unit">Unit <span class="starred">*</span></label>
 								<select name="item_unit" id="item_unit" class="required form-control" data-bind="numnzero">
@@ -703,6 +703,10 @@
 		$("#item_category_name").on("input", function() {
 			$("#item_category").val("");
 			$("#item_hsn_code").val("");
+			$("#cgst_tax_rate").val("");
+			$("#sgst_tax_rate").val("");
+			$("#igst_tax_rate").val("");
+			$("#cess_tax_rate").val("");
 		});
 		/* End of on chnage of item category */
 
@@ -1455,13 +1459,13 @@
 			var taxOldApplied = $("#taxApplied").val();
 			var taxFlag = false;
 
-			if(supplierStateId === receiverStateId) {
+			if(supplierStateId == receiverStateId) {
 				var taxNewApplied = "CGSTSGST";
 			} else {
 				var taxNewApplied = "IGST";
 			}
 
-			if(taxOldApplied === taxNewApplied) {
+			if(taxOldApplied == taxNewApplied) {
 				taxFlag = false;
 				$("#taxApplied").val(taxOldApplied);
 			} else {
@@ -1487,7 +1491,7 @@
 							success: function(response){
 
 								/* calculation */
-								if(supplierStateId === receiverStateId) {
+								if(supplierStateId == receiverStateId) {
 
 									$("#invoice_tr_"+rowid+"_cgstrate").val(response.csgt_tax_rate);
 									$("#invoice_tr_"+rowid+"_sgstrate").val(response.sgst_tax_rate);

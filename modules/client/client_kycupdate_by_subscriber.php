@@ -72,7 +72,7 @@
                     <?php } else { ?>
 						<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 							<label>Name of Applicant / Company Name<span class="starred">*</span></label>
-							<input type="text" placeholder="Name of Applicant" name="name" id="name" class="required form-control" data-bind="content" value="<?php if(isset($_POST['name'])) { echo $_POST['name']; } else if(isset($dataArr['data']->name)) { echo $dataArr['data']->name; } ?>" />
+							<input type="text" placeholder="Name of Applicant" name="name" id="name" class="required form-control" data-bind="content" value="<?php if(isset($_POST['name'])) { echo $_POST['name']; } else if(isset($dataArr['data']->company_name)) { echo $dataArr['data']->company_name; } ?>" />
 							<span class="greysmalltxt">(As appearing in supporting / identification document)</span>
 						</div>
                     <?php } ?>

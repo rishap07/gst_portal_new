@@ -121,7 +121,7 @@ final class client extends validation {
             return false;
         }
 
-        if ($_FILES['proof_photograph']['name'] != '') {
+        if (isset($_FILES['proof_photograph']['name']) && $_FILES['proof_photograph']['name'] != '') {
 
             $proof_photograph = $this->imageUploads($_FILES['proof_photograph'], 'kyc-docs', 'upload', $this->allowImageExt, 1048576, 'Max file Size 1 MB');
             if ($proof_photograph == FALSE) {
@@ -131,7 +131,7 @@ final class client extends validation {
             }
         }
 
-        if ($_FILES['address_proof']['name'] != '') {
+        if (isset($_FILES['address_proof']['name']) && $_FILES['address_proof']['name'] != '') {
 
             $address_proof = $this->imageUploads($_FILES['address_proof'], 'kyc-docs', 'upload', $this->allowImageExt, 1048576, 'Max file Size 1 MB');
             if ($address_proof == FALSE) {
@@ -141,7 +141,7 @@ final class client extends validation {
             }
         }
 
-        if ($_FILES['certificate']['name'] != '' && $_FILES['certificate']['tmp_name'] != '') {
+        if (isset($_FILES['certificate']['name']) && $_FILES['certificate']['name'] != '' && $_FILES['certificate']['tmp_name'] != '') {
 
 			$extension = pathinfo($_FILES['certificate']['name'], PATHINFO_EXTENSION);
             if($extension == 'cer' || $extension == 'crt' || $extension == 'der' || $extension == 'pem') {
@@ -328,7 +328,7 @@ final class client extends validation {
             return false;
         }
 
-        if ($_FILES['proof_photograph']['name'] != '') {
+		if (isset($_FILES['proof_photograph']['name']) && $_FILES['proof_photograph']['name'] != '') {
 
             $proof_photograph = $this->imageUploads($_FILES['proof_photograph'], 'kyc-docs', 'upload', $this->allowImageExt, 1048576, 'Max file Size 1 MB');
             if ($proof_photograph == FALSE) {
@@ -338,7 +338,7 @@ final class client extends validation {
             }
         }
 
-        if ($_FILES['address_proof']['name'] != '') {
+        if (isset($_FILES['address_proof']['name']) && $_FILES['address_proof']['name'] != '') {
 
             $address_proof = $this->imageUploads($_FILES['address_proof'], 'kyc-docs', 'upload', $this->allowImageExt, 1048576, 'Max file Size 1 MB');
             if ($address_proof == FALSE) {
@@ -348,7 +348,7 @@ final class client extends validation {
             }
         }
 
-        if ($_FILES['certificate']['name'] != '' && $_FILES['certificate']['tmp_name'] != '') {
+        if (isset($_FILES['certificate']['name']) && $_FILES['certificate']['name'] != '' && $_FILES['certificate']['tmp_name'] != '') {
 
 			$extension = pathinfo($_FILES['certificate']['name'], PATHINFO_EXTENSION);
             if($extension == 'cer' || $extension == 'crt' || $extension == 'der' || $extension == 'pem') {
@@ -1016,9 +1016,9 @@ final class client extends validation {
 		}
 		
 		if (array_key_exists("export_bill_port_code", $dataArr)) {
-			$rules['export_bill_port_code'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Export Bill Port Code';
+			$rules['export_bill_port_code'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Export Bill Port Code';
 		}
-		
+
 		if (array_key_exists("export_bill_date", $dataArr)) {
 			$rules['export_bill_date'] = 'required||date|#|lable_name:Export Bill Date';
 		}
@@ -6898,11 +6898,11 @@ final class client extends validation {
 		if (array_key_exists("export_bill_number", $dataArr)) {
             $rules['export_bill_number'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Export Bill Number';
         }
-		
+
 		if (array_key_exists("export_bill_port_code", $dataArr)) {
-            $rules['export_bill_port_code'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||max:6|#|lable_name:Export Bill Port Code';
+            $rules['export_bill_port_code'] = 'pattern:/^[' . $this->validateType['content'] . ']+$/||max:6|#|lable_name:Export Bill Port Code';
         }
-		
+
 		if (array_key_exists("export_bill_date", $dataArr)) {
             $rules['export_bill_date'] = 'required||date|#|lable_name:Export Bill Date';
         }

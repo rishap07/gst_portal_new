@@ -25,7 +25,7 @@ $ciTable = $db_obj->getTableName('client_invoice');
 */
 $uLimit = "";
 if (isset($_POST['iDisplayStart']) && $_POST['iDisplayLength'] != '-1') {
-    $uLimit = "LIMIT " . $db_obj->escape($_POST['iDisplayStart']) . ", " . $db_obj->escape($_POST['iDisplayLength']);
+    $uLimit = " LIMIT " . $db_obj->escape($_POST['iDisplayStart']) . ", " . $db_obj->escape($_POST['iDisplayLength']);
 }
 
 /*
@@ -40,9 +40,12 @@ if (isset($_POST['iSortCol_0'])) {
             $uOrder .= $aColumns[intval($_POST['iSortCol_' . $i])] . " " .$db_obj->escape($_POST['sSortDir_' . $i]) . ", ";
         }
     }
+
     if ($uOrder == "ORDER BY ") {
         $uOrder = "ORDER BY ci.serial_number ASC";
     }
+
+	$uOrder = rtrim($uOrder,", ");
 }
 
 /*
@@ -71,7 +74,7 @@ if(isset($params['supply_type']) && !empty($params['supply_type'])) {
 }
 
 if(isset($params['reference_number']) && !empty($params['reference_number'])) {
-	$uWhere .= " AND ci.reference_number = '" . $params['reference_number'] ."'";
+	$uWhere .= " AND ci.reference_number LIKE '%" . $params['reference_number'] ."%'";
 }
 
 if(isset($params['place_of_supply']) && !empty($params['place_of_supply'])) {
@@ -193,6 +196,7 @@ if(isset($rResult) && !empty($rResult)) {
 		$row[] = html_entity_decode($aRow->billing_name);
 		$row[] = $aRow->billing_gstin_number;
 		$row[] = $aRow->billing_state_name;
+		$row[] = $aRow->invoice_total_value;
 		
 		if($aRow->invoice_type == "taxinvoice") {
 			$row[] = '<a target="_blank" href="'.PROJECT_URL.'/?page=client_invoice_list&action=printInvoice&id='.$aRow->invoice_id.'" class="btn btn-success mr-r-5">Print</a><a target="_blank" href="'.PROJECT_URL.'/?page=client_update_invoice&action=editInvoice&id='.$aRow->invoice_id.'" class="btn btn-warning">Edit</a>';

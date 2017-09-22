@@ -5,7 +5,7 @@ $obj_gstr1 = new gstr1();
 $dataCurrentUserArr = $obj_gstr1->getUserDetailsById( $obj_gstr1->sanitize($_SESSION['user_detail']['user_id']) );
 //z$obj_gstr1->pr($dataCurrentUserArr['data']);die;
 
-if($dataCurrentUserArr['data']->kyc->vendor_type!='1'){
+if(isset($dataCurrentUserArr['data']->kyc->vendor_type) && $dataCurrentUserArr['data']->kyc->vendor_type!='1'){
     $obj_gstr1->setError("Invalid Access to file");
     $obj_gstr1->redirect(PROJECT_URL . "/?page=dashboard");
    exit();

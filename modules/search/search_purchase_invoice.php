@@ -132,6 +132,7 @@ if(!$db_obj->can_read('client_invoice')) {
 								<th align='center'>Supplier Name</th>
 								<th align='center'>Supplier GSTIN</th>
 								<th align='center'>Supplier State</th>
+								<th align='center'>Invoice Value(<i class="fa fa-inr" aria-hidden="true"></i>)</th>
 								<th width="120">Action</th>
 							</tr>
 						</thead>
@@ -208,6 +209,7 @@ if(!$db_obj->can_read('client_invoice')) {
                         {"bSortable": false},
 						{"bSortable": false},
                         {"bSortable": false},
+						{"bSortable": false},
 						{"bSortable": false},
                         {"bSortable": false}
                     ],

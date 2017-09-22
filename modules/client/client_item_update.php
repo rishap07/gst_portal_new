@@ -198,6 +198,10 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
 		$("#item_category_name").on("input", function() {
 			$("#item_category").val("");
 			$("#item_hsn_code").text("HSN/SAC Code");
+			$("#cgst_tax_rate").val("");
+			$("#sgst_tax_rate").val("");
+			$("#igst_tax_rate").val("");
+			$("#cess_tax_rate").val("");
 		});
 		/* End of on chnage of item category */
 

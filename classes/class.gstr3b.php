@@ -837,14 +837,16 @@ final class gstr3b extends validation {
 		$fmonth =   $this->sanitize($_GET['returnmonth']);
 		$userid = $_SESSION['user_detail']['user_id'];
 
-         /*  
+           
 		$obj_gst = new gstr();
         $payload = $this->gstr3bData($userid, $fmonth);
+		$this->pr($payload);
         $dataArr = $payload['data_arr'];
         $response = $obj_gst->returnSave($dataArr, $fmonth,'gstr3b');
+		$this->pr($response);
        die;
-	   */
-
+	   
+     /*
 		if($this->update(TAB_PREFIX.'client_return_gstr3b', array('final_submit' => 1), array('return_id' => $return_id)))
 		{
 			$this->setSuccess('GSTR3B Submitted Successfully');
@@ -852,6 +854,7 @@ final class gstr3b extends validation {
 
 			return true;
 		}
+		*/
     }
     public function gst3bPayloadHeader($user_id, $returnmonth) {
         $obj_gst = new gstr();
