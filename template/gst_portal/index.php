@@ -7,7 +7,7 @@ if(isset($_POST['plan']) && $_POST['plan'] != ''){
 if (isset($_COOKIE['preserveKey']) && $_COOKIE['preserveKey'] != '') {
 
 	$preserveSet = $obj_login->getPreserveData($_COOKIE['preserveKey']);
-    if (count($preserveSet)) {
+    if (count($preserveSet) && isset($preserveSet->user_id)) {
         $userData = $obj_login->getUserDetailsById($preserveSet->user_id);
         $_SESSION['user_detail']['user_id'] = $userData['data']->user_id;
         $_SESSION['user_detail']['username'] = $userData['data']->username;
