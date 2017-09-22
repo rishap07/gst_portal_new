@@ -50,8 +50,8 @@ define('SMTP_PASSWORD', "");
 #-------------------------------------------------------------------------------
 # WEBSITE DEFAULT PARAMETERS
 #-------------------------------------------------------------------------------
-define('CMS_FRONT_TITLE', "OBC ADMIN PORTAL");
-define('CMS_ADMIN_TITLE', "OBC ADMIN PANEL");
+define('CMS_FRONT_TITLE', "GSTKEEPER ADMIN PORTAL");
+define('CMS_ADMIN_TITLE', "GSTKEEPER ADMIN PANEL");
 
 define('ROOT_DIR', "/projects/gst_portal_new");
 #-------------------------------------------------------------------------------
@@ -149,16 +149,23 @@ define('SCRIPT_URL', PROJECT_URL . SCRIPT_DIR);
 #-------------------------------------------------------------------------------
 # API URLS
 #------------------------- DEMO ----------------------------------------------
-//define('API_CLIENT_ID', 'l7xx1ed437f1e18347c38bd2aad6e6dd3b3c');
-//define('API_CLIENT_SECRET', 'a9bcf665fe424883b7b94791eb31f667');
+define('API_CLIENT_ID', 'l7xx1ed437f1e18347c38bd2aad6e6dd3b3c');
+define('API_CLIENT_SECRET', 'a9bcf665fe424883b7b94791eb31f667');
+define('API_OTP_URL', 'http://gsp.karvygst.com/v0.3/authenticate');
+define('API_AUTH_URL', 'http://gsp.karvygst.com/v0.3/authenticate');
+define('API_RETURN_URL', 'http://gsp.karvygst.com/v0.3/returns');
+
+
 #---------------------- LIVE ------------------------------------------
-define('API_CLIENT_ID', 'l7xx77bf62d48fd045ffbbe6ad958d11a372');
-define('API_CLIENT_SECRET', 'b4afd81551ec4f8f969b171bc4373340');
+//define('API_OTP_URL', 'https://gspapi.karvygst.com/Authenticate');
+//define('API_AUTH_URL', 'https://gspapi.karvygst.com/Authenticate');
+//define('API_RETURN_URL', 'https://gspapi.karvygst.com/returns');
+
+//define('API_CLIENT_ID', 'l7xx77bf62d48fd045ffbbe6ad958d11a372');
+//define('API_CLIENT_SECRET', 'b4afd81551ec4f8f969b171bc4373340');
 
 define('API_TXN', 'TXN789123456789');
 define('API_IP', '203.197.205.110');
-
-
 
 function __autoload($class) {
     $class = strtolower($class);
