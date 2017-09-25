@@ -5,6 +5,8 @@ if(!$db_obj->can_read('client_invoice')) {
     $db_obj->redirect(PROJECT_URL."/?page=dashboard");
     exit();
 }
+
+//$db_obj->uploadClientTallyInvoice();
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">

@@ -350,7 +350,7 @@ class login extends validation {
 
 				if ($time_diff > 15) {
 
-                    if ($this->sendMail('Email Verify', 'User ID : ' . $userid . ' email forgotPassword', $data[0]->email, 'noreply@gstkeeper.com', '', 'rishap.gandhi@cyfuture.com,sheetalprasad95@gmail.com', '', 'Password Reset', $this->getEmailVerifyMailBody($userid, $name))) {
+                    if ($this->sendMail('forgotPassword', 'User ID : ' . $userid . ' email forgotPassword', $data[0]->email, 'noreply@gstkeeper.com', '', 'rishap.gandhi@cyfuture.com,sheetalprasad95@gmail.com', '', 'Password Reset', $this->getEmailVerifyMailBody($userid, $name))) {
 
                         $this->setSuccess('Kindly check your email for verification');
                         return true;
@@ -363,7 +363,7 @@ class login extends validation {
                     return false;
                 }
             } else {
-                if ($this->sendMail('Email Verify', 'User ID : ' . $userid . ' email forgotPassword', $data[0]->email, 'noreply@gstkeeper.com', '', 'rishap.gandhi@cyfuture.com', '', 'Password Reset', $this->getEmailVerifyMailBody($userid, $name))) {
+                if ($this->sendMail('forgotPassword', 'User ID : ' . $userid . ' email forgotPassword', $data[0]->email, 'noreply@gstkeeper.com', '', 'rishap.gandhi@cyfuture.com', '', 'Password Reset', $this->getEmailVerifyMailBody($userid, $name))) {
                     $this->setSuccess('Kindly check your email for verification');
                     return true;
                 } else {

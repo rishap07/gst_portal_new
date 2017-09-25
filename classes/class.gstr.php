@@ -102,8 +102,14 @@ final class gstr extends validation {
     public function getCertificateKey()
     {
         if(empty($_SESSION['app_key'])) {
-            $pem_private_key = file_get_contents(PROJECT_ROOT.'/modules/api/GSTN_Public_Key/GSTN_G2B_Prod_Public.pem');
-            $private_key = openssl_pkey_get_public($pem_private_key);
+            if(API_TYPE == 'Demo') {
+                $pem_private_key = file_get_contents(PROJECT_ROOT.'/modules/api/GSTN_Public_Key/GSTN_private.pem');
+                $private_key = openssl_pkey_get_private($pem_private_key);
+            }
+            else {
+                $pem_private_key = file_get_contents(PROJECT_ROOT.'/modules/api/GSTN_Public_Key/GSTN_G2B_Prod_Public.pem');
+                $private_key = openssl_pkey_get_public($pem_private_key);
+            }
             $pem_public_key = openssl_pkey_get_details($private_key)['key'];
             $public_key = openssl_pkey_get_public($pem_public_key);
             $encrypted="";
@@ -135,6 +141,10 @@ final class gstr extends validation {
     {
         //return true;
         $this->gstr_session_destroy();
+        if(API_TYPE == 'Demo') {
+            return true;
+        }
+        
         $this->keyGeneration();
         $this->getCertificateKey();
        
@@ -159,7 +169,7 @@ final class gstr extends validation {
         $dataGST1['code'] =  $code;
         $dataGST1['inserted_date'] =  date('Y-m-d H:i:s');
         $this->insert($this->getTableName('otp_request'), $dataGST1);
-        
+
         if(isset($data->status_cd) && $data->status_cd=='1')
         {
             return true;
@@ -178,6 +188,10 @@ final class gstr extends validation {
     public function authenticateToken($otp,$code='')
     { 
         //return true;
+        if(API_TYPE == 'Demo') {
+            $this->keyGeneration();
+            $this->getCertificateKey();
+        }
         $otp_code = $_SESSION['otp'] = $otp;
         if(empty($_SESSION['ciphertext_enc'])) {
             $ciphertext_enc = $this->getOTPEncypt($_SESSION['otp']);
@@ -188,7 +202,7 @@ final class gstr extends validation {
         $username = $this->username();
         $data = array("username" => $username, "action" => 'AUTHTOKEN', "app_key" => $_SESSION['app_key'], "otp" =>$otp);
         $data_string = json_encode($data);
-        
+        //$this->pr($data);
         //Start code for create header
         $header_array = array(
             'Content-Length: ' . strlen($data_string).'',
@@ -207,8 +221,7 @@ final class gstr extends validation {
         $dataGST1['code'] =  $code;
         $dataGST1['inserted_date'] =  date('Y-m-d H:i:s');
         $this->insert($this->getTableName('otp_request'), $dataGST1);
-       
-        //$this->pr($data);
+        
         if(isset($data->status_cd) && $data->status_cd=='1')
         {
             $session_key = $data->sek;
@@ -255,7 +268,7 @@ final class gstr extends validation {
     }
     
     public function returnSave($dataArr,$returnmonth,$jstr) {
-
+        //$this->pr();
         $msg = $return_encode = '';
         $error = 1;
         $response = array();
@@ -803,8 +816,8 @@ final class gstr extends validation {
         $ip_usr = API_IP;
         $state_cd = $this->state_cd();
         $txn= API_TXN;
-        $karvyclientid= 'VYFKG###fdkfjf';
-        $karvyclientsecret= 'VYFdd##fdkfjf';
+        $karvyclientid= API_KARVI_ID;
+        $karvyclientsecret= API_KARVI_SECRET;
 
         $header_new_array = array();
 

@@ -51,17 +51,48 @@ class common extends db {
     }
 
     public function sendVerifcationEmail() {
-        $data = $this->get_results("select * from " . TAB_PREFIX . "user where user_id='" . $_SESSION['user_detail']['user_id'] . "'");
+		
+		$data = $this->get_results("select * from " . TAB_PREFIX . "user where user_id='" . $_SESSION['user_detail']['user_id'] . "'");
         if ($data[0]->email_verify == '0') {
             $name = $data[0]->first_name;
-            if ($this->sendMail('Email Verify', 'User ID : ' . $_SESSION['user_detail']['user_id'] . ' email verfication', $data[0]->email, 'noreply@gstkeeper.com', '', 'rishap.gandhi@cyfuture.com', '', 'Verify Your Email Address', $this->getEmailVerifyMailBody($name))) {
-                $this->setSuccess('A confirmation mail has been sent to you (Kindly check your inbox & spam folder). <strong>Confirm your e-mail</strong> by clicking on the link in the mail. ');
-            } else {
-                $this->setError('Try again, there is some issue in sending an email.');
-            }
-        } else {
-            $this->setError('It looks like you`ve already verified your email address with us. Thanks!');
-        }
+			$email = $data[0]->email;
+		    $query = "select * from " . TAB_PREFIX . "email where to_send='" . $email . "' and module='Email Verify' order by id desc limit 0,1";
+            $emaildata = $this->get_results($query);
+					if (count($emaildata) > 0) {
+
+						$to_time = $emaildata[0]->datetime;
+						$to_time = strtotime($to_time);
+						$from_time = strtotime(date('Y-m-d H:i:s'));
+						$time_diff = round(abs($to_time - $from_time) / 60, 2);
+
+						if ($time_diff > 15) {
+						
+							if ($this->sendMail('Email Verify', 'User ID : ' . $_SESSION['user_detail']['user_id'] . ' email verfication', $data[0]->email, 'noreply@gstkeeper.com', '', 'rishap.gandhi@cyfuture.com', '', 'Verify Your Email Address', $this->getEmailVerifyMailBody($name))) {
+							$this->setSuccess('A confirmation mail has been sent to you (Kindly check your inbox & spam folder). <strong>Confirm your e-mail</strong> by clicking on the link in the mail. ');
+							}
+							else {
+							$this->setError('Try again, there is some issue in sending an email.');
+							}   
+							
+						} else {
+							$this->setError('Email is already sent please check your mailbox or try again after 15 minutes');
+							return false;
+						}
+					}
+					else
+					{
+						   if ($this->sendMail('Email Verify', 'User ID : ' . $_SESSION['user_detail']['user_id'] . ' email verfication', $data[0]->email, 'noreply@gstkeeper.com', '', 'rishap.gandhi@cyfuture.com', '', 'Verify Your Email Address', $this->getEmailVerifyMailBody($name))) {
+							$this->setSuccess('A confirmation mail has been sent to you (Kindly check your inbox & spam folder). <strong>Confirm your e-mail</strong> by clicking on the link in the mail. ');
+							}
+							else {
+							$this->setError('Try again, there is some issue in sending an email.');
+							}   
+					}
+		}
+		else
+		{
+	     $this->setError('It looks like you`ve already verified your email address with us. Thanks!');
+		}
     }
 
     private function getEmailVerifyMailBody($name) {
@@ -117,7 +148,8 @@ class common extends db {
         $dataInsertArray['attachment'] = $attachment;
         $dataInsertArray['subject'] = $subject;
         $dataInsertArray['body'] = $body;
-
+		$dataInsertArray['datetime'] =  date('Y-m-d H:i:s');
+   
         if ($this->insert($this->tableNames['email'], $dataInsertArray)) {
             return true;
         } else {
@@ -1617,5 +1649,50 @@ class common extends db {
 
         return $dataArr;
     }
+	
+	public function uploadClientTallyInvoice() {
+
+		$flag = true;
+		$errorflag = false;
+		$dataArray = array();
+		$indexArray = array();
+		$invoiceArray = array();
+		$invoiceItemArray = array();
+		$currentFinancialYear = $this->generateFinancialYear();
+
+		$invoice_excel_dir_path = PROJECT_ROOT . "/gstr-1.xlsx";
+
+		$inputFileType = PHPExcel_IOFactory::identify($invoice_excel_dir_path);
+		$objReader = PHPExcel_IOFactory::createReader($inputFileType);
+		$objReader->setReadDataOnly(true);
+		$objPHPExcel = $objReader->load($invoice_excel_dir_path);
+
+		echo "<pre>";
+        foreach ($objPHPExcel->getAllSheets() as $sheet) {
+			
+			echo $sheet->getTitle();
+			echo "<br>";
+			
+			$sheetData = $sheet->toArray(null, true, true, true);
+			$sheetData = array_map('array_filter', $sheetData);
+			$sheetData = array_filter($sheetData);
+			
+			print_r($sheetData);
+        }
+		echo "</pre>";
+		die;
+
+		$sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+		$sheetData = array_map('array_filter', $sheetData);
+		$sheetData = array_filter($sheetData);
+		
+		echo "<pre>";
+		print_r($sheetData);
+		echo "</pre>";
+		die;
+		
+		foreach ($sheetData as $rowKey => $data) {
+		}
+	}
 }
 ?>

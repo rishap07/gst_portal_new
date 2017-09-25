@@ -1169,7 +1169,7 @@ final class master extends validation {
         $rules = array(
             'name' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Contact Name',
             'company_name' => 'pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Business Name',
-            'email' => 'required||email|#|lable_name:Email Address',
+            'email' => 'email|#|lable_name:Email Address',
             'address' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:Address',
             'city' => 'required||pattern:/^[' . $this->validateType['content'] . ']+$/|#|lable_name:City',
             'state' => 'required|#|lable_name:State',

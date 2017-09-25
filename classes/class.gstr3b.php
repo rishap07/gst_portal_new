@@ -831,20 +831,123 @@ final class gstr3b extends validation {
 
 		exit;
 	}
+	public function checkoffsetLiability()
+	{
+    /***** Start Code For total taxpayable otherthan reverse charge ********** */
+	$totaligst_amount_other=isset($_POST['taxpayable_igst_other']) ? $_POST['taxpayable_igst_other'] : '';
+	$totalcgst_amount_other=isset($_POST['taxpayable_cgst_other']) ? $_POST['taxpayable_cgst_other'] : '';
+	$totalsgst_amount_other=isset($_POST['taxpayable_sgst_other']) ? $_POST['taxpayable_sgst_other'] : '';
+	$totalcess_amount_other=isset($_POST['taxpayable_cess_other']) ? $_POST['taxpayable_cess_other'] : '';
+	/***** end Code For total taxpayable otherthan reverse charge ********** */
+	 /***** Start Code For total taxpayable reverse charge ********** */
+	$totaligst_amount_reverse=isset($_POST['taxpayable_igst_reverse']) ? $_POST['taxpayable_igst_reverse'] : '';
+	$totalcgst_amount_reverse=isset($_POST['taxpayable_cgst_reverse']) ? $_POST['taxpayable_cgst_reverse'] : '';
+	$totalsgst_amount_reverse=isset($_POST['taxpayable_sgst_reverse']) ? $_POST['taxpayable_sgst_reverse'] : '';
+	$totalcess_amount_reverse=isset($_POST['taxpayable_cess_reverse']) ? $_POST['taxpayable_cess_reverse'] : '';
+	 /***** End Code For total taxpayable reverse charge ********** */
+	/***** Start Code For total taxpayable through ITC Integrated Tax ********** */
+	$paiditcigst_igst=0;
+	$paiditcigst_cgst=0;
+	$paiditcigst_sgst=0;
+	$taxpaidigst_igst=0;
+	$paiditcigst_igst=isset($_POST['paiditcigst_igst']) ? $_POST['paiditcigst_igst'] : '';
+	$paiditcigst_cgst=isset($_POST['paiditcigst_cgst']) ? $_POST['paiditcigst_cgst'] : '';
+	$paiditcigst_sgst=isset($_POST['paiditcigst_sgst']) ? $_POST['paiditcigst_sgst'] : '';
+	$taxpaidigst_igst=isset($_POST['taxpaidigst_igst']) ? $_POST['taxpaidigst_igst'] : '';
+	   if(($paiditcigst_igst+$paiditcigst_cgst+$paiditcigst_sgst+$taxpaidigst_igst)!=$totaligst_amount_other)
+		{
+		$this->setError('Please check offset value for integrated tax values are not equal');
+		}
+	/***** end Code For total taxpayable through ITC Integrated Tax ********** */
+	/***** Start Code For total taxpayable through ITC central Tax ********** */	
+   	$paiditccgst_igst=isset($_POST['paiditccgst_igst']) ? $_POST['paiditccgst_igst'] : '';
+	$paiditccgst_cgst=isset($_POST['paiditccgst_cgst']) ? $_POST['paiditccgst_cgst'] : '';
+	$taxpaidcgst_igst=isset($_POST['taxpaidcgst_igst']) ? $_POST['taxpaidcgst_igst'] : '';
+	if(($paiditccgst_igst+$paiditccgst_cgst+$taxpaidcgst_igst)!=$totalcgst_amount_other)
+		{
+		$this->setError('Please check offset value for central tax values are not equal');
+		}
+   /***** end Code For total taxpayable through ITC central Tax ********** */
+   /***** Start Code For total taxpayable through ITC state Tax ********** */
+    $paiditccgst_igst=0;
+	$paiditcsgst_sgst=0;
+	$taxpaidsgst_sgst=0;
+   	$paiditcsgst_igst=isset($_POST['paiditcsgst_igst']) ? $_POST['paiditcsgst_igst'] : '';
+	$paiditcsgst_sgst=isset($_POST['paiditcsgst_sgst']) ? $_POST['paiditcsgst_sgst'] : '';
+	$taxpaidsgst_sgst=isset($_POST['taxpaidsgst_sgst']) ? $_POST['taxpaidsgst_sgst'] : '';
+	if(($paiditccgst_igst+$paiditccgst_cgst+$taxpaidsgst_sgst)!=$totalsgst_amount_other)
+		{
+		$this->setError('Please check offset value for state tax values are not equal');
+		}
+   /***** end Code For total taxpayable through ITC state Tax ********** */
+    /***** Start Code For total taxpayable through ITC cess Tax ********** */	
+   	$paiditccess_cess=isset($_POST['paiditccess_cess']) ? $_POST['paiditccess_cess'] : '';
+	$taxpaidcess_cess=isset($_POST['taxpaidcess_cess']) ? $_POST['taxpaidcess_cess'] : '';
+	if(($paiditccess_cess+$taxpaidcess_cess)!=$totalcess_amount_other)
+		{
+		$this->setError('Please check offset value for state tax values are not equal');
+		}
+   /***** end Code For total taxpayable through ITC cess Tax ********** */
+   /* start code for check toal available IGST value */
+	$total_igst_available='';
+	$total_cgst_available='';
+	$total_sgst_available='';
+	$total_cess_available='';
+	if($paiditcigst_igst+$paiditccgst_igst+$paiditcsgst_igst!=$total_igst_available)
+	{
+	$this->setError('Please check integrated tax value it can not be greater than total available IGST');
+
+	}
+	 /* end code for check toal available IGST value */
+	 /* start code for check toal available central tax value */
+	if($paiditcigst_cgst+$paiditccgst_cgst!=$total_cgst_available)
+	{
+	$this->setError('Please check central tax value it can not be greater than total available CGST');
+
+	}
+	 /* end code for check toal available central tax value */
+	  /* start code for check toal available state tax value */
+	if($paiditcigst_sgst+$paiditcsgst_sgst!=$total_sgst_available)
+	{
+	$this->setError('Please check state tax value it can not be greater than total available SGST');
+
+	}
+	 /* end code for check toal available state tax value */
+	   /* start code for check toal available cess tax value */
+	if($paiditccess_cess!=$total_cess_available)
+	{
+	$this->setError('Please check cess tax value it can not be greater than total available CESS value');
+
+	}
+	 /* end code for check toal available cess tax value */
+	
+	
+	}
     public function finalSaveGstr3b()
     {
 		$return_id =   isset($_POST['returnid']) ? $_POST['returnid'] : '';
 		$fmonth =   $this->sanitize($_GET['returnmonth']);
 		$userid = $_SESSION['user_detail']['user_id'];
-
-           
+       
 		$obj_gst = new gstr();
         $payload = $this->gstr3bData($userid, $fmonth);
-		$this->pr($payload);
+		//$this->pr($payload);
+		//echo  json_encode($payload);
+		
         $dataArr = $payload['data_arr'];
         $response = $obj_gst->returnSave($dataArr, $fmonth,'gstr3b');
-		$this->pr($response);
-       die;
+		
+		//$this->pr($response);
+		if ($response['error'] == 2) {
+           $this->setError($response['message']);
+		}
+		else if($response['error'] == 0) {
+			 $this->setSuccess($response['message']);
+		} 
+        else
+		{
+			$this->setError($response['message']);
+		}			
 	   
      /*
 		if($this->update(TAB_PREFIX.'client_return_gstr3b', array('final_submit' => 1), array('return_id' => $return_id)))
@@ -935,11 +1038,20 @@ final class gstr3b extends validation {
 					$str3  = substr($gstr3bUnRegisteredData[0]->amount_of_integrated_tax,0,-1);
 					$str3 = (explode(",",$str3));
                 	foreach ($str1 as $ukey => $str1_val) {
-
-	                	$dataArr['inter_sup']['unreg_details'][$u]['pos'] = $str1_val;
-		                $dataArr['inter_sup']['unreg_details'][$u]['txval'] = (float)$str2[$ukey];
-		                $dataArr['inter_sup']['unreg_details'][$u]['iamt'] = (float)$str3[$ukey];
-		                $u++;
+						 if(count($str1) > 1)
+						{
+							$dataArr['inter_sup']['unreg_details'][$u]['pos'] = $str1_val;
+							$dataArr['inter_sup']['unreg_details'][$u]['txval'] = (float)$str2[$ukey];
+							$dataArr['inter_sup']['unreg_details'][$u]['iamt'] = (float)$str3[$ukey];
+							$u++;
+						}
+						else
+						{
+							$dataArr['inter_sup']['unreg_details']['pos'] = $str1_val;
+							$dataArr['inter_sup']['unreg_details']['txval'] = (float)$str2[$ukey];
+							$dataArr['inter_sup']['unreg_details']['iamt'] = (float)$str3[$ukey];
+							
+						}
 	                }
                 }
                 
@@ -953,11 +1065,20 @@ final class gstr3b extends validation {
 					$str3  = substr($gstr3bTaxableData[0]->amount_of_integrated_tax,0,-1);
 					$str3 = (explode(",",$str3));
                 	foreach ($str1 as $ukey => $str1_val) {
-
+                      
+					  if(count($str1) > 1)
+					  {
 	                	$dataArr['inter_sup']['comp_details'][$u]['pos'] = $str1_val;
 		                $dataArr['inter_sup']['comp_details'][$u]['txval'] = (float)$str2[$ukey];
 		                $dataArr['inter_sup']['comp_details'][$u]['iamt'] = (float)$str3[$ukey];
 		                $u++;
+					  }
+					  else{
+						$dataArr['inter_sup']['comp_details']['pos'] = $str1_val;
+		                $dataArr['inter_sup']['comp_details']['txval'] = (float)$str2[$ukey];
+		                $dataArr['inter_sup']['comp_details']['iamt'] = (float)$str3[$ukey];
+		               
+					  }
 	                }
                 }
 
@@ -971,11 +1092,21 @@ final class gstr3b extends validation {
 					$str3  = substr($gstr3bUinHolderData[0]->amount_of_integrated_tax,0,-1);
 					$str3 = (explode(",",$str3));
                 	foreach ($str1 as $ukey => $str1_val) {
-
-	                	$dataArr['inter_sup']['uin_details'][$u]['pos'] = $str1_val;
-		                $dataArr['inter_sup']['uin_details'][$u]['txval'] = (float)$str2[$ukey];
-		                $dataArr['inter_sup']['uin_details'][$u]['iamt'] = (float)$str3[$ukey];
-		                $u++;
+                     
+						 if(count($str1) > 1)
+						 {
+							$dataArr['inter_sup']['uin_details'][$u]['pos'] = $str1_val;
+							$dataArr['inter_sup']['uin_details'][$u]['txval'] = (float)$str2[$ukey];
+							$dataArr['inter_sup']['uin_details'][$u]['iamt'] = (float)$str3[$ukey];
+							$u++;
+						 }
+						 else
+						 {
+							$dataArr['inter_sup']['uin_details']['pos'] = $str1_val;
+							$dataArr['inter_sup']['uin_details']['txval'] = (float)$str2[$ukey];
+							$dataArr['inter_sup']['uin_details']['iamt'] = (float)$str3[$ukey];
+							
+						 }
 	                }
                 }
 

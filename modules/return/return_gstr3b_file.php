@@ -1,8 +1,9 @@
 <?php
-
+$obj_gstr = new gstr();
 $obj_return = new gstr3b();
-$obj_master = new master();
+//$obj_master = new master();
 $returnmonth = date('Y-m');
+//$obj_return->pr($_POST);
 if(isset($_POST['returnmonth']))
 {
     $returnmonth = $_POST['returnmonth'];
@@ -27,7 +28,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
         } 
    // }
 }
-if(isset($_POST['finalsubmit']) && $_POST['finalsubmit']=='final submit') {
+if(isset($_POST['final_returnid']) && $_POST['final_returnid']!='') {
  
   //$flag = $obj_return->checkVerifyUser();
  // if($flag=='verify')
@@ -213,7 +214,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
         if (!empty($supply_composition_data)) {
          // $total = $tdsTotData[0]->cgst_amount + $b2bItemData[0]->sgst_amount + $tdsTotData[0]->igst_amount + $tdsTotData[0]->cess_amount;
          }
-	$flag = $obj_master->getVendorName('uin holder');
+	$flag = $db_obj->getVendorName('uin holder');
 	   $vendor_id=0;
 		if($flag!=0)
 		{
@@ -317,10 +318,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
                                 <!--<li><a href="#"><div data-toggle="tooltip" data-placement="bottom" title="Attached File"><i class="fa fa-paperclip" aria-hidden="true"></i></div></a></li>-->
                          </ul>
 							</div><?php } ?>
-                       <form method="post" enctype="multipart/form-data" id='form'> 
+                       <form method="post" enctype="multipart/form-data" id='form' name="form4"> 
                     	<div class="greyheading">3.1 Details of Outward Supplies and inward supplies liable to reverse charge</div>
                            <div class="tableresponsive">
-						   <form method="post" enctype="multipart/form-data" id='form'>
+						  
                             <table  class="table  tablecontent tablecontent2 bordernone">
                                 <thead>
                                 <tr>
@@ -2899,8 +2900,9 @@ composition taxable persons and UIN holders</div>
                             <div class="tc">
                                <input type="button" value="<?php echo ucfirst('Edit'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_gstr3b_file_submit&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/>
 							    <input type='submit' class="btn btn-danger" name='cleardata' value='clear data' id='cleardata'>
-							  <input type='submit' class="btn btn-success" name='finalsubmit' value='final submit' id='finalsubmit'>
+							  <input type='submit' class="btn btn-success" name='finalsubmit' value='final submit' id='gstr1_summary_download'>
 							  <input type='hidden' name="returnid" id="returnid" value="<?php echo $returndata[0]->return_id; ?>" />
+							<input type='hidden' name="final_returnid" id="final_returnid" value="<?php echo $returndata[0]->return_id; ?>" />
 									
                                
                             </div>
@@ -2931,7 +2933,11 @@ composition taxable persons and UIN holders</div>
     </div>
            <!--CONTENT START HERE-->
 		   </form>
-        <div class="clear"></div>  	
+        <div class="clear"></div> 
+<?php 
+$obj_gstr->DownloadSummaryOtpPopupJs();
+?>		
+	
 <script type="text/javascript">
     $(document).ready(function(){
 		
