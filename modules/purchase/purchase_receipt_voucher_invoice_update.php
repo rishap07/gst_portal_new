@@ -337,8 +337,8 @@
 
 				<div class="row">
 					<div class="col-md-12 form-group">
-						<label>Description</label>
-						<textarea placeholder="Enter Description" class="form-control" name="description" id="description" data-bind="content"><?php echo $invoiceData[0]->description; ?></textarea>
+						<label>Additional Notes</label>
+						<textarea placeholder="Enter Additional Notes" class="form-control" name="description" id="description" data-bind="content"><?php echo $invoiceData[0]->description; ?></textarea>
 					</div>
 				</div>
 
@@ -675,11 +675,13 @@
 						</div>
 						
 						<div class='col-sm-4'>
-							<label for="status">Status <span class="starred">*</span></label>
-							<select name="status" id="status" class="required form-control">
-								<option value="1">Active</option>
-								<option value="0">Inactive</option>
-							</select>
+							<div class='form-group'>
+								<label for="status">Status <span class="starred">*</span></label>
+								<select name="status" id="status" class="required form-control">
+									<option value="1">Active</option>
+									<option value="0">Inactive</option>
+								</select>
+							</div>
 						</div>
 					</div>
 					
@@ -687,7 +689,7 @@
 						<div class='col-sm-4'>
 							<div class='form-group'>
 								<label for="item_description">Description </label>
-								<textarea placeholder="Item Unit Price" name='item_description' id="item_description" data-bind="content" class="form-control" /></textarea>
+								<textarea placeholder="Item Description" name='item_description' id="item_description" data-bind="content" class="form-control" /></textarea>
 							</div>
 						</div>
 					</div>

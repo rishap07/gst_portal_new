@@ -394,8 +394,8 @@
 
 				<div class="row">
 					<div class="col-md-12 form-group">
-						<label>Description</label>
-						<textarea placeholder="Enter Description" class="form-control" name="description" id="description" data-bind="content"><?php echo $invoiceData[0]->description; ?></textarea>
+						<label>Additional Notes</label>
+						<textarea placeholder="Enter Additional Notes" class="form-control" name="description" id="description" data-bind="content"><?php echo $invoiceData[0]->description; ?></textarea>
 					</div>
 				</div>
 
@@ -456,7 +456,7 @@
 									<input type="text" id="invoice_tr_<?php echo $counter; ?>_description" name="invoice_description[]" class="inptxt" data-bind="content" placeholder="Enter Description" style="width:120px;" value="<?php echo $invData->item_description; ?>" />
 								</td>
 								<td>
-									<input type="text" id="invoice_tr_<?php echo $counter; ?>_quantity" name="invoice_quantity[]" class="required validateDecimalValue invoiceQuantity inptxt" data-bind="decimal" value="<?php echo $invData->item_quantity; ?>" placeholder="0" style="width:100px;" />
+									<input type="text" id="invoice_tr_<?php echo $counter; ?>_quantity" name="invoice_quantity[]" class="required validateDecimalValue invoiceQuantity inptxt" data-bind="decimal" value="<?php echo $invData->item_quantity; ?>" placeholder="Enter Quantity" style="width:100px;" />
 								</td>
 								<td>
 									<select name="invoice_unit[]" id="invoice_tr_<?php echo $counter; ?>_unit" class="required inptxt" style="width:100px;">
@@ -756,11 +756,13 @@
 						</div>
 						
 						<div class='col-sm-4'>
-							<label for="status">Status <span class="starred">*</span></label>
-							<select name="status" id="status" class="required form-control">
-								<option value="1">Active</option>
-								<option value="0">Inactive</option>
-							</select>
+							<div class='form-group'>
+								<label for="status">Status <span class="starred">*</span></label>
+								<select name="status" id="status" class="required form-control">
+									<option value="1">Active</option>
+									<option value="0">Inactive</option>
+								</select>
+							</div>
 						</div>
 					</div>
 					
@@ -768,12 +770,12 @@
 						<div class='col-sm-4'>
 							<div class='form-group'>
 								<label for="item_description">Description </label>
-								<textarea placeholder="Item Unit Price" name='item_description' id="item_description" data-bind="content" class="form-control" /></textarea>
+								<textarea placeholder="Item Description" name='item_description' id="item_description" data-bind="content" class="form-control" /></textarea>
 							</div>
 						</div>
 					</div>
 				</div>
-				
+
 				<div class="modal-footer">
 					<input type='submit' class="btn btn-success" name='submit' value='SUBMIT' id='add-item-submit'>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -1322,7 +1324,7 @@
 				newtr += '</td>';
                 newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_hsncode" name="invoice_hsncode[]" readonly="true" class="inptxt" data-bind="content" placeholder="HSN/SAC Code" style="width:120px;" /></td>';
                 newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_description" name="invoice_description[]" class="inptxt" data-bind="content" placeholder="Enter Description" style="width:120px;" /></td>';
-				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_quantity" name="invoice_quantity[]" class="required validateDecimalValue invoiceQuantity inptxt" value="0" placeholder="0" style="width:100px;" /></td>';
+				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_quantity" name="invoice_quantity[]" class="required validateDecimalValue invoiceQuantity inptxt" value="0" placeholder="Enter Quantity" style="width:100px;" /></td>';
 
 				newtr += '<td>';
 					newtr += '<select name="invoice_unit[]" id="invoice_tr_'+nexttrid+'_unit" class="required inptxt" style="width:100px;">';

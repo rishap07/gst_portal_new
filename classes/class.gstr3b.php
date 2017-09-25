@@ -932,7 +932,7 @@ final class gstr3b extends validation {
 		$obj_gst = new gstr();
         $payload = $this->gstr3bData($userid, $fmonth);
 		//$this->pr($payload);
-		//echo  json_encode($payload);
+		echo  json_encode($payload);
 		
         $dataArr = $payload['data_arr'];
         $response = $obj_gst->returnSave($dataArr, $fmonth,'gstr3b');
