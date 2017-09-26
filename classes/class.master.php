@@ -1313,7 +1313,7 @@ final class master extends validation {
     }
 
     final public function updateItem() {
-        
+
 		$dataArr = $this->getItemData();
         if (empty($dataArr)) {
             $this->setError($this->validationMessage['mandatory']);

@@ -854,6 +854,7 @@ final class gstr3b extends validation {
 	$paiditcigst_cgst=isset($_POST['paiditcigst_cgst']) ? $_POST['paiditcigst_cgst'] : '';
 	$paiditcigst_sgst=isset($_POST['paiditcigst_sgst']) ? $_POST['paiditcigst_sgst'] : '';
 	$taxpaidigst_igst=isset($_POST['taxpaidigst_igst']) ? $_POST['taxpaidigst_igst'] : '';
+	
 	   if(($paiditcigst_igst+$paiditcigst_cgst+$paiditcigst_sgst+$taxpaidigst_igst)!=$totaligst_amount_other)
 		{
 		$this->setError('Please check offset value for integrated tax values are not equal');
@@ -861,15 +862,16 @@ final class gstr3b extends validation {
 	/***** end Code For total taxpayable through ITC Integrated Tax ********** */
 	/***** Start Code For total taxpayable through ITC central Tax ********** */	
    	$paiditccgst_igst=isset($_POST['paiditccgst_igst']) ? $_POST['paiditccgst_igst'] : '';
-	$paiditccgst_cgst=isset($_POST['paiditccgst_cgst']) ? $_POST['paiditccgst_cgst'] : '';
+  	$paiditccgst_cgst=isset($_POST['paiditccgst_cgst']) ? $_POST['paiditccgst_cgst'] : '';
 	$taxpaidcgst_igst=isset($_POST['taxpaidcgst_igst']) ? $_POST['taxpaidcgst_igst'] : '';
+	
 	if(($paiditccgst_igst+$paiditccgst_cgst+$taxpaidcgst_igst)!=$totalcgst_amount_other)
 		{
 		$this->setError('Please check offset value for central tax values are not equal');
 		}
    /***** end Code For total taxpayable through ITC central Tax ********** */
    /***** Start Code For total taxpayable through ITC state Tax ********** */
-    $paiditccgst_igst=0;
+    $paiditcsgst_igst=0;
 	$paiditcsgst_sgst=0;
 	$taxpaidsgst_sgst=0;
    	$paiditcsgst_igst=isset($_POST['paiditcsgst_igst']) ? $_POST['paiditcsgst_igst'] : '';
@@ -889,11 +891,12 @@ final class gstr3b extends validation {
 		}
    /***** end Code For total taxpayable through ITC cess Tax ********** */
    /* start code for check toal available IGST value */
-	$total_igst_available='';
-	$total_cgst_available='';
-	$total_sgst_available='';
-	$total_cess_available='';
-	if($paiditcigst_igst+$paiditccgst_igst+$paiditcsgst_igst!=$total_igst_available)
+	$total_igst_available=135653;
+	$total_cgst_available=30723;
+	$total_sgst_available=30723;
+	$total_cess_available=0;
+	
+	if(($paiditcigst_igst+$paiditccgst_igst+$paiditcsgst_igst)!=$total_igst_available)
 	{
 	$this->setError('Please check integrated tax value it can not be greater than total available IGST');
 
@@ -942,7 +945,7 @@ final class gstr3b extends validation {
            $this->setError($response['message']);
 		}
 		else if($response['error'] == 0) {
-			 $this->setSuccess($response['message']);
+			 $this->setSuccess('GSTR3B return month of '.$fmonth.'submitted successfully');
 		} 
         else
 		{
@@ -1038,20 +1041,23 @@ final class gstr3b extends validation {
 					$str3  = substr($gstr3bUnRegisteredData[0]->amount_of_integrated_tax,0,-1);
 					$str3 = (explode(",",$str3));
                 	foreach ($str1 as $ukey => $str1_val) {
-						 if(count($str1) > 1)
-						{
+						
+		//				if(count($str1) > 1)
+			//			{
 							$dataArr['inter_sup']['unreg_details'][$u]['pos'] = $str1_val;
 							$dataArr['inter_sup']['unreg_details'][$u]['txval'] = (float)$str2[$ukey];
 							$dataArr['inter_sup']['unreg_details'][$u]['iamt'] = (float)$str3[$ukey];
 							$u++;
-						}
-						else
-						{
+				//		}
+					/*
+					else
+						//{
 							$dataArr['inter_sup']['unreg_details']['pos'] = $str1_val;
 							$dataArr['inter_sup']['unreg_details']['txval'] = (float)$str2[$ukey];
 							$dataArr['inter_sup']['unreg_details']['iamt'] = (float)$str3[$ukey];
 							
 						}
+						*/
 	                }
                 }
                 
@@ -1066,19 +1072,21 @@ final class gstr3b extends validation {
 					$str3 = (explode(",",$str3));
                 	foreach ($str1 as $ukey => $str1_val) {
                       
-					  if(count($str1) > 1)
-					  {
+					  //if(count($str1) > 1)
+					  //{
 	                	$dataArr['inter_sup']['comp_details'][$u]['pos'] = $str1_val;
 		                $dataArr['inter_sup']['comp_details'][$u]['txval'] = (float)$str2[$ukey];
 		                $dataArr['inter_sup']['comp_details'][$u]['iamt'] = (float)$str3[$ukey];
 		                $u++;
-					  }
+					  //}
+					  /*
 					  else{
 						$dataArr['inter_sup']['comp_details']['pos'] = $str1_val;
 		                $dataArr['inter_sup']['comp_details']['txval'] = (float)$str2[$ukey];
 		                $dataArr['inter_sup']['comp_details']['iamt'] = (float)$str3[$ukey];
 		               
 					  }
+					  */
 	                }
                 }
 
@@ -1093,13 +1101,14 @@ final class gstr3b extends validation {
 					$str3 = (explode(",",$str3));
                 	foreach ($str1 as $ukey => $str1_val) {
                      
-						 if(count($str1) > 1)
-						 {
+						 //if(count($str1) > 1)
+						 //{
 							$dataArr['inter_sup']['uin_details'][$u]['pos'] = $str1_val;
 							$dataArr['inter_sup']['uin_details'][$u]['txval'] = (float)$str2[$ukey];
 							$dataArr['inter_sup']['uin_details'][$u]['iamt'] = (float)$str3[$ukey];
 							$u++;
-						 }
+						 //}
+						 /*
 						 else
 						 {
 							$dataArr['inter_sup']['uin_details']['pos'] = $str1_val;
@@ -1107,74 +1116,76 @@ final class gstr3b extends validation {
 							$dataArr['inter_sup']['uin_details']['iamt'] = (float)$str3[$ukey];
 							
 						 }
+						 */
 	                }
                 }
 
                 $dataArr['itc_elg']['itc_avl'][$y]['ty'] = "IMPG";
-                $dataArr['itc_elg']['itc_avl'][$y]['iamt'] = (float)$dataIn->integrated_tax_itcavailable_a;
-                $dataArr['itc_elg']['itc_avl'][$y]['camt'] = (float)$dataIn->central_tax_itcavailable_a;
-                $dataArr['itc_elg']['itc_avl'][$y]['samt'] = (float)$dataIn->state_tax_itcavailable_a;
-                $dataArr['itc_elg']['itc_avl'][$y]['csamt'] = (float)$dataIn->cess_tax_itcavailable_a;
-                $y++;
-                $dataArr['itc_elg']['itc_avl'][$y]['ty'] = "IMPS";
                 $dataArr['itc_elg']['itc_avl'][$y]['iamt'] = (float)$dataIn->integrated_tax_import_of_goods;
                 $dataArr['itc_elg']['itc_avl'][$y]['camt'] = (float)$dataIn->central_tax_import_of_goods;
                 $dataArr['itc_elg']['itc_avl'][$y]['samt'] = (float)$dataIn->state_tax_import_of_goods;
                 $dataArr['itc_elg']['itc_avl'][$y]['csamt'] = (float)$dataIn->cess_tax_import_of_goods;
                 $y++;
-                $dataArr['itc_elg']['itc_avl'][$y]['ty'] = "ISRC";
+                $dataArr['itc_elg']['itc_avl'][$y]['ty'] = "IMPS";
                 $dataArr['itc_elg']['itc_avl'][$y]['iamt'] = (float)$dataIn->integrated_tax_import_of_services;
                 $dataArr['itc_elg']['itc_avl'][$y]['camt'] = (float)$dataIn->central_tax_import_of_services;
                 $dataArr['itc_elg']['itc_avl'][$y]['samt'] = (float)$dataIn->state_tax_import_of_services;
                 $dataArr['itc_elg']['itc_avl'][$y]['csamt'] = (float)$dataIn->cess_tax_import_of_services;
-                $y++;
-                $dataArr['itc_elg']['itc_avl'][$y]['ty'] = "ISD";
-                $dataArr['itc_elg']['itc_avl'][$y]['iamt'] = (float)$dataIn->integrated_tax_inward_supplies_reverse_charge;
+				$y++;
+                $dataArr['itc_elg']['itc_avl'][$y]['ty'] = "ISRC";
+				$dataArr['itc_elg']['itc_avl'][$y]['iamt'] = (float)$dataIn->integrated_tax_inward_supplies_reverse_charge;
                 $dataArr['itc_elg']['itc_avl'][$y]['camt'] = (float)$dataIn->central_tax_inward_supplies_reverse_charge;
                 $dataArr['itc_elg']['itc_avl'][$y]['samt'] = (float)$dataIn->state_tax_inward_supplies_reverse_charge;
                 $dataArr['itc_elg']['itc_avl'][$y]['csamt'] = (float)$dataIn->cess_tax_inward_supplies_reverse_charge;
-                $y++;
-                $dataArr['itc_elg']['itc_avl'][$y]['ty'] = "OTH";
-                $dataArr['itc_elg']['itc_avl'][$y]['iamt'] = (float)$dataIn->integrated_tax_inward_supplies;
+				$y++;
+                $dataArr['itc_elg']['itc_avl'][$y]['ty'] = "ISD";
+				$dataArr['itc_elg']['itc_avl'][$y]['iamt'] = (float)$dataIn->integrated_tax_inward_supplies;
                 $dataArr['itc_elg']['itc_avl'][$y]['camt'] = (float)$dataIn->central_tax_inward_supplies;
                 $dataArr['itc_elg']['itc_avl'][$y]['samt'] = (float)$dataIn->state_tax_inward_supplies;
                 $dataArr['itc_elg']['itc_avl'][$y]['csamt'] = (float)$dataIn->cess_tax_inward_supplies;
                 $y++;
-
+                $dataArr['itc_elg']['itc_avl'][$y]['ty'] = "OTH";
+				$dataArr['itc_elg']['itc_avl'][$y]['iamt'] = (float)$dataIn->integrated_tax_allother_itc;
+                $dataArr['itc_elg']['itc_avl'][$y]['camt'] = (float)$dataIn->central_tax_allother_itc;
+                $dataArr['itc_elg']['itc_avl'][$y]['samt'] = (float)$dataIn->state_tax_allother_itc;
+                $dataArr['itc_elg']['itc_avl'][$y]['csamt'] = (float)$dataIn->cess_tax_allother_itc;
+                $y++;
+				
+				
+				
                 $y=0;
                 $dataArr['itc_elg']['itc_rev'][$y]['ty'] = "RUL";
-                $dataArr['itc_elg']['itc_rev'][$y]['iamt'] = (float)$dataIn->integrated_tax_allother_itc;
-                $dataArr['itc_elg']['itc_rev'][$y]['camt'] = (float)$dataIn->central_tax_allother_itc;
-                $dataArr['itc_elg']['itc_rev'][$y]['samt'] = (float)$dataIn->state_tax_allother_itc;
-                $dataArr['itc_elg']['itc_rev'][$y]['csamt'] = (float)$dataIn->cess_tax_allother_itc;
+                $dataArr['itc_elg']['itc_rev'][$y]['iamt'] = (float)$dataIn->integrated_tax_itc_reversed_cgstrules;
+                $dataArr['itc_elg']['itc_rev'][$y]['camt'] = (float)$dataIn->central_tax_itc_reversed_cgstrules;
+                $dataArr['itc_elg']['itc_rev'][$y]['samt'] = (float)$dataIn->state_tax_itc_reversed_cgstrules;
+                $dataArr['itc_elg']['itc_rev'][$y]['csamt'] = (float)$dataIn->cess_tax_itc_reversed_cgstrules;
                 $y++;
                 $dataArr['itc_elg']['itc_rev'][$y]['ty'] = "OTH";
-                $dataArr['itc_elg']['itc_rev'][$y]['iamt'] = (float)$dataIn->integrated_tax_itc_reversed_b;
-                $dataArr['itc_elg']['itc_rev'][$y]['camt'] = (float)$dataIn->central_tax_itc_reversed_b;
-                $dataArr['itc_elg']['itc_rev'][$y]['samt'] = (float)$dataIn->state_tax_itc_reversed_b;
-                $dataArr['itc_elg']['itc_rev'][$y]['csamt'] = (float)$dataIn->cess_tax_itc_reversed_b;
+                $dataArr['itc_elg']['itc_rev'][$y]['iamt'] = (float)$dataIn->integrated_tax_itc_reversed_other;
+                $dataArr['itc_elg']['itc_rev'][$y]['camt'] = (float)$dataIn->central_tax_itc_reversed_other;
+                $dataArr['itc_elg']['itc_rev'][$y]['samt'] = (float)$dataIn->state_tax_itc_reversed_other;
+                $dataArr['itc_elg']['itc_rev'][$y]['csamt'] = (float)$dataIn->cess_tax_itc_reversed_other;
 
                 $y=0;
-                $dataArr['itc_elg']['itc_net']['iamt'] = (float)$dataIn->integrated_tax_itc_reversed_cgstrules;
-                $dataArr['itc_elg']['itc_net']['camt'] = (float)$dataIn->central_tax_itc_reversed_cgstrules;
-                $dataArr['itc_elg']['itc_net']['samt'] = (float)$dataIn->state_tax_itc_reversed_cgstrules;
-                $dataArr['itc_elg']['itc_net']['csamt'] = (float)$dataIn->cess_tax_itc_reversed_cgstrules;
+                $dataArr['itc_elg']['itc_net']['iamt'] = (float)$dataIn->integrated_tax_net_itc_a_b;
+                $dataArr['itc_elg']['itc_net']['camt'] = (float)$dataIn->central_tax_net_itc_a_b;
+                $dataArr['itc_elg']['itc_net']['samt'] = (float)$dataIn->state_tax_net_itc_a_b;
+                $dataArr['itc_elg']['itc_net']['csamt'] = (float)$dataIn->cess_tax_net_itc_a_b;
 
 
                 $dataArr['itc_elg']['itc_inelg'][$y]['ty'] ="RUL";
-                $dataArr['itc_elg']['itc_inelg'][$y]['iamt'] = (float)$dataIn->integrated_tax_itc_reversed_other;
-                $dataArr['itc_elg']['itc_inelg'][$y]['camt'] = (float)$dataIn->central_tax_itc_reversed_other;
-                $dataArr['itc_elg']['itc_inelg'][$y]['samt'] = (float)$dataIn->state_tax_itc_reversed_other;
-                $dataArr['itc_elg']['itc_inelg'][$y]['csamt'] = (float)$dataIn->cess_tax_itc_reversed_other;
+                $dataArr['itc_elg']['itc_inelg'][$y]['iamt'] = (float)$dataIn->integrated_tax_inligible_itc_17_5;
+                $dataArr['itc_elg']['itc_inelg'][$y]['camt'] = (float)$dataIn->central_tax_inligible_itc_17_5;
+                $dataArr['itc_elg']['itc_inelg'][$y]['samt'] = (float)$dataIn->state_tax_inligible_itc_17_5;
+                $dataArr['itc_elg']['itc_inelg'][$y]['csamt'] = (float)$dataIn->cess_tax_inligible_itc_17_5;
                 $y++;
 
                 $dataArr['itc_elg']['itc_inelg'][$y]['ty'] ="OTH";
-                $dataArr['itc_elg']['itc_inelg'][$y]['iamt'] = (float)$dataIn->integrated_tax_net_itc_a_b;
-                $dataArr['itc_elg']['itc_inelg'][$y]['camt'] = (float)$dataIn->central_tax_net_itc_a_b;
-                $dataArr['itc_elg']['itc_inelg'][$y]['samt'] = (float)$dataIn->state_tax_net_itc_a_b;
-                $dataArr['itc_elg']['itc_inelg'][$y]['csamt'] = (float)$dataIn->cess_tax_net_itc_a_b;
-
-
+				$dataArr['itc_elg']['itc_inelg'][$y]['iamt'] = (float)$dataIn->integrated_tax_inligible_itc_others;
+                $dataArr['itc_elg']['itc_inelg'][$y]['camt'] = (float)$dataIn->central_tax_inligible_itc_others;
+                $dataArr['itc_elg']['itc_inelg'][$y]['samt'] = (float)$dataIn->state_tax_inligible_itc_others;
+                $dataArr['itc_elg']['itc_inelg'][$y]['csamt'] = (float)$dataIn->cess_tax_inligible_itc_others;
+                
                 $y=0;
                 $dataArr['inward_sup']['isup_details'][$y]['ty'] = "GST";
                 $dataArr['inward_sup']['isup_details'][$y]['inter'] = (int)$dataIn->inter_state_supplies_composition_scheme;

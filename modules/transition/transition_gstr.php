@@ -451,7 +451,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'downloadInvoice' && isset($_GE
        <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
        			<div class="col-md-12 col-sm-12 col-xs-12">
                
-                	<div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>GST-Transition Form</h1></div>
+                	<div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>GST-Transition Form1</h1></div>
                     <div class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav"><a href="#">Home</a>
 					<i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GST-Transition Form</span> </div>
                      <div class="whitebg formboxcontainer">

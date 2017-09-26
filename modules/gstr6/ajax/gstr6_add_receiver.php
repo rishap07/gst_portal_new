@@ -31,6 +31,7 @@ if(isset($_POST['receiverData']) && isset($_POST['action']) && $_POST['action'] 
 	$_POST['remarks'] = $params['remarks'];
 	$_POST['status'] = $params['status'];
 	$_POST['vendor_type'] = $params['vendor_type'];
+	$_POST['submit'] = 'submit';
 
 	if($obj_master->addReceiver()) {
 		$result['status'] = "success";

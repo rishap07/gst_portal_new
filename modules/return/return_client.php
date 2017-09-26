@@ -247,7 +247,7 @@ if(!empty($dataInvPurchase))
         </div>
       <!--GSTR STEP START HERE--->
 		<?php
-			function date_quarter()
+			function getReturn($month)
 		{
 			$month = date('n');
 

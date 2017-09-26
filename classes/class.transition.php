@@ -1902,7 +1902,7 @@ final class transition extends validation {
 				//$this->getPlaceOfSupplyUnregistered();
 				//$this->getPlaceOfSupplyComposition();
 				//$this->getPlaceOfSupplyUinHolder();
-				$this->setSuccess('GST transition form Saved Successfully');
+				$this->setSuccess('GST transition form1 Saved Successfully');
 				$this->logMsg("GST transition Inserted financial month : " . $returnmonth,"gst_transition");
 				return true;
 			}
@@ -1915,19 +1915,21 @@ final class transition extends validation {
 		}
 		else
 		{
-			
-			if ($this->update($this->tableNames['transition_form'], $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
+			$dataArr['updated_date']=  date('Y-m-d h:i:s');
+			$dataArr['updated_by'] = $this->sanitize($_SESSION["user_detail"]["user_id"]);
+          
+			if ($this->update($this->tableNames['transition_form'], $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'type'=>'transitionform1','financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
 				//$this->getPlaceOfSupplyUnregistered();
 				//$this->getPlaceOfSupplyComposition();
 				//$this->getPlaceOfSupplyUinHolder();
 		                      
-				$this->setSuccess('GST transition month of '.$returnmonth."updated Successfully");
+				$this->setSuccess('GST transition form1 month of '.$returnmonth."updated Successfully");
 				//$this->logMsg("GSTR3B updated financial month : " . $returnmonth,"gstr_3b");
 				return true;
 			}
 			else
 			{
-				$this->setError('Failed to save transition form data');
+				$this->setError('Failed to save transition form1 data');
 			   return false;    	   
 		   }
 		}
@@ -2175,8 +2177,10 @@ final class transition extends validation {
 		}
 		else
 		{
-			
-			if ($this->update($this->tableNames['transition_form'], $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
+			$dataArr['updated_date']=  date('Y-m-d h:i:s');
+			$dataArr['updated_by'] = $this->sanitize($_SESSION["user_detail"]["user_id"]);
+          
+			if ($this->update($this->tableNames['transition_form'], $dataArr,array('added_by'=>$_SESSION['user_detail']['user_id'],'type'=>'transitionform2','financial_month'=>$this->sanitize($_GET['returnmonth'])))) {
 				//$this->getPlaceOfSupplyUnregistered();
 				//$this->getPlaceOfSupplyComposition();
 				//$this->getPlaceOfSupplyUinHolder();

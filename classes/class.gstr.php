@@ -363,6 +363,9 @@ final class gstr extends validation {
                     else {
                         $this->array_key_search('error_msg', $jstr1_status);
                         $msg = $this->error_msg;
+                        if(!$msg) {
+                            $msg = "Sorry! Something went wrong, please try again.";
+                        }
                         //$this->pr($msg);
                     }
                 }

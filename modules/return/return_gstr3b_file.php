@@ -1537,7 +1537,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_import_of_goods" value="<?php if(isset($import_of_goods_TotData[0]->cgst_amount)) { echo $import_of_goods_TotData[0]->cgst_amount; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" disabled name="central_tax_import_of_goods" value="<?php if(isset($import_of_goods_TotData[0]->cgst_amount)) { echo $import_of_goods_TotData[0]->cgst_amount; } else { echo ''; } ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1550,7 +1550,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_import_of_goods" value="<?php if(isset($import_of_goods_TotData[0]->sgst_amount)) { echo $import_of_goods_TotData[0]->sgst_amount; } else { echo ''; } ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" disabled name="state_tax_import_of_goods" value="<?php if(isset($import_of_goods_TotData[0]->sgst_amount)) { echo $import_of_goods_TotData[0]->sgst_amount; } else { echo ''; } ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 	
@@ -1598,7 +1598,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_import_of_services" value="<?php if(isset($import_of_services_TotData[0]->cgst_amount)) { echo $import_of_services_TotData[0]->cgst_amount; } else { echo ''; }?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" disabled name="central_tax_import_of_services" value="<?php if(isset($import_of_services_TotData[0]->cgst_amount)) { echo $import_of_services_TotData[0]->cgst_amount; } else { echo ''; }?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1611,7 +1611,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_import_of_services" value="<?php if(isset($import_of_services_TotData[0]->sgst_amount)) { echo $import_of_services_TotData[0]->sgst_amount; } else { echo ''; }?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" disabled name="state_tax_import_of_services" value="<?php if(isset($import_of_services_TotData[0]->sgst_amount)) { echo $import_of_services_TotData[0]->sgst_amount; } else { echo ''; }?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -2900,7 +2900,7 @@ composition taxable persons and UIN holders</div>
                             <div class="tc">
                                <input type="button" value="<?php echo ucfirst('Edit'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_gstr3b_file_submit&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/>
 							    <input type='submit' class="btn btn-danger" name='cleardata' value='clear data' id='cleardata'>
-							  <input type='submit' class="btn btn-success" name='finalsubmit' value='final submit' id='gstr1_summary_download'>
+							  <input type='submit' class="btn btn-success" name='finalsubmit' value='Upload to GSTN' id='gstr1_summary_download'>
 							  <input type='hidden' name="returnid" id="returnid" value="<?php echo $returndata[0]->return_id; ?>" />
 							<input type='hidden' name="final_returnid" id="final_returnid" value="<?php echo $returndata[0]->return_id; ?>" />
 									

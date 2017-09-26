@@ -20,6 +20,8 @@ if ($_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
 }
 if(isset($_POST['submit']) && $_POST['submit']=='submit') {
+	$obj_gstr2->saveGstr1DocumentSummary();
+	/*
  $flag = $obj_transition->checkVerifyUser();
   if($flag=='notverify')
   {
@@ -31,6 +33,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
         //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
     }
   }
+  */
 }
 
 

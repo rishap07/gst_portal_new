@@ -1024,7 +1024,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_import_of_goods" value="<?php echo $returndata[0]->central_tax_import_of_goods; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" disabled name="central_tax_import_of_goods" value="<?php echo $returndata[0]->central_tax_import_of_goods; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1037,7 +1037,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_import_of_goods" value="<?php echo $returndata[0]->state_tax_import_of_goods; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" disabled name="state_tax_import_of_goods" value="<?php echo $returndata[0]->state_tax_import_of_goods; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 	
@@ -1085,7 +1085,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="central_tax_import_of_services" value="<?php echo $returndata[0]->central_tax_import_of_services; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" disabled name="central_tax_import_of_services" value="<?php echo $returndata[0]->central_tax_import_of_services; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>
@@ -1098,7 +1098,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="state_tax_import_of_services" value="<?php echo $returndata[0]->state_tax_import_of_services; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" disabled name="state_tax_import_of_services" value="<?php echo $returndata[0]->state_tax_import_of_services; ?>"
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td>

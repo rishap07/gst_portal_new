@@ -19,6 +19,8 @@ if ($_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
 }
 if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
+	$obj_gstr2->saveGstr1nilexemptSummary();
+	/*
     $flag = $obj_transition->checkVerifyUser();
     if ($flag == 'notverify') {
       $obj_transition->setError("To save nil summary first verify your email and mobile number");
@@ -28,6 +30,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
             //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
         }
     }
+	*/
 }
 
     $autoflag = 0;
@@ -150,18 +153,7 @@ if (isset($_POST['finalsubmit']) && $_POST['finalsubmit'] == 'final submit') {
 }
 ?>
 <?php $obj_transition->unsetMessage(); ?>
-<?php
-if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
 
-    if ($flag == 'notverify') {
-        
-    } else {
-
-        //echo "<div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>GSTR3B successfully submitted </div>";
-    }
-}
-
-?>
            
             <form method="post" id="auto" name="auto">
                 <button  type="button"  class="btn btn-success" id="btnConfirm">autopopulate</button>

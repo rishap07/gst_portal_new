@@ -1660,12 +1660,15 @@ class common extends db {
 		$invoiceItemArray = array();
 		$currentFinancialYear = $this->generateFinancialYear();
 
-		$invoice_excel_dir_path = PROJECT_ROOT . "/gstr-1.xlsx";
+		$invoice_excel_dir_path = PROJECT_ROOT . "/gstr-1.xls";
 
 		$inputFileType = PHPExcel_IOFactory::identify($invoice_excel_dir_path);
 		$objReader = PHPExcel_IOFactory::createReader($inputFileType);
 		$objReader->setReadDataOnly(true);
 		$objPHPExcel = $objReader->load($invoice_excel_dir_path);
+
+		//$UNIX_DATE = (42930 - 25569) * 86400;
+		//echo gmdate("Y-m-d", $UNIX_DATE);
 
 		echo "<pre>";
         foreach ($objPHPExcel->getAllSheets() as $sheet) {
