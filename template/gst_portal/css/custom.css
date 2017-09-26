@@ -119,6 +119,13 @@ table.dataTable tbody tr.even {
 #add-item-error {
 	display:none;
 }
+
+#add-receiver-success {
+	display:none;
+}
+#add-receiver-error {
+	display:none;
+}
 .left-submenu {
 	background: #e5e5e5;
 	width: 100%;
