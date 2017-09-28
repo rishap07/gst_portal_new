@@ -18,12 +18,92 @@ $returnmonth = date('Y-m');
 if ($_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
 }
+$resultdata = $obj_gstr3b->getSubmitGSTR3bData();
+$obj_gstr3b->pr($resultdata);
+$total_igst_other=0;
+$total_cgst_other=0;
+$total_sgst_other=0;
+$total_cess_other=0;
+$total_igst_reverse=0;
+$total_cgst_reverse=0;
+$total_sgst_reverse=0;
+$total_cess_reverse=0;
+$total_net_igst=0;
+$total_net_cgst=0;
+$total_net_sgst=0;
+$total_net_cess=0;
+$paidcash_liab_ldg_id1='';
+$paidcash_trans_type1='';
+$paidcash_liab_ldg_id2='';
+$paidcash_trans_type2='';
+
+
+
+if(!empty($resultdata))
+{
+	$itc_eligible = $resultdata->itc_elg;
+	//$obj_gstr3b->pr($itc_eligible);
+	$itc_available = $itc_eligible->itc_avl;
+	$itc_reverse = $itc_eligible->itc_rev;
+	$itc_net = $itc_eligible->itc_net;
+	$tax_pmt = $resultdata->tx_pmt;
+	$tx_py = $tax_pmt->tx_py;
+	$obj_gstr3b->pr($tx_py);die;
+	if(!empty($itc_available))
+	{
+		foreach($itc_available as $item)
+		{
+			
+			$total_sgst_other=$total_sgst_other+$item->samt;
+			$total_cess_other=$total_cess_other+$item->csamt;
+			$total_cgst_other=$total_cgst_other+$item->camt;
+			$total_igst_other=$total_igst_other+$item->iamt;
+			
+			
+		}
+	}
+	if(!empty($itc_reverse))
+	{
+		foreach($itc_reverse as $item)
+		{
+			
+			$total_sgst_reverse=$total_sgst_reverse+$item->samt;
+			$total_cess_reverse=$total_cess_reverse+$item->csamt;
+			$total_cgst_reverse=$total_cgst_reverse+$item->camt;
+			$total_igst_reverse=$total_igst_reverse+$item->iamt;
+			
+			
+		}
+	}
+	if(!empty($itc_net))
+	{
+		
+			
+			$total_net_sgst=$itc_net->samt;
+			$total_net_cess=$itc_net->csamt;
+			$total_net_cgst=$itc_net->camt;
+			$total_net_igst=$itc_net->iamt;
+			
+			
+		
+	}
+}
+echo "TotalIGST Available".$total_net_igst;
+echo "<br>";
+echo "TotalCGST Available".$total_net_cgst;
+echo "<br>";
+echo "TotalCESS Available".$total_net_cess;
+echo "<br>";
+echo "TotalSGST Available".$total_net_sgst;
+echo "<br>";
 if(isset($_POST['offset']) && $_POST['offset']=='offset liability') {
-   if($obj_gstr3b->checkoffsetLiability())
+	
+   if($obj_gstr3b->checkoffsetLiability($total_net_igst,$total_net_cgst,$total_net_sgst,$total_net_cess))
    {
 	   
    }
 }
+
 ?>
 
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
@@ -122,34 +202,34 @@ if (!empty($dataRes)) {
 				<tr>
 			<td class="lftheading">IntegratedTax</td>     
                
-			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_igst_other' value="525000"/></td>
+			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_igst_other' value="<?php  echo $total_igst_other;  ?>"  /></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='paiditcigst_igst' value=""/></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='paiditcigst_cgst' value=""/></td>
-			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='paiditcigst_sgst' value="<?php  echo (isset($paiditc_sgst)) ? $paiditc_sgst : '' ?>"/></td>
+			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='paiditcigst_sgst'  /></td>
 			   <td><input type="text" maxlength="15" disabled="" onkeypress="return  isNumberKey(event,this);" name="" value="" class="form-control" placeholder=""></td>
-			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='taxpaidigst_igst' value="<?php  echo (isset($taxpaidigst_igst)) ? $taxpaidigst_igst : '' ?>"/></td>
-			  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='interestpaidigst_igst' value="<?php  echo (isset($interestpaidigst_igst)) ? $interestpaidigst_igst : '' ?>"/></td>
+			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='taxpaidigst_igst' /></td>
+			  <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='interestpaidigst_igst' /></td>
 			  <td><input type="text" maxlength="15" disabled="" onkeypress="return  isNumberKey(event,this);" name="" value="" class="form-control" placeholder=""></td>
 			   </tr> 
 				</tr>
 				<tr>
 			<td class="lftheading">CentralTax</td>     
                
-			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_cgst_other' value="107348"/></td>
-			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='paiditccgst_igst' value="<?php  echo (isset($paiditccgst_igst)) ? $paiditccgst_igst : '' ?>"/></td>
-			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='paiditccgst_cgst' value="<?php  echo (isset($paiditccgst_cgst)) ? $paiditccgst_cgst : '' ?>"/></td>
+			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_cgst_other' value="<?php  echo $total_cgst_other;  ?>" /></td>
+			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='paiditccgst_igst' /></td>
+			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='paiditccgst_cgst' /></td>
 			    <td><input type="text" maxlength="15" disabled="" onkeypress="return  isNumberKey(event,this);" name="" value="" class="form-control" placeholder=""></td>
 			  <td><input type="text" maxlength="15" disabled="" onkeypress="return  isNumberKey(event,this);" name="" value="" class="form-control" placeholder=""></td>
 			 
-			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='taxpaidcgst_igst' value="<?php  echo (isset($taxpaidcgst_igst)) ? $taxpaidcgst_igst : '' ?>"/></td>
-			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" name="interestpaidcgst_igst" value="<?php  echo (isset($interestpaidcgst_igst)) ? $interestpaidcgst_igst : '' ?>" class="form-control" placeholder=""></td>
-			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" name="latefee_cash" value="<?php  echo (isset($latefee_cash)) ? $latefee_cash : '' ?>" class="form-control" placeholder=""></td>
+			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='taxpaidcgst_igst' /></td>
+			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" name="interestpaidcgst_igst"  class="form-control" placeholder=""></td>
+			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" name="latefee_cash"  class="form-control" placeholder=""></td>
 			   </tr> 
 				</tr>
 				<tr>
 			<td class="lftheading">State/UtTax</td>     
                
-			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_sgst_other' value="107348"/></td>
+			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_sgst_other' value="<?php  echo $total_sgst_other;  ?>" /></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='paiditcsgst_igst' value="<?php  echo (isset($paiditcsgst_igst)) ? $paiditcsgst_igst : '' ?>"/></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' disabled name='' value="<?php  echo (isset($paiditcsgst_cgst)) ? $paiditcsgst_cgst : '' ?>"/></td>
 			    <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" name="paiditcsgst_sgst" value="<?php  echo (isset($paiditcsgst_sgst)) ? $paiditcsgst_sgst : '' ?>" class="form-control" placeholder=""></td>
@@ -163,7 +243,7 @@ if (!empty($dataRes)) {
 				<tr>
 			<td class="lftheading">Cess</td>     
                
-			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_cess_other' value="<?php  echo (isset($taxpayable_cess_other)) ? $taxpayable_cess_other : '' ?>"/></td>
+			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_cess_other' value="<?php  echo $total_cess_other;  ?>" /></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' disabled name='' value="<?php  echo (isset($paiditccess_igst)) ? $paiditccess_igst : '' ?>"/></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' disabled name='' value="<?php  echo (isset($paiditccess_cgst)) ? $paiditccess_cgst : '' ?>"/></td>
 			    <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="<?php  echo (isset($paiditcsgst_sgst)) ? $paiditcsgst_sgst : '' ?>" class="form-control" placeholder=""></td>
@@ -180,52 +260,52 @@ if (!empty($dataRes)) {
 				<tr>
 			<td class="lftheading">IntegratedTax</td>     
                
-			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_igst_reverse' value="172099"/></td>
+			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_igst_reverse' value="<?php  echo $total_igst_reverse;  ?>" /></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' disabled name='' value="<?php  echo (isset($paiditccess_igst)) ? $paiditccess_igst : '' ?>"/></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' disabled name='' value="<?php  echo (isset($paiditccess_cgst)) ? $paiditccess_cgst : '' ?>"/></td>
 			    <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="<?php  echo (isset($paiditcsgst_sgst)) ? $paiditcsgst_sgst : '' ?>" class="form-control" placeholder=""></td>
 			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="" class="form-control" placeholder=""></td>
 			 
-			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='taxpaidcess_igst' value="172099"/></td>
+			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='taxpaidcess_igst' value="<?php  echo $total_igst_reverse;  ?>" /></td>
 			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);"  disabled name='' value="<?php  echo (isset($interestpaidcess_cess)) ? $interestpaidcess_cess : '' ?>" class="form-control" placeholder=""></td>
 			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="<?php  echo (isset($latefee_sgst)) ? $latefee_sgst : '' ?>" class="form-control" placeholder=""></td>
 			   </tr> 
 			   <tr>
 			<td class="lftheading">CentralTax</td>     
                
-			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_cgst_reverse' value="29083"/></td>
+			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_cgst_reverse' value="<?php  echo $total_cgst_reverse;  ?>" /></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' disabled name='' value="<?php  echo (isset($paiditccess_igst)) ? $paiditccess_igst : '' ?>"/></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' disabled name='' value="<?php  echo (isset($paiditccess_cgst)) ? $paiditccess_cgst : '' ?>"/></td>
 			    <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="<?php  echo (isset($paiditcsgst_sgst)) ? $paiditcsgst_sgst : '' ?>" class="form-control" placeholder=""></td>
 			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="" class="form-control" placeholder=""></td>
 			 
-			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='taxpaidcess_cgst' value="29083"/></td>
+			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='taxpaidcess_cgst' value="<?php  echo $total_cgst_reverse;  ?>" /></td>
 			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);"  disabled name='' value="<?php  echo (isset($interestpaidcess_cess)) ? $interestpaidcess_cess : '' ?>" class="form-control" placeholder=""></td>
 			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="<?php  echo (isset($latefee_sgst)) ? $latefee_sgst : '' ?>" class="form-control" placeholder=""></td>
 			   </tr> 
 			   <tr>
 			<td class="lftheading">StateTax</td>     
                
-			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_sgst_reverse' value="29083"/></td>
+			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_sgst_reverse' value="<?php  echo $total_sgst_reverse;  ?>"  /></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' disabled name='' value="<?php  echo (isset($paiditccess_igst)) ? $paiditccess_igst : '' ?>"/></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' disabled name='' value="<?php  echo (isset($paiditccess_cgst)) ? $paiditccess_cgst : '' ?>"/></td>
 			    <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="<?php  echo (isset($paiditcsgst_sgst)) ? $paiditcsgst_sgst : '' ?>" class="form-control" placeholder=""></td>
 			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="" class="form-control" placeholder=""></td>
 			 
-			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='taxpaidcess_sgst' value="29083"/></td>
+			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='taxpaidcess_sgst' value="<?php  echo $total_sgst_reverse;  ?>" /></td>
 			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);"  disabled name='' value="<?php  echo (isset($interestpaidcess_cess)) ? $interestpaidcess_cess : '' ?>" class="form-control" placeholder=""></td>
 			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="<?php  echo (isset($latefee_sgst)) ? $latefee_sgst : '' ?>" class="form-control" placeholder=""></td>
 			   </tr> 
 			   <tr>
 			<td class="lftheading">Cess</td>     
                
-			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_cess_reverse' value="0"/></td>
+			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_cess_reverse' value="<?php  echo $total_cess_reverse;  ?>" /></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' disabled name='' value="<?php  echo (isset($paiditccess_igst)) ? $paiditccess_igst : '' ?>"/></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' disabled name='' value="<?php  echo (isset($paiditccess_cgst)) ? $paiditccess_cgst : '' ?>"/></td>
 			    <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="<?php  echo (isset($paiditcsgst_sgst)) ? $paiditcsgst_sgst : '' ?>" class="form-control" placeholder=""></td>
 			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="" class="form-control" placeholder=""></td>
 			 
-			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='taxpaidcess_cess' value="0"/></td>
+			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='taxpaidcess_cess' value="<?php  echo $total_cess_reverse;  ?>" /></td>
 			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);"  disabled name='' value="<?php  echo (isset($interestpaidcess_cess)) ? $interestpaidcess_cess : '' ?>" class="form-control" placeholder=""></td>
 			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="<?php  echo (isset($latefee_sgst)) ? $latefee_sgst : '' ?>" class="form-control" placeholder=""></td>
 			   </tr>			   		   

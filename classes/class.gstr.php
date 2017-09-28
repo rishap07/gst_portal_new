@@ -140,11 +140,11 @@ final class gstr extends validation {
     public function requestOTP($code='')
     {
         //return true;
-        $this->gstr_session_destroy();
+        
         if(API_TYPE == 'Demo') {
             return true;
         }
-        
+        $this->gstr_session_destroy();
         $this->keyGeneration();
         $this->getCertificateKey();
        
@@ -189,6 +189,7 @@ final class gstr extends validation {
     { 
         //return true;
         if(API_TYPE == 'Demo') {
+            $this->gstr_session_destroy();
             $this->keyGeneration();
             $this->getCertificateKey();
         }

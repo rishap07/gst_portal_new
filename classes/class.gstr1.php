@@ -115,29 +115,31 @@ final class gstr1 extends validation {
         $cur_gt=  (float)$obj_gst->cur_gross_turnover($_SESSION['user_detail']['user_id']);
         $is_username_check = $obj_gst->is_username_exists($_SESSION['user_detail']['user_id']);
         $dataRes = $this->generalGSTR1InvoiceList($fmonth);
-		//$this->pr($dataRes);
+        //$this->pr($dataRes);
         $flag = 0;
         if(!empty($is_username_check)) {
             if (!empty($is_gross_turnover_check) && !empty($cur_gt)) {
-                if (!empty($dataRes)) {
-                    $payload = $this->gstCreatePayload($_SESSION['user_detail']['user_id'], $fmonth,$ids,'',$invoice_type);
+                //$this->pr($dataRes);  
+                
+                $payload = $this->gstCreatePayload($_SESSION['user_detail']['user_id'], $fmonth,$ids,'',$invoice_type);
 
-                    $dataArr = $payload['data_arr'];
-                    $data_ids = $payload['data_ids'];
+                $dataArr = $payload['data_arr'];
+                $data_ids = $payload['data_ids'];
 
-                    //$this->pr($payload);die;
-                    $response = $obj_gst->returnSave($dataArr, $fmonth,'gstr1');
-                                
-                    if ($response['error'] == 0) {
-                        $flag = 1;
-                        if($invoice_type != 'HSN' && $invoice_type != 'NIL' && $invoice_type != 'DOCISSUE') {
+                //$this->pr($payload);die;
+                $response = $obj_gst->returnSave($dataArr, $fmonth,'gstr1');
+                  //$this->pr($response);         
+                if ($response['error'] == 0) {
+                    $flag = 1;
+                    if($invoice_type != 'HSN' && $invoice_type != 'NIL' && $invoice_type != 'DOCISSUE') {
+                        if (!empty($dataRes)) {
                             if (!empty($data_ids)) {
                                 /********** Start Code for Update Invoice is upload ************* */
                                 $flagup = 0;
                                 /*$this->pr($data_ids);
                                 die;*/
                                 $this->query("UPDATE ".$this->getTableName('client_invoice')." SET is_gstr1_uploaded='1' WHERE invoice_id in (".$data_ids.")");
-        						
+                                
                                 /*********** End code for Update Invoice is upload ********* */
 
                                 /******************* Start Code Return Save **************** */
@@ -150,8 +152,8 @@ final class gstr1 extends validation {
                                         $dataGST1['type'] = 'gstr1';
                                         $dataGST1['client_id'] = $_SESSION['user_detail']['user_id'];
                                         $this->update($this->getTableName('return'), $dataGST1_set, $dataGST1);
-        								$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update GSTR1 upload status financial month ".$fmonth,"gstr1");
-        			
+                                        $this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update GSTR1 upload status financial month ".$fmonth,"gstr1");
+                    
                                     } else {
                                         $dataGST1['financial_year'] = $this->generateFinancialYear();
                                         $dataGST1['return_month'] = $fmonth;
@@ -159,8 +161,8 @@ final class gstr1 extends validation {
                                         $dataGST1['client_id'] = $_SESSION['user_detail']['user_id'];
                                         $dataGST1['status'] = '2';
                                         $this->insert($this->getTableName('return'), $dataGST1);
-        								$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " Uploaded GSTR1 for financial month ".$fmonth,"gstr1");
-        			
+                                        $this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " Uploaded GSTR1 for financial month ".$fmonth,"gstr1");
+                    
                                     }
                                 }
                                 /* ******* End Code for Return Save ************************* */
@@ -171,27 +173,28 @@ final class gstr1 extends validation {
                                 $this->setError('file not updated');
                             }
                         }
-                        elseif($invoice_type == 'HSN') {
-                            $this->query("UPDATE ".$this->getTableName('return_upload_summary')." SET is_uploaded='1' WHERE added_by = '".$_SESSION['user_detail']['user_id']."' and financial_month = '".$fmonth."' and type = 'gstr1hsn' ");
-                        }
-                        elseif($invoice_type == 'NIL') {
-                            $this->query("UPDATE ".$this->getTableName('return_upload_summary')." SET is_uploaded='1' WHERE added_by = '".$_SESSION['user_detail']['user_id']."' and financial_month = '".$fmonth."' and type = 'gstr1nil' ");
-                        }
-                        elseif($invoice_type == 'DOCISSUE') {
-                            $this->query("UPDATE ".$this->getTableName('return_upload_summary')." SET is_uploaded='1' WHERE added_by = '".$_SESSION['user_detail']['user_id']."' and financial_month = '".$fmonth."' and type = 'gstr1document' ");
-                        }
                         else {
-                            $flag = 2;
-                            $this->setError('file not updated');
+                            $flag = 0;
                         }
-
-                    } 
-                    else {
-                        $flag = 2;
-                        $this->setError($response['message']);
                     }
+                    elseif($invoice_type == 'HSN') {
+                        //echo $flag;
+                        $this->query("UPDATE ".$this->getTableName('return_upload_summary')." SET is_uploaded='1' WHERE added_by = '".$_SESSION['user_detail']['user_id']."' and financial_month = '".$fmonth."' and type = 'gstr1hsn' ");
+                    }
+                    elseif($invoice_type == 'NIL') {
+                        $this->query("UPDATE ".$this->getTableName('return_upload_summary')." SET is_uploaded='1' WHERE added_by = '".$_SESSION['user_detail']['user_id']."' and financial_month = '".$fmonth."' and type = 'gstr1nil' ");
+                    }
+                    elseif($invoice_type == 'DOCISSUE') {
+                        $this->query("UPDATE ".$this->getTableName('return_upload_summary')." SET is_uploaded='1' WHERE added_by = '".$_SESSION['user_detail']['user_id']."' and financial_month = '".$fmonth."' and type = 'gstr1document' ");
+                    }
+                    
+
+                } 
+                else {
+                    $flag = 2;
+                    $this->setError($response['message']);
                 }
-                
+                //echo $flag.$invoice_type;
                 if ($flag == 1) {
                     
                     $this->setSuccess(" Congratulations! GSTR1 Data Uploaded.");

@@ -26,7 +26,7 @@ if(isset($_POST['invoice_type']))
 //$obj_gstr1->pr($_POST);
 if($type=="B2B")
 {
-	if (isset($_POST['returnmonth'])) 
+    if (isset($_POST['returnmonth'])) 
     {
         $returnmonth = $_POST['returnmonth'];
 
@@ -36,7 +36,7 @@ if($type=="B2B")
 }
 
 //$obj_gstr1->pr($_POST);
-if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isset($_POST['name']))
+if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isset($_POST['name']) || isset($_POST['type']))
 {
     
     $invoice_type = isset($_REQUEST['type'])?$_REQUEST['type']:'';
@@ -254,7 +254,7 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                 }
                                 if($type=='B2CS')
                                 {
-                                    $group_by = "";
+                                    $group_by = "a.reference_number,b.consolidate_rate";
                                     $order_by = 'a.reference_number';
                                     $Data = $b2csData = $obj_gstr1->getB2CSInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
@@ -618,7 +618,7 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                                 <?php }
                                                 else { ?>
                                                     <tr>
-                                                        <th align='left'><input name="select_all" value="1" id="example-select-all" type="checkbox" /></th>
+                                                        <th align='left'>&nbsp;<!-- <input name="select_all" value="1" id="example-select-all" type="checkbox" /> --></th>
                                                         <th align='left'>No.</th>
                                                         <th align='left'>Date</th>
                                                         <th align='left'>Invoice Number</th>
@@ -630,11 +630,15 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                                         <th align='left'>GSTIN</th>
                                                         <?php
                                                         }
+                                                        else { ?>
+                                                        <th align='left'></th>
+
+                                                        <?php }
                                                         ?>
                                                         <th style='text-align:right'>Taxable AMT</th>
                                                         <th style='text-align:right'>Total Tax</th>
                                                         <th style='text-align:right'>Total Amt</th>
-                                                        <?php if($type == 'AT') { ?>
+                                                        <?php if($type == 'AT' || $type == 'B2CS') { ?>
                                                             <th align='center'>Pos</th>
                                                         <?php } 
                                                         else { ?>
@@ -736,7 +740,7 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                                                         <td style='text-align:right'><?php echo $taxable_subtotal;?></td>
                                                                         <td style='text-align:right'><?php echo $tax?></td>
                                                                         <td style='text-align:right'><?php echo $invoice_total_value;?></td>
-                                                                        <?php if($type == 'AT') {
+                                                                        <?php if($type == 'AT' || $type == 'B2CS' ) {
                                                                             $status = $pos;
                                                                         }
                                                                         ?>
@@ -803,7 +807,7 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                                                         <td style='text-align:right'><?php echo $taxable_subtotal;?></td>
                                                                         <td style='text-align:right'><?php echo $tax?></td>
                                                                         <td style='text-align:right'><?php echo $invoice_total_value;?></td>
-                                                                        <?php if($type == 'AT') {
+                                                                        <?php if($type == 'AT'  || $type == 'B2CS' ) {
                                                                             $status = $pos;
                                                                         }
                                                                         ?>

@@ -1193,7 +1193,7 @@ class common extends db {
 
     public function getStateDetailByStateTin($state_tin) {
 
-        $data = $this->get_row("select * from " . $this->tableNames['state'] . " where state_id = '" . $state_tin . "'");
+        $data = $this->get_row("select * from " . $this->tableNames['state'] . " where state_tin = '" . $state_tin . "'");
         $dataArr = array();
         if (!empty($data)) {
             $dataArr['data'] = $data;
@@ -1623,7 +1623,7 @@ class common extends db {
     }
 
     final public function generalGSTR1InvoiceList($returnmonth,$uploaded='0') {
-        $query = "select invoice_id from " . TAB_PREFIX . 'client_invoice' . " where invoice_nature='salesinvoice' and (invoice_type='creditnote' or invoice_type='debitnote' or invoice_type='taxinvoice' or invoice_type='receiptvoucherinvoice' or  invoice_type='exportinvoice' or invoice_type='sezunitinvoice' or invoice_type='deemedexportinvoice' or invoice_type='refundvoucherinvoice' ) and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%' and is_gstr1_uploaded='".$uploaded."'";
+        echo $query = "select invoice_id from " . TAB_PREFIX . 'client_invoice' . " where invoice_nature='salesinvoice' and (invoice_type='creditnote' or invoice_type='debitnote' or invoice_type='taxinvoice' or invoice_type='receiptvoucherinvoice' or  invoice_type='exportinvoice' or invoice_type='sezunitinvoice' or invoice_type='deemedexportinvoice' or invoice_type='refundvoucherinvoice' ) and added_by='" . $_SESSION['user_detail']['user_id'] . "' and status='1' and is_canceled='0' and is_deleted='0'  and invoice_date like '%" . $returnmonth . "%' and is_gstr1_uploaded='".$uploaded."'";
         return $this->get_results($query);
     }
 
@@ -1649,53 +1649,5 @@ class common extends db {
 
         return $dataArr;
     }
-	
-	public function uploadClientTallyInvoice() {
-
-		$flag = true;
-		$errorflag = false;
-		$dataArray = array();
-		$indexArray = array();
-		$invoiceArray = array();
-		$invoiceItemArray = array();
-		$currentFinancialYear = $this->generateFinancialYear();
-
-		$invoice_excel_dir_path = PROJECT_ROOT . "/gstr-1.xls";
-
-		$inputFileType = PHPExcel_IOFactory::identify($invoice_excel_dir_path);
-		$objReader = PHPExcel_IOFactory::createReader($inputFileType);
-		$objReader->setReadDataOnly(true);
-		$objPHPExcel = $objReader->load($invoice_excel_dir_path);
-
-		//$UNIX_DATE = (42930 - 25569) * 86400;
-		//echo gmdate("Y-m-d", $UNIX_DATE);
-
-		echo "<pre>";
-        foreach ($objPHPExcel->getAllSheets() as $sheet) {
-			
-			echo $sheet->getTitle();
-			echo "<br>";
-			
-			$sheetData = $sheet->toArray(null, true, true, true);
-			$sheetData = array_map('array_filter', $sheetData);
-			$sheetData = array_filter($sheetData);
-			
-			print_r($sheetData);
-        }
-		echo "</pre>";
-		die;
-
-		$sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
-		$sheetData = array_map('array_filter', $sheetData);
-		$sheetData = array_filter($sheetData);
-		
-		echo "<pre>";
-		print_r($sheetData);
-		echo "</pre>";
-		die;
-		
-		foreach ($sheetData as $rowKey => $data) {
-		}
-	}
 }
 ?>

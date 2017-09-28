@@ -831,8 +831,9 @@ final class gstr3b extends validation {
 
 		exit;
 	}
-	public function checkoffsetLiability()
+	public function checkoffsetLiability($total_net_igst,$total_net_cgst,$total_net_sgst,$total_net_cess)
 	{
+		
     /***** Start Code For total taxpayable otherthan reverse charge ********** */
 	$totaligst_amount_other=isset($_POST['taxpayable_igst_other']) ? $_POST['taxpayable_igst_other'] : '';
 	$totalcgst_amount_other=isset($_POST['taxpayable_cgst_other']) ? $_POST['taxpayable_cgst_other'] : '';
@@ -891,10 +892,10 @@ final class gstr3b extends validation {
 		}
    /***** end Code For total taxpayable through ITC cess Tax ********** */
    /* start code for check toal available IGST value */
-	$total_igst_available=135653;
-	$total_cgst_available=30723;
-	$total_sgst_available=30723;
-	$total_cess_available=0;
+	$total_igst_available=$total_net_igst;
+	$total_cgst_available=$total_net_cgst;
+	$total_sgst_available=$total_net_sgst;
+	$total_cess_available=$total_net_cess;
 	
 	if(($paiditcigst_igst+$paiditccgst_igst+$paiditcsgst_igst)!=$total_igst_available)
 	{
@@ -925,6 +926,234 @@ final class gstr3b extends validation {
 	 /* end code for check toal available cess tax value */
 	
 	
+	}
+	 public	function RandomToken($length){
+	  if(!isset($length) || intval($length) <= 8 ){
+		$length = 16;
+	  }
+	  if (function_exists('random_bytes')) {
+		  return bin2hex(random_bytes($length));
+	  }
+	  if (function_exists('mcrypt_create_iv')) {
+		  return bin2hex(mcrypt_create_iv($length, MCRYPT_DEV_URANDOM));
+	  } 
+	  if (function_exists('openssl_random_pseudo_bytes')) {
+		  return bin2hex(openssl_random_pseudo_bytes($length));
+	  }
+	}
+	public function RandomKey($length){
+	  if(!isset($length) || intval($length) <= 8 ){
+		$length = 16;
+	  }
+	  if (function_exists('random_bytes')) {
+		  return bin2hex(random_bytes($length));
+	  }
+	  if (function_exists('mcrypt_create_iv')) {
+		  return bin2hex(mcrypt_create_iv($length, MCRYPT_DEV_URANDOM));
+	  } 
+	  if (function_exists('openssl_random_pseudo_bytes')) {
+		  return bin2hex(openssl_random_pseudo_bytes($length));
+	  }
+	}
+	public function aes256_ecb_encrypt($key, $data, $iv) {
+	  if(32 !== strlen($key)) $key = hash('SHA256', $key, true);
+	  if(16 !== strlen($iv)) $iv = hash('MD5', $iv, true);
+	  $padding = 16 - (strlen($data) % 16);
+	  $data .= str_repeat(chr($padding), $padding);
+	  return mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key, $data, MCRYPT_MODE_ECB, $iv);
+	}
+	public	function hitUrl($url,$data_string,$header) {
+			
+	  $ch = curl_init($url);
+	  curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+	  curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+	  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	  curl_setopt($ch, CURLOPT_HTTPHEADER,$header);
+	  $result = curl_exec($ch);
+	  curl_close($ch);
+	  //echo $result;  
+	  return $result;     
+
+		}
+	public function hitUrl2($url, $data_string, $header)
+		{
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+		$result = curl_exec($ch);
+		curl_close($ch);
+
+
+		return $result;
+		}
+	public function getSubmitGSTR3bData()
+	{
+		$inputToken = $this->RandomToken(16);
+		$keyhash = $this->RandomKey(32);
+		$key = pack('H*',$keyhash);
+
+		# create a random IV to use with CBC encoding
+		$iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
+		$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+
+		$ciphertext = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key,
+									$inputToken, MCRYPT_MODE_ECB, $iv);
+
+		$hexcode= bin2hex($ciphertext);
+         $filepath=PROJECT_URL . "/documents/".'GSTN_private.pem';
+		$pem_private_key = file_get_contents($filepath);
+		$private_key = openssl_pkey_get_private($pem_private_key);
+		$pem_public_key = openssl_pkey_get_details($private_key)['key'];
+		$public_key = openssl_pkey_get_public($pem_public_key);
+
+		$encrypted="";
+		openssl_public_encrypt($ciphertext , $encrypted, $public_key);
+
+		$app_key=base64_encode($encrypted);   //encrypted string
+		if ($app_key)
+		{
+		//echo "your App Key is<br>".$app_key."<br><br>";
+		}
+
+		$key = pack('H*', $hexcode);
+
+
+		$otp_code = '575757';
+		$otp_encode =utf8_encode($otp_code);
+
+
+		$iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
+		$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+
+
+		$ciphertext_enc= $this->aes256_ecb_encrypt($key,$otp_encode,$iv);
+
+
+		$otp = base64_encode($ciphertext_enc);
+
+		if ($otp)
+		{
+		//echo "your otp is<br>".$otp."<br><br>";
+		}
+
+		$client_secret = 'fa6f03446473400fa21240241affe2a5';
+		$clientid = 'l7xx2909cd95daee418b8118e070b6b24dd6';
+		$ip_usr = '49.50.73.109';
+		$state_cd='27';
+		$txn='TXN789123456789';
+		$kclient_secret = 'fa6f03446473400fa21240241affe2a5';
+		$kclientid = 'l7xx2909cd95daee418b8118e070b6b24dd6';
+		//$username='Cyfuture1.MH.TP.1';
+		$username='Cyfuture1.MH.TP.1';
+		$action='AUTHTOKEN';
+		$gstin  = '27GSPMH6181G1ZE';
+		//$action='OTPREQUEST';
+
+		$data = array("username" => $username, "action" => $action, "app_key" => $app_key, "otp" =>$otp);
+		$data_string = json_encode($data);
+		$header= array(
+		  'client-secret: '.$client_secret.'',
+		  'Content-Length: ' . strlen($data_string),
+		  'clientid: '.$clientid.'',
+		  'Content-Type: application/json',
+		  'ip-usr: '.$ip_usr.'',
+		  'state-cd: '.$state_cd.'',
+		  'txn: '.$txn.'',
+		  'karvyclientid: '.$clientid.'',
+		  'karvyclient-secret: '.$client_secret.''
+		 );
+
+
+		$url='http://gsp.karvygst.com/v0.3/authenticate';
+
+
+		$result_data= $this->hitUrl($url,$data_string,$header);
+		$data=json_decode($result_data);
+		//echo $result_data;
+		//echo "Your auth_token  <br>" .$data->auth_token."<br><br>";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		$session_key=$data->sek;
+
+		//echo "Your session_key  <br>" .$session_key."<br><br>";
+		# --- DECRYPTION ---
+	    $decrypt_sess_key=openssl_decrypt(base64_decode($session_key),"aes-256-ecb",$key, OPENSSL_RAW_DATA);
+		$header2 = array(
+		  'accept:application/json',
+		   'auth-token:' . $data->auth_token . '',
+		  'client-secret:' . $client_secret . '',
+		  'clientid:' . $clientid . '',
+		  'Content-Type: application/json',
+		  'gstin:' . $gstin . '',
+		  'ip-usr:' . $ip_usr . '',
+		  'ret_prd:072017',
+		  'state-cd:' . $state_cd . '',
+		  'txn:' . $txn . '',
+		  'username:' . $username . '',
+		  'karvyclientid:' . $clientid . '',
+		  'action:' . 'RETSUM' . '',
+		  'karvyclient-secret:' . $kclient_secret . ''
+		  
+		  
+		  
+		);
+		//echo '<pre>';print_r($header2);
+
+
+
+		$data = array("username" => $username, "action" => $action, "app_key" => $app_key);
+		$data_string = json_encode($data);
+		$getReturnUrl='http://gsp.karvygst.com/v0.3/returns/gstr3b?gstin=27GSPMH6181G1ZE&ret_period=072017&action=RETSUM';
+		$result_data1 = $this->hitUrl2($getReturnUrl,'', $header2);
+		$retDta = json_decode($result_data1);
+		//print_r(json_decode($result_data1));
+		//echo "gstr1 Summary<br>";
+		$retRek=$retDta->rek;
+		$retData1=$retDta->data;
+		$apiEk1=openssl_decrypt(base64_decode($retRek),"aes-256-ecb",$decrypt_sess_key, OPENSSL_RAW_DATA);
+
+		//echo "<br>decode json1<br>$apiEk1<br><br>";
+
+		$decodejson1= base64_decode(openssl_decrypt(base64_decode($retData1),"aes-256-ecb",$apiEk1, OPENSSL_RAW_DATA));
+		//echo "GET SUMMARY<br><pre>";
+		//echo $decodejson1;die;
+		$retDta = json_decode($decodejson1);
+		//print_r($retDta)."<br><br>";
+		//$this->pr($retDta);
+		return $retDta;
+		
 	}
     public function finalSaveGstr3b()
     {

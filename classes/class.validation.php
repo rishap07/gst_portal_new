@@ -74,6 +74,7 @@ class validation extends upload {
             'returnfile_dates'=>TAB_PREFIX.'returnfile_dates',
             'otp_request'=>TAB_PREFIX.'otp_request',
             'user_api_summary'=>TAB_PREFIX.'user_api_summary',
+			'gstr1_return_summary'=>TAB_PREFIX.'gstr1_return_summary',
             'return_upload_summary'=>TAB_PREFIX.'return_upload_summary'
         );
 
@@ -98,6 +99,8 @@ class validation extends upload {
                 "06-Finalization of Provisional assessment", 
                 "07-Others"
         );
+
+	protected $validateTaxRate = array(0.00, 0.25, 3.00, 5.00, 12.00, 18.00, 28.00);
 
     //onedash   /^[a-zA-Z\d]+[(-{1})|(a-zA-Z\d)][a-zA-Z\d]+$/
     protected $validateType = array(
@@ -444,7 +447,7 @@ class validation extends upload {
         $queryB2CS .= " and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$returnmonth."%' and a.billing_gstin_number='' and (a.supply_place=a.company_state  or (a.supply_place!=a.company_state and a.invoice_total_value<='250000')) and (a.invoice_type='taxinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice') and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' group by ";
         if($group_by=='')
         {
-            $queryB2CS.=' a.reference_number, b.consolidate_rate ';
+            $queryB2CS.=' a.supply_place, b.consolidate_rate ';
         }
         else
         {
