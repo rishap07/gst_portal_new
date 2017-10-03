@@ -3,8 +3,6 @@ $obj_tally = new tally();
 $excelError = false;
 $returnMessage = '';
 
-$obj_tally->uploadClientTallyInvoice();
-
 if(!$obj_tally->can_read('client_invoice')) {
 
     $obj_tally->setError($obj_tally->getValMsg('can_read'));
@@ -26,18 +24,21 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
         $obj_tally->setError('Invalid access to files');
     } else {
 		
-		
+		$uploadInvoice = $obj_tally->uploadClientTallyInvoice();
+		if($uploadInvoice === true){
+            $obj_tally->redirect(PROJECT_URL."?page=tally_import_invoice");
+        } else {
+			$excelError = true;
+			$returnMessage = json_decode($uploadInvoice);
+		}
     }
 }
-
-$dataCurrentArr = array();
-$dataCurrentArr = $obj_tally->getUserDetailsById( $obj_tally->sanitize($_SESSION['user_detail']['user_id']) );
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
-		
+
 		<div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Upload Invoice</h1></div>
-        
+
 		<div class="whitebg formboxcontainer">
 			
 			<?php $obj_tally->showErrorMessage(); ?>
@@ -58,18 +59,18 @@ $dataCurrentArr = $obj_tally->getUserDetailsById( $obj_tally->sanitize($_SESSION
 				<div class="row">
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Invoice Type<span class="starred">*</span></label>
-						<select name="invoice_type" id="invoice_type" class="required form-control">
-							<option value=''>Select Invoice Type</option>
-							<option value='taxinvoice'>Tax Invoice</option>
-							<option value='taxexportinvoice'>Tax Export Invoice</option>
-							<option value='bosinvoice'>Bill of Supply Invoice</option>
-							<option value='rvinvoice'>Receipt Voucher Invoice</option>
-							<option value='rtinvoice'>Revised Tax Invoice</option>
-							<option value='dcinvoice'>Delivery Challan Invoice</option>
+						<label>Return Period<span class="starred">*</span></label>
+						<select name="tally_return_period" id="tally_return_period" class="required form-control">
+							<option value=''>Select Return Period</option>
+							<option value='2017-07'>July 2017</option>
+							<option value='2017-08'>August 2017</option>
+							<option value='2017-09'>September 2017</option>
+							<option value='2017-10'>October 2017</option>
+							<option value='2017-11'>November 2017</option>
+							<option value='2017-12'>December 2017</option>
 						</select>
 					</div>
-									 
+
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Upload Excel File<span class="starred">*</span></label>
 						<div class="clear"></div>
@@ -79,7 +80,7 @@ $dataCurrentArr = $obj_tally->getUserDetailsById( $obj_tally->sanitize($_SESSION
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Download Sample Excel File</label>
 						<div class="clear"></div>
-						<a href="<?php echo PROJECT_URL."/upload/excel.zip"; ?>"><b>Download Sample</b></a>
+						<a href="<?php echo PROJECT_URL."/upload/gstr-1.zip"; ?>"><b>Download Sample</b></a>
 					</div>
 
 					<div class="clear"></div>

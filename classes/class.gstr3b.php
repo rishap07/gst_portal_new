@@ -833,6 +833,41 @@ final class gstr3b extends validation {
 	}
 	public function checkoffsetLiability($total_net_igst,$total_net_cgst,$total_net_sgst,$total_net_cess)
 	{
+		$data=array();
+		$data1[0]['liab_ldg_id'] = '172';		
+        $data1[0]['trans_typ'] = '30002';
+        $data1[0]['ipd'] = (float)9000.00;
+        $data1[0]['cpd'] = (float)2000.00;
+        $data1[0]['spd'] = (float)'2000.00';
+        $data1[0]['cspd'] = (float)'3000.00';
+		$data1[0]['i_intrpd'] = (float)'0.00';
+		$data1[0]['c_intrpd'] = (float)'0.00';
+		$data1[0]['s_intrpd'] = (float)'0.00';
+		$data1[0]['cs_intrpd'] = (float)'0.00';
+		$data1[0]['c_lfeepd'] = (float)'0.00';
+		$data1[0]['s_lfeepd'] = (float)'0.00';
+		//data2
+		$data1[1]['liab_ldg_id'] = (float)'172.00';		
+        $data1[1]['trans_typ'] = (float)'30002.00';
+        $data1[1]['ipd'] = (float)'0.00';
+        $data1[1]['cpd'] = (float)'0.00';
+        $data1[1]['spd'] = (float)'0.00';
+        $data1[1]['cspd'] = (float)'0.00';
+		//data3
+		$data3[0]['liab_ldg_id'] = (float)'173.00';		
+        $data3[0]['trans_typ'] = (float)'30003.00';
+        $data3[0]['i_pdi'] = (float)'9000.00';
+        $data3[0]['i_pdc'] = (float)'0.00';
+        $data3[0]['i_pds'] = (float)'0.00';
+        $data3[0]['c_pdi'] = (float)'0.00';
+		$data3[0]['c_pdc'] = (float)'2000.00';
+		$data3[0]['s_pdi'] = (float)'0.00';
+		$data3[0]['s_pds'] = (float)'2000.00';
+		$data3[0]['cs_pdcs'] = (float)'3000.00';
+		 //$this->pr($data=array("doc_num1"=>$data1,"doc_num2"=>$data2,"doc_num3"=>$data3,"doc_num4"=>$data4,"doc_num5"=>$data5,"doc_num6"=>$data6,"doc_num7"=>$data7,"doc_num8"=>$data8,"doc_num9"=>$data9,"doc_num10"=>$data10,"doc_num11"=>$data11,"doc_num12"=>$data12));
+	    $data=array("pdcash"=>$data1,"pditc"=>$data3);
+        echo json_encode($data);die;
+         
 		
     /***** Start Code For total taxpayable otherthan reverse charge ********** */
 	$totaligst_amount_other=isset($_POST['taxpayable_igst_other']) ? $_POST['taxpayable_igst_other'] : '';
@@ -923,6 +958,7 @@ final class gstr3b extends validation {
 	$this->setError('Please check cess tax value it can not be greater than total available CESS value');
 
 	}
+	
 	 /* end code for check toal available cess tax value */
 	
 	
@@ -1218,7 +1254,10 @@ final class gstr3b extends validation {
         $response['data_arr'] = $dataArr;
         return $response;
     }
-
+    public function gstr3bOffsetPayload($user_id,$returnmonth)
+    {
+		
+	}		
     public function gstGSTR3BPayload($user_id, $returnmonth) {
     	$dataArr = $data_ids = array();
         $query =  "select * from ".$this->getTableName('client_return_gstr3b')." a where  a.status='1' and a.added_by='".$user_id."'  and a.financial_month like '%".$returnmonth."%'  and a.final_submit = '0' ";

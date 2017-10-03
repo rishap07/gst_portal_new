@@ -1088,7 +1088,7 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
         }
         //$this->pr($data=array("doc_num1"=>$data1,"doc_num2"=>$data2,"doc_num3"=>$data3,"doc_num4"=>$data4,"doc_num5"=>$data5,"doc_num6"=>$data6,"doc_num7"=>$data7,"doc_num8"=>$data8,"doc_num9"=>$data9,"doc_num10"=>$data10,"doc_num11"=>$data11,"doc_num12"=>$data12));
 	    $data=array("doc_num1"=>$data1,"doc_num2"=>$data2,"doc_num3"=>$data3,"doc_num4"=>$data4,"doc_num5"=>$data5,"doc_num6"=>$data6,"doc_num7"=>$data7,"doc_num8"=>$data8,"doc_num9"=>$data9,"doc_num10"=>$data10,"doc_num11"=>$data11,"doc_num12"=>$data12);
-        $dataArr['return_data'] = base64_encode(json_encode($data));
+		$dataArr['return_data'] = base64_encode(json_encode($data));
         return $dataArr;
      
     }
@@ -1121,7 +1121,7 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
                 $data[$x]['cess'] = isset($_POST['cess'][$x]) ? $_POST['cess'][$x] : '';
             }
         }
-        //$this->pr($data);
+       
         $dataArr['return_data'] = base64_encode(json_encode($data));
 
         return $dataArr;
@@ -1202,10 +1202,10 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 			 }				 
             }
         
-       //$this->pr($data);die;
+       
 		
 		$dataArr['return_data'] = base64_encode(json_encode($data));
-
+           
         return $dataArr;
     }
 	public function gstr2NilExemptSummaryData() {

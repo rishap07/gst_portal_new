@@ -48,7 +48,24 @@ if(!empty($resultdata))
 	$itc_net = $itc_eligible->itc_net;
 	$tax_pmt = $resultdata->tx_pmt;
 	$tx_py = $tax_pmt->tx_py;
-	$obj_gstr3b->pr($tx_py);die;
+	$obj_gstr3b->pr($tx_py);
+	if(!empty($tx_py))
+	{
+		foreach($tx_py as $item)
+		{
+			if($item->tran_desc=='Reverse charge')
+			{
+			 $paidcash_liab_ldg_id2=$item->liab_ldg_id;
+			$paidcash_trans_type2 = $item->trans_typ;  
+			
+			}
+			if($item->tran_desc=='Other than reverse charge')
+			{
+			 $paidcash_liab_ldg_id1=$item->liab_ldg_id;
+			 $paidcash_trans_type1 = $item->trans_typ;  
+			}
+		}
+	}
 	if(!empty($itc_available))
 	{
 		foreach($itc_available as $item)

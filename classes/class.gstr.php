@@ -273,12 +273,13 @@ final class gstr extends validation {
         $msg = $return_encode = '';
         $error = 1;
         $response = array();
-        $json_data = json_encode($dataArr);
+        $json_data = json_encode($dataArr);			
         $encodejson=base64_encode(openssl_encrypt(base64_encode($json_data),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
         $hmac = $this->hmac($_SESSION['decrypt_sess_key'],$json_data); 
         $response = $this->gstCommonRetunSave($encodejson,$hmac,$returnmonth,$jstr);      
         return $response;
     }
+	
     public function gstCommonRetunSave($encodejson,$hmac,$returnmonth,$jstr) {
         $error =1;
         $msg = '';
@@ -320,7 +321,7 @@ final class gstr extends validation {
             $decodejson= base64_decode(openssl_decrypt(base64_decode($retData),"aes-256-ecb",$apiEk, OPENSSL_RAW_DATA));
             $ref = json_decode($decodejson);
 
-            $refId = $ref->reference_id;
+			$refId = $ref->reference_id;
             sleep(5);
             
             //Start code for create header
@@ -336,11 +337,13 @@ final class gstr extends validation {
             $header2 = $this->header($header2_array);
             //$this->pr($header2);
             //End code for create header
-            $url2 = API_RETURN_URL.'?action=RETSTATUS&gstin='.$gstin. '&ret_period='.$api_return_period.'&ref_id='.$refId.'';
+           $url2 = API_RETURN_URL.'?action=RETSTATUS&gstin='.$gstin. '&ret_period='.$api_return_period.'&ref_id='.$refId.'';
+		  
             $result_data1 = $this->hitGetUrl($url2, '', $header2);
             
             $retDta = json_decode($result_data1);
             //$this->pr($retDta);
+			
             if(isset($retDta->status_cd) && $retDta->status_cd=='1' && $msg == '')
             {
                 $retRek=$retDta->rek;
@@ -394,6 +397,7 @@ final class gstr extends validation {
         $response['error'] = $error;
         return $response;
     }
+	
     public function returnSummary($returnmonth,$type='',$jstr='gstr1')
     {
         if(!empty($_SESSION['auth_token'])) {

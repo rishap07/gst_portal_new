@@ -96,6 +96,7 @@ else {
 	
 	$nil_data = json_decode($arr1);
 	//$obj_transition->pr($nil_data);
+	
 	for($i=0;$i<sizeof($nil_data);$i++)
 	{
 		if(isset($nil_data[$i]->sply_ty) && $i==0 && ($nil_data[$i]->sply_ty=='INTERB2B'))

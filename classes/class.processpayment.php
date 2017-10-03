@@ -501,8 +501,17 @@ The GST Keeper Team </p></td>
         $mpdfHtml .= '</tr>';
 
         $mpdfHtml .= '<tr class="heading">';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;text-align:right;">(%)</td>';
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Amt (₹)</td>';
+		if ($useraddress['state'] != '22') {
+			$mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;text-align:right;">(%)</td>';
+			$mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Amt (₹)</td>';
+		}
+		else
+		{
+			$mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;text-align:right;">(%)</td>';
+			$mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Amt (₹)</td>';
+			$mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;text-align:right;">(%)</td>';
+			$mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;">Amt (₹)</td>';
+		}
         $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;text-align:right;">(%)</td>';
         $mpdfHtml .= '<td style="padding:5px;vertical-align:top;background:#eee;border-bottom:1px solid #ddd;font-weight:bold;text-align:right;">Amt (₹)</td>';
         $mpdfHtml .= '</tr>';
@@ -556,20 +565,27 @@ The GST Keeper Team </p></td>
             $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
             $mpdfHtml .= round($dataInvoice['tax_percentage'], 2, PHP_ROUND_HALF_DOWN);
             $mpdfHtml .= '</td>';
+			$mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
+			$mpdfHtml .= round($dataInvoice['taxes'], 2, PHP_ROUND_HALF_DOWN);
+			$mpdfHtml .= '</td>';
         }
         else 
         {
             $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
             $mpdfHtml .= round(($dataInvoice['tax_percentage']/2), 2, PHP_ROUND_HALF_DOWN);
             $mpdfHtml .= '</td>';
+			$mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
+			$mpdfHtml .= round(($dataInvoice['taxes']/2), 2, PHP_ROUND_HALF_DOWN);
+			$mpdfHtml .= '</td>';
             $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
             $mpdfHtml .= round(($dataInvoice['tax_percentage']/2), 2, PHP_ROUND_HALF_DOWN);
             $mpdfHtml .= '</td>';
+			$mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
+			$mpdfHtml .= round(($dataInvoice['taxes']/2), 2, PHP_ROUND_HALF_DOWN);
+			$mpdfHtml .= '</td>';
         }
 
-        $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
-        $mpdfHtml .= round($dataInvoice['taxes'], 2, PHP_ROUND_HALF_DOWN);
-        $mpdfHtml .= '</td>';
+        
 
         $mpdfHtml .= '<td style="padding:5px;vertical-align:top;border-bottom:1px solid #eee;text-align:right;">';
         $mpdfHtml .= '0';
