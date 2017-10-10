@@ -80,8 +80,7 @@
 							 $message=$obj_notification->totalNotificationShow();
 						  }
 						  $notification_status=$obj_notification->checkNotificationStatus();
-						  
-
+						
 					?>
 				
 
@@ -144,28 +143,32 @@
 		<div class="row row-offcanvas row-offcanvas-left">
 
 		<!-- sidebar -->
-		<div class="column col-md-2 col-sm-3 col-xs-6 sidebar-offcanvas  padlr0" id="sidebar"> 
+		<div class="column col-md-2 col-sm-3 col-xs-6 sidebar-offcanvas  padlr0" id="sidebar">
 
 			<ul class="nav" id="menu">
-
 				<li><a href="<?php echo PROJECT_URL . "?page=dashboard"; ?>"><i class="fa fa-tachometer" aria-hidden="true"></i><span class="collapse in hidden-xs">Dashboard</span></a></li>
 
 				<?php if ($db_obj->can_read('client_list')) { ?>
-					<li>
-						<a href="#" data-target="#item2" data-toggle="collapse"><i class="fa fa-user-o" aria-hidden="true"></i> 
-						<span class="collapse in hidden-xs">Business Users <span class="navrgtarrow"><i class="fa fa-chevron-right" aria-hidden="true"></i></span></span></a>
-						<ul class="nav nav-stacked collapse left-submenu" id="item2">
-							<li><a href="<?php echo PROJECT_URL; ?>/?page=client_list"><i class="fa fa-circle" aria-hidden="true"></i>All Business User</a></li>
-							<li><a href="<?php echo PROJECT_URL; ?>/?page=client_update"><i class="fa fa-circle" aria-hidden="true"></i>Add Business User</a></li>
-						<?php $dataCurrentArr = $db_obj->getUserDetailsById($db_obj->sanitize($_SESSION['user_detail']['user_id']));
-							$subscribePlanDetail = $db_obj->getUserSubscribePlanDetails($dataCurrentArr['data']->plan_id,$db_obj->sanitize($_SESSION['user_detail']['user_id']));
-							if(!empty($subscribePlanDetail['data']) && ($subscribePlanDetail['data']->sub_user!=0))
-							{
-							?><?php  if ($db_obj->can_read('subscriber_subuser_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=subscriber_subuser_list"><i class="fa fa-circle" aria-hidden="true"></i>All Business SubUser</a></li><?php } ?>
-							
-						<?php } ?>
-						</ul>
-					</li>
+					
+					<?php if($_SESSION['user_detail']['user_group'] == 1 || $_SESSION['user_detail']['user_group'] == 2) { ?>
+						<li><a href="<?php echo PROJECT_URL . "?page=client_list"; ?>"><i class="fa fa-cog" aria-hidden="true"></i><span class="collapse in hidden-xs">Client List</span></a></li>
+					<?php } else { ?>
+						<li>
+							<a href="#" data-target="#item2" data-toggle="collapse"><i class="fa fa-user-o" aria-hidden="true"></i> 
+							<span class="collapse in hidden-xs">Business Users <span class="navrgtarrow"><i class="fa fa-chevron-right" aria-hidden="true"></i></span></span></a>
+							<ul class="nav nav-stacked collapse left-submenu" id="item2">
+								<li><a href="<?php echo PROJECT_URL; ?>/?page=client_list"><i class="fa fa-circle" aria-hidden="true"></i>All Business User</a></li>
+								<li><a href="<?php echo PROJECT_URL; ?>/?page=client_update"><i class="fa fa-circle" aria-hidden="true"></i>Add Business User</a></li>
+
+								<?php $dataCurrentArr = $db_obj->getUserDetailsById($db_obj->sanitize($_SESSION['user_detail']['user_id'])); ?>
+								<?php $subscribePlanDetail = $db_obj->getUserSubscribePlanDetails($dataCurrentArr['data']->plan_id,$db_obj->sanitize($_SESSION['user_detail']['user_id'])); ?>
+								<?php if(!empty($subscribePlanDetail['data']) && ($subscribePlanDetail['data']->sub_user!=0)) { ?>
+									<?php if ($db_obj->can_read('subscriber_subuser_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=subscriber_subuser_list"><i class="fa fa-circle" aria-hidden="true"></i>All Business SubUser</a></li><?php } ?>
+								<?php } ?>
+							</ul>
+						</li>
+					<?php } ?>
+
 				<?php } ?>
 
 				<?php if ($db_obj->can_read('admin_list')) { ?>
@@ -350,14 +353,14 @@
 				<?php if ($db_obj->can_read('client_invoice')) { ?>
 					<li><a href="<?php echo PROJECT_URL . '/?page=return_client'; ?>"><i class="fa fa-refresh"></i> <span class="collapse in hidden-xs">Return</span></a></li>
 				<?php } ?>
-                  	<?php if ($db_obj->can_read('returnfile_list')) { ?>
+                  	<?php if ($db_obj->can_read('returnsetting_list')) { ?>
 					<li>
 						<a href="#" data-target="#returnfile" data-toggle="collapse"><i class="fa fa-cog"></i> 
 						<span class="collapse in hidden-xs">ReturnFile Setting<span class="navrgtarrow"><i class="fa fa-chevron-right" aria-hidden="true"></i></span></span></a>
 						<ul class="nav nav-stacked collapse left-submenu" id="returnfile">
-						 	<?php if ($db_obj->can_read('returnfile_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=returnfile_date_list"><i class="fa fa-circle" aria-hidden="true"></i>ReturnFile dates</a></li><?php } ?>
-							<?php if ($db_obj->can_read('returnfile_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=returnfile_category_list"><i class="fa fa-circle" aria-hidden="true"></i>ReturnFile Category</a></li><?php } ?>
-							<?php if ($db_obj->can_read('returnfile_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=returnfile_subcategory_list"><i class="fa fa-circle" aria-hidden="true"></i>ReturnFile SubCategory</a></li><?php } ?>
+						 	<?php if ($db_obj->can_read('returnsetting_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=returnfile_date_list"><i class="fa fa-circle" aria-hidden="true"></i>ReturnFile dates</a></li><?php } ?>
+							<?php if ($db_obj->can_read('returnsetting_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=returnfile_category_list"><i class="fa fa-circle" aria-hidden="true"></i>ReturnFile Category</a></li><?php } ?>
+							<?php if ($db_obj->can_read('returnsetting_list')) { ?><li><a href="<?php echo PROJECT_URL; ?>/?page=returnfile_subcategory_list"><i class="fa fa-circle" aria-hidden="true"></i>ReturnFile SubCategory</a></li><?php } ?>
 				
 						</ul>
 					</li>
@@ -391,10 +394,18 @@
 		<?php
 		if($notification_status > 0 )
 		{
+			$totalcounter;
+			if($notification_status==1)
+			{
+				$totalcounter=$notification_status;
+			}
+			else{
+				$totalcounter=$notification_status-1;
+			}
 			?>
         $('#noti_Counter')
             .css({ opacity: 0 })
-            .text('<?php echo $count-1; ?>')              // ADD DYNAMIC VALUE (YOU CAN EXTRACT DATA FROM DATABASE OR XML).
+            .text('<?php echo $totalcounter; ?>')              // ADD DYNAMIC VALUE (YOU CAN EXTRACT DATA FROM DATABASE OR XML).
             .css({ top: '-10px' })
 			 .css({ background: '#E1141E' })
             .animate({ top: '-2px', opacity: 1 }, 500);

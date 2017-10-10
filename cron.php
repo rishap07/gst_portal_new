@@ -7,20 +7,17 @@ foreach($dataRes as $dataRe)
 {
     $mail = new PHPMailer();
     $mail->IsSMTP();
-    $mail->SMTPAuth = true;
-    $mail->Host = "whmcsmail.go4hosting.in";
-    $mail->Username = "support@go4hosting.com";
-    $mail->Password = "OKI87%\$#DD%^";
-    $mail->SMTPSecure = 'tls';
+    $mail->Host = "49.50.104.11";
     $mail->Port = 25;
+    //$mail->SMTPDebug = 2;
 
     $mail->SMTPOptions = array(
         'ssl' => array(
-        'verify_peer' => false,
-        'verify_peer_name' => false,
-        'allow_self_signed' => true
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
         )
-    );  
+    );
     $mail->SetFrom('noreply@gstkeeper.com', 'GST Keeper');
     $mail->Subject=$dataRe->subject;
     $mail->MsgHTML(html_entity_decode($dataRe->body));

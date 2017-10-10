@@ -131,7 +131,7 @@ input[type='submit'] {text-transform:capitalize;}
 /*------------------------------------HEARDER CSS START HRE-------------------------------*/
 .togglemenu { position:absolute; z-index:9999; top:20px; left:20px;}
 .adminpanelbody{float:left;width:100%;}
-.headertop{background:#FFF; width:100%; float:left; padding:0px 20px 0px 0px; position:fixed; top:0px; z-index:99999;}
+.headertop{background:#FFF; width:100%; float:left; padding:0px 20px 0px 0px; position:fixed; top:0px; z-index:999;}
 .topnav{float:right;width:auto; margin-top:15px;}
 .topnav ul{width:auto;margin:10px 0px 0px;padding:0px;float:left;}
 .topnav ul li{float:left;color:#6d6d6d;list-style:none;padding:0px 15px; font-size:12px; border-right:1px solid #e5e5e5; height:25px;}

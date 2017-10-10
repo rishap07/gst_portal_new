@@ -145,38 +145,44 @@ define('SCRIPT_URL', PROJECT_URL . SCRIPT_DIR);
 # INCLUDE CLASSES FILES NEEDED WHEN AN OBJECT IS INITIALIZED
 #-------------------------------------------------------------------------------
 
-
 #-------------------------------------------------------------------------------
-# API URLS
-#------------------------- DEMO ----------------------------------------------
-define('API_CLIENT_ID', 'l7xx2909cd95daee418b8118e070b6b24dd6'); 
-//'l7xx1ed437f1e18347c38bd2aad6e6dd3b3c' for dev api
-define('API_CLIENT_SECRET', 'fa6f03446473400fa21240241affe2a5');
-//'a9bcf665fe424883b7b94791eb31f667 ' for dev api
+    # API URLS
 
-define('API_KARVI_ID', API_CLIENT_ID);
-define('API_KARVI_SECRET', API_CLIENT_SECRET);
+define('API_TYPE', 'Demo'); //Demo or Live
 
-define('API_OTP_URL', 'http://gsp.karvygst.com/v0.3/authenticate');
-define('API_AUTH_URL', 'http://gsp.karvygst.com/v0.3/authenticate');
-define('API_RETURN_URL', 'http://gsp.karvygst.com/v0.3/returns');
-define('API_TYPE', 'Demo');
+if(API_TYPE == 'Demo') {
 
+    #------------------------- DEMO ----------------------------------------------
+    define('API_CLIENT_ID', 'l7xx2909cd95daee418b8118e070b6b24dd6'); 
+    //'l7xx1ed437f1e18347c38bd2aad6e6dd3b3c' for dev api
+    define('API_CLIENT_SECRET', 'fa6f03446473400fa21240241affe2a5');
+    //'a9bcf665fe424883b7b94791eb31f667 ' for dev api
 
-#---------------------- LIVE ------------------------------------------
+    define('API_KARVI_ID', API_CLIENT_ID);
+    define('API_KARVI_SECRET', API_CLIENT_SECRET);
 
-//define('API_CLIENT_ID', 'l7xx77bf62d48fd045ffbbe6ad958d11a372');
-//define('API_CLIENT_SECRET', 'b4afd81551ec4f8f969b171bc4373340');
+    define('API_OTP_URL', 'http://gsp.karvygst.com/v0.3/authenticate');
+    define('API_AUTH_URL', 'http://gsp.karvygst.com/v0.3/authenticate');
+    define('API_RETURN_URL', 'http://gsp.karvygst.com/v0.3/returns');
 
-//define('API_KARVI_ID', 'VYFKG###fdkfjf');
-//define('API_KARVI_SECRET', 'VYFdd##fdkfjf');
+    define('API_USERNAME', 'Cyfuture.MH.TP.1');//Cyfuture.MH.TP.1
+    define('API_GSTIN', '27GSPMH3941G1ZK');//27GSPMH3941G1ZK
+    define('API_STATE_CD', '27');
 
-//define('API_OTP_URL', 'https://gspapi.karvygst.com/Authenticate');
-//define('API_AUTH_URL', 'https://gspapi.karvygst.com/Authenticate');
-//define('API_RETURN_URL', 'https://gspapi.karvygst.com/returns');
+}
+elseif(API_TYPE == 'Live') {
+    #---------------------- LIVE ------------------------------------------
+    define('API_CLIENT_ID', 'l7xx77bf62d48fd045ffbbe6ad958d11a372');
+    define('API_CLIENT_SECRET', 'b4afd81551ec4f8f969b171bc4373340');
 
-//define('API_TYPE', 'Live');
+    define('API_KARVI_ID', 'VYFKG###fdkfjf');
+    define('API_KARVI_SECRET', 'VYFdd##fdkfjf');
 
+    define('API_OTP_URL', 'https://gspapi.karvygst.com/Authenticate');
+    define('API_AUTH_URL', 'https://gspapi.karvygst.com/Authenticate');
+    define('API_RETURN_URL', 'https://gspapi.karvygst.com/returns');
+
+}
 
 define('API_TXN', 'TXN789123456789');
 define('API_IP', '203.197.205.110');

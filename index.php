@@ -6,17 +6,17 @@ if (isset($theme_data[0]->theme_name) && $theme_data[0]->theme_name != '') {
 
     define('THEME_PATH', THEME_DIR . $theme_data[0]->theme_folder);
     define('THEME_URL', PROJECT_URL . "/template/" . $theme_data[0]->theme_folder);
-} else {
+} 
+else {
 
     define('THEME_PATH', THEME_DIR . 'gst_portal');
     define('THEME_URL', PROJECT_URL . "/template/gst_portal");
 }
 $pagename = '';
 if (isset($_REQUEST['page']) && !empty($_REQUEST['page'])) {
-
     $pagename = $_REQUEST['page'];
-} else if (isset($_REQUEST['ajax']) && !empty($_REQUEST['ajax'])) {
-
+}
+else if (isset($_REQUEST['ajax']) && !empty($_REQUEST['ajax'])) {
     $pagename = $_REQUEST['ajax'];
 }
 if (!isset($_REQUEST['ajax']) && $_SERVER['REQUEST_URI'] != ROOT_DIR . "/") {
@@ -37,7 +37,8 @@ if ($pagename == '' && !isset($_REQUEST['ajax'])) {
         header("HTTP/1.0 404 Not Found");
         include_once PROJECT_ROOT . "/modules/404/404.php";
     }
-} else {
+} 
+else {
     if (isset($_REQUEST['page'])) {
         $name = explode('_', $pagename);
         $folder = $name[0];
