@@ -2,6 +2,13 @@
 //session_destroy();
 $obj_gstr = new gstr();
 $obj_gstr1 = new gstr1();
+//$obj_gstr1->pr($_SESSION);
+if(!$obj_gstr1->can_read('returnfile_list'))
+{
+    $obj_gstr1->setError($obj_gstr1->getValMsg('can_read'));
+    $obj_gstr1->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
 $dataCurrentUserArr = $obj_gstr1->getUserDetailsById( $obj_gstr1->sanitize($_SESSION['user_detail']['user_id']) );
 //$obj_gstr1->pr($dataCurrentUserArr['data']);die;
 if($dataCurrentUserArr['data']->kyc->vendor_type!='1'){
@@ -34,11 +41,11 @@ if($type=="B2B")
         exit();
     }
 }
-
 //$obj_gstr1->pr($_POST);
-if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isset($_POST['name']) || isset($_POST['type']))
+//die;
+if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isset($_POST['name']) || isset($_POST['type']) && isset($_POST['btn_type']) && $_POST['btn_type'] == 'upload')
 {
-    
+    //echo "upload";
     $invoice_type = isset($_REQUEST['type'])?$_REQUEST['type']:'';
     if ($invoice_type == 'HSN' || $invoice_type == 'NIL' || $invoice_type == 'DOCISSUE') {
         if ($obj_gstr1->gstr1Upload('',$invoice_type)) 
@@ -60,6 +67,13 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
     else {
         $obj_gstr1->setError('Sorry! No Invoices are selected');
     }
+    
+}
+
+if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To GSTN')|| (isset($_POST['btn_type']) && $_POST['btn_type'] == 'final_submit' ))
+{
+    //echo "submit";
+    $obj_gstr1->gstr1FinalSubmit();
     
 }
 
@@ -186,7 +200,8 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                 $Data = $b2bData = $b2clData = $b2csData = $cdnrData = $cdnurData = $atData = $expData = array();
                                 if($type=='B2B')
                                 {
-                                    $Data = $b2bData = $obj_gstr1->getB2BInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all');
+                                    $Data = $b2bData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'b2b');
+                                    //$Data = $b2bData = $obj_gstr1->getB2BInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all');
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
                                     $invoice_temp = '';
                                     $invoice_total_value_temp = '';
@@ -221,7 +236,8 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                 {
                                     $group_by = "";
                                     $order_by = 'a.reference_number';
-                                    $Data = $b2clData = $obj_gstr1->getB2CLInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
+                                    $Data = $b2clData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'b2cl');
+                                    // /$Data = $b2clData = $obj_gstr1->getB2CLInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;  
                                     
                                     $invoice_temp = '';
@@ -256,7 +272,8 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                 {
                                     $group_by = "a.reference_number,b.consolidate_rate";
                                     $order_by = 'a.reference_number';
-                                    $Data = $b2csData = $obj_gstr1->getB2CSInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
+                                    $Data = $b2csData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'b2cs');
+                                    // /$Data = $b2csData = $obj_gstr1->getB2CSInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
                                     $invoice_temp = '';
                                     $invCount = 0;
@@ -288,7 +305,8 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                 }
                                 if($type=='CDNR')
                                 {
-                                    $Data = $cdnrData = $obj_gstr1->getCDNRInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all');
+                                     $Data = $cdnrData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'cdnr');
+                                    //$Data = $cdnrData = $obj_gstr1->getCDNRInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all');
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
                                     $invoice_temp = '';
                                     $invCount = 0;
@@ -322,7 +340,8 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                 {
                                     $group_by = "";
                                     $order_by = 'a.reference_number';
-                                    $Data = $cdnurData = $obj_gstr1->getCDNURInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
+                                    $Data = $cdnurData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'cdnur');
+                                    //$Data = $cdnurData = $obj_gstr1->getCDNURInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
                                     $sumTotal_temp = '';
                                     $invoice_temp = '';
@@ -357,7 +376,8 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                 {
                                     $group_by = " a.reference_number ,b.consolidate_rate ";
                                     $order_by = 'a.reference_number';
-                                    $Data = $atData = $obj_gstr1->getATInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
+                                    $Data = $atData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'at');
+                                    //$Data = $atData = $obj_gstr1->getATInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
                                     $sumTotal_temp = '';
                                     $invoice_temp = '';
@@ -393,7 +413,8 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                 {
                                     $group_by = " a.reference_number";
                                     $order_by = 'a.reference_number';
-                                    $Data = $expData = $obj_gstr1->getEXPInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
+                                    $Data = $expData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'exp');
+                                   // $Data = $expData = $obj_gstr1->getEXPInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
                                     $sumTotal_temp = '';
                                     $invoice_temp = '';
@@ -443,7 +464,7 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                                 $sgstTotal += isset($hsnDatavalue->sgst)?$hsnDatavalue->sgst:0;
                                                 $cgstTotal += isset($hsnDatavalue->cgst)?$hsnDatavalue->cgst:0;
                                                 $cessTotal += isset($hsnDatavalue->cess)?$hsnDatavalue->cess:0;
-                                                $sumTotal +=isset($hsnDatavalue->invoice_total_value)?$hsnDatavalue->invoice_total_value:0;
+                                                $sumTotal += isset($hsnDatavalue->invoice_total_value)?$hsnDatavalue->invoice_total_value:0;
                                                 $invCount++;
                                             }
                                         }
@@ -501,10 +522,13 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                     ?>
                                         <div style="text-align: center;">
                                             <input type="hidden" name="type" value="<?php echo $type;?>" readonly>
+                                            <input type="hidden" name="btn_type" value="upload" readonly id="btn_type">
                                             <?php //if($_SESSION['user_detail']['user_id'] == '896') { ?>
-                                            <input itype="<?php echo $type?>" type="submit" name="submit_up" id="up" value="Upload TO GSTN" class="btn  btn-success " >
+                                            <input itype="<?php echo $type?>" type="submit" name="submit_up" id="up" value="Upload TO GSTN" class="btn  btn-success uploadBtn" >
                                             <?php //} ?>
                                             <input itype="<?php echo $type?>" type="submit" name="submit_dwn" id="down" value="Download GSTR1" class="btn btn-warning ">
+                                            &nbsp;&nbsp;
+                                            <input  type="submit" name="submit_freeze" id="freeze" value="Final Submit To GSTN" class="btn btn-primary ">
                                         </div>
                                         <div class="clear"></div><br>
                                     <?php } 
@@ -622,7 +646,7 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                                         <th align='left'>No.</th>
                                                         <th align='left'>Date</th>
                                                         <th align='left'>Invoice Number</th>
-                                                        <th align='left'>Customer</th>
+                                                        <!-- <th align='left'>Customer</th> -->
                                                         <?php
                                                         if($type!='B2CL' && $type!='B2CS' && $type!='CDNUR')
                                                         {
@@ -645,7 +669,7 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                                             <th align='center'>Type</th>
                                                         <?php } ?>
                                                         <th align='center'>Status</th>
-                                                        <th align='center'></th>
+                                                        <!-- <th align='center'></th> -->
                                                     </tr>
                                                 <?php
                                                 }
@@ -735,7 +759,7 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                                                         <td align='left'><?php echo $i++;?></td>
                                                                         <td align='left'><?php echo $invoice_date;?></td>
                                                                         <td align='left'><?php echo $reference_number;?></td>
-                                                                        <td align='left'><?php echo $billing_name;?></td>
+                                                                        <!-- <td align='left'><?php echo $billing_name;?></td> -->
                                                                         <td align='left'><?php echo $billing_gstin_number;?></td>
                                                                         <td style='text-align:right'><?php echo $taxable_subtotal;?></td>
                                                                         <td style='text-align:right'><?php echo $tax?></td>
@@ -775,14 +799,14 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                                                         }
                                                                         
                                                                         ?>
-                                                                        <td align='center'><a href="<?php echo $url; ?>" target="_blank">View</a></td>
+                                                                        <!-- <td align='center'><a href="<?php echo $url; ?>" target="_blank">View</a></td> -->
                                                                     </tr>
                                                                     <?php
                                                                      $tax=0;
                                                                     }
                                                                     $invoice_date = $Item->invoice_date;
                                                                     $reference_number = $Item->reference_number;
-                                                                    $billing_name = $Item->billing_name;
+                                                                    $billing_name = isset($Item->billing_name)?$Item->billing_name:'';
                                                                     $billing_gstin_number = $Item->billing_gstin_number;
                                                                     $taxable_subtotal = $Item->taxable_subtotal;
                                                                     $invoice_total_value = $Item->invoice_total_value;
@@ -802,7 +826,7 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                                                         <td align='left'><?php echo $i++;?></td>
                                                                         <td align='left'><?php echo $invoice_date;?></td>
                                                                         <td align='left'><?php echo $reference_number;?></td>
-                                                                        <td align='left'><?php echo $billing_name;?></td>
+                                                                        <!-- <td align='left'><?php echo $billing_name;?></td> -->
                                                                         <td align='left'><?php echo $billing_gstin_number;?></td>
                                                                         <td style='text-align:right'><?php echo $taxable_subtotal;?></td>
                                                                         <td style='text-align:right'><?php echo $tax?></td>
@@ -841,7 +865,7 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
                                                                         }
                                                                         
                                                                         ?>
-                                                                        <td align='center'><a href="<?php echo $url; ?>" target="_blank">View</a></td>
+                                                                        <!-- <td align='center'><a href="<?php echo $url; ?>" target="_blank">View</a></td> -->
                                                                     </tr>
                                                                 <?php
                                                                 }
@@ -874,6 +898,21 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
 <?php 
 $obj_gstr->uploadOtpPopupJs();
 ?>
+ <div id="finalotpModalBox" class="modal fade" role="dialog" style="z-index: 999999;top: 78px;">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+                <label>Enter OTP </label>
+                <input id="final_otp_code" type="textbox" name="otp" class="form-control" data-bind="numeric" autocomplete="off">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="finalotpModalBoxSubmit" type="button" value="OTP" class="btn btn-success" >Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
     $(document).ready(function () {
         $('#down').click(function () {
@@ -902,10 +941,86 @@ $obj_gstr->uploadOtpPopupJs();
             }
             
         });
-        /*$('#up').on('click', function () {
-            document.form4.action = '<?php echo PROJECT_URL.'/?page=return_view_invoices';?>&returnmonth=<?php echo $returnmonth; ?>';
-            document.form4.submit();
-        });*/
+
+        $(document).ready(function () {
+            $("#freeze").on("click", function () {
+                $('#btn_type').val('final_submit');
+                $.ajax({
+                    url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_details_check",
+                    type: "json",
+                    success: function (response) {
+                       // alert(response);
+                        if(response == 1) {
+                            $("#finalotpModalBox").modal("show");
+                            return false;
+                        }
+                        else if(response == 0) {
+                           if(!confirm("Are you sure you want to final submit data of current month?"))
+                            {
+                                return false;
+                            }
+                            else {
+                                document.form4.submit();
+                            }
+                        }
+                        else {
+                            location.reload();
+                            return false;
+                        }
+                    },
+                    error: function() {
+
+                        alert("Please try again.");
+                        return false;
+                    }
+                });
+                return false;
+            });
+            return false;
+
+        });
+        $( "#finalotpModalBoxSubmit" ).click(function( event ) {
+            var otp = $('#final_otp_code').val();
+            //event.preventDefault();
+            if(otp != " ") {
+                $.ajax({
+                    url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_otp_request",
+                    type: "post",
+                    data: {otp:otp},
+                    success: function (response) {
+                        var arr = $.parseJSON(response);
+                        if(arr.error_code == 0) {
+                            $("#finalotpModalBox").modal("hide");
+                            if(!confirm("Are you sure you want to final submit data of current month?"))
+                            {
+                                return false;
+                            }
+                            else {
+                                document.form4.submit();
+                            }
+                        }
+                        else {
+                          location.reload();
+                            return false;
+                        }
+                    },
+                    error: function() {
+                        alert("Enter OTP First");
+                        return false;
+                    }
+                });
+                return false;
+            }
+            else {
+                alert("Enter OTP First");
+                return false;
+            }
+            return false;
+        });
+        
+        $('.uploadBtn').on('click', function () {
+            $('#btn_type').val('upload');
+        });
         $('#multiple-checkboxes').multiselect();
         $('#returnmonth').on('change', function () {
             document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_view_invoices&returnmonth=<?php echo $returnmonth; ?>';

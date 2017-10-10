@@ -1,6 +1,12 @@
 <?php
 $obj_client = new client();
 $obj_gstr2 = new gstr2();
+if(!$obj_gstr2->can_read('returnfile_list'))
+{
+    $obj_gstr2->setError($obj_gstr2->getValMsg('can_read'));
+    $obj_gstr2->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
 $returnmonth = date('Y-m');
 if (isset($_POST['returnmonth'])) {
     $returnmonth = $_POST['returnmonth'];

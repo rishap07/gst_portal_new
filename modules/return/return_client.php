@@ -1,6 +1,12 @@
 <?php
 $obj_client = new client();
 $returnmonth = date('Y-m');
+if(!$obj_client->can_read('returnfile_list'))
+{
+    $obj_client->setError($obj_client->getValMsg('can_read'));
+    $obj_client->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
 if(isset($_POST['returnmonth']))
 {
     $returnmonth = $_POST['returnmonth'];
@@ -215,7 +221,7 @@ if(!empty($dataInvPurchase))
                 <div class="col-md-12 col-sm-12 col-xs-12">
 				 <?php
                     $queryPurchase = "select * from ".$obj_client->getTableName('client_purchase_invoice')." where invoice_nature='purchaseinvoice' and added_by='".$_SESSION['user_detail']['user_id']."' and status='1' and is_canceled='0' and is_deleted='0' and invoice_date like '%".$returnmonth."%'";
-                    $purchaseData = $obj_client->get_results($querySales);
+                    $purchaseData = $obj_client->get_results($queryPurchase);
                     ?>
                     Total Purchase Invoices :<?php echo count($purchaseData);?>
                     <div class="clear" style="height:20px;"></div>

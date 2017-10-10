@@ -2,6 +2,12 @@
 $obj_gstr1 = new gstr1();
 $obj_api =  new gstr();
 $returnmonth = '2017-07';
+if(!$obj_gstr1->can_read('returnfile_list'))
+{
+    $obj_gstr1->setError($obj_gstr1->getValMsg('can_read'));
+    $obj_gstr1->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
 if (!isset($_REQUEST['type']) || $_REQUEST['type'] == '') 
 {
   $obj_gstr1->redirect(PROJECT_URL . "/?page=return_client");

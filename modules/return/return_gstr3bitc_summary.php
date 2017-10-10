@@ -2,9 +2,15 @@
 $obj_transition = new transition();
 $obj_gstr2 = new gstr2();
 $obj_gstr3b = new gstr3b();
+$obj_gstr = new gstr();
 //$obj_login->sendMobileMessage
 $returnmonth = date('Y-m');
-
+if(!$obj_gstr2->can_read('returnfile_list'))
+{
+    $obj_gstr2->setError($obj_gstr2->getValMsg('can_read'));
+    $obj_gstr2->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
 if (isset($_POST['returnmonth'])) {
     $returnmonth = $_POST['returnmonth'];
     $obj_gstr2->redirect(PROJECT_URL . "/?page=return_gstr3bitc_summary&returnmonth=" . $returnmonth);
@@ -19,7 +25,8 @@ if ($_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
 }
 $resultdata = $obj_gstr3b->getSubmitGSTR3bData();
-$obj_gstr3b->pr($resultdata);
+//$resultdata = $obj_gstr->returnSummary($returnmonth,'','gstr3b');
+//$obj_gstr3b->pr($resultdata);die;
 $total_igst_other=0;
 $total_cgst_other=0;
 $total_sgst_other=0;
@@ -48,7 +55,7 @@ if(!empty($resultdata))
 	$itc_net = $itc_eligible->itc_net;
 	$tax_pmt = $resultdata->tx_pmt;
 	$tx_py = $tax_pmt->tx_py;
-	$obj_gstr3b->pr($tx_py);
+	//$obj_gstr3b->pr($tx_py);
 	if(!empty($tx_py))
 	{
 		foreach($tx_py as $item)
@@ -113,11 +120,11 @@ echo "TotalCESS Available".$total_net_cess;
 echo "<br>";
 echo "TotalSGST Available".$total_net_sgst;
 echo "<br>";
-if(isset($_POST['offset']) && $_POST['offset']=='offset liability') {
+if(isset($_POST['offset_id']) && $_POST['offset_id']=='1') {
 	
-   if($obj_gstr3b->checkoffsetLiability($total_net_igst,$total_net_cgst,$total_net_sgst,$total_net_cess))
+   if($obj_gstr3b->checkoffsetLiability($total_net_igst,$total_net_cgst,$total_net_sgst,$total_net_cess,$paidcash_liab_ldg_id1,$paidcash_trans_type1,$paidcash_liab_ldg_id2,$paidcash_trans_type2,$returnmonth))
    {
-	   
+	 
    }
 }
 
@@ -133,21 +140,18 @@ if(isset($_POST['offset']) && $_POST['offset']=='offset liability') {
 			<?php $obj_gstr2->showErrorMessage(); ?>
 		    <?php $obj_gstr2->showSuccessMessge(); ?>
 		    <?php $obj_gstr2->unsetMessage(); ?>
-             <form method="post" id="auto" name="auto">
-                <button  type="button" style="display:none;" class="btn btn-success" id="btnConfirm">autopopulate</button>
-                <input type="hidden" name="autoname" id="autoname" value="1" />
-                <input style="display:none;" type='submit' class="btn btn-success" name='autopopulate' value='autopopulate'>
-            </form>	 
+             
             <div class="tab">
                 <a href="<?php echo PROJECT_URL . '/?page=return_gstr3b_file&returnmonth='.$returnmonth ?>" >
                     Prepare GSTR-3B 
                 </a>
-                <a href="<?php echo PROJECT_URL . '/?page=return_filegstr3b_file&returnmonth='.$returnmonth ?>" >
-                    File GSTR-3B
-                </a>
 				 <a href="<?php echo PROJECT_URL . '/?page=return_gstr3bitc_summary&returnmonth='.$returnmonth ?>" class="active" >
                     ITC Paid
                 </a>
+                <a href="<?php echo PROJECT_URL . '/?page=return_filegstr3b_file&returnmonth='.$returnmonth ?>" >
+                    File GSTR-3B
+                </a>
+				
               
              </div>  			
             <div class="pull-right rgtdatetxt">
@@ -181,11 +185,11 @@ if (!empty($dataRes)) {
                 </form>
             </div>
                    
-            <form method="post" enctype="multipart/form-data" id='form'> 
+              <form method="post" enctype="multipart/form-data" id='form' name="form4">
+      
                 <div class="greyheading">1.ITC Available</div>
                 <div class="tableresponsive">
-                    <form method="post" enctype="multipart/form-data" id='form'>
-                        <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0"  class="table  tablecontent tablecontent2 bordernone" id='table1a'>
+                       <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0"  class="table  tablecontent tablecontent2 bordernone" id='table1a'>
                             <thead>
                                 <tr>
                                     <th>Description</th>
@@ -333,9 +337,10 @@ if (!empty($dataRes)) {
         <div class="adminformbxsubmit" style="width:100%;"> 
          <div class="tc" style="float:right;">
 		 <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_gstr2_mydata&returnmonth=" . $_REQUEST["returnmonth"]; ?>';" class="btn btn-danger" class="redbtn marlef10"/>
-         <input type='submit' class="btn btn-success" name='submit' value='checkbalance' id='submit'>
-		 <input type='submit' class="btn btn-success" name='offset' value='offset liability' id='submit'>
-		 
+     	 <input type='submit' class="btn btn-success" name='offset' value='offset liability' id='gstr1_summary_download'>
+		 <input type='hidden' name="btn_type" id="btn_type" readonly value="upload" />
+		 <input type='hidden' name="offset_id" id="offset_id" readonly value="1" />
+							    	
          </div>                             
         </div>                                            
     
@@ -348,6 +353,10 @@ if (!empty($dataRes)) {
     <!--CONTENT START HERE-->
 </form>
 <div class="clear"></div>
+<?php 
+
+$obj_gstr->DownloadSummaryOtpPopupJs();
+?>
 <script>
     $(document).ready(function () {
         $('#returnmonth').on('change', function () {
@@ -365,159 +374,8 @@ if (!empty($dataRes)) {
                     });
                 });
 </script>
-<script>
-    function ezBSAlert(options) {
-        var deferredObject = $.Deferred();
-        var defaults = {
-            type: "alert", //alert, prompt,confirm 
-            modalSize: 'modal-sm', //modal-sm, modal-lg
-            okButtonText: 'Confirm',
-            cancelButtonText: 'Cancel',
-            yesButtonText: 'Yes',
-            noButtonText: 'No',
-            headerText: 'Important : Please Read And Confirm',
-            messageText: 'Message',
-            alertType: 'default', //default, primary, success, info, warning, danger
-            inputFieldType: 'text', //could ask for number,email,etc
-        }
-        $.extend(defaults, options);
-
-        var _show = function () {
-            var headClass = "navbar-default";
-            switch (defaults.alertType) {
-                case "primary":
-                    headClass = "alert-primary";
-                    break;
-                case "success":
-                    headClass = "alert-success";
-                    break;
-                case "info":
-                    headClass = "alert-info";
-                    break;
-                case "warning":
-                    headClass = "alert-warning";
-                    break;
-                case "danger":
-                    headClass = "alert-danger";
-                    break;
-            }
-            $('BODY').append(
-                    '<div id="ezAlerts" style="z-index: 99999" class="modal fade">' +
-                    '<div class="modal-dialog" class="' + defaults.modalSize + '">' +
-                    '<div class="modal-content">' +
-                    '<div id="ezAlerts-header" class="modal-header ' + headClass + '">' +
-                    '<button id="close-button" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>' +
-                    '<h4 id="ezAlerts-title" class="modal-title">Modal title</h4>' +
-                    '</div>' +
-                    '<div id="ezAlerts-body" class="modal-body">' +
-                    '<div id="ezAlerts-message" ></div>' +
-                    '</div>' +
-                    '<div id="ezAlerts-footer" class="modal-footer">' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>'
-                    );
-
-            $('.modal-header').css({
-                'padding': '15px 15px',
-                '-webkit-border-top-left-radius': '5px',
-                '-webkit-border-top-right-radius': '5px',
-                '-moz-border-radius-topleft': '5px',
-                '-moz-border-radius-topright': '5px',
-                'border-top-left-radius': '5px',
-                'border-top-right-radius': '5px'
-            });
-
-            $('#ezAlerts-title').text(defaults.headerText);
-            $('#ezAlerts-message').html(defaults.messageText);
-
-            var keyb = "false", backd = "static";
-            var calbackParam = "";
-            switch (defaults.type) {
-                case 'alert':
-                    keyb = "true";
-                    backd = "true";
-                    $('#ezAlerts-footer').html('<button class="btn btn-' + defaults.alertType + '">' + defaults.okButtonText + '</button>').on('click', ".btn", function () {
-                        calbackParam = true;
-                        $('#ezAlerts').modal('hide');
-                    });
-                    break;
-                case 'confirm':
-                    var btnhtml = '<button id="ezok-btn" class="btn btn-primary">' + defaults.yesButtonText + '</button>';
-                    if (defaults.noButtonText && defaults.noButtonText.length > 0) {
-                        btnhtml += '<button id="ezclose-btn" class="btn btn-default">' + defaults.noButtonText + '</button>';
-                    }
-                    $('#ezAlerts-footer').html(btnhtml).on('click', 'button', function (e) {
-                        if (e.target.id === 'ezok-btn') {
-                            calbackParam = true;
-                            $('#ezAlerts').modal('hide');
-                        } else if (e.target.id === 'ezclose-btn') {
-                            calbackParam = false;
-                            $('#ezAlerts').modal('hide');
-                        }
-                    });
-                    break;
-                case 'prompt':
-                    $('#ezAlerts-message').html(defaults.messageText + '<br /><br /><div class="form-group"><input type="' + defaults.inputFieldType + '" class="form-control" id="prompt" /></div>');
-                    $('#ezAlerts-footer').html('<button class="btn btn-primary">' + defaults.okButtonText + '</button>').on('click', ".btn", function () {
-                        calbackParam = $('#prompt').val();
-                        $('#ezAlerts').modal('hide');
-                    });
-                    break;
-            }
-
-            $('#ezAlerts').modal({
-                show: false,
-                backdrop: backd,
-                keyboard: keyb
-            }).on('hidden.bs.modal', function (e) {
-                $('#ezAlerts').remove();
-                deferredObject.resolve(calbackParam);
-            }).on('shown.bs.modal', function (e) {
-                if ($('#prompt').length > 0) {
-                    $('#prompt').focus();
-                }
-            }).modal('show');
-        }
-
-        _show();
-        return deferredObject.promise();
-    }
 
 
-
-
-
-    $(document).ready(function () {
-
-
-        $("#btnConfirm").on("click", function () {
-            ezBSAlert({
-                type: "confirm",
-                messageText: "Auto-compute for Nil rated, exempted and Non-GST supplies is based only on Invoices data.<br><br>Your current data for this section will be erased and it will be reset based on summary computed from Invoice level data.",
-                alertType: "danger"
-            }).done(function (e) {
-                //$("body").append('<div>Callback from confirm ' + e + '</div>');
-                if (e == true)
-                {
-                    document.auto.action = '<?php echo PROJECT_URL; ?>/?page=return_gstr3bitc_summary&returnmonth=<?php echo $returnmonth; ?>';
-                                        document.auto.submit();
-                                    }
-                                });
-                            });
-
-                        });
-</script>   
-<script>
-    $(document).ready(function () {
-
-        /* select2 js for state */
-        //$("#place_of_supply_unregistered_person").select2();
-
-
-    });
-</script>
 
 <script type="text/javascript">
     function isNumberKey(evt)

@@ -33,6 +33,8 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
 		}
     }
 }
+
+//$obj_tally->generateB2BPayload();
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
@@ -54,20 +56,23 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
 				}
 			?>
 			<div class="clear"></div>
-
+			
 			<form name="import-tally-invoice" id="import-tally-invoice" method="POST" enctype="multipart/form-data">
 				<div class="row">
-
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Return Period<span class="starred">*</span></label>
 						<select name="tally_return_period" id="tally_return_period" class="required form-control">
 							<option value=''>Select Return Period</option>
-							<option value='2017-07'>July 2017</option>
-							<option value='2017-08'>August 2017</option>
-							<option value='2017-09'>September 2017</option>
-							<option value='2017-10'>October 2017</option>
-							<option value='2017-11'>November 2017</option>
-							<option value='2017-12'>December 2017</option>
+
+							<?php for($year = 2017; $year <= date('Y'); $year++) { ?>
+								<?php for($month = 1; $month <= 12; $month++) { ?>
+
+									<?php if($year >= 2017 && $month >= 6) { ?>
+										<option value="<?php echo date( "Y-m", strtotime($year."-".$month) ); ?>"><?php echo date( "F Y", strtotime($year."-".$month) ); ?></option>
+									<?php } ?>
+
+								<?php } ?>
+							<?php } ?>
 						</select>
 					</div>
 
@@ -100,6 +105,10 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
 <!--========================sidemenu over=========================-->
 <script>
     $(document).ready(function () {
+		
+		/* Tally Return Period */
+		$("#tally_return_period").select2();
+
         $('#submit').click(function () {
             var mesg = {};
             if (vali.validate(mesg,'import-tally-invoice')) {

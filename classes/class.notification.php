@@ -55,7 +55,7 @@ final class notification extends validation {
 		$message="";
 	    $count=1;
 		$flag=0;
-		$dataNotification = $this->get_results("select * from " . $this->getTableName('notification') . " where status='1'");
+		$dataNotification = $this->get_results("select *, DATE_FORMAT(added_date, '%d %M %Y %r') as added_date from " . $this->getTableName('notification') . " where status='1'");
         if(!empty($dataNotification))
 				{
 					
@@ -87,6 +87,15 @@ final class notification extends validation {
 									
 							   }
 						  }
+						  else if($dataItem->parentid > 0 )
+						  {
+							  
+							  if( $this->checkReturnNotificationDetail($dataItem->notification_id,$dataItem->parentid))
+								 {
+								 }
+						  }
+						  else{
+						  }
 						 
 						
 					  }
@@ -106,7 +115,7 @@ final class notification extends validation {
 		$message="<ul class='noti-ul'>";
 	    $count=1;
 		$flag=0;
-		$sql="select *,u.status as nstatus  from " . $this->getTableName('notification') . " as n INNER join " . $this->getTableName('user_notification') . " as u on u.notification_id=n.notification_id  where n.status='1' and u.user_id='".$_SESSION["user_detail"]["user_id"]."' order by u.notification_id desc limit 0,2";
+	 $sql="select *,u.status as nstatus,DATE_FORMAT(added_date, '%d %M %Y %r') as added_date  from " . $this->getTableName('notification') . " as n INNER join " . $this->getTableName('user_notification') . " as u on u.notification_id=n.notification_id  where n.status='1' and u.user_id='".$_SESSION["user_detail"]["user_id"]."' order by u.notification_id desc limit 0,2";
 			
 		$dataNotification = $this->get_results($sql);
         if(!empty($dataNotification))
@@ -142,6 +151,16 @@ final class notification extends validation {
 									
 							   }
 						  }
+						  else if($dataItem->parentid > 0)
+						  {
+							 
+							 $this->checkReturnNotificationDetail($dataItem->notification_id,$dataItem->parentid);
+							 $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name)). "</a></li>";
+							 $count = $count+1;
+						  }
+						  else{
+							  
+						  }
 						 
 						
 					     }
@@ -166,8 +185,7 @@ final class notification extends validation {
 		$message="";
 	    $count=0;
 		$flag=0;
-	 $sql="select *,u.status as nstatus  from " . $this->getTableName('notification') . " as n INNER join " . $this->getTableName('user_notification') . " as u on u.notification_id=n.notification_id  where u.user_id='".$_SESSION["user_detail"]["user_id"]."' order by u.notification_id desc";
-			
+		$sql="select *,u.status as nstatus  from " . $this->getTableName('notification') . " as n INNER join " . $this->getTableName('user_notification') . " as u on u.notification_id=n.notification_id  where u.user_id='".$_SESSION["user_detail"]["user_id"]."' order by u.notification_id desc";
 		$dataNotification = $this->get_results($sql);
         if(!empty($dataNotification))
 				{
@@ -185,6 +203,7 @@ final class notification extends validation {
 				   if($flag==1)
 				   {
 					return $count;
+				
 				   }
 				   return 0;
 					
@@ -350,6 +369,16 @@ final class notification extends validation {
 								 $count = $count+1;
 									
 							   }
+							    else if($dataItem->parentid > 0)
+						  {
+							 
+							 $this->checkReturnNotificationDetail($dataItem->notification_id,$dataItem->parentid);
+							 $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name)). "</a></li>";
+							 $count = $count+1;
+						  }
+						  else{
+							  
+						  }
 						  //}
 						 
 						
@@ -387,8 +416,47 @@ final class notification extends validation {
             }
         }
     }
+	 public function checkReturnNotificationDetail($notification_id,$userid) {
+        $sql = "select * from " . TAB_PREFIX . "user_notification where notification_id=" . $notification_id . " and user_id='" . $userid . "'";
+         
+        $clientdata = $this->get_results($sql);
+
+        if (empty($clientdata)) {
+
+            $dataArr['user_id'] = $userid;
+            $dataArr['notification_id'] = $notification_id;
+            $dataArr['status'] = 0;
+
+            if ($this->insert(TAB_PREFIX . 'user_notification', $dataArr)) {
+					$this->logMsg("User ID Notification added : " . $_SESSION['user_detail']['user_id'],"notification");
+											
+                //$this->setSuccess('GSTR2 Saved Successfully');
+                return true;
+            } else {
+               // $this->setError('Failed to save notification data');
+                return false;
+            }
+        }
+    }
 	public function updateuserNotificationDetail()
 	{
+		
+		$dataConditionArray['user_id'] = $_SESSION["user_detail"]["user_id"];
+		$dataArr['status_updated_date'] = date('Y-m-d H:i:s');
+		$dataArr['updated_by'] = $_SESSION["user_detail"]["user_id"];
+		$dataArr['status'] = 1;
+											
+		if ($this->update(TAB_PREFIX.'user_notification', $dataArr, $dataConditionArray)) {
+//$this->setSuccess("Your Notification information updated successfully");
+		$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update the notification info","notification");
+												//return true;
+		} else {
+
+			$this->setError($this->validationMessage['failed']);
+			return false;
+		}		
+																			
+		/*
 		        $message="";
 				$count=1;
 				$flag=0;
@@ -502,6 +570,8 @@ final class notification extends validation {
 						
 					  }
 				 } 
+				 */
+				                   
 	}
 	 public function updateNotificationDetail($notification_id) {
         $sql = "select * from " . TAB_PREFIX . "user_notification where notification_id=" . $notification_id . " and user_id='" . $_SESSION["user_detail"]["user_id"] . "'";
@@ -575,6 +645,7 @@ final class notification extends validation {
   			}
 			else
 			{
+				/*
 				$sql="select count(notification_id) as numcount from ".TAB_PREFIX."notification WHERE notification_name='".$dataArr["notification_name"]."'";
 				$dataCurrentArr = $this->get_results($sql);
 				
@@ -586,6 +657,7 @@ final class notification extends validation {
 				}	
 				else
 				{
+					*/
 				
 					if ($this->insert(TAB_PREFIX.'notification', $dataArr)) {
 						$this->setSuccess('Notification Saved Successfully');
@@ -598,12 +670,13 @@ final class notification extends validation {
 						$this->setError('Failed to save Notification data');
 					   return false;    	   
 				   }
-				}
+				//}
 
 			}
 		}
 		else
 		{
+			/*
 			$sql="select count(notification_id) as numcount from ".TAB_PREFIX."notification WHERE notification_name='".$dataArr["notification_name"]."'";
 			$dataCurrentArr = $this->get_results($sql);
 			
@@ -615,6 +688,7 @@ final class notification extends validation {
 			}	
 			else
 			{
+				*/
 				 $dataArr['added_date'] = date('Y-m-d H:i:s');
 				 $dataArr['added_by'] = $_SESSION["user_detail"]["user_id"];
 				if ($this->insert(TAB_PREFIX.'notification', $dataArr)) {
@@ -628,25 +702,9 @@ final class notification extends validation {
 					$this->setError('Failed to save Notification data');
 				   return false;    	   
 			   }
-			}
+			//}
 		}
-		
-		
-		
-		
-		
-	 
 
-        
-       
-       
-       
-       
-      
-      
-
-        
-	
    }
     
 }

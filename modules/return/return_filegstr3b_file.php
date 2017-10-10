@@ -2,7 +2,12 @@
 
 $obj_return = new gstr3b();
 $returnmonth = date('Y-m');
-
+if(!$obj_return->can_read('returnfile_list'))
+{
+    $obj_return->setError($obj_return->getValMsg('can_read'));
+    $obj_return->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
 if(isset($_POST['returnmonth']))
 {
     $returnmonth = $_POST['returnmonth'];

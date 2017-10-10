@@ -624,6 +624,7 @@ echo $response;
         }
         else {
             alert('Invalid procces');
+            return false;
         }
         
     }

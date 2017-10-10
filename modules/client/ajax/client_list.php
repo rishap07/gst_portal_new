@@ -52,7 +52,11 @@ if (isset($_POST['iSortCol_0'])) {
  * on very large tables, and MySQL's regex functionality is very limited
  */
 
-$uWhere = " where is_deleted='0' AND user_group = '4' AND added_by='".$_SESSION['user_detail']['user_id']."' ";
+if($_SESSION['user_detail']['user_group'] == 1 || $_SESSION['user_detail']['user_group'] == 2) {
+	$uWhere = " where is_deleted='0' AND user_group = '4' ";
+} else {
+	$uWhere = " where is_deleted='0' AND user_group = '4' AND added_by='".$_SESSION['user_detail']['user_id']."' ";
+}
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
     
     $uWhere .= 'AND (';
@@ -132,11 +136,22 @@ foreach($rResult as $aRow) {
     $row[] = utf8_decode($aRow->company_name);
     $row[] = utf8_decode($aRow->phone_number);
     $row[] = $status;
+	
+	if($_SESSION['user_detail']['user_group'] == 1 || $_SESSION['user_detail']['user_group'] == 2) {
 
-	if ($dataCurrentArr['data']->kyc == '') {
-		$row[] = '<a href="'.PROJECT_URL.'/?page=client_update&action=editClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_kycupdate_by_subscriber&action=updateClientKYC&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Update KYC" >Update KYC</a>';
-    } else {
-		$row[] = '<a href="'.PROJECT_URL.'/?page=client_update&action=editClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_loginas&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Login" >Login As Client</a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_kycupdate_by_subscriber&action=updateClientKYC&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Update KYC" >Update KYC</a>';
+		if ($dataCurrentArr['data']->kyc == '') {
+			$row[] = '';
+		} else {
+			$row[] = '<a href="'.PROJECT_URL.'/?page=client_loginas&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Login" >Login As Client</a>';
+		}
+
+	} else {
+
+		if ($dataCurrentArr['data']->kyc == '') {
+			$row[] = '<a href="'.PROJECT_URL.'/?page=client_update&action=editClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_kycupdate_by_subscriber&action=updateClientKYC&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Update KYC" >Update KYC</a>';
+		} else {
+			$row[] = '<a href="'.PROJECT_URL.'/?page=client_update&action=editClient&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_loginas&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Login" >Login As Client</a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=client_kycupdate_by_subscriber&action=updateClientKYC&id='.$aRow->user_id.'" class="iconedit hint--bottom" data-hint="Update KYC" >Update KYC</a>';
+		}
 	}
 
 	$output['aaData'][] = $row;

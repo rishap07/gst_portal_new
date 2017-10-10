@@ -1,6 +1,12 @@
 <?php
 $obj_client = new client();
 $obj_gstr2 = new gstr2();
+if(!$obj_gstr2->can_read('returnfile_list'))
+{
+    $obj_gstr2->setError($obj_gstr2->getValMsg('can_read'));
+    $obj_gstr2->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
 	$dataCurrentUserArr = $obj_gstr2->getUserDetailsById( $obj_gstr2->sanitize($_SESSION['user_detail']['user_id']) );
 
 	$returnmonth= date('Y-m');

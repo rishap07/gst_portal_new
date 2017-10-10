@@ -1437,17 +1437,20 @@
 
 			var currentTotal = currentTrQuantity * currentTrRate;
 			$("#invoice_tr_"+rowid+"_total").val(currentTotal.toFixed(2));
+			$("#invoice_tr_"+rowid+"_total").attr("data-invoice-tr-"+rowid+"-total", currentTotal.toFixed(3));
 
 			var currentTrDiscountAmount = (currentTrDiscount/100) * currentTotal;
 			var currentTrReduceAmount = advAdjustmentAmount + currentTrDiscountAmount;
 			var currentTrTaxableValue = currentTotal - currentTrReduceAmount;
 
 			$("#invoice_tr_"+rowid+"_taxablevalue").val(currentTrTaxableValue.toFixed(2));
+			$("#invoice_tr_"+rowid+"_taxablevalue").attr("data-invoice-tr-"+rowid+"-taxablevalue", currentTrTaxableValue.toFixed(3));
 
 			if(supplierStateId === receiverStateId) {
 
 				$("#invoice_tr_"+rowid+"_igstrate").val(0.00);
 				$("#invoice_tr_"+rowid+"_igstamount").val(0.00);
+				$("#invoice_tr_"+rowid+"_igstamount").attr("data-invoice-tr-"+rowid+"-igstamount", 0.00);
 
 				$("#invoice_tr_"+rowid+"_cgstrate").prop("readonly", false);
 				$("#invoice_tr_"+rowid+"_sgstrate").prop("readonly", false);
@@ -1457,20 +1460,25 @@
 				var cgstTax = parseFloat(currentCGSTRate);
 				var cgstTaxAmount = (cgstTax/100) * currentTrTaxableValue;
 				$("#invoice_tr_"+rowid+"_cgstamount").val(cgstTaxAmount.toFixed(2));
+				$("#invoice_tr_"+rowid+"_cgstamount").attr("data-invoice-tr-"+rowid+"-cgstamount", cgstTaxAmount.toFixed(3));
 
 				var sgstTax = parseFloat(currentSGSTRate);
 				var sgstTaxAmount = (sgstTax/100) * currentTrTaxableValue;
 				$("#invoice_tr_"+rowid+"_sgstamount").val(sgstTaxAmount.toFixed(2));
+				$("#invoice_tr_"+rowid+"_sgstamount").attr("data-invoice-tr-"+rowid+"-sgstamount", sgstTaxAmount.toFixed(3));
 
 				var cessTax = parseFloat(currentCESSRate);
 				var cessTaxAmount = (cessTax/100) * currentTrTaxableValue;
 				$("#invoice_tr_"+rowid+"_cessamount").val(cessTaxAmount.toFixed(2));
+				$("#invoice_tr_"+rowid+"_cessamount").attr("data-invoice-tr-"+rowid+"-cessamount", cessTaxAmount.toFixed(3));
 			} else {
 
 				$("#invoice_tr_"+rowid+"_cgstrate").val(0.00);
 				$("#invoice_tr_"+rowid+"_sgstrate").val(0.00);
 				$("#invoice_tr_"+rowid+"_cgstamount").val(0.00);
+				$("#invoice_tr_"+rowid+"_cgstamount").attr("data-invoice-tr-"+rowid+"-cgstamount", 0.00);
 				$("#invoice_tr_"+rowid+"_sgstamount").val(0.00);
+				$("#invoice_tr_"+rowid+"_sgstamount").attr("data-invoice-tr-"+rowid+"-sgstamount", 0.00);
 
 				$("#invoice_tr_"+rowid+"_cgstrate").prop("readonly", true);
 				$("#invoice_tr_"+rowid+"_sgstrate").prop("readonly", true);
@@ -1480,10 +1488,12 @@
 				var igstTax = parseFloat(currentIGSTRate);
 				var igstTaxAmount = (igstTax/100) * currentTrTaxableValue;
 				$("#invoice_tr_"+rowid+"_igstamount").val(igstTaxAmount.toFixed(2));
+				$("#invoice_tr_"+rowid+"_igstamount").attr("data-invoice-tr-"+rowid+"-igstamount", igstTaxAmount.toFixed(3));
 				
 				var cessTax = parseFloat(currentCESSRate);
 				var cessTaxAmount = (cessTax/100) * currentTrTaxableValue;
 				$("#invoice_tr_"+rowid+"_cessamount").val(cessTaxAmount.toFixed(2));
+				$("#invoice_tr_"+rowid+"_cessamount").attr("data-invoice-tr-"+rowid+"-cessamount", cessTaxAmount.toFixed(3));
 			}
 			/* end of calculation */
 
@@ -1510,11 +1520,11 @@
 
                 if($("#invoice_tr_"+rowid+"_itemid").val() != '' && $("#invoice_tr_"+rowid+"_itemid").val() > 0) {
 
-					var taxablevalue = parseFloat($("#invoice_tr_"+rowid+"_taxablevalue").val());
-                    var cgstamount = parseFloat($("#invoice_tr_"+rowid+"_cgstamount").val());
-                    var sgstamount = parseFloat($("#invoice_tr_"+rowid+"_sgstamount").val());
-                    var igstamount = parseFloat($("#invoice_tr_"+rowid+"_igstamount").val());
-					var cessamount = parseFloat($("#invoice_tr_"+rowid+"_cessamount").val());
+					var taxablevalue = parseFloat($("#invoice_tr_"+rowid+"_taxablevalue").attr("data-invoice-tr-"+rowid+"-taxablevalue"));
+                    var cgstamount = parseFloat($("#invoice_tr_"+rowid+"_cgstamount").attr("data-invoice-tr-"+rowid+"-cgstamount"));
+                    var sgstamount = parseFloat($("#invoice_tr_"+rowid+"_sgstamount").attr("data-invoice-tr-"+rowid+"-sgstamount"));
+                    var igstamount = parseFloat($("#invoice_tr_"+rowid+"_igstamount").attr("data-invoice-tr-"+rowid+"-igstamount"));
+					var cessamount = parseFloat($("#invoice_tr_"+rowid+"_cessamount").attr("data-invoice-tr-"+rowid+"-cessamount"));
 
 					totalInvoiceCGSTValue += cgstamount;
 					totalInvoiceSGSTValue += sgstamount;

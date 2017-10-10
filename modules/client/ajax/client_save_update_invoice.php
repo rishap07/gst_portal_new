@@ -252,7 +252,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	$dataArr['updated_by'] = $obj_client->sanitize($_SESSION['user_detail']['user_id']);
 	$dataArr['updated_date'] = date('Y-m-d H:i:s');
 	$dataConditionArray['invoice_id'] = $obj_client->sanitize(base64_decode($params['invoice_id']));
-	
+
 	if(!empty($invoiceErrorMessage) && count($invoiceErrorMessage) > 0) {
 
 		$invoiceErrorMessage = array_reverse($invoiceErrorMessage);

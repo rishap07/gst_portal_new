@@ -12,7 +12,6 @@
 
 final class api extends validation
 {
-    
     protected $validationMessage = array(
         'failed' => "Some error try again to submit.",
         'loginerror' => 'Username or Password Incorrect.',
@@ -33,14 +32,13 @@ final class api extends validation
     */
     final public function login()
     {
-		
         //$this->pr($_SERVER);
         $server_name= $_SERVER['SERVER_NAME'];
         $server_addr= $_SERVER['SERVER_ADDR'];
         $remote_addr= $_SERVER['REMOTE_ADDR'];
         $request_method= $_SERVER['REQUEST_METHOD'];
         $dataArr = $this->getLoginParameters();
-		
+
         if(empty($dataArr))
         {
             return array('msg'=>$this->validationMessage['apiDataBlank'],'code'=>'1');
@@ -53,20 +51,21 @@ final class api extends validation
         {
             return array('msg'=>$this->validationMessage['invalidHashCode'],'code'=>'1');
         }
+
         $data1 = $this->findAll($this->tableNames["api"],array('remote_addr'=>$_SERVER['REMOTE_ADDR'],'api_code'=>$dataArr['api_code'],'api_user'=>$dataArr['api_user'],'status'=>'1','is_deleted'=>'0'));
-        if(empty($data1))
+		if(empty($data1))
         {
             return array('msg'=>$this->validationMessage['api'],'code'=>'1');
         }
+
         $data['user'] = $this->findAll($this->tableNames["user"],array('password'=>$this->password_encrypt($dataArr['password']),'username'=>$dataArr['username'],'status'=>'1','is_deleted'=>'0'),"user_id,concat(first_name,' ',last_name)as name,username,user_group,email,user_group,profile_pics");
-        
+		
         if(empty($data['user'])) {
             return array('msg'=>$this->validationMessage['loginerror'],'code'=>'1');
         }
 
-        $query = "select b.role_page,a.can_read,a.can_create,a.can_update,a.can_delete from ".$this->tableNames['user_role_permission']." a left join ".$this->tableNames['user_role']." b on a.role_id=b.user_role_id where a.group_id='".$data['user']['0']->user_group."' and a.is_deleted='0' and a.status='1'";
-	   
-        $data['user_permission'] = $this->get_results($query);
+        $query = "select b.role_page,a.can_read,a.can_create,a.can_update,a.can_delete from ".$this->tableNames['user_role_permission']." a left join ".$this->tableNames['user_role']." b on a.role_id=b.user_role_id where a.group_id='".$data['user']['0']->user_group."' and a.is_deleted='0' and a.status='1'";		
+		$data['user_permission'] = $this->get_results($query);
       
         return array('data'=>$data,'msg'=>'success','code'=>'2');
     }

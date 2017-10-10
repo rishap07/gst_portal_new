@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
 }
 
 
-if (!$obj_return->can_read('returnfile_list')) {
+if (!$obj_return->can_read('returnsetting_list')) {
 
     $obj_return->setError($obj_return->getValMsg('can_read'));
     $obj_return->redirect(PROJECT_URL . "/?page=dashboard");
@@ -65,7 +65,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
                             <?php $dataCatArrs = $obj_return->get_results("select * from " . $obj_return->getTableName('return_cat') . " where status='1' and is_deleted='0' order by id asc"); ?>
                             <?php if (!empty($dataCatArrs)) { ?>
                                 <?php
-                                if ($dataCurrentArr[0]->cat_id == 0) {
+                                if (isset($dataCurrentArr[0]->cat_id) &&  $dataCurrentArr[0]->cat_id== 0) {
                                     ?>
                                     
                                 <?php } else { ?>

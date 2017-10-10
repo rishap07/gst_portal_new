@@ -22,7 +22,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteAdmin' && isset($_GET['i
         }
 
     } else {
-        $obj_user->setError($obj_plan->validationMessage['usernotexist']);
+        $obj_user->setError($obj_user->validationMessage['usernotexist']);
         $obj_user->redirect(PROJECT_URL."?page=user_adminlist");
     }
 }

@@ -1,6 +1,12 @@
 <?php
 $obj_gstr1 = new gstr1();
 $obj_api =  new gstr();
+if(!$obj_gstr1->can_read('returnfile_list'))
+{
+    $obj_gstr1->setError($obj_gstr1->getValMsg('can_read'));
+    $obj_gstr1->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
 //session_destroy();
 $dataCurrentUserArr = $obj_gstr1->getUserDetailsById( $obj_gstr1->sanitize($_SESSION['user_detail']['user_id']) );
 //$obj_gstr1->pr($dataCurrentUserArr['data']);die;
@@ -145,7 +151,7 @@ $obj_api->DownloadSummaryOtpPopupJs();
         <div class="modal-content">
             <div class="modal-body">
                 <label>Enter OTP</label>
-                <input id="all_sum_otp_code" type="textbox" name="otp" class="form-control" data-bind="numeric">
+                <input id="all_sum_otp_code" type="textbox" name="otp" class="form-control" data-bind="numeric"  autocomplete="off">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -229,7 +235,7 @@ $obj_api->DownloadSummaryOtpPopupJs();
             return false;
         }
         $("#loading").show();
-        var type = $(this).attr('type');
+        var type = $('.gstr1ViewDeleteBtn').attr('type');
         var returnmonth = "<?php echo $returnmonth;?>";
         delete_item_invoice(type,returnmonth); 
     }

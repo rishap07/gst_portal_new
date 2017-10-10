@@ -416,7 +416,7 @@ final class users extends validation {
         if (array_key_exists("theme_logo", $dataArr)) {
             $rules['theme_logo'] = 'image|#|lable_name:Theme Logo';
         }
-		
+
 		if (array_key_exists("theme_signature", $dataArr)) {
             $rules['theme_signature'] = 'image|#|lable_name:Theme Signature';
         }

@@ -12,7 +12,10 @@ class tally extends validation {
     }
 
 	public function uploadClientTallyInvoice() {
-
+		
+		/* get current user data */
+		$dataCurrentUserArray = $this->getUserDetailsById( $this->sanitize($_SESSION['user_detail']['user_id']) );
+		
 		$resultB2B = '';
 		$resultB2CL = '';
 		$resultB2CS = '';
@@ -23,6 +26,7 @@ class tally extends validation {
 		$resultATADJ = '';
 		$resultEXEMP = '';
 		$resultHSN = '';
+		$currentUserStateTin = $dataCurrentUserArray['data']->kyc->state_tin;
 		
 		$return_period = isset($_POST['tally_return_period']) ? (string)$_POST['tally_return_period'] : '';
 		if(empty($return_period)) {
@@ -57,28 +61,28 @@ class tally extends validation {
 
 					switch ($sheetTitle) {
 						case "b2b":
-							$resultB2B = $this->uploadClientB2BInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period);
+							$resultB2B = $this->uploadClientB2BInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period, $currentUserStateTin);
 							break;
 						case "b2cl":
-							$resultB2CL = $this->uploadClientB2CLInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period);
+							$resultB2CL = $this->uploadClientB2CLInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period, $currentUserStateTin);
 							break;
 						case "b2cs":
-							$resultB2CS = $this->uploadClientB2CSInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period);
+							$resultB2CS = $this->uploadClientB2CSInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period, $currentUserStateTin);
 							break;
 						case "cdnr":
-							$resultCDNR = $this->uploadClientCDNRInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period);
+							$resultCDNR = $this->uploadClientCDNRInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period, $currentUserStateTin);
 							break;
 						case "cdnur":
-							$resultCDNUR = $this->uploadClientCDNURInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period);
+							$resultCDNUR = $this->uploadClientCDNURInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period, $currentUserStateTin);
 							break;
 						case "exp":
-							$resultEXP = $this->uploadClientEXPInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period);
+							$resultEXP = $this->uploadClientEXPInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period, $currentUserStateTin);
 							break;
 						case "at":
-							$resultAT = $this->uploadClientATInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period);
+							$resultAT = $this->uploadClientATInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period, $currentUserStateTin);
 							break;
 						case "atadj":
-							$resultATADJ = $this->uploadClientATADJInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period);
+							$resultATADJ = $this->uploadClientATADJInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period, $currentUserStateTin);
 							break;
 						case "exemp":
 							$resultEXEMP = $this->uploadClientEXEMPInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path);
@@ -115,6 +119,7 @@ class tally extends validation {
 				echo "<br>";
 				print_r($resultHSN);
 				echo "</pre>";
+				die;
 			*/
 
 			$resultB2BArray = json_decode($resultB2B);
@@ -127,6 +132,7 @@ class tally extends validation {
 			$resultATADJArray = json_decode($resultATADJ);
 			$resultEXEMPArray = json_decode($resultEXEMP);
 			$resultHSNArray = json_decode($resultHSN);
+			$resultDOCSArray = json_decode($resultDOCS);
 
 			if(
 				$resultB2BArray->status === "success" && 
@@ -138,7 +144,8 @@ class tally extends validation {
 				$resultATArray->status === "success" && 
 				$resultATADJArray->status === "success" && 
 				$resultEXEMPArray->status === "success" && 
-				$resultHSNArray->status === "success"
+				$resultHSNArray->status === "success" && 
+				$resultDOCSArray->status === "success"
 			) {
 
 				$dataConditionArray['return_period'] = $return_period;
@@ -157,6 +164,12 @@ class tally extends validation {
 				$dataHSNConditionArray['type'] = "gstr1hsn";
 				$this->deletData($this->tableNames['return_upload_summary'], $dataHSNConditionArray);
 				$this->logMsg("Tally HSN deleted for return period : " . $return_period . " by User ID : " . $_SESSION['user_detail']['user_id'] . ".","gstr1_hsn_deleted");
+
+				$dataDOCSConditionArray['financial_month'] = $return_period;
+				$dataDOCSConditionArray['added_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);
+				$dataDOCSConditionArray['type'] = "gstr1document";
+				$this->deletData($this->tableNames['return_upload_summary'], $dataDOCSConditionArray);
+				$this->logMsg("Tally DOCS deleted for return period : " . $return_period . " by User ID : " . $_SESSION['user_detail']['user_id'] . ".","gstr1_docs_deleted");
 
 				if(count($resultB2BArray->invoiceB2BArray) > 0 && !empty($resultB2BArray->invoiceB2BArray)) {
 					$this->insertMultiple($this->tableNames['gstr1_return_summary'], $this->objectToArray($resultB2BArray->invoiceB2BArray));
@@ -219,6 +232,17 @@ class tally extends validation {
 					$this->insert($this->tableNames['return_upload_summary'], $dataHSNArray);
 					$this->logMsg("Tally HSN invoice inserted for return period : " . $return_period . " by User ID : " . $_SESSION['user_detail']['user_id'] . ".","gstr1_hsn_inserted");
 				}
+				
+				if(count($resultDOCSArray->invoiceDOCSArray) > 0 && !empty($resultDOCSArray->invoiceDOCSArray)) {
+
+					$dataDOCSArray['return_data'] = base64_encode(json_encode($this->objectToArray($resultDOCSArray->invoiceDOCSArray)));
+					$dataDOCSArray['type'] = "gstr1document";
+					$dataDOCSArray['financial_month'] = $return_period;
+					$dataDOCSArray['added_by'] = $this->sanitize($_SESSION['user_detail']['user_id']);
+					$dataDOCSArray['added_date'] = date('Y-m-d H:i:s');
+					$this->insert($this->tableNames['return_upload_summary'], $dataDOCSArray);
+					$this->logMsg("Tally DOCS invoice inserted for return period : " . $return_period . " by User ID : " . $_SESSION['user_detail']['user_id'] . ".","gstr1_docs_inserted");
+				}
 
 				$this->setSuccess("All Tally invoice imported.");
                 return true;
@@ -228,7 +252,7 @@ class tally extends validation {
 				$resultArray = array("status" => "error", "excelurl" => $invoice_excel_url_path);
 				return json_encode($resultArray);
 			}
-		}		
+		}
 	}
 
 	function objectToArray($obj) {
@@ -245,6 +269,65 @@ class tally extends validation {
 
 		return $new;
 	}
+	
+	final public function docsKeyFromValue($docsName) {
+
+		$docsTitle = strtoupper($docsName);
+		$docsKey = "0";
+
+		switch ($docsTitle) {
+			case "INVOICE FOR OUTWARD SUPPLY":
+				$docsKey = "1";
+				break;
+			case "INVOICES FOR OUTWARD SUPPLY":
+				$docsKey = "1";
+				break;
+			case "INVOICE FOR INWARD SUPPLY FROM UNREGISTERED PERSON":
+				$docsKey = "2";
+				break;
+			case "INVOICES FOR INWARD SUPPLY FROM UNREGISTERED PERSON":
+				$docsKey = "2";
+				break;
+			case "REVISED INVOICE":
+				$docsKey = "3";
+				break;
+			case "DEBIT NOTE":
+				$docsKey = "4";
+				break;
+			case "CREDIT NOTE":
+				$docsKey = "5";
+				break;
+			case "RECEIPT VOUCHER":
+				$docsKey = "6";
+				break;
+			case "PAYMENT VOUCHER":
+				$docsKey = "7";
+				break;
+			case "REFUND VOUCHER":
+				$docsKey = "8";
+				break;
+			case "DELIVERY CHALLAN FOR JOB WORK":
+				$docsKey = "9";
+				break;
+			case "DELIVERY CHALLAN FOR SUPPLY ON APPROVAL":
+				$docsKey = "10";
+				break;
+			case "DELIVERY CHALLAN IN CASE OF LIQUID GAS":
+				$docsKey = "11";
+				break;
+			case "DELIVERY CHALLAN IN CASES OF LIQUID GAS":
+				$docsKey = "11";
+				break;
+			case "DELIVERY CHALLAN IN CASE OTHER THAN BY WAY OF SUPPLY (EXCLUDING AT S NO. 9 TO 11)":
+				$docsKey = "12";
+				break;
+			case "DELIVERY CHALLAN IN CASES OTHER THAN BY WAY OF SUPPLY (EXCLUDING AT S NO. 9 TO 11)":
+				$docsKey = "12";
+				break;
+		}
+		
+		return $docsKey;
+	}
 
 	final public function uploadClientDOCSInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path) {
 
@@ -255,10 +338,6 @@ class tally extends validation {
 		$invoiceArray = array();
 		$currentFinancialYear = $this->generateFinancialYear();
 		$sheet = $objPHPExcel->getSheetByName("docs");
-		
-		echo "<pre>";
-		print_r($sheetData);
-		die;
 
 		foreach($sheetData as $rowKey => $data) {
 
@@ -269,51 +348,17 @@ class tally extends validation {
 			}
 
 			$currentItemError = array();
-			$dataArray['hsn'] = isset($data['A']) ? $data['A'] : '';
-			$dataArray['description'] = isset($data['B']) ? $data['B'] : '';
-			$dataArray['unit'] = isset($data['C']) ? $data['C'] : '';
-			$dataArray['qty'] = isset($data['D']) ? $data['D'] : '';
+			$docsname = isset($data['A']) ? $data['A'] : '';
+			$dataArray['num'] = $this->docsKeyFromValue($docsname);
+			$dataArray['from'] = isset($data['B']) ? $data['B'] : '';
+			$dataArray['to'] = isset($data['C']) ? $data['C'] : '';
+			$dataArray['totnum'] = isset($data['D']) ? $data['D'] : '';
+			$dataArray['cancel'] = isset($data['E']) ? $data['E'] : '';
+			$dataArray['net_issue'] = $dataArray['totnum'] - $dataArray['cancel'];
 
-			$invoice_total_value = isset($data['E']) ? $data['E'] : '';
-			if(is_numeric($invoice_total_value) && $invoice_total_value >= 0) {
-				$dataArray['invoice_total_value'] = number_format($invoice_total_value, 2, '.', '');
-			} else {
-				$dataArray['invoice_total_value'] = 0.00;
-			}
-
-			$taxable_subtotal = isset($data['F']) ? $data['F'] : '';
-			if(is_numeric($taxable_subtotal) && $taxable_subtotal >= 0) {
-				$dataArray['taxable_subtotal'] = number_format($taxable_subtotal, 2, '.', '');
-			} else {
-				$dataArray['taxable_subtotal'] = 0.00;
-			}
-
-			$igst_amount = isset($data['G']) ? $data['G'] : '';
-			if(is_numeric($igst_amount) && $igst_amount >= 0) {
-				$dataArray['igst'] = number_format($igst_amount, 2, '.', '');
-			} else {
-				$dataArray['igst'] = 0.00;
-			}
-			
-			$cgst_amount = isset($data['H']) ? $data['H'] : '';
-			if(is_numeric($cgst_amount) && $cgst_amount >= 0) {
-				$dataArray['cgst'] = number_format($cgst_amount, 2, '.', '');
-			} else {
-				$dataArray['cgst'] = 0.00;
-			}
-			
-			$sgst_amount = isset($data['I']) ? $data['I'] : '';
-			if(is_numeric($sgst_amount) && $sgst_amount >= 0) {
-				$dataArray['sgst'] = number_format($sgst_amount, 2, '.', '');
-			} else {
-				$dataArray['sgst'] = 0.00;
-			}
-
-			$cess_amount = isset($data['J']) ? $data['J'] : '';
-			if(is_numeric($cess_amount) && $cess_amount >= 0) {
-				$dataArray['cess'] = number_format($cess_amount, 2, '.', '');
-			} else {
-				$dataArray['cess'] = 0.00;
+			if(in_array($dataArray['num'], $this->validateDOCSSerialNumber) == false) {
+				$errorflag = true;
+				array_push($currentItemError, "Nature of document should be valid.");
 			}
 
 			$invoiceErrors = $this->validateClientTallyInvoice($dataArray);
@@ -326,46 +371,38 @@ class tally extends validation {
 
 				$invoiceErrors = array_merge($invoiceErrors, $currentItemError);
 				$invoiceErrors = implode(", ", $invoiceErrors);
-				$sheet->SetCellValue('K' . $rowKey, $invoiceErrors);
+				$sheet->SetCellValue('F' . $rowKey, $invoiceErrors);
 			} else {
 
 				$singleInvoiceArray = array(
-					"hsn" => $dataArray['hsn'],
-					"description" => $dataArray['description'],
-					"unit" => $dataArray['unit'],
-					"qty" => $dataArray['qty'],
-					"invoice_total_value" => $dataArray['invoice_total_value'],
-					"taxable_subtotal" => $dataArray['taxable_subtotal'],
-					"igst" => $dataArray['igst'],
-					"cgst" => $dataArray['cgst'],
-					"sgst" => $dataArray['sgst'],
-					"cess" => $dataArray['cess']
+					"num" => $dataArray['num'],
+					"from" => $dataArray['from'],
+					"to" => $dataArray['to'],
+					"totnum" => $dataArray['totnum'],
+					"cancel" => $dataArray['cancel'],
+					"net_issue" => $dataArray['net_issue']
 				);
-
-				array_push($invoiceArray, $singleInvoiceArray);
+				
+				$docs_num = $dataArray['num'];
+				$invoiceArray['doc_num' . $docs_num][0] = $singleInvoiceArray;
 			}
 
-			/* set format of invoice amount cell(D,E,F,G,H,I,J) of excel */
-			$sheet->getStyle('D' . $rowKey)->getNumberFormat()->setFormatCode('0.00');
-			$sheet->getStyle('E' . $rowKey)->getNumberFormat()->setFormatCode('0.00');
-			$sheet->getStyle('F' . $rowKey)->getNumberFormat()->setFormatCode('0.00');
-			$sheet->getStyle('G' . $rowKey)->getNumberFormat()->setFormatCode('0.00');
-			$sheet->getStyle('H' . $rowKey)->getNumberFormat()->setFormatCode('0.00');
-			$sheet->getStyle('I' . $rowKey)->getNumberFormat()->setFormatCode('0.00');
-			$sheet->getStyle('J' . $rowKey)->getNumberFormat()->setFormatCode('0.00');
+			/* set format of number cell(D,E) of excel */
+			$sheet->getStyle('D' . $rowKey)->getNumberFormat()->setFormatCode('0');
+			$sheet->getStyle('E' . $rowKey)->getNumberFormat()->setFormatCode('0');
 		}
 
 		if ($errorflag === true) {
 
-			$sheet->SetCellValue('K4', "Error Information");
+			$sheet->SetCellValue('F4', "Error Information");
 
 			/* set stylesheet of excel */
-			$sheet->getStyle('A4:K4')->getFill('A4:K4')->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('F8CBAD');
-			$sheet->getStyle('A4:K4')->getFont()->setName('Times New Roman')->setSize(11)->setBold(false);
-			$sheet->getStyle('A4:K4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-			$sheet->getStyle('A4:K4')->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+			$sheet->getStyle('A4:F4')->getFill('A4:F4')->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('F8CBAD');
+			$sheet->getStyle('A4:F4')->getFont()->setName('Times New Roman')->setSize(11)->setBold(false);
+			$sheet->getStyle('A4:F4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+			$sheet->getStyle('A4:F4')->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 
-			for($col = 'A'; $col <= 'K'; $col++) {
+			for($col = 'A'; $col <= 'F'; $col++) {
 				$sheet->getColumnDimension($col)->setAutoSize(true);
 			}
 
@@ -376,16 +413,16 @@ class tally extends validation {
 		} else {
 
 			/* set stylesheet of excel */
-			$sheet->getStyle('A4:J4')->getFill('A4:J4')->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('F8CBAD');
-			$sheet->getStyle('A4:J4')->getFont()->setName('Times New Roman')->setSize(11)->setBold(false);
-			$sheet->getStyle('A4:J4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-			$sheet->getStyle('A4:J4')->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+			$sheet->getStyle('A4:E4')->getFill('A4:E4')->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('F8CBAD');
+			$sheet->getStyle('A4:E4')->getFont()->setName('Times New Roman')->setSize(11)->setBold(false);
+			$sheet->getStyle('A4:E4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+			$sheet->getStyle('A4:E4')->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 
-			for($col = 'A'; $col <= 'J'; $col++) {
+			for($col = 'A'; $col <= 'E'; $col++) {
 				$sheet->getColumnDimension($col)->setAutoSize(true);
 			}
 
-			$resultArray = array("status" => "success", "invoiceHSNArray" => $invoiceArray);
+			$resultArray = array("status" => "success", "invoiceDOCSArray" => $invoiceArray);
 			return json_encode($resultArray);
 		}
 	}
@@ -648,7 +685,7 @@ class tally extends validation {
 		}
 	}
 
-	final public function uploadClientB2BInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period) {
+	final public function uploadClientB2BInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period, $currentUserStateTin) {
 
 		$flag = true;
 		$errorflag = false;
@@ -772,6 +809,22 @@ class tally extends validation {
 				$sheet->SetCellValue('L' . $rowKey, $invoiceErrors);
 			} else {
 
+				if($dataArray['place_of_supply'] == $currentUserStateTin && $dataArray['invoice_type'] == "R") {
+
+					$supply_type = "INTRA";
+					$rateTaxAmount = ($dataArray['rate']/100) * $dataArray['taxable_value'];
+					$cgst_amount = number_format(($rateTaxAmount/2), 2, '.', '');
+					$sgst_amount = number_format(($rateTaxAmount/2), 2, '.', '');
+					$igst_amount = 0.00;
+				} else {
+
+					$supply_type = "INTER";
+					$rateTaxAmount = ($dataArray['rate']/100) * $dataArray['taxable_value'];
+					$cgst_amount = 0.00;
+					$sgst_amount = 0.00;
+					$igst_amount = number_format($rateTaxAmount, 2, '.', '');
+				}
+
 				$singleInvoiceArray = array(
 					"invoice_nature" => "b2b",
 					"recipient_gstin" => $dataArray['recipient_gstin'],
@@ -779,11 +832,15 @@ class tally extends validation {
 					"invoice_date" => $dataArray['invoice_date'],
 					"invoice_value" => $dataArray['invoice_value'],
 					"place_of_supply" => $dataArray['place_of_supply'],
+					"supply_type" => $supply_type,
 					"reverse_charge" => $dataArray['reverse_charge'],
 					"invoice_type" => $dataArray['invoice_type'],
 					"ecommerce_gstin_number" => $dataArray['ecommerce_gstin_number'],
 					"rate" => $dataArray['rate'],
 					"taxable_value" => $dataArray['taxable_value'],
+					"cgst_amount" => $cgst_amount,
+					"sgst_amount" => $sgst_amount,
+					"igst_amount" => $igst_amount,
 					"cess_amount" => $dataArray['cess_amount'],
 					"return_period" => $return_period,
 					"financial_year" => $this->generateFinancialYear(),
@@ -795,7 +852,7 @@ class tally extends validation {
 
 				array_push($invoiceArray, $singleInvoiceArray);
 			}
-			
+
 			/* set format of invoice date cell(C) of excel */
 			$sheet->getStyle('C' . $rowKey)->getNumberFormat()->setFormatCode('dd-mmm-yy');
 			$sheet->getStyle('D' . $rowKey)->getNumberFormat()->setFormatCode('0.00');
@@ -838,7 +895,7 @@ class tally extends validation {
 		}
 	}
 
-	final public function uploadClientB2CLInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period) {
+	final public function uploadClientB2CLInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period, $currentUserStateTin) {
 
 		$flag = true;
 		$errorflag = false;
@@ -937,14 +994,24 @@ class tally extends validation {
 				$sheet->SetCellValue('I' . $rowKey, $invoiceErrors);
 			} else {
 
+				$supply_type = "INTER";
+				$rateTaxAmount = ($dataArray['rate']/100) * $dataArray['taxable_value'];
+				$cgst_amount = 0.00;
+				$sgst_amount = 0.00;
+				$igst_amount = number_format($rateTaxAmount, 2, '.', '');
+
 				$singleInvoiceArray = array(
 					"invoice_nature" => "b2cl",
 					"invoice_number" => $dataArray['invoice_number'],
 					"invoice_date" => $dataArray['invoice_date'],
 					"invoice_value" => $dataArray['invoice_value'],
 					"place_of_supply" => $dataArray['place_of_supply'],
+					"supply_type" => $supply_type,
 					"rate" => $dataArray['rate'],
 					"taxable_value" => $dataArray['taxable_value'],
+					"cgst_amount" => $cgst_amount,
+					"sgst_amount" => $sgst_amount,
+					"igst_amount" => $igst_amount,
 					"cess_amount" => $dataArray['cess_amount'],
 					"ecommerce_gstin_number" => $dataArray['ecommerce_gstin_number'],
 					"return_period" => $return_period,
@@ -1000,7 +1067,7 @@ class tally extends validation {
 		}
 	}
 
-	final public function uploadClientB2CSInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period) {
+	final public function uploadClientB2CSInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period, $currentUserStateTin) {
 
 		$flag = true;
 		$errorflag = false;
@@ -1093,12 +1160,35 @@ class tally extends validation {
 				$sheet->SetCellValue('G' . $rowKey, $invoiceErrors);
 			} else {
 
+				if($dataArray['place_of_supply'] == $currentUserStateTin) {
+
+					$supply_type = "INTRA";
+					$rateTaxAmount = ($dataArray['rate']/100) * $dataArray['taxable_value'];
+					$cgst_amount = number_format(($rateTaxAmount/2), 2, '.', '');
+					$sgst_amount = number_format(($rateTaxAmount/2), 2, '.', '');
+					$igst_amount = 0.00;
+				} else {
+
+					$supply_type = "INTER";
+					$rateTaxAmount = ($dataArray['rate']/100) * $dataArray['taxable_value'];
+					$cgst_amount = 0.00;
+					$sgst_amount = 0.00;
+					$igst_amount = number_format($rateTaxAmount, 2, '.', '');
+				}
+
+				$dataArray['invoice_value'] = $dataArray['taxable_value'] + $cgst_amount + $sgst_amount + $igst_amount + $dataArray['cess_amount'];
+
 				$singleInvoiceArray = array(
 					"invoice_nature" => "b2cs",
 					"type" => $dataArray['type'],
+					"invoice_value" => number_format($dataArray['invoice_value'], 2, '.', ''),
 					"place_of_supply" => $dataArray['place_of_supply'],
+					"supply_type" => $supply_type,
 					"rate" => $dataArray['rate'],
 					"taxable_value" => $dataArray['taxable_value'],
+					"cgst_amount" => $cgst_amount,
+					"sgst_amount" => $sgst_amount,
+					"igst_amount" => $igst_amount,
 					"cess_amount" => $dataArray['cess_amount'],
 					"ecommerce_gstin_number" => $dataArray['ecommerce_gstin_number'],
 					"return_period" => $return_period,
@@ -1111,7 +1201,7 @@ class tally extends validation {
 
 				array_push($invoiceArray, $singleInvoiceArray);
 			}
-			
+
 			/* set format of invoice rate cell(C) of excel */
 			$sheet->getStyle('C' . $rowKey)->getNumberFormat()->setFormatCode('0.00');
 			$sheet->getStyle('D' . $rowKey)->getNumberFormat()->setFormatCode('0.00');
@@ -1152,7 +1242,7 @@ class tally extends validation {
 		}
 	}
 
-	final public function uploadClientCDNRInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period) {
+	final public function uploadClientCDNRInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period, $currentUserStateTin) {
 
 		$flag = true;
 		$errorflag = false;
@@ -1304,6 +1394,22 @@ class tally extends validation {
 				$sheet->SetCellValue('N' . $rowKey, $invoiceErrors);
 			} else {
 
+				if($dataArray['place_of_supply'] == $currentUserStateTin) {
+
+					$supply_type = "INTRA";
+					$rateTaxAmount = ($dataArray['rate']/100) * $dataArray['taxable_value'];
+					$cgst_amount = number_format(($rateTaxAmount/2), 2, '.', '');
+					$sgst_amount = number_format(($rateTaxAmount/2), 2, '.', '');
+					$igst_amount = 0.00;
+				} else {
+
+					$supply_type = "INTER";
+					$rateTaxAmount = ($dataArray['rate']/100) * $dataArray['taxable_value'];
+					$cgst_amount = 0.00;
+					$sgst_amount = 0.00;
+					$igst_amount = number_format($rateTaxAmount, 2, '.', '');
+				}
+
 				$singleInvoiceArray = array(
 					"invoice_nature" => "cdnr",
 					"recipient_gstin" => $dataArray['recipient_gstin'],
@@ -1314,9 +1420,13 @@ class tally extends validation {
 					"document_type" => $dataArray['document_type'],
 					"reason_for_issuing_document" => $dataArray['reason_for_issuing_document'],
 					"place_of_supply" => $dataArray['place_of_supply'],
+					"supply_type" => $supply_type,
 					"invoice_value" => $dataArray['invoice_value'],
 					"rate" => $dataArray['rate'],
 					"taxable_value" => $dataArray['taxable_value'],
+					"cgst_amount" => $cgst_amount,
+					"sgst_amount" => $sgst_amount,
+					"igst_amount" => $igst_amount,
 					"cess_amount" => $dataArray['cess_amount'],
 					"pre_gst" => $dataArray['pre_gst'],
 					"return_period" => $return_period,
@@ -1374,7 +1484,7 @@ class tally extends validation {
 		}
 	}
 
-	final public function uploadClientCDNURInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period) {
+	final public function uploadClientCDNURInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period, $currentUserStateTin) {
 
 		$flag = true;
 		$errorflag = false;
@@ -1535,6 +1645,12 @@ class tally extends validation {
 				$invoiceErrors = implode(", ", $invoiceErrors);
 				$sheet->SetCellValue('N' . $rowKey, $invoiceErrors);
 			} else {
+				
+				$supply_type = "INTER";
+				$rateTaxAmount = ($dataArray['rate']/100) * $dataArray['taxable_value'];
+				$cgst_amount = 0.00;
+				$sgst_amount = 0.00;
+				$igst_amount = number_format($rateTaxAmount, 2, '.', '');
 
 				$singleInvoiceArray = array(
 					"invoice_nature" => "cdnur",
@@ -1546,9 +1662,13 @@ class tally extends validation {
 					"original_invoice_date" => $dataArray['original_invoice_date'],
 					"reason_for_issuing_document" => $dataArray['reason_for_issuing_document'],
 					"place_of_supply" => $dataArray['place_of_supply'],
+					"supply_type" => $supply_type,
 					"invoice_value" => $dataArray['invoice_value'],
 					"rate" => $dataArray['rate'],
 					"taxable_value" => $dataArray['taxable_value'],
+					"cgst_amount" => $cgst_amount,
+					"sgst_amount" => $sgst_amount,
+					"igst_amount" => $igst_amount,
 					"cess_amount" => $dataArray['cess_amount'],
 					"pre_gst" => $dataArray['pre_gst'],
 					"return_period" => $return_period,
@@ -1606,7 +1726,7 @@ class tally extends validation {
 		}
 	}
 
-	final public function uploadClientEXPInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period) {
+	final public function uploadClientEXPInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period, $currentUserStateTin) {
 
 		$flag = true;
 		$errorflag = false;
@@ -1690,6 +1810,14 @@ class tally extends validation {
 				array_push($currentItemError, "Tax rate should be valid.");
 			}
 
+			if($dataArray['invoice_type'] == "WOPAY") {
+				
+				if($dataArray['rate'] != 0.00) {
+					$errorflag = true;
+					array_push($currentItemError, "IGST rate should be 0.00 instead of ".$dataArray['rate']." for Export Under Bond type of export invoice.");
+				}
+			}
+
 			$invoiceErrors = $this->validateClientTallyInvoice($dataArray);
 			if ($invoiceErrors !== true || !empty($currentItemError)) {
 
@@ -1703,6 +1831,11 @@ class tally extends validation {
 				$sheet->SetCellValue('J' . $rowKey, $invoiceErrors);
 			} else {
 
+				$rateTaxAmount = ($dataArray['rate']/100) * $dataArray['taxable_value'];
+				$cgst_amount = 0.00;
+				$sgst_amount = 0.00;
+				$igst_amount = number_format($rateTaxAmount, 2, '.', '');
+
 				$singleInvoiceArray = array(
 					"invoice_nature" => "exp",
 					"invoice_type" => $dataArray['invoice_type'],
@@ -1712,8 +1845,12 @@ class tally extends validation {
 					"port_code" => $dataArray['port_code'],
 					"shipping_bill_number" => $dataArray['shipping_bill_number'],
 					"shipping_bill_date" => $dataArray['shipping_bill_date'],
+					"supply_type" => "INTER",
 					"rate" => $dataArray['rate'],
 					"taxable_value" => $dataArray['taxable_value'],
+					"cgst_amount" => $cgst_amount,
+					"sgst_amount" => $sgst_amount,
+					"igst_amount" => $igst_amount,
 					"return_period" => $return_period,
 					"financial_year" => $this->generateFinancialYear(),
 					"created_from" => "E",
@@ -1767,7 +1904,7 @@ class tally extends validation {
 		}
 	}
 
-	final public function uploadClientATInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period) {
+	final public function uploadClientATInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period, $currentUserStateTin) {
 
 		$flag = true;
 		$errorflag = false;
@@ -1807,12 +1944,12 @@ class tally extends validation {
 			} else {
 				$dataArray['rate'] = 0.00;
 			}
-
-			$invoice_value = isset($data['C']) ? $data['C'] : '';
-			if(is_numeric($invoice_value) && $invoice_value >= 0) {
-				$dataArray['invoice_value'] = number_format($invoice_value, 2, '.', '');
+			
+			$taxable_value = isset($data['C']) ? $data['C'] : '';
+			if(is_numeric($taxable_value) && $taxable_value >= 0) {
+				$dataArray['taxable_value'] = number_format($taxable_value, 2, '.', '');
 			} else {
-				$dataArray['invoice_value'] = 0.00;
+				$dataArray['taxable_value'] = 0.00;
 			}
 
 			$cess_amount = isset($data['D']) ? $data['D'] : '';
@@ -1840,11 +1977,34 @@ class tally extends validation {
 				$sheet->SetCellValue('E' . $rowKey, $invoiceErrors);
 			} else {
 
+				if($dataArray['place_of_supply'] == $currentUserStateTin) {
+					
+					$supply_type = "INTRA";
+					$rateTaxAmount = ($dataArray['rate']/100) * $dataArray['taxable_value'];
+					$cgst_amount = number_format(($rateTaxAmount/2), 2, '.', '');
+					$sgst_amount = number_format(($rateTaxAmount/2), 2, '.', '');
+					$igst_amount = 0.00;
+				} else {
+					
+					$supply_type = "INTER";
+					$rateTaxAmount = ($dataArray['rate']/100) * $dataArray['taxable_value'];
+					$cgst_amount = 0.00;
+					$sgst_amount = 0.00;
+					$igst_amount = number_format($rateTaxAmount, 2, '.', '');
+				}
+
+				$dataArray['invoice_value'] = $dataArray['taxable_value'] + $cgst_amount + $sgst_amount + $igst_amount + $dataArray['cess_amount'];
+
 				$singleInvoiceArray = array(
 					"invoice_nature" => "at",
+					"invoice_value" => number_format($dataArray['invoice_value'], 2, '.', ''),
 					"place_of_supply" => $dataArray['place_of_supply'],
+					"supply_type" => $supply_type,
 					"rate" => $dataArray['rate'],
-					"invoice_value" => $dataArray['invoice_value'],
+					"taxable_value" => $dataArray['taxable_value'],
+					"cgst_amount" => $cgst_amount,
+					"sgst_amount" => $sgst_amount,
+					"igst_amount" => $igst_amount,
 					"cess_amount" => $dataArray['cess_amount'],
 					"return_period" => $return_period,
 					"financial_year" => $this->generateFinancialYear(),
@@ -1898,7 +2058,7 @@ class tally extends validation {
 		}
 	}
 
-	final public function uploadClientATADJInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period) {
+	final public function uploadClientATADJInvoice($sheetData, $objPHPExcel, $invoice_excel_dir_path, $return_period, $currentUserStateTin) {
 
 		$flag = true;
 		$errorflag = false;
@@ -1939,11 +2099,11 @@ class tally extends validation {
 				$dataArray['rate'] = 0.00;
 			}
 
-			$invoice_value = isset($data['C']) ? $data['C'] : '';
-			if(is_numeric($invoice_value) && $invoice_value >= 0) {
-				$dataArray['invoice_value'] = number_format($invoice_value, 2, '.', '');
+			$taxable_value = isset($data['C']) ? $data['C'] : '';
+			if(is_numeric($taxable_value) && $taxable_value >= 0) {
+				$dataArray['taxable_value'] = number_format($taxable_value, 2, '.', '');
 			} else {
-				$dataArray['invoice_value'] = 0.00;
+				$dataArray['taxable_value'] = 0.00;
 			}
 
 			$cess_amount = isset($data['D']) ? $data['D'] : '';
@@ -1971,11 +2131,34 @@ class tally extends validation {
 				$sheet->SetCellValue('E' . $rowKey, $invoiceErrors);
 			} else {
 
+				if($dataArray['place_of_supply'] == $currentUserStateTin) {
+
+					$supply_type = "INTRA";
+					$rateTaxAmount = ($dataArray['rate']/100) * $dataArray['taxable_value'];
+					$cgst_amount = number_format(($rateTaxAmount/2), 2, '.', '');
+					$sgst_amount = number_format(($rateTaxAmount/2), 2, '.', '');
+					$igst_amount = 0.00;
+				} else {
+
+					$supply_type = "INTER";
+					$rateTaxAmount = ($dataArray['rate']/100) * $dataArray['taxable_value'];
+					$cgst_amount = 0.00;
+					$sgst_amount = 0.00;
+					$igst_amount = number_format($rateTaxAmount, 2, '.', '');
+				}
+
+				$dataArray['invoice_value'] = $dataArray['taxable_value'] + $cgst_amount + $sgst_amount + $igst_amount + $dataArray['cess_amount'];
+
 				$singleInvoiceArray = array(
 					"invoice_nature" => "atadj",
+					"invoice_value" => number_format($dataArray['invoice_value'], 2, '.', ''),
 					"place_of_supply" => $dataArray['place_of_supply'],
+					"supply_type" => $supply_type,
 					"rate" => $dataArray['rate'],
-					"invoice_value" => $dataArray['invoice_value'],
+					"taxable_value" => $dataArray['taxable_value'],
+					"cgst_amount" => $cgst_amount,
+					"sgst_amount" => $sgst_amount,
+					"igst_amount" => $igst_amount,
 					"cess_amount" => $dataArray['cess_amount'],
 					"return_period" => $return_period,
 					"financial_year" => $this->generateFinancialYear(),
@@ -1987,7 +2170,7 @@ class tally extends validation {
 
 				array_push($invoiceArray, $singleInvoiceArray);
 			}
-			
+
 			/* set format of invoice rate cell(B) of excel */
 			$sheet->getStyle('B' . $rowKey)->getNumberFormat()->setFormatCode('0.00');
 			$sheet->getStyle('C' . $rowKey)->getNumberFormat()->setFormatCode('0.00');
@@ -2027,6 +2210,435 @@ class tally extends validation {
 			$resultArray = array("status" => "success", "invoiceATADJArray" => $invoiceArray);
 			return json_encode($resultArray);
 		}
+	}
+
+	final public function generateB2BPayload() {
+
+		$B2BPayloadArray = array();
+		$return_period = "2017-07";
+		$user_id = $this->sanitize($_SESSION['user_detail']['user_id']);
+		$flag = '';
+
+		/* get current user data */
+		$dataCurrentUserArray = $this->getUserDetailsById($user_id);
+
+		$B2BPayloadArray['gstin'] = $dataCurrentUserArray['data']->kyc->gstin_number;
+		$B2BPayloadArray['fp'] = $return_period;
+		$B2BPayloadArray['gt'] = $dataCurrentUserArray['data']->kyc->gross_turnover;
+		$B2BPayloadArray['cur_gt'] = $dataCurrentUserArray['data']->kyc->cur_gross_turnover;
+
+		$rowsB2BData = $this->get_results("SELECT invoice_number,invoice_date,recipient_gstin,return_period,place_of_supply,reverse_charge,ecommerce_gstin_number,invoice_type FROM ".$this->getTableName('gstr1_return_summary')." WHERE 1=1 AND return_period = '".$return_period."' AND invoice_nature = 'b2b' AND added_by='".$user_id."' group by invoice_number ORDER BY id ASC");
+		foreach($rowsB2BData as $B2BData) {
+
+			/* start b2b data */
+			$B2BPayloadArray['b2b']['ctin'] = $B2BData->recipient_gstin;
+
+			/* start b2b inv data */
+			$B2BPayloadArray['b2b']['inv']['inum'] = $B2BData->invoice_number;
+			$B2BPayloadArray['b2b']['inv']['idt'] = $B2BData->invoice_date;
+			$B2BPayloadArray['b2b']['inv']['pos'] = $B2BData->place_of_supply;
+			$B2BPayloadArray['b2b']['inv']['rchrg'] = $B2BData->reverse_charge;
+			$B2BPayloadArray['b2b']['inv']['etin'] = $B2BData->ecommerce_gstin_number;
+			$B2BPayloadArray['b2b']['inv']['inv_typ'] = $B2BData->invoice_type;
+
+			$invoice_amount = 0.00;
+			$itmsCounter = 0;
+			$rowB2BData = $this->get_results("SELECT * FROM ".$this->getTableName('gstr1_return_summary')." WHERE 1=1 AND return_period = '".$B2BData->return_period."' AND invoice_nature = 'b2b' AND added_by='".$user_id."' AND invoice_number='".$B2BData->invoice_number."'");
+			foreach($rowB2BData as $innerB2BData) {
+
+				$invoice_amount += $innerB2BData->invoice_value;
+
+				/* start b2b inv itms data */
+				/* start b2b inv itm num data */
+				$B2BPayloadArray['b2b']['inv']['itms'][$itmsCounter]['num'] = 1;
+
+				/* start b2b inv itm det data */
+				$B2BPayloadArray['b2b']['inv']['itms'][$itmsCounter]['itm_det']['rt'] = $innerB2BData->rate;
+				$B2BPayloadArray['b2b']['inv']['itms'][$itmsCounter]['itm_det']['txval'] = $innerB2BData->taxable_value;
+
+				if($dataCurrentUserArray['data']->kyc->gstin_number == $innerB2BData->place_of_supply) {
+					$B2BPayloadArray['b2b']['inv']['itms'][$itmsCounter]['itm_det']['camt'] = $innerB2BData->cgst_amount;
+					$B2BPayloadArray['b2b']['inv']['itms'][$itmsCounter]['itm_det']['samt'] = $innerB2BData->sgst_amount;
+				} else {
+					$B2BPayloadArray['b2b']['inv']['itms'][$itmsCounter]['itm_det']['iamt'] = $innerB2BData->igst_amount;
+				}
+
+				$B2BPayloadArray['b2b']['inv']['itms'][$itmsCounter]['itm_det']['csamt'] = $innerB2BData->cess_amount;
+				$itmsCounter++;
+			}
+
+			$B2BPayloadArray['b2b']['inv']['val'] = $invoice_amount;
+		}
+
+		//echo "<pre>";
+		//print_r($rowsB2BData);
+		//echo "</pre>";
+
+		echo "<pre>";
+		print_r($B2BPayloadArray);
+		echo "</pre>";
+		die;
+	}
+
+
+	public function insertIntoGstr1Table($user_id,$returnmonth) {
+		$dataArray = $itemArray = array();
+		$obj_gstr1 = new gstr1();
+		$dataConditionArray['return_period'] = $returnmonth;
+		$dataConditionArray['added_by'] = $user_id;
+
+		$this->deletData($this->tableNames['gstr1_return_summary'], $dataConditionArray);
+		$this->logMsg("Manual Invoices deleted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_deleted");
+		$arrayCounter = 0;
+		$dataInvB2B = $obj_gstr1->getB2BInvoices($user_id, $returnmonth,'all'); 
+		//$this->pr($dataInvB2B);
+		if(isset($dataInvB2B) && !empty($dataInvB2B)) {
+			
+			foreach ($dataInvB2B as $key => $dataIn) {	
+				$itemArray[$arrayCounter]['invoice_nature'] = 'b2b';
+				$itemArray[$arrayCounter]['recipient_gstin'] = $dataIn->billing_gstin_number;
+				$itemArray[$arrayCounter]['invoice_number'] = $dataIn->reference_number;
+				$itemArray[$arrayCounter]['invoice_date'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+				$itemArray[$arrayCounter]['invoice_value'] = (float) $dataIn->invoice_total_value;
+				$itemArray[$arrayCounter]['place_of_supply'] = strlen($dataIn->supply_place) == '1' ? '0' . $dataIn->supply_place : $dataIn->supply_place;
+				if ($dataIn->company_state != $dataIn->supply_place) {
+                    $itemArray[$arrayCounter]['supply_type'] = 'INTER';
+                } 
+                else {
+                    $itemArray[$arrayCounter]['supply_type'] = 'INTRA';
+                }
+				$in_type = '';
+
+	            if ($dataIn->invoice_type == 'taxinvoice' || $dataIn->invoice_type =='billofsupplyinvoice') {
+	                $in_type = 'R';
+	            } 
+	            else if ($dataIn->invoice_type == 'sezunitinvoice') {
+	                if($dataIn->export_supply_meant=='withpayment')
+	                {
+	                        $in_type = 'SEWP';
+	                }
+	                else
+	                {
+	                        $in_type = 'SEWOP';
+	                }
+
+	            } else if ($dataIn->invoice_type == 'deemedexportinvoice') {
+	                $in_type = 'DE';
+	            }
+	            $itemArray[$arrayCounter]['invoice_type'] = $in_type;
+	            $rever_charge = ($dataIn->supply_type == 'reversecharge') ? 'Y' : 'N';
+
+				$itemArray[$arrayCounter]['reverse_charge'] = $rever_charge;
+				$itemArray[$arrayCounter]['ecommerce_gstin_number'] = isset($dataIn->ecommerce_gstin_number)?$dataIn->ecommerce_gstin_number:'';
+
+				$rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
+				$itemArray[$arrayCounter]['rate'] = isset($rt)?$rt:'0';
+				$itemArray[$arrayCounter]['taxable_value'] = isset($dataIn->taxable_subtotal)?$dataIn->taxable_subtotal:'0';
+				$itemArray[$arrayCounter]['cgst_amount'] = isset($dataIn->cgst_amount)?$dataIn->cgst_amount:'0';
+				$itemArray[$arrayCounter]['sgst_amount'] = isset($dataIn->sgst_amount)?$dataIn->sgst_amount:'0';
+				$itemArray[$arrayCounter]['igst_amount'] = isset($dataIn->igst_amount)?$dataIn->igst_amount:'0';
+				$itemArray[$arrayCounter]['cess_amount'] = isset($dataIn->cess_amount)?$dataIn->cess_amount:'0';
+				$itemArray[$arrayCounter]['financial_year'] = $dataIn->financial_year;
+				$itemArray[$arrayCounter]['return_period'] = $returnmonth;
+				$itemArray[$arrayCounter]['added_by'] = $user_id;
+				$itemArray[$arrayCounter]['added_date'] = date('Y-m-d H:i:s');
+				$arrayCounter++;
+			}
+			$this->insertMultiple($this->tableNames['gstr1_return_summary'], $itemArray);
+			$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_b2b_inserted");
+			
+		}
+
+		$dataInvB2CL = $obj_gstr1->getB2CLInvoices($user_id, $returnmonth,'all'); 
+		if(isset($dataInvB2CL) && !empty($dataInvB2CL)) {
+			$arrayCounter = 0;
+			$itemArray = array();
+			foreach ($dataInvB2CL as $key => $dataIn) {	
+				$itemArray[$arrayCounter]['invoice_nature'] = 'b2cl';
+				
+				$itemArray[$arrayCounter]['recipient_gstin'] = $dataIn->billing_gstin_number;
+				$itemArray[$arrayCounter]['invoice_number'] = $dataIn->reference_number;
+				$itemArray[$arrayCounter]['invoice_date'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+				$itemArray[$arrayCounter]['invoice_value'] = (float) $dataIn->invoice_total_value;
+				$itemArray[$arrayCounter]['place_of_supply'] = strlen($dataIn->supply_place) == '1' ? '0' . $dataIn->supply_place : $dataIn->supply_place;
+	           
+				if ($dataIn->company_state != $dataIn->supply_place) {
+                    $itemArray[$arrayCounter]['supply_type'] = 'INTER';
+                } 
+                else {
+                    $itemArray[$arrayCounter]['supply_type'] = 'INTRA';
+                }
+				$itemArray[$arrayCounter]['ecommerce_gstin_number'] = isset($dataIn->ecommerce_gstin_number)?$dataIn->ecommerce_gstin_number:'';
+
+				$rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
+				$itemArray[$arrayCounter]['rate'] = isset($rt)?$rt:'0';
+				$itemArray[$arrayCounter]['taxable_value'] = isset($dataIn->taxable_subtotal)?$dataIn->taxable_subtotal:'0';
+				$itemArray[$arrayCounter]['cgst_amount'] = isset($dataIn->cgst_amount)?$dataIn->cgst_amount:'0';
+				$itemArray[$arrayCounter]['sgst_amount'] = isset($dataIn->sgst_amount)?$dataIn->sgst_amount:'0';
+				$itemArray[$arrayCounter]['igst_amount'] = isset($dataIn->igst_amount)?$dataIn->igst_amount:'0';
+				$itemArray[$arrayCounter]['cess_amount'] = isset($dataIn->cess_amount)?$dataIn->cess_amount:'0';
+				$itemArray[$arrayCounter]['financial_year'] = $dataIn->financial_year;
+				$itemArray[$arrayCounter]['return_period'] = $returnmonth;
+				$itemArray[$arrayCounter]['added_by'] = $user_id;
+				$itemArray[$arrayCounter]['added_date'] = date('Y-m-d H:i:s');
+				$arrayCounter++;
+			}
+			$this->insertMultiple($this->tableNames['gstr1_return_summary'], $itemArray);
+			$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_b2b_inserted");
+			
+		}
+
+		$dataInvB2CS = $obj_gstr1->getB2CSInvoices($user_id, $returnmonth,'all'); 
+		if(isset($dataInvB2CS) && !empty($dataInvB2CS)) {
+			$itemArray = array();
+			$arrayCounter = 0;
+			foreach ($dataInvB2CS as $key => $dataIn) {	
+				$itemArray[$arrayCounter]['invoice_nature'] = 'b2cs';
+				$itemArray[$arrayCounter]['recipient_gstin'] = $dataIn->billing_gstin_number;
+				$itemArray[$arrayCounter]['invoice_number'] = $dataIn->reference_number;
+				$itemArray[$arrayCounter]['invoice_date'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+				$itemArray[$arrayCounter]['invoice_value'] = (float) $dataIn->invoice_total_value;
+				$itemArray[$arrayCounter]['place_of_supply'] = strlen($dataIn->supply_place) == '1' ? '0' . $dataIn->supply_place : $dataIn->supply_place;
+	           
+				if ($dataIn->company_state != $dataIn->supply_place) {
+                    $itemArray[$arrayCounter]['supply_type'] = 'INTER';
+                } 
+                else {
+                    $itemArray[$arrayCounter]['supply_type'] = 'INTRA';
+                }
+                if($dataIn->supply_type == 'tcs') {
+                    $itemArray[$arrayCounter]['type'] = 'E';
+                }
+                else {
+                    $itemArray[$arrayCounter]['type'] = 'OE';
+                }
+				$itemArray[$arrayCounter]['ecommerce_gstin_number'] = isset($dataIn->ecommerce_gstin_number)?$dataIn->ecommerce_gstin_number:'';
+
+				$rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
+				$itemArray[$arrayCounter]['rate'] = isset($rt)?$rt:'0';
+				$itemArray[$arrayCounter]['taxable_value'] = isset($dataIn->taxable_subtotal)?$dataIn->taxable_subtotal:'0';
+				$itemArray[$arrayCounter]['cgst_amount'] = isset($dataIn->cgst_amount)?$dataIn->cgst_amount:'0';
+				$itemArray[$arrayCounter]['sgst_amount'] = isset($dataIn->sgst_amount)?$dataIn->sgst_amount:'0';
+				$itemArray[$arrayCounter]['igst_amount'] = isset($dataIn->igst_amount)?$dataIn->igst_amount:'0';
+				$itemArray[$arrayCounter]['cess_amount'] = isset($dataIn->cess_amount)?$dataIn->cess_amount:'0';
+				$itemArray[$arrayCounter]['financial_year'] = $dataIn->financial_year;
+				$itemArray[$arrayCounter]['return_period'] = $returnmonth;
+
+				$itemArray[$arrayCounter]['added_by'] = $user_id;
+				$itemArray[$arrayCounter]['added_date'] = date('Y-m-d H:i:s');
+				$arrayCounter++;
+			}
+			$this->insertMultiple($this->tableNames['gstr1_return_summary'], $itemArray);
+			$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_b2b_inserted");
+			
+		}
+		$dataInvCDNR = $obj_gstr1->getCDNRInvoices($user_id, $returnmonth,'all'); 
+		if(isset($dataInvCDNR) && !empty($dataInvCDNR)) {
+			$itemArray = array();
+			$arrayCounter = 0;
+			foreach ($dataInvCDNR as $key => $dataIn) {	
+				$itemArray[$arrayCounter]['invoice_nature'] = 'cdnr';
+				$itemArray[$arrayCounter]['recipient_gstin'] = $dataIn->billing_gstin_number;
+				$itemArray[$arrayCounter]['invoice_number'] = $dataIn->reference_number;
+				$itemArray[$arrayCounter]['invoice_date'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+				$itemArray[$arrayCounter]['invoice_value'] = (float) $dataIn->invoice_total_value;
+				$itemArray[$arrayCounter]['place_of_supply'] = strlen($dataIn->supply_place) == '1' ? '0' . $dataIn->supply_place : $dataIn->supply_place;
+	           	if ($dataIn->company_state != $dataIn->supply_place) {
+                    $itemArray[$arrayCounter]['supply_type'] = 'INTER';
+                } 
+                else {
+                    $itemArray[$arrayCounter]['supply_type'] = 'INTRA';
+                }
+				$nt_type = '';
+                if ($dataIn->invoice_type == 'creditnote') {
+                    $nt_type = 'C';
+                }
+                elseif ($dataIn->invoice_type == 'refundvoucherinvoice') {
+                    $nt_type = 'R';
+                } 
+                else {
+                    $nt_type = 'D';
+                }
+                $itemArray[$arrayCounter]['document_type'] = $nt_type;
+                $itemArray[$arrayCounter]['reason_for_issuing_document'] = $dataIn->reason_issuing_document;
+
+                $itemArray[$arrayCounter]['pre_gst'] = "N";
+                $itemArray[$arrayCounter]['original_invoice_date'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+                $itemArray[$arrayCounter]['original_invoice_number'] = $dataIn->reference_number;
+
+				
+
+				$rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
+				$itemArray[$arrayCounter]['rate'] = isset($rt)?$rt:'0';
+				$itemArray[$arrayCounter]['taxable_value'] = isset($dataIn->taxable_subtotal)?$dataIn->taxable_subtotal:'0';
+				$itemArray[$arrayCounter]['cgst_amount'] = isset($dataIn->cgst_amount)?$dataIn->cgst_amount:'0';
+				$itemArray[$arrayCounter]['sgst_amount'] = isset($dataIn->sgst_amount)?$dataIn->sgst_amount:'0';
+				$itemArray[$arrayCounter]['igst_amount'] = isset($dataIn->igst_amount)?$dataIn->igst_amount:'0';
+				$itemArray[$arrayCounter]['cess_amount'] = isset($dataIn->cess_amount)?$dataIn->cess_amount:'0';
+				$itemArray[$arrayCounter]['financial_year'] = $dataIn->financial_year;
+				$itemArray[$arrayCounter]['return_period'] = $returnmonth;
+				$itemArray[$arrayCounter]['added_by'] = $user_id;
+				$itemArray[$arrayCounter]['added_date'] = date('Y-m-d H:i:s');
+				$arrayCounter++;
+			}
+			$this->insertMultiple($this->tableNames['gstr1_return_summary'], $itemArray);
+			$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_b2b_inserted");
+			
+		}
+		$dataInvCDNUR = $obj_gstr1->getCDNURInvoices($user_id, $returnmonth,'all'); 
+		if(isset($dataInvCDNUR) && !empty($dataInvCDNUR)) {
+			$itemArray = array();
+			$arrayCounter = 0;
+			foreach ($dataInvCDNUR as $key => $dataIn) {	
+				$itemArray[$arrayCounter]['invoice_nature'] = 'cdnur';
+				$itemArray[$arrayCounter]['recipient_gstin'] = $dataIn->billing_gstin_number;
+				$itemArray[$arrayCounter]['invoice_number'] = $dataIn->reference_number;
+				$itemArray[$arrayCounter]['invoice_date'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+				$itemArray[$arrayCounter]['invoice_value'] = (float) $dataIn->invoice_total_value;
+				$itemArray[$arrayCounter]['place_of_supply'] = strlen($dataIn->supply_place) == '1' ? '0' . $dataIn->supply_place : $dataIn->supply_place;
+				if ($dataIn->company_state != $dataIn->supply_place) {
+                    $itemArray[$arrayCounter]['supply_type'] = 'INTER';
+                } 
+                else {
+                    $itemArray[$arrayCounter]['supply_type'] = 'INTRA';
+                }
+	           
+				$nt_type = '';
+                if ($dataIn->invoice_type == 'creditnote') {
+                    $nt_type = 'C';
+                }
+                elseif ($dataIn->invoice_type == 'refundvoucherinvoice') {
+                    $nt_type = 'R';
+                } 
+                else {
+                    $nt_type = 'D';
+                }
+                $itemArray[$arrayCounter]['document_type'] = $nt_type;
+                $type = '';
+                if ($dataIn->original_type == 'taxinvoice') {
+                    $type = "B2CL";
+                } 
+                else {
+                    if ($dataIn->export_supply_meant == 'withpayment') {
+                        $type = "EXPWP";
+                    }
+                    else {
+                        $type = "EXPWOP";
+                    }
+                }
+                $itemArray[$arrayCounter]['ur_type'] = $type;
+                $itemArray[$arrayCounter]['reason_for_issuing_document'] = $dataIn->reason_issuing_document;
+
+                $itemArray[$arrayCounter]['pre_gst'] = "N";
+                $itemArray[$arrayCounter]['original_invoice_date'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+                $itemArray[$arrayCounter]['original_invoice_number'] = $dataIn->reference_number;
+
+				
+
+				$rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
+				$itemArray[$arrayCounter]['rate'] = isset($rt)?$rt:'0';
+				$itemArray[$arrayCounter]['taxable_value'] = isset($dataIn->taxable_subtotal)?$dataIn->taxable_subtotal:'0';
+				$itemArray[$arrayCounter]['cgst_amount'] = isset($dataIn->cgst_amount)?$dataIn->cgst_amount:'0';
+				$itemArray[$arrayCounter]['sgst_amount'] = isset($dataIn->sgst_amount)?$dataIn->sgst_amount:'0';
+				$itemArray[$arrayCounter]['igst_amount'] = isset($dataIn->igst_amount)?$dataIn->igst_amount:'0';
+				$itemArray[$arrayCounter]['cess_amount'] = isset($dataIn->cess_amount)?$dataIn->cess_amount:'0';
+				$itemArray[$arrayCounter]['financial_year'] = $dataIn->financial_year;
+				$itemArray[$arrayCounter]['return_period'] = $returnmonth;
+				$itemArray[$arrayCounter]['added_by'] = $user_id;
+				$itemArray[$arrayCounter]['added_date'] = date('Y-m-d H:i:s');
+				$arrayCounter++;
+			}
+			$this->insertMultiple($this->tableNames['gstr1_return_summary'], $itemArray);
+			$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_b2b_inserted");
+
+		}
+		
+		$dataInvAt = $obj_gstr1->getATInvoices($user_id, $returnmonth,'all'); 
+		if(isset($dataInvAt) && !empty($dataInvAt)) {
+			$itemArray = array();
+			$arrayCounter = 0;
+			foreach ($dataInvAt as $key => $dataIn) {	
+				$itemArray[$arrayCounter]['invoice_nature'] = 'at';
+				$itemArray[$arrayCounter]['recipient_gstin'] = $dataIn->billing_gstin_number;
+				$itemArray[$arrayCounter]['invoice_number'] = $dataIn->reference_number;
+				$itemArray[$arrayCounter]['invoice_date'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+				$itemArray[$arrayCounter]['invoice_value'] = (float) $dataIn->invoice_total_value;
+				$itemArray[$arrayCounter]['place_of_supply'] = strlen($dataIn->supply_place) == '1' ? '0' . $dataIn->supply_place : $dataIn->supply_place;
+	           
+				if ($dataIn->company_state != $dataIn->supply_place) {
+                    $itemArray[$arrayCounter]['supply_type'] = 'INTER';
+                } 
+                else {
+                    $itemArray[$arrayCounter]['supply_type'] = 'INTRA';
+                }
+
+
+				$rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
+				$itemArray[$arrayCounter]['rate'] = isset($rt)?$rt:'0';
+				$itemArray[$arrayCounter]['taxable_value'] = isset($dataIn->taxable_subtotal)?$dataIn->taxable_subtotal:'0';
+				$itemArray[$arrayCounter]['cgst_amount'] = isset($dataIn->cgst_amount)?$dataIn->cgst_amount:'0';
+				$itemArray[$arrayCounter]['sgst_amount'] = isset($dataIn->sgst_amount)?$dataIn->sgst_amount:'0';
+				$itemArray[$arrayCounter]['igst_amount'] = isset($dataIn->igst_amount)?$dataIn->igst_amount:'0';
+				$itemArray[$arrayCounter]['cess_amount'] = isset($dataIn->cess_amount)?$dataIn->cess_amount:'0';
+				$itemArray[$arrayCounter]['financial_year'] = $dataIn->financial_year;
+				$itemArray[$arrayCounter]['return_period'] = $returnmonth;
+				$itemArray[$arrayCounter]['added_by'] = $user_id;
+				$itemArray[$arrayCounter]['added_date'] = date('Y-m-d H:i:s');
+				$arrayCounter++;
+			}
+			$this->insertMultiple($this->tableNames['gstr1_return_summary'], $itemArray);
+			$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_b2b_inserted");
+			
+		}
+		$dataInvExp = $obj_gstr1->getEXPInvoices($user_id, $returnmonth,'all'); 
+		
+		if(isset($dataInvExp) && !empty($dataInvExp)) {
+			$itemArray = array();
+			$arrayCounter = 0;
+			foreach ($dataInvExp as $key => $dataIn) {	
+				$itemArray[$arrayCounter]['invoice_nature'] = 'exp';
+				$itemArray[$arrayCounter]['recipient_gstin'] = $dataIn->billing_gstin_number;
+				$itemArray[$arrayCounter]['invoice_number'] = $dataIn->reference_number;
+				$itemArray[$arrayCounter]['invoice_date'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+				$itemArray[$arrayCounter]['invoice_value'] = (float) $dataIn->invoice_total_value;
+				$itemArray[$arrayCounter]['place_of_supply'] = strlen($dataIn->supply_place) == '1' ? '0' . $dataIn->supply_place : $dataIn->supply_place;
+				if ($dataIn->company_state != $dataIn->supply_place) {
+                    $itemArray[$arrayCounter]['supply_type'] = 'INTER';
+                } 
+                else {
+                    $itemArray[$arrayCounter]['supply_type'] = 'INTRA';
+                }
+	           
+                $itemArray[$arrayCounter]['invoice_type'] = ($dataIn->export_supply_meant=='withpayment') ? "WPAY" : 'WOPAY';
+
+                $itemArray[$arrayCounter]['port_code'] = $dataIn->export_bill_port_code;
+                $itemArray[$arrayCounter]['shipping_bill_number'] = (int)$dataIn->export_bill_number;
+                $itemArray[$arrayCounter]['shipping_bill_date'] =$dataIn->export_bill_date > 0 ? date('d-m-Y', strtotime($dataIn->export_bill_date)) : '';
+
+				$rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
+				$itemArray[$arrayCounter]['rate'] = isset($rt)?$rt:'0';
+				$itemArray[$arrayCounter]['taxable_value'] = isset($dataIn->taxable_subtotal)?$dataIn->taxable_subtotal:'0';
+				$itemArray[$arrayCounter]['cgst_amount'] = isset($dataIn->cgst_amount)?$dataIn->cgst_amount:'0';
+				$itemArray[$arrayCounter]['sgst_amount'] = isset($dataIn->sgst_amount)?$dataIn->sgst_amount:'0';
+				$itemArray[$arrayCounter]['igst_amount'] = isset($dataIn->igst_amount)?$dataIn->igst_amount:'0';
+				$itemArray[$arrayCounter]['cess_amount'] = isset($dataIn->cess_amount)?$dataIn->cess_amount:'0';
+				$itemArray[$arrayCounter]['financial_year'] = $dataIn->financial_year;
+				$itemArray[$arrayCounter]['return_period'] = $returnmonth;
+				$itemArray[$arrayCounter]['added_by'] = $user_id;
+				$itemArray[$arrayCounter]['added_date'] = date('Y-m-d H:i:s');
+				$arrayCounter++;
+			}
+
+			$this->insertMultiple($this->tableNames['gstr1_return_summary'], $itemArray);
+			$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_b2b_inserted");
+			
+		}
+		
+		//$this->pr($itemArray);
+		
+
+
+		return $itemArray; 
 	}
 
 	final public function validateClientTallyInvoice($dataArr) {
@@ -2121,6 +2733,26 @@ class tally extends validation {
 
 		if (array_key_exists("cess", $dataArr)) {
 			$rules['cess'] = 'required||numeric||decimalzero|#|lable_name:HSN CESS Amount';
+		}
+		
+		if (array_key_exists("from", $dataArr)) {
+			$rules['from'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||min:1||max:16|#|lable_name:From Serial Number';
+		}
+
+		if (array_key_exists("to", $dataArr)) {
+			$rules['to'] = 'required||pattern:/^[' . $this->validateType['content'] . ']+$/||min:1||max:16|#|lable_name:To Serial Number';
+		}
+
+		if (array_key_exists("totnum", $dataArr)) {
+			$rules['totnum'] = 'required||numeric||pattern:/^' . $this->validateType['integerwithzero'] . '*$/|#|lable_name:Total Number';
+		}
+
+		if (array_key_exists("cancel", $dataArr)) {
+			$rules['cancel'] = 'required||numeric||pattern:/^' . $this->validateType['integerwithzero'] . '*$/|#|lable_name:Cancelled';
+		}
+
+		if (array_key_exists("net_issue", $dataArr)) {
+			$rules['net_issue'] = 'required||numeric||pattern:/^' . $this->validateType['integerwithzero'] . '*$/|#|lable_name:Net Issued';
 		}
 
 		$valid = $this->vali_obj->validate($dataArr, $rules);

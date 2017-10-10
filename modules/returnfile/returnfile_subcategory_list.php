@@ -5,7 +5,7 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
     exit();
 }
 
-if(!$obj_plan->can_read('returnfile_list')) {
+if(!$obj_plan->can_read('returnsetting_list')) {
 
     $obj_plan->setError($obj_plan->getValMsg('can_read'));
     $obj_plan->redirect(PROJECT_URL."/?page=dashboard");

@@ -1,8 +1,28 @@
 <?php
 $obj_user = new users();
-if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '' ) {
+
+if( !isset($_SESSION['user_detail']['user_group']) || $_SESSION['user_detail']['user_group'] != '1' ) {
     $obj_user->redirect(PROJECT_URL);
     exit();
+}
+
+if( isset($_GET['action']) && $_GET['action'] == 'deleteRole' && isset($_GET['id']) && $obj_user->validateId($_GET['id'])) {
+
+	$dataConditionArray['user_role_id'] = $obj_user->sanitize($_GET['id']);
+	$dataUpdateArray['is_deleted'] = "1";
+	$dataUpdateArray['deleted_by'] = $_SESSION['user_detail']['user_id'];
+	$dataUpdateArray['deleted_date'] = date('Y-m-d H:i:s');
+
+	if ($obj_user->update($obj_user->getTableName('user_role'), $dataUpdateArray, $dataConditionArray)) {
+
+		$obj_user->setSuccess("Role Deleted Successfully.");
+		$obj_user->logMsg("Role ID : " . $_GET['id'] . " in User Role has been deleted","user_role_delete");
+		$obj_user->redirect(PROJECT_URL."?page=user_role");
+	} else {
+
+		$obj_user->setError($obj_user->validationMessage['failed']);
+		$obj_user->redirect(PROJECT_URL."?page=user_role");
+	}	
 }
 ?>
 

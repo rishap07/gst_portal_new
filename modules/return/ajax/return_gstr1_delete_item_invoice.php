@@ -99,5 +99,3 @@ if(!empty($type) && empty($arrValues) && !empty($deleteType)) {
 	$data['json'] =  $obj_api->returnSummary($returnmonth,$type);
 	$response = $obj_gst1->gstDeleteItemPayload($returnmonth,$type,$data,$deleteType);
 }
- // $obj_gst1->pr($response);
- // die;

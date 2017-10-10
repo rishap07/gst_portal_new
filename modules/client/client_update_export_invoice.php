@@ -484,7 +484,7 @@
 								</td>
 								<td>
 									<div class="padrgt0" style="width:100px;">
-										<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_total" name="invoice_total[]" readonly="true" class="inptxt" data-bind="decimal" value="<?php echo $invData->subtotal; ?>" placeholder="0.00" />
+										<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_total" name="invoice_total[]" readonly="true" class="inptxt" data-bind="decimal" data-invoice-tr-<?php echo $counter; ?>-total="<?php echo $invData->subtotal; ?>" value="<?php echo $invData->subtotal; ?>" placeholder="0.00" />
 									</div>
 								</td>
 								<td>
@@ -497,10 +497,10 @@
 								</td>
 								<td>
 									<div style="width:100px;" class="padrgt0">
-										<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="inptxt" value="<?php echo $invData->taxable_subtotal; ?>" data-bind="decimal" placeholder="0.00" />
+										<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="inptxt" data-invoice-tr-<?php echo $counter; ?>-taxablevalue="<?php echo $invData->taxable_subtotal; ?>" value="<?php echo $invData->taxable_subtotal; ?>" data-bind="decimal" placeholder="0.00" />
 									</div>
 								</td>
-								
+
 								<?php if($invoiceData[0]->export_supply_meant == "withpayment") { ?>
 
 									<td>
@@ -508,7 +508,7 @@
 									</td>
 									<td>
 										<div style="width:100px;" class="padrgt0">
-											<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_igstamount" name="invoice_igstamount[]" readonly="true" class="inptxt invigstamount" value="<?php echo $invData->igst_amount; ?>" placeholder="0.00" />
+											<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_igstamount" name="invoice_igstamount[]" readonly="true" class="inptxt invigstamount" data-invoice-tr-<?php echo $counter; ?>-igstamount="<?php echo $invData->igst_amount; ?>" value="<?php echo $invData->igst_amount; ?>" placeholder="0.00" />
 										</div>
 									</td>
 								
@@ -519,7 +519,7 @@
 									</td>
 									<td>
 										<div style="width:100px;" class="padrgt0">
-											<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_igstamount" name="invoice_igstamount[]" readonly="true" class="inptxt invigstamount" value="0.00" placeholder="0.00" />
+											<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_igstamount" name="invoice_igstamount[]" readonly="true" class="inptxt invigstamount" data-invoice-tr-<?php echo $counter; ?>-igstamount="0.00" value="0.00" placeholder="0.00" />
 										</div>
 									</td>
 
@@ -530,7 +530,7 @@
 								</td>
 								<td>
 									<div style="width:100px;" class="padrgt0">
-										<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_cessamount" name="invoice_cessamount[]" readonly="true" class="inptxt invcessamount" value="<?php echo $invData->cess_amount; ?>" placeholder="0.00" />
+										<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_cessamount" name="invoice_cessamount[]" readonly="true" class="inptxt invcessamount" data-invoice-tr-<?php echo $counter; ?>-cessamount="<?php echo $invData->cess_amount; ?>" value="<?php echo $invData->cess_amount; ?>" placeholder="0.00" />
 									</div>
 								</td>
 
@@ -1636,12 +1636,15 @@
 
 			var currentTotal = currentTrQuantity * currentTrRate;
 			$("#invoice_tr_"+rowid+"_total").val(currentTotal.toFixed(2));
+			$("#invoice_tr_"+rowid+"_total").attr("data-invoice-tr-"+rowid+"-total", currentTotal.toFixed(3));
 
 			var currentTrDiscountAmount = (currentTrDiscount/100) * currentTotal;
 			var currentTrReduceAmount = advAdjustmentAmount + currentTrDiscountAmount;
 			var currentTrTaxableValue = currentTotal - currentTrReduceAmount;
-			
+
 			$("#invoice_tr_"+rowid+"_taxablevalue").val(currentTrTaxableValue.toFixed(2));
+			$("#invoice_tr_"+rowid+"_taxablevalue").attr("data-invoice-tr-"+rowid+"-taxablevalue", currentTrTaxableValue.toFixed(3));
+
 			var exportSupplyMeant = $('input[name=export_supply_meant]:checked', '#create-invoice').val();
 
 			if(exportSupplyMeant == "withpayment") {
@@ -1651,20 +1654,24 @@
 				var igstTax = parseFloat(currentIGSTRate);
 				var igstTaxAmount = (igstTax/100) * currentTrTaxableValue;
 				$("#invoice_tr_"+rowid+"_igstamount").val(igstTaxAmount.toFixed(2));
+				$("#invoice_tr_"+rowid+"_igstamount").attr("data-invoice-tr-"+rowid+"-igstamount", igstTaxAmount.toFixed(3));
 				
 				var cessTax = parseFloat(currentCESSRate);
 				var cessTaxAmount = (cessTax/100) * currentTrTaxableValue;
 				$("#invoice_tr_"+rowid+"_cessamount").val(cessTaxAmount.toFixed(2));
+				$("#invoice_tr_"+rowid+"_cessamount").attr("data-invoice-tr-"+rowid+"-cessamount", cessTaxAmount.toFixed(3));
 			} else {
 
 				$("#invoice_tr_"+rowid+"_igstrate").val(0.00);
 				$("#invoice_tr_"+rowid+"_igstamount").val(0.00);
+				$("#invoice_tr_"+rowid+"_igstamount").attr("data-invoice-tr-"+rowid+"-igstamount", 0.00);
 
 				$("#invoice_tr_"+rowid+"_igstrate").prop("readonly", true);
 
 				var cessTax = parseFloat(currentCESSRate);
 				var cessTaxAmount = (cessTax/100) * currentTrTaxableValue;
 				$("#invoice_tr_"+rowid+"_cessamount").val(cessTaxAmount.toFixed(2));
+				$("#invoice_tr_"+rowid+"_cessamount").attr("data-invoice-tr-"+rowid+"-cessamount", cessTaxAmount.toFixed(3));
 			}
 			/* end of calculation */
 
@@ -1682,10 +1689,10 @@
                 var rowid = $(this).attr("data-row-id");
 
                 if($("#invoice_tr_"+rowid+"_itemid").val() != '' && $("#invoice_tr_"+rowid+"_itemid").val() > 0) {
-					
-					var taxablevalue = parseFloat($("#invoice_tr_"+rowid+"_taxablevalue").val());
-                    var igstamount = parseFloat($("#invoice_tr_"+rowid+"_igstamount").val());
-					var cessamount = parseFloat($("#invoice_tr_"+rowid+"_cessamount").val());
+
+					var taxablevalue = parseFloat($("#invoice_tr_"+rowid+"_taxablevalue").attr("data-invoice-tr-"+rowid+"-taxablevalue"));
+                    var igstamount = parseFloat($("#invoice_tr_"+rowid+"_igstamount").attr("data-invoice-tr-"+rowid+"-igstamount"));
+					var cessamount = parseFloat($("#invoice_tr_"+rowid+"_cessamount").attr("data-invoice-tr-"+rowid+"-cessamount"));
 
 					totalInvoiceValue += (taxablevalue + igstamount + cessamount);
                 }

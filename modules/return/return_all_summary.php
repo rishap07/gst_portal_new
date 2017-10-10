@@ -1,5 +1,11 @@
 <?php
 $obj_client = new client();
+if(!$obj_client->can_read('returnfile_list'))
+{
+    $obj_client->setError($obj_client->getValMsg('can_read'));
+    $obj_client->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
 ?>
   
 <style type="text/css">

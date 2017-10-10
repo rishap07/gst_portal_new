@@ -2,6 +2,12 @@
 $obj_client = new client();
 $obj_gstr1 = new gstr1();
 $type='invoice';
+if(!$obj_client->can_read('returnfile_list'))
+{
+    $obj_client->setError($obj_client->getValMsg('can_read'));
+    $obj_client->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
 if(isset($_POST['invoice_type']))
 {
     $type=$_POST['invoice_type'];

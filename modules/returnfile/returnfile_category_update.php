@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
 }
 
 
-if (!$obj_return->can_read('returnfile_list')) {
+if (!$obj_return->can_read('returnsetting_list')) {
 
     $obj_return->setError($obj_return->getValMsg('can_read'));
     $obj_return->redirect(PROJECT_URL . "/?page=dashboard");
@@ -75,7 +75,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
                             <?php $dataVendorArrs = $obj_return->get_results("select * from " . $obj_return->getTableName('vendor_type') . " where status='1' and is_deleted='0' order by vendor_name asc"); ?>
                             <?php if (!empty($dataVendorArrs)) { ?>
                                 <?php
-                                if ($dataCurrentArr[0]->returntofile_vendor_id == 0) {
+                                if (isset($dataCurrentArr[0]->returntofile_vendor_id) && $dataCurrentArr[0]->returntofile_vendor_id== 0) {
                                     ?>
                                     <option value='0' 'selected="selected">Select AllVendor</option>
                                 <?php } else { ?>
@@ -85,7 +85,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
                                     <option value='<?php echo $dataVendorArr->vendor_id; ?>' <?php
                                             if (isset($_POST['vendor_type']) && $_POST['vendor_type'] == $dataVendorArr->vendor_id) {
                                                 echo 'selected="selected"';
-                                            } else if (isset($dataVendorArr->vendor_id) && $dataCurrentArr[0]->returntofile_vendor_id == $dataVendorArr->vendor_id) {
+                                            } else if (isset($dataVendorArr->vendor_id) && isset($dataCurrentArr[0]->returntofile_vendor_id) && $dataCurrentArr[0]->returntofile_vendor_id == $dataVendorArr->vendor_id) {
                                                 echo 'selected="selected"';
                                             }
                                             ?>><?php echo $dataVendorArr->vendor_name; ?></option>

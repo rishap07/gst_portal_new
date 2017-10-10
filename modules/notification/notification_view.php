@@ -3,6 +3,7 @@
 
 $db_obj = new validation();
 extract($_POST);
+
 if((isset($_GET["id"])) && (!empty($_GET["id"])))
 {
         $dataArr = array();
@@ -10,7 +11,7 @@ if((isset($_GET["id"])) && (!empty($_GET["id"])))
 		
 	    $count=1;
 		$flag=0;
-		$sql="select *,u.status as nstatus  from " . $db_obj->getTableName('notification') . " as n INNER join " . $db_obj->getTableName('user_notification') . " as u on u.notification_id=n.notification_id  where n.status='1' and u.user_id='".$_SESSION["user_detail"]["user_id"]."' order by u.notification_id desc";
+		$sql="select *,u.status as nstatus,DATE_FORMAT(added_date, '%d %M %Y %r') as added_date  from " . $db_obj->getTableName('notification') . " as n INNER join " . $db_obj->getTableName('user_notification') . " as u on u.notification_id=n.notification_id  where n.status='1' and u.user_id='".$_SESSION["user_detail"]["user_id"]."' order by u.notification_id desc";
 		
 		$dataNotification = $db_obj->get_results($sql);
         if(!empty($dataNotification))
@@ -63,9 +64,30 @@ if((isset($_GET["id"])) && (!empty($_GET["id"])))
 			{
 //return false;
 			}
-        if($_SESSION["user_detail"]["user_group"]==2)
+	 if($_SESSION["user_detail"]["user_group"]==2)
+	     {
+				$flag=1; 
+	     }
+        if($_SESSION["user_detail"]["user_group"]==3)
 	{
 		$flag=1; 
+		$dataConditionArray=array();
+		$dataArr=array();
+		 $dataConditionArray['notification_id'] = $db_obj->sanitize($_GET["id"]);
+		 $dataConditionArray['user_id'] = $_SESSION["user_detail"]["user_id"];
+		$dataArr['status_updated_date'] = date('Y-m-d H:i:s');
+		$dataArr['updated_by'] = $_SESSION["user_detail"]["user_id"];
+		$dataArr['status'] = 1;	
+		if ($db_obj->update(TAB_PREFIX.'user_notification', $dataArr, $dataConditionArray)) {
+      	//$this->setSuccess("Your Notification information updated successfully");
+		$db_obj->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update the notification info","notification");
+												//return true;
+											
+		} else {
+
+				//$db_obj->setError($db_obj->validationMessage['failed']);
+				//return false;							
+			}			
 	}
 		if($flag==1)
 		{
@@ -74,8 +96,8 @@ if((isset($_GET["id"])) && (!empty($_GET["id"])))
 		$rResult = $db_obj->get_results($query);
 		$dataConditionArray=array();
 		$dataArr=array();
-		 $dataConditionArray['notification_id'] = $db_obj->sanitize($_GET["id"]);
-		 $dataConditionArray['user_id'] = $_SESSION["user_detail"]["user_id"];
+		$dataConditionArray['notification_id'] = $db_obj->sanitize($_GET["id"]);
+		$dataConditionArray['user_id'] = $_SESSION["user_detail"]["user_id"];
 		$dataArr['status_updated_date'] = date('Y-m-d H:i:s');
 		$dataArr['updated_by'] = $_SESSION["user_detail"]["user_id"];
 		$dataArr['status'] = 1;

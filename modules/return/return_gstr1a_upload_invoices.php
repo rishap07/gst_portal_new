@@ -1,5 +1,11 @@
 <?php
 $obj_gstr1 = new gstr1();
+if(!$obj_gstr1->can_read('returnfile_list'))
+{
+    $obj_gstr1->setError($obj_gstr1->getValMsg('can_read'));
+    $obj_gstr1->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
 if (!isset($_REQUEST['returnmonth']) || $_REQUEST['returnmonth'] == '') 
 {
     $obj_gstr1->redirect(PROJECT_URL . "/?page=return_client");

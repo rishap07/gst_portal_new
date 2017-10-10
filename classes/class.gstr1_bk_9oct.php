@@ -1136,15 +1136,17 @@ final class gstr1 extends validation {
 
     public function gstB2BPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $b2b_array = $b2b_ids = array();
+        //$this->pr($this->getAllInvoices($user_id, $returnmonth,'b2b'));
+        //die;
         if(!empty($flag)) {
-           $dataInvB2B = $this->getAllInvoices($user_id, $returnmonth,'b2b','1'); 
+           $dataInvB2B = $this->getB2BInvoices($user_id, $returnmonth,'1');
         }
         else {
-           $dataInvB2B = $this->getAllInvoices($user_id, $returnmonth,'b2b','',$ids); 
+           $dataInvB2B = $this->getB2BInvoices($user_id, $returnmonth,$type,$ids); 
         }
-        
+        $dataInvB2B = $this->getAllInvoices($user_id, $returnmonth,'b2b'); 
         if (isset($dataInvB2B) && !empty($dataInvB2B)) {
-
+            echo "fdg";
             $x = 0;
             $y = 0;
             $z = 0;
@@ -1171,7 +1173,9 @@ final class gstr1 extends validation {
                 }
                 $dataArr['b2b'][$x]['inv'][$y]['val'] = (float) $dataIn->invoice_total_value;
                 $dataArr['b2b'][$x]['inv'][$y]['pos'] = strlen($dataIn->supply_place) == '1' ? '0' . $dataIn->supply_place : $dataIn->supply_place;
+                $in_type = '';
                 if ($dataIn->invoice_type == 'taxinvoice' || $dataIn->invoice_type =='billofsupplyinvoice') {
+                    $in_type = 'R';
 
                     if ($dataIn->company_state != $dataIn->supply_place ) {
                         $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['iamt'] = (float) $dataIn->igst_amount;
@@ -1181,20 +1185,30 @@ final class gstr1 extends validation {
                     }
                 } 
                 else if ($dataIn->invoice_type == 'sezunitinvoice') {
-                    
+                    if($dataIn->export_supply_meant=='withpayment')
+                    {
+                            $in_type = 'SEWP';
+                    }
+                    else
+                    {
+                            $in_type = 'SEWOP';
+                    }
                     $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['iamt'] = (float) $dataIn->igst_amount;
 
                 } else if ($dataIn->invoice_type == 'deemedexportinvoice') {
+                    $in_type = 'DE';
 
                     $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['iamt'] = (float) $dataIn->igst_amount;
                 }
+                $rever_charge = ($dataIn->supply_type == 'reversecharge') ? 'Y' : 'N';
                 /*if($dataIn->supply_type == 'tcs') {
                     $dataArr['b2b'][$x]['inv'][$y]['etin'] = $dataIn->ecommerce_gstin_number;
                 }*/
-                $dataArr['b2b'][$x]['inv'][$y]['inv_typ'] = $dataIn->invoice_type;
-                $dataArr['b2b'][$x]['inv'][$y]['rchrg'] = $dataIn->reverse_charge;
+                $dataArr['b2b'][$x]['inv'][$y]['inv_typ'] = $in_type;
+                $dataArr['b2b'][$x]['inv'][$y]['rchrg'] = $rever_charge;
                 $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['num'] = (int) $a;
-                $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['rt'] = (float) $dataIn->rate;
+                $rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
+                $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['rt'] = (float) $rt;
                 $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['txval'] = (float) $dataIn->taxable_subtotal;
 
                 
@@ -1207,25 +1221,19 @@ final class gstr1 extends validation {
                 $b2b_array[] = (array) $dataIn;
             }
             if (!empty($b2b_array)) {
-                $b2b_ids = array_unique(array_column($b2b_array, 'id'));
+                $b2b_ids = array_unique(array_column($b2b_array, 'invoice_id'));
             }
         }
         $response['b2b_ids'] = $b2b_ids;
         $response['b2b_arr'] = $dataArr;
-        //$this->pr($dataArr);die;
+        $this->pr($dataArr);die;
         return $response;
     }
 
     public function gstB2CLPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $b2cl_array = $b2cl_ids = array();
-        if(!empty($flag)) {
-           $dataInvB2CL = $this->getAllInvoices($user_id, $returnmonth,'b2cl','1'); 
-        }
-        else {
-           $dataInvB2CL = $this->getAllInvoices($user_id, $returnmonth,'b2cl','',$ids);
-        }
-        
-        //$this->pr($dataInvB2CL);die;
+
+        $dataInvB2CL = $this->getB2CLInvoices($user_id, $returnmonth,$type,$ids);
         if (isset($dataInvB2CL) && !empty($dataInvB2CL)) {
 
             $x = 0;
@@ -1249,12 +1257,13 @@ final class gstr1 extends validation {
                 $dataArr['b2cl'][$x]['inv'][$y]['idt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
                 $dataArr['b2cl'][$x]['inv'][$y]['val'] = (float) $dataIn->invoice_total_value;
 
-                $dataArr['b2b'][$x]['inv'][$y]['rchrg'] = $dataIn->reverse_charge;
+                $rever_charge = ($dataIn->supply_type == 'reversecharge') ? 'Y' : 'N';
 
                 $dataArr['b2cl'][$x]['inv'][$y]['itms'][$z]['num'] = (int) $a;
-                $dataArr['b2cl'][$x]['inv'][$y]['itms'][$z]['itm_det']['rt'] = (float) $dataIn->rate;
+                $rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
+                $dataArr['b2cl'][$x]['inv'][$y]['itms'][$z]['itm_det']['rt'] = (float) $rt;
                 $dataArr['b2cl'][$x]['inv'][$y]['itms'][$z]['itm_det']['txval'] = (float) $dataIn->taxable_subtotal;
-                if ($dataIn->supply_type == 'INTER') {
+                if ($dataIn->company_state != $dataIn->supply_place) {
                     $dataArr['b2cl'][$x]['inv'][$y]['itms'][$z]['itm_det']['iamt'] = (float) $dataIn->igst_amount;
                 } 
                 else {
@@ -1269,7 +1278,7 @@ final class gstr1 extends validation {
                 $b2cl_array[] = (array) $dataIn;
             }
             if (!empty($b2cl_array)) {
-                $b2cl_ids = array_unique(array_column($b2cl_array, 'id'));
+                $b2cl_ids = array_unique(array_column($b2cl_array, 'invoice_id'));
             }
         }
         $response['b2cl_ids'] = $b2cl_ids;
@@ -1280,13 +1289,7 @@ final class gstr1 extends validation {
 
     public function gstB2CSPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $b2cs_array = $b2cs_ids = array();
-        //$dataInvB2CS = $this->getB2CSInvoices($user_id, $returnmonth,$type,$ids);
-        if(!empty($flag)) {
-           $dataInvB2CS = $this->getAllInvoices($user_id, $returnmonth,'b2cs','1'); 
-        }
-        else {
-           $dataInvB2CS = $this->getAllInvoices($user_id, $returnmonth,'b2cs','',$ids);
-        }
+        $dataInvB2CS = $this->getB2CSInvoices($user_id, $returnmonth,$type,$ids);
         if (isset($dataInvB2CS) && !empty($dataInvB2CS)) {
 
             $x = 0;
@@ -1296,7 +1299,7 @@ final class gstr1 extends validation {
             $temp_number = '';
             $ctin = '';
             foreach ($dataInvB2CS as $dataIn) {
-                
+                $rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
                 if ($ctin != '' && $ctin != $dataIn->billing_gstin_number) {
                     $x++;
                 }
@@ -1305,21 +1308,28 @@ final class gstr1 extends validation {
                     $y++;
                 }
 
-                $dataArr['b2cs'][$x]['sply_ty'] = $dataIn->supply_type;
-                $dataArr['b2cs'][$x]['rt'] = (float) $dataIn->rate;
 
-                if(!empty($ecommerce_gstin_number)) {
+                if ($dataIn->company_state != $dataIn->supply_place) {
+                    $dataArr['b2cs'][$x]['sply_ty'] = 'INTER';
+                } else {
+                    $dataArr['b2cs'][$x]['sply_ty'] = 'INTRA';
+                }
+
+                $dataArr['b2cs'][$x]['rt'] = (float) $rt;
+
+                if($dataIn->supply_type == 'tcs') {
+                    $dataArr['b2cs'][$x]['typ'] = 'E';
                     $dataArr['b2cs'][$x]['etin'] = $dataIn->ecommerce_gstin_number;
                 }
-                $dataArr['b2cs'][$x]['typ'] = $dataIn->type;
-                
+                else {
+                    $dataArr['b2cs'][$x]['typ'] = 'OE';
+                }
                 $dataArr['b2cs'][$x]['pos'] = strlen($dataIn->supply_place) == '1' ? '0' . $dataIn->supply_place : $dataIn->supply_place;
 
                 $dataArr['b2cs'][$x]['txval'] = (float) $dataIn->taxable_subtotal;
-                if ($dataIn->supply_type == 'INTER') {
+                if ($dataIn->company_state != $dataIn->supply_place) {
                     $dataArr['b2cs'][$x]['iamt'] = (float) $dataIn->igst_amount;
-                } 
-                else {
+                } else {
                     $dataArr['b2cs'][$x]['samt'] = (float) $dataIn->sgst_amount;
                     $dataArr['b2cs'][$x]['camt'] = (float) $dataIn->cgst_amount;
                 }
@@ -1331,7 +1341,7 @@ final class gstr1 extends validation {
                 $b2cs_array[] = (array) $dataIn;
             }
             if (!empty($b2cs_array)) {
-                $b2cs_ids = array_unique(array_column($b2cs_array, 'id'));
+                $b2cs_ids = array_unique(array_column($b2cs_array, 'invoice_id'));
             }
         }
         $response['b2cs_ids'] = $b2cs_ids;
@@ -1341,14 +1351,8 @@ final class gstr1 extends validation {
 
     public function gstCDNRPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $cdnr_array = $cdnr_ids = array();
-        //$dataInvCDNR = $this->getCDNRInvoices($user_id, $returnmonth,$type,$ids);
+        $dataInvCDNR = $this->getCDNRInvoices($user_id, $returnmonth,$type,$ids);
         //$this->pr($dataInvCDNR);
-        if(!empty($flag)) {
-           $dataInvCDNR = $this->getAllInvoices($user_id, $returnmonth,'cdnr','1'); 
-        }
-        else {
-           $dataInvCDNR = $this->getAllInvoices($user_id, $returnmonth,'cdnr','',$ids);
-        }
         if (isset($dataInvCDNR) && !empty($dataInvCDNR)) {
 
             $x = 0;
@@ -1369,20 +1373,29 @@ final class gstr1 extends validation {
                     $x++;
                 }
                 $dataArr['cdnr'][$x]['ctin'] = $dataIn->billing_gstin_number;
-               
-                $dataArr['cdnr'][$x]['nt'][$y]['ntty'] = $dataIn->document_type;
-                $dataArr['cdnr'][$x]['nt'][$y]['nt_num'] =$dataIn->original_invoice_number;
-                $dataArr['cdnr'][$x]['nt'][$y]['nt_dt'] = $dataIn->original_invoice_date;
-
-                $dataArr['cdnr'][$x]['nt'][$y]['p_gst'] = $dataIn->pre_gst;
+                $nt_type = '';
+                if ($dataIn->invoice_type == 'creditnote') {
+                    $nt_type = 'C';
+                }
+                elseif ($dataIn->invoice_type == 'refundvoucherinvoice') {
+                    $nt_type = 'R';
+                } 
+                else {
+                    $nt_type = 'D';
+                }
+                $dataArr['cdnr'][$x]['nt'][$y]['ntty'] = $nt_type;
+                $dataArr['cdnr'][$x]['nt'][$y]['nt_num'] = $dataIn->reference_number;
+                $dataArr['cdnr'][$x]['nt'][$y]['nt_dt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+                $dataArr['cdnr'][$x]['nt'][$y]['p_gst'] = "N";
                 $dataArr['cdnr'][$x]['nt'][$y]['rsn'] = $dataIn->reason_issuing_document;//"02-Post Sale Discount";
-                $dataArr['cdnr'][$x]['nt'][$y]['inum'] = $dataIn->reference_number;
-                $dataArr['cdnr'][$x]['nt'][$y]['idt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+                $dataArr['cdnr'][$x]['nt'][$y]['inum'] = $dataIn->corresponding_document_number;
+                $dataArr['cdnr'][$x]['nt'][$y]['idt'] = date('d-m-Y', strtotime($dataIn->corresponding_document_date));
                 $dataArr['cdnr'][$x]['nt'][$y]['val'] = (float) $dataIn->invoice_total_value;
                 $dataArr['cdnr'][$x]['nt'][$y]['itms'][$z]['num'] = (int) $a;
-                $dataArr['cdnr'][$x]['nt'][$y]['itms'][$z]['itm_det']['rt'] = (float) $dataIn->rate;
+                $rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
+                $dataArr['cdnr'][$x]['nt'][$y]['itms'][$z]['itm_det']['rt'] = (float) $rt;
                 $dataArr['cdnr'][$x]['nt'][$y]['itms'][$z]['itm_det']['txval'] = (float) $dataIn->taxable_subtotal;
-                if ($dataIn->supply_type == 'INTER') {
+                if ($dataIn->company_state != $dataIn->supply_place) {
                     $dataArr['cdnr'][$x]['nt'][$y]['itms'][$z]['itm_det']['iamt'] = (float) $dataIn->igst_amount;
                 } else {
                     $dataArr['cdnr'][$x]['nt'][$y]['itms'][$z]['itm_det']['samt'] = (float) $dataIn->sgst_amount;
@@ -1396,7 +1409,7 @@ final class gstr1 extends validation {
                 $cdnr_array[] = (array) $dataIn;
             }
             if (!empty($cdnr_array)) {
-                $cdnr_ids = array_unique(array_column($cdnr_array, 'id'));
+                $cdnr_ids = array_unique(array_column($cdnr_array, 'invoice_id'));
             }
         }
         
@@ -1407,13 +1420,7 @@ final class gstr1 extends validation {
 
     public function gstCDNURPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $cdnur_array = $cdnur_ids = array();
-        //$dataInvCDNUR = $this->getCDNURInvoices($user_id, $returnmonth,$type,$ids);
-        if(!empty($flag)) {
-           $dataInvCDNUR = $this->getAllInvoices($user_id, $returnmonth,'cdnur','1'); 
-        }
-        else {
-           $dataInvCDNUR = $this->getAllInvoices($user_id, $returnmonth,'cdnur','',$ids);
-        }
+        $dataInvCDNUR = $this->getCDNURInvoices($user_id, $returnmonth,$type,$ids);
        // $this->pr($dataInvCDNUR);
         if (isset($dataInvCDNUR) && !empty($dataInvCDNUR)) {
 
@@ -1429,18 +1436,40 @@ final class gstr1 extends validation {
                     $y = 0;
                     $x++;
                 }
-
-                $dataArr['cdnur'][$x]['typ'] = $dataIn->ur_type;
-                $dataArr['cdnr'][$x]['nt'][$y]['ntty'] = $dataIn->document_type;
-                $dataArr['cdnr'][$x]['nt'][$y]['nt_num'] =$dataIn->original_invoice_number;
-                $dataArr['cdnr'][$x]['nt'][$y]['nt_dt'] = $dataIn->pre_gst;
-                $dataArr['cdnur'][$x]['p_gst'] = $dataIn->pre_gst;
+                $nt_type = '';
+                if ($dataIn->invoice_type == 'creditnote') {
+                    $nt_type = 'C';
+                } 
+                elseif ($dataIn->invoice_type == 'refundvoucherinvoice') {
+                    $nt_type = 'R';
+                }
+                else {
+                    $nt_type = 'D';
+                }
+                $type = '';
+                if ($dataIn->original_type == 'taxinvoice') {
+                    $type = "B2CL";
+                } 
+                else {
+                    if ($dataIn->export_supply_meant == 'withpayment') {
+                        $type = "EXPWP";
+                    }
+                    else {
+                        $type = "EXPWOP";
+                    }
+                }
+                $dataArr['cdnur'][$x]['typ'] = $type;
+                $dataArr['cdnur'][$x]['ntty'] = $nt_type;
+                $dataArr['cdnur'][$x]['nt_num'] = $dataIn->reference_number;
+                $dataArr['cdnur'][$x]['nt_dt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+                $dataArr['cdnur'][$x]['p_gst'] = "N";
                 $dataArr['cdnur'][$x]['rsn'] = $dataIn->reason_issuing_document;//"02-Post Sale Discount";
-                $dataArr['cdnur'][$x]['inum'] = $dataIn->reference_number;
-                $dataArr['cdnur'][$x]['idt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+                $dataArr['cdnur'][$x]['inum'] = $dataIn->corresponding_document_number;
+                $dataArr['cdnur'][$x]['idt'] = date('d-m-Y', strtotime($dataIn->corresponding_document_date));
                 $dataArr['cdnur'][$x]['val'] = (float) $dataIn->invoice_total_value;
                 $dataArr['cdnur'][$x]['itms'][$y]['num'] = (int) $a;
-                $dataArr['cdnur'][$x]['itms'][$y]['itm_det']['rt'] = (float) $dataIn->rate;
+                $rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
+                $dataArr['cdnur'][$x]['itms'][$y]['itm_det']['rt'] = (float) $rt;
                 $dataArr['cdnur'][$x]['itms'][$y]['itm_det']['txval'] = (float) $dataIn->taxable_subtotal;
                 $dataArr['cdnur'][$x]['itms'][$y]['itm_det']['iamt'] = (float) $dataIn->igst_amount;
                 $dataArr['cdnur'][$x]['itms'][$y]['itm_det']['csamt'] = (float) $dataIn->cess_amount;
@@ -1450,7 +1479,7 @@ final class gstr1 extends validation {
                 $cdnur_array[] = (array) $dataIn;
             }
             if (!empty($cdnur_array)) {
-                $cdnur_ids = array_unique(array_column($cdnur_array, 'id'));
+                $cdnur_ids = array_unique(array_column($cdnur_array, 'invoice_id'));
             }
         }
         /*$this->pr($dataArr);
@@ -1496,14 +1525,8 @@ final class gstr1 extends validation {
 
     public function gstATPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $at_array = $at_ids = array();
-        //$dataInvAt = $this->getATInvoices($user_id, $returnmonth,$type,$ids);
+        $dataInvAt = $this->getATInvoices($user_id, $returnmonth,$type,$ids);
         //$this->pr($dataInvAt);
-        if(!empty($flag)) {
-           $dataInvAt = $this->getAllInvoices($user_id, $returnmonth,'at','1'); 
-        }
-        else {
-           $dataInvAt = $this->getAllInvoices($user_id, $returnmonth,'at','',$ids);
-        }
         if (isset($dataInvAt) && !empty($dataInvAt)) {
             $z = 0;
             $y = 0;
@@ -1511,34 +1534,39 @@ final class gstr1 extends validation {
             $at_pos = '';
             $at_rate = '';
             foreach ($dataInvAt as $dataIn) {
+                $rt = $dataIn->igst_rate;
+                //$rt = ($dataIn->company_state==$dataIn->supply_place) ? ($dataIn->sgst_rate+ $dataIn->cgst_rate) :  $dataIn->igst_rate;
                 if ($at_pos != '' && $at_pos != $dataIn->supply_place) {
                     $y++;
                     $z = 0;
                 }
 
                 $dataArr['at'][$y]['pos'] = (strlen($dataIn->supply_place) == '1') ? '0' . $dataIn->supply_place : $dataIn->supply_place;
-                $dataArr['at'][$y]['sply_ty'] = $dataIn->supply_type;
+                if ($dataIn->company_state != $dataIn->supply_place) {
+                    $dataArr['at'][$y]['sply_ty'] = 'INTER';
+                } else {
+                    $dataArr['at'][$y]['sply_ty'] = 'INTRA';
+                }
 
-                if ($dataIn->supply_type == 'INTER') {
+                if ($dataIn->company_state != $dataIn->supply_place) {
                     $dataArr['at'][$y]['itms'][$z]['iamt'] = (float) $dataIn->igst_amount;
-                } 
-                else {
-                    $dataArr['at'][$y]['itms'][$z]['iamt'] = (float) $dataIn->igst_amount;
+                } else {
+                   $dataArr['at'][$y]['itms'][$z]['iamt'] = (float) $dataIn->igst_amount;
                     $dataArr['at'][$y]['itms'][$z]['samt'] = (float) $dataIn->sgst_amount;
                     $dataArr['at'][$y]['itms'][$z]['camt'] = (float) $dataIn->cgst_amount;
                 }
 
-                $dataArr['at'][$y]['itms'][$z]['rt'] = (float) $dataIn->rate;
+                $dataArr['at'][$y]['itms'][$z]['rt'] = (float) $rt;
                 $dataArr['at'][$y]['itms'][$z]['ad_amt'] = (float) $dataIn->taxable_subtotal;
                 
                 $dataArr['at'][$y]['itms'][$z]['csamt'] = (float) $dataIn->cess_amount;
                 $at_pos = $dataIn->supply_place;
-                $at_rate = $dataIn->rate;
+                $at_rate = $rt;
                 $z++;
                 $at_array[] = (array) $dataIn;
             }
             if (!empty($at_array)) {
-                $at_ids = array_unique(array_column($at_array, 'id'));
+                $at_ids = array_unique(array_column($at_array, 'invoice_id'));
             }
         }
         $response['at_ids'] = $at_ids;
@@ -1585,65 +1613,98 @@ final class gstr1 extends validation {
 
     public function getEXPPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $exp_ids = $exp_array = $dataArr1 = $dataArr2 = array();
-        //$dataInvExp = $this->getEXPInvoices($user_id, $returnmonth,$type,$ids);
-        if(!empty($flag)) {
-           $dataInvExp = $this->getAllInvoices($user_id, $returnmonth,'exp','1'); 
-        }
-        else {
-           $dataInvExp = $this->getAllInvoices($user_id, $returnmonth,'exp','',$ids);
-        }
-        // $this->pr($dataInvExp);
+        $dataInvExp = $this->getEXPInvoices($user_id, $returnmonth,$type,$ids);
         if (isset($dataInvExp) && !empty($dataInvExp)) {
-            $x = 0;
             $y = 0;
-            $z = 0;
-            $temp_number = '';
-            foreach ($dataInvExp as $key => $dataIn) {
-                //$this->pr($dataIn);
-                if ($temp_number != '' && $temp_number != $dataIn->reference_number) {
-                    $z = 0;
-                    $y++;
-                }
-                $dataArr2['exp_typ'] = $dataIn->invoice_type;
-                $dataArr2['inv'][$y]['inum'] = $dataIn->reference_number;
-                $dataArr2['inv'][$y]['idt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
-                $dataArr2['inv'][$y]['val'] = (float) $dataIn->invoice_total_value;
-                if(!empty($dataIn->port_code)) {
-                    $dataArr2['inv'][$y]['sbpcode'] = $dataIn->port_code;
-                }
-                if(!empty($dataIn->shipping_bill_number)) {
-                    $dataArr2['inv'][$y]['sbnum'] = (int)$dataIn->shipping_bill_number;
-                }
-                if(!empty($dataIn->shipping_bill_date)) {
-                    $dataArr2['inv'][$y]['sbdt'] = $dataIn->shipping_bill_date > 0 ? date('d-m-Y', strtotime($dataIn->shipping_bill_date)) : '';
-                }
-                $dataArr2['inv'][$y]['itms'][$z]['txval'] = (float) $dataIn->taxable_subtotal;
-                $dataArr2['inv'][$y]['itms'][$z]['rt'] = (float) $dataIn->rate;
-                //$dataArr2['inv'][$y]['itms'][$z]['iamt'] = (float) $dataIn->igst_amount;
-                $temp_number = $dataIn->reference_number;
-                $z++;
-                $exp_array[] = (array) $dataIn;
+            $a = 1;
+            $mydata = array();
+            foreach ($dataInvExp as $key => $value) {
+                $mydata[$value->export_supply_meant][] = $value;
             }
-           
+            if (!empty($mydata)) {
+                if (isset($mydata['withpayment']) && !empty($mydata['withpayment'])) {
+                    $x = 0;
+                    $y = 0;
+                    $z = 0;
+                    $temp_number = '';
+                    foreach ($mydata['withpayment'] as $dataIn) {
+                        if ($temp_number != '' && $temp_number != $dataIn->reference_number) {
+                            $z = 0;
+                            $y++;
+                        }
+                        $rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
+                        
+                        $dataArr1['exp_typ'] = ($dataIn->export_supply_meant=='withpayment') ? "WPAY" : 'WOPAY';
+                        $dataArr1['inv'][$y]['inum'] = $dataIn->reference_number;
+                        $dataArr1['inv'][$y]['idt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+                        $dataArr1['inv'][$y]['val'] = (float) $dataIn->invoice_total_value;
+                        if(!empty($dataIn->export_bill_port_code)) {
+                            $dataArr1['inv'][$y]['sbpcode'] = $dataIn->export_bill_port_code;
+                        }
+                        if(!empty($dataIn->export_bill_number)) {
+                            $dataArr1['inv'][$y]['sbnum'] = (int)$dataIn->export_bill_number;
+                        }
+                        if(!empty($dataIn->export_bill_date)) {
+                            $dataArr1['inv'][$y]['sbdt'] = $dataIn->export_bill_date > 0 ? date('d-m-Y', strtotime($dataIn->export_bill_date)) : '';
+                        }
+                        
+                        $dataArr1['inv'][$y]['itms'][$z]['txval'] = (float) $dataIn->taxable_subtotal;
+                        $dataArr1['inv'][$y]['itms'][$z]['rt'] = (float) $rt;
+                        $dataArr1['inv'][$y]['itms'][$z]['iamt'] = (float) $dataIn->igst_amount;
+                        $temp_number = $dataIn->reference_number;
+                        $z++;
+                        $exp_array[] = (array) $dataIn;
+                    }
+                }
+                if (isset($mydata['withoutpayment']) && !empty($mydata['withoutpayment'])) {
+                    $x = 0;
+                    $y = 0;
+                    $z = 0;
+                    $temp_number = '';
+                    foreach ($mydata['withoutpayment'] as $dataIn) {
+                        $rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
+                        if ($temp_number != '' && $temp_number != $dataIn->reference_number) {
+                            $z = 0;
+                            $y++;
+                        }
+                        $dataArr2['exp_typ'] = "WOPAY";
+                        $dataArr2['inv'][$y]['inum'] = $dataIn->reference_number;
+                        $dataArr2['inv'][$y]['idt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+                        $dataArr2['inv'][$y]['val'] = (float) $dataIn->invoice_total_value;
+                        if(!empty($dataIn->export_bill_port_code)) {
+                            $dataArr2['inv'][$y]['sbpcode'] = $dataIn->export_bill_port_code;
+                        }
+                        if(!empty($dataIn->export_bill_number)) {
+                            $dataArr2['inv'][$y]['sbnum'] = (int)$dataIn->export_bill_number;
+                        }
+                        if(!empty($dataIn->export_bill_date)) {
+                            $dataArr2['inv'][$y]['sbdt'] = $dataIn->export_bill_date > 0 ? date('d-m-Y', strtotime($dataIn->export_bill_date)) : '';
+                        }
+                        $dataArr2['inv'][$y]['itms'][$z]['txval'] = (float) $dataIn->taxable_subtotal;
+                        $dataArr2['inv'][$y]['itms'][$z]['rt'] = (float) $rt;
+                        //$dataArr2['inv'][$y]['itms'][$z]['iamt'] = (float) $dataIn->igst_amount;
+                        $temp_number = $dataIn->reference_number;
+                        $z++;
+                        $exp_array[] = (array) $dataIn;
+                    }
+                }
+            }
             if (!empty($exp_array)) {
-                $exp_ids = array_unique(array_column($exp_array, 'id'));
+                $exp_ids = array_unique(array_column($exp_array, 'invoice_id'));
             }
 
             $x = 0;
             
-            /*if (!empty($dataArr1)) {
+            if (!empty($dataArr1)) {
                 $dataArr['exp'][$x] = $dataArr1;
                 $x++;
-            }*/
+            }
             if (!empty($dataArr2)) {
                 $dataArr['exp'][$x] = $dataArr2;
-                $x++;
             }
         }
         $response['exp_ids'] = $exp_ids;
         $response['exp_arr'] = $dataArr;
-        /*$this->pr($dataArr);
-        die;*/
         return $response;
     }
 

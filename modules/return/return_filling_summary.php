@@ -1,6 +1,12 @@
 <?php
 $obj_gstr1 = new gstr1();
 $obj_client = new client();
+if(!$obj_client->can_read('returnfile_list'))
+{
+    $obj_client->setError($obj_client->getValMsg('can_read'));
+    $obj_client->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
 $dataCurrentUserArr = $obj_gstr1->getUserDetailsById( $obj_gstr1->sanitize($_SESSION['user_detail']['user_id']) );
 //$obj_gstr1->pr($dataCurrentUserArr['data']);die;
 if($dataCurrentUserArr['data']->kyc->vendor_type!='1'){

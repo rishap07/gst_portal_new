@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
 }
 
 
-if (!$obj_return->can_read('returnfile_list')) {
+if (!$obj_return->can_read('returnsetting_list')) {
 
     $obj_return->setError($obj_return->getValMsg('can_read'));
     $obj_return->redirect(PROJECT_URL . "/?page=dashboard");

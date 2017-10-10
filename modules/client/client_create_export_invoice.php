@@ -1471,12 +1471,15 @@
 
 			var currentTotal = currentTrQuantity * currentTrRate;
 			$("#invoice_tr_"+rowid+"_total").val(currentTotal.toFixed(2));
+			$("#invoice_tr_"+rowid+"_total").attr("data-invoice-tr-"+rowid+"-total", currentTotal.toFixed(3));
 
 			var currentTrDiscountAmount = (currentTrDiscount/100) * currentTotal;
 			var currentTrReduceAmount = advAdjustmentAmount + currentTrDiscountAmount;
 			var currentTrTaxableValue = currentTotal - currentTrReduceAmount;
 			
 			$("#invoice_tr_"+rowid+"_taxablevalue").val(currentTrTaxableValue.toFixed(2));
+			$("#invoice_tr_"+rowid+"_taxablevalue").attr("data-invoice-tr-"+rowid+"-taxablevalue", currentTrTaxableValue.toFixed(3));
+
 			var exportSupplyMeant = $('input[name=export_supply_meant]:checked', '#create-invoice').val();
 
 			if(exportSupplyMeant == "withpayment") {
@@ -1486,20 +1489,24 @@
 				var igstTax = parseFloat(currentIGSTRate);
 				var igstTaxAmount = (igstTax/100) * currentTrTaxableValue;
 				$("#invoice_tr_"+rowid+"_igstamount").val(igstTaxAmount.toFixed(2));
+				$("#invoice_tr_"+rowid+"_igstamount").attr("data-invoice-tr-"+rowid+"-igstamount", igstTaxAmount.toFixed(3));
 				
 				var cessTax = parseFloat(currentCESSRate);
 				var cessTaxAmount = (cessTax/100) * currentTrTaxableValue;
 				$("#invoice_tr_"+rowid+"_cessamount").val(cessTaxAmount.toFixed(2));
+				$("#invoice_tr_"+rowid+"_cessamount").attr("data-invoice-tr-"+rowid+"-cessamount", cessTaxAmount.toFixed(3));
 			} else {
 
 				$("#invoice_tr_"+rowid+"_igstrate").val(0.00);
 				$("#invoice_tr_"+rowid+"_igstamount").val(0.00);
+				$("#invoice_tr_"+rowid+"_igstamount").attr("data-invoice-tr-"+rowid+"-igstamount", 0.00);
 
 				$("#invoice_tr_"+rowid+"_igstrate").prop("readonly", true);
 
 				var cessTax = parseFloat(currentCESSRate);
 				var cessTaxAmount = (cessTax/100) * currentTrTaxableValue;
 				$("#invoice_tr_"+rowid+"_cessamount").val(cessTaxAmount.toFixed(2));
+				$("#invoice_tr_"+rowid+"_cessamount").attr("data-invoice-tr-"+rowid+"-cessamount", cessTaxAmount.toFixed(3));
 			}
 			/* end of calculation */
 
@@ -1517,10 +1524,10 @@
                 var rowid = $(this).attr("data-row-id");
 
                 if($("#invoice_tr_"+rowid+"_itemid").val() != '' && $("#invoice_tr_"+rowid+"_itemid").val() > 0) {
-					
-					var taxablevalue = parseFloat($("#invoice_tr_"+rowid+"_taxablevalue").val());
-                    var igstamount = parseFloat($("#invoice_tr_"+rowid+"_igstamount").val());
-					var cessamount = parseFloat($("#invoice_tr_"+rowid+"_cessamount").val());
+
+					var taxablevalue = parseFloat($("#invoice_tr_"+rowid+"_taxablevalue").attr("data-invoice-tr-"+rowid+"-taxablevalue"));
+                    var igstamount = parseFloat($("#invoice_tr_"+rowid+"_igstamount").attr("data-invoice-tr-"+rowid+"-igstamount"));
+					var cessamount = parseFloat($("#invoice_tr_"+rowid+"_cessamount").attr("data-invoice-tr-"+rowid+"-cessamount"));
 
 					totalInvoiceValue += (taxablevalue + igstamount + cessamount);
                 }

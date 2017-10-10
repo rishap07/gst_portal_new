@@ -1,7 +1,12 @@
 <?php
 //$obj_gstr1 = new client();
 $obj_gstr1 = new gstr1();
-
+if(!$obj_gstr1->can_read('returnfile_list'))
+{
+    $obj_gstr1->setError($obj_gstr1->getValMsg('can_read'));
+    $obj_gstr1->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
 $dataCurrentUserArr = $obj_gstr1->getUserDetailsById( $obj_gstr1->sanitize($_SESSION['user_detail']['user_id']) );
 //z$obj_gstr1->pr($dataCurrentUserArr['data']);die;
 
@@ -132,7 +137,8 @@ else
                                         </tr>
                                         <tr>
                                             <?php
-                                            $b2bData = $obj_gstr1->getB2BInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all');
+                                            $b2bData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'b2b');
+                                            //$b2bData = $obj_gstr1->getB2BInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all');
                                             //$obj_gstr1->pr($b2bData);
                                             $b2b_total = $b2b_invoice_total_value = $b2b_sumTotal = 0;
                                             $b2bCount = $tempTotVal = $tempInvTot=  0;
@@ -172,7 +178,8 @@ else
                                             <?php
                                             $group_by = "";
                                             $order_by = 'a.reference_number';
-                                            $b2clData = $obj_gstr1->getB2CLInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
+                                            $b2clData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'b2cl');
+                                            //$b2clData = $obj_gstr1->getB2CLInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
                                             $b2cl_total = $b2cl_invoice_total_value = $b2cl_sumTotal = 0;
                                             $b2clCount = $tempTotVal = $tempInvTot = 0;
                                             if (!empty($b2clData)) {
@@ -208,30 +215,35 @@ else
                                         <tr>
                                             <?php
                                             $group_by = "";
-                                    $order_by = 'a.reference_number';
-                                            $b2csData = $obj_gstr1->getB2CSInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
-                                            $b2cs_total = $b2cs_invoice_total_value = $b2cs_sumTotal = 0;
+                                            $order_by = 'a.reference_number';
+                                            $b2csData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'b2cs');
+                                            //$b2csData = $obj_gstr1->getB2CSInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
+                                            $b2cs_total = $b2cs_taxable_value = $b2cs_sumTotal = 0;
                                             $b2csCount = $tempTotVal = $tempInvTot = 0;
                                             if (!empty($b2csData)) {
                                                 $tempInv = '';
                                                 foreach ($b2csData as $key => $b2csDatavalue) {
                                                     
-                                                    if($tempInv!='' && $tempInv!=$b2csDatavalue->invoice_id )
+                                                    if($tempInv!='' && ($tempInv!=$b2csDatavalue->supply_place || $consolidate_rate!=$b2csDatavalue->consolidate_rate))
                                                     {
                                                         $b2csCount++;
-                                                        $b2cs_sumTotal +=$tempTotVal;
-                                                        $b2cs_invoice_total_value +=$tempInvTot;
+                                                        if($tempInv!=$b2csDatavalue->supply_place) {
+                                                           $b2cs_sumTotal +=$tempTotVal; 
+                                                        }
+                                                        
+                                                        $b2cs_taxable_value +=$tempInvTot;
                                                     }
                                                     $tempInvTot = isset($b2csDatavalue->taxable_subtotal)?$b2csDatavalue->taxable_subtotal:0;
                                                     $b2cs_total += $b2csDatavalue->cgst_amount + $b2csDatavalue->sgst_amount + $b2csDatavalue->igst_amount + $b2csDatavalue->cess_amount;
                                                     $tempTotVal =isset($b2csDatavalue->invoice_total_value)?$b2csDatavalue->invoice_total_value:0;
-                                                    $tempInv=$b2csDatavalue->invoice_id;
+                                                    $tempInv=$b2csDatavalue->supply_place;
+                                                    $consolidate_rate=$b2csDatavalue->consolidate_rate;
                                                 }
                                                 if($tempInv!='')
                                                 {
                                                     $b2csCount++;
                                                     $b2cs_sumTotal +=$tempTotVal;
-                                                    $b2cs_invoice_total_value +=$tempInvTot;
+                                                    $b2cs_taxable_value +=$tempInvTot;
                                                 }
                                                 
                                              }
@@ -239,13 +251,14 @@ else
                                             ?>
                                             <td>B2C Small</td>
                                             <td align='right'><?php echo $b2csCount; ?></td>
-                                            <td align='right'><?php echo $b2cs_invoice_total_value; ?></td>
+                                            <td align='right'><?php echo $b2cs_taxable_value; ?></td>
                                             <td align='right'><?php echo $b2cs_total; ?></td>
                                             <td align='right'><?php echo $b2cs_sumTotal; ?></td>
                                         </tr>
                                         <tr>
                                             <?php
-                                            $cdnrData = $obj_gstr1->getCDNRInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all');
+                                            $cdnrData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'cdnr');
+                                            //$cdnrData = $obj_gstr1->getCDNRInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all');
                                             $cdnr_total = $cdnr_invoice_total_value = $cdnr_sumTotal = 0;
                                             $cdnrCount = $tempTotVal = $tempInvTot = 0;
                                             if (!empty($cdnrData)) {
@@ -281,7 +294,8 @@ else
                                             <?php
                                             $group_by = "a.reference_number";
                                             $order_by = 'a.reference_number';
-                                            $expData = $obj_gstr1->getEXPInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
+                                            $expData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'exp');
+                                            //$expData = $obj_gstr1->getEXPInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
 											
                                             $exp_total = $exp_invoice_total_value = $exp_sumTotal = 0;
                                             $expCount = $tempTotVal = $tempInvTot = 0;
@@ -318,6 +332,7 @@ else
                                             <?php
                                             $group_by = " a.reference_number  ";
                                             $order_by = 'a.reference_number';
+                                            $atData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'at');
                                             $atData = $obj_gstr1->getATInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
                                             $at_total = $at_invoice_total_value = $at_sumTotal = 0;
                                             $atCount = $tempTotVal = $tempInvTot = 0;

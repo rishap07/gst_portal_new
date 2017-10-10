@@ -110,28 +110,28 @@ $output = array(
 );
 
 $temp_x=isset($_POST['iDisplayStart']) ? $_POST['iDisplayStart']+ 1 : 1;
-if(isset($rResult) && !empty($rResult))
-{
-foreach($rResult as $aRow) {
-    
-    $row = array();
-    $status = '';
-    
-    if($aRow->status == '0'){
-        $status = '<span class="inactive">InActive<span>';
-    }elseif($aRow->status == '1'){
-        $status = '<span class="active">Active<span>';
-    }
-    
-    $row[] = $temp_x;
-    $row[] = utf8_decode($aRow->role_name);
-    $row[] = utf8_decode($aRow->role_description);
-    $row[] = utf8_decode($aRow->role_page);
-    $row[] = $status;
-    $row[] = '<a href="'.PROJECT_URL.'/?page=user_role_update&id='.$aRow->user_role_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=user_adminlist&action=deleteAdmin&id='.$aRow->user_role_id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
-    $output['aaData'][] = $row;
-    $temp_x++;
-}
+if(isset($rResult) && !empty($rResult)) {
+
+	foreach($rResult as $aRow) {
+		
+		$row = array();
+		$status = '';
+		
+		if($aRow->status == '0'){
+			$status = '<span class="inactive">InActive<span>';
+		}elseif($aRow->status == '1'){
+			$status = '<span class="active">Active<span>';
+		}
+		
+		$row[] = $temp_x;
+		$row[] = utf8_decode($aRow->role_name);
+		$row[] = utf8_decode($aRow->role_description);
+		$row[] = utf8_decode($aRow->role_page);
+		$row[] = $status;
+		$row[] = '<a href="'.PROJECT_URL.'/?page=user_role_update&id='.$aRow->user_role_id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=user_role&action=deleteRole&id='.$aRow->user_role_id.'" class="iconedit hint--bottom" data-hint="Delete"><i class="fa fa-trash"></i></a>';
+		$output['aaData'][] = $row;
+		$temp_x++;
+	}
 }
 
 echo json_encode($output);

@@ -19,7 +19,7 @@ final class client extends validation {
 
 		include(CLASSES_ROOT . "/digitalsignlib/X509.php");
 		$dataCurrentArr = $this->getUserDetailsById($this->sanitize(base64_decode($_POST['clientID'])));
-        
+
 		$dataArr['name'] = isset($_POST['name']) ? $_POST['name'] : '';
         $dataArr['email'] = isset($_POST['email']) ? $_POST['email'] : '';
         $dataArr['phone_number'] = isset($_POST['phone_number']) ? $_POST['phone_number'] : '';

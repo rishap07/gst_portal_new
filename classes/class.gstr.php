@@ -56,7 +56,7 @@ final class gstr extends validation {
         return $iv;
     }
     public function encrypt($key,$data) {
-      $encrypt=base64_encode(openssl_encrypt(base64_encode($data),"aes-256-ecb",$key, OPENSSL_RAW_DATA));
+      $encrypt=openssl_encrypt(base64_encode($data),"aes-256-ecb",$key, OPENSSL_RAW_DATA);
       return $encrypt;
     }
     public function decrypt($key,$data) {
@@ -140,15 +140,21 @@ final class gstr extends validation {
     public function requestOTP($code='')
     {
         //return true;
-        
+        $this->gstr_session_destroy();
         if(API_TYPE == 'Demo') {
             return true;
         }
-        $this->gstr_session_destroy();
+        
         $this->keyGeneration();
         $this->getCertificateKey();
        
-        $username = $this->username();
+        if(API_TYPE == 'Demo') {
+           $username = API_USERNAME;
+        }
+        else {
+            $username = $this->username();
+        }
+        
         $data = array("username" => $username, "action" => 'OTPREQUEST', "app_key" => $_SESSION['app_key']);
         $data_string = json_encode($data);
         
@@ -199,10 +205,16 @@ final class gstr extends validation {
         }
         
         $otp = base64_encode($_SESSION['ciphertext_enc']);
-        
-        $username = $this->username();
+        if(API_TYPE == 'Demo') {
+           $username = API_USERNAME;
+        }
+        else {
+            $username = $this->username();
+        }
+
         $data = array("username" => $username, "action" => 'AUTHTOKEN', "app_key" => $_SESSION['app_key'], "otp" =>$otp);
         $data_string = json_encode($data);
+
         //$this->pr($data);
         //Start code for create header
         $header_array = array(
@@ -210,7 +222,7 @@ final class gstr extends validation {
         );
         $header = $this->header($header_array);
         //End code for create header
-
+        //$this->pr($header);
         $url = API_AUTH_URL;
         $result_data= $this->hitUrl($url,$data_string,$header);
         $data = json_decode($result_data);
@@ -222,7 +234,7 @@ final class gstr extends validation {
         $dataGST1['code'] =  $code;
         $dataGST1['inserted_date'] =  date('Y-m-d H:i:s');
         $this->insert($this->getTableName('otp_request'), $dataGST1);
-        
+        //$this->pr($data);
         if(isset($data->status_cd) && $data->status_cd=='1')
         {
             $session_key = $data->sek;
@@ -285,8 +297,17 @@ final class gstr extends validation {
         $msg = '';
         $api_return_period = $this->getRetrunPeriodFormat($returnmonth);
 
-        $gstin = $this->gstin();
-        $username = $this->username();
+        
+        if(API_TYPE == 'Demo') {
+           $username = API_USERNAME;
+           $gstin = API_GSTIN;
+        }
+        else {
+            $username = $this->username();
+            $gstin = $this->gstin();
+
+        }
+
         $action = 'RETSAVE';
 
         $data = array(
@@ -401,8 +422,15 @@ final class gstr extends validation {
     public function returnSummary($returnmonth,$type='',$jstr='gstr1')
     {
         if(!empty($_SESSION['auth_token'])) {
-            $gstin = $this->gstin();
-            $username = $this->username();
+            if(API_TYPE == 'Demo') {
+               $username = API_USERNAME;
+               $gstin = API_GSTIN;
+            }
+            else {
+                $username = $this->username();
+                $gstin = $this->gstin();
+
+            }
             $ctin = $this->ctin();
             $api_return_period = $this->getRetrunPeriodFormat($returnmonth);
             //Start code for create header
@@ -511,6 +539,7 @@ final class gstr extends validation {
                 else {
                     $msg = "Sorry! Unable to process";
                     $this->setError($msg);
+
                 }  
                 
             }
@@ -531,55 +560,132 @@ final class gstr extends validation {
         }
     }
 
-    public function returnSubmit($returnmonth) {
+    public function returnSubmit($returnmonth,$jstr='gstr1') {
         $error =1;
         $msg = '';
         $api_return_period = $this->getRetrunPeriodFormat($returnmonth);
-        $gstin = $this->gstin();
-        $username = $this->username();
-
-        $sub_data='{
-          "gstin": "'.$gstin.'",
-          "ret_prd": "'.$api_return_period.'"
-        }';
-        $encodejson = base64_encode(openssl_encrypt(base64_encode($sub_data),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
-        $sdata1 = array("action" => 'RETSUBMIT', "data" => $encodejson);
-
-        $data_string = json_encode($sdata1);
-
-        //Start code for create header
-        $header_array = array(
-            'Content-Length: ' . strlen($data_string).'',
-            'auth-token:' . $_SESSION['auth_token'] . '',
-            'gstin:' . $gstin . '',
-            'ret_prd: '.$api_return_period.' ',
-            'username:' . $username . '',
-            'accept:application/json',
-            'action:RETSUBMIT'
-        );
-        $header3 = $this->header($header_array);
-        //End code for create header
-        $getSubmitUrl = API_RETURN_URL.'/gstr1';
-        $submit_data1 = $this->hitUrl($getSubmitUrl, $data_string, $header3);
-        $retDta1 = json_decode($submit_data1);
-        if(isset($retDta1->status_cd) && $retDta1->status_cd=='1'  && $msg == '')
-        {
-            $retRek=$retDta1->rek;
-            $retData1=$retDta1->data;
-
-            $apiEk1=openssl_decrypt(base64_decode($retRek),"aes-256-ecb",$decrypt_sess_key, OPENSSL_RAW_DATA);
-            $decodejson1= base64_decode(openssl_decrypt(base64_decode($retData1),"aes-256-ecb",$apiEk1, OPENSSL_RAW_DATA));
-
-            echo "<br>RETSTATUS Of Submit<br>$decodejson1<br><br>";
-            $msg = "Congratulations! invoice has been submitted succussfuly.";
-            $error = 0;
+        if(API_TYPE == 'Demo') {
+           $username = API_USERNAME;
+           $gstin = API_GSTIN;
         }
         else {
-           $msg = $retDta1->error->message;
+            $username = $this->username();
+            $gstin = $this->gstin();
+
+        }
+        $returnSummary= $this->returnSummary($returnmonth,'',$jstr);
+
+        if(!empty($returnSummary)) {
+            $hmac = $this->hmac($_SESSION['decrypt_sess_key'],$returnSummary); 
+            $encodejson = base64_encode($this->encrypt($_SESSION['decrypt_sess_key'],$returnSummary));
+            $sdata1 = array("action" => 'RETSUBMIT',"data" => $encodejson,"hmac"=>$hmac);
+            /*$sub_data='{
+              "gstin": "'.$gstin.'",
+              "ret_prd": "'.$api_return_period.'"
+            }';
+            $encodejson = base64_encode(openssl_encrypt(base64_encode($sub_data),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
+            $sdata1 = array("action" => 'RETSUBMIT', "data" => $encodejson);*/
+
+            $data_string = json_encode($sdata1);
+            //$this->pr($sdata1);
+            //Start code for create header
+            $header_array = array(
+                'Content-Length: ' . strlen($data_string).'',
+                'auth-token:' . $_SESSION['auth_token'] . '',
+                'gstin:' . $gstin . '',
+                'ret_prd: '.$api_return_period.' ',
+                'username:' . $username . '',
+                'accept:application/json',
+                'action:RETSUBMIT'
+            );
+            $header3 = $this->header($header_array);
+           // $this->pr($header3);
+            //End code for create header
+            $getSubmitUrl = API_RETURN_URL.'/'.$jstr;
+            $submit_data1 = $this->hitUrl($getSubmitUrl, $data_string, $header3);
+            $retDta1 = json_decode($submit_data1);
+            //$this->pr($retDta1);
+            if(isset($retDta1->status_cd) && $retDta1->status_cd=='1'  && $msg == '')
+            {
+                $retRek=$retDta1->rek;
+                $retData1=$retDta1->data;
+                $apiEk1 = $this->decrypt($_SESSION['decrypt_sess_key'],$retRek);
+                //$apiEk1=openssl_decrypt(base64_decode($retRek),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
+                $decodejson1 =  base64_decode($this->decrypt($_SESSION['decrypt_sess_key'],$retData1));
+                //$decodejson1= base64_decode(openssl_decrypt(base64_decode($retData1),"aes-256-ecb",$apiEk1, OPENSSL_RAW_DATA));
+
+                $ref = json_decode($decodejson1);
+
+                $refId = $ref->reference_id;
+                sleep(5);
+                
+                //Start code for create header
+                $header2_array = array(
+                    'auth-token:' . $_SESSION['auth_token'] . '',
+                    'gstin:' . $gstin . '',
+                    'ret_prd: '.$api_return_period.' ',
+                    'username:' . $username . '',
+                    'accept:application/json',
+                    'action:' . 'RETSTATUS' . ''
+                );
+                
+                $header2 = $this->header($header2_array);
+                //$this->pr($header2);
+                //End code for create header
+                $url2 = API_RETURN_URL.'?action=RETSTATUS&gstin='.$gstin. '&ret_period='.$api_return_period.'&ref_id=f0a28c53-e132-4b92-b6f0-8cb36f23ed13';
+              
+                $result_data1 = $this->hitGetUrl($url2, '', $header2);
+                
+                $retDta = json_decode($result_data1);
+                //$this->pr($retDta);
+                
+                if(isset($retDta->status_cd) && $retDta->status_cd=='1' && $msg == '')
+                {
+                    $retReksStatus=$retDta->rek;
+                    $retData1Status=$retDta->data;
+                    $apiEk1Status = $this->decrypt($_SESSION['decrypt_sess_key'],$retReksStatus);
+                    //$apiEk1Status=openssl_decrypt(base64_decode($retReksStatus),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
+                    $decodejson1Status =  base64_decode($this->decrypt($_SESSION['decrypt_sess_key'],$retData1Status));
+                    //$decodejson1Status= base64_decode(openssl_decrypt(base64_decode($retData1Status),"aes-256-ecb",$apiEk1Status, OPENSSL_RAW_DATA));
+                    ;
+                    if(!empty($decodejson1Status) && $msg == '') {
+                        $jstr1_status = json_decode($decodejson1Status,true);
+                        //$this->pr($jstr1_status);
+                        
+                        if(isset($jstr1_status['status_cd']) && $jstr1_status['status_cd']=='P' && $msg == '') {
+
+                            $error = 0;
+                        }
+                        elseif(isset($jstr1_status['status_cd']) && $jstr1_status['status_cd']=='IP' && $msg == ''){
+                            $msg = "Invoices are under procces, kindly wait for some time.";
+                            $error = 2;
+                        }
+                        else {
+                            $this->array_key_search('error_msg', $jstr1_status);
+                            $msg = $this->error_msg;
+                            if(!$msg) {
+                                $msg = "Sorry! Something went wrong, please try again.";
+                            }
+                            //$this->pr($msg);
+                        }
+                    }
+                    else {
+                       $msg = "Sorry! Invalid proccess";
+                    }
+                }
+                else {
+                    $msg = "Sorry! Invalid proccess";
+                }
+            }
+            else {
+               $msg = $retDta1->error->message;
+            }
+            
         }
         $response['message'] = $msg;
         $response['error'] = $error;
         return $response;
+        
     }
 
     public function returnFiling($returnmonth) {
@@ -587,8 +693,15 @@ final class gstr extends validation {
         $error =1;
         $msg = '';
         $api_return_period = $this->getRetrunPeriodFormat($returnmonth);
-        $gstin = $this->gstin();
-        $username = $this->username();
+        if(API_TYPE == 'Demo') {
+           $username = API_USERNAME;
+           $gstin = API_GSTIN;
+        }
+        else {
+            $username = $this->username();
+            $gstin = $this->gstin();
+
+        }
 
         $reqPayLoad= $this->returnSummary($returnmonth);
         $encodejson=base64_encode(openssl_encrypt(base64_encode($reqPayLoad),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
@@ -822,7 +935,12 @@ final class gstr extends validation {
         $client_secret = API_CLIENT_SECRET;
         $clientid = API_CLIENT_ID;
         $ip_usr = API_IP;
-        $state_cd = $this->state_cd();
+        if(API_TYPE == 'Demo') {
+            $state_cd = API_STATE_CD;
+        }
+        else {
+            $state_cd = $this->state_cd();
+        }
         $txn= API_TXN;
         $karvyclientid= API_KARVI_ID;
         $karvyclientsecret= API_KARVI_SECRET;
@@ -884,14 +1002,14 @@ final class gstr extends validation {
     }
 
     public function gross_turnover($user_id=0) {
-        $gt = '';
+        $gt = '0';
         $clientGt = $this->get_results("select gross_turnover as gt from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by = ".$user_id." ");
         $gt = $clientGt[0]->gt;
         return $gt;
     }
 
     public function cur_gross_turnover($user_id=0) {
-        $cur_gt = '';
+        $cur_gt = '0';
         $clientGt = $this->get_results("select cur_gross_turnover as cur_gt from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by = ".$user_id." ");
         $cur_gt = $clientGt[0]->cur_gt;
         return $cur_gt;
@@ -1030,7 +1148,7 @@ final class gstr extends validation {
                 <div class="modal-content">
                     <div class="modal-body">
                         <label>Enter OTP </label>
-                        <input id="otp_code" type="textbox" name="otp" class="form-control" data-bind="numeric">
+                        <input id="otp_code" type="textbox" name="otp" class="form-control" data-bind="numeric"  autocomplete="off">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -1051,7 +1169,7 @@ final class gstr extends validation {
                 <div class="modal-content">
                     <div class="modal-body">
                         <label>Enter OTP </label>
-                        <input id="otp_code" type="textbox" name="otp" class="form-control" data-bind="numeric">
+                        <input id="otp_code" type="textbox" name="otp" class="form-control" data-bind="numeric" autocomplete="off">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -1104,6 +1222,7 @@ final class gstr extends validation {
         <script type="text/javascript">
             $(document).ready(function () {
                 $("#up").on("click", function (event) {
+                    
                     flag=0;
                     var itype =  $(this).attr('itype');
                     if(itype == 'HSN' || itype == 'NIL' || itype == 'DOCISSUE' ) {
@@ -1255,6 +1374,76 @@ final class gstr extends validation {
         <script type="text/javascript">
             $(document).ready(function () {
                 $("#gstr2Download").on("click", function () {
+                    $.ajax({
+                        url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_details_check",
+                        type: "json",
+                        success: function (response) {
+                            //alert(response);
+                            if(response == 1) {
+                                $("#otpModalBox").modal("show");
+                                return false;
+                            }
+                            else if(response == 0) {
+                               document.form4.submit();
+                            }
+                            else {
+                                location.reload();
+                                return false;
+                            }
+                        },
+                        error: function() {
+
+                            alert("Please try again.");
+                            return false;
+                        }
+                    });
+                    return false;
+                });
+                return false;
+
+            });
+            $( "#otpModalBoxSubmit" ).click(function( event ) {
+                var otp = $('#otp_code').val();
+                //event.preventDefault();
+                if(otp != " ") {
+                    $.ajax({
+                        url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_otp_request",
+                        type: "post",
+                        data: {otp:otp},
+                        success: function (response) {
+                            //alert(response);
+                            var arr = $.parseJSON(response);
+                            if(arr.error_code == 0) {
+                                $("#otpModalBox").modal("hide");
+                                document.form4.submit();
+                            }
+                            else {
+                                location.reload();
+                                return false;
+                            }
+                        },
+                        error: function() {
+                            alert("Enter OTP First");
+                            return false;
+                        }
+                    });
+                    return false;
+                }
+                else {
+                    alert("Enter OTP First");
+                    return false;
+                }
+                return false;
+            });
+        </script>
+        <?php
+    }
+    public function FinalSubmitOtpPopupJs() {
+        $this->commaonOTPModal();
+        ?>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#freeze").on("click", function () {
                     $.ajax({
                         url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_details_check",
                         type: "json",

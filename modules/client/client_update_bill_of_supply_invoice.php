@@ -374,7 +374,7 @@
 								</td>
 								<td>
 									<div class="padrgt0" style="width:100px;">
-										<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_total" name="invoice_total[]" readonly="true" class="inptxt" value="<?php echo $invData->subtotal; ?>" class="inptxt" placeholder="0.00" />
+										<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_total" name="invoice_total[]" readonly="true" class="inptxt" data-invoice-tr-<?php echo $counter; ?>-total="<?php echo $invData->subtotal; ?>" value="<?php echo $invData->subtotal; ?>" class="inptxt" placeholder="0.00" />
 									</div>
 								</td>
 								<td>
@@ -382,7 +382,7 @@
 								</td>
 								<td>
 									<div style="width:100px;" class="padrgt0">
-										<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="inptxt" value="<?php echo $invData->taxable_subtotal; ?>" data-bind="decimal" placeholder="0.00" />
+										<input type="text" style="width:100%;" id="invoice_tr_<?php echo $counter; ?>_taxablevalue" name="invoice_taxablevalue[]" readonly="true" class="inptxt" data-invoice-tr-<?php echo $counter; ?>-taxablevalue="<?php echo $invData->taxable_subtotal; ?>" value="<?php echo $invData->taxable_subtotal; ?>" data-bind="decimal" placeholder="0.00" />
 									</div>
 								</td>
 
@@ -1248,11 +1248,13 @@
 
 			var currentTotal = currentTrQuantity * currentTrRate;
 			$("#invoice_tr_"+rowid+"_total").val(currentTotal.toFixed(2));
+			$("#invoice_tr_"+rowid+"_total").attr("data-invoice-tr-"+rowid+"-total", currentTotal.toFixed(3));
 
 			var currentTrDiscountAmount = (currentTrDiscount/100) * currentTotal;
 			var currentTrTaxableValue = currentTotal - currentTrDiscountAmount;
 
 			$("#invoice_tr_"+rowid+"_taxablevalue").val(currentTrTaxableValue.toFixed(2));
+			$("#invoice_tr_"+rowid+"_taxablevalue").attr("data-invoice-tr-"+rowid+"-taxablevalue", currentTrTaxableValue.toFixed(3));
 			/* end of calculation */
 
 			/* call function of total invoice */
@@ -1270,7 +1272,7 @@
 
                 if($("#invoice_tr_"+rowid+"_itemid").val() != '' && $("#invoice_tr_"+rowid+"_itemid").val() > 0) {
 
-					var taxablevalue = parseFloat($("#invoice_tr_"+rowid+"_taxablevalue").val());
+					var taxablevalue = parseFloat($("#invoice_tr_"+rowid+"_taxablevalue").attr("data-invoice-tr-"+rowid+"-taxablevalue"));
                     totalInvoiceValue += taxablevalue;
                 }
             });

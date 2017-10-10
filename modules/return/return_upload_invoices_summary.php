@@ -1,5 +1,11 @@
 <?php
 $obj_gstr = new gstr();
+if(!$obj_gstr->can_read('returnfile_list'))
+{
+    $obj_gstr->setError($obj_gstr->getValMsg('can_read'));
+    $obj_gstr->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
 $dataCurrentUserArr = $obj_gstr->getUserDetailsById( $obj_gstr->sanitize($_SESSION['user_detail']['user_id']) );
 if($dataCurrentUserArr['data']->kyc->vendor_type!='1'){
     $obj_gstr->setError("Invalid Access to file");

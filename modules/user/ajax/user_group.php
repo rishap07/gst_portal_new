@@ -121,7 +121,7 @@ foreach($rResult as $aRow) {
     $row[] = $temp_x;
     $row[] = utf8_decode($aRow->group_name);
     $row[] = utf8_decode($aRow->description);
-    $row[] = '<a href="'.PROJECT_URL.'/?page=user_group_update&id='.$aRow->id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a href="'.PROJECT_URL.'/?page=user_adminlist&action=deleteAdmin&id='.$aRow->id.'" class="iconedit hint--bottom" data-hint="Delete" ><i class="fa fa-trash"></i></a>';
+    $row[] = '<a href="'.PROJECT_URL.'/?page=user_group_update&id='.$aRow->id.'" class="iconedit hint--bottom" data-hint="Edit" ><i class="fa fa-pencil"></i></a>';
     $output['aaData'][] = $row;
     $temp_x++;
 }

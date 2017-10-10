@@ -569,7 +569,7 @@ echo $response;
         <div class="modal-content">
             <div class="modal-body">
                 <label>Enter OTP</label>
-                <input id="otp_code" type="textbox" name="otp" class="form-control" data-bind="numeric">
+                <input id="otp_code" type="textbox" name="otp" class="form-control" data-bind="numeric"  autocomplete="off">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -650,47 +650,47 @@ echo $response;
         }
                     
         $("#loading").show();
-        var type = $(this).attr('type');
+        var type = $('.gstr1ViewDeleteBtn').attr('type');
         var returnmonth = "<?php echo $returnmonth;?>";
 
         var arrValues = [];
         if(type == 'B2B') {
-            var ctin = $(this).attr('ctin');
-            var inum = $(this).attr('inum');
-            var idt = $(this).attr('idt');
+            var ctin = $('.gstr1ViewDeleteBtn').attr('ctin');
+            var inum = $('.gstr1ViewDeleteBtn').attr('inum');
+            var idt = $('.gstr1ViewDeleteBtn').attr('idt');
             arrValues = [ctin,inum,idt];
         }
         if(type == 'B2CL') {
-            var pos = $(this).attr('pos');
-            var inum = $(this).attr('inum');
-            var idt = $(this).attr('idt');
+            var pos = $('.gstr1ViewDeleteBtn').attr('pos');
+            var inum = $('.gstr1ViewDeleteBtn').attr('inum');
+            var idt = $('.gstr1ViewDeleteBtn').attr('idt');
             arrValues = [pos,inum,idt];
         }
         if(type == 'CDNR') {
-            var ctin = $(this).attr('ctin');
-            var inum = $(this).attr('inum');
-            var idt = $(this).attr('idt');
-            var nt_num = $(this).attr('nt_num');
-            var nt_dt = $(this).attr('nt_dt');
+            var ctin = $('.gstr1ViewDeleteBtn').attr('ctin');
+            var inum = $('.gstr1ViewDeleteBtn').attr('inum');
+            var idt = $('.gstr1ViewDeleteBtn').attr('idt');
+            var nt_num = $('.gstr1ViewDeleteBtn').attr('nt_num');
+            var nt_dt = $('.gstr1ViewDeleteBtn').attr('nt_dt');
             arrValues = [ctin,inum,idt,nt_num,nt_dt];
         }
         if(type == 'CDNUR') {
-            var inum = $(this).attr('inum');
-            var idt = $(this).attr('idt');
-            var nt_num = $(this).attr('nt_num');
-            var nt_dt = $(this).attr('nt_dt');
-            var typ = $(this).attr('typ');
+            var inum = $('.gstr1ViewDeleteBtn').attr('inum');
+            var idt = $('.gstr1ViewDeleteBtn').attr('idt');
+            var nt_num = $('.gstr1ViewDeleteBtn').attr('nt_num');
+            var nt_dt = $('.gstr1ViewDeleteBtn').attr('nt_dt');
+            var typ = $('.gstr1ViewDeleteBtn').attr('typ');
             arrValues = [inum,idt,nt_num,nt_dt,typ];
         }
         if(type == 'EXP') {
-            var inum = $(this).attr('inum');
-            var idt = $(this).attr('idt');
-            var exp_typ = $(this).attr('exp_typ');
+            var inum = $('.gstr1ViewDeleteBtn').attr('inum');
+            var idt = $('.gstr1ViewDeleteBtn').attr('idt');
+            var exp_typ = $('.gstr1ViewDeleteBtn').attr('exp_typ');
             arrValues = [inum,idt,exp_typ];
         }
         if(type == 'HSN') {
-            var hsn_sc = $(this).attr('hsn_sc');
-            var chksum = $(this).attr('chksum');
+            var hsn_sc = $('.gstr1ViewDeleteBtn').attr('hsn_sc');
+            var chksum = $('.gstr1ViewDeleteBtn').attr('chksum');
             arrValues = [hsn_sc,chksum];
         }                        
         delete_item_invoice(type,returnmonth,arrValues); 
@@ -699,6 +699,7 @@ echo $response;
 
     /******* To delele invoice of GSTR1 ********/
     function delete_item_invoice(type,returnmonth,arrValues) {
+
         if(type!= '' && arrValues != '') {
             $.ajax({
                 url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_delete_item_invoice",
@@ -706,14 +707,16 @@ echo $response;
                 data: {type:type,returnmonth:returnmonth,arrValues: arrValues},
                 success: function (response) {
                     $("#loading").hide();
-                   //location.reload();
+                   location.reload();
                 },
                 error: function() {
+                     return false; 
                 }
             });
         }
         else {
             alert('Invalid procces');
+             return false; 
         }
         
     }

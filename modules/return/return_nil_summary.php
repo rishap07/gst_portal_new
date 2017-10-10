@@ -4,7 +4,12 @@ $obj_gstr2 = new gstr2();
 
 //$obj_login->sendMobileMessage
 $returnmonth = date('Y-m');
-
+if(!$obj_gstr2->can_read('returnfile_list'))
+{
+    $obj_gstr2->setError($obj_gstr2->getValMsg('can_read'));
+    $obj_gstr2->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
 if (isset($_POST['returnmonth'])) {
     $returnmonth = $_POST['returnmonth'];
     $obj_transition->redirect(PROJECT_URL . "/?page=return_nil_summary&returnmonth=" . $returnmonth);

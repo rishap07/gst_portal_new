@@ -36,16 +36,17 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
    	
 	if($_SESSION["user_detail"]["user_group"]==3)
 	{
-		if($subscribePlanDetail['data']->no_of_client!=-1)
+		if($subscribePlanDetail['data']->no_of_client != -1)
 		{
-		
-			if ($subscribePlanDetail['data']->no_of_client>=0 && ($totaluser >= intval($subscribePlanDetail['data']->no_of_client))) {
+
+			if ($subscribePlanDetail['data']->no_of_client >= 0 && ($totaluser >= intval($subscribePlanDetail['data']->no_of_client))) {
 
 				$obj_client->setError('You have reach maximum client creation limit.');
 				$obj_client->redirect(PROJECT_URL . "?page=client_update");
 			}
 		}
 	}
+
 	if($_SESSION["user_detail"]["user_group"]==5)
 	{
 		

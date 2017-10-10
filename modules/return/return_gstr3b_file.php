@@ -3,6 +3,12 @@ $obj_gstr = new gstr();
 $obj_return = new gstr3b();
 //$obj_master = new master();
 $returnmonth = date('Y-m');
+if(!$obj_return->can_read('returnfile_list'))
+{
+    $obj_return->setError($obj_return->getValMsg('can_read'));
+    $obj_return->redirect(PROJECT_URL."/?page=dashboard");
+    exit();
+}
 //$obj_return->pr($_POST);
 if(isset($_POST['returnmonth']))
 {
@@ -28,16 +34,101 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
         } 
    // }
 }
-if(isset($_POST['final_returnid']) && $_POST['final_returnid']!='') {
+
+
+if(isset($_POST['final_returnid']) && $_POST['final_returnid']!='' && isset($_POST['btn_type']) && $_POST['btn_type'] == 'upload')  {
  
   //$flag = $obj_return->checkVerifyUser();
  // if($flag=='verify')
    // {
     	if($obj_return->finalSaveGstr3b()){
             //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
+			$sql = "SELECT * FROM " . $db_obj->getTableName('user') . " as u WHERE user_id='" . $_SESSION["user_detail"]["user_id"] . "'";
+  	    $userdata = $obj_return->get_results($sql);
+		if(!empty($userdata))
+		{
+			 $added_by= $userdata[0]->added_by;
+			 $username = $userdata[0]->username;
+			 $sql = "SELECT * FROM " . $db_obj->getTableName('user') . " as u WHERE user_id='" . $added_by . "'";
+			$subdata = $obj_return->get_results($sql);
+			if(!empty($subdata))
+			{
+			 $user_group = $subdata[0]->user_group;
+		
+			 if($user_group==5)
+			 {
+			$added_by = $subdata[0]->added_by;	 
+			 $title='GSTR-3B return save by'.' '.$username;
+			 $message='GSTR-3B return save by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
+			 $parentid = $added_by;
+			 $userid= $_SESSION["user_detail"]["user_id"];
+			 $returntype='gstr3b';
+			 $return_step='gstr3bsave';
+			 $returnmonth =$_REQUEST['returnmonth'];	
+			 $obj_return->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
+			
+				 
+			 }
+			}
+			 $title='GSTR-3B return save by'.' '.$username;
+			 $message='GSTR-3B return save by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
+			 $parentid = $added_by;
+			 $userid= $_SESSION["user_detail"]["user_id"];
+			 $returntype='gstr3b';
+			 $return_step='gstr3bsave';
+			 $returnmonth =$_REQUEST['returnmonth'];	
+			 $obj_return->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
+			
+		}	
+		
         }					  
    // } 
 }
+if(isset($_POST['btn_type']) && $_POST['btn_type'] == 'final_submit')  {
+ 
+		if($obj_return->finalSubmitGstr3b())
+		{
+		$sql = "SELECT * FROM " . $db_obj->getTableName('user') . " as u WHERE user_id='" . $_SESSION["user_detail"]["user_id"] . "'";
+  	    $userdata = $obj_return->get_results($sql);
+		if(!empty($userdata))
+		{
+			 $added_by= $userdata[0]->added_by;
+			 $username = $userdata[0]->username;
+			 $sql = "SELECT * FROM " . $db_obj->getTableName('user') . " as u WHERE user_id='" . $added_by . "'";
+			$subdata = $obj_return->get_results($sql);
+			if(!empty($subdata))
+			{
+			 $user_group = $subdata[0]->user_group;
+		
+			 if($user_group==5)
+			 {
+			$added_by = $subdata[0]->added_by;	 
+			 $title='GSTR-3B return submitted by'.' '.$username;
+			 $message='GSTR-3B return submitted by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
+			 $parentid = $added_by;
+			 $userid= $_SESSION["user_detail"]["user_id"];
+			 $returntype='gstr3b';
+			 $return_step='gstr3bsubmit';
+			 $returnmonth =$_REQUEST['returnmonth'];	
+			 $obj_return->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
+			
+				 
+			 }
+			}
+			 $title='GSTR-3B return submitted by'.' '.$username;
+			 $message='GSTR-3B return submitted by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
+			 $parentid = $added_by;
+			 $userid= $_SESSION["user_detail"]["user_id"];
+			 $returntype='gstr3b';
+			 $return_step='gstr3bsubmit';
+			 $returnmonth =$_REQUEST['returnmonth'];	
+			 $obj_return->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
+			
+		}	
+		$obj_return->redirect(PROJECT_URL . "/?page=return_gstr3bitc_summary&returnmonth=" . $returnmonth);
+		}
+}
+
 if(isset($_POST['cleardata']) && $_POST['cleardata']=='clear data') {
 	
     if($obj_return->deleteSaveGstr3b()){
@@ -93,12 +184,50 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
 
     
 }
-
+//** Code for send GSTR-3B notification to subscriber **//
+		$sql = "SELECT * FROM " . $db_obj->getTableName('user') . " as u WHERE user_id='" . $_SESSION["user_detail"]["user_id"] . "'";
+  	    $userdata = $obj_return->get_results($sql);
+		if(!empty($userdata))
+		{
+			 $added_by= $userdata[0]->added_by;
+			 $username = $userdata[0]->username;
+			 $sql = "SELECT * FROM " . $db_obj->getTableName('user') . " as u WHERE user_id='" . $added_by . "'";
+			$subdata = $obj_return->get_results($sql);
+			if(!empty($subdata))
+			{
+			 $user_group = $subdata[0]->user_group;
+			
+			 if($user_group==5)
+			 {
+			$added_by = $subdata[0]->added_by;
+			 $title='GSTR-3B return Initiated by'.' '.$username;
+			 $message='GSTR-3B return Initiated by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
+			 $parentid = $added_by;
+			 $userid= $_SESSION["user_detail"]["user_id"];
+			 $returntype='gstr3b';
+			 $return_step='gstr3binitiared';
+			 $returnmonth =$_REQUEST['returnmonth'];	
+			 $obj_return->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
+			
+				 
+			 }
+			}
+			 $title='GSTR-3B return Initiated by'.' '.$username;
+			 $message='GSTR-3B return Initiated by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
+			 $parentid = $added_by;
+			  
+			 $userid= $_SESSION["user_detail"]["user_id"];
+			 $returntype='gstr3b';
+			 $return_step='gstr3binitiared';
+			 $returnmonth =$_REQUEST['returnmonth'];	
+			 $obj_return->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
+			
+		}
+//** Code for GSTR-3B notification end here **//
         
        
 	   $sql = "select  *,count(return_id) as totalinvoice from ".TAB_PREFIX."client_return_gstr3b where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0'  order by return_id desc limit 0,1";
-       $returndata = $obj_return->get_results($sql);
-	    
+       $returndata = $obj_return->get_results($sql);	    
 		
 	    $tdsTotquery = "SELECT COUNT(i.invoice_id) as numcount,sum(item.cgst_amount) as cgst_amount,sum(item.sgst_amount) as sgst_amount,sum(igst_amount) as igst_amount,sum(cess_amount) as cess_amount FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id WHERE i.invoice_nature='salesinvoice'  and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and supply_type='tds' and  invoice_date like '%" . $returnmonth . "%'";
       // echo "<br>";
@@ -2898,13 +3027,15 @@ composition taxable persons and UIN holders</div>
 								?>
                                 <div class="adminformbxsubmit" style="width:100%;"> 
                             <div class="tc">
-                               <input type="button" value="<?php echo ucfirst('Edit'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_gstr3b_file_submit&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/>
-							    <input type='submit' class="btn btn-danger" name='cleardata' value='clear data' id='cleardata'>
-							  <input type='submit' class="btn btn-success" name='finalsubmit' value='Upload to GSTN' id='gstr1_summary_download'>
-							  <input type='hidden' name="returnid" id="returnid" value="<?php echo $returndata[0]->return_id; ?>" />
+                            <input type="button" value="<?php echo ucfirst('Edit'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_gstr3b_file_submit&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/>
+							 <input type='submit' class="btn btn-danger" name='cleardata' value='clear data' id='cleardata'>
+							<input type='submit' class="btn btn-success uploadBtn" name='finalsubmit' value='Upload to GSTN' id='gstr1_summary_download'>
+							<input type='submit' class="btn btn-primary" name='retsubmit' value='final submit' id='retsubmit'>
+						
+							<input type='hidden' name="returnid" id="returnid" value="<?php echo $returndata[0]->return_id; ?>" />
 							<input type='hidden' name="final_returnid" id="final_returnid" value="<?php echo $returndata[0]->return_id; ?>" />
-									
-                               
+						    <input type='hidden' name="btn_type" id="btn_type" readonly value="upload" />
+			                             
                             </div>
                               </div>
                             <?php } }
@@ -2934,13 +3065,109 @@ composition taxable persons and UIN holders</div>
            <!--CONTENT START HERE-->
 		   </form>
         <div class="clear"></div> 
+		 <div id="finalotpModalBox" class="modal fade" role="dialog" style="z-index: 999999;top: 78px;">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+                <label>Enter OTP </label>
+                <input id="final_otp_code" type="textbox" name="otp" class="form-control" data-bind="numeric" autocomplete="off">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="finalotpModalBoxSubmit" type="button" value="OTP" class="btn btn-success" >Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
 <?php 
 $obj_gstr->DownloadSummaryOtpPopupJs();
 ?>		
-	
+<script>
+    $(document).ready(function () {
+                $("#retsubmit").on("click", function () {
+                    $('#btn_type').val('final_submit');
+                    $.ajax({
+                        url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_details_check",
+                        type: "json",
+                        success: function (response) {
+                            //alert(response);
+                            if(response == 1) {
+                                $("#finalotpModalBox").modal("show");
+                                return false;
+                            }
+                            else if(response == 0) {
+                               if(!confirm("Are you sure you want to final submit data of current month?"))
+                                {
+                                    return false;
+                                }
+                                else {
+                                    document.form4.submit();
+                                }
+                            }
+                            else {
+                                location.reload();
+                                return false;
+                            }
+                        },
+                        error: function() {
+
+                            alert("Please try again.");
+                            return false;
+                        }
+                    });
+                    return false;
+                });
+                
+
+           
+            $( "#finalotpModalBoxSubmit" ).click(function( event ) {
+                var otp = $('#final_otp_code').val();
+                //event.preventDefault();
+                if(otp != " ") {
+                    $.ajax({
+                        url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_otp_request",
+                        type: "post",
+                        data: {otp:otp},
+                        success: function (response) {
+                            //alert(response);
+                            var arr = $.parseJSON(response);
+                            if(arr.error_code == 0) {
+                                $("#finalotpModalBox").modal("hide");
+                                if(!confirm("Are you sure you want to final submit data of current month?"))
+                                {
+                                    return false;
+                                }
+                                else {
+                                    document.form4.submit();
+                                }
+                            }
+                            else {
+                               location.reload();
+                                return false;
+                            }
+                        },
+                        error: function() {
+                            alert("Enter OTP First");
+                            return false;
+                        }
+                    });
+                    return false;
+                }
+                else {
+                    alert("Enter OTP First");
+                    return false;
+                }
+                return false;
+            });
+        
+        
+        
+    });
+</script>	
 <script type="text/javascript">
     $(document).ready(function(){
-		
+	    
         $(".add-row1").click(function(){
        
 			var data1 ='<select class="required form-control" id="place_of_supply_unregistered_person"  name="place_of_supply_unregistered_person[]">';
@@ -3068,10 +3295,9 @@ $obj_gstr->DownloadSummaryOtpPopupJs();
  <script>
 	$(document).ready(function () {
 		
-		/* select2 js for state */
-		//$("#place_of_supply_unregistered_person").select2();
-	
-	
+	$('.uploadBtn').on('click', function () {
+            $('#btn_type').val('upload');
+        });
 	});
 </script>
  

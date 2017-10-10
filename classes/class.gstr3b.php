@@ -783,13 +783,11 @@ final class gstr3b extends validation {
 	}
   	public function downlodfile($filepath)
 	{
-	  $_GET['download_file'] = $filepath;
- 
-		ignore_user_abort(true);
+	    $_GET['download_file'] = $filepath;
+ 		ignore_user_abort(true);
 		set_time_limit(0); // disable the time limit for this script
-		 $path = @"upload/gstr3b-file/"; // change the path to fit your websites document structure
-		 
-		$dl_file = preg_replace("([^\w\s\d\-_~,;:\[\]\(\).]|[\.]{2,})", '', $_GET['download_file']); // simple file name validation
+		$path = @"upload/gstr3b-file/"; // change the path to fit your websites document structure
+	   $dl_file = preg_replace("([^\w\s\d\-_~,;:\[\]\(\).]|[\.]{2,})", '', $_GET['download_file']); // simple file name validation
 		$dl_file = filter_var($dl_file, FILTER_SANITIZE_URL); // Remove (more) invalid characters
 		$fullPath = $path.$dl_file;
 		 
@@ -831,65 +829,36 @@ final class gstr3b extends validation {
 
 		exit;
 	}
-	public function checkoffsetLiability($total_net_igst,$total_net_cgst,$total_net_sgst,$total_net_cess)
+	public function checkoffsetLiability($total_net_igst,$total_net_cgst,$total_net_sgst,$total_net_cess,$paidcash_liab_ldg_id1,$paidcash_trans_type1,$paidcash_liab_ldg_id2,$paidcash_trans_type2,$returnmonth)
 	{
-		$data=array();
-		$data1[0]['liab_ldg_id'] = '172';		
-        $data1[0]['trans_typ'] = '30002';
-        $data1[0]['ipd'] = (float)9000.00;
-        $data1[0]['cpd'] = (float)2000.00;
-        $data1[0]['spd'] = (float)'2000.00';
-        $data1[0]['cspd'] = (float)'3000.00';
-		$data1[0]['i_intrpd'] = (float)'0.00';
-		$data1[0]['c_intrpd'] = (float)'0.00';
-		$data1[0]['s_intrpd'] = (float)'0.00';
-		$data1[0]['cs_intrpd'] = (float)'0.00';
-		$data1[0]['c_lfeepd'] = (float)'0.00';
-		$data1[0]['s_lfeepd'] = (float)'0.00';
-		//data2
-		$data1[1]['liab_ldg_id'] = (float)'172.00';		
-        $data1[1]['trans_typ'] = (float)'30002.00';
-        $data1[1]['ipd'] = (float)'0.00';
-        $data1[1]['cpd'] = (float)'0.00';
-        $data1[1]['spd'] = (float)'0.00';
-        $data1[1]['cspd'] = (float)'0.00';
-		//data3
-		$data3[0]['liab_ldg_id'] = (float)'173.00';		
-        $data3[0]['trans_typ'] = (float)'30003.00';
-        $data3[0]['i_pdi'] = (float)'9000.00';
-        $data3[0]['i_pdc'] = (float)'0.00';
-        $data3[0]['i_pds'] = (float)'0.00';
-        $data3[0]['c_pdi'] = (float)'0.00';
-		$data3[0]['c_pdc'] = (float)'2000.00';
-		$data3[0]['s_pdi'] = (float)'0.00';
-		$data3[0]['s_pds'] = (float)'2000.00';
-		$data3[0]['cs_pdcs'] = (float)'3000.00';
-		 //$this->pr($data=array("doc_num1"=>$data1,"doc_num2"=>$data2,"doc_num3"=>$data3,"doc_num4"=>$data4,"doc_num5"=>$data5,"doc_num6"=>$data6,"doc_num7"=>$data7,"doc_num8"=>$data8,"doc_num9"=>$data9,"doc_num10"=>$data10,"doc_num11"=>$data11,"doc_num12"=>$data12));
-	    $data=array("pdcash"=>$data1,"pditc"=>$data3);
-        echo json_encode($data);die;
-         
-		
-    /***** Start Code For total taxpayable otherthan reverse charge ********** */
-	$totaligst_amount_other=isset($_POST['taxpayable_igst_other']) ? $_POST['taxpayable_igst_other'] : '';
-	$totalcgst_amount_other=isset($_POST['taxpayable_cgst_other']) ? $_POST['taxpayable_cgst_other'] : '';
-	$totalsgst_amount_other=isset($_POST['taxpayable_sgst_other']) ? $_POST['taxpayable_sgst_other'] : '';
-	$totalcess_amount_other=isset($_POST['taxpayable_cess_other']) ? $_POST['taxpayable_cess_other'] : '';
+		$interestpaidigst_igst=isset($_POST['interestpaidigst_igst']) ? $_POST['interestpaidigst_igst'] : '0.00';
+		$interestpaidcgst_igst=isset($_POST['interestpaidcgst_igst']) ? $_POST['interestpaidcgst_igst'] : '0.00';
+		$interestpaidsgst_sgst=isset($_POST['interestpaidsgst_sgst']) ? $_POST['interestpaidsgst_sgst'] : '0.00';
+		$interestpaidcess_cess=isset($_POST['interestpaidcess_cess']) ? $_POST['interestpaidcess_cess'] : '0.00';
+		$latefee_cash=isset($_POST['latefee_cash']) ? $_POST['latefee_cash'] : '0.00';
+		$latefee_sgst=isset($_POST['latefee_sgst']) ? $_POST['latefee_sgst'] : '0.00';
+
+		 /***** Start Code For total taxpayable otherthan reverse charge ********** */
+	$totaligst_amount_other=isset($_POST['taxpayable_igst_other']) ? $_POST['taxpayable_igst_other'] : '0.00';
+	$totalcgst_amount_other=isset($_POST['taxpayable_cgst_other']) ? $_POST['taxpayable_cgst_other'] : '0.00';
+	$totalsgst_amount_other=isset($_POST['taxpayable_sgst_other']) ? $_POST['taxpayable_sgst_other'] : '0.00';
+	$totalcess_amount_other=isset($_POST['taxpayable_cess_other']) ? $_POST['taxpayable_cess_other'] : '0.00';
 	/***** end Code For total taxpayable otherthan reverse charge ********** */
 	 /***** Start Code For total taxpayable reverse charge ********** */
-	$totaligst_amount_reverse=isset($_POST['taxpayable_igst_reverse']) ? $_POST['taxpayable_igst_reverse'] : '';
-	$totalcgst_amount_reverse=isset($_POST['taxpayable_cgst_reverse']) ? $_POST['taxpayable_cgst_reverse'] : '';
-	$totalsgst_amount_reverse=isset($_POST['taxpayable_sgst_reverse']) ? $_POST['taxpayable_sgst_reverse'] : '';
-	$totalcess_amount_reverse=isset($_POST['taxpayable_cess_reverse']) ? $_POST['taxpayable_cess_reverse'] : '';
+	$totaligst_amount_reverse=isset($_POST['taxpayable_igst_reverse']) ? $_POST['taxpayable_igst_reverse'] : '0.00';
+	$totalcgst_amount_reverse=isset($_POST['taxpayable_cgst_reverse']) ? $_POST['taxpayable_cgst_reverse'] : '0.00';
+	$totalsgst_amount_reverse=isset($_POST['taxpayable_sgst_reverse']) ? $_POST['taxpayable_sgst_reverse'] : '0.00';
+	$totalcess_amount_reverse=isset($_POST['taxpayable_cess_reverse']) ? $_POST['taxpayable_cess_reverse'] : '0.00';
 	 /***** End Code For total taxpayable reverse charge ********** */
 	/***** Start Code For total taxpayable through ITC Integrated Tax ********** */
 	$paiditcigst_igst=0;
 	$paiditcigst_cgst=0;
 	$paiditcigst_sgst=0;
 	$taxpaidigst_igst=0;
-	$paiditcigst_igst=isset($_POST['paiditcigst_igst']) ? $_POST['paiditcigst_igst'] : '';
-	$paiditcigst_cgst=isset($_POST['paiditcigst_cgst']) ? $_POST['paiditcigst_cgst'] : '';
-	$paiditcigst_sgst=isset($_POST['paiditcigst_sgst']) ? $_POST['paiditcigst_sgst'] : '';
-	$taxpaidigst_igst=isset($_POST['taxpaidigst_igst']) ? $_POST['taxpaidigst_igst'] : '';
+	$paiditcigst_igst=isset($_POST['paiditcigst_igst']) ? $_POST['paiditcigst_igst'] : '0.00';
+	$paiditcigst_cgst=isset($_POST['paiditcigst_cgst']) ? $_POST['paiditcigst_cgst'] : '0.00';
+	$paiditcigst_sgst=isset($_POST['paiditcigst_sgst']) ? $_POST['paiditcigst_sgst'] : '0.00';
+	$taxpaidigst_igst=isset($_POST['taxpaidigst_igst']) ? $_POST['taxpaidigst_igst'] : '0.00';
 	
 	   if(($paiditcigst_igst+$paiditcigst_cgst+$paiditcigst_sgst+$taxpaidigst_igst)!=$totaligst_amount_other)
 		{
@@ -897,9 +866,9 @@ final class gstr3b extends validation {
 		}
 	/***** end Code For total taxpayable through ITC Integrated Tax ********** */
 	/***** Start Code For total taxpayable through ITC central Tax ********** */	
-   	$paiditccgst_igst=isset($_POST['paiditccgst_igst']) ? $_POST['paiditccgst_igst'] : '';
-  	$paiditccgst_cgst=isset($_POST['paiditccgst_cgst']) ? $_POST['paiditccgst_cgst'] : '';
-	$taxpaidcgst_igst=isset($_POST['taxpaidcgst_igst']) ? $_POST['taxpaidcgst_igst'] : '';
+   	$paiditccgst_igst=isset($_POST['paiditccgst_igst']) ? $_POST['paiditccgst_igst'] : '0.00';
+  	$paiditccgst_cgst=isset($_POST['paiditccgst_cgst']) ? $_POST['paiditccgst_cgst'] : '0.00';
+	$taxpaidcgst_igst=isset($_POST['taxpaidcgst_igst']) ? $_POST['taxpaidcgst_igst'] : '0.00';
 	
 	if(($paiditccgst_igst+$paiditccgst_cgst+$taxpaidcgst_igst)!=$totalcgst_amount_other)
 		{
@@ -910,17 +879,17 @@ final class gstr3b extends validation {
     $paiditcsgst_igst=0;
 	$paiditcsgst_sgst=0;
 	$taxpaidsgst_sgst=0;
-   	$paiditcsgst_igst=isset($_POST['paiditcsgst_igst']) ? $_POST['paiditcsgst_igst'] : '';
-	$paiditcsgst_sgst=isset($_POST['paiditcsgst_sgst']) ? $_POST['paiditcsgst_sgst'] : '';
-	$taxpaidsgst_sgst=isset($_POST['taxpaidsgst_sgst']) ? $_POST['taxpaidsgst_sgst'] : '';
+   	$paiditcsgst_igst=isset($_POST['paiditcsgst_igst']) ? $_POST['paiditcsgst_igst'] : '0.00';
+	$paiditcsgst_sgst=isset($_POST['paiditcsgst_sgst']) ? $_POST['paiditcsgst_sgst'] : '0.00';
+	$taxpaidsgst_sgst=isset($_POST['taxpaidsgst_sgst']) ? $_POST['taxpaidsgst_sgst'] : '0.00';
 	if(($paiditccgst_igst+$paiditccgst_cgst+$taxpaidsgst_sgst)!=$totalsgst_amount_other)
 		{
 		$this->setError('Please check offset value for state tax values are not equal');
 		}
    /***** end Code For total taxpayable through ITC state Tax ********** */
     /***** Start Code For total taxpayable through ITC cess Tax ********** */	
-   	$paiditccess_cess=isset($_POST['paiditccess_cess']) ? $_POST['paiditccess_cess'] : '';
-	$taxpaidcess_cess=isset($_POST['taxpaidcess_cess']) ? $_POST['taxpaidcess_cess'] : '';
+   	$paiditccess_cess=isset($_POST['paiditccess_cess']) ? $_POST['paiditccess_cess'] : '0.00';
+	$taxpaidcess_cess=isset($_POST['taxpaidcess_cess']) ? $_POST['taxpaidcess_cess'] : '0.00';
 	if(($paiditccess_cess+$taxpaidcess_cess)!=$totalcess_amount_other)
 		{
 		$this->setError('Please check offset value for state tax values are not equal');
@@ -959,6 +928,173 @@ final class gstr3b extends validation {
 
 	}
 	
+		$obj_gstr = new gstr();
+		$dataoffset=array();
+		if(isset($paidcash_liab_ldg_id1) && $paidcash_liab_ldg_id1!='' && isset($paidcash_trans_type1) && $paidcash_trans_type1!='')
+		{			
+		$data1[0]['liab_ldg_id'] = $paidcash_liab_ldg_id1;		
+        $data1[0]['trans_typ'] = $paidcash_trans_type1;
+        $data1[0]['ipd'] = (float)$taxpaidigst_igst;
+        $data1[0]['cpd'] = (float)$taxpaidcgst_igst;
+        $data1[0]['spd'] = (float)$taxpaidsgst_sgst;
+        $data1[0]['cspd'] = (float)$taxpaidcess_cess;
+		$data1[0]['i_intrpd'] = (float)$interestpaidigst_igst;
+		$data1[0]['c_intrpd'] = (float)$interestpaidcgst_igst;
+		$data1[0]['s_intrpd'] = (float)$interestpaidsgst_sgst;
+		$data1[0]['cs_intrpd'] = (float)$interestpaidcess_cess;
+		$data1[0]['c_lfeepd'] = (float)$latefee_cash;
+		$data1[0]['s_lfeepd'] = (float)$latefee_sgst;
+		}else{
+			$data1='{}';
+		}
+		//data2
+		/*
+		$data1[1]['liab_ldg_id'] = (float)'172.00';		
+        $data1[1]['trans_typ'] = (float)'30002.00';
+        $data1[1]['ipd'] = (float)'0.00';
+        $data1[1]['cpd'] = (float)'0.00';
+        $data1[1]['spd'] = (float)'0.00';
+        $data1[1]['cspd'] = (float)'0.00';
+		*/
+		//data3
+		$data3[0]['liab_ldg_id'] = $paidcash_liab_ldg_id2;		
+        $data3[0]['trans_typ'] = $paidcash_trans_type2;
+        $data3[0]['i_pdi'] = (float)$paiditcigst_igst;
+        $data3[0]['i_pdc'] = (float)$paiditcigst_cgst;
+        $data3[0]['i_pds'] = (float)$paiditcigst_sgst;
+        $data3[0]['c_pdi'] = (float)$paiditccgst_igst;
+		$data3[0]['c_pdc'] = (float)$paiditccgst_cgst;
+		$data3[0]['s_pdi'] = (float)$paiditcsgst_igst;
+		$data3[0]['s_pds'] = (float)$paiditcsgst_sgst;
+		$data3[0]['cs_pdcs'] = (float)$paiditccess_cess;
+		 //$this->pr($data=array("doc_num1"=>$data1,"doc_num2"=>$data2,"doc_num3"=>$data3,"doc_num4"=>$data4,"doc_num5"=>$data5,"doc_num6"=>$data6,"doc_num7"=>$data7,"doc_num8"=>$data8,"doc_num9"=>$data9,"doc_num10"=>$data10,"doc_num11"=>$data11,"doc_num12"=>$data12));
+	    $dataoffset=array("pdcash"=>$data1,"pditc"=>$data3);
+        $returnSummary= json_encode($dataoffset);
+		echo $returnSummary; die;
+         $error =1;
+        $msg = '';
+        $api_return_period = $obj_gstr->getRetrunPeriodFormat($returnmonth);
+        if(API_TYPE == 'Demo') {
+           $username = API_USERNAME;
+           $gstin = API_GSTIN;
+        }
+        else {
+            $username = $obj_gstr->username();
+            $gstin = $obj_gstr->gstin();
+
+        }
+       // $returnSummary= $obj_gstr->returnSummary($returnmonth,'',$jstr);
+
+        if(!empty($returnSummary)) {
+			echo $returnSummary;
+            $hmac = $obj_gstr->hmac($_SESSION['decrypt_sess_key'],$returnSummary); 
+            $encodejson = base64_encode($obj_gstr->encrypt($_SESSION['decrypt_sess_key'],$returnSummary));
+            $sdata1 = array("action" => 'RETOFFSET',"data" => $encodejson,"hmac"=>$hmac);
+           
+            $data_string = json_encode($sdata1);
+            //$this->pr($sdata1);
+            //Start code for create header
+            $header_array = array(
+                'Content-Length: ' . strlen($data_string).'',
+                'auth-token:' . $_SESSION['auth_token'] . '',
+                'gstin:' . $gstin . '',
+                'ret_prd: '.$api_return_period.' ',
+                'username:' . $username . '',
+                'accept:application/json',
+                'action:RETOFFSET'
+            );
+            $header3 = $obj_gstr->header($header_array);
+            $this->pr($header3);
+            //End code for create header
+			$jstr='gstr3b';
+           echo $getSubmitUrl = API_RETURN_URL.'/'.$jstr;
+            $submit_data1 = $obj_gstr->hitPulUrl($getSubmitUrl, $data_string, $header3);
+            $retDta1 = json_decode($submit_data1);
+            $this->pr($retDta1);die;
+            if(isset($retDta1->status_cd) && $retDta1->status_cd=='1'  && $msg == '')
+            {
+                $retRek=$retDta1->rek;
+                $retData1=$retDta1->data;
+                $apiEk1 = $this->decrypt($_SESSION['decrypt_sess_key'],$retRek);
+                //$apiEk1=openssl_decrypt(base64_decode($retRek),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
+                $decodejson1 =  base64_decode($this->decrypt($_SESSION['decrypt_sess_key'],$retData1));
+                //$decodejson1= base64_decode(openssl_decrypt(base64_decode($retData1),"aes-256-ecb",$apiEk1, OPENSSL_RAW_DATA));
+
+                $ref = json_decode($decodejson1);
+
+                $refId = $ref->reference_id;
+                sleep(5);
+                
+                //Start code for create header
+                $header2_array = array(
+                    'auth-token:' . $_SESSION['auth_token'] . '',
+                    'gstin:' . $gstin . '',
+                    'ret_prd: '.$api_return_period.' ',
+                    'username:' . $username . '',
+                    'accept:application/json',
+                    'action:' . 'RETSTATUS' . ''
+                );
+                
+                $header2 = $obj_gstr->header($header2_array);
+                //$this->pr($header2);
+                //End code for create header
+                $url2 = API_RETURN_URL.'?action=RETSTATUS&gstin='.$gstin. '&ret_period='.$api_return_period.'&ref_id=f0a28c53-e132-4b92-b6f0-8cb36f23ed13';
+              
+                $result_data1 = $obj_gstr->hitGetUrl($url2, '', $header2);
+                
+                $retDta = json_decode($result_data1);
+                //$this->pr($retDta);
+                
+                if(isset($retDta->status_cd) && $retDta->status_cd=='1' && $msg == '')
+                {
+                    $retReksStatus=$retDta->rek;
+                    $retData1Status=$retDta->data;
+                    $apiEk1Status = $obj_gstr->decrypt($_SESSION['decrypt_sess_key'],$retReksStatus);
+                    //$apiEk1Status=openssl_decrypt(base64_decode($retReksStatus),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
+                    $decodejson1Status =  base64_decode($this->decrypt($_SESSION['decrypt_sess_key'],$retData1Status));
+                    //$decodejson1Status= base64_decode(openssl_decrypt(base64_decode($retData1Status),"aes-256-ecb",$apiEk1Status, OPENSSL_RAW_DATA));
+                    ;
+                    if(!empty($decodejson1Status) && $msg == '') {
+                        $jstr1_status = json_decode($decodejson1Status,true);
+                        //$this->pr($jstr1_status);
+                        
+                        if(isset($jstr1_status['status_cd']) && $jstr1_status['status_cd']=='P' && $msg == '') {
+
+                            $error = 0;
+                        }
+                        elseif(isset($jstr1_status['status_cd']) && $jstr1_status['status_cd']=='IP' && $msg == ''){
+                            $msg = "Invoices are under procces, kindly wait for some time.";
+                            $error = 2;
+                        }
+                        else {
+                            $obj_gstr->array_key_search('error_msg', $jstr1_status);
+                            $msg = $obj_gstr->error_msg;
+                            if(!$msg) {
+                                $msg = "Sorry! Something went wrong, please try again.";
+                            }
+                            //$this->pr($msg);
+                        }
+                    }
+                    else {
+                       $msg = "Sorry! Invalid proccess";
+                    }
+                }
+                else {
+                    $msg = "Sorry! Invalid proccess";
+                }
+            }
+            else {
+               $msg = $retDta1->error->message;
+            }
+            
+        }
+        $response['message'] = $msg;
+        $response['error'] = $error;
+        return $response;
+        
+    
+		
+   
 	 /* end code for check toal available cess tax value */
 	
 	
@@ -1024,6 +1160,93 @@ final class gstr3b extends validation {
 
 		return $result;
 		}
+	public function finalSubmitGstr3b()
+	{
+		$obj_gst = new gstr();
+        $fmonth = isset($_GET['returnmonth']) ? $_GET['returnmonth'] : date('Y-m');
+        $response = $obj_gst->returnSubmit($fmonth,'gstr3b');
+		//$obj_gst->pr($response);
+		$flag = 0;
+        if ($response['error'] == 0) {
+            $flag = 1;
+
+        } 
+        else {
+            $flag = 2;
+            if(!empty($response['message'])) {
+               $obj_gst->setError($response['message']); 
+			   return true;
+            }
+            
+        }
+        if ($flag == 1) {
+            //$this->setSuccess($response['message']);
+            $obj_gst->setSuccess(" Congratulations! GSTR3B Data Submitted.");
+            return true;
+        }
+        elseif ($flag == 2) {
+            return false;
+        }
+       
+        return false;
+  
+	}		
+	public function insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step)
+    {
+			$dataArr =array();
+			//$dataArr = $this->getnotificationData();
+			$sql="select count(notification_id) as numcount from ".TAB_PREFIX."notification WHERE parentid=".$parentid." AND userid=".$userid." and return_type='".$returntype."' AND return_step='".$return_step."' AND return_month='".$returnmonth."'";
+			$dataCurrentArr = $this->get_results($sql);
+			
+			if($dataCurrentArr[0]->numcount > 0)
+			{
+				$dataConditionArray['parentid'] = $parentid;
+				$dataConditionArray['userid'] = $userid;
+				$dataConditionArray['return_type'] = $returntype;
+				$dataArr['updated_date'] = date('Y-m-d H:i:s');
+				$dataArr['updated_by'] = $_SESSION["user_detail"]["user_id"];
+				
+				if ($this->update(TAB_PREFIX.'notification', $dataArr, $dataConditionArray)) {
+
+					//$this->setSuccess("Your Notification information updated successfully");
+					$this->logMsg("User ID : " . $_SESSION['user_detail']['user_id'] . " update the notification info","notification");
+					return true;
+				} else {
+
+					$this->setError($this->validationMessage['failed']);
+					return false;
+				}
+				
+  			}
+			else
+			{
+				
+				$dataArr["notification_name"]=$title;
+				$dataArr["notification_message"]=$message;
+				$dataArr["userid"] = $userid;
+				$dataArr["parentid"] = $parentid;
+				$dataArr["return_type"] = $returntype;
+				$dataArr['return_month'] = $returnmonth;
+				$dataArr['return_step'] = $return_step;	
+				$dataArr['added_date'] = date('Y-m-d H:i:s');
+						
+			  
+				if ($this->insert(TAB_PREFIX.'notification', $dataArr)) {
+						//$this->setSuccess('Notification Saved Successfully');
+						$this->logMsg("User ID Notification added : " . $_SESSION['user_detail']['user_id'],"notification");
+								
+						return true;
+					}
+					else
+					{
+						$this->setError('Failed to save Notification data');
+					   return false;    	   
+				   }	
+				
+
+			}
+		
+   }	
 	public function getSubmitGSTR3bData()
 	{
 		$inputToken = $this->RandomToken(16);
@@ -1200,7 +1423,7 @@ final class gstr3b extends validation {
 		$obj_gst = new gstr();
         $payload = $this->gstr3bData($userid, $fmonth);
 		//$this->pr($payload);
-		echo  json_encode($payload);
+		//echo  json_encode($payload);
 		
         $dataArr = $payload['data_arr'];
         $response = $obj_gst->returnSave($dataArr, $fmonth,'gstr3b');
@@ -1231,7 +1454,13 @@ final class gstr3b extends validation {
         $obj_gst = new gstr();
         $dataArr = array();
         $api_return_period = $obj_gst->getRetrunPeriodFormat($returnmonth);
-        $dataArr["gstin"] = $obj_gst->gstin();
+		if(API_TYPE == 'Demo') {
+           $gstin = API_GSTIN;
+        }
+        else {
+            $gstin = $obj_gst->gstin();
+        }
+        $dataArr["gstin"] = $gstin;
         $dataArr["ret_period"] = $api_return_period ;
         //$dataArr["fp"] = $api_return_period;
        // $dataArr["gt"] = (float) $obj_gst->gross_turnover($user_id);

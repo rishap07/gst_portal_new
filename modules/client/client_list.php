@@ -4,19 +4,23 @@ if (!isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
     $obj_client->redirect(PROJECT_URL);
     exit();
 }
+
 if (!$obj_client->can_read('client_list')) {
 
     $obj_client->setError($obj_client->getValMsg('can_read'));
     $obj_client->redirect(PROJECT_URL . "/?page=dashboard");
     exit();
 }
+
 if (isset($_GET['action']) && $_GET['action'] == 'deleteClient' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
-    if (!$obj_client->can_delete('client_list')) {
+
+	if (!$obj_client->can_delete('client_list')) {
 
         $obj_client->setError($obj_client->getValMsg('can_delete'));
         $obj_client->redirect(PROJECT_URL . "/?page=client_list");
         exit();
     }
+
     $userDetail = $obj_client->getUserDetailsById($obj_client->sanitize($_GET['id']));
     if ($userDetail['status'] == "success") {
         if ($obj_client->deleteClientUser($userDetail['data']->user_id)) {

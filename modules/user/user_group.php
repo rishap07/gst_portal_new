@@ -1,6 +1,6 @@
 <?php
 $obj_user = new users();
-if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '' ) {
+if( !isset($_SESSION['user_detail']['user_group']) || $_SESSION['user_detail']['user_group'] != '1' ) {
     $obj_user->redirect(PROJECT_URL);
     exit();
 }

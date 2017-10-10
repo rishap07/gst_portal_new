@@ -211,7 +211,7 @@ class processpayment extends validation
 				$planDetail[0]->sub_user = 'Unlimited';
 			}
 
-			$htmlResponse = $this->generatePlanPdf($_SESSION['user_detail']['id'], $planDetail, $dataUpdateArr['plan_due_date'], $companyaddress, $useraddress, $dataInvoice);
+			$htmlResponse = $this->generatePlanPdf($_SESSION['user_detail']['user_id'], $planDetail, $dataUpdateArr['plan_due_date'], $companyaddress, $useraddress, $dataInvoice);
 			
 			if ($htmlResponse === false) {
 				$obj_client->setError("No Plan Pdf found.");
