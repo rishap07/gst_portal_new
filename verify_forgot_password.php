@@ -182,7 +182,7 @@ if (isset($_POST['resetpass']) && $_POST['resetpass'] == 'Reset Password'){
                             <input type="password" id="confirmpassword" name="confirmpassword" placeholder="Confirm Password" />
                             <strong class="fa fa-key" aria-hidden="true"></strong>
                         </div>
-						<input type="hidden" name="userid" id="userid" value="<?php echo $_GET["passkey"]; ?>" />
+						<input type="hidden" name="userid" id="userid" value="<?php if(isset($_GET["passkey"])){ echo $_GET["passkey"];}else { echo ''; } ?>" />
                        
                      
                         <input type="submit" name="resetpass" class="btnsubmit" id="resetpass" value="Reset Password" />
