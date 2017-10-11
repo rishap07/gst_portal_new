@@ -74,9 +74,10 @@ class validation extends upload {
             'returnfile_dates'=>TAB_PREFIX.'returnfile_dates',
             'otp_request'=>TAB_PREFIX.'otp_request',
             'user_api_summary'=>TAB_PREFIX.'user_api_summary',
-			'gstr1_return_summary'=>TAB_PREFIX.'gstr1_return_summary',
+            'gstr1_return_summary'=>TAB_PREFIX.'gstr1_return_summary',
             'gstr2_return_summary'=>TAB_PREFIX.'gstr2_return_summary',
-            'return_upload_summary'=>TAB_PREFIX.'return_upload_summary'
+            'return_upload_summary'=>TAB_PREFIX.'return_upload_summary',
+            'gstr2_reconcile_final'=>TAB_PREFIX.'gstr2_reconcile_final'
         );
 
         $this->checkUserPortalAccess();
@@ -364,6 +365,7 @@ class validation extends upload {
             a.pre_gst,
             a.port_code,
             a.shipping_bill_number,
+            a.is_uploaded,
             a.shipping_bill_date  from ".$this->getTableName('gstr1_return_summary')." a  where 1 ";
         
         if(!empty($ids)) {

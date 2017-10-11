@@ -93,7 +93,7 @@ if( isset($_POST['submit']) && $_POST['submit'] == 'submit' ) {
 					<div class="adminformbxsubmit" style="width:100%;">
 						<div class="tc">
 							<input type='submit' class="btn btn-success" name='submit' value='submit' id='submit'>
-							<input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href='<?php echo PROJECT_URL . "/?page=client_invoice_list"; ?>';" class="btn btn-danger" />
+							<input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href='<?php echo PROJECT_URL . "/?page=return_choose_invoice"; ?>';" class="btn btn-danger" />
 						</div>
 					</div>
 

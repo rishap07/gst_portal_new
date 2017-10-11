@@ -84,8 +84,9 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
   <div class="panel-group">
     <div class="panel panel-default">
       <div class="panel-heading">File GSTR-3B Return</div>
-      <div class="panel-body" style="text-align:center;"><p>Please Click&nbsp;<a href="https://services.gst.gov.in/services/login" target="_blank" >here</a>&nbsp;to file  GSTR 3B on government portal.</p><br>
-<p>Filing in government portal is easy  ; You will just need to enter the  values  as mentioned in GSTKEEPER  3B form.</p>
+      <div class="panel-body" style="text-align:center;">
+<p>For further process submit and offset liability.</p>
+<p>Please Click&nbsp;<a href="https://services.gst.gov.in/services/login" target="_blank" >here</a>&nbsp;to go to government portal.</p>
 <p>Also, for your convenience we have added an excel <a href="<?php echo PROJECT_URL . '/?page=return_gstr3b_file&returnmonth='.$returnmonth ?>">export</a> option to make the filing easy.</p></div>
     </div>
        

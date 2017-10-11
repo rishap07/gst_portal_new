@@ -92,20 +92,6 @@ if(isset($_GET['id'])) {
 						<input type="text" placeholder="City" name='city' data-bind="content" class="form-control required" value='<?php if(isset($_POST['city'])){ echo $_POST['city']; } else if(isset($dataArr[0]->city)){ echo $dataArr[0]->city; } ?>'/>
 					</div>
 
-                    <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-						<label>Country <span class="starred">*</span></label>
-						<select name='country' id='country' class='required form-control'>
-							<?php $dataSCountryArrs = $obj_master->get_results("select * from ".$obj_master->getTableName('country')." order by country_name asc"); ?>
-							<?php if(!empty($dataSCountryArrs)) { ?>
-								<option value=''>Select Country</option>
-								<?php foreach($dataSCountryArrs as $dataSCountryArr) { ?>
-									<option value='<?php echo $dataSCountryArr->id; ?>' data-code="<?php echo $dataSCountryArr->country_code; ?>" <?php if(isset($_POST['country']) && $_POST['country'] === $dataSCountryArr->id){ echo 'selected="selected"'; } else if(isset($dataArr[0]->country) && $dataSCountryArr->id == $dataArr[0]->country){ echo 'selected="selected"'; } ?>><?php echo $dataSCountryArr->country_name . " (" . $dataSCountryArr->country_code . ")"; ?></option>
-								<?php } ?>
-							<?php } ?>
-						</select>
-					</div>
-					<div class="clear"></div>
-
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>State <span class="starred">*</span></label>
 						<select name='state' id='state' class='form-control required'>
@@ -120,7 +106,21 @@ if(isset($_GET['id'])) {
 							<?php } ?>
 						</select>
 					</div>
-                    
+					<div class="clear"></div>
+
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>Country <span class="starred">*</span></label>
+						<select name='country' id='country' class='required form-control'>
+							<?php $dataSCountryArrs = $obj_master->get_results("select * from ".$obj_master->getTableName('country')." order by country_name asc"); ?>
+							<?php if(!empty($dataSCountryArrs)) { ?>
+								<option value=''>Select Country</option>
+								<?php foreach($dataSCountryArrs as $dataSCountryArr) { ?>
+									<option value='<?php echo $dataSCountryArr->id; ?>' data-code="<?php echo $dataSCountryArr->country_code; ?>" <?php if(isset($_POST['country']) && $_POST['country'] === $dataSCountryArr->id){ echo 'selected="selected"'; } else if(isset($dataArr[0]->country) && $dataSCountryArr->id == $dataArr[0]->country){ echo 'selected="selected"'; } ?>><?php echo $dataSCountryArr->country_name . " (" . $dataSCountryArr->country_code . ")"; ?></option>
+								<?php } ?>
+							<?php } ?>
+						</select>
+					</div>
+
                     <div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Zipcode <span class="starred">*</span></label>
 						<input type="text" placeholder="Zipcode" name='zipcode' class='form-control required' data-bind="number" value='<?php if(isset($_POST['zipcode'])){ echo $_POST['zipcode']; } else if(isset($dataArr[0]->zipcode)){ echo $dataArr[0]->zipcode; } ?>'/>
@@ -201,17 +201,31 @@ if(isset($_GET['id'])) {
 		$("#country").select2();
 		$("#vendor_type").select2();
 		
-		$("#country").on("change", function(){
-
-			if($("#country option:selected").attr("data-code") != "IN") {
-				$("#state").val($("#state option[data-code=OI]").val());
-				$("#state").select2();
+		$("#state").on("change", function(event){
+			var stateCode = $('option:selected', this).attr('data-code');
+			if(stateCode == "OI") {
+				$('#country').val("");
+				$("#country").select2();
 			} else {
-				$("#state").val('');
+				$('#country').val($('#country option[data-code="IN"]').val());
+				$("#country").select2();
+			}
+		});
+		
+		$("#country").on("change", function(event){
+			var countryCode = $('option:selected', this).attr('data-code');
+			if(countryCode == "IN") {
+				var stateCode = $('option:selected', "#state").attr('data-code');
+				if(stateCode == "OI") {
+					$('#state').val("");
+					$("#state").select2();
+				}
+			} else {
+				$('#state').val($('#state option[data-code="OI"]').val());
 				$("#state").select2();
 			}
 		});
-
+		
         $('#submit').click(function () {
             var mesg = {};
             if (vali.validate(mesg,'form')) {

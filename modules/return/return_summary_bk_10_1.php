@@ -185,22 +185,22 @@ else
                                             if (!empty($b2clData)) {
                                                 $tempInv = '';
                                                 foreach ($b2clData as $key => $b2clDatavalue) {
-                                                    if($tempInv!='' && $tempInv!=$b2clDatavalue->reference_number)
+                                                    if($tempInv!='' && $tempInv!=$b2clDatavalue->invoice_id)
                                                     {
                                                         $b2clCount++;
                                                         $b2cl_sumTotal +=$tempTotVal;
-                                                        //$b2cl_invoice_total_value +=$tempInvTot;
+                                                        $b2cl_invoice_total_value +=$tempInvTot;
                                                     }
-                                                    $b2cl_invoice_total_value += isset($b2clDatavalue->taxable_subtotal)?$b2clDatavalue->taxable_subtotal:0;
+                                                    $tempInvTot = isset($b2clDatavalue->taxable_subtotal)?$b2clDatavalue->taxable_subtotal:0;
                                                     $b2cl_total += $b2clDatavalue->cgst_amount + $b2clDatavalue->sgst_amount + $b2clDatavalue->igst_amount + $b2clDatavalue->cess_amount;
                                                     $tempTotVal =isset($b2clDatavalue->invoice_total_value)?$b2clDatavalue->invoice_total_value:0;
-                                                    $tempInv=$b2clDatavalue->reference_number;
+                                                    $tempInv=$b2clDatavalue->invoice_id;
                                                 }
                                                 if($tempInv!='')
                                                 {
                                                     $b2clCount++;
                                                     $b2cl_sumTotal +=$tempTotVal;
-                                                    //$b2cl_invoice_total_value +=$tempInvTot;
+                                                    $b2cl_invoice_total_value +=$tempInvTot;
                                                 }
                                                 
                                             }
@@ -215,12 +215,11 @@ else
                                         <tr>
                                             <?php
                                             $group_by = "";
-                                            $order_by = 'a.supply_place';
+                                            $order_by = 'a.reference_number';
                                             $b2csData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'b2cs');
                                             //$b2csData = $obj_gstr1->getB2CSInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
                                             $b2cs_total = $b2cs_taxable_value = $b2cs_sumTotal = 0;
                                             $b2csCount = $tempTotVal = $tempInvTot = 0;
-                                            //$obj_gstr1->pr($b2csData);
                                             if (!empty($b2csData)) {
                                                 $tempInv = '';
                                                 foreach ($b2csData as $key => $b2csDatavalue) {
@@ -228,7 +227,7 @@ else
                                                     if($tempInv!='' && ($tempInv!=$b2csDatavalue->supply_place || $rate!=$b2csDatavalue->rate))
                                                     {
                                                         $b2csCount++;
-                                                        if($tempInv!=$b2csDatavalue->supply_place ) {
+                                                        if($tempInv!=$b2csDatavalue->supply_place) {
                                                            $b2cs_sumTotal +=$tempTotVal; 
                                                         }
                                                         
@@ -266,26 +265,27 @@ else
                                             if (!empty($cdnrData)) {
                                                 $tempInv = '';
                                                 foreach ($cdnrData as $key => $cdnrDatavalue) {
+
                                                     if($tempInv!='' && $tempInv!=$cdnrDatavalue->reference_number )
                                                     {
-                                                        //echo "df";
                                                         $cdnrCount++;
                                                         $cdnr_sumTotal +=$tempTotVal;
-                                                        //$cdnr_invoice_total_value +=$tempInvTot;
+                                                        $cdnr_invoice_total_value +=$tempInvTot;
                                                         
                                                     }
-                                                    $cdnr_invoice_total_value += isset($cdnrDatavalue->taxable_subtotal)?$cdnrDatavalue->taxable_subtotal:0;
+                                                    $tempInvTot = isset($cdnrDatavalue->taxable_subtotal)?$cdnrDatavalue->taxable_subtotal:0;
                                                     $cdnr_total += $cdnrDatavalue->cgst_amount + $cdnrDatavalue->sgst_amount + $cdnrDatavalue->igst_amount + $cdnrDatavalue->cess_amount;
                                                     $tempTotVal =isset($cdnrDatavalue->invoice_total_value)?$cdnrDatavalue->invoice_total_value:0;
+                                                   
                                                     $tempInv=$cdnrDatavalue->reference_number;
                                                     $rate=$cdnrDatavalue->rate;
                                                 }
                                                 if($tempInv!='' )
                                                 {
-                                                   // echo "df1";
+                                                    //echo "df1";
                                                     $cdnrCount++;
                                                     $cdnr_sumTotal +=$tempTotVal;
-                                                    //$cdnr_invoice_total_value +=$tempInvTot;
+                                                    $cdnr_invoice_total_value +=$tempInvTot;
                                                 }
                                                 
                                             }
@@ -312,9 +312,9 @@ else
                                                     {
                                                         $expCount++;
                                                         $exp_sumTotal +=$tempTotVal;
-                                                        //$exp_invoice_total_value +=$tempInvTot;
+                                                        $exp_invoice_total_value +=$tempInvTot;
                                                     }
-                                                    $exp_invoice_total_value += isset($expDatavalue->taxable_subtotal)?$expDatavalue->taxable_subtotal:0;
+                                                    $tempInvTot = isset($expDatavalue->taxable_subtotal)?$expDatavalue->taxable_subtotal:0;
                                                     $exp_total += $expDatavalue->cgst_amount + $expDatavalue->sgst_amount + $expDatavalue->igst_amount + $expDatavalue->cess_amount;
                                                     $tempTotVal =isset($expDatavalue->invoice_total_value)?$expDatavalue->invoice_total_value:0;
                                                     $tempInv=$expDatavalue->reference_number;
@@ -323,7 +323,7 @@ else
                                                 {
                                                     $expCount++;
                                                     $exp_sumTotal +=$tempTotVal;
-                                                   // $exp_invoice_total_value +=$tempInvTot;
+                                                    $exp_invoice_total_value +=$tempInvTot;
                                                 }
                                                 
                                             }
@@ -345,23 +345,23 @@ else
                                             if (!empty($atData)) {
                                                 $tempInv = '';
                                                 foreach ($atData as $key => $atDatavalue) {
-                                                    /*if($tempInv!='' && $tempInv!=$atDatavalue->supply_place )
+                                                    if($tempInv!='' && $tempInv!=$atDatavalue->reference_number )
                                                     {
                                                         $atCount++;
                                                         $at_sumTotal +=$tempTotVal;
                                                         $at_invoice_total_value +=$tempInvTot;
-                                                    }*/
+                                                    }
                                                     $tempInvTot = isset($atDatavalue->taxable_subtotal)?$atDatavalue->taxable_subtotal:0;
                                                     $at_total += $atDatavalue->cgst_amount + $atDatavalue->sgst_amount + $atDatavalue->igst_amount + $atDatavalue->cess_amount;
                                                     $tempTotVal =isset($atDatavalue->invoice_total_value)?$atDatavalue->invoice_total_value:0;
-                                                    $tempInv=$atDatavalue->supply_place;
-                                                    $atCount++;
-                                                   
-                                                    $at_invoice_total_value +=$tempInvTot;
-                                                    
+                                                    $tempInv=$atDatavalue->reference_number;
                                                 }
-                                                $at_sumTotal = $at_total + $at_invoice_total_value;
-          
+                                                if($tempInv!='')
+                                                {
+                                                    $atCount++;
+                                                    $at_sumTotal +=$tempTotVal;
+                                                    $at_invoice_total_value +=$tempInvTot;
+                                                }
                                                 
                                             }
                                             ?>
@@ -382,22 +382,14 @@ else
                                             if (!empty($cdnurData)) {
                                                 $tempInv = '';
                                                 foreach ($cdnurData as $key => $cdnurDatavalue) {
-                                                    if($tempInv!='' && $tempInv!=$cdnurDatavalue->reference_number )
-                                                    {
-                                                        $cdnurCount++;
-                                                        $cdnur_sumTotal +=$tempTotVal;
-                                                        //$cdnur_invoice_total_value +=$tempInvTot;
-                                                    }
-                                                    $cdnur_invoice_total_value += isset($cdnurDatavalue->taxable_subtotal)?$cdnurDatavalue->taxable_subtotal:0;
+                                                    
+                                                    $tempInvTot = isset($cdnurDatavalue->taxable_subtotal)?$cdnurDatavalue->taxable_subtotal:0;
                                                     $cdnur_total +=  $cdnurDatavalue->igst_amount + $cdnurDatavalue->cess_amount;
                                                     $tempTotVal =isset($cdnurDatavalue->invoice_total_value)?$cdnurDatavalue->invoice_total_value:0;
-                                                    $tempInv=$cdnurDatavalue->reference_number;
-                                                }
-                                                if($tempInv!='')
-                                                {
+                                                    $tempInv=$cdnurDatavalue->invoice_id;
                                                     $cdnurCount++;
                                                     $cdnur_sumTotal +=$tempTotVal;
-                                                    //$cdnur_invoice_total_value +=$tempInvTot;
+                                                    $cdnur_invoice_total_value +=$tempInvTot;
                                                 }
                                                 
                                             }

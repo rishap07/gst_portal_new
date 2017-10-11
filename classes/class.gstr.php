@@ -181,8 +181,9 @@ final class gstr extends validation {
             return true;
         }
         else {
-            $this->array_key_search('message', $data);
-            $msg = $this->error_msg;
+            if(isset($data->error->message)) {
+                $msg = $data->error->message;
+            }
             if(!$msg) {
                 $msg = 'Sorry! Invalid OTP Request.';
             }
@@ -994,11 +995,22 @@ final class gstr extends validation {
         if(isset($_SESSION['user_detail']['user_id'])) {
             $clientKyc = $this->get_results("select `billing_gstin_number` as ctin from " . $this->getTableName('client_kyc') ." where 1=1 AND added_by = ".$_SESSION['user_detail']['user_id']." ");
             if(!empty($clientKyc)) {
-                $gstin = $clientKyc[0]->ctin;
+                $ctin = $clientKyc[0]->ctin;
 
             }
         }
         return $ctin;
+    }
+    public function place_of_supply($pos) {
+        $state_name = '';
+        if(isset($pos)) {
+            $state = $this->get_results("select `state_name`  from " . $this->getTableName('state') ." where 1=1 AND state_tin = ".$pos." ");
+            if(!empty($state)) {
+                $state_name = $state[0]->state_name;
+
+            }
+        }
+        return $state_name;
     }
 
     public function gross_turnover($user_id=0) {

@@ -31,6 +31,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
     //{
         if($obj_return->saveGstr3b()){
             //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
+			
         } 
    // }
 }
@@ -80,6 +81,8 @@ if(isset($_POST['final_returnid']) && $_POST['final_returnid']!='' && isset($_PO
 			 $obj_return->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
 			
 		}	
+		$obj_return->redirect(PROJECT_URL."/?page=return_filegstr3b_file&returnmonth=" . $returnmonth);
+		exit();
 		
         }					  
    // } 
@@ -207,7 +210,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
 			 $returntype='gstr3b';
 			 $return_step='gstr3binitiared';
 			 $returnmonth =$_REQUEST['returnmonth'];	
-			 $obj_return->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
+			 //$obj_return->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
 			
 				 
 			 }
@@ -220,7 +223,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
 			 $returntype='gstr3b';
 			 $return_step='gstr3binitiared';
 			 $returnmonth =$_REQUEST['returnmonth'];	
-			 $obj_return->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
+			 //$obj_return->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
 			
 		}
 //** Code for GSTR-3B notification end here **//
@@ -3030,7 +3033,11 @@ composition taxable persons and UIN holders</div>
                             <input type="button" value="<?php echo ucfirst('Edit'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_gstr3b_file_submit&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/>
 							 <input type='submit' class="btn btn-danger" name='cleardata' value='clear data' id='cleardata'>
 							<input type='submit' class="btn btn-success uploadBtn" name='finalsubmit' value='Upload to GSTN' id='gstr1_summary_download'>
+							<?php
+							/*
 							<input type='submit' class="btn btn-primary" name='retsubmit' value='final submit' id='retsubmit'>
+							*/
+							?>
 						
 							<input type='hidden' name="returnid" id="returnid" value="<?php echo $returndata[0]->return_id; ?>" />
 							<input type='hidden' name="final_returnid" id="final_returnid" value="<?php echo $returndata[0]->return_id; ?>" />

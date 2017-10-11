@@ -162,11 +162,12 @@ final class gstr1 extends validation {
                     if($invoice_type != 'HSN' && $invoice_type != 'NIL' && $invoice_type != 'DOCISSUE') {
                         if (!empty($dataRes)) {
                             if (!empty($data_ids)) {
+
                                 /********** Start Code for Update Invoice is upload ************* */
                                 $flagup = 0;
                                 /*$this->pr($data_ids);
                                 die;*/
-                                $this->query("UPDATE ".$this->getTableName('client_invoice')." SET is_gstr1_uploaded='1' WHERE invoice_id in (".$data_ids.")");
+                                $this->query("UPDATE ".$this->getTableName('gstr1_return_summary')." SET is_uploaded='1' WHERE id in (".$data_ids.")");
                                 
                                 /*********** End code for Update Invoice is upload ********* */
 
@@ -583,7 +584,7 @@ final class gstr1 extends validation {
                         if($type != 'HSN' && $type != 'NIL' && $type != 'DOCISSUE') {
                             if (!empty($data_ids)) {
                                 foreach ($data_ids as $key => $data_id) {
-                                    $this->query("UPDATE ".$this->getTableName('client_invoice')." SET is_gstr1_uploaded='0' WHERE invoice_id = ".$data_id."");  
+                                    $this->query("UPDATE ".$this->getTableName('gstr1_return_summary')." SET is_uploaded='0' WHERE id = ".$data_id."");  
                                 }
 
                                 $callReturnSummary = $obj_gst->returnSummary($returnmonth);
@@ -1196,8 +1197,14 @@ final class gstr1 extends validation {
                 $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['num'] = (int) $a;
                 $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['rt'] = (float) $dataIn->rate;
                 $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['txval'] = (float) $dataIn->taxable_subtotal;
-
-                
+                //echo $dataIn->supply_type;
+                if ($dataIn->supply_type == 'INTER') {
+                    $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['iamt'] = (float) $dataIn->igst_amount;
+                } 
+                else {
+                    $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['samt'] = (float) $dataIn->sgst_amount;
+                    $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['camt'] = (float) $dataIn->cgst_amount;
+                }
                 $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['csamt'] = (float) $dataIn->cess_amount;
                 $ctin = $dataIn->billing_gstin_number;
 
@@ -1207,7 +1214,7 @@ final class gstr1 extends validation {
                 $b2b_array[] = (array) $dataIn;
             }
             if (!empty($b2b_array)) {
-                $b2b_ids = array_unique(array_column($b2b_array, 'id'));
+                $b2b_ids = array_unique(array_column($b2b_array, 'invoice_id'));
             }
         }
         $response['b2b_ids'] = $b2b_ids;
@@ -1249,7 +1256,7 @@ final class gstr1 extends validation {
                 $dataArr['b2cl'][$x]['inv'][$y]['idt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
                 $dataArr['b2cl'][$x]['inv'][$y]['val'] = (float) $dataIn->invoice_total_value;
 
-                $dataArr['b2b'][$x]['inv'][$y]['rchrg'] = $dataIn->reverse_charge;
+                $dataArr['b2cl'][$x]['inv'][$y]['rchrg'] = $dataIn->reverse_charge;
 
                 $dataArr['b2cl'][$x]['inv'][$y]['itms'][$z]['num'] = (int) $a;
                 $dataArr['b2cl'][$x]['inv'][$y]['itms'][$z]['itm_det']['rt'] = (float) $dataIn->rate;
@@ -1269,7 +1276,7 @@ final class gstr1 extends validation {
                 $b2cl_array[] = (array) $dataIn;
             }
             if (!empty($b2cl_array)) {
-                $b2cl_ids = array_unique(array_column($b2cl_array, 'id'));
+                $b2cl_ids = array_unique(array_column($b2cl_array, 'invoice_id'));
             }
         }
         $response['b2cl_ids'] = $b2cl_ids;
@@ -1331,7 +1338,7 @@ final class gstr1 extends validation {
                 $b2cs_array[] = (array) $dataIn;
             }
             if (!empty($b2cs_array)) {
-                $b2cs_ids = array_unique(array_column($b2cs_array, 'id'));
+                $b2cs_ids = array_unique(array_column($b2cs_array, 'invoice_id'));
             }
         }
         $response['b2cs_ids'] = $b2cs_ids;
@@ -1396,7 +1403,7 @@ final class gstr1 extends validation {
                 $cdnr_array[] = (array) $dataIn;
             }
             if (!empty($cdnr_array)) {
-                $cdnr_ids = array_unique(array_column($cdnr_array, 'id'));
+                $cdnr_ids = array_unique(array_column($cdnr_array, 'invoice_id'));
             }
         }
         
@@ -1450,7 +1457,7 @@ final class gstr1 extends validation {
                 $cdnur_array[] = (array) $dataIn;
             }
             if (!empty($cdnur_array)) {
-                $cdnur_ids = array_unique(array_column($cdnur_array, 'id'));
+                $cdnur_ids = array_unique(array_column($cdnur_array, 'invoice_id'));
             }
         }
         /*$this->pr($dataArr);
@@ -1538,7 +1545,7 @@ final class gstr1 extends validation {
                 $at_array[] = (array) $dataIn;
             }
             if (!empty($at_array)) {
-                $at_ids = array_unique(array_column($at_array, 'id'));
+                $at_ids = array_unique(array_column($at_array, 'invoice_id'));
             }
         }
         $response['at_ids'] = $at_ids;
@@ -1626,7 +1633,7 @@ final class gstr1 extends validation {
             }
            
             if (!empty($exp_array)) {
-                $exp_ids = array_unique(array_column($exp_array, 'id'));
+                $exp_ids = array_unique(array_column($exp_array, 'invoice_id'));
             }
 
             $x = 0;

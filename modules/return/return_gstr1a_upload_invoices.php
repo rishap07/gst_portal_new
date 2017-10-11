@@ -39,19 +39,10 @@ if ($_REQUEST['returnmonth'] != '') {
     <div class="col-md-11 col-sm-12 col-xs-12 mobpadlr">
         <div class="col-md-12 col-sm-12 col-xs-12 heading">
             <div class="tab col-md-12 col-sm-12 col-xs-12">
-                  <a href="<?php echo PROJECT_URL . '/?page=return_gstr1a_download&returnmonth=' . $returnmonth ?>" >
-                    Download GSTR-1A
-                </a>
-                <a href="<?php echo PROJECT_URL . '/?page=return_gstr1a_reconcile&returnmonth=' . $returnmonth ?>"  >
-                  GSTR-1A Reconcile
-                </a>
-                <a href="<?php echo PROJECT_URL . '/?page=return_gstr1a_upload_invoices&returnmonth=' . $returnmonth ?>" class="active">
-                    Upload GSTR-1A
-                </a>
-                </a>
-                <a href="<?php echo PROJECT_URL . '/?page=return_gstr1a_filling_summary&returnmonth=' . $returnmonth ?>">
-                    File GSTR-1A
-                </a>              
+                <a href="<?php echo PROJECT_URL . '/?page=return_gstr1a_download&returnmonth=' . $returnmonth ?>" > Download GSTR-1A            </a>
+                <a href="<?php echo PROJECT_URL . '/?page=return_gstr1a_reconcile&returnmonth=' . $returnmonth ?>"  > GSTR-1A Reconcile           </a>
+                <a href="<?php echo PROJECT_URL . '/?page=return_gstr1a_upload_invoices&returnmonth=' . $returnmonth ?>" class="active"> Upload GSTR-1A   </a>
+                <a href="<?php echo PROJECT_URL . '/?page=return_gstr1a_filling_summary&returnmonth=' . $returnmonth ?>"> File GSTR-1A  </a>              
             </div>
             <div id="upload_invoice" class="tabcontent">
                 <div class="col-md-12 col-sm-12 col-xs-12">

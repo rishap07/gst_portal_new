@@ -38,7 +38,7 @@
 				<div class="row">
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Invoice Serial Number <span class="starred">*</span></label>
-						<input type="text" placeholder="Invoice Serial Number" readonly="true" class="form-control required" value="ISD-000000000001" name="invoice_serial_number" id="invoice_serial_number" />
+						<input type="text" placeholder="Invoice Serial Number" readonly="true" class="form-control required" value="ISD-000000000001" name="serial_number" id="serial_number" />
 					</div>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
@@ -48,7 +48,7 @@
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Reference Number <span class="starred">*</span></label>
-						<input type="text" placeholder="Invoice Reference Number" class="required form-control" data-bind="content" value="ISD-000000000001" name="invoice_reference_number" id="invoice_reference_number" />
+						<input type="text" placeholder="Invoice Reference Number" class="required form-control" data-bind="content" value="ISD-000000000001" name="reference_number" id="reference_number" />
 					</div>
 				</div>
 
@@ -72,7 +72,7 @@
 				<div class="row">
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>GSTIN of ISD <span class="starred">*</span></label>
-						<input type="text" placeholder="BYRAJ14N3KKT" name="company_gstin_number" data-bind="gstin" readonly="true" class="form-control required" id="company_gstin_number" value="<?php if(isset($dataCurrentUserArr['data']->kyc->gstin_number)) { echo $dataCurrentUserArr['data']->kyc->gstin_number; } ?>" />
+						<input type="text" placeholder="08ABCDE12341ZE" name="company_gstin_number" data-bind="gstin" readonly="true" class="form-control required" id="company_gstin_number" value="<?php if(isset($dataCurrentUserArr['data']->kyc->gstin_number)) { echo $dataCurrentUserArr['data']->kyc->gstin_number; } ?>" />
 					</div>
 				</div>
 
@@ -126,7 +126,7 @@
 								<input type="text" id="invoice_tr_1_recipientaddress" name="invoice_recipientaddress[]" class="inptxt required" data-bind="content" placeholder="Recipient Address" style="width:120px;" />
 							</td>
 							<td>
-								<select name="invoice_recipientstate[]" id="invoice_tr_1_recipientstate" class="required form-control" style="width:175px;">
+								<select name="invoice_recipientstate[]" id="invoice_tr_1_recipientstate" class="recipientstate required form-control" style="width:175px;">
 									<?php $dataISDStateArrs = $gstr6->get_results("select * from ".$gstr6->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 									<?php if(!empty($dataISDStateArrs)) { ?>
 										<option value=''>Select State</option>
@@ -140,7 +140,7 @@
 								<input type="text" id="invoice_tr_1_recipientgstin" name="invoice_recipientgstin[]" class="required inptxt" data-bind="gstin" placeholder="Enter GSTIN" style="width:120px;" />
 							</td>
 							<td>
-								<input type="text" id="invoice_tr_1_rate" name="invoice_rate[]" class="required validateDecimalValue invoiceRateValue inptxt" data-bind="decimal" placeholder="0.00" style="width:100px;" />
+								<input type="text" id="invoice_tr_1_taxablevalue" name="invoice_taxablevalue[]" class="required validateDecimalValue invoiceTaxableValue inptxt" data-bind="decimal" placeholder="0.00" style="width:120px;">
 							</td>
 							<td>
 								<input type="text" id="invoice_tr_1_cgstrate" name="invoice_cgstrate[]" class="inptxt validateTaxValue invcgstrate" data-bind="valtax" placeholder="0.00" style="width:75px;" />
@@ -259,7 +259,7 @@
 						<div class='col-sm-4'>
 							<div class='form-group'>
 								<label>Email</label>
-								<input type="text" placeholder="Email" name='email' class="form-control" data-bind="email" />
+								<input type="email" placeholder="Email" name='email' class="form-control" data-bind="email" />
 							</div>
 						</div>
 					</div>
@@ -278,24 +278,7 @@
 								<input type="text" placeholder="City" name='city' data-bind="content" class="form-control required" />
 							</div>
 						</div>
-						
-						<div class='col-sm-4'>
-							<div class='form-group'>
-								<label>Country <span class="starred">*</span></label>
-								<select name='country' id='country' class='required form-control'>
-									<?php $dataCountryArrs = $gstr6->get_results("select * from ".$gstr6->getTableName('country')." order by country_name asc"); ?>
-									<?php if(!empty($dataCountryArrs)) { ?>
-										<option value=''>Select Country</option>
-										<?php foreach($dataCountryArrs as $dataCountryArr) { ?>
-											<option value='<?php echo $dataCountryArr->id; ?>' data-code="<?php echo $dataCountryArr->country_code; ?>"><?php echo $dataCountryArr->country_name . " (" . $dataCountryArr->country_code . ")"; ?></option>
-										<?php } ?>
-									<?php } ?>
-								</select>
-							</div>
-						</div>
-					</div>
-					
-					<div class='row'>
+
 						<div class='col-sm-4'>
 							<div class='form-group'>
 								<label>State <span class="starred">*</span></label>
@@ -308,6 +291,23 @@
 										<?php } ?>
 									<?php } else { ?>
 										<option value=''>No State Found</option>
+									<?php } ?>
+								</select>
+							</div>
+						</div>
+					</div>
+					
+					<div class='row'>
+						<div class='col-sm-4'>
+							<div class='form-group'>
+								<label>Country <span class="starred">*</span></label>
+								<select name='country' id='country' class='required form-control'>
+									<?php $dataCountryArrs = $gstr6->get_results("select * from ".$gstr6->getTableName('country')." order by country_name asc"); ?>
+									<?php if(!empty($dataCountryArrs)) { ?>
+										<option value=''>Select Country</option>
+										<?php foreach($dataCountryArrs as $dataCountryArr) { ?>
+											<option value='<?php echo $dataCountryArr->id; ?>' data-code="<?php echo $dataCountryArr->country_code; ?>"><?php echo $dataCountryArr->country_name . " (" . $dataCountryArr->country_code . ")"; ?></option>
+										<?php } ?>
 									<?php } ?>
 								</select>
 							</div>
@@ -427,9 +427,41 @@
 		</div>
 	</div>
 </div>
+
 <script type="text/javascript">
 
     $(document).ready(function () {
+
+		$('#addReceiverModal').on('shown.bs.modal', function () {
+			$("#state").select2();
+			$("#country").select2();
+			$("#vendor_type").select2();
+		});
+		
+		$("#state").on("change", function(event){
+			var stateCode = $('option:selected', this).attr('data-code');
+			if(stateCode == "OI") {
+				$('#country').val("");
+				$("#country").select2();
+			} else {
+				$('#country').val($('#country option[data-code="IN"]').val());
+				$("#country").select2();
+			}
+		});
+
+		$("#country").on("change", function(event){
+			var countryCode = $('option:selected', this).attr('data-code');
+			if(countryCode == "IN") {
+				var stateCode = $('option:selected', "#state").attr('data-code');
+				if(stateCode == "OI") {
+					$('#state').val("");
+					$("#state").select2();
+				}
+			} else {
+				$('#state').val($('#state option[data-code="OI"]').val());
+				$("#state").select2();
+			}
+		});
 
 		/* validate add receiver form */
         $('#add-receiver-submit').click(function () {
@@ -475,22 +507,25 @@
             dateFormat: 'yy-mm-dd',
 			maxDate: '0'
         });
+		
+		$(".recipientstate").on("change", function(event){
+			var rowid = $(this).parent().parent().attr("data-row-id");
+			rowInvoiceCalculation(rowid);
+		});
 
-		/* on unit price chnage of item */
-        $(".invoicetable").on("input", ".invoiceRateValue", function(){
+		/* on taxable amount chnage of item */
+        $(".invoicetable").on("input", ".invoiceTaxableValue", function () {
 
-			var rowid = $(this).parent().parent().parent().attr("data-row-id");
-            var currentTrItemId = parseInt($("#invoice_tr_"+rowid+"_itemid").val());
-            rowInvoiceCalculation(currentTrItemId, rowid);
+            var rowid = $(this).parent().parent().parent().attr("data-row-id");
+			rowInvoiceCalculation(rowid);
         });
-        /* end of on unit price chnage of item */
+        /* end of on taxable amount chnage of item */
 
 		/* on cgst rate chnage of item */
         $(".invoicetable").on("input", ".invcgstrate", function(){
 
 			var rowid = $(this).parent().parent().attr("data-row-id");
-            var currentTrItemId = parseInt($("#invoice_tr_"+rowid+"_itemid").val());
-            rowInvoiceCalculation(currentTrItemId, rowid);
+            rowInvoiceCalculation(rowid);
         });
         /* end of on cgst rate chnage of item */
 
@@ -498,8 +533,7 @@
         $(".invoicetable").on("input", ".invsgstrate", function(){
 
 			var rowid = $(this).parent().parent().attr("data-row-id");
-            var currentTrItemId = parseInt($("#invoice_tr_"+rowid+"_itemid").val());
-            rowInvoiceCalculation(currentTrItemId, rowid);
+            rowInvoiceCalculation(rowid);
         });
         /* end of on sgst rate chnage of item */
 		
@@ -507,8 +541,7 @@
         $(".invoicetable").on("input", ".invigstrate", function(){
 
 			var rowid = $(this).parent().parent().attr("data-row-id");
-            var currentTrItemId = parseInt($("#invoice_tr_"+rowid+"_itemid").val());
-            rowInvoiceCalculation(currentTrItemId, rowid);
+            rowInvoiceCalculation(rowid);
         });
         /* end of on igst rate chnage of item */
 		
@@ -516,8 +549,7 @@
         $(".invoicetable").on("input", ".invcessrate", function(){
 
 			var rowid = $(this).parent().parent().attr("data-row-id");
-            var currentTrItemId = parseInt($("#invoice_tr_"+rowid+"_itemid").val());
-            rowInvoiceCalculation(currentTrItemId, rowid);
+            rowInvoiceCalculation(rowid);
         });
         /* end of on cess rate chnage of item */
 
@@ -532,7 +564,7 @@
             return validateTaxValue(event, this);
         });
         /* end of validate invoice tax decimal values allow only numbers or decimals */
-
+		
 		/* autocomplete for select recipients for invoice */
         $(".invoicetable").on("keypress", ".autocompleterecipientname", function(){
 
@@ -548,11 +580,11 @@
 					$("#invoice_tr_"+rowid+"_recipientaddress").val(ui.item.address);
                     $("#invoice_tr_"+rowid+"_recipientstate").val(ui.item.state_id);
 					$("#invoice_tr_"+rowid+"_recipientgstin").val(ui.item.gstid);
-                }
+                
+					/* current row invoice calculation */
+					rowInvoiceCalculation(rowid);
+				}
             });
-			
-			/* call function of total invoice */
-            totalInvoiceValueCalculation();
         });
         /* end of autocomplete for select recipients for invoice */
 
@@ -581,14 +613,14 @@
             var nexttrid = parseInt($("tr.invoice_tr:last").attr("data-row-id")) + 1;
 
             var newtr = '<tr class="invoice_tr" data-row-id="'+nexttrid+'" id="invoice_tr_'+nexttrid+'">';
-                newtr += '<td class="text-center"><span class="serialno" id="invoice_tr_'+nexttrid+'_serialno">'+(trlength+1)+'</span></td>';
+				newtr += '<td class="text-center"><span class="serialno" id="invoice_tr_'+nexttrid+'_serialno">'+(trlength+1)+'</span></td>';
 				newtr += '<td id="invoice_td_'+nexttrid+'_recipientname">';
 				newtr += '<input type="text" id="invoice_tr_'+nexttrid+'_recipientname" name="invoice_recipientname[]" class="inptxt autocompleterecipientname required" placeholder="Recipient Name" data-bind="content" style="width:120px;" />';
 				newtr += '</td>';
 				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_recipientaddress" name="invoice_recipientaddress[]" class="inptxt required" data-bind="content" placeholder="Recipient Address" style="width:120px;" /></td>';
 
 				newtr += '<td>';
-					newtr += '<select name="invoice_recipientstate[]" id="invoice_tr_'+nexttrid+'_recipientstate" class="required form-control" style="width:175px;">';
+					newtr += '<select name="invoice_recipientstate[]" id="invoice_tr_'+nexttrid+'_recipientstate" class="recipientstate required form-control" style="width:175px;">';
 						<?php $dataISDStateArrs = $gstr6->get_results("select * from ".$gstr6->getTableName('state')." where status='1' and is_deleted='0' order by state_name asc"); ?>
 						<?php if(!empty($dataISDStateArrs)) { ?>
 							newtr += '<option value="">Select State</option>';
@@ -600,7 +632,7 @@
 				newtr += '</td>';
 
 				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_recipientgstin" name="invoice_recipientgstin[]" class="required inptxt" data-bind="gstin" placeholder="Enter GSTIN" style="width:120px;" /></td>';
-				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_rate" name="invoice_rate[]" class="required validateDecimalValue invoiceRateValue inptxt" data-bind="decimal" placeholder="0.00" style="width:100px;" /></td>';
+				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_taxablevalue" name="invoice_taxablevalue[]" class="required validateDecimalValue invoiceTaxableValue inptxt" data-bind="decimal" placeholder="0.00" style="width:120px;" /></td>';
 				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_cgstrate" name="invoice_cgstrate[]" class="inptxt validateTaxValue invcgstrate" data-bind="valtax" placeholder="0.00" style="width:75px;" /></td>';
 				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_cgstamount" name="invoice_cgstamount[]" readonly="true" class="inptxt invcgstamount" placeholder="0.00" style="width:100px;" /></td>';
 				newtr += '<td><input type="text" id="invoice_tr_'+nexttrid+'_sgstrate" name="invoice_sgstrate[]" class="inptxt validateTaxValue invsgstrate" data-bind="valtax" placeholder="0.00" style="width:75px;" /></td>';
@@ -738,33 +770,10 @@
         /* end of save new item */
 
 		/* calculate row invoice function */
-        function rowInvoiceCalculation(itemid, rowid) {
+        function rowInvoiceCalculation(rowid) {
 
-			var supplierStateId = $("#supplier_billing_state").val();
-			var receiverStateId = $("#place_of_supply").val();
-
-			/* calculation */
-			if($.trim($("#invoice_tr_"+rowid+"_quantity").val()).length == 0 || $.trim($("#invoice_tr_"+rowid+"_quantity").val()).length == '' || $.trim($("#invoice_tr_"+rowid+"_quantity").val()) == '.') {
-				var currentTrQuantity = 0.00;
-			} else {
-				var currentTrQuantity = parseFloat($("#invoice_tr_"+rowid+"_quantity").val());
-			}
-
-			if($.trim($("#invoice_tr_"+rowid+"_rate").val()).length == 0 || $.trim($("#invoice_tr_"+rowid+"_rate").val()).length == '' || $.trim($("#invoice_tr_"+rowid+"_rate").val()) == '.') {
-				var currentTrRate = 0.00;
-			} else {
-				var currentTrRate = parseFloat($("#invoice_tr_"+rowid+"_rate").val());
-			}
-
-			if($.trim($("#invoice_tr_"+rowid+"_discount").val()).length == 0 || $.trim($("#invoice_tr_"+rowid+"_discount").val()).length == '' || $.trim($("#invoice_tr_"+rowid+"_discount").val()) == '.') {
-				var currentTrDiscount = 0.00;
-			} else {
-				var currentTrDiscount = parseFloat($("#invoice_tr_"+rowid+"_discount").val());
-			}
-
-			if(parseFloat(currentTrDiscount) > 100) {
-				var currentTrDiscount = 100;
-			}
+			var ISDStateId = $("#company_state").attr("data-state-id");
+			var receiptStateId = $('option:selected', "#invoice_tr_"+rowid+"_recipientstate").val();
 
 			/* get all tax rates */
 			if($.trim($("#invoice_tr_"+rowid+"_cgstrate").val()).length == 0 || $.trim($("#invoice_tr_"+rowid+"_cgstrate").val()).length == '' || $.trim($("#invoice_tr_"+rowid+"_cgstrate").val()) == '.') {
@@ -792,33 +801,18 @@
 			}
 
 			/* end of get all tax rates */
-
-			/* advance adjustment */
-			var advAdjustment = $('input[name=advance_adjustment]:checked', '#create-invoice').val();
-			if(advAdjustment == 1) {
-				
-				if($.trim($("#invoice_tr_"+rowid+"_advancevalue").val()).length == 0 || $.trim($("#invoice_tr_"+rowid+"_advancevalue").val()).length == '' || $.trim($("#invoice_tr_"+rowid+"_advancevalue").val()) == '.') {
-					var advAdjustmentAmount = 0.00;
-				} else {
-					var advAdjustmentAmount = parseFloat($("#invoice_tr_"+rowid+"_advancevalue").val());
-				}
+			
+			if ($.trim($("#invoice_tr_" + rowid + "_taxablevalue").val()).length == 0 || $.trim($("#invoice_tr_" + rowid + "_taxablevalue").val()).length == '' || $.trim($("#invoice_tr_" + rowid + "_taxablevalue").val()) == '.') {
+				var currentTrTaxableValue = 0.00;
 			} else {
-				var advAdjustmentAmount = 0.00;
+				var currentTrTaxableValue = parseFloat($("#invoice_tr_" + rowid + "_taxablevalue").val());
 			}
 
-			var currentTotal = currentTrQuantity * currentTrRate;
-			$("#invoice_tr_"+rowid+"_total").val(currentTotal.toFixed(2));
-
-			var currentTrDiscountAmount = (currentTrDiscount/100) * currentTotal;
-			var currentTrReduceAmount = advAdjustmentAmount + currentTrDiscountAmount;
-			var currentTrTaxableValue = currentTotal - currentTrReduceAmount;
-
-			$("#invoice_tr_"+rowid+"_taxablevalue").val(currentTrTaxableValue.toFixed(2));
-
-			if(supplierStateId === receiverStateId) {
+			if(ISDStateId === receiptStateId) {
 
 				$("#invoice_tr_"+rowid+"_igstrate").val(0.00);
 				$("#invoice_tr_"+rowid+"_igstamount").val(0.00);
+				$("#invoice_tr_"+rowid+"_igstamount").attr("data-invoice-tr-"+rowid+"-igstamount", 0.00);
 
 				$("#invoice_tr_"+rowid+"_cgstrate").prop("readonly", false);
 				$("#invoice_tr_"+rowid+"_sgstrate").prop("readonly", false);
@@ -828,20 +822,25 @@
 				var cgstTax = parseFloat(currentCGSTRate);
 				var cgstTaxAmount = (cgstTax/100) * currentTrTaxableValue;
 				$("#invoice_tr_"+rowid+"_cgstamount").val(cgstTaxAmount.toFixed(2));
+				$("#invoice_tr_"+rowid+"_cgstamount").attr("data-invoice-tr-"+rowid+"-cgstamount", cgstTaxAmount.toFixed(3));
 
 				var sgstTax = parseFloat(currentSGSTRate);
 				var sgstTaxAmount = (sgstTax/100) * currentTrTaxableValue;
 				$("#invoice_tr_"+rowid+"_sgstamount").val(sgstTaxAmount.toFixed(2));
+				$("#invoice_tr_"+rowid+"_sgstamount").attr("data-invoice-tr-"+rowid+"-sgstamount", sgstTaxAmount.toFixed(3));
 
 				var cessTax = parseFloat(currentCESSRate);
 				var cessTaxAmount = (cessTax/100) * currentTrTaxableValue;
 				$("#invoice_tr_"+rowid+"_cessamount").val(cessTaxAmount.toFixed(2));
+				$("#invoice_tr_"+rowid+"_cessamount").attr("data-invoice-tr-"+rowid+"-cessamount", cessTaxAmount.toFixed(3));
 			} else {
 
 				$("#invoice_tr_"+rowid+"_cgstrate").val(0.00);
 				$("#invoice_tr_"+rowid+"_sgstrate").val(0.00);
-				$("#invoice_tr_"+rowid+"_cgstamount").val(0.00);
+				$("#invoice_tr_"+rowid+"_cgstamount").val(0.00);				
+				$("#invoice_tr_"+rowid+"_cgstamount").attr("data-invoice-tr-"+rowid+"-cgstamount", 0.00);
 				$("#invoice_tr_"+rowid+"_sgstamount").val(0.00);
+				$("#invoice_tr_"+rowid+"_sgstamount").attr("data-invoice-tr-"+rowid+"-sgstamount", 0.00);
 
 				$("#invoice_tr_"+rowid+"_cgstrate").prop("readonly", true);
 				$("#invoice_tr_"+rowid+"_sgstrate").prop("readonly", true);
@@ -851,10 +850,12 @@
 				var igstTax = parseFloat(currentIGSTRate);
 				var igstTaxAmount = (igstTax/100) * currentTrTaxableValue;
 				$("#invoice_tr_"+rowid+"_igstamount").val(igstTaxAmount.toFixed(2));
+				$("#invoice_tr_"+rowid+"_igstamount").attr("data-invoice-tr-"+rowid+"-igstamount", igstTaxAmount.toFixed(3));
 				
 				var cessTax = parseFloat(currentCESSRate);
 				var cessTaxAmount = (cessTax/100) * currentTrTaxableValue;
 				$("#invoice_tr_"+rowid+"_cessamount").val(cessTaxAmount.toFixed(2));
+				$("#invoice_tr_"+rowid+"_cessamount").attr("data-invoice-tr-"+rowid+"-cessamount", cessTaxAmount.toFixed(3));
 			}
 			/* end of calculation */
 
@@ -866,39 +867,30 @@
         /* calculate total invoice value function */
         function totalInvoiceValueCalculation() {
 
-			var supplierStateId = $("#supplier_billing_state").val();
-			var receiverStateId = $("#place_of_supply").val();
 			var totalInvoiceValue = 0.00;
-			var totalInvoiceWithoutTaxValue = 0.00;
 			var totalInvoiceCGSTValue = 0.00;
 			var totalInvoiceSGSTValue = 0.00;
 			var totalInvoiceIGSTValue = 0.00;
 			var totalInvoiceCESSValue = 0.00;
-			var invsupplyType = $('input[name=supply_type]:checked', '#create-invoice').val();
+
 			$( "tr.invoice_tr" ).each(function( index ) {
 
                 var rowid = $(this).attr("data-row-id");
 
-                if($("#invoice_tr_"+rowid+"_itemid").val() != '' && $("#invoice_tr_"+rowid+"_itemid").val() > 0) {
+                if($("#invoice_tr_"+rowid+"_recipientstate").val() != '' && $("#invoice_tr_"+rowid+"_recipientstate").val() > 0) {
 
 					var taxablevalue = parseFloat($("#invoice_tr_"+rowid+"_taxablevalue").val());
-                    var cgstamount = parseFloat($("#invoice_tr_"+rowid+"_cgstamount").val());
-                    var sgstamount = parseFloat($("#invoice_tr_"+rowid+"_sgstamount").val());
-                    var igstamount = parseFloat($("#invoice_tr_"+rowid+"_igstamount").val());
-					var cessamount = parseFloat($("#invoice_tr_"+rowid+"_cessamount").val());
+                    var cgstamount = parseFloat($("#invoice_tr_"+rowid+"_cgstamount").attr("data-invoice-tr-"+rowid+"-cgstamount"));
+                    var sgstamount = parseFloat($("#invoice_tr_"+rowid+"_sgstamount").attr("data-invoice-tr-"+rowid+"-sgstamount"));
+                    var igstamount = parseFloat($("#invoice_tr_"+rowid+"_igstamount").attr("data-invoice-tr-"+rowid+"-igstamount"));
+					var cessamount = parseFloat($("#invoice_tr_"+rowid+"_cessamount").attr("data-invoice-tr-"+rowid+"-cessamount"));
 
 					totalInvoiceCGSTValue += cgstamount;
 					totalInvoiceSGSTValue += sgstamount;
 					totalInvoiceIGSTValue += igstamount;
 					totalInvoiceCESSValue += cessamount;
 
-					if(invsupplyType == "reversecharge") {
-						totalInvoiceValue += taxablevalue;
-					} else {
-						totalInvoiceValue += (taxablevalue + cgstamount + sgstamount + igstamount + cessamount);
-					}
-
-					totalInvoiceWithoutTaxValue += taxablevalue;
+					totalInvoiceValue += (taxablevalue + cgstamount + sgstamount + igstamount + cessamount);
                 }
             });
 
@@ -910,26 +902,11 @@
 				return false;
 			}
 
-			if(invsupplyType == "reversecharge") {
-
-				$(".rvcamount .rvccgst span").html("-");
-				$(".rvcamount .rvccgstamount span").html(totalInvoiceCGSTValue.toFixed(2));
-
-				$(".rvcamount .rvcsgst span").html("-");
-				$(".rvcamount .rvcsgstamount span").html(totalInvoiceSGSTValue.toFixed(2));
-
-				$(".rvcamount .rvcigst span").html("-");
-				$(".rvcamount .rvcigstamount span").html(totalInvoiceIGSTValue.toFixed(2));
-
-				$(".rvcamount .rvccess span").html("-");
-				$(".rvcamount .rvccessamount span").html(totalInvoiceCESSValue.toFixed(2));
-			}
-
 			$.ajax({
                 data: {totalInvoiceValue:totalFinalInvoiceValue, action:"numberToWords"},
                 dataType: 'json',
                 type: 'post',
-                url: "<?php echo PROJECT_URL; ?>/?ajax=purchase_convert_number_to_words",
+                url: "<?php echo PROJECT_URL; ?>/?ajax=gstr6_convert_number_to_words",
                 success: function(response){
 
                     if(response.status == "success") {
@@ -948,20 +925,6 @@
 		/* calculate consolidate total function */
         function calculationConsolidateTotal() {
 
-			/* advance total sum */
-			var invoiceAdvanceTotal = 0.00;
-			$('input[name="invoice_advancevalue[]"]').each(function() {
-
-				if($.trim($(this).val()).length == 0 || $.trim($(this).val()).length == '' || $.trim($(this).val()) == '.') {
-					var invoiceRowAdvanceTotal = 0.00;
-				} else {
-					var invoiceRowAdvanceTotal = $(this).val();
-				}
-				
-				invoiceAdvanceTotal += parseFloat(invoiceRowAdvanceTotal);
-			});
-			$(".consolidateTotal .consolidateAdvanceTotal span").html(invoiceAdvanceTotal.toFixed(2));
-
 			/* taxable total sum */
 			var invoiceTaxableTotal = 0.00;
 			$('input[name="invoice_taxablevalue[]"]').each(function() {
@@ -971,11 +934,11 @@
 				} else {
 					var invoiceRowTaxableTotal = $(this).val();
 				}
-				
+
 				invoiceTaxableTotal += parseFloat(invoiceRowTaxableTotal);
 			});
 			$(".consolidateTotal .consolidateTaxableTotal span").html(invoiceTaxableTotal.toFixed(2));
-			
+
 			/* CGST total sum */
 			var invoiceCGSTTotal = 0.00;
 			$('input[name="invoice_cgstamount[]"]').each(function() {
@@ -989,7 +952,7 @@
 				invoiceCGSTTotal += parseFloat(invoiceRowCGSTTotal);
 			});
 			$(".consolidateTotal .consolidateCGSTTotal span").html(invoiceCGSTTotal.toFixed(2));
-			
+
 			/* SGST total sum */
 			var invoiceSGSTTotal = 0.00;
 			$('input[name="invoice_sgstamount[]"]').each(function() {
@@ -1013,11 +976,11 @@
 				} else {
 					var invoiceRowIGSTTotal = $(this).val();
 				}
-				
+
 				invoiceIGSTTotal += parseFloat(invoiceRowIGSTTotal);
 			});
 			$(".consolidateTotal .consolidateIGSTTotal span").html(invoiceIGSTTotal.toFixed(2));
-			
+
 			/* CESS total sum */
 			var invoiceCESSTotal = 0.00;
 			$('input[name="invoice_cessamount[]"]').each(function() {

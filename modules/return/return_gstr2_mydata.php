@@ -103,13 +103,13 @@ if (!empty($dataRes)) {
 								$total_inv+=$temp_total;
 								$inv_count++;
 							}
-							$taxable_amount+=$dataArr['taxable_subtotal'];
+							$taxable_amount+=$dataArr['taxable_total'];
 							$tax+=$dataArr['cgst']+$dataArr['sgst']+$dataArr['igst']+$dataArr['cess'];
 							if($dataArr['supply_type']=='reversecharge')
 							{
 								$itc+=$dataArr['cgst']+$dataArr['sgst']+$dataArr['igst']+$dataArr['cess'];
 							}
-							$temp_total= $dataArr['invoice_total_value'];
+							$temp_total= $dataArr['invoice_total'];
 							$temp=$dataArr['reference_number'];
 						}
 						if($temp!='')
@@ -216,25 +216,26 @@ if (!empty($dataRes)) {
         </tr>
         <tr>
           <?php $dataCDNArr=$data->getGstr2CDNQuery($_SESSION['user_detail']['user_id'],$returnmonth,'','','',$order_by);
+		
 						
 						$inv_count_cdn = 0;
 						$taxable_amount_cdn = $tax_cdn = $total_inv_cdn = $itc_cdn= $temp_total_cdn =  0;
 						$temp_cdn= '';
 						foreach($dataCDNArr as $dataCDN)
 						{
-							if($temp_cdn!='' && $temp_cdn!=$dataCDN->reference_number)
+							if($temp_cdn!='' && $temp_cdn!=$dataCDN['reference_number'])
 							{
 								$total_inv_cdn+=$temp_total_cdn;
 								$inv_count_cdn++;
 							}
-							$taxable_amount_cdn+=$dataCDN->taxable_subtotal;
-							$tax_cdn+=$dataCDN->igst+$dataCDN->cgst+$dataCDN->sgst+$dataCDN->cess;
-							if($dataCDN->supply_type=='reversecharge')
+							$taxable_amount_cdn+=$dataCDN['taxable_total'];
+							$tax_cdn+=$dataCDN['igst']+$dataCDN['cgst']+$dataCDN['sgst']+$dataCDN['cess'];
+							if($dataCDN['supply_type']=='reversecharge')
 							{
-								$itc_cdn+=$dataCDN->igst+$dataCDN->cgst+$dataCDN->sgst+$dataCDN->cess;
+								$itc_cdn+=$dataCDN['igst']+$dataCDN['cgst']+$dataCDN['sgst']+$dataCDN['cess'];
 							}
-							$temp_total_cdn= $dataCDN->invoice_total_value;
-							$temp_cdn=$dataCDN->reference_number;
+							$temp_total_cdn= $dataCDN['invoice_total'];
+							$temp_cdn=$dataCDN['reference_number'];
 						}
 						if($temp_cdn!='')
 						{
@@ -260,19 +261,19 @@ if (!empty($dataRes)) {
 						$temp= '';
 						foreach($dataB2BUR as $dataArr )
 						{
-							if($temp!='' && $temp!=$dataArr->reference_number)
+							if($temp!='' && $temp!=$dataArr['reference_number'])
 							{
 								$total_inv+=$temp_total;
 								$inv_count++;
 							}
-							$taxable_amount+=$dataArr->taxable_subtotal;
-							$tax+=$dataArr->cgst+$dataArr->sgst+$dataArr->igst+$dataArr->cess;
-							if($dataArr->supply_type=='reversecharge')
+							$taxable_amount+=$dataArr['taxable_subtotal'];
+							$tax+=$dataArr['cgst']+$dataArr['sgst']+$dataArr['igst']+$dataArr['cess'];
+							if($dataArr['supply_type']=='reversecharge')
 							{
-								$itc+=$dataArr->cgst+$dataArr->sgst+$dataArr->igst+$dataArr->cess;
+								$itc+=$dataArr['cgst']+$dataArr['sgst']+$dataArr['igst']+$dataArr['cess'];
 							}
-							$temp_total= $dataArr->invoice_total_value ;
-							$temp=$dataArr->reference_number;
+							$temp_total= $dataArr['invoice_total_value'];
+							$temp=$dataArr['reference_number'];
 						}
 						if($temp!='')
 						{
@@ -298,19 +299,19 @@ if (!empty($dataRes)) {
 						$temp_cdnur= '';
 						foreach($dataCDNURArr as $dataCDNur)
 						{
-							if($temp_cdnur!='' && $temp_cdnur!=$dataCDNur->reference_number)
+							if($temp_cdnur!='' && $temp_cdnur!=$dataCDNur['reference_number'])
 							{
 								$inv_count_cdnur++;
 								$total_inv_cdnur+=$temp_total_cdnur;
 							}
-							$taxable_amount_cdnur+= $dataCDNur->taxable_subtotal;
-							$tax_cdnur+=$dataCDNur->igst+$dataCDNur->cgst+$dataCDNur->sgst+$dataCDNur->cess;
-							if($dataCDN->supply_type=='reversecharge')
+							$taxable_amount_cdnur+= $dataCDNur['taxable_total'];
+							$tax_cdnur+=$dataCDNur['igst']+$dataCDNur['cgst']+$dataCDNur['sgst']+$dataCDNur['cess'];
+							if($dataCDN['supply_type']=='reversecharge')
 							{
-								$itc_cdnur+=$dataCDNur->igstamount+$dataCDNur->cgstamount+$dataCDNur->sgstamount+$dataCDNur->cessamount;
+								$itc_cdnur+=$dataCDNur['igst']+$dataCDNur['cgst']+$dataCDNur['sgstamount']+$dataCDNur['cessamount'];
 							}
-							$temp_total_cdnur= $dataCDNur->invoice_total_value;
-							$temp_cdnur=$dataCDNur->reference_number;
+							$temp_total_cdnur= $dataCDNur['invoice_total'];
+							$temp_cdnur=$dataCDNur['reference_number'];
 							
 						}
 						if($temp_cdnur!='')

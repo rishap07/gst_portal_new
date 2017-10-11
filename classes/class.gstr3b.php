@@ -1162,8 +1162,12 @@ final class gstr3b extends validation {
 		}
 	public function finalSubmitGstr3b()
 	{
+			
 		$obj_gst = new gstr();
-        $fmonth = isset($_GET['returnmonth']) ? $_GET['returnmonth'] : date('Y-m');
+		$fmonth = isset($_GET['returnmonth']) ? $_GET['returnmonth'] : date('Y-m');
+		$return_id =   isset($_POST['returnid']) ? $_POST['returnid'] : '';
+		$userid = $_SESSION['user_detail']['user_id'];
+		
         $response = $obj_gst->returnSubmit($fmonth,'gstr3b');
 		//$obj_gst->pr($response);
 		$flag = 0;
@@ -1182,6 +1186,12 @@ final class gstr3b extends validation {
         if ($flag == 1) {
             //$this->setSuccess($response['message']);
             $obj_gst->setSuccess(" Congratulations! GSTR3B Data Submitted.");
+		
+			 if($this->update(TAB_PREFIX.'client_return_gstr3b', array('final_submit' => 1), array('added_by'=>$userid,"financial_month"=>$fmonth,'return_id' => $return_id)))
+			 {
+			 $this->setSuccess('GSTR3B Submitted Successfully');
+			 return true;
+			 }
             return true;
         }
         elseif ($flag == 2) {
@@ -1419,8 +1429,7 @@ final class gstr3b extends validation {
 		$return_id =   isset($_POST['returnid']) ? $_POST['returnid'] : '';
 		$fmonth =   $this->sanitize($_GET['returnmonth']);
 		$userid = $_SESSION['user_detail']['user_id'];
-       
-		$obj_gst = new gstr();
+     	$obj_gst = new gstr();
         $payload = $this->gstr3bData($userid, $fmonth);
 		//$this->pr($payload);
 		//echo  json_encode($payload);
@@ -1433,7 +1442,7 @@ final class gstr3b extends validation {
            $this->setError($response['message']);
 		}
 		else if($response['error'] == 0) {
-			 $this->setSuccess('GSTR3B return month of '.$fmonth.'submitted successfully');
+			 $this->setSuccess('GSTR3B return month of '.$fmonth.' '.'uploaded successfully to GSTN');
 		} 
         else
 		{

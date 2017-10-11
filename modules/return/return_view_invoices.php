@@ -244,25 +244,25 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                     $invCount = 0;
                                     if (!empty($b2clData)) {
                                         foreach ($b2clData as $key => $b2clDatavalue) {
-                                            if($invoice_temp!='' and $invoice_temp!=$b2clDatavalue->invoice_id)
+                                            if($invoice_temp!='' and $invoice_temp!=$b2clDatavalue->reference_number)
                                             {
                                                 $invCount++;
-                                                $invoice_total_value +=$invoice_total_value_temp;
+                                                //$invoice_total_value +=$invoice_total_value_temp;
                                                 $sumTotal +=$sumTotal_temp;
                                             }
-                                            $invoice_total_value_temp = isset($b2clDatavalue->taxable_subtotal)?$b2clDatavalue->taxable_subtotal:0;
+                                            $invoice_total_value += isset($b2clDatavalue->taxable_subtotal)?$b2clDatavalue->taxable_subtotal:0;
                                             $total += $b2clDatavalue->cgst_amount + $b2clDatavalue->sgst_amount + $b2clDatavalue->igst_amount + $b2clDatavalue->cess_amount;
                                             $igstTotal += $b2clDatavalue->igst_amount;
                                             $sgstTotal += $b2clDatavalue->sgst_amount;
                                             $cgstTotal += $b2clDatavalue->cgst_amount;
                                             $cessTotal += $b2clDatavalue->cess_amount;
                                             $sumTotal_temp = isset($b2clDatavalue->invoice_total_value)?$b2clDatavalue->invoice_total_value:0;
-                                            $invoice_temp=$b2clDatavalue->invoice_id;
+                                            $invoice_temp=$b2clDatavalue->reference_number;
                                         }
                                         if($invoice_temp!='')
                                         {
                                             $invCount++;
-                                            $invoice_total_value +=$invoice_total_value_temp;
+                                            //$invoice_total_value +=$invoice_total_value_temp;
                                             $sumTotal +=$sumTotal_temp;
                                         }
                                     }
@@ -312,25 +312,25 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                     $invCount = 0;
                                     if (!empty($cdnrData)) {
                                         foreach ($cdnrData as $key => $cdnrDatavalue) {
-                                            if($invoice_temp!='' and $invoice_temp!=$cdnrDatavalue->invoice_id)
+                                            if($invoice_temp!='' and $invoice_temp!=$cdnrDatavalue->reference_number)
                                             {
                                                 $invCount++;
-                                                $invoice_total_value +=$invoice_total_value_temp;
+                                                //$invoice_total_value +=$invoice_total_value_temp;
                                                 $sumTotal +=$sumTotal_temp;
                                             }
-                                            $invoice_total_value_temp = isset($cdnrDatavalue->taxable_subtotal)?$cdnrDatavalue->taxable_subtotal:0;
+                                            $invoice_total_value += isset($cdnrDatavalue->taxable_subtotal)?$cdnrDatavalue->taxable_subtotal:0;
                                             $total += $cdnrDatavalue->cgst_amount + $cdnrDatavalue->sgst_amount + $cdnrDatavalue->igst_amount + $cdnrDatavalue->cess_amount;
                                             $igstTotal += $cdnrDatavalue->igst_amount;
                                             $sgstTotal += $cdnrDatavalue->sgst_amount;
                                             $cgstTotal += $cdnrDatavalue->cgst_amount;
                                             $cessTotal += $cdnrDatavalue->cess_amount;
                                             $sumTotal_temp = isset($cdnrDatavalue->invoice_total_value)?$cdnrDatavalue->invoice_total_value:0;
-                                            $invoice_temp=$cdnrDatavalue->invoice_id;
+                                            $invoice_temp=$cdnrDatavalue->reference_number;
                                         }
                                         if($invoice_temp!='')
                                         {
                                             $invCount++;
-                                            $invoice_total_value +=$invoice_total_value_temp;
+                                            //$invoice_total_value +=$invoice_total_value_temp;
                                             $sumTotal +=$sumTotal_temp;
                                         }
                                     }
@@ -348,25 +348,25 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                     $invCount = 0;
                                     if (!empty($cdnurData)) {
                                         foreach ($cdnurData as $key => $cdnurDatavalue) {
-                                            if($invoice_temp!='' and $invoice_temp!=$cdnurDatavalue->invoice_id)
+                                            if($invoice_temp!='' and $invoice_temp!=$cdnurDatavalue->reference_number)
                                             {
                                                 $invCount++;
-                                                $invoice_total_value +=$invoice_total_value_temp;
+                                                //$invoice_total_value +=$invoice_total_value_temp;
                                                 $sumTotal +=$sumTotal_temp;
                                             }
-                                            $invoice_total_value = isset($cdnurDatavalue->taxable_subtotal)?$cdnurDatavalue->taxable_subtotal:0;
+                                            $invoice_total_value += isset($cdnurDatavalue->taxable_subtotal)?$cdnurDatavalue->taxable_subtotal:0;
                                             $invoice_total_value_temp =  $cdnurDatavalue->igst_amount + $cdnurDatavalue->cess_amount;
                                             $igstTotal += $cdnurDatavalue->igst_amount;
                                             $sgstTotal += $cdnurDatavalue->sgst_amount;
                                             $cgstTotal += $cdnurDatavalue->cgst_amount;
                                             $cessTotal += $cdnurDatavalue->cess_amount;
                                             $sumTotal_temp = isset($cdnurDatavalue->invoice_total_value)?$cdnurDatavalue->invoice_total_value:0;
-                                            $invoice_temp=$cdnurDatavalue->invoice_id;
+                                            $invoice_temp=$cdnurDatavalue->reference_number;
                                         }
                                         if($invoice_temp!='')
                                         {
                                             $invCount++;
-                                            $invoice_total_value +=$invoice_total_value_temp;
+                                            //$invoice_total_value +=$invoice_total_value_temp;
                                             $sumTotal +=$sumTotal_temp;
                                         }
                                     }
@@ -422,25 +422,25 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                     if (!empty($expData)) {
                                         $invoice_temp='';
                                         foreach ($expData as $key => $expDatavalue) {
-                                            if($invoice_temp!='' and $invoice_temp!=$expDatavalue->invoice_id)
+                                            if($invoice_temp!='' and $invoice_temp!=$expDatavalue->reference_number)
                                             {
                                                 $invCount++;
-                                                $invoice_total_value +=$invoice_total_value_temp;
+                                                //$invoice_total_value +=$invoice_total_value_temp;
                                                 $sumTotal +=$sumTotal_temp;
                                             }
-                                            $invoice_total_value_temp = isset($expDatavalue->taxable_subtotal)?$expDatavalue->taxable_subtotal:0;
+                                            $invoice_total_value += isset($expDatavalue->taxable_subtotal)?$expDatavalue->taxable_subtotal:0;
                                             $total += $expDatavalue->cgst_amount + $expDatavalue->sgst_amount + $expDatavalue->igst_amount + $expDatavalue->cess_amount;
                                             $igstTotal += $expDatavalue->igst_amount;
                                             $sgstTotal += $expDatavalue->sgst_amount;
                                             $cgstTotal += $expDatavalue->cgst_amount;
                                             $cessTotal += $expDatavalue->cess_amount;
                                             $sumTotal_temp = isset($expDatavalue->invoice_total_value)?$expDatavalue->invoice_total_value:0;
-                                            $invoice_temp=$expDatavalue->invoice_id;
+                                            $invoice_temp=$expDatavalue->reference_number;
                                         }
                                         if($invoice_temp!='')
                                         {
                                             $invCount++;
-                                            $invoice_total_value +=$invoice_total_value_temp;
+                                           // $invoice_total_value +=$invoice_total_value_temp;
                                             $sumTotal +=$sumTotal_temp;
                                         }
                                     }
@@ -528,7 +528,13 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                             <?php //} ?>
                                             <input itype="<?php echo $type?>" type="submit" name="submit_dwn" id="down" value="Download GSTR1" class="btn btn-warning ">
                                             &nbsp;&nbsp;
+                                            <?php
+                                            $sql = "select id from " . $obj_gstr1->getTableName('gstr1_return_summary') . " where return_period='" . $returnmonth . "' and added_by='" . $_SESSION['user_detail']['user_id'] . "' and is_uploaded='1' and status = '1' "; 
+                                            $dataReturn = $obj_gstr1->get_results($sql);
+                                            if(!empty($dataReturn)) { ?>
                                             <input  type="submit" name="submit_freeze" id="freeze" value="Final Submit To GSTN" class="btn btn-primary ">
+                                            <?php } ?>
+                                            
                                         </div>
                                         <div class="clear"></div><br>
                                     <?php } 
@@ -583,7 +589,14 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                                 <th align='left'>Total SGST</th>
                                                 <th align='left'>Total CGST</th>
                                                 <th align='left'>Total Cess</th>
+                                                <?php if($type=='B2CS' || $type=='AT') { ?>
+                                                    <th align='left'>Total Tax</th>
+                                                <?php } 
+
+                                                else { ?>
                                                 <th align='left'>Total Amount</th>
+                                                <?php  } ?>
+                                                
                                             </tr>
                                             <tr>
                                                 <td><?php echo $invCount;?></td>
@@ -592,7 +605,13 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                                 <td><?php echo $sgstTotal; ?></td>
                                                 <td><?php echo $cgstTotal; ?></td>
                                                 <td><?php echo $cessTotal; ?></td>
+                                                <?php if($type=='B2CS' || $type=='AT') { ?>
+                                                    <td><?php echo $igstTotal+$sgstTotal+$cgstTotal+$cessTotal; ?></td>
+                                                <?php } 
+                                                else { ?>
                                                 <td><?php echo $sumTotal; ?></td>
+                                                <?php } ?>
+                                                
                                             </tr>
                                         </thead>
                                     </table>
@@ -646,28 +665,26 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                                         <th align='left'>No.</th>
                                                         <th align='left'>Date</th>
                                                         <th align='left'>Invoice Number</th>
-                                                        <!-- <th align='left'>Customer</th> -->
+                                                        
                                                         <?php
-                                                        if($type!='B2CL' && $type!='B2CS' && $type!='CDNUR')
+                                                        if($type!='B2CL' && $type!='B2CS' && $type!='CDNUR' &&  $type!='AT')
                                                         {
                                                         ?>
                                                         <th align='left'>GSTIN</th>
                                                         <?php
                                                         }
-                                                        else { ?>
-                                                        <th align='left'></th>
-
-                                                        <?php }
                                                         ?>
+                                                        
                                                         <th style='text-align:right'>Taxable AMT</th>
+                                                        <th align='left'>Rate</th>
                                                         <th style='text-align:right'>Total Tax</th>
-                                                        <th style='text-align:right'>Total Amt</th>
-                                                        <?php if($type == 'AT' || $type == 'B2CS') { ?>
-                                                            <th align='center'>Pos</th>
-                                                        <?php } 
-                                                        else { ?>
-                                                            <th align='center'>Type</th>
+                                                         <?php if($type!='B2CS' && $type != 'AT' ) { ?>
+                                                           <th style='text-align:right'>Total Amt</th>
                                                         <?php } ?>
+                                                        <?php if($type == 'B2B' ) { ?>
+                                                            <th align='center'>Type</th>
+                                                        <?php }  ?>
+                                                        <th align='center'>POS</th>
                                                         <th align='center'>Status</th>
                                                         <!-- <th align='center'></th> -->
                                                     </tr>
@@ -759,16 +776,27 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                                                         <td align='left'><?php echo $i++;?></td>
                                                                         <td align='left'><?php echo $invoice_date;?></td>
                                                                         <td align='left'><?php echo $reference_number;?></td>
-                                                                        <!-- <td align='left'><?php echo $billing_name;?></td> -->
+                                                                        <?php
+                                                                        if($type!='B2CL' && $type!='B2CS' && $type!='CDNUR' &&  $type!='AT')
+                                                                        {
+                                                                        ?>
                                                                         <td align='left'><?php echo $billing_gstin_number;?></td>
-                                                                        <td style='text-align:right'><?php echo $taxable_subtotal;?></td>
-                                                                        <td style='text-align:right'><?php echo $tax?></td>
-                                                                        <td style='text-align:right'><?php echo $invoice_total_value;?></td>
-                                                                        <?php if($type == 'AT' || $type == 'B2CS' ) {
-                                                                            $status = $pos;
+                                                                        <?php
                                                                         }
                                                                         ?>
-                                                                        <td align='center'><?php echo $status; ?></td>
+                                                                        
+                                                                        
+                                                                        <td style='text-align:right'><?php echo $taxable_subtotal;?></td>
+                                                                        <td align='left'><?php echo $rate;?></td> 
+                                                                        <td style='text-align:right'><?php echo $tax?></td>
+                                                                        <?php if($type!='B2CS'  && $type!='AT') { ?>
+                                                                           <td style='text-align:right'><?php echo $invoice_total_value;?></td>
+                                                                        <?php } ?>
+
+                                                                        <?php if($type == 'B2B') { ?>
+                                                                            <td align='center'><?php echo $Item->invoice_type;; ?></td>
+                                                                        <?php } ?>
+                                                                        <td align='center'><?php echo $pos; ?></td>
                                                                         <td align='center'><?php echo $is_uploaded;?></td>
                                                                         <?php 
                                                                         //$obj_gstr1->pr($Item->is_gstr1_uploaded);
@@ -807,14 +835,15 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                                                     $invoice_date = $Item->invoice_date;
                                                                     $reference_number = $Item->reference_number;
                                                                     $billing_name = isset($Item->billing_name)?$Item->billing_name:'';
+                                                                    $rate = isset($Item->rate)?$Item->rate:'';
                                                                     $billing_gstin_number = $Item->billing_gstin_number;
                                                                     $taxable_subtotal = $Item->taxable_subtotal;
                                                                     $invoice_total_value = $Item->invoice_total_value;
-                                                                    $is_uploaded =  (isset($Item->is_gstr1_uploaded) && $Item->is_gstr1_uploaded=='0') ? 'Pending':'Uploaded';
+                                                                    $is_uploaded =  (isset($Item->is_uploaded) && $Item->is_uploaded=='0') ? 'Pending':'Uploaded';
                                                                     $invoice_type = $Item->invoice_type;
                                                                     $tax += $Item->cgst_amount + $Item->sgst_amount + $Item->igst_amount + $Item->cess_amount;
                                                                     $temp_inv=$Item->invoice_id;
-                                                                    $pos = $Item->supply_place;
+                                                                    $pos = $obj_gstr->place_of_supply($Item->supply_place);
                                                                 }
                                                                 if($temp_inv!='')   
                                                                 {
@@ -826,16 +855,27 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                                                         <td align='left'><?php echo $i++;?></td>
                                                                         <td align='left'><?php echo $invoice_date;?></td>
                                                                         <td align='left'><?php echo $reference_number;?></td>
-                                                                        <!-- <td align='left'><?php echo $billing_name;?></td> -->
+                                                                        
+                                                                        <?php
+                                                                        if($type!='B2CL' && $type!='B2CS' && $type!='CDNUR' &&  $type!='AT')
+                                                                        {
+                                                                        ?>
                                                                         <td align='left'><?php echo $billing_gstin_number;?></td>
-                                                                        <td style='text-align:right'><?php echo $taxable_subtotal;?></td>
-                                                                        <td style='text-align:right'><?php echo $tax?></td>
-                                                                        <td style='text-align:right'><?php echo $invoice_total_value;?></td>
-                                                                        <?php if($type == 'AT'  || $type == 'B2CS' ) {
-                                                                            $status = $pos;
+                                                                        <?php
                                                                         }
                                                                         ?>
-                                                                        <td align='center'><?php echo $status; ?></td>
+                                                                        <td style='text-align:right'><?php echo $taxable_subtotal;?></td>
+                                                                        <td align='left'><?php echo $rate;?></td> 
+
+                                                                        <td style='text-align:right'><?php echo $tax?></td>
+                                                                        <?php if($type!='B2CS' && $type!='AT') { ?>
+                                                                           <td style='text-align:right'><?php echo $invoice_total_value;?></td>
+                                                                        <?php } ?>
+                                                                        
+                                                                        <?php if($type == 'B2B') { ?>
+                                                                            <td align='center'><?php echo $Item->invoice_type; ?></td>
+                                                                        <?php } ?>
+                                                                        <td align='center'><?php echo $pos; ?></td>
                                                                         <td align='center'><?php echo $is_uploaded;?></td>
                                                                         <?php 
                                                                         //$obj_gstr1->pr($Item->is_gstr1_uploaded);

@@ -89,7 +89,7 @@ if ($_REQUEST['returnmonth'] != '') {
                                             <th>Type Of Invoice</th>
                                             <th style="text-align:right">No. Invoices</th>
                                             <th style="text-align:right">Taxable Amount ( <i class="fa fa-inr"></i> )</th>
-                                              <th style="text-align:right">CGST ( <i class="fa fa-inr"></i> )</th>
+                                            <th style="text-align:right">CGST ( <i class="fa fa-inr"></i> )</th>
 											<th style="text-align:right">SGSt ( <i class="fa fa-inr"></i> )</th>
 										    <th style="text-align:right">IGST ( <i class="fa fa-inr"></i> )</th>
 											<th style="text-align:right">CESS ( <i class="fa fa-inr"></i> )</th>

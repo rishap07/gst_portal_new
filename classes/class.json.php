@@ -601,7 +601,7 @@ class json extends validation
 		inv.supplier_billing_gstin_number,
 		inv.reference_number,
 		inv.invoice_date,
-		inv.invoice_total_value as invoice_total_value,
+		inv.invoice_total_value as invoice_total,
 		inv.company_state,
 		inv.supply_type,
 		inv.invoice_type,
@@ -613,7 +613,7 @@ class json extends validation
 		ms.state_tin as place_of_supply,
 		it.consolidate_rate,
 		inv.reason_issuing_document,
-		sum(it.taxable_subtotal) as taxable_subtotal 
+		sum(it.taxable_subtotal) as taxable_total 
 		from '.$client_purchase_invoice.' inv 
 		inner join '.$client_purchase_invoice_item.' it on inv.purchase_invoice_id=it.purchase_invoice_id 							
 		inner join '.$master_state.' ms on ms.state_id=inv.supply_place
@@ -647,7 +647,7 @@ class json extends validation
 		{
 			$query .="order by  ".$order_by." ";
 		}
-		//echo $query."<br>";
+//		echo $query."<br>";
 		return $this->get_results($query,$arr_type=false);
 	}
 	
@@ -1174,36 +1174,36 @@ class json extends validation
 	//get gstr2 IMPG Payload 
 	public function getGstr2IMPGPayload($userid,$financialMonth)
 	{
-		$data= $this->getGstr2IMPGQuery($userid,$financialMonth);
-		$dataArr=array();
-		$x=$y=$z=0;
-		$sply_ty=$temp_ctin=$temp_inv='';
-		$count=1;
-		if(count($data)>0)
-		{
-			foreach($data as $GstrIMPG)
-			{
-				if($temp_inv!='' and $temp_inv!=$GstrIMPG['reference_number'])
-				{
-					$y=0;
-					$x++;
-				}
-				$dataArr[$x]['is_sez']=($GstrIMPG['invoice_type']=='sezunitinvoice')?'Y':'N';
-				$dataArr[$x]['stin']=$GstrIMPG['company_gstin_number'];
-				$dataArr[$x]['boe_num']= $GstrIMPG['import_bill_number'];
-				$dataArr[$x]['boe_dt']= ($GstrIMPG['import_bill_date']=='0000-00-00')?'':date('d-m-Y',strtotime($GstrIMPG['import_bill_date']));
-				$dataArr[$x]['boe_val']= (float)$GstrIMPG['invoice_total'];
-				$dataArr[$x]['port_code']= $GstrIMPG['import_bill_port_code'];
-				$dataArr[$x]['itms'][$y]['num']= $y+$count;
-				$dataArr[$x]['itms'][$y]['txval']= (float)$GstrIMPG['taxable_total'];
-				$dataArr[$x]['itms'][$y]['rt']= (float)$GstrIMPG['consolidate_rate'];
-				$dataArr[$x]['itms'][$y]['iamt']= (float)$GstrIMPG['igst'];
-				$dataArr[$x]['itms'][$y]['csamt']=(float) $GstrIMPG['cess'];
-				$temp_ctin=$GstrIMPG['supplier_billing_gstin_number'];
-				$temp_inv=$GstrIMPG['reference_number'];
-				$y++;
-			}
-		}
+            $data= $this->getGstr2IMPGQuery($userid,$financialMonth);
+            $dataArr=array();
+            $x=$y=$z=0;
+            $sply_ty=$temp_ctin=$temp_inv='';
+            $count=1;
+            if(count($data)>0)
+            {
+                foreach($data as $GstrIMPG)
+                {
+                    if($temp_inv!='' and $temp_inv!=$GstrIMPG['reference_number'])
+                    {
+                            $y=0;
+                            $x++;
+                    }
+                    $dataArr[$x]['is_sez']=($GstrIMPG['invoice_type']=='sezunitinvoice')?'Y':'N';
+                    $dataArr[$x]['stin']=$GstrIMPG['company_gstin_number'];
+                    $dataArr[$x]['boe_num']= $GstrIMPG['import_bill_number'];
+                    $dataArr[$x]['boe_dt']= ($GstrIMPG['import_bill_date']=='0000-00-00')?'':date('d-m-Y',strtotime($GstrIMPG['import_bill_date']));
+                    $dataArr[$x]['boe_val']= (float)$GstrIMPG['invoice_total'];
+                    $dataArr[$x]['port_code']= $GstrIMPG['import_bill_port_code'];
+                    $dataArr[$x]['itms'][$y]['num']= $y+$count;
+                    $dataArr[$x]['itms'][$y]['txval']= (float)$GstrIMPG['taxable_total'];
+                    $dataArr[$x]['itms'][$y]['rt']= (float)$GstrIMPG['consolidate_rate'];
+                    $dataArr[$x]['itms'][$y]['iamt']= (float)$GstrIMPG['igst'];
+                    $dataArr[$x]['itms'][$y]['csamt']=(float) $GstrIMPG['cess'];
+                    $temp_ctin=$GstrIMPG['supplier_billing_gstin_number'];
+                    $temp_inv=$GstrIMPG['reference_number'];
+                    $y++;
+                }
+            }
 		return $dataArr;
 	}	
 	
@@ -1505,6 +1505,40 @@ class json extends validation
 		return $this->get_results($query);
 	}
 	
+	public function getGst2ReconcileQuery($userid,$financialMonth,$type='',$ids='',$order_by='',$group_by='',$array_type=true)
+        {
+            $creconcile_purchase_invoice1=$this->tableNames['client_reconcile_purchase_invoice1'];
+            $query='select id,
+                    type,
+                    reference_number,
+                    invoice_date,
+                    invoice_total_value as invoice_total,
+                    invoice_type,
+                    total_taxable_subtotal as taxable_total ,
+                    invoice_status,
+                    company_gstin_number,
+                    total_cgst_amount as cgst,
+                    total_sgst_amount as sgst,
+                    total_igst_amount as igst,
+                    total_cess_amount as cess,
+                    financial_month from 
+                    '.$creconcile_purchase_invoice1.'
+                    where added_by='.$userid.'
+                    and invoice_date like "'.$financialMonth.'%" 
+                    and status="1" 
+                    and company_gstin_number!=""';
+        if($order_by=='')
+            {
+                $query.=' order by reference_number';
+            }else
+            {
+                $query.=' order by '.$order_by.'';
+            }
+            return $this->get_results($query,false);        
+                    
+        }
+        
+        
 }
 
  ?>

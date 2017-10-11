@@ -95,6 +95,7 @@
 				
 			</div>
 			<?php 
+				//echo $_SESSION['user_detail']['user_id'];
 				$responseCDN = $obj_gstr2->checkUserInvoices($_SESSION['user_detail']['user_id'],$returnmonth,'CDN');
 				$responseB2B = $obj_gstr2->checkUserInvoices($_SESSION['user_detail']['user_id'],$returnmonth,'B2B');
 				$responseTableB2B = $responseTableCDN = '';
