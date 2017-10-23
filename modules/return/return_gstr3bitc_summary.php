@@ -24,9 +24,6 @@ $returnmonth = date('Y-m');
 if ($_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
 }
-$resultdata = $obj_gstr3b->getSubmitGSTR3bData();
-//$resultdata = $obj_gstr->returnSummary($returnmonth,'','gstr3b');
-//$obj_gstr3b->pr($resultdata);die;
 $total_igst_other=0;
 $total_cgst_other=0;
 $total_sgst_other=0;
@@ -43,17 +40,81 @@ $paidcash_liab_ldg_id1='';
 $paidcash_trans_type1='';
 $paidcash_liab_ldg_id2='';
 $paidcash_trans_type2='';
+$resultdata = $obj_gstr3b->getCashItcDetails($returnmonth); 
+//$obj_gstr3b->pr($resultdata);
+$data = 
+$cash_bal = $resultdata->cash_bal;
+$itc_balance = $resultdata->itc_bal;
 
-
-
-if(!empty($resultdata))
+if(!empty($itc_balance))
 {
-	$itc_eligible = $resultdata->itc_elg;
+ $total_net_sgst = $itc_balance->sgst_bal;
+ $total_net_igst = $itc_balance->igst_bal;
+ $total_net_cgst = $itc_balance->cgst_bal;
+ $total_net_cess = $itc_balance->cess_bal;
+ 
+}
+if(!empty($cash_bal))
+{
+	//print_r($cash_bal->sgst);
+	if(!empty($cash_bal->sgst))
+	{
+	$sgst_arr = $cash_bal->sgst;
+	$total_sgst_intr=$sgst_arr->intr;
+	$total_sgst_oth=$sgst_arr->oth;
+	$total_sgst_tx=$sgst_arr->tx;
+	$total_sgst_fee=$sgst_arr->fee;
+	$total_sgst_pen=$sgst_arr->pen;
+	$total_sgst_other=$cash_bal->sgst_tot_bal;
+	}
+	if(!empty($cash_bal->igst))
+	{
+	$igst_arr = $cash_bal->igst;
+	$total_igst_intr=$igst_arr->intr;
+	$total_igst_oth=$igst_arr->oth;
+	$total_igst_tx=$igst_arr->tx;
+	$total_igst_fee=$igst_arr->fee;
+	$total_igst_pen=$igst_arr->pen;
+	$total_igst_other=$cash_bal->igst_tot_bal;
+	}
+	if(!empty($cash_bal->cgst))
+	{
+	$cgst_arr = $cash_bal->cgst;
+	$total_cgst_intr=$cgst_arr->intr;
+	$total_cgst_oth=$cgst_arr->oth;
+	$total_cgst_tx=$cgst_arr->tx;
+	$total_cgst_fee=$cgst_arr->fee;
+	$total_cgst_pen=$cgst_arr->pen;
+	$total_cgst_other=$cash_bal->cgst_tot_bal;
+	}
+	if(!empty($cash_bal->cess))
+	{
+	$cess_arr = $cash_bal->cess;
+	$total_cess_intr=$cess_arr->intr;
+	$total_cess_oth=$cess_arr->oth;
+	$total_cess_tx=$cess_arr->tx;
+	$total_cess_fee=$cess_arr->fee;
+	$total_cess_pen=$cess_arr->pen;
+	$total_cess_other=$cash_bal->sgst_tot_bal;
+	}
+	
+}
+
+$resultdata1 = $obj_gstr3b->getSubmitGSTR3bData($returnmonth);
+//$resultdata = $obj_gstr->returnSummary($returnmonth,'','gstr3b');
+//$obj_gstr3b->pr($resultdata);die;
+
+
+
+
+if(!empty($resultdata1))
+{
+	$itc_eligible = $resultdata1->itc_elg;
 	//$obj_gstr3b->pr($itc_eligible);
 	$itc_available = $itc_eligible->itc_avl;
 	$itc_reverse = $itc_eligible->itc_rev;
 	$itc_net = $itc_eligible->itc_net;
-	$tax_pmt = $resultdata->tx_pmt;
+	$tax_pmt = $resultdata1->tx_pmt;
 	$tx_py = $tax_pmt->tx_py;
 	//$obj_gstr3b->pr($tx_py);
 	if(!empty($tx_py))
@@ -73,6 +134,7 @@ if(!empty($resultdata))
 			}
 		}
 	}
+	
 	if(!empty($itc_available))
 	{
 		foreach($itc_available as $item)
@@ -86,6 +148,8 @@ if(!empty($resultdata))
 			
 		}
 	}
+	
+	
 	if(!empty($itc_reverse))
 	{
 		foreach($itc_reverse as $item)
@@ -99,6 +163,7 @@ if(!empty($resultdata))
 			
 		}
 	}
+/*
 	if(!empty($itc_net))
 	{
 		
@@ -111,6 +176,7 @@ if(!empty($resultdata))
 			
 		
 	}
+	*/
 }
 echo "TotalIGST Available".$total_net_igst;
 echo "<br>";

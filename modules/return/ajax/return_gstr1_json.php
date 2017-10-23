@@ -40,36 +40,35 @@ if(!empty($jstr1_array)) {
                             if($jstr1_value['sec_nm'] == 'DOC_ISSUE') {
                                 $doc_issue_array = $jstr1_value;
                             }
-                            else {
-                                $invoice_number = $jstr1_value['ttl_rec'];
-                                $ttl_val = isset($jstr1_value['ttl_val'])?$jstr1_value['ttl_val']:0;
-                                $ttl_tax = isset($jstr1_value['ttl_tax'])?$jstr1_value['ttl_tax']:0;
-                                $ttl_igst = isset($jstr1_value['ttl_igst'])?$jstr1_value['ttl_igst']:0;
-                                $ttl_cgst = isset($jstr1_value['ttl_cgst'])?$jstr1_value['ttl_cgst']:0;
-                                $ttl_cess = isset($jstr1_value['ttl_cess'])?$jstr1_value['ttl_cess']:0;
-                                $ttl_sgst = isset($jstr1_value['ttl_sgst'])?$jstr1_value['ttl_sgst']:0;
-                                $response .= '<tr>
-                                    <td>'.$jstr1_value['sec_nm'].'</td>
-                                    <td align="right">'.$invoice_number.'</td>
-                                    <td align="right">'.$ttl_tax.'</td>
-                                    <td align="right">'.$ttl_igst.'</td>
-                                    <td align="right">'.$ttl_cgst.'</td>
-                                    <td align="right">'.$ttl_cess.'</td>
-                                    <td align="right">'.$ttl_sgst.'</td>
-                                    <td align="right">'.$ttl_val.'</td>
-                                    <td align="right">';
-                                    if($invoice_number>0) {
-                                        $response .= ' <a class="gstr1ViewBtn" href="'.PROJECT_URL.'?page=return_get_summary_view&type='.$jstr1_value['sec_nm'].'&returnmonth='.$returnmonth.'" target="_blank">view</a>';
-                                    }
-                                   
-                                    $response .= '</td><td align="right">';
-                                    if($invoice_number>0) {
-                                        //$response .= '<a href="javascript:;" class="gstr1ViewDeleteBtn" type="'.$jstr1_value['sec_nm'].'" deleteall="all"><i class="fa fa-trash"></i></a>';
-                                    }
-                                   
-                                    $response .= '</td>
-                                </tr>';
-                            }
+                            $invoice_number = $jstr1_value['ttl_rec'];
+                            $ttl_val = isset($jstr1_value['ttl_val'])?$jstr1_value['ttl_val']:0;
+                            $ttl_tax = isset($jstr1_value['ttl_tax'])?$jstr1_value['ttl_tax']:0;
+                            $ttl_igst = isset($jstr1_value['ttl_igst'])?$jstr1_value['ttl_igst']:0;
+                            $ttl_cgst = isset($jstr1_value['ttl_cgst'])?$jstr1_value['ttl_cgst']:0;
+                            $ttl_cess = isset($jstr1_value['ttl_cess'])?$jstr1_value['ttl_cess']:0;
+                            $ttl_sgst = isset($jstr1_value['ttl_sgst'])?$jstr1_value['ttl_sgst']:0;
+                            $response .= '<tr>
+                                <td>'.$jstr1_value['sec_nm'].'</td>
+                                <td align="right">'.$invoice_number.'</td>
+                                <td align="right">'.$ttl_tax.'</td>
+                                <td align="right">'.$ttl_igst.'</td>
+                                <td align="right">'.$ttl_cgst.'</td>
+                                <td align="right">'.$ttl_cess.'</td>
+                                <td align="right">'.$ttl_sgst.'</td>
+                                <td align="right">'.$ttl_val.'</td>
+                                <td align="right">';
+                                if($invoice_number>0) {
+                                    $response .= ' <a class="gstr1ViewBtn" href="'.PROJECT_URL.'?page=return_get_summary_view&type='.$jstr1_value['sec_nm'].'&returnmonth='.$returnmonth.'" target="_blank">view</a>';
+                                }
+                               
+                                $response .= '</td><td align="right">';
+                                if($invoice_number>0) {
+                                    //$response .= '<a href="javascript:;" class="gstr1ViewDeleteBtn" type="'.$jstr1_value['sec_nm'].'" deleteall="all"><i class="fa fa-trash"></i></a>';
+                                }
+                               
+                                $response .= '</td>
+                            </tr>';
+                            
                             
                         }   
                     }
@@ -109,9 +108,6 @@ if(!empty($doc_issue_array)) {
                 </div>';
 }
 
-else {
-    echo 'No Record found';
-}
 echo $response_doc;
 echo $response;
 

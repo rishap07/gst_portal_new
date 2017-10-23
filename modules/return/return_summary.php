@@ -373,6 +373,37 @@ else
                                         </tr>
                                         <tr>
                                             <?php
+                                            $group_by = " a.reference_number  ";
+                                            $order_by = 'a.reference_number';
+                                            $atData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'atadj');
+                                            //$atData = $obj_gstr1->getATInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
+                                            $at_total = $at_invoice_total_value = $at_sumTotal = 0;
+                                            $atCount = $tempTotVal = $tempInvTot = 0;
+                                            if (!empty($atData)) {
+                                                $tempInv = '';
+                                                foreach ($atData as $key => $atDatavalue) {
+                                                    $tempInvTot = isset($atDatavalue->taxable_subtotal)?$atDatavalue->taxable_subtotal:0;
+                                                    $at_total += $atDatavalue->cgst_amount + $atDatavalue->sgst_amount + $atDatavalue->igst_amount + $atDatavalue->cess_amount;
+                                                    $tempTotVal =isset($atDatavalue->invoice_total_value)?$atDatavalue->invoice_total_value:0;
+                                                    $tempInv=$atDatavalue->supply_place;
+                                                    $atCount++;
+                                                   
+                                                    $at_invoice_total_value +=$tempInvTot;
+                                                    
+                                                }
+                                                $at_sumTotal = $at_total + $at_invoice_total_value;
+          
+                                                
+                                            }
+                                            ?>
+                                            <td>Advance Tax Adjustment (TXPD)</td>
+                                            <td align='right'><?php echo $atCount; ?></td>
+                                            <td align='right'><?php echo $at_invoice_total_value; ?></td>
+                                            <td align='right'><?php echo $at_total; ?></td>
+                                            <td align='right'><?php echo $at_sumTotal; ?></td>
+                                        </tr>
+                                        <tr>
+                                            <?php
                                             $group_by = "";
                                             $order_by = 'a.reference_number';
                                             $cdnurData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'cdnur');

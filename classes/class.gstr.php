@@ -298,7 +298,7 @@ final class gstr extends validation {
         $msg = '';
         $api_return_period = $this->getRetrunPeriodFormat($returnmonth);
 
-        
+       
         if(API_TYPE == 'Demo') {
            $username = API_USERNAME;
            $gstin = API_GSTIN;
@@ -469,6 +469,9 @@ final class gstr extends validation {
             if($type=='CDN') {
                 $getReturnUrl=API_RETURN_URL.'/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=CDN';
             }
+            if($type=='DOC_ISSUE') {
+                $getReturnUrl=API_RETURN_URL.'/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=DOCISS';
+            }
             
             $result_data_sum = $this->hitGetUrl($getReturnUrl, '', $header2);
             $retDta_sum = json_decode($result_data_sum);
@@ -490,7 +493,7 @@ final class gstr extends validation {
                 $apiEk1_sum = openssl_decrypt(base64_decode($retRek_sum),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
                 $decodejson_sum = base64_decode(openssl_decrypt(base64_decode($retData_sum),"aes-256-ecb",$apiEk1_sum, OPENSSL_RAW_DATA));
                 $return_encode = $decodejson_sum;
-               // echo  $return_encode;
+               //echo  $return_encode;
                 
                 if(!empty($return_encode)) {
                     $filearr = json_decode($return_encode);
@@ -548,7 +551,7 @@ final class gstr extends validation {
                 $msg = "Sorry! Unable to process";
                 if(isset($retDta_sum->error)) {
                     $this->array_key_search('message', $retDta_sum->error);
-                    $msg = $this->error_msg;;
+                    $msg = $this->error_msg;
                 }
 
                 $this->setError($msg);
@@ -891,32 +894,33 @@ final class gstr extends validation {
     }
 
     public function save_user_summary($data,$key,$returnmonth) {
-        if(isset($_SESSION['user_detail']['user_id'])) {
-           $sql = "select id from " . $this->getTableName('user_api_summary') ." where user_id = ".$_SESSION['user_detail']['user_id']." and gst_key = '".$key."' and fmonth = '".$returnmonth."'  ";
+		
+		if(isset($_SESSION['user_detail']['user_id'])) {
 
+			$sql = "select id from " . $this->getTableName('user_api_summary') ." where user_id = ".$_SESSION['user_detail']['user_id']." and gst_key = '".$key."' and fmonth = '".$returnmonth."'  ";
             $user_ustr = $this->get_results($sql);
 
             if (!empty($user_ustr)) {
-                $dataGST1['json'] = $data['json'];
-                $dataGST1['updated_date'] =  date('Y-m-d H:i:s');
-                $dataGST1['fmonth'] =  $returnmonth;
 
-                $dataGST1where['user_id'] =  $_SESSION['user_detail']['user_id'];
-                $dataGST1where['fmonth'] =  $returnmonth;
-                $dataGST1where['gst_key'] =  $key;
+				$dataGST1['json'] = $data['json'];
+                $dataGST1['updated_date'] = date('Y-m-d H:i:s');
+                $dataGST1['fmonth'] = $returnmonth;
+                $dataGST1where['user_id'] = $_SESSION['user_detail']['user_id'];
+                $dataGST1where['fmonth'] = $returnmonth;
+                $dataGST1where['gst_key'] = $key;
                 $this->update($this->getTableName('user_api_summary'),  $dataGST1, $dataGST1where);
-
-            } 
-            else {
-                $dataGST1['gst_key'] =  $key;
+            } else {
+				
+				$dataGST1['gst_key'] =  $key;
                 $dataGST1['json'] = $data['json'];
                 $dataGST1['added_date'] = date('Y-m-d H:i:s');
                 $dataGST1['user_id'] =  $_SESSION['user_detail']['user_id'];
                 $dataGST1['fmonth'] =  $returnmonth;
                 $this->insert($this->getTableName('user_api_summary'), $dataGST1);
-            } 
-        }   
-    }
+            }
+		}
+	}
+
     public function get_user_summary($key,$returnmonth) {
         $json = '';
         if(isset($_SESSION['user_detail']['user_id'])) {
@@ -1113,42 +1117,56 @@ final class gstr extends validation {
         }
     }
     public function doc_issue_key_name($key) {
+        $value = '';
         switch ($key) {
-            case ($key == 'doc_num1'): 
-                echo 'Invoices for outward supply';
+
+            case ($key == 'doc_num1' || $key == 1): 
+                $value =  'Invoices for outward supply';
+                return $value;
             break; 
-            case ($key == 'doc_num2'): 
-                echo 'Invoices for inward supply from unregistered person ';
+            case ($key == 'doc_num2' || $key ==  2): 
+                $value = 'Invoices for inward supply from unregistered person ';
+                return $value;
             break; 
-            case ($key == 'doc_num3'): 
-                echo 'Revised Invoice';
+            case ($key == 'doc_num3' ||  $key == 3): 
+                $value = 'Revised Invoice';
+                return $value;
             break; 
-            case ($key == 'doc_num4'): 
-                echo 'Debit Note';
+            case ($key == 'doc_num4' ||  $key == 4): 
+               $value =  'Debit Note';
+               return $value;
             break; 
-            case ($key == 'doc_num5'): 
-                echo 'Credit Note';
+            case ($key == 'doc_num5' ||  $key == 5): 
+                $value =  'Credit Note';
+                return $value;
             break; 
-            case ($key == 'doc_num6'): 
-                echo 'Receipt voucher';
+            case ($key == 'doc_num6' ||  $key == 6): 
+                $value =  'Receipt voucher';
+                return $value;
             break; 
-            case ($key == 'doc_num7'): 
-                echo 'Payment Voucher';
+            case ($key == 'doc_num7' ||  $key == 7): 
+                $value =  'Payment Voucher';
+                return $value;
             break; 
-            case ($key == 'doc_num8'): 
-                echo 'Refund voucher';
+            case ($key == 'doc_num8' ||  $key == 8): 
+                $value =  'Refund voucher';
+                return $value;
             break; 
-            case ($key == 'doc_num9'): 
-                echo 'Delivery Challan for job work';
+            case ($key == 'doc_num9' ||  $key == 9): 
+                $value =  'Delivery Challan for job work';
+                return $value;
             break; 
-            case ($key == 'doc_num10'): 
-                echo 'Delivery Challan for supply on approval';
+            case ($key == 'doc_num10' ||  $key == 10): 
+                $value =  'Delivery Challan for supply on approval';
+                return $value;
             break; 
-            case ($key == 'doc_num11'): 
-                echo 'Delivery Challan in case of liquid gas';
+            case ($key == 'doc_num11' ||  $key == 11): 
+                $value =  'Delivery Challan in case of liquid gas';
+                return $value;
             break; 
-            case ($key == 'doc_num12'): 
-                echo 'Delivery Challan in cases other than by way of supply';
+            case ($key == 'doc_num12' ||  $key == 12): 
+                $value =  'Delivery Challan in cases other than by way of supply';
+                return $value;
             break; 
         }
     }

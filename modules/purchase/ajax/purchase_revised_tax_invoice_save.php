@@ -58,7 +58,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	$dataArr['supplier_billing_address'] = isset($params['supplier_billing_address']) ? $params['supplier_billing_address'] : '';
 	$dataArr['supplier_billing_vendor_type'] = isset($params['supplier_billing_vendor_type']) ? $params['supplier_billing_vendor_type'] : '';
 	$dataArr['supplier_billing_gstin_number'] = isset($params['supplier_billing_gstin_number']) ? $params['supplier_billing_gstin_number'] : '';
-	
+
 	$supplier_billing_state_code = isset($params['supplier_billing_state_code']) ? $params['supplier_billing_state_code'] : '';
 	$supplier_billing_state_data = $obj_purchase->getStateDetailByStateCode($supplier_billing_state_code);
 
@@ -91,7 +91,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 		$dataArr['recipient_shipping_vendor_type'] = $dataCurrentUserArr['data']->kyc->vendor_type;
 		$dataArr['recipient_shipping_gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
 	} else {
-		
+
 		$dataArr['recipient_shipping_name'] = isset($params['recipient_shipping_name']) ? $params['recipient_shipping_name'] : '';
 		$dataArr['recipient_shipping_company_name'] = isset($params['recipient_shipping_company_name']) ? $params['recipient_shipping_company_name'] : '';
 		$dataArr['recipient_shipping_address'] = isset($params['recipient_shipping_address']) ? $params['recipient_shipping_address'] : '';
@@ -120,7 +120,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	}
 
 	/* check reference number */
-	$referenceStatus = $obj_purchase->checkPurchaseReferenceNumberExist($dataArr['reference_number'], $obj_purchase->sanitize($_SESSION['user_detail']['user_id']));
+	$referenceStatus = $obj_purchase->checkPurchaseReferenceNumberExist($dataArr['reference_number'], $obj_purchase->sanitize($_SESSION['user_detail']['user_id']), $dataArr['supplier_billing_gstin_number']);
 	if($referenceStatus == true) {
 		array_push($invoiceErrorMessage, "You have already used this reference number.");
 	}

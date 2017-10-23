@@ -178,6 +178,7 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                     <label for="invoice-types__CDNR"><input type="radio" id="invoice-types__CDNR" name="invoice_type" value="CDNR" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='CDNR') echo 'checked=""';?>>CDNR</label>
                                     <label for="invoice-types__CDNUR"><input type="radio" id="invoice-types__CDNUR" name="invoice_type" value="CDNUR" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='CDNUR') echo 'checked=""';?>>CDNUR</label>
                                     <label for="invoice-types__AT"><input type="radio" id="invoice-types__AT" name="invoice_type" value="AT" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='AT') echo 'checked=""';?>>AT</label>
+                                    <label for="invoice-types__TXPD"><input type="radio" id="invoice-types__TXPD" name="invoice_type" value="TXPD" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='TXPD') echo 'checked=""';?>>TXPD</label>
                                     <label for="invoice-types__EXP"><input type="radio" id="invoice-types__EXP" name="invoice_type" value="EXP" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='EXP') echo 'checked=""';?>>EXP</label>
                                     <label for="invoice-types__HSN"><input type="radio" id="invoice-types__HSN" name="invoice_type" value="HSN" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='HSN') echo 'checked=""';?>>HSN</label>
                                     <label for="invoice-types__NIL"><input type="radio" id="invoice-types__NIL" name="invoice_type" value="NIL" class="type" <?php if(isset($_POST['invoice_type']) && $_POST['invoice_type']=='NIL') echo 'checked=""';?>>NIL</label>
@@ -377,7 +378,42 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                     $group_by = " a.reference_number ,b.consolidate_rate ";
                                     $order_by = 'a.reference_number';
                                     $Data = $atData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'at');
-                                    //$Data = $atData = $obj_gstr1->getATInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
+                                    $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
+                                    $sumTotal_temp = '';
+                                    $invoice_temp = '';
+                                    $invCount = 0;
+                                    if (!empty($atData)) {
+                                        $invoice_temp='';
+                                        foreach ($atData as $key => $atDatavalue) {
+                                            if($invoice_temp!='' and $invoice_temp!=$atDatavalue->invoice_id)
+                                            {
+                                                $invCount++;
+                                                $invoice_total_value +=$invoice_total_value_temp;
+                                                $sumTotal +=$sumTotal_temp;
+                                            }
+                                            $invoice_total_value_temp = isset($atDatavalue->taxable_subtotal)?$atDatavalue->taxable_subtotal:0;
+                                            $total += $atDatavalue->cgst_amount + $atDatavalue->sgst_amount + $atDatavalue->igst_amount + $atDatavalue->cess_amount;
+                                            $igstTotal += $atDatavalue->igst_amount;
+                                            $sgstTotal += $atDatavalue->sgst_amount;
+                                            $cgstTotal += $atDatavalue->cgst_amount;
+                                            $cessTotal += $atDatavalue->cess_amount;
+                                            $sumTotal_temp = isset($atDatavalue->invoice_total_value)?$atDatavalue->invoice_total_value:0;
+                                            $invoice_temp=$atDatavalue->invoice_id;
+                                        }
+                                        if($invoice_temp!='')
+                                        {
+                                            $invCount++;
+                                            $invoice_total_value +=$invoice_total_value_temp;
+                                            $sumTotal +=$sumTotal_temp;
+                                        }
+                                    }
+
+                                }
+                                if($type=='TXPD')
+                                {
+                                    $group_by = " a.reference_number ,b.consolidate_rate ";
+                                    $order_by = 'a.reference_number';
+                                    $Data = $atData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'atadj');
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
                                     $sumTotal_temp = '';
                                     $invoice_temp = '';
@@ -589,7 +625,7 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                                 <th align='left'>Total SGST</th>
                                                 <th align='left'>Total CGST</th>
                                                 <th align='left'>Total Cess</th>
-                                                <?php if($type=='B2CS' || $type=='AT') { ?>
+                                                <?php if($type=='B2CS' || $type=='AT' || $type=='TXPD'  ) { ?>
                                                     <th align='left'>Total Tax</th>
                                                 <?php } 
 
@@ -605,7 +641,7 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                                 <td><?php echo $sgstTotal; ?></td>
                                                 <td><?php echo $cgstTotal; ?></td>
                                                 <td><?php echo $cessTotal; ?></td>
-                                                <?php if($type=='B2CS' || $type=='AT') { ?>
+                                                <?php if($type=='B2CS' || $type=='AT'|| $type=='TXPD'  ) { ?>
                                                     <td><?php echo $igstTotal+$sgstTotal+$cgstTotal+$cessTotal; ?></td>
                                                 <?php } 
                                                 else { ?>
@@ -667,7 +703,7 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                                         <th align='left'>Invoice Number</th>
                                                         
                                                         <?php
-                                                        if($type!='B2CL' && $type!='B2CS' && $type!='CDNUR' &&  $type!='AT')
+                                                        if($type!='B2CL' && $type!='B2CS' && $type!='CDNUR' &&  $type!='AT' &&  $type!='TXPD')
                                                         {
                                                         ?>
                                                         <th align='left'>GSTIN</th>
@@ -678,7 +714,7 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                                         <th style='text-align:right'>Taxable AMT</th>
                                                         <th align='left'>Rate</th>
                                                         <th style='text-align:right'>Total Tax</th>
-                                                         <?php if($type!='B2CS' && $type != 'AT' ) { ?>
+                                                         <?php if($type!='B2CS' && $type != 'AT' &&  $type!='TXPD') { ?>
                                                            <th style='text-align:right'>Total Amt</th>
                                                         <?php } ?>
                                                         <?php if($type == 'B2B' ) { ?>
@@ -723,7 +759,9 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                                                 $url = PROJECT_URL.'/?page=return_document_summary&returnmonth='.$returnmonth;
                                                                 foreach($Data as $doc => $arr_value)
                                                                 { 
-                                                                    foreach ($arr_value as $key => $Item) {  ?>
+                                                                    foreach ($arr_value as $key => $Item) {  
+                                                                        if(!empty($Item->from) && !empty($Item->to)) {
+                                                                        ?>
                                                                         <tr>
                                                                             <td align='left'><?php echo $i++;?></td>
                                                                             <td align='left'><?php echo $obj_gstr->doc_issue_key_name($doc);?></td>
@@ -736,7 +774,8 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                                                             <td align='center'><a href="<?php echo $url; ?>" target="_blank">View</a></td>
                                                             
                                                                         </tr>
-                                                                    <?php }
+                                                                    <?php } 
+                                                                    }
                                                                 }
                                                             }
                                                             else if($type == 'NIL') {
@@ -777,7 +816,7 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                                                         <td align='left'><?php echo $invoice_date;?></td>
                                                                         <td align='left'><?php echo $reference_number;?></td>
                                                                         <?php
-                                                                        if($type!='B2CL' && $type!='B2CS' && $type!='CDNUR' &&  $type!='AT')
+                                                                        if($type!='B2CL' && $type!='B2CS' && $type!='CDNUR' &&  $type!='AT' && $type!='TXPD')
                                                                         {
                                                                         ?>
                                                                         <td align='left'><?php echo $billing_gstin_number;?></td>
@@ -789,7 +828,7 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                                                         <td style='text-align:right'><?php echo $taxable_subtotal;?></td>
                                                                         <td align='left'><?php echo $rate;?></td> 
                                                                         <td style='text-align:right'><?php echo $tax?></td>
-                                                                        <?php if($type!='B2CS'  && $type!='AT') { ?>
+                                                                        <?php if($type!='B2CS'  && $type!='AT'&& $type!='TXPD') { ?>
                                                                            <td style='text-align:right'><?php echo $invoice_total_value;?></td>
                                                                         <?php } ?>
 
@@ -857,7 +896,7 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                                                         <td align='left'><?php echo $reference_number;?></td>
                                                                         
                                                                         <?php
-                                                                        if($type!='B2CL' && $type!='B2CS' && $type!='CDNUR' &&  $type!='AT')
+                                                                        if($type!='B2CL' && $type!='B2CS' && $type!='CDNUR' &&  $type!='AT' && $type!='TXPD')
                                                                         {
                                                                         ?>
                                                                         <td align='left'><?php echo $billing_gstin_number;?></td>
@@ -868,7 +907,7 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                                                         <td align='left'><?php echo $rate;?></td> 
 
                                                                         <td style='text-align:right'><?php echo $tax?></td>
-                                                                        <?php if($type!='B2CS' && $type!='AT') { ?>
+                                                                        <?php if($type!='B2CS' && $type!='AT' && $type!='TXPD') { ?>
                                                                            <td style='text-align:right'><?php echo $invoice_total_value;?></td>
                                                                         <?php } ?>
                                                                         

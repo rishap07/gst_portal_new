@@ -193,12 +193,12 @@ if(!$db_obj->can_read('client_invoice')) {
 	
 	var TableManaged = function () {
         return {
-            init: function (salesSearchData) {
+            init: function (purchaseSearchData) {
                 if (!jQuery().dataTable) {
                     return;
                 }
                 var sgHREF = window.location.pathname;
-                $.ajaxSetup({'type': 'POST', 'data' : {'purchaseSearchData':salesSearchData}, 'url': sgHREF, 'dataType': 'json'});
+                $.ajaxSetup({'type': 'POST', 'data' : {'purchaseSearchData':purchaseSearchData}, 'url': sgHREF, 'dataType': 'json'});
                 $.extend($.fn.dataTable.defaults, {'sServerMethod': 'POST'});
                 $('#mainTable').dataTable({
                     "aoColumns": [

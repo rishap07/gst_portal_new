@@ -72,92 +72,92 @@ class json extends validation
 		$arrayB2BData=array();
 		for($i=0; $i<count($dataArry['b2b']); $i++)
 		{
-			 $dataArry['b2b'][$i]['supply_place'];
-			 $dataArry['b2b'][$i]['company_state'];
-			//supply_type
-			if($dataArry['b2b'][$i]['supply_place']!= $dataArry['b2b'][$i]['company_state'])
-			{$supply_type='INTER';}
-			else{$supply_type='INTRA';}
-			
-			//reversecharge
-			if($dataArry['b2b'][$i]['supply_type']=='reversecharge')
-			{$reverse_charge='Y';}
-			else{$reverse_charge='N';}
-			
-			//ur_type
-			if($dataArry['b2b'][$i]['invoice_total_value'] >'250000' &&
-			 $dataArry['b2b'][$i]['supplier_billing_gstin_number'])
-			{$ur_type='B2CL';}
-			elseif($dataArry['b2b'][$i]['import_supply_meant']=='withpayment')
-			{$ur_type='EXPWP';}
-			elseif($dataArry['b2b'][$i]['import_supply_meant']=='withoutpayment')
-			{$ur_type='EXPWOP';}
-			elseif($dataArry['b2b'][$i]['import_supply_meant']=='')
-			{$ur_type='';}
-			
-			//document_type
-			if($dataArry['b2b'][$i]['invoice_type'] =='creditnote')
-			{$document_type='C';}
-			elseif($dataArry['b2b'][$i]['invoice_type']=='debitnote')
-			{$document_type='D';}
-			elseif($dataArry['b2b'][$i]['invoice_type']=='receiptvoucherinvoice')
-			{$document_type='R';}
-			elseif($dataArry['b2b'][$i]['invoice_type']!='')
-			{$document_type=$dataArry['b2b'][$i]['invoice_type'];}
-			elseif($dataArry['b2b'][$i]['invoice_type']=='')
-			{$document_type='';}
-			
-			//invoice_type
-			if($dataArry['b2b'][$i]['invoice_type'] =='taxinvoice')
-			{$invoice_type='R';}
-			elseif($dataArry['b2b'][$i]['invoice_type']=='deemedimportinvoice')
-			{$invoice_type='DE';}
-			elseif($dataArry['b2b'][$i]['invoice_type']=='sezunitinvoice' && 
-			$dataArry['b2b'][$i]['import_supply_meant']=='withpayment' )
-			{$invoice_type='SEWP';}
-			elseif($dataArry['b2b'][$i]['invoice_type']=='sezunitinvoice' && 
-			$dataArry['b2b'][$i]['import_supply_meant']=='withoutpayment' )
-			{$invoice_type='SEWOP';}
-			elseif($dataArry['b2b'][$i]['invoice_type']=='')
-			{$invoice_type='';}
-			
-			$arrayB2BData[]=array(
-			'invoice_nature'	=>	'b2b',
-			'invoice_type'		=>	$invoice_type,
-			'recipient_gstin'	=>	$dataArry['b2b'][$i]['supplier_billing_gstin_number'],
-			'invoice_number'	=>	$dataArry['b2b'][$i]['reference_number'],
-			'invoice_date'		=>	$dataArry['b2b'][$i]['invoice_date'],
-			'invoice_value'		=>	$dataArry['b2b'][$i]['invoice_total_value'],
-			'place_of_supply'	=>	$dataArry['b2b'][$i]['supply_place'],
-			'supply_type'		=>	$supply_type,
-			'reverse_charge'	=>	$reverse_charge,
-			'rate'				=>	$dataArry['b2b'][$i]['consolidate_rate'],
-			'taxable_value'		=>	$dataArry['b2b'][$i]['taxable_subtotal'],
-			'cgst_amount'		=>	$dataArry['b2b'][$i]['cgst'],
-			'sgst_amount'		=>	$dataArry['b2b'][$i]['sgst'],
-			'igst_amount'		=>	$dataArry['b2b'][$i]['igst'],
-			'cess_amount'		=>	$dataArry['b2b'][$i]['cess'],
-			'type'				=>	'',
-			'original_invoice_number'=>	'',
-			'original_invoice_date'	=>	'',
-			'ur_type'			=>	$ur_type,
-			'document_type'		=> 	$document_type,
-			'reason_for_issuing_document'=>	$dataArry['b2b'][$i]['reason_issuing_document'],
-			'pre_gst'			=>	'',
-			'port_code'			=> 	'',
-			'shipping_bill_number'=>$dataArry['b2b'][$i]['import_bill_number'],
-			'shipping_bill_date'=>	$dataArry['b2b'][$i]['import_bill_date'],
-			'return_period'		=>	date('Y-m',strtotime($dataArry['b2b'][$i]['invoice_date'])),
-			'financial_year'	=>	$dataArry['b2b'][$i]['financial_year'],
-			'created_from'		=>	$dataArry['b2b'][$i]['created_from'],
-			'added_by'			=>	$userid,
-			'added_date'		=>	date('Y-m-d H:i:s',time()),
-			'updated_by'		=>	$userid,
-			'updated_date'		=>	date('Y-m-d H:i:s',time()),
-			'deleted_by'		=>	$userid,
-			'deleted_date'		=>	date('Y-m-d H:i:s',time())
-			);
-		}
+                     $dataArry['b2b'][$i]['supply_place'];
+                    $dataArry['b2b'][$i]['company_state'];
+                   //supply_type
+                   if($dataArry['b2b'][$i]['supply_place']!= $dataArry['b2b'][$i]['company_state'])
+                   {$supply_type='INTER';}
+                   else{$supply_type='INTRA';}
+
+                   //reversecharge
+                   if($dataArry['b2b'][$i]['supply_type']=='reversecharge')
+                   {$reverse_charge='Y';}
+                   else{$reverse_charge='N';}
+
+                   //ur_type
+                   if($dataArry['b2b'][$i]['invoice_total'] >'250000' &&
+                    $dataArry['b2b'][$i]['supplier_billing_gstin_number'])
+                   {$ur_type='B2CL';}
+                   elseif($dataArry['b2b'][$i]['import_supply_meant']=='withpayment')
+                   {$ur_type='EXPWP';}
+                   elseif($dataArry['b2b'][$i]['import_supply_meant']=='withoutpayment')
+                   {$ur_type='EXPWOP';}
+                   elseif($dataArry['b2b'][$i]['import_supply_meant']=='')
+                   {$ur_type='';}
+
+                   //document_type
+                   if($dataArry['b2b'][$i]['invoice_type'] =='creditnote')
+                   {$document_type='C';}
+                   elseif($dataArry['b2b'][$i]['invoice_type']=='debitnote')
+                   {$document_type='D';}
+                   elseif($dataArry['b2b'][$i]['invoice_type']=='receiptvoucherinvoice')
+                   {$document_type='R';}
+                   elseif($dataArry['b2b'][$i]['invoice_type']!='')
+                   {$document_type=$dataArry['b2b'][$i]['invoice_type'];}
+                   elseif($dataArry['b2b'][$i]['invoice_type']=='')
+                   {$document_type='';}
+
+                   //invoice_type
+                   if($dataArry['b2b'][$i]['invoice_type'] =='taxinvoice')
+                   {$invoice_type='R';}
+                   elseif($dataArry['b2b'][$i]['invoice_type']=='deemedimportinvoice')
+                   {$invoice_type='DE';}
+                   elseif($dataArry['b2b'][$i]['invoice_type']=='sezunitinvoice' && 
+                   $dataArry['b2b'][$i]['import_supply_meant']=='withpayment' )
+                   {$invoice_type='SEWP';}
+                   elseif($dataArry['b2b'][$i]['invoice_type']=='sezunitinvoice' && 
+                   $dataArry['b2b'][$i]['import_supply_meant']=='withoutpayment' )
+                   {$invoice_type='SEWOP';}
+                   elseif($dataArry['b2b'][$i]['invoice_type']=='')
+                   {$invoice_type='';}
+
+                   $arrayB2BData[]=array(
+                   'invoice_nature'	=>	'b2b',
+                   'invoice_type'		=>	$invoice_type,
+                   'recipient_gstin'	=>	$dataArry['b2b'][$i]['supplier_billing_gstin_number'],
+                   'invoice_number'	=>	$dataArry['b2b'][$i]['reference_number'],
+                   'invoice_date'		=>	$dataArry['b2b'][$i]['invoice_date'],
+                   'invoice_value'		=>	$dataArry['b2b'][$i]['invoice_total'],
+                   'place_of_supply'	=>	$dataArry['b2b'][$i]['supply_place'],
+                   'supply_type'		=>	$supply_type,
+                   'reverse_charge'	=>	$reverse_charge,
+                   'rate'				=>	$dataArry['b2b'][$i]['consolidate_rate'],
+                   'taxable_value'		=>	$dataArry['b2b'][$i]['taxable_total'],
+                   'cgst_amount'		=>	$dataArry['b2b'][$i]['cgst'],
+                   'sgst_amount'		=>	$dataArry['b2b'][$i]['sgst'],
+                   'igst_amount'		=>	$dataArry['b2b'][$i]['igst'],
+                   'cess_amount'		=>	$dataArry['b2b'][$i]['cess'],
+                   'type'				=>	'',
+                   'original_invoice_number'=>	'',
+                   'original_invoice_date'	=>	'',
+                   'ur_type'			=>	$ur_type,
+                   'document_type'		=> 	$document_type,
+                   'reason_for_issuing_document'=>	$dataArry['b2b'][$i]['reason_issuing_document'],
+                   'pre_gst'			=>	'',
+                   'port_code'			=> 	'',
+                   'shipping_bill_number'=>$dataArry['b2b'][$i]['import_bill_number'],
+                   'shipping_bill_date'=>	$dataArry['b2b'][$i]['import_bill_date'],
+                   'return_period'		=>	date('Y-m',strtotime($dataArry['b2b'][$i]['invoice_date'])),
+                   'financial_year'	=>	$dataArry['b2b'][$i]['financial_year'],
+                   'created_from'		=>	$dataArry['b2b'][$i]['created_from'],
+                   'added_by'			=>	$userid,
+                   'added_date'		=>	date('Y-m-d H:i:s',time()),
+                   'updated_by'		=>	$userid,
+                   'updated_date'		=>	date('Y-m-d H:i:s',time()),
+                   'deleted_by'		=>	$userid,
+                   'deleted_date'		=>	date('Y-m-d H:i:s',time())
+                   );
+           }
 		$condition['invoice_nature'] = "b2b";
 		$condition['return_period'] = $financialMonth;
 		$this->deletData($this->tableNames['gstr2_return_summary'], $condition) ;
@@ -1505,40 +1505,143 @@ class json extends validation
 		return $this->get_results($query);
 	}
 	
-	public function getGst2ReconcileQuery($userid,$financialMonth,$type='',$ids='',$order_by='',$group_by='',$array_type=true)
-        {
-            $creconcile_purchase_invoice1=$this->tableNames['client_reconcile_purchase_invoice1'];
-            $query='select id,
-                    type,
-                    reference_number,
-                    invoice_date,
-                    invoice_total_value as invoice_total,
-                    invoice_type,
-                    total_taxable_subtotal as taxable_total ,
-                    invoice_status,
-                    company_gstin_number,
-                    total_cgst_amount as cgst,
-                    total_sgst_amount as sgst,
-                    total_igst_amount as igst,
-                    total_cess_amount as cess,
-                    financial_month from 
-                    '.$creconcile_purchase_invoice1.'
-                    where added_by='.$userid.'
-                    and invoice_date like "'.$financialMonth.'%" 
-                    and status="1" 
-                    and company_gstin_number!=""';
-        if($order_by=='')
-            {
-                $query.=' order by reference_number';
-            }else
-            {
-                $query.=' order by '.$order_by.'';
-            }
-            return $this->get_results($query,false);        
-                    
-        }
-        
-        
-}
+	public function getGSTR2ADownlodedMissingData($userid, $returnMonth, $array_type=true) {
 
- ?>
+		/* Missing Invoices Query */
+		$missingQuery = 'Select 
+				pi.reference_number,
+				pi.invoice_date,
+				pi.invoice_total_value,
+				sum(pii.taxable_subtotal) as total_taxable_subtotal,
+				pi.supplier_billing_gstin_number as company_gstin_number,
+				sum(pii.cgst_amount) as total_cgst_amount,
+				sum(pii.sgst_amount) as total_sgst_amount,
+				sum(pii.igst_amount) as total_igst_amount,
+				sum(pii.cess_amount) as total_cess_amount,
+				CONCAT(pi.reference_number,pi.supplier_billing_gstin_number) as ref_ctin,
+				(
+					CASE
+						WHEN pi.corresponding_document_number = "0" THEN pi.corresponding_document_number 
+						ELSE (SELECT reference_number FROM '.$this->tableNames['client_purchase_invoice'].' WHERE purchase_invoice_id = pi.corresponding_document_number)
+					END
+				) AS nt_num,
+				pi.corresponding_document_date as nt_dt,
+				GROUP_CONCAT(DISTINCT CAST(pii.consolidate_rate AS UNSIGNED) ORDER BY CAST(pii.consolidate_rate AS UNSIGNED) ASC SEPARATOR ",") as rate,
+				pi.supply_place as pos,
+				DATE_FORMAT(pi.invoice_date,"%Y-%m") as financial_month 
+				from '.$this->tableNames['client_purchase_invoice'].' as pi 
+				INNER JOIN '.$this->tableNames['client_purchase_invoice_item'].' as pii 
+				ON pi.purchase_invoice_id = pii.purchase_invoice_id 
+				where 1=1 
+				and pi.added_by = '.$userid.' 
+				and pii.added_by = '.$_SESSION['user_detail']['user_id'].' 
+				and DATE_FORMAT(pi.invoice_date,"%Y-%m") = "'.$returnMonth.'" 
+				and pi.status = "1" 
+				and CONCAT(pi.reference_number,pi.supplier_billing_gstin_number)
+				NOT IN(Select CONCAT(reference_number,company_gstin_number) 
+				from '.$this->tableNames['client_reconcile_purchase_invoice1'].' 
+				WHERE status = "1"
+				and DATE_FORMAT(invoice_date,"%Y-%m") = "'.$returnMonth.'" 
+				AND added_by = '.$userid.') 
+				GROUP BY ref_ctin';
+
+		return $this->get_results($missingQuery, $array_type);
+	}
+
+	public function getGSTR2ADownlodedAdditionalData($userid, $returnMonth, $array_type=true) {
+
+		/* Additional Invoices Query */
+		$additionalQuery = 'Select 
+				di.reference_number,
+				di.invoice_date,
+				di.invoice_total_value,
+				sum(di.total_taxable_subtotal) as total_taxable_subtotal,
+				di.company_gstin_number,
+				sum(di.total_cgst_amount) as total_cgst_amount,
+				sum(di.total_sgst_amount) as total_sgst_amount,
+				sum(di.total_igst_amount) as total_igst_amount,
+				sum(di.total_cess_amount) as total_cess_amount,
+				di.nt_num,
+				di.nt_dt,
+				GROUP_CONCAT(DISTINCT CAST(di.rate AS UNSIGNED) ORDER BY CAST(di.rate AS UNSIGNED) ASC SEPARATOR ",") as rate,
+				di.pos,
+				di.financial_month 
+				from '.$this->tableNames['client_reconcile_purchase_invoice1'].' as di 
+				where 1=1 AND di.added_by = '.$userid.' 
+				and DATE_FORMAT(di.invoice_date,"%Y-%m") = "'.$returnMonth.'" 
+				and di.status = "1" 
+				and CONCAT(di.reference_number,di.company_gstin_number) 
+				NOT IN(Select CONCAT(reference_number,supplier_billing_gstin_number)
+				from '.$this->tableNames['client_purchase_invoice'].' WHERE status = "1" 
+				and DATE_FORMAT(invoice_date,"%Y-%m") = "'.$returnMonth.'"
+				AND added_by = '.$userid.') 
+				GROUP BY CONCAT(di.reference_number,di.company_gstin_number)';
+
+		return $this->get_results($additionalQuery, $array_type);
+	}
+
+	public function getGSTR2ADownlodedMatchMisData($userid, $returnMonth, $array_type=true) {
+
+		$query = 'Select 
+				di.id,
+				pi.purchase_invoice_id,
+				di.type,
+				di.invoice_type,
+				pi.invoice_type as pi_invoice_type,
+				di.reference_number,
+				pi.reference_number as pi_reference_number,
+				di.company_gstin_number as ctin,
+				pi.supplier_billing_gstin_number as pi_ctin,
+				CONCAT(di.reference_number,di.company_gstin_number) as ref_ctin,
+				di.invoice_date,
+				pi.invoice_date as pi_invoice_date,
+				di.rate,
+				di.total_cgst_amount as cgst,
+				di.total_sgst_amount as sgst,
+				di.total_igst_amount as igst,
+				di.total_cess_amount as cess,
+				di.total_taxable_subtotal as taxable_total,
+				di.invoice_total_value as invoice_total,
+				pi.invoice_total_value as pi_invoice_total,
+				di.financial_month 
+				from '.$this->tableNames['client_reconcile_purchase_invoice1'].' as di 
+				INNER JOIN '.$this->tableNames['client_purchase_invoice'].' as pi 
+				ON di.reference_number = pi.reference_number and 
+				di.company_gstin_number = pi.supplier_billing_gstin_number 
+				where 1=1 
+				and di.added_by = '.$userid.' 
+				and pi.added_by = '.$userid.' 
+				and DATE_FORMAT(di.invoice_date,"%Y-%m") = "'.$returnMonth.'" 
+				and DATE_FORMAT(pi.invoice_date,"%Y-%m") = "'.$returnMonth.'" 
+				and di.status = "1" 
+				and pi.status = "1" 
+				group by ref_ctin 
+				order by di.reference_number';
+
+		return $this->get_results($query, $array_type);
+	}
+
+	public function getGst2ReconcileFinalQuery($userid,$financialMonth,$where='')
+    {
+		$gstr2_reconcile_final=$this->tableNames['gstr2_reconcile_final'];
+		$query='select * from 
+				'.$gstr2_reconcile_final.'
+				where added_by='.$userid.'
+				and financial_month like "'.$financialMonth.'%" 
+				and status="1" 
+				and company_gstin_number!=""
+				';
+		if($where)
+		{
+			$query.=' and invoice_status="'.$where.'" ';
+		}else
+		{
+			$query.=' and invoice_status!="" ';
+		}	
+		
+		//echo $query;
+		return $this->get_results($query,false);        
+	}
+		
+}
+?>

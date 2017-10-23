@@ -9,7 +9,7 @@ if(!$obj_return->can_read('returnfile_list'))
     $obj_return->redirect(PROJECT_URL."/?page=dashboard");
     exit();
 }
-//$obj_return->pr($_POST);
+
 if(isset($_POST['returnmonth']))
 {
     $returnmonth = $_POST['returnmonth'];
@@ -44,43 +44,7 @@ if(isset($_POST['final_returnid']) && $_POST['final_returnid']!='' && isset($_PO
    // {
     	if($obj_return->finalSaveGstr3b()){
             //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
-			$sql = "SELECT * FROM " . $db_obj->getTableName('user') . " as u WHERE user_id='" . $_SESSION["user_detail"]["user_id"] . "'";
-  	    $userdata = $obj_return->get_results($sql);
-		if(!empty($userdata))
-		{
-			 $added_by= $userdata[0]->added_by;
-			 $username = $userdata[0]->username;
-			 $sql = "SELECT * FROM " . $db_obj->getTableName('user') . " as u WHERE user_id='" . $added_by . "'";
-			$subdata = $obj_return->get_results($sql);
-			if(!empty($subdata))
-			{
-			 $user_group = $subdata[0]->user_group;
-		
-			 if($user_group==5)
-			 {
-			$added_by = $subdata[0]->added_by;	 
-			 $title='GSTR-3B return save by'.' '.$username;
-			 $message='GSTR-3B return save by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
-			 $parentid = $added_by;
-			 $userid= $_SESSION["user_detail"]["user_id"];
-			 $returntype='gstr3b';
-			 $return_step='gstr3bsave';
-			 $returnmonth =$_REQUEST['returnmonth'];	
-			 $obj_return->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
-			
-				 
-			 }
-			}
-			 $title='GSTR-3B return save by'.' '.$username;
-			 $message='GSTR-3B return save by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
-			 $parentid = $added_by;
-			 $userid= $_SESSION["user_detail"]["user_id"];
-			 $returntype='gstr3b';
-			 $return_step='gstr3bsave';
-			 $returnmonth =$_REQUEST['returnmonth'];	
-			 $obj_return->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
-			
-		}	
+		$obj_return->saveReturn3bNotification($returnmonth);
 		$obj_return->redirect(PROJECT_URL."/?page=return_filegstr3b_file&returnmonth=" . $returnmonth);
 		exit();
 		
@@ -91,43 +55,7 @@ if(isset($_POST['btn_type']) && $_POST['btn_type'] == 'final_submit')  {
  
 		if($obj_return->finalSubmitGstr3b())
 		{
-		$sql = "SELECT * FROM " . $db_obj->getTableName('user') . " as u WHERE user_id='" . $_SESSION["user_detail"]["user_id"] . "'";
-  	    $userdata = $obj_return->get_results($sql);
-		if(!empty($userdata))
-		{
-			 $added_by= $userdata[0]->added_by;
-			 $username = $userdata[0]->username;
-			 $sql = "SELECT * FROM " . $db_obj->getTableName('user') . " as u WHERE user_id='" . $added_by . "'";
-			$subdata = $obj_return->get_results($sql);
-			if(!empty($subdata))
-			{
-			 $user_group = $subdata[0]->user_group;
-		
-			 if($user_group==5)
-			 {
-			$added_by = $subdata[0]->added_by;	 
-			 $title='GSTR-3B return submitted by'.' '.$username;
-			 $message='GSTR-3B return submitted by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
-			 $parentid = $added_by;
-			 $userid= $_SESSION["user_detail"]["user_id"];
-			 $returntype='gstr3b';
-			 $return_step='gstr3bsubmit';
-			 $returnmonth =$_REQUEST['returnmonth'];	
-			 $obj_return->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
-			
-				 
-			 }
-			}
-			 $title='GSTR-3B return submitted by'.' '.$username;
-			 $message='GSTR-3B return submitted by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
-			 $parentid = $added_by;
-			 $userid= $_SESSION["user_detail"]["user_id"];
-			 $returntype='gstr3b';
-			 $return_step='gstr3bsubmit';
-			 $returnmonth =$_REQUEST['returnmonth'];	
-			 $obj_return->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
-			
-		}	
+		$obj_return->submitReturn3bNotification($returnmonth);
 		$obj_return->redirect(PROJECT_URL . "/?page=return_gstr3bitc_summary&returnmonth=" . $returnmonth);
 		}
 }
@@ -188,44 +116,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
     
 }
 //** Code for send GSTR-3B notification to subscriber **//
-		$sql = "SELECT * FROM " . $db_obj->getTableName('user') . " as u WHERE user_id='" . $_SESSION["user_detail"]["user_id"] . "'";
-  	    $userdata = $obj_return->get_results($sql);
-		if(!empty($userdata))
-		{
-			 $added_by= $userdata[0]->added_by;
-			 $username = $userdata[0]->username;
-			 $sql = "SELECT * FROM " . $db_obj->getTableName('user') . " as u WHERE user_id='" . $added_by . "'";
-			$subdata = $obj_return->get_results($sql);
-			if(!empty($subdata))
-			{
-			 $user_group = $subdata[0]->user_group;
-			
-			 if($user_group==5)
-			 {
-			$added_by = $subdata[0]->added_by;
-			 $title='GSTR-3B return Initiated by'.' '.$username;
-			 $message='GSTR-3B return Initiated by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
-			 $parentid = $added_by;
-			 $userid= $_SESSION["user_detail"]["user_id"];
-			 $returntype='gstr3b';
-			 $return_step='gstr3binitiared';
-			 $returnmonth =$_REQUEST['returnmonth'];	
-			 //$obj_return->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
-			
-				 
-			 }
-			}
-			 $title='GSTR-3B return Initiated by'.' '.$username;
-			 $message='GSTR-3B return Initiated by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
-			 $parentid = $added_by;
-			  
-			 $userid= $_SESSION["user_detail"]["user_id"];
-			 $returntype='gstr3b';
-			 $return_step='gstr3binitiared';
-			 $returnmonth =$_REQUEST['returnmonth'];	
-			 //$obj_return->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
-			
-		}
+		$obj_return->initiateReturn3bNotification($returnmonth);
 //** Code for GSTR-3B notification end here **//
         
        

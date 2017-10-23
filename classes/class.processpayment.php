@@ -119,7 +119,16 @@ class processpayment extends validation
 		$dataArr['datetime'] 			= isset($_POST['DateCreated']) ? $_POST['DateCreated'] : '';
 		$dataArr['response_datetime'] 	= date('Y-m-d H:i:s');
 		$dataArr['response_data'] 		= json_encode($_POST);
-
+		
+		
+		$check_data_exists = $this->get_results("select * from ".TAB_PREFIX . "payment_log where process_payment_id='".$dataArr['process_payment_id']."' and response_data='".$dataArr['response_data']."' and ref_id='".$dataAr['ref_id']."' " );
+		if(count($check_data_exists)>0)
+		{
+			$this->setError('Invalid Access of page.');
+			return false;
+		}
+		
+		
         $this->update(TAB_PREFIX . "payment_log", $dataArr, $dataAr);
 		$dataArr['ref_id'] = isset($_POST['MerchantRefNo']) ? $_POST['MerchantRefNo'] : '';
 		$this->insert(TAB_PREFIX . "payment_log_chck", $dataArr);

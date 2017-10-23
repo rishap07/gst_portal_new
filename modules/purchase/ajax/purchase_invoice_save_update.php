@@ -48,6 +48,8 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	$dataArr['advance_adjustment'] = isset($params['advance_adjustment']) ? $params['advance_adjustment'] : '';
 	if($dataArr['advance_adjustment'] == 1) {
 		$dataArr['receipt_voucher_number'] = isset($params['receipt_voucher_number']) ? $params['receipt_voucher_number'] : '';
+	} else {
+		$dataArr['receipt_voucher_number'] = 0;
 	}
 
 	$dataArr['supplier_billing_name'] = isset($params['supplier_billing_name']) ? $params['supplier_billing_name'] : '';
@@ -117,7 +119,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	}
 
 	/* check reference number */
-	$referenceStatus = $obj_purchase->checkPurchaseReferenceNumberExist($dataArr['reference_number'], $obj_purchase->sanitize($_SESSION['user_detail']['user_id']), $obj_purchase->sanitize(base64_decode($params['purchase_invoice_id'])));
+	$referenceStatus = $obj_purchase->checkPurchaseReferenceNumberExist($dataArr['reference_number'], $obj_purchase->sanitize($_SESSION['user_detail']['user_id']), $dataArr['supplier_billing_gstin_number'], $obj_purchase->sanitize(base64_decode($params['purchase_invoice_id'])));
 	if($referenceStatus == true) {
 		array_push($invoiceErrorMessage, "You have already used this reference number.");
 	}

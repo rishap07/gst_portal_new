@@ -26,13 +26,14 @@ if ($_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
 }
 if(isset($_POST['submit']) && $_POST['submit']=='submit') {
-	$obj_gstr2->saveGstr1DocumentSummary();
-	/*
- $flag = $obj_transition->checkVerifyUser();
+  if($obj_gstr2->saveGstr1DocumentSummary()){
+        //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
+    }
+  /*	
+  $flag = $obj_transition->checkVerifyUser();
   if($flag=='notverify')
   {
-	   $obj_transition->setError("To save document summary first verify your email and mobile number");
-		
+	  
   }
   else{
     if($obj_gstr2->saveGstr1DocumentSummary()){
@@ -90,7 +91,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
         
       <div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>GSTR1-Document Summary</h1></div>
                     <div class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav"><a href="#">Home</a>
-					<i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GST-Transition Form</span> </div>
+					<i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GSTR-1 document summary</span> </div>
                 <div class="whitebg formboxcontainer">
 				<?php $obj_transition->showErrorMessage(); ?>
 				<?php $obj_transition->showSuccessMessge(); ?>
@@ -154,7 +155,26 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" id="table1_totalno" onchange="table1onchange(this.value)" name="table1_totalno[]"   class="form-control" value="<?php if(isset($data->totnum)) { echo $data->totnum; } else { echo ''; }?>"  placeholder="" /></td>
 								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" id="table1_cancelled" onchange="table1onchange(this.value)" name="table1_cancelled[]"  class="form-control" value="<?php if(isset($data->cancel)) { echo $data->cancel; } else { echo ''; }?>"  placeholder="" /> </td>
 								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" id="table1_netissued" name="table1_netissued[]" id="table1_netissued" class="form-control" value="<?php if(isset($data->net_issue)) { echo $data->net_issue; } else { echo ''; }?>"  placeholder="" /> </td>
-					 						 
+								 
+					    <?php if(!empty($doc_num1))
+								 {   
+							        if($i==1){
+										
+									 ?>
+									
+                               <td>
+									 <a class="addMoreInvoice add-table1a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+							</td>   
+						<?php } else { ?>
+						  
+                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+							  
+							  <?php } }  ?>								 
                                 </tr>
 								
 								
@@ -165,7 +185,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table1_totalno[]" id="table1_totalno" onchange="table1onchange(this.value)"  class="form-control"  placeholder="" /> </td>
 							<td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table1_cancelled[]" id="table1_cancelled" onchange="table1onchange(this.value)" class="form-control"  placeholder="" /> </td> 
 							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table1_netissued[]" class="form-control"  placeholder="" /></td> 
-  						 	
+  						 	<td><a class="addMoreInvoice add-table1a"  href="javascript:void(0)"><div class="tooltip2"><i class="fa fa-plus-circle addicon"></i><span class="tooltiptext">Add More</span></div></a></td>
 							 </tr>
 							
 								<?php } ?>                              
@@ -204,8 +224,26 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" onchange="table2onchange(this.value)" id="table2_totalno" name="table2_totalno[]" class="form-control" value="<?php if(isset($data->totnum)) { echo $data->totnum; } else { echo ''; }?>"  placeholder="" /></td>
 								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" onchange="table2onchange(this.value)" id="table2_cancelled" name="table2_cancelled[]"class="form-control" value="<?php if(isset($data->cancel)) { echo $data->cancel; } else { echo ''; }?>"  placeholder="" /> </td>
 								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" id="table2_netissued" name="table2_netissued[]"class="form-control" value="<?php if(isset($data->net_issue)) { echo $data->net_issue; } else { echo ''; }?>"  placeholder="" /> </td>
-						 
-					 					 
+								 
+					     <?php if(!empty($doc_num2))
+								 {   
+							        if($i==1){
+										
+									 ?>
+									
+                               <td>
+									 <a class="addMoreInvoice add-table2a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+							</td>   
+						<?php } else { ?>
+						  
+                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+							  
+							  <?php } }  ?>						 
                                 </tr>
 					<?php  }  } else {  ?>
  
@@ -215,7 +253,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" onchange="table2onchange(this.value)" id="table2_totalno" name="table2_totalno[]"  class="form-control"  placeholder="" /> </td>
 							<td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" onchange="table2onchange(this.value)" id="table2_cancelled" name="table2_cancelled[]" class="form-control"  placeholder="" /> </td> 
 							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" id="table2_netissued" name="table2_netissued[]" class="form-control"  placeholder="" /></td> 
-  						 	
+  						 	<td><a class="addMoreInvoice add-table2a"  href="javascript:void(0)"><div class="tooltip2"><i class="fa fa-plus-circle addicon"></i><span class="tooltiptext">Add More</span></div></a></td>
 							 </tr>
 							
 								<?php } ?>                              
@@ -252,7 +290,25 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" onchange="table3onchange(this.value)" id="table3_totalno" name="table3_totalno[]" class="form-control" value="<?php if(isset($data->totnum)) { echo $data->totnum; } else { echo ''; }?>"  placeholder="" /></td>
 								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" onchange="table3onchange(this.value)" id="table3_cancelled" name="table3_cancelled[]"class="form-control" value="<?php if(isset($data->cancel)) { echo $data->cancel; } else { echo ''; }?>"  placeholder="" /> </td>
 								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" id="table3_netissued" name="table3_netissued[]"class="form-control" value="<?php if(isset($data->net_issue)) { echo $data->net_issue; } else { echo ''; }?>"  placeholder="" /> </td>
-									   							 
+								 <?php if(!empty($doc_num3))
+								 {   
+							        if($i==1){
+										
+									 ?>
+									
+                               <td>
+									 <a class="addMoreInvoice add-table3a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+							</td>   
+						<?php } else { ?>
+						  
+                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+							  
+							  <?php } }  ?>							 
                                 </tr>
 								
 								
@@ -263,6 +319,8 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table3_totalno[]" id="table3_totalno" onchange="table3onchange(this.value)"  class="form-control"  placeholder="" /> </td>
 							<td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table3_cancelled[]" id="table3_cancelled" onchange="table3onchange(this.value)" class="form-control"  placeholder="" /> </td> 
 							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table3_netissued[]" id="table3_netissued" class="form-control"  placeholder="" /></td> 
+							 <td><a class="addMoreInvoice add-table3a"  href="javascript:void(0)"><div class="tooltip2"><i class="fa fa-plus-circle addicon"></i><span class="tooltiptext">Add More</span></div></a></td>
+	
   							 </tr>
 								
 								<?php } ?>                              
@@ -298,7 +356,25 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" onchange="table4onchange(this.value)" id="table4_totalno"  name="table4_totalno[]" class="form-control" value="<?php if(isset($data->totnum)) { echo $data->totnum; } else { echo ''; }?>"  placeholder="" /></td>
 								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" onchange="table4onchange(this.value)" id="table4_cancelled" name="table4_cancelled[]"class="form-control" value="<?php if(isset($data->cancel)) { echo $data->cancel; } else { echo ''; }?>"  placeholder="" /> </td>
 								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table4_netissued[]" id="table4_netissued" class="form-control" value="<?php if(isset($data->net_issue)) { echo $data->net_issue; } else { echo ''; }?>"  placeholder="" /> </td>
-								 
+								 <?php if(!empty($doc_num4))
+								 {   
+							        if($i==1){
+										
+									 ?>
+									
+                               <td>
+									 <a class="addMoreInvoice add-table4a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+							</td>   
+						<?php } else { ?>
+						  
+                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+							  
+							  <?php } }  ?>
 					   						 
                                 </tr>
 								
@@ -311,8 +387,8 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table4_totalno[]" onchange="table4onchange(this.value)" id="table4_totalno"  class="form-control"  placeholder="" /> </td>
 							<td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table4_cancelled[]" onchange="table4onchange(this.value)" id="table4_cancelled" class="form-control"  placeholder="" /> </td> 
 							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table4_netissued[]" id="table4_netissued" class="form-control"  placeholder="" /></td> 
-  						 	
-							 </tr>
+  						 	<td><a class="addMoreInvoice add-table4a"  href="javascript:void(0)"><div class="tooltip2"><i class="fa fa-plus-circle addicon"></i><span class="tooltiptext">Add More</span></div></a></td>
+							</tr>
 								<?php } ?>                              
 							
                                 </tbody>
@@ -347,7 +423,26 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" id="table5_totalno" onchange="table5onchange(this.value)" name="table5_totalno[]" class="form-control" value="<?php if(isset($data->totnum)) { echo $data->totnum; } else { echo ''; }?>"  placeholder="" /></td>
 								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" id="table5_cancelled" onchange="table5onchange(this.value)" name="table5_cancelled[]"class="form-control" value="<?php if(isset($data->cancel)) { echo $data->cancel; } else { echo ''; }?>"  placeholder="" /> </td>
 								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" id="table5_netissued" name="table5_netissued[]"class="form-control" value="<?php if(isset($data->net_issue)) { echo $data->net_issue; } else { echo ''; }?>"  placeholder="" /> </td>
-									   						 
+								 
+					    <?php if(!empty($doc_num5))
+								 {   
+							        if($i==1){
+										
+									 ?>
+									
+                               <td>
+									 <a class="addMoreInvoice add-table5a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+							</td>   
+						<?php } else { ?>
+						  
+                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+							  
+							  <?php } }  ?>							 
                                 </tr>
 								
 								
@@ -359,7 +454,8 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table5_totalno[]" onchange="table5onchange(this.value)" id="table5_totalno"  class="form-control"  placeholder="" /> </td>
 							<td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table5_cancelled[]" onchange="table5onchange(this.value)" id="table5_cancelled class="form-control"  placeholder="" /> </td> 
 							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table5_netissued[]" id="table5_netissued" class="form-control"  placeholder="" /></td> 
-  						 	
+  						 	<td><a class="addMoreInvoice add-table5a"  href="javascript:void(0)"><div class="tooltip2"><i class="fa fa-plus-circle addicon"></i><span class="tooltiptext">Add More</span></div></a></td>
+		
 							 </tr>
 								<?php } ?>                              
 							
@@ -367,7 +463,7 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
                             </table>
                           			
                         </div>
-               <div class="greyheading">6. Receipt voucher</div>
+						<div class="greyheading">6. Receipt voucher</div>
 					       <div class="tableresponsive">
 						   <form method="post" enctype="multipart/form-data" id='form'>
                             <table  class="table  tablecontent tablecontent2 bordernone" id='table6a'>
@@ -392,10 +488,29 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
                                 <tr>
                                  <td><input type="text" maxlength="16"  name="table6_srno_from[]" class="form-control" value="<?php if(isset($data->from)) { echo $data->from; } else { echo ''; }?>"  placeholder="" /> </td>
                                  <td><input type="text" maxlength="16"  name="table6_srno_to[]" class="form-control" value="<?php if(isset($data->to)) { echo $data->to; } else { echo ''; }?>"  placeholder="" /> </td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" onchange="table6onchange(this.value)" id="table6_totalno" name="table6_totalno[]" class="form-control" value="<?php if(isset($data->totnum)) { echo $data->totnum; } else { echo ''; }?>"  placeholder="" /></td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" onchange="table6onchange(this.value)" id="table6_cancelled" name="table6_cancelled[]"class="form-control" value="<?php if(isset($data->cancel)) { echo $data->cancel; } else { echo ''; }?>"  placeholder="" /> </td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table6_netissued[]" id="table6_netissued" class="form-control" value="<?php if(isset($data->net_issue)) { echo $data->net_issue; } else { echo ''; }?>"  placeholder="" /> </td>
-										    						 
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table6_totalno[]" class="form-control" value="<?php if(isset($data->totnum)) { echo $data->totnum; } else { echo ''; }?>"  placeholder="" /></td>
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table6_cancelled[]"class="form-control" value="<?php if(isset($data->cancel)) { echo $data->cancel; } else { echo ''; }?>"  placeholder="" /> </td>
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table6_netissued[]"class="form-control" value="<?php if(isset($data->net_issue)) { echo $data->net_issue; } else { echo ''; }?>"  placeholder="" /> </td>
+								 
+					   <?php if(!empty($doc_num6))
+								 {   
+							        if($i==1){
+										
+									 ?>
+									
+                               <td>
+									 <a class="addMoreInvoice add-table6a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+							</td>   
+						<?php } else { ?>
+						  
+                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+							  
+							  <?php } }  ?>							 
                                 </tr>
 								
 								
@@ -403,9 +518,11 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
                               <tr>
                               <td><input type="text" maxlength="16"  name="table6_srno_from[]" class="form-control"  placeholder="" /> </td> 
 	                          <td><input type="text" maxlength="16"  name="table6_srno_to[]" class="form-control"  placeholder="" /> </td>
-							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table6_totalno[]" id="table6_totalno" onchange="table6onchange(this.value)"  class="form-control"  placeholder="" /> </td>
-							<td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table6_cancelled[]" id="table6_cancelled" onchange="table6onchange(this.value)" class="form-control"  placeholder="" /> </td> 
-							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table6_netissued[]" id="table6_netissued" class="form-control"  placeholder="" /></td> 
+							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table6_totalno[]"  class="form-control"  placeholder="" /> </td>
+							<td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table6_cancelled[]" class="form-control"  placeholder="" /> </td> 
+							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table6_netissued[]" class="form-control"  placeholder="" /></td> 
+							 <td><a class="addMoreInvoice add-table6a"  href="javascript:void(0)"><div class="tooltip2"><i class="fa fa-plus-circle addicon"></i><span class="tooltiptext">Add More</span></div></a></td>
+		
   							 </tr>
 							
 								<?php } ?>                              
@@ -440,10 +557,29 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
                                 <tr>
                                  <td><input type="text" maxlength="16"  name="table7_srno_from[]" class="form-control" value="<?php if(isset($data->from)) { echo $data->from; } else { echo ''; }?>"  placeholder="" /> </td>
                                  <td><input type="text" maxlength="16"  name="table7_srno_to[]" class="form-control" value="<?php if(isset($data->to)) { echo $data->to; } else { echo ''; }?>"  placeholder="" /> </td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table7_totalno[]" id="table7_totalno" onchange="table7onchange(this.value)" class="form-control" value="<?php if(isset($data->totnum)) { echo $data->totnum; } else { echo ''; }?>"  placeholder="" /></td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table7_cancelled[]" id="table7_cancelled" onchange="table7onchange(this.value)" class="form-control" value="<?php if(isset($data->cancel)) { echo $data->cancel; } else { echo ''; }?>"  placeholder="" /> </td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table7_netissued[]" id="table7_netissued" class="form-control" value="<?php if(isset($data->net_issue)) { echo $data->net_issue; } else { echo ''; }?>"  placeholder="" /> </td>
-									   							 
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table7_totalno[]" class="form-control" value="<?php if(isset($data->totnum)) { echo $data->totnum; } else { echo ''; }?>"  placeholder="" /></td>
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table7_cancelled[]"class="form-control" value="<?php if(isset($data->cancel)) { echo $data->cancel; } else { echo ''; }?>"  placeholder="" /> </td>
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table7_netissued[]"class="form-control" value="<?php if(isset($data->net_issue)) { echo $data->net_issue; } else { echo ''; }?>"  placeholder="" /> </td>
+								 
+					   <?php if(!empty($doc_num7))
+								 {   
+							        if($i==1){
+										
+									 ?>
+									
+                               <td>
+									 <a class="addMoreInvoice add-table7a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+							</td>   
+						<?php } else { ?>
+						  
+                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+							  
+							  <?php } }  ?>								 
                                 </tr>
 								
 								
@@ -451,11 +587,11 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
                                <tr>
                               <td><input type="text" maxlength="16"  name="table7_srno_from[]" class="form-control"  placeholder="" /> </td> 
 	                          <td><input type="text" maxlength="16"  name="table7_srno_to[]" class="form-control"  placeholder="" /> </td>
-							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table7_totalno[]" id="table7_totalno" onchange="table7onchange(this.value)"  class="form-control"  placeholder="" /> </td>
-							<td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table7_cancelled[]" id="table7_cancelled" onchange="table7onchange(this.value)" class="form-control"  placeholder="" /> </td> 
-							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table7_netissued[]" id="table7_netissued" class="form-control"  placeholder="" /></td> 
-  							 </tr>
-								
+							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table7_totalno[]"  class="form-control"  placeholder="" /> </td>
+							<td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table7_cancelled[]" class="form-control"  placeholder="" /> </td> 
+							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table7_netissued[]" class="form-control"  placeholder="" /></td> 
+							 <td><a class="addMoreInvoice add-table7a"  href="javascript:void(0)"><div class="tooltip2"><i class="fa fa-plus-circle addicon"></i><span class="tooltiptext">Add More</span></div></a></td>
+							 </tr>								
 								<?php } ?>                              
 							
                                 </tbody>
@@ -488,10 +624,28 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
                                 <tr>
                                  <td><input type="text" maxlength="16"  name="table8_srno_from[]" class="form-control" value="<?php if(isset($data->from)) { echo $data->from; } else { echo ''; }?>"  placeholder="" /> </td>
                                  <td><input type="text" maxlength="16"  name="table8_srno_to[]" class="form-control" value="<?php if(isset($data->to)) { echo $data->to; } else { echo ''; }?>"  placeholder="" /> </td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" onchange="table8onchange(this.value)" id="table8_totalno" name="table8_totalno[]" class="form-control" value="<?php if(isset($data->totnum)) { echo $data->totnum; } else { echo ''; }?>"  placeholder="" /></td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" onchange="table8onchange(this.value)" id="table8_cancelled" name="table8_cancelled[]"class="form-control" value="<?php if(isset($data->cancel)) { echo $data->cancel; } else { echo ''; }?>"  placeholder="" /> </td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table8_netissued[]" id="table8_netissued" class="form-control" value="<?php if(isset($data->net_issue)) { echo $data->net_issue; } else { echo ''; }?>"  placeholder="" /> </td>
-						
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table8_totalno[]" class="form-control" value="<?php if(isset($data->totnum)) { echo $data->totnum; } else { echo ''; }?>"  placeholder="" /></td>
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table8_cancelled[]"class="form-control" value="<?php if(isset($data->cancel)) { echo $data->cancel; } else { echo ''; }?>"  placeholder="" /> </td>
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table8_netissued[]"class="form-control" value="<?php if(isset($data->net_issue)) { echo $data->net_issue; } else { echo ''; }?>"  placeholder="" /> </td>
+						 <?php if(!empty($doc_num8))
+								 {   
+							        if($i==1){
+										
+									 ?>
+									
+                               <td>
+									 <a class="addMoreInvoice add-table8a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+							</td>   
+						<?php } else { ?>
+						  
+                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+							  
+							  <?php } }  ?>
 					    					 
                                 </tr>
 								
@@ -500,9 +654,11 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 					             <tr>
                               <td><input type="text" maxlength="16"  name="table8_srno_from[]" class="form-control"  placeholder="" /> </td> 
 	                          <td><input type="text" maxlength="16"  name="table8_srno_to[]" class="form-control"  placeholder="" /> </td>
-							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" id="table8_totalno" onchange="table8onchange(this.value)" name="table8_totalno[]"  class="form-control"  placeholder="" /> </td>
-							<td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" id="table8_cancelled" onchange="table8onchange(this.value)" name="table8_cancelled[]" class="form-control"  placeholder="" /> </td> 
-							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" id="table8_netissued" name="table8_netissued[]" class="form-control"  placeholder="" /></td> 
+							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table8_totalno[]"  class="form-control"  placeholder="" /> </td>
+							<td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table8_cancelled[]" class="form-control"  placeholder="" /> </td> 
+							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table8_netissued[]" class="form-control"  placeholder="" /></td> 
+							 <td><a class="addMoreInvoice add-table8a"  href="javascript:void(0)"><div class="tooltip2"><i class="fa fa-plus-circle addicon"></i><span class="tooltiptext">Add More</span></div></a></td>
+		
   							 </tr>
 					<?php } ?>                              
 							
@@ -526,20 +682,38 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
                                 
                                 <tbody>
 							<?php
-								if(!empty($doc_num1))
+								if(!empty($doc_num9))
 								{
 															
 							$i=0;		
-						    foreach($doc_num1 as $data) {
+						    foreach($doc_num9 as $data) {
 								$i++;
                           ?>
                                 <tr>
                                  <td><input type="text" maxlength="16"  name="table9_srno_from[]" class="form-control" value="<?php if(isset($data->from)) { echo $data->from; } else { echo ''; }?>"  placeholder="" /> </td>
                                  <td><input type="text" maxlength="16"  name="table9_srno_to[]" class="form-control" value="<?php if(isset($data->to)) { echo $data->to; } else { echo ''; }?>"  placeholder="" /> </td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" onchange="table9onchange(this.value)" id="table9_totalno" name="table9_totalno[]" class="form-control" value="<?php if(isset($data->totnum)) { echo $data->totnum; } else { echo ''; }?>"  placeholder="" /></td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" onchange="table9onchange(this.value)" id="table9_cancelled" name="table9_cancelled[]"class="form-control" value="<?php if(isset($data->cancel)) { echo $data->cancel; } else { echo ''; }?>"  placeholder="" /> </td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table9_netissued[]" id="table9_netissued" class="form-control" value="<?php if(isset($data->net_issue)) { echo $data->net_issue; } else { echo ''; }?>"  placeholder="" /> </td>
-						
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table9_totalno[]" class="form-control" value="<?php if(isset($data->totnum)) { echo $data->totnum; } else { echo ''; }?>"  placeholder="" /></td>
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table9_cancelled[]"class="form-control" value="<?php if(isset($data->cancel)) { echo $data->cancel; } else { echo ''; }?>"  placeholder="" /> </td>
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table9_netissued[]"class="form-control" value="<?php if(isset($data->net_issue)) { echo $data->net_issue; } else { echo ''; }?>"  placeholder="" /> </td>
+								<?php if(!empty($doc_num9))
+								 {   
+							        if($i==1){
+										
+									 ?>
+									
+                               <td>
+									 <a class="addMoreInvoice add-table9a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+							</td>   
+						<?php } else { ?>
+						  
+                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+							  
+							  <?php } }  ?>
 					    							 
                                 </tr>
 								
@@ -548,9 +722,11 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
                              <tr>
                               <td><input type="text" maxlength="16"  name="table9_srno_from[]" class="form-control"  placeholder="" /> </td> 
 	                          <td><input type="text" maxlength="16"  name="table9_srno_to[]" class="form-control"  placeholder="" /> </td>
-							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" id="table9_totalno" onchange="table9onchange(this.value)" name="table9_totalno[]"  class="form-control"  placeholder="" /> </td>
-							<td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" id="table9_cancelled" onchange="table9onchange(this.value)" name="table9_cancelled[]" class="form-control"  placeholder="" /> </td> 
-							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" id="table9_netissued" name="table9_netissued[]" class="form-control"  placeholder="" /></td> 
+							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table9_totalno[]"  class="form-control"  placeholder="" /> </td>
+							<td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table9_cancelled[]" class="form-control"  placeholder="" /> </td> 
+							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table9_netissued[]" class="form-control"  placeholder="" /></td> 
+							 <td><a class="addMoreInvoice add-table9a"  href="javascript:void(0)"><div class="tooltip2"><i class="fa fa-plus-circle addicon"></i><span class="tooltiptext">Add More</span></div></a></td>
+			
   							 </tr>
 								
 								<?php } ?>                              
@@ -585,10 +761,28 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
                                 <tr>
                                  <td><input type="text" maxlength="16"  name="table10_srno_from[]" class="form-control" value="<?php if(isset($data->from)) { echo $data->from; } else { echo ''; }?>"  placeholder="" /> </td>
                                  <td><input type="text" maxlength="16"  name="table10_srno_to[]" class="form-control" value="<?php if(isset($data->to)) { echo $data->to; } else { echo ''; }?>"  placeholder="" /> </td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" id="table10_totalno" onchange="table10onchange(this.value)" name="table10_totalno[]" class="form-control" value="<?php if(isset($data->totnum)) { echo $data->totnum; } else { echo ''; }?>"  placeholder="" /></td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" id="table10_cancelled" onchange="table10onchange(this.value)" name="table10_cancelled[]"class="form-control" value="<?php if(isset($data->cancel)) { echo $data->cancel; } else { echo ''; }?>"  placeholder="" /> </td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" id="table10_netissued" name="table10_netissued[]"class="form-control" value="<?php if(isset($data->net_issue)) { echo $data->net_issue; } else { echo ''; }?>"  placeholder="" /> </td>
-								    								 
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table10_totalno[]" class="form-control" value="<?php if(isset($data->totnum)) { echo $data->totnum; } else { echo ''; }?>"  placeholder="" /></td>
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table10_cancelled[]"class="form-control" value="<?php if(isset($data->cancel)) { echo $data->cancel; } else { echo ''; }?>"  placeholder="" /> </td>
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table10_netissued[]"class="form-control" value="<?php if(isset($data->net_issue)) { echo $data->net_issue; } else { echo ''; }?>"  placeholder="" /> </td>
+								<?php if(!empty($doc_num10))
+								 {   
+							        if($i==1){
+										
+									 ?>
+									
+                               <td>
+									 <a class="addMoreInvoice add-table10a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+							</td>   
+						<?php } else { ?>
+						  
+                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+							  
+							  <?php } }  ?>    								 
                                 </tr>
 								
 								
@@ -596,10 +790,11 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
                                <tr>
                               <td><input type="text" maxlength="16"  name="table10_srno_from[]" class="form-control"  placeholder="" /> </td> 
 	                          <td><input type="text" maxlength="16"  name="table10_srno_to[]" class="form-control"  placeholder="" /> </td>
-							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table10_totalno[]" id="table10_totalno" onchange="table10onchange(this.value)"  class="form-control"  placeholder="" /> </td>
-							<td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table10_cancelled[]" id="table10_cancelled" onchange="table10onchange(this.value)" class="form-control"  placeholder="" /> </td> 
-							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table10_netissued[]" id="table10_netissued" class="form-control"  placeholder="" /></td> 
-  							 </tr>
+							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table10_totalno[]"  class="form-control"  placeholder="" /> </td>
+							<td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table10_cancelled[]" class="form-control"  placeholder="" /> </td> 
+							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table10_netissued[]" class="form-control"  placeholder="" /></td> 
+  						 	<td><a class="addMoreInvoice add-table10a"  href="javascript:void(0)"><div class="tooltip2"><i class="fa fa-plus-circle addicon"></i><span class="tooltiptext">Add More</span></div></a></td>
+						 </tr>
 								
 								<?php } ?>                              
 							
@@ -633,10 +828,28 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
                                 <tr>
                                  <td><input type="text" maxlength="16"  name="table11_srno_from[]" class="form-control" value="<?php if(isset($data->from)) { echo $data->from; } else { echo ''; }?>"  placeholder="" /> </td>
                                  <td><input type="text" maxlength="16"  name="table11_srno_to[]" class="form-control" value="<?php if(isset($data->to)) { echo $data->to; } else { echo ''; }?>"  placeholder="" /> </td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table11_totalno[]" id="table11_totalno" onchange="table11onchange(this.value)" class="form-control" value="<?php if(isset($data->totnum)) { echo $data->totnum; } else { echo ''; }?>"  placeholder="" /></td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table11_cancelled[]" id="table11_cancelled" onchange="table11onchange(this.value)" class="form-control" value="<?php if(isset($data->cancel)) { echo $data->cancel; } else { echo ''; }?>"  placeholder="" /> </td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table11_netissued[]" id="table11_netissued" class="form-control" value="<?php if(isset($data->net_issue)) { echo $data->net_issue; } else { echo ''; }?>"  placeholder="" /> </td>
-												 
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table11_totalno[]" class="form-control" value="<?php if(isset($data->totnum)) { echo $data->totnum; } else { echo ''; }?>"  placeholder="" /></td>
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table11_cancelled[]"class="form-control" value="<?php if(isset($data->cancel)) { echo $data->cancel; } else { echo ''; }?>"  placeholder="" /> </td>
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table11_netissued[]"class="form-control" value="<?php if(isset($data->net_issue)) { echo $data->net_issue; } else { echo ''; }?>"  placeholder="" /> </td>
+								<?php if(!empty($doc_num11))
+								 {   
+							        if($i==1){
+										
+									 ?>
+									
+                               <td>
+									 <a class="addMoreInvoice add-table11a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+							</td>   
+						<?php } else { ?>
+						  
+                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+							  
+							  <?php } }  ?>				 
                                 </tr>
 								
 								
@@ -644,9 +857,11 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
                             <tr>
                               <td><input type="text" maxlength="16"  name="table11_srno_from[]" class="form-control"  placeholder="" /> </td> 
 	                          <td><input type="text" maxlength="16"  name="table11_srno_to[]" class="form-control"  placeholder="" /> </td>
-							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" onchange="table11onchange(this.value)" id="table11_totalno" name="table11_totalno[]"  class="form-control"  placeholder="" /> </td>
-							<td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" onchange="table11onchange(this.value)" id="table11_cancelled" name="table11_cancelled[]" class="form-control"  placeholder="" /> </td> 
-							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table11_netissued[]" id="table11_netissued" class="form-control"  placeholder="" /></td> 
+							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table11_totalno[]"  class="form-control"  placeholder="" /> </td>
+							<td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table11_cancelled[]" class="form-control"  placeholder="" /> </td> 
+							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table11_netissued[]" class="form-control"  placeholder="" /></td> 
+							 <td><a class="addMoreInvoice add-table11a"  href="javascript:void(0)"><div class="tooltip2"><i class="fa fa-plus-circle addicon"></i><span class="tooltiptext">Add More</span></div></a></td>
+		
   							 </tr>
 							
 								<?php } ?>                              
@@ -681,10 +896,28 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
                                 <tr>
                                  <td><input type="text" maxlength="16"  name="table12_srno_from[]" class="form-control" value="<?php if(isset($data->from)) { echo $data->from; } else { echo ''; }?>"  placeholder="" /> </td>
                                  <td><input type="text" maxlength="16"  name="table12_srno_to[]" class="form-control" value="<?php if(isset($data->to)) { echo $data->to; } else { echo ''; }?>"  placeholder="" /> </td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" onchange="table12onchange(this.value)" id="table12_totalno" name="table12_totalno[]" class="form-control" value="<?php if(isset($data->totnum)) { echo $data->totnum; } else { echo ''; }?>"  placeholder="" /></td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" onchange="table12onchange(this.value)" id="table12_cancelled"  name="table12_cancelled[]"class="form-control" value="<?php if(isset($data->cancel)) { echo $data->cancel; } else { echo ''; }?>"  placeholder="" /> </td>
-								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table12_netissued[]" id="table12_netissued" class="form-control" value="<?php if(isset($data->net_issue)) { echo $data->net_issue; } else { echo ''; }?>"  placeholder="" /> </td>
-											 
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table12_totalno[]" class="form-control" value="<?php if(isset($data->totnum)) { echo $data->totnum; } else { echo ''; }?>"  placeholder="" /></td>
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table12_cancelled[]"class="form-control" value="<?php if(isset($data->cancel)) { echo $data->cancel; } else { echo ''; }?>"  placeholder="" /> </td>
+								 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table12_netissued[]"class="form-control" value="<?php if(isset($data->net_issue)) { echo $data->net_issue; } else { echo ''; }?>"  placeholder="" /> </td>
+								<?php if(!empty($doc_num12))
+								 {   
+							        if($i==1){
+										
+									 ?>
+									
+                               <td>
+									 <a class="addMoreInvoice add-table12a"  href="javascript:void(0)">
+									<div class="tooltip2">
+										<i class="fa fa-plus-circle addicon"></i>
+										<span class="tooltiptext">Add More</span>
+									</div>
+								</a>
+							</td>   
+						<?php } else { ?>
+						  
+                               <td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td>								 
+							  
+							  <?php } }  ?>			 
                                 </tr>
 								
 								
@@ -693,9 +926,11 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 							<tr>
                               <td><input type="text" maxlength="16"  name="table12_srno_from[]" class="form-control"  placeholder="" /> </td> 
 	                          <td><input type="text" maxlength="16"  name="table12_srno_to[]" class="form-control"  placeholder="" /> </td>
-							 <td><input type="text" maxlength="15" onchange="table12onchange(this.value)" id="table12_totalno" onKeyPress="return  isNumberKey(event,this);" name="table12_totalno[]"  class="form-control"  placeholder="" /> </td>
-							<td><input type="text" maxlength="15" onchange="table12onchange(this.value)" id="table12_cancelled" onKeyPress="return  isNumberKey(event,this);" name="table12_cancelled[]" class="form-control"  placeholder="" /> </td> 
-							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" id="table12_netissued" name="table12_netissued[]" class="form-control"  placeholder="" /></td> 
+							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table12_totalno[]"  class="form-control"  placeholder="" /> </td>
+							<td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table12_cancelled[]" class="form-control"  placeholder="" /> </td> 
+							 <td><input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="table12_netissued[]" class="form-control"  placeholder="" /></td> 
+							 <td><a class="addMoreInvoice add-table12a"  href="javascript:void(0)"><div class="tooltip2"><i class="fa fa-plus-circle addicon"></i><span class="tooltiptext">Add More</span></div></a></td>
+		
   							 </tr>
 							<?php } ?>                              
 							
@@ -724,10 +959,237 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
            <!--CONTENT START HERE-->
 		   </form>
         <div class="clear"></div>  	
+<script type="text/javascript">
+    $(document).ready(function(){
+		
+        $(".add-table1a").click(function(){
+          var element = document.getElementById('trtable1');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable1').style.display = 'none';
+			}
+            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table1_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table1_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' onchange='table1onchange(this.value)' id='table1_totalno' name='table1_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table1_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table1_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+          // $("table tbody").append(markup);
+		   $('#table1a').append(markup);
+        });
+		$('body').delegate('.del','click',function(){
+			$(this).closest('tr').remove();
+		});
+     
+		 
+        
+    }); 
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+		
+        $(".add-table2a").click(function(){
+          var element = document.getElementById('trtable2');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable2').style.display = 'none';
+			}
+            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table2_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table2_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' onchange='table2onchange(this.value)' id='table2_totalno' name='table2_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' onchange='table2onchange(this.value)' id='table2_cancelled' name='table2_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' id='table2_netissued' name='table2_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+          // $("table tbody").append(markup);
+		   $('#table2a').append(markup);
+        });
+		$('body').delegate('.del','click',function(){
+			$(this).closest('tr').remove();
+		});    
+	
+        
+    }); 
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+		
+        $(".add-table3a").click(function(){
+           var element = document.getElementById('trtable3');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable3').style.display = 'none';
+			}
+            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table3_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table3_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' onchange='table3onchange(this.value)' id='table3_totalno' name='table3_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' onchange='table3onchange(this.value)' id='table3_cancelled' name='table3_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table3_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+          // $("table tbody").append(markup);
+		   $('#table3a').append(markup);
+        });
+		$('body').delegate('.del','click',function(){
+			$(this).closest('tr').remove();
+		});    
+	
+        
+    }); 
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+		
+        $(".add-table4a").click(function(){
+		var element = document.getElementById('trtable4');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable4').style.display = 'none';
+			}
+         
+            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table4_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table4_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' onchange='table4onchange(this.value)' id='table4_totalno' name='table4_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' onchange='table4onchange(this.value)' id='table4_cancelled' name='table4_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' id='table4_netissued' name='table4_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+          // $("table tbody").append(markup);
+		   $('#table4a').append(markup);
+        });
+		$('body').delegate('.del','click',function(){
+			$(this).closest('tr').remove();
+		});    
+	
+        
+    }); 
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+		
+        $(".add-table5a").click(function(){
+           var element = document.getElementById('trtable5');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable5').style.display = 'none';
+			}
+            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table5_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table5_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' onchange='table5onchange(this.value)' id='table5_totalno' name='table5_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' onchange='table5onchange(this.value)' id='table5_cancelled' name='table5_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' id='table5_netissued' name='table5_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+          // $("table tbody").append(markup);
+		   $('#table5a').append(markup);
+        });
+		$('body').delegate('.del','click',function(){
+			$(this).closest('tr').remove();
+		});    
+	
+        
+    }); 
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+		
+        $(".add-table6a").click(function(){
+           var element = document.getElementById('trtable6');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable6').style.display = 'none';
+			}
+            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table6_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table6_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table6_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table6_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table6_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+          // $("table tbody").append(markup);
+		   $('#table6a').append(markup);
+        });
+		$('body').delegate('.del','click',function(){
+			$(this).closest('tr').remove();
+		});    
+	
+        
+    }); 
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+		
+        $(".add-table7a").click(function(){
+           var element = document.getElementById('trtable7');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable7').style.display = 'none';
+			}
+            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table7_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table7_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table7_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table7_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table7_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+          // $("table tbody").append(markup);
+		   $('#table7a').append(markup);
+        });
+		$('body').delegate('.del','click',function(){
+			$(this).closest('tr').remove();
+		});    
+	
+        
+    }); 
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+		
+        $(".add-table8a").click(function(){
+           var element = document.getElementById('trtable8');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable8').style.display = 'none';
+			}
+            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table8_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table8_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table8_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table8_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table8_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+          // $("table tbody").append(markup);
+		   $('#table8a').append(markup);
+        });
+		$('body').delegate('.del','click',function(){
+			$(this).closest('tr').remove();
+		});    
+	
+        
+    }); 
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+		
+        $(".add-table9a").click(function(){
+           var element = document.getElementById('trtable9');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable9').style.display = 'none';
+			}
+            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table9_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table9_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table9_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table9_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table9_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+          // $("table tbody").append(markup);
+		   $('#table9a').append(markup);
+        });
+		$('body').delegate('.del','click',function(){
+			$(this).closest('tr').remove();
+		});    
+	
+        
+    }); 
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+		
+        $(".add-table10a").click(function(){
+          var element = document.getElementById('trtable10');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable10').style.display = 'none';
+			}
+            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table10_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table10_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table10_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table10_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table10_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+          // $("table tbody").append(markup);
+		   $('#table10a').append(markup);
+        });
+		$('body').delegate('.del','click',function(){
+			$(this).closest('tr').remove();
+		});    
+	        
+    }); 
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+		
+        $(".add-table11a").click(function(){
+           var element = document.getElementById('trtable11');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable11').style.display = 'none';
+			}
+            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table11_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table11_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table11_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table11_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table11_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+          // $("table tbody").append(markup);
+		   $('#table11a').append(markup);
+        });
+		$('body').delegate('.del','click',function(){
+			$(this).closest('tr').remove();
+		});    
+	        
+    }); 
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+		
+        $(".add-table12a").click(function(){
+           var element = document.getElementById('trtable12');
+			if (element != null && element.value == '') {
+		document.getElementById('trtable12').style.display = 'none';
+			}
+            var markup = "<tr><td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='table12_srno_from[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table12_srno_to[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table12_totalno[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table12_cancelled[]'/></td><td><input type='text' onKeyPress='return  isNumberKey(event,this);' class='required form-control' name='table12_netissued[]'/></td><td><a class='deleteInvoice del' href='javascript:void(0)'><div class='tooltip2'><i class='fa fa-trash deleteicon'></i><span class='tooltiptext'>Delete</span></div></a></td></tr>";
+          // $("table tbody").append(markup);
+		   $('#table12a').append(markup);
+        });
+		$('body').delegate('.del','click',function(){
+			$(this).closest('tr').remove();
+		});    
+	        
+    }); 
+</script>
 <script>
 
 function table1onchange(val) {
-	
 	var element = document.getElementById("table1_cancelled");
 	if (element != null) {
 	document.getElementById("table1_netissued").value =  document.getElementById("table1_totalno").value - document.getElementById("table1_cancelled").value;

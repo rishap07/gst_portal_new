@@ -6,6 +6,7 @@
     *  Last Modification   :   Summary of JSTR1
     * 
 */
+$obj_gstr =  new gstr();
 $jstr1_array = array();
 $getSummary= isset($_POST['json'])?$_POST['json']:'';
 $type= isset($_POST['type'])?$_POST['type']:'';
@@ -551,6 +552,60 @@ if(!empty($jstr1_array)) {
                             }
                         }
                     }   
+                    $response .= '
+                </thead>
+            </table>';
+    }
+
+    if($type == 'DOC_ISSUE') {
+        //echo '<pre>'; print_r($jstr1_array);
+        $response .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">
+                    <thead>
+                    <tr>
+                        <th>Doc Number</th>
+                        <th style="text-align:center">From  </th>
+                        <th style="text-align:center">To </th>
+                        <th style="text-align:center">Total Num</th>
+                        <th style="text-align:center">Total cCancel</th>
+                        <th style="text-align:center">Net Issue </th>
+                        <th></th>
+                    </tr>';
+                    $doc_det = isset($jstr1_array['doc_issue']['doc_det'])?$jstr1_array['doc_issue']['doc_det']:'';
+                    $chksum = isset($jstr1_array['doc_issue']['chksum'])?$jstr1_array['doc_issue']['chksum']:'';
+                    $flag = isset($jstr1_array['doc_issue']['flag'])?$jstr1_array['doc_issue']['flag']:'';
+                        if(isset($doc_det)) {
+
+                            foreach ($doc_det as $key2 => $doc_det_value) {
+
+                                $docs = isset($doc_det_value['docs'])?$doc_det_value['docs']:'';
+                                $doc_num = isset($doc_det_value['doc_num'])?$doc_det_value['doc_num']:'';
+
+                                foreach ($docs as $key3 => $jstr1_value) {
+                                    $cancel = isset($jstr1_value['cancel'])?$jstr1_value['cancel']:0;
+                                    $num = isset($jstr1_value['num'])?$jstr1_value['num']:array();
+                                    $totnum = isset($jstr1_value['totnum'])?$jstr1_value['totnum']:0;
+                                    $from = isset($jstr1_value['from'])?$jstr1_value['from']:'';
+                                    $sbdt = isset($jstr1_value['sbdt'])?$jstr1_value['sbdt']:'';
+                                    $to = isset($jstr1_value['to'])?$jstr1_value['to']:'';
+                                    $net_issue = isset($jstr1_value['net_issue'])?$jstr1_value['net_issue']:'';
+                                    $doc_num_name = '';
+                                    if(!empty($doc_num)) {
+                                      $doc_num_name = $obj_gstr->doc_issue_key_name($doc_num);  
+                                    }
+                                    
+                                    $response .='<tr>
+                                                <td >'.$doc_num_name.'</td>
+                                                <td align="center">'.$from.'</td>
+                                                <td align="center">'.$to.'</td>
+                                                <td align="center">'.$totnum.'</td>
+                                                <td align="center">'.$cancel.'</td>
+                                                <td align="center">'.$net_issue.'</td>';
+                                            $response .='</tr>';
+                                }
+                                
+
+                            }
+                        }
                     $response .= '
                 </thead>
             </table>';

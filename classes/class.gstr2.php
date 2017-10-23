@@ -11,74 +11,106 @@ final class gstr2 extends validation {
     function __construct() {
         parent::__construct();
     }
+	
+	public function downloadGSTR2() {
 
-    public function downloadGSTR2() {
-        $obj_api = new gstr();
         $response_b2b = $response_cdn = '';
+		$flag = 0;
+		$obj_api = new gstr();
+		$dataUpdate = $dataUpdate1 = array();
+
         $gstr2ReturnMonth = isset($_POST['gstr2ReturnMonth']) ? $_POST['gstr2ReturnMonth'] : '';
-        $flag = 0;
-        if (empty($gstr2ReturnMonth)) {
+		if (empty($gstr2ReturnMonth)) {
             $this->setError($this->validationMessage['mandatory']);
             return false;
         }
-        $dataUpdate = $dataUpdate1 = array();
+        $msg = array();
         $response_b2b = $obj_api->returnSummary($gstr2ReturnMonth, 'B2B', 'gstr2a');
-        if ($response_b2b == true) {
-            $flag = 1;
+		if ($response_b2b == true) {
+
+			$flag = 1;
             /***** Start Code Insert/update to summary *****/
             $savedata['json'] = base64_encode(serialize($response_b2b));
             $obj_api->save_user_summary($savedata,'gstr2aB2B',$gstr2ReturnMonth);
             /***** End Code Insert/update to summary *****/
+            
+
         }
-        $response_cdn = $obj_api->returnSummary($gstr2ReturnMonth, 'CDN', 'gstr2a');
-        if ($response_cdn == true) {
-            $flag = 1;
+        else {
+            if(isset($_SESSION['error']) && !empty($_SESSION['error'])) {
+                unset($_SESSION['error']);
+                $msg[] = 'B2B Invoices are not found for the provided Inputs ';
+            }
+        }
+		
+		$response_cdn = $obj_api->returnSummary($gstr2ReturnMonth, 'CDN', 'gstr2a');
+		if ($response_cdn == true) {
+            
+			$flag = 1;
             /***** Start Code Insert/update to summary *****/
             $savedata['json'] = base64_encode(serialize($response_cdn));
             $obj_api->save_user_summary($savedata,'gstr2aCDN',$gstr2ReturnMonth);
             /***** End Code Insert/update to summary *****/
+
         }
-        if($flag == 0) {
+        else {
+            if(isset($_SESSION['error']) && !empty($_SESSION['error'])) {
+                unset($_SESSION['error']);
+                $msg[] = 'CDN Invoices are not found for the provided Inputs ';
+            }
+        }
+        //$this->pr($_SESSION['error']);
+        if(isset($msg) && !empty($msg)) {
+            $this->setError($msg);
+        }
+       
+
+		if($flag == 0) {
             return false;
         }
-        $this->unsetMessage();
-        //$this->setSuccess('GSTR2A Download Successfully.');
-        if (!empty($response_b2b) || !empty($response_cdn)) {
-            $jstrb2b_array = json_decode($response_b2b, true);
-            $jstrcdn_array = json_decode($response_cdn, true);
-            //$this->pr($jstrb2b_array);
-            //$this->pr($jstrcdn_array);
-            if (isset($jstrb2b_array['b2b'])) {
-                $x = 0;
-                foreach ($jstrb2b_array['b2b'] as $key1 => $inv_value) {
-                    if (isset($inv_value['inv'])) {
-                        $ctin = isset($inv_value['ctin']) ? $inv_value['ctin'] : '';
 
-                        foreach ($inv_value['inv'] as $key2 => $jstr1_value) {
-                            $val = isset($jstr1_value['val']) ? $jstr1_value['val'] : 0;
+		
+		if(!empty($response_b2b) || !empty($response_cdn)) {
+			
+			$jstrb2b_array = json_decode($response_b2b, true);
+            $jstrcdn_array = json_decode($response_cdn, true);
+			//$this->pr($jstrb2b_array);
+			//$this->pr($jstrcdn_array);
+
+			if (isset($jstrb2b_array['b2b'])) {
+
+				$x = 0;
+				foreach ($jstrb2b_array['b2b'] as $key1 => $inv_value) {
+					
+					if (isset($inv_value['inv'])) {
+						
+						$ctin = isset($inv_value['ctin']) ? $inv_value['ctin'] : '';
+
+						foreach ($inv_value['inv'] as $key2 => $jstr1_value) {
+							
+							$val = isset($jstr1_value['val']) ? $jstr1_value['val'] : 0;
                             $itms = isset($jstr1_value['itms']) ? $jstr1_value['itms'] : array();
                             $inv_typ = isset($jstr1_value['inv_typ']) ? $jstr1_value['inv_typ'] : '';
                             $pos = isset($jstr1_value['pos']) ? $jstr1_value['pos'] : 0;
                             $updby = isset($jstr1_value['updby']) ? $jstr1_value['updby'] : '';
-                            $idt = isset($jstr1_value['idt']) ? $jstr1_value['idt'] : '';
                             $rchrg = isset($jstr1_value['rchrg']) ? $jstr1_value['rchrg'] : '';
                             $inum = isset($jstr1_value['inum']) ? $jstr1_value['inum'] : '';
                             $chksum = isset($jstr1_value['chksum']) ? $jstr1_value['chksum'] : '';
 
                             $nt_num = isset($jstr1_value['nt_num']) ? $jstr1_value['nt_num'] : '';
-                            $inum = isset($jstr1_value['inum']) ? $jstr1_value['inum'] : '';
                             $rsn = isset($jstr1_value['rsn']) ? $jstr1_value['rsn'] : 0;
 
                             $idt = isset($jstr1_value['idt']) ? $jstr1_value['idt'] : '';
                             $nt_dt = isset($jstr1_value['nt_dt']) ? $jstr1_value['nt_dt'] : '';
                             $p_gst = isset($jstr1_value['p_gst']) ? $jstr1_value['p_gst'] : '';
                             $ntty = isset($jstr1_value['ntty']) ? $jstr1_value['ntty'] : '';
-                            $rsn = isset($jstr1_value['rsn']) ? $jstr1_value['rsn'] : '';
 
                             if (!empty($itms)) {
-                                $i = 0;
-                                foreach ($itms as $key3 => $value) {
-                                    $num = isset($value['num']) ? $value['num'] : 0;
+								
+								$i = 0;
+								foreach ($itms as $key3 => $value) {
+									
+									$num = isset($value['num']) ? $value['num'] : 0;
                                     $csamt = isset($value['itm_det']['csamt']) ? $value['itm_det']['csamt'] : 0;
                                     $rt = isset($value['itm_det']['rt']) ? $value['itm_det']['rt'] : 0;
                                     $txval = isset($value['itm_det']['txval']) ? $value['itm_det']['txval'] : 0;
@@ -86,10 +118,9 @@ final class gstr2 extends validation {
                                     $samt = isset($value['itm_det']['samt']) ? $value['itm_det']['samt'] : 0;
                                     $camt = isset($value['itm_det']['camt']) ? $value['itm_det']['camt'] : 0;
 
-
                                     $dataUpdate[$x][$i]['type'] = 'B2B';
                                     $dataUpdate[$x][$i]['reference_number'] = $inum;
-                                    $dataUpdate[$x][$i]['invoice_date'] = $idt > 0 ? date('Y-m-d', strtotime($idt)) : '';
+                                    $dataUpdate[$x][$i]['invoice_date'] = isset($idt) ? date('Y-m-d', strtotime($idt)) : '';
 
                                     $dataUpdate[$x][$i]['invoice_total_value'] = $val;
                                     $dataUpdate[$x][$i]['total_taxable_subtotal'] = $txval;
@@ -105,12 +136,10 @@ final class gstr2 extends validation {
                                     $dataUpdate[$x][$i]['rate'] = $rt;
                                     $dataUpdate[$x][$i]['pos'] = $pos;
                                     $dataUpdate[$x][$i]['itms'] = $num;
-                                    $dataUpdate[$x][$i]['rchrg'] = $rchrg;
                                     $dataUpdate[$x][$i]['chksum'] = $chksum;
-
                                     $dataUpdate[$x][$i]['nt_num'] = $nt_num;
 
-                                    $dataUpdate[$x][$i]['nt_dt'] = $nt_dt > 0 ? date('Y-m-d', strtotime($nt_dt)) : '';
+                                    $dataUpdate[$x][$i]['nt_dt'] = isset($nt_dt) ? date('Y-m-d', strtotime($nt_dt)) : '';
                                     $dataUpdate[$x][$i]['p_gst'] = $p_gst;
                                     $dataUpdate[$x][$i]['ntty'] = $ntty;
                                     $dataUpdate[$x][$i]['rsn'] = $rsn;
@@ -127,14 +156,17 @@ final class gstr2 extends validation {
             }
 
             if (!empty($jstrcdn_array)) {
-                $x = 0;
-                $a = 0;
-                foreach ($jstrcdn_array['cdn'] as $key1 => $inv_value) {
-                    $cfs = isset($inv_value['cfs']) ? $inv_value['cfs'] : '';
+                
+				$x = 0;
+				foreach ($jstrcdn_array['cdn'] as $key1 => $inv_value) {
+
+					$cfs = isset($inv_value['cfs']) ? $inv_value['cfs'] : '';
                     $nt = isset($inv_value['nt']) ? $inv_value['nt'] : array();
                     $ctin = isset($inv_value['ctin']) ? $inv_value['ctin'] : '';
-                    if (isset($nt) && !empty($nt)) {
-                        $y = 0;
+
+					if (isset($nt) && !empty($nt)) {
+						
+						$y = 0;
                         foreach ($nt as $key2 => $jstr1_value) {
 
                             $val = isset($jstr1_value['val']) ? $jstr1_value['val'] : 0;
@@ -152,12 +184,13 @@ final class gstr2 extends validation {
                             $chksum = isset($jstr1_value['chksum']) ? $jstr1_value['chksum'] : '';
                             $inv_typ = isset($jstr1_value['inv_typ']) ? $jstr1_value['inv_typ'] : '';
                             $pos = isset($jstr1_value['pos']) ? $jstr1_value['pos'] : 0;
-                            $updby = isset($jstr1_value['updby']) ? $jstr1_value['updby'] : '';
 
                             if (!empty($itms)) {
-                                $i = 0;
-                                foreach ($itms as $key3 => $value) {
-                                    $num = isset($value['num']) ? $value['num'] : 0;
+								
+								$i = 0;
+								foreach ($itms as $key3 => $value) {
+									
+									$num = isset($value['num']) ? $value['num'] : 0;
                                     $csamt = isset($value['itm_det']['csamt']) ? $value['itm_det']['csamt'] : 0;
                                     $rt = isset($value['itm_det']['rt']) ? $value['itm_det']['rt'] : 0;
                                     $txval = isset($value['itm_det']['txval']) ? $value['itm_det']['txval'] : 0;
@@ -167,7 +200,7 @@ final class gstr2 extends validation {
 
                                     $dataUpdate1[$y][$i]['type'] = 'CDN';
                                     $dataUpdate1[$y][$i]['reference_number'] = $inum;
-                                    $dataUpdate1[$y][$i]['invoice_date'] = $idt > 0 ? date('Y-m-d', strtotime($idt)) : '';
+                                    $dataUpdate1[$y][$i]['invoice_date'] = isset($idt) > 0 ? date('Y-m-d', strtotime($idt)) : '';
 
                                     $dataUpdate1[$y][$i]['invoice_total_value'] = $val;
                                     $dataUpdate1[$y][$i]['total_taxable_subtotal'] = $txval;
@@ -183,17 +216,17 @@ final class gstr2 extends validation {
                                     $dataUpdate1[$y][$i]['rate'] = $rt;
                                     $dataUpdate1[$y][$i]['pos'] = $pos;
                                     $dataUpdate1[$y][$i]['itms'] = $num;
-                                    $dataUpdate1[$y][$i]['rchrg'] = $rchrg;
                                     $dataUpdate1[$y][$i]['chksum'] = $chksum;
 
                                     $dataUpdate1[$y][$i]['nt_num'] = $nt_num;
-                                    $dataUpdate1[$y][$i]['nt_dt'] = $nt_dt > 0 ? date('Y-m-d', strtotime($nt_dt)) : '';
+                                    $dataUpdate1[$y][$i]['nt_dt'] = isset($nt_dt) ? date('Y-m-d', strtotime($nt_dt)) : '';
                                     $dataUpdate1[$y][$i]['p_gst'] = $p_gst;
                                     $dataUpdate1[$y][$i]['ntty'] = $ntty;
                                     $dataUpdate1[$y][$i]['rsn'] = $rsn;
                                     $dataUpdate1[$y][$i]['financial_month'] = $gstr2ReturnMonth;
                                     $dataUpdate1[$y][$i]['added_by'] = $_SESSION['user_detail']['user_id'];
                                     $dataUpdate1[$y][$i]['added_date'] = date('Y-m-d h:i:s');
+									$i++;
                                 }
                             }
                             $y++;
@@ -203,14 +236,16 @@ final class gstr2 extends validation {
                 }
                 $dataUpdate = array_merge($dataUpdate, $dataUpdate1);
             }
+
             $data = $data1 = array();
             $y = 0;
             $data = array_reduce($dataUpdate, 'array_merge', $data1);
 
-            /* $this->pr($data);
-              die; */
+            /* $this->pr($data); die; */
+
             if (!empty($data)) {
-                $results_old = $this->checkUserInvoices($this->sanitize($_SESSION['user_detail']['user_id']), $gstr2ReturnMonth);
+
+				$results_old = $this->checkUserInvoices($this->sanitize($_SESSION['user_detail']['user_id']), $gstr2ReturnMonth);
                 //$this->pr($results_old);
                 $data_update = $data_insert = array();
                 $x = $y = 0;
@@ -261,6 +296,7 @@ final class gstr2 extends validation {
                         $y++;
                     }
                 }
+
                 $flagfailed = 0;
                 //echo '<br/>insert====> ';$this->pr($data_insert);
                 if (!empty($data_insert)) {

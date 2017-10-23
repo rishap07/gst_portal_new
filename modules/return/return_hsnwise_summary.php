@@ -67,7 +67,7 @@ else {
 
         <div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>HSN-wise summary</h1></div>
         <div class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav"><a href="#">Home</a>
-            <i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GST-Transition Form</span> </div>
+            <i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GSTR1-hsnwise summary</span> </div>
         <div class="whitebg formboxcontainer">
 <?php $obj_transition->showErrorMessage(); ?>
 <?php

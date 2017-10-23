@@ -30,6 +30,12 @@ final class client extends validation {
 			$dataArr['gstin_number'] = isset($_POST['gstin_number']) ? $_POST['gstin_number'] : '';
 			$dataArr['pan_card_number'] = isset($_POST['pan_card_number']) ? $_POST['pan_card_number'] : '';
 
+			$checkGSTINNumber = $this->get_row("select * from " . $this->tableNames['client_kyc'] . " where 1=1 AND gstin_number = '" . $dataArr['gstin_number'] . "'");
+			if(isset($checkGSTINNumber) && count($checkGSTINNumber) > 0) {
+				$this->setError('This GSTIN already in use.');
+				return false;
+			}
+
 			$dataCurrentSubsArr = $this->getUserDetailsById($this->sanitize($_SESSION['user_detail']['user_id']));
 
 			$parentIds = array();
@@ -236,6 +242,12 @@ final class client extends validation {
 
 			$dataArr['gstin_number'] = isset($_POST['gstin_number']) ? $_POST['gstin_number'] : '';
 			$dataArr['pan_card_number'] = isset($_POST['pan_card_number']) ? $_POST['pan_card_number'] : '';
+
+			$checkGSTINNumber = $this->get_row("select * from " . $this->tableNames['client_kyc'] . " where 1=1 AND gstin_number = '" . $dataArr['gstin_number'] . "'");
+			if(isset($checkGSTINNumber) && count($checkGSTINNumber) > 0) {
+				$this->setError('This GSTIN already in use.');
+				return false;
+			}
 
 			$dataCurrentSubsArr = $this->getUserDetailsById($this->sanitize($dataCurrentArr['data']->added_by));
 

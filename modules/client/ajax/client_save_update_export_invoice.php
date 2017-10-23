@@ -47,6 +47,8 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	$dataArr['advance_adjustment'] = isset($params['advance_adjustment']) ? $params['advance_adjustment'] : '';
 	if($dataArr['advance_adjustment'] == 1) {
 		$dataArr['receipt_voucher_number'] = isset($params['receipt_voucher_number']) ? $params['receipt_voucher_number'] : '';
+	} else {
+		$dataArr['receipt_voucher_number'] = 0;
 	}
 
 	$dataArr['billing_name'] = isset($params['billing_name']) ? $params['billing_name'] : '';

@@ -160,7 +160,7 @@ class validation extends upload {
         'gstinexist' => 'This GSTIN number already associated with another client.',
         'gstinupdated' => 'GSTIN number updated successfully.',
         'themesettingsaved' => 'Theme setting saved successfully.',
-		'invoicesettingsaved' => 'Invoice setting saved successfully.',
+	'invoicesettingsaved' => 'Invoice setting saved successfully.',
         'iteminserted' => 'Item Inserted Successfully',
         'itemupdated' => 'Item Updated Successfully',
         'itemdeleted' => 'Item Deleted Successfully',
@@ -201,26 +201,25 @@ class validation extends upload {
 
             $currentUserDetails = $this->getUserDetailsById( $_SESSION['user_detail']['user_id'] );
 
-			if($currentUserDetails['data']->user_group == 3) {
+		if($currentUserDetails['data']->user_group == 3) {
 
-                if( isset($_GET['page']) && $_GET['page'] != "plan_chooseplan" && $_GET['page'] != "logout" && $_GET['page'] != "payment_online"  && $_GET['page'] != "payment_error"  && $_GET['page'] != "payment_success" && $_GET['page'] != "payment_response") {
+                    if( isset($_GET['page']) && $_GET['page'] != "plan_chooseplan" && $_GET['page'] != "logout" && $_GET['page'] != "payment_online"  && $_GET['page'] != "payment_error"  && $_GET['page'] != "payment_success" && $_GET['page'] != "payment_response") {
 
-					if($currentUserDetails['data']->plan_id == 0 || $currentUserDetails['data']->payment_status == 0) {
+			if($currentUserDetails['data']->plan_id == 0 || $currentUserDetails['data']->payment_status == 0) {
                         $this->redirect(PROJECT_URL . "?page=plan_chooseplan");
+                        }
                     }
-                }
-            } else if($currentUserDetails['data']->user_group == 4) {
+                } else if($currentUserDetails['data']->user_group == 4) {
 
-                if( isset($_GET['page']) && $_GET['page'] != "client_loginas")        
-                {
-                    if( isset($_GET['page']) && $_GET['page'] != "client_kycupdate" && $_GET['page'] != "logout") {
-
-                        if($currentUserDetails['data']->kyc == '') {
-                            $this->redirect(PROJECT_URL . "?page=client_kycupdate");
+                    if( isset($_GET['page']) && $_GET['page'] != "client_loginas")        
+                    {
+                        if( isset($_GET['page']) && $_GET['page'] != "client_kycupdate" && $_GET['page'] != "logout") {
+                            if($currentUserDetails['data']->kyc == '') {
+                                $this->redirect(PROJECT_URL . "?page=client_kycupdate");
+                            }
                         }
                     }
                 }
-            }
         }
     }
 
@@ -385,22 +384,29 @@ class validation extends upload {
 
     public function getB2BInvoices($user_id,$returnmonth,$type='',$ids=''){
        
-       $queryB2B =  "select a.export_supply_meant, a.invoice_id,
-       a.invoice_type,a.billing_gstin_number,a.financial_year,
-       a.reference_number,
-       a.invoice_date,
-       a.is_gstr1_uploaded,
-       (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
+        $queryB2B =  "select a.export_supply_meant,
+        a.invoice_id,
+        a.invoice_type,
+        a.billing_gstin_number,
+        a.financial_year,
+        a.reference_number,
+        a.invoice_date,
+        a.is_gstr1_uploaded,
+        (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
         (Select sum(taxable_subtotal) from gst_client_invoice_item c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal,
-       s.state_tin as company_state,ps.state_tin as supply_place,
-       a.invoice_type,a.supply_type,
-       a.ecommerce_gstin_number,
-       b.igst_rate,
-       b.cgst_rate,
-       b.sgst_rate,
-       b.consolidate_rate,
-       a.billing_name,
-        sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id  inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
+        s.state_tin as company_state,ps.state_tin as supply_place,
+        a.invoice_type,a.supply_type,
+        a.ecommerce_gstin_number,
+        b.igst_rate,
+        b.cgst_rate,
+        b.sgst_rate,
+        b.consolidate_rate,
+        a.billing_name,
+        sum(b.igst_amount) as igst_amount, 
+        sum(b.cgst_amount) as cgst_amount,
+        sum(b.sgst_amount) as sgst_amount,
+        sum(b.cess_amount) as cess_amount
+        from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id  inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
         
         if($type != '') {
             if($type != 'all') {
@@ -434,7 +440,19 @@ class validation extends upload {
         a.is_gstr1_uploaded,
         (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
         (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal,
-        s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_type,a.supply_type,b.igst_rate,b.cgst_rate,b.sgst_rate,b.consolidate_rate, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
+        s.state_tin as company_state,
+        ps.state_tin as supply_place,
+        a.invoice_type,
+        a.supply_type,
+        b.igst_rate,
+        b.cgst_rate,
+        b.sgst_rate,
+        b.consolidate_rate,
+        sum(b.igst_amount) as igst_amount,
+        sum(b.cgst_amount) as cgst_amount, 
+        sum(b.sgst_amount) as sgst_amount,
+        sum(b.cess_amount) as cess_amount
+        from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
 
         if($type != '') {
             if($type != 'all') {
@@ -528,15 +546,17 @@ class validation extends upload {
     }
 
     public function getCDNRInvoices($user_id,$returnmonth,$type='',$ids=''){
-       $queryCDNR =  "select a.invoice_id,
-       a.invoice_type,a.reference_number ,a.financial_year,
-       a.billing_name,
-       a.is_gstr1_uploaded,
-       a.reason_issuing_document,
-       c.reference_number as corresponding_document_number,
-       c.invoice_date as corresponding_document_date, 
-       a.invoice_id,a.billing_gstin_number,
-       a.reference_number,a.invoice_date,
+        $queryCDNR =  "select a.invoice_id,
+        a.invoice_type,
+        a.reference_number ,
+        a.financial_year,
+        a.billing_name,
+        a.is_gstr1_uploaded,
+        a.reason_issuing_document,
+        c.reference_number as corresponding_document_number,
+        c.invoice_date as corresponding_document_date, 
+        a.invoice_id,a.billing_gstin_number,
+        a.reference_number,a.invoice_date,
        (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
         (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal, 
         s.state_tin as company_state,ps.state_tin as supply_place,b.igst_rate,b.cgst_rate,b.sgst_rate, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('client_invoice')." c  on (((a.invoice_type='creditnote' or a.invoice_type='debitnote') and a.corresponding_document_number=c.invoice_id)or (  a.invoice_type='refundvoucherinvoice' and a.refund_voucher_receipt=c.invoice_id)) inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
@@ -560,17 +580,31 @@ class validation extends upload {
     }
 
     public function getCDNURInvoices($user_id,$returnmonth,$type='',$ids='',$group_by='',$order_by=''){
-        $queryCDNUR =  "select a.invoice_id,a.financial_year,
-        a.billing_name,a.invoice_type,a.reference_number,c.reference_number as corresponding_document_number,c.export_supply_meant,
+        $queryCDNUR =  "select a.invoice_id,
+        a.financial_year,
+        a.billing_name,
+        a.invoice_type,
+        a.reference_number,
+        c.reference_number as corresponding_document_number,
+        c.export_supply_meant,
         c.invoice_type as original_type,
-        c.invoice_date as corresponding_document_date,a.billing_gstin_number,
+        c.invoice_date as corresponding_document_date,
+        a.billing_gstin_number,
         a.reference_number,
         a.is_gstr1_uploaded,
         a.reason_issuing_document,
         a.invoice_date,
         (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
         (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal,
-        s.state_tin as company_state,ps.state_tin as supply_place,b.igst_rate,b.cgst_rate,b.sgst_rate,b.consolidate_rate, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('client_invoice')." c  on (((a.invoice_type='creditnote' or a.invoice_type='debitnote') and a.corresponding_document_number=c.invoice_id)or (  a.invoice_type='refundvoucherinvoice' and a.refund_voucher_receipt=c.invoice_id)) inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1";
+        s.state_tin as company_state,
+        ps.state_tin as supply_place,
+        b.igst_rate,b.cgst_rate,
+        b.sgst_rate,b.consolidate_rate,
+        sum(b.igst_amount) as igst_amount, 
+        sum(b.cgst_amount) as cgst_amount, 
+        sum(b.sgst_amount) as sgst_amount,
+        sum(b.cess_amount) as cess_amount 
+        from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('client_invoice')." c  on (((a.invoice_type='creditnote' or a.invoice_type='debitnote') and a.corresponding_document_number=c.invoice_id)or (  a.invoice_type='refundvoucherinvoice' and a.refund_voucher_receipt=c.invoice_id)) inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1";
 
         if($type != '') {
             if($type != 'all') {
@@ -613,15 +647,34 @@ class validation extends upload {
 
     public function getATInvoices($user_id,$returnmonth,$type='',$ids='',$group_by='',$order_by=''){
 
-       $queryAt =  "select a.invoice_id,a.billing_name,a.invoice_type,a.financial_year,
-       a.reference_number,
-       a.billing_gstin_number,
-       a.is_gstr1_uploaded,
-       a.reference_number,s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_date,
-       (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
+        $queryAt =  "select a.invoice_id,
+        a.billing_name,
+        a.invoice_type,
+        a.financial_year,
+        a.reference_number,
+        a.billing_gstin_number,
+        a.is_gstr1_uploaded,
+        a.reference_number,
+        s.state_tin as company_state,
+        ps.state_tin as supply_place,
+        a.invoice_date,
+        (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
         (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal1,
         sum(taxable_subtotal)  as taxable_subtotal,
-        b.item_name, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount,b.igst_rate,b.cgst_rate,b.sgst_rate,b.consolidate_rate from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id  inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
+        b.item_name,
+        sum(b.igst_amount) as igst_amount,
+        sum(b.cgst_amount) as cgst_amount,
+        sum(b.sgst_amount) as sgst_amount,
+        sum(b.cess_amount) as cess_amount,
+        b.igst_rate,
+        b.cgst_rate,
+        b.sgst_rate,
+        b.consolidate_rate 
+        from ".$this->getTableName('client_invoice')." a 
+        left join ".$this->getTableName('client_invoice')." as inv on a.invoice_id=inv.receipt_voucher_number 
+        inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id  
+        inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  
+        inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
 
 
         if($type != '') {
@@ -637,7 +690,10 @@ class validation extends upload {
             $queryAt .=  " and a.invoice_id in (".$ids.") ";
         }
 
-        $queryAt .= " and a.status='1'  and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.invoice_type='receiptvoucherinvoice' and a.is_canceled='0' and a.is_deleted='0' group by  ";
+        $queryAt .= " and ((
+                inv.invoice_date > a.invoice_date and 
+                (DATE_FORMAT(inv.invoice_date, '%Y-%m') > '".$returnmonth."' ) and 
+                (inv.invoice_id is not NULL)) or (inv.invoice_id is  NULL)) and a.status='1'  and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.invoice_type='receiptvoucherinvoice' and a.is_canceled='0' and a.is_deleted='0' group by  ";
         if($group_by=='')
         {
             $queryAt .= " a.supply_place ,b.consolidate_rate ";
@@ -657,11 +713,83 @@ class validation extends upload {
             $queryAt .= $order_by;
         }
         //echo '<br>AT====='.$queryAt.'<br/>';
+        //die;
+        return $this->get_results($queryAt);
+    }
+
+    public function getTXPDInvoices($user_id,$returnmonth,$type='',$ids='',$group_by='',$order_by=''){
+
+       $queryAt =  "select a.invoice_id,
+       a.billing_name,
+       a.invoice_type,
+       a.financial_year,
+       a.reference_number,
+       a.billing_gstin_number,
+       a.is_gstr1_uploaded,
+       a.reference_number,
+       s.state_tin as company_state,
+       ps.state_tin as supply_place,
+       a.invoice_date,
+       (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
+       (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal1,
+       sum(taxable_subtotal)  as taxable_subtotal,
+       b.item_name,
+       sum(b.igst_amount) as igst_amount, 
+       sum(b.cgst_amount) as cgst_amount,
+       sum(b.sgst_amount) as sgst_amount,
+       sum(b.cess_amount) as cess_amount,
+       b.igst_rate,
+       b.cgst_rate,
+       b.sgst_rate,
+       b.consolidate_rate from ".$this->getTableName('client_invoice')." a 
+       inner join ".$this->getTableName('client_invoice')." as inv on a.receipt_voucher_number=inv.invoice_id 
+       inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id  
+       inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  
+       inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
+
+
+        if($type != '') {
+            if($type != 'all') {
+                $queryAt .=  " and a.is_gstr1_uploaded='".$type."'  ";            
+            }
+            
+        }
+        else if($type == '') {
+            $queryAt .=  "and a.is_gstr1_uploaded='0'";
+        }
+        if(!empty($ids)) {
+            $queryAt .=  " and a.invoice_id in (".$ids.") ";
+        }
+
+         $queryAt .= " and 
+                inv.invoice_date < a.invoice_date and 
+                DATE_FORMAT(inv.invoice_date, '%Y-%m') < '".$returnmonth."'   and a.status='1'  and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.invoice_type='taxinvoice' and a.is_canceled='0' and a.is_deleted='0' group by  ";
+        if($group_by=='')
+        {
+            $queryAt .= " a.supply_place ,b.consolidate_rate ";
+            
+        }
+        else
+        {
+            $queryAt .= $group_by;
+        }
+        $queryAt .= "  order by ";
+        if($order_by=='')
+        {
+            $queryAt .=" a.supply_place ";
+        }
+        else
+        {
+            $queryAt .= $order_by;
+        }
+        //echo '<br>TXPD====='.$queryAt.'<br/>';
+        //die;
         return $this->get_results($queryAt);
     }
 
     public function getEXPInvoices($user_id,$returnmonth,$type='',$ids='',$group_by='',$order_by=''){
-       $queryExp =  "select a.export_bill_number,a.financial_year,
+       $queryExp =  "select a.export_bill_number,
+       a.financial_year,
        a.invoice_type,
        a.billing_name,
        a.is_gstr1_uploaded,
@@ -718,12 +846,18 @@ class validation extends upload {
         a.invoice_type,
         a.billing_name,
         a.is_gstr1_uploaded,
-        a.invoice_date,b.item_name,s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_type,
-        b.item_hsncode,sum(b.item_quantity) as item_quantity,
+        a.invoice_date,
+        b.item_name,
+        s.state_tin as company_state,
+        ps.state_tin as supply_place,
+        a.invoice_type,
+        b.item_hsncode,
+        sum(b.item_quantity) as item_quantity,
         b.item_unit,
         (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value1,sum(a.invoice_total_value) as invoice_total_value,
         (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id)  as taxable_subtotal1, sum(taxable_subtotal)  as taxable_subtotal,
-        sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, 
+        sum(b.igst_amount) as igst_amount, 
+        sum(b.cgst_amount) as cgst_amount, 
         sum(b.sgst_amount) as sgst_amount,
         sum(b.cess_amount) as cess_amount from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
 
@@ -747,12 +881,18 @@ class validation extends upload {
 
     
     public function getNILTotalInvoices($user_id,$returnmonth,$type='',$ids=''){
-        $query1 =  "select a.invoice_id,a.billing_name,
+        $query1 =  "select a.invoice_id,
+        a.billing_name,
         a.invoice_type,
         a.billing_gstin_number,
         a.is_gstr1_uploaded,
         b.is_applicable,
-        a.reference_number,s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_date,b.item_name,a.invoice_type,
+        a.reference_number,
+        s.state_tin as company_state,
+        ps.state_tin as supply_place,
+        a.invoice_date,
+        b.item_name,
+        a.invoice_type,
         sum(b.igst_amount) as igst_amount, 
         sum(b.cgst_amount) as cgst_amount, 
         sum(b.sgst_amount) as sgst_amount,
@@ -783,7 +923,12 @@ class validation extends upload {
        a.reference_number,
        ps.state_tin as supply_place,
        a.invoice_date,
-       b.item_name,a.invoice_type, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount,
+       b.item_name,
+       a.invoice_type,
+       sum(b.igst_amount) as igst_amount,
+       sum(b.cgst_amount) as cgst_amount, 
+       sum(b.sgst_amount) as sgst_amount,
+       sum(b.cess_amount) as cess_amount,
        (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
         (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id)  as taxable_subtotal
         from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
@@ -811,12 +956,17 @@ class validation extends upload {
 
     }
     public function getNILInvoices($user_id,$returnmonth,$type='',$ids=''){
-        $query1 =  "select a.invoice_id,a.billing_name,
+        $query1 =  "select a.invoice_id,
+        a.billing_name,
         a.invoice_type,
         a.billing_gstin_number,
         a.is_gstr1_uploaded,
         b.is_applicable,
-        a.reference_number,s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_date,b.item_name,a.invoice_type,
+        a.reference_number,
+        s.state_tin as company_state,
+        ps.state_tin as supply_place,
+        a.invoice_date,b.item_name,
+        a.invoice_type,
         a.invoice_total_value
         from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
 
@@ -839,7 +989,12 @@ class validation extends upload {
         a.billing_gstin_number,
         a.is_gstr1_uploaded,
         b.is_applicable,
-        a.reference_number,s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_date,b.item_name,a.invoice_type,
+        a.reference_number,
+        s.state_tin as company_state,
+        ps.state_tin as supply_place,
+        a.invoice_date,
+        b.item_name,
+        a.invoice_type,
         a.invoice_total_value
         from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
 
@@ -1303,12 +1458,14 @@ class validation extends upload {
     
     final public function getInvoiceMonthList($type, $invoiceType = ''){
 		
-		if($invoiceType != '') {
-			$invoiceMonthYear = $this->get_results("SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS invoiceDate FROM ".$type." where 1=1 AND invoice_type IN(".$invoiceType.") AND added_by='".$this->sanitize($_SESSION['user_detail']['user_id'])."' group by invoiceDate");
-		} else {
-			$invoiceMonthYear = $this->get_results("SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS invoiceDate FROM ".$type." where 1=1 AND added_by='".$this->sanitize($_SESSION['user_detail']['user_id'])."' group by invoiceDate");
+        if($invoiceType != '') 
+        {
+            $invoiceMonthYear = $this->get_results("SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS invoiceDate FROM ".$type." where 1=1 AND invoice_type IN(".$invoiceType.") AND added_by='".$this->sanitize($_SESSION['user_detail']['user_id'])."' group by invoiceDate");
+        } else 
+        {
+            $invoiceMonthYear = $this->get_results("SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS invoiceDate FROM ".$type." where 1=1 AND added_by='".$this->sanitize($_SESSION['user_detail']['user_id'])."' group by invoiceDate");
         }
-		return $invoiceMonthYear;
+            return $invoiceMonthYear;
     }
 }
-
+?>

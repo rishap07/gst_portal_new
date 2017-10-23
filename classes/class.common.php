@@ -1352,18 +1352,23 @@ class common extends db {
     }
 
 	/* check purchase reference number exist */
-	public function checkPurchaseReferenceNumberExist($referenceNumber, $clientId, $purchase_invoice_id = '') {
+	public function checkPurchaseReferenceNumberExist($referenceNumber, $clientId, $supplier_billing_gstin_number = '', $purchase_invoice_id = '') {
 
 		$currentFinancialYear = $this->generateFinancialYear();
-        if ($purchase_invoice_id && $purchase_invoice_id != '') {
-            $checkReferenceNumber = $this->get_row("select * from " . $this->tableNames['client_purchase_invoice'] . " where 1=1 AND purchase_invoice_id != " . $purchase_invoice_id . " AND financial_year = '" . $currentFinancialYear . "' AND reference_number = '" . $referenceNumber . "' AND added_by = '" . $clientId . "'");
-        } else {
-            $checkReferenceNumber = $this->get_row("select * from " . $this->tableNames['client_purchase_invoice'] . " where 1=1 AND financial_year = '" . $currentFinancialYear . "' AND reference_number = '" . $referenceNumber . "' AND added_by = '" . $clientId . "'");
-        }
+		
+		if ($supplier_billing_gstin_number && $supplier_billing_gstin_number != '') {
 
-        if(count($checkReferenceNumber) > 0) {
-            return true;
-        }
+			$referenceQuery = "select * from " . $this->tableNames['client_purchase_invoice'] . " where 1=1 AND financial_year = '" . $currentFinancialYear . "' AND reference_number = '" . $referenceNumber . "' AND added_by = '" . $clientId . "'";
+
+			if ($purchase_invoice_id && $purchase_invoice_id != '') {
+				$referenceQuery .= " AND purchase_invoice_id != '" . $purchase_invoice_id . "'";
+			}
+			
+			$checkReferenceNumber = $this->get_row($referenceQuery);
+			if(count($checkReferenceNumber) > 0) {
+				return true;
+			}
+		}
     }
 
     /* generate purchase invoice number for client */

@@ -24,6 +24,127 @@ final class gstr3b extends validation {
 		 return true;
 		 }
    }
+   public function saveReturn3bNotification($returnmonth)
+   {
+	   $sql = "SELECT * FROM " . $this->getTableName('user') . " as u WHERE user_id='" . $_SESSION["user_detail"]["user_id"] . "'";
+  	    $userdata = $this->get_results($sql);
+		if(!empty($userdata))
+		{
+			 $added_by= $userdata[0]->added_by;
+			 $username = $userdata[0]->username;
+			 $sql = "SELECT * FROM " . $this->getTableName('user') . " as u WHERE user_id='" . $added_by . "'";
+			$subdata = $this->get_results($sql);
+			if(!empty($subdata))
+			{
+			 $user_group = $subdata[0]->user_group;
+		
+			 if($user_group==5)
+			 {
+			$added_by = $subdata[0]->added_by;	 
+			 $title='GSTR-3B return save by'.' '.$username;
+			 $message='GSTR-3B return save by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
+			 $parentid = $added_by;
+			 $userid= $_SESSION["user_detail"]["user_id"];
+			 $returntype='gstr3b';
+			 $return_step='gstr3bsave';
+			 $returnmonth =$_REQUEST['returnmonth'];	
+			 $this->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
+			
+				 
+			 }
+			}
+			 $title='GSTR-3B return save by'.' '.$username;
+			 $message='GSTR-3B return save by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
+			 $parentid = $added_by;
+			 $userid= $_SESSION["user_detail"]["user_id"];
+			 $returntype='gstr3b';
+			 $return_step='gstr3bsave';
+			 $returnmonth =$_REQUEST['returnmonth'];	
+			 $this->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
+			
+		}	
+   }
+   public function initiateReturn3bNotification($returnmonth)
+   {
+	   $sql = "SELECT * FROM " . $this->getTableName('user') . " as u WHERE user_id='" . $_SESSION["user_detail"]["user_id"] . "'";
+  	    $userdata = $this->get_results($sql);
+		if(!empty($userdata))
+		{
+			 $added_by= $userdata[0]->added_by;
+			 $username = $userdata[0]->username;
+			 $sql = "SELECT * FROM " . $this->getTableName('user') . " as u WHERE user_id='" . $added_by . "'";
+			$subdata = $this->get_results($sql);
+			if(!empty($subdata))
+			{
+			 $user_group = $subdata[0]->user_group;
+			
+			 if($user_group==5)
+			 {
+			$added_by = $subdata[0]->added_by;
+			 $title='GSTR-3B return Initiated by'.' '.$username;
+			 $message='GSTR-3B return Initiated by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
+			 $parentid = $added_by;
+			 $userid= $_SESSION["user_detail"]["user_id"];
+			 $returntype='gstr3b';
+			 $return_step='gstr3binitiared';
+			 $returnmonth =$_REQUEST['returnmonth'];	
+			 //$this->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
+			
+				 
+			 }
+			}
+			 $title='GSTR-3B return Initiated by'.' '.$username;
+			 $message='GSTR-3B return Initiated by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
+			 $parentid = $added_by;
+			  
+			 $userid= $_SESSION["user_detail"]["user_id"];
+			 $returntype='gstr3b';
+			 $return_step='gstr3binitiared';
+			 $returnmonth =$_REQUEST['returnmonth'];	
+			 //$this->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
+			
+		}
+   }
+   public function submitReturn3bNotification($returnmonth)
+   {
+	   $sql = "SELECT * FROM " . $this->getTableName('user') . " as u WHERE user_id='" . $_SESSION["user_detail"]["user_id"] . "'";
+  	    $userdata = $this->get_results($sql);
+		if(!empty($userdata))
+		{
+			 $added_by= $userdata[0]->added_by;
+			 $username = $userdata[0]->username;
+			 $sql = "SELECT * FROM " . $this->getTableName('user') . " as u WHERE user_id='" . $added_by . "'";
+			$subdata = $this->get_results($sql);
+			if(!empty($subdata))
+			{
+			 $user_group = $subdata[0]->user_group;
+		
+			 if($user_group==5)
+			 {
+			$added_by = $subdata[0]->added_by;	 
+			 $title='GSTR-3B return submitted by'.' '.$username;
+			 $message='GSTR-3B return submitted by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
+			 $parentid = $added_by;
+			 $userid= $_SESSION["user_detail"]["user_id"];
+			 $returntype='gstr3b';
+			 $return_step='gstr3bsubmit';
+			 $returnmonth =$_REQUEST['returnmonth'];	
+			 $this->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
+			
+				 
+			 }
+			}
+			 $title='GSTR-3B return submitted by'.' '.$username;
+			 $message='GSTR-3B return submitted by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
+			 $parentid = $added_by;
+			 $userid= $_SESSION["user_detail"]["user_id"];
+			 $returntype='gstr3b';
+			 $return_step='gstr3bsubmit';
+			 $returnmonth =$_REQUEST['returnmonth'];	
+			 $this->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
+			
+		}	
+   }
   	public  function write_excel()
 	{    $returnmonth='';
 		if(isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '')
@@ -1257,12 +1378,11 @@ final class gstr3b extends validation {
 			}
 		
    }	
-	public function getSubmitGSTR3bData()
+	public function getSubmitGSTR3bData($returnmonth)
 	{
 		$inputToken = $this->RandomToken(16);
 		$keyhash = $this->RandomKey(32);
 		$key = pack('H*',$keyhash);
-
 		# create a random IV to use with CBC encoding
 		$iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
 		$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
@@ -1306,18 +1426,41 @@ final class gstr3b extends validation {
 		{
 		//echo "your otp is<br>".$otp."<br><br>";
 		}
+        if(API_TYPE == 'Demo') {
+           $username = API_USERNAME;
+           $gstin = API_GSTIN;
+        }
+        else {
+            $username = $this->username();
+            $gstin = $this->gstin();
 
-		$client_secret = 'fa6f03446473400fa21240241affe2a5';
-		$clientid = 'l7xx2909cd95daee418b8118e070b6b24dd6';
-		$ip_usr = '49.50.73.109';
-		$state_cd='27';
-		$txn='TXN789123456789';
-		$kclient_secret = 'fa6f03446473400fa21240241affe2a5';
-		$kclientid = 'l7xx2909cd95daee418b8118e070b6b24dd6';
+        }
+		
+		$obj_gstr = new gstr();
+		$api_return_period = $obj_gstr->getRetrunPeriodFormat($returnmonth);
+		
+        $header = $obj_gstr->header();
+		$client_secret_arr =explode(":",$header[0]);
+		$client_id_arr =explode(":",$header[1]);
+		$content_type_arr =explode(":",$header[2]);
+		$ip_user_arr =explode(":",$header[3]);
+		$state_cd_arr =explode(":",$header[4]);
+		$txn_arr =explode(":",$header[5]);
+		$karvyclientid_arr = explode(":",$header[6]);
+		$karvyclient_secret_arr = explode(":",$header[7]);
+		  
+		//Code for assign header value
+		$client_secret = $client_secret_arr[1];
+		$clientid = $client_id_arr[1];
+		$ip_usr = $ip_user_arr[1];
+		$state_cd=$state_cd_arr[1];
+		$txn=$txn_arr[1];
+		$kclient_secret = $karvyclientid_arr[1];
+		$kclientid = $karvyclient_secret_arr[1];
 		//$username='Cyfuture1.MH.TP.1';
-		$username='Cyfuture1.MH.TP.1';
+		$username=$username;
 		$action='AUTHTOKEN';
-		$gstin  = '27GSPMH6181G1ZE';
+		$gstin  = $gstin;
 		//$action='OTPREQUEST';
 
 		$data = array("username" => $username, "action" => $action, "app_key" => $app_key, "otp" =>$otp);
@@ -1333,47 +1476,12 @@ final class gstr3b extends validation {
 		  'karvyclientid: '.$clientid.'',
 		  'karvyclient-secret: '.$client_secret.''
 		 );
-
-
+       
 		$url='http://gsp.karvygst.com/v0.3/authenticate';
 
 
 		$result_data= $this->hitUrl($url,$data_string,$header);
 		$data=json_decode($result_data);
-		//echo $result_data;
-		//echo "Your auth_token  <br>" .$data->auth_token."<br><br>";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 		$session_key=$data->sek;
 
 		//echo "Your session_key  <br>" .$session_key."<br><br>";
@@ -1387,26 +1495,28 @@ final class gstr3b extends validation {
 		  'Content-Type: application/json',
 		  'gstin:' . $gstin . '',
 		  'ip-usr:' . $ip_usr . '',
-		  'ret_prd:072017',
+		  'ret_prd:' .$api_return_period.'',
 		  'state-cd:' . $state_cd . '',
 		  'txn:' . $txn . '',
 		  'username:' . $username . '',
 		  'karvyclientid:' . $clientid . '',
 		  'action:' . 'RETSUM' . '',
-		  'karvyclient-secret:' . $kclient_secret . ''
+		  'karvyclient-secret:' . $client_secret . ''
 		  
 		  
 		  
 		);
+		
 		//echo '<pre>';print_r($header2);
-
+ 
 
 
 		$data = array("username" => $username, "action" => $action, "app_key" => $app_key);
 		$data_string = json_encode($data);
-		$getReturnUrl='http://gsp.karvygst.com/v0.3/returns/gstr3b?gstin=27GSPMH6181G1ZE&ret_period=072017&action=RETSUM';
+		 $getReturnUrl='http://gsp.karvygst.com/v0.3/returns/gstr3b?gstin='.$gstin.'&ret_period='.$api_return_period.'&action=RETSUM';
 		$result_data1 = $this->hitUrl2($getReturnUrl,'', $header2);
 		$retDta = json_decode($result_data1);
+		
 		//print_r(json_decode($result_data1));
 		//echo "gstr1 Summary<br>";
 		$retRek=$retDta->rek;
@@ -1422,6 +1532,137 @@ final class gstr3b extends validation {
 		//print_r($retDta)."<br><br>";
 		//$this->pr($retDta);
 		return $retDta;
+		
+	}
+	public function getCashItcDetails($returnmonth)
+	{
+		$inputToken = $this->RandomToken(16);
+		$keyhash = $this->RandomKey(32);
+		$key = pack('H*',$keyhash);
+		# create a random IV to use with CBC encoding
+		$iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
+		$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+		$ciphertext = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key,
+									$inputToken, MCRYPT_MODE_ECB, $iv);
+
+		$hexcode= bin2hex($ciphertext);
+		$filepath=PROJECT_URL . "/documents/".'GSTN_private.pem';
+		$pem_private_key = file_get_contents($filepath);
+		$private_key = openssl_pkey_get_private($pem_private_key);
+		$pem_public_key = openssl_pkey_get_details($private_key)['key'];
+		$public_key = openssl_pkey_get_public($pem_public_key);
+
+		$encrypted="";
+		openssl_public_encrypt($ciphertext , $encrypted, $public_key);
+
+		$app_key=base64_encode($encrypted);   //encrypted string
+		$key = pack('H*', $hexcode);
+		$otp_code = '575757';
+		$otp_encode =utf8_encode($otp_code);
+		$iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
+		$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+		$ciphertext_enc= $this->aes256_ecb_encrypt($key,$otp_encode,$iv);
+		$otp = base64_encode($ciphertext_enc);
+		 if(API_TYPE == 'Demo') {
+           $username = API_USERNAME;
+           $gstin = API_GSTIN;
+        }
+        else {
+            $username = $this->username();
+            $gstin = $this->gstin();
+
+        }
+		
+		$obj_gstr = new gstr();
+		$api_return_period = $obj_gstr->getRetrunPeriodFormat($returnmonth);
+		$header = $obj_gstr->header();
+		$client_secret_arr =explode(":",$header[0]);
+		$client_id_arr =explode(":",$header[1]);
+		$content_type_arr =explode(":",$header[2]);
+		$ip_user_arr =explode(":",$header[3]);
+		$state_cd_arr =explode(":",$header[4]);
+		$txn_arr =explode(":",$header[5]);
+		$karvyclientid_arr = explode(":",$header[6]);
+		$karvyclient_secret_arr = explode(":",$header[7]);
+
+
+			$client_secret = $client_secret_arr[1];
+			$clientid = $client_id_arr[1];
+			$ip_usr = $ip_user_arr[1];
+			$state_cd=$state_cd_arr[1];
+			$txn=$txn_arr[1];
+			$kclient_secret = $karvyclientid_arr[1];
+			$kclientid = $karvyclient_secret_arr[1];
+			//$action='OTPREQUEST';
+			$username=$username;
+			$action='AUTHTOKEN';
+			$gstin  = $gstin;
+			$data = array("username" => $username, "action" => $action, "app_key" => $app_key, "otp" =>$otp);
+			$data_string = json_encode($data);
+			$header= array(
+			  'client-secret: '.$client_secret.'',
+			  'Content-Length: ' . strlen($data_string),
+			  'clientid: '.$clientid.'',
+			  'Content-Type: application/json',
+			  'ip-usr: '.$ip_usr.'',
+			  'state-cd: '.$state_cd.'',
+			  'txn: '.$txn.'',
+			  'karvyclientid: '.$clientid.'',
+			  'karvyclient-secret: '.$client_secret.''
+			 );
+
+
+//$url=  'http://devapi.gstsystem.co.in/taxpayerapi/v0.2/authenticate';
+			$url='http://gsp.karvygst.com/v0.3/authenticate';
+
+
+			$result_data= $this->hitUrl($url,$data_string,$header);
+			$data=json_decode($result_data);
+			//echo $result_data;
+			//"Your auth_token  <br>" .$data->auth_token."<br><br>";
+			$session_key=$data->sek;
+
+			//echo "Your session_key  <br>" .$session_key."<br><br>";
+# --- DECRYPTION ---
+			$decrypt_sess_key=openssl_decrypt(base64_decode($session_key),"aes-256-ecb",$key, OPENSSL_RAW_DATA);
+			$header2 = array(
+			  'accept:application/json',
+			   'auth-token:' . $data->auth_token . '',
+			  'client-secret:' . $client_secret . '',
+			  'clientid:' . $clientid . '',
+			  'Content-Type: application/json',
+			  'gstin:' . $gstin . '',
+			  'ip-usr:' . $ip_usr . '',
+			  'ret_prd:'.$api_return_period.'',
+			  'state-cd:' . $state_cd . '',
+			  'txn:' . $txn . '',
+			  'username:' . $username . '',
+			  'karvyclientid:' . $clientid . '',
+			  'action:' . 'BAL' . '',
+			  'karvyclient-secret:' . $client_secret . ''
+			  
+			  
+			  
+			);
+		$data = array("username" => $username, "action" => 'BAL', "app_key" => $app_key);
+		$data_string = json_encode($data);
+		$getReturnUrl='http://gsp.karvygst.com/taxpayerapi/v0.3/ledgers?gstin='.$gstin.'&ret_period='.$api_return_period.'&action=BAL';
+		$result_data1 = $this->hitUrl2($getReturnUrl,$data_string, $header2);
+		$retDta = json_decode($result_data1);
+		$retRek=$retDta->rek;
+		$retData1=$retDta->data;
+
+		$apiEk1=openssl_decrypt(base64_decode($retRek),"aes-256-ecb",$decrypt_sess_key, OPENSSL_RAW_DATA);
+
+		
+		$decodejson1= base64_decode(openssl_decrypt(base64_decode($retData1),"aes-256-ecb",$apiEk1, OPENSSL_RAW_DATA));
+		$retDta = json_decode($decodejson1);
+		//echo '<pre>';print_r($retDta)."<br><br>";
+		$data = $retDta;
+		//$cash_bal = $data->cash_bal;
+		return $data;
+		//print_r($sgst_arr = $cash_bal->sgst);
+
 		
 	}
     public function finalSaveGstr3b()

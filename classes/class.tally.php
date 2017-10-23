@@ -2524,14 +2524,16 @@ class tally extends validation {
 				
 			}
 			$dataInvCDNR = $obj_gstr1->getCDNRInvoices($user_id, $returnmonth,'all'); 
+			// $this->pr($dataInvCDNR);
+			// die;
 			if(isset($dataInvCDNR) && !empty($dataInvCDNR)) {
 				$itemArray = array();
 				$arrayCounter = 0;
 				foreach ($dataInvCDNR as $key => $dataIn) {	
 					$itemArray[$arrayCounter]['invoice_nature'] = 'cdnr';
 					$itemArray[$arrayCounter]['recipient_gstin'] = $dataIn->billing_gstin_number;
-					$itemArray[$arrayCounter]['invoice_number'] = $dataIn->reference_number;
-					$itemArray[$arrayCounter]['invoice_date'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+					$itemArray[$arrayCounter]['invoice_number'] = $dataIn->corresponding_document_number;
+					$itemArray[$arrayCounter]['invoice_date'] = date('d-m-Y', strtotime($dataIn->corresponding_document_date));
 					$itemArray[$arrayCounter]['invoice_value'] = (float) $dataIn->invoice_total_value;
 					$itemArray[$arrayCounter]['place_of_supply'] = strlen($dataIn->supply_place) == '1' ? '0' . $dataIn->supply_place : $dataIn->supply_place;
 		           	if ($dataIn->company_state != $dataIn->supply_place) {
@@ -2583,8 +2585,8 @@ class tally extends validation {
 				foreach ($dataInvCDNUR as $key => $dataIn) {	
 					$itemArray[$arrayCounter]['invoice_nature'] = 'cdnur';
 					$itemArray[$arrayCounter]['recipient_gstin'] = $dataIn->billing_gstin_number;
-					$itemArray[$arrayCounter]['invoice_number'] = $dataIn->reference_number;
-					$itemArray[$arrayCounter]['invoice_date'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+					$itemArray[$arrayCounter]['invoice_number'] = $dataIn->corresponding_document_number;
+					$itemArray[$arrayCounter]['invoice_date'] = date('d-m-Y', strtotime($dataIn->corresponding_document_date));
 					$itemArray[$arrayCounter]['invoice_value'] = (float) $dataIn->invoice_total_value;
 					$itemArray[$arrayCounter]['place_of_supply'] = strlen($dataIn->supply_place) == '1' ? '0' . $dataIn->supply_place : $dataIn->supply_place;
 					if ($dataIn->company_state != $dataIn->supply_place) {
@@ -2650,6 +2652,43 @@ class tally extends validation {
 				$arrayCounter = 0;
 				foreach ($dataInvAt as $key => $dataIn) {	
 					$itemArray[$arrayCounter]['invoice_nature'] = 'at';
+					$itemArray[$arrayCounter]['recipient_gstin'] = $dataIn->billing_gstin_number;
+					$itemArray[$arrayCounter]['invoice_number'] = $dataIn->reference_number;
+					$itemArray[$arrayCounter]['invoice_date'] = date('d-m-Y', strtotime($dataIn->invoice_date));
+					$itemArray[$arrayCounter]['invoice_value'] = (float) $dataIn->invoice_total_value;
+					$itemArray[$arrayCounter]['place_of_supply'] = strlen($dataIn->supply_place) == '1' ? '0' . $dataIn->supply_place : $dataIn->supply_place;
+		           
+					if ($dataIn->company_state != $dataIn->supply_place) {
+	                    $itemArray[$arrayCounter]['supply_type'] = 'INTER';
+	                } 
+	                else {
+	                    $itemArray[$arrayCounter]['supply_type'] = 'INTRA';
+	                }
+
+
+					$rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
+					$itemArray[$arrayCounter]['rate'] = isset($rt)?$rt:'0';
+					$itemArray[$arrayCounter]['taxable_value'] = isset($dataIn->taxable_subtotal)?$dataIn->taxable_subtotal:'0';
+					$itemArray[$arrayCounter]['cgst_amount'] = isset($dataIn->cgst_amount)?$dataIn->cgst_amount:'0';
+					$itemArray[$arrayCounter]['sgst_amount'] = isset($dataIn->sgst_amount)?$dataIn->sgst_amount:'0';
+					$itemArray[$arrayCounter]['igst_amount'] = isset($dataIn->igst_amount)?$dataIn->igst_amount:'0';
+					$itemArray[$arrayCounter]['cess_amount'] = isset($dataIn->cess_amount)?$dataIn->cess_amount:'0';
+					$itemArray[$arrayCounter]['financial_year'] = $dataIn->financial_year;
+					$itemArray[$arrayCounter]['return_period'] = $returnmonth;
+					$itemArray[$arrayCounter]['added_by'] = $user_id;
+					$itemArray[$arrayCounter]['added_date'] = date('Y-m-d H:i:s');
+					$arrayCounter++;
+				}
+				$this->insertMultiple($this->tableNames['gstr1_return_summary'], $itemArray);
+				$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_b2b_inserted");
+				
+			}
+			$dataInvTXPD = $obj_gstr1->getTXPDInvoices($user_id, $returnmonth,'all'); 
+			if(isset($dataInvTXPD) && !empty($dataInvTXPD)) {
+				$itemArray = array();
+				$arrayCounter = 0;
+				foreach ($dataInvTXPD as $key => $dataIn) {	
+					$itemArray[$arrayCounter]['invoice_nature'] = 'atadj';
 					$itemArray[$arrayCounter]['recipient_gstin'] = $dataIn->billing_gstin_number;
 					$itemArray[$arrayCounter]['invoice_number'] = $dataIn->reference_number;
 					$itemArray[$arrayCounter]['invoice_date'] = date('d-m-Y', strtotime($dataIn->invoice_date));

@@ -165,10 +165,10 @@ if(API_TYPE == 'Demo') {
     define('API_AUTH_URL', 'http://gsp.karvygst.com/v0.3/authenticate');
     define('API_RETURN_URL', 'http://gsp.karvygst.com/v0.3/returns');
 
-    define('API_USERNAME', 'Cyfuture.MH.TP.1');//Cyfuture.MH.TP.1
-    define('API_GSTIN', '27GSPMH3941G1ZK');//27GSPMH3941G1ZK
+    define('API_USERNAME', 'Cyfuture1.MH.TP.2');//Cyfuture.MH.TP.1
+    define('API_GSTIN', '27GSPMH6182G1ZD');//27GSPMH3941G1ZK
     define('API_STATE_CD', '27');
-
+    //27GSPMH6182G1ZD //Cyfuture1.MH.TP.2
 }
 elseif(API_TYPE == 'Live') {
     #---------------------- LIVE ------------------------------------------

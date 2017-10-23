@@ -101,7 +101,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	}
 	
 	/* check reference number */
-	$referenceStatus = $obj_purchase->checkPurchaseReferenceNumberExist($dataArr['reference_number'], $obj_purchase->sanitize($_SESSION['user_detail']['user_id']), $obj_purchase->sanitize(base64_decode($params['purchase_invoice_id'])));
+	$referenceStatus = $obj_purchase->checkPurchaseReferenceNumberExist($dataArr['reference_number'], $obj_purchase->sanitize($_SESSION['user_detail']['user_id']), $dataArr['supplier_billing_gstin_number'], $obj_purchase->sanitize(base64_decode($params['purchase_invoice_id'])));
 	if($referenceStatus == true) {
 		array_push($invoiceErrorMessage, "You have already used this reference number.");
 	}

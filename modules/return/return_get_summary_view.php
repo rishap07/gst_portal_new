@@ -175,7 +175,7 @@ $response = $obj_api->get_user_summary('gstr1'.$type,$returnmonth);
                             <?php }*/ ?>
                                 <form method="post" name="form4" id="SummaryForm" action="">
 
-                                <input type="submit" name="submit_summary" id="gstr1_summary_download" value="Download GSTR1 <?php echo $type;?> Summary" class="btn  btn-success " >
+                                <input type="submit" name="submit_summary" id="gstr1_summary_download" value="Latest Download GSTR1 <?php echo $type;?> Summary" class="btn  btn-success " >
                                 <input type="hidden" name="summary_type"  value="Download GSTR1 Summary"  >
                             </form>
                             <div id="display_json"></div>

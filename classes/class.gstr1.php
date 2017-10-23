@@ -153,8 +153,8 @@ final class gstr1 extends validation {
 
                 $dataArr = $payload['data_arr'];
                 $data_ids = $payload['data_ids'];
-
-                //$this->pr($payload);die;
+               // $this->pr($dataArr);
+               //$this->pr(json_encode($dataArr));die;
                 $response = $obj_gst->returnSave($dataArr, $fmonth,'gstr1');
                   //$this->pr($response);         
                 if ($response['error'] == 0) {
@@ -424,12 +424,12 @@ final class gstr1 extends validation {
             /***** End Code For Exp Payload ********** */
 
             /***** Start Code For TXPD  Payload ********** */
-            // $txpd_data = $this->getTXPDPayload($user_id, $returnmonth,,'',$ids);
-            // if (!empty($txpd_data)) {
-            //     $data_ids[] = $txpd_ids = $txpd_data['txpd_ids'];
-            //     $txpd_arr = $txpd_data['txpd_arr'];
-            //     $dataArr = array_merge($dataArr, $txpd_arr);
-            // }
+            $txpd_data = $this->getTXPDPayload($user_id, $returnmonth,'',$ids,$type);
+            if (!empty($txpd_data)) {
+                $data_ids[] = $txpd_ids = $txpd_data['txpd_ids'];
+                $txpd_arr = $txpd_data['txpd_arr'];
+                $dataArr = array_merge($dataArr, $txpd_arr);
+            }
             /***** End Code For TXPD Payload ********** */ 
         }
 
@@ -493,6 +493,15 @@ final class gstr1 extends validation {
             }
             /***** End Code For AT Payload ********** */
         }
+        if($invoice_type == 'TXPD') {
+            $txpd_data = $this->getTXPDPayload($user_id, $returnmonth,'',$ids,'all');
+            if (!empty($txpd_data)) {
+                $data_ids[] = $txpd_ids = $txpd_data['txpd_ids'];
+                $txpd_arr = $txpd_data['txpd_arr'];
+                $dataArr = array_merge($dataArr, $txpd_arr);
+            }
+        }
+
         if($invoice_type == 'EXP') {
             /***** Start Code For Exp Payload ********** */
             $exp_data = $this->getEXPPayload($user_id, $returnmonth,'',$ids,'all');
@@ -1553,6 +1562,62 @@ final class gstr1 extends validation {
         return $response;
     }
 
+    public function getTXPDPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
+        $dataArr = $response = $txpd_array = $txpd_ids = array();
+         if(!empty($flag)) {
+           $dataInvTXPD = $this->getAllInvoices($user_id, $returnmonth,'atadj','1'); 
+        }
+        else {
+           $dataInvTXPD = $this->getAllInvoices($user_id, $returnmonth,'atadj','',$ids);
+        }
+        if (isset($dataInvTXPD) && !empty($dataInvTXPD)) {
+            $z = 0;
+            $y = 0;
+            $a = 1;
+            $at_pos = '';
+            $at_rate = '';
+            foreach ($dataInvTXPD as $dataIn) {
+                if ($at_pos != '' && $at_pos != $dataIn->supply_place) {
+                    $y++;
+                    $z = 0;
+                }
+
+                $dataArr['txpd'][$y]['pos'] = (strlen($dataIn->supply_place) == '1') ? '0' . $dataIn->supply_place : $dataIn->supply_place;
+                $dataArr['txpd'][$y]['sply_ty'] = $dataIn->supply_type;
+
+                if ($dataIn->supply_type == 'INTER') {
+                    $dataArr['txpd'][$y]['itms'][$z]['iamt'] = (float) $dataIn->igst_amount;
+                } 
+                else {
+                    $dataArr['txpd'][$y]['itms'][$z]['iamt'] = (float) $dataIn->igst_amount;
+                    $dataArr['txpd'][$y]['itms'][$z]['samt'] = (float) $dataIn->sgst_amount;
+                    $dataArr['txpd'][$y]['itms'][$z]['camt'] = (float) $dataIn->cgst_amount;
+                }
+
+                $dataArr['txpd'][$y]['itms'][$z]['rt'] = (float) $dataIn->rate;
+                $dataArr['txpd'][$y]['itms'][$z]['ad_amt'] = (float) $dataIn->taxable_subtotal;
+                
+                $dataArr['txpd'][$y]['itms'][$z]['csamt'] = (float) $dataIn->cess_amount;
+                $at_pos = $dataIn->supply_place;
+                $at_rate = $dataIn->rate;
+                $z++;
+                $txpd_array[] = (array) $dataIn;
+            }
+            if (!empty($txpd_array)) {
+                $txpd_ids = array_unique(array_column($txpd_array, 'invoice_id'));
+            }
+        }
+        /*$dataArr['txpd'][0]['pos'] = '05';
+        $dataArr['txpd'][0]['sply_ty'] = 'INTER';
+        $dataArr['txpd'][0]['itms'][0]['rt'] = (float) 5;
+        $dataArr['txpd'][0]['itms'][0]['ad_amt'] = (float) 100;
+        $dataArr['txpd'][0]['itms'][0]['iamt'] = (float) 9400;
+        $dataArr['txpd'][0]['itms'][0]['csamt'] = (float) 500;*/
+        $response['txpd_ids'] = $txpd_ids;
+        $response['txpd_arr'] = $dataArr;
+        return $response;
+    }
+
 
     public function getNILPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
         $dataArr = $response = $nil_array = $nil_ids = $nill_inv_array_b2b = array();
@@ -1959,18 +2024,7 @@ final class gstr1 extends validation {
     // }
 
 
-    public function getTXPDPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
-        $dataArr = $response = $txpd_ids = array();
-        $dataArr['txpd'][0]['pos'] = '05';
-        $dataArr['txpd'][0]['sply_ty'] = 'INTER';
-        $dataArr['txpd'][0]['itms'][0]['rt'] = (float) 5;
-        $dataArr['txpd'][0]['itms'][0]['ad_amt'] = (float) 100;
-        $dataArr['txpd'][0]['itms'][0]['iamt'] = (float) 9400;
-        $dataArr['txpd'][0]['itms'][0]['csamt'] = (float) 500;
-        $response['txpd_ids'] = $txpd_ids;
-        $response['txpd_arr'] = $dataArr;
-        return $response;
-    }
+    
 
     public function getNilFinalArray($user_id, $returnmonth) {
         $dataArr = $response = $nil_array = $nil_ids = array();
