@@ -1791,10 +1791,13 @@ final class gstr3b extends validation {
 						
 		//				if(count($str1) > 1)
 			//			{
+					if($str1_val!='')
+					{
 							$dataArr['inter_sup']['unreg_details'][$u]['pos'] = $str1_val;
 							$dataArr['inter_sup']['unreg_details'][$u]['txval'] = (float)$str2[$ukey];
 							$dataArr['inter_sup']['unreg_details'][$u]['iamt'] = (float)$str3[$ukey];
 							$u++;
+					}
 				//		}
 					/*
 					else
@@ -1821,10 +1824,13 @@ final class gstr3b extends validation {
                       
 					  //if(count($str1) > 1)
 					  //{
+						  if($str1_val!='')
+					{
 	                	$dataArr['inter_sup']['comp_details'][$u]['pos'] = $str1_val;
 		                $dataArr['inter_sup']['comp_details'][$u]['txval'] = (float)$str2[$ukey];
 		                $dataArr['inter_sup']['comp_details'][$u]['iamt'] = (float)$str3[$ukey];
 		                $u++;
+					}
 					  //}
 					  /*
 					  else{
@@ -1850,10 +1856,13 @@ final class gstr3b extends validation {
                      
 						 //if(count($str1) > 1)
 						 //{
+							if($str1_val!='')
+					{ 
 							$dataArr['inter_sup']['uin_details'][$u]['pos'] = $str1_val;
 							$dataArr['inter_sup']['uin_details'][$u]['txval'] = (float)$str2[$ukey];
 							$dataArr['inter_sup']['uin_details'][$u]['iamt'] = (float)$str3[$ukey];
 							$u++;
+					}
 						 //}
 						 /*
 						 else

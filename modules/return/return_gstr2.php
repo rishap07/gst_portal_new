@@ -11,15 +11,6 @@ if(!$obj_gstr2->can_read('returnfile_list')) {
 if(isset($_GET['returnmonth']) && !empty($_GET['returnmonth'])) {
 	$returnmonth = $_GET['returnmonth'];
 } else {
-	/*
-	$return_month_row = $obj_gstr2->get_row("SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS returnmonth FROM ".$obj_gstr2->getTableName('client_purchase_invoice')." WHERE 1=1 AND added_by='".$obj_gstr2->sanitize($_SESSION['user_detail']['user_id'])."' group by invoice_date order by invoice_date DESC Limit 0,1");
-	if(isset($return_month_row)) {
-		$returnmonth = $return_month_row->returnmonth;
-	} else {
-		$returnmonth = '';
-	}
-	*/
-
 	$obj_gstr2->setError("Please choose return period.");
     $obj_gstr2->redirect(PROJECT_URL."/?page=return_client");
     exit();

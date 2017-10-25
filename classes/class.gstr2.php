@@ -199,8 +199,8 @@ final class gstr2 extends validation {
                                     $camt = isset($value['itm_det']['camt']) ? $value['itm_det']['camt'] : 0;
 
                                     $dataUpdate1[$y][$i]['type'] = 'CDN';
-                                    $dataUpdate1[$y][$i]['reference_number'] = $inum;
-                                    $dataUpdate1[$y][$i]['invoice_date'] = isset($idt) > 0 ? date('Y-m-d', strtotime($idt)) : '';
+                                    $dataUpdate1[$y][$i]['reference_number'] = $nt_num;
+                                    $dataUpdate1[$y][$i]['invoice_date'] = isset($nt_dt) > 0 ? date('Y-m-d', strtotime($nt_dt)) : '';
 
                                     $dataUpdate1[$y][$i]['invoice_total_value'] = $val;
                                     $dataUpdate1[$y][$i]['total_taxable_subtotal'] = $txval;
@@ -218,8 +218,8 @@ final class gstr2 extends validation {
                                     $dataUpdate1[$y][$i]['itms'] = $num;
                                     $dataUpdate1[$y][$i]['chksum'] = $chksum;
 
-                                    $dataUpdate1[$y][$i]['nt_num'] = $nt_num;
-                                    $dataUpdate1[$y][$i]['nt_dt'] = isset($nt_dt) ? date('Y-m-d', strtotime($nt_dt)) : '';
+                                    $dataUpdate1[$y][$i]['nt_num'] = $inum;
+                                    $dataUpdate1[$y][$i]['nt_dt'] = isset($idt) ? date('Y-m-d', strtotime($idt)) : '';
                                     $dataUpdate1[$y][$i]['p_gst'] = $p_gst;
                                     $dataUpdate1[$y][$i]['ntty'] = $ntty;
                                     $dataUpdate1[$y][$i]['rsn'] = $rsn;

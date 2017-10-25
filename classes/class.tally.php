@@ -352,8 +352,8 @@ class tally extends validation {
 			$dataArray['num'] = $this->docsKeyFromValue($docsname);
 			$dataArray['from'] = isset($data['B']) ? $data['B'] : '';
 			$dataArray['to'] = isset($data['C']) ? $data['C'] : '';
-			$dataArray['totnum'] = isset($data['D']) ? $data['D'] : '';
-			$dataArray['cancel'] = isset($data['E']) ? $data['E'] : '';
+			$dataArray['totnum'] = isset($data['D']) ? $data['D'] : 0;
+			$dataArray['cancel'] = isset($data['E']) ? $data['E'] : 0;
 			$dataArray['net_issue'] = $dataArray['totnum'] - $dataArray['cancel'];
 
 			if(in_array($dataArray['num'], $this->validateDOCSSerialNumber) == false) {
@@ -1874,8 +1874,8 @@ class tally extends validation {
 				array_push($currentItemError, "Tax rate should be valid.");
 			}
 
-			if($dataArray['invoice_type'] == "WOPAY") {
-				
+			if(isset($dataArray['invoice_type']) && $dataArray['invoice_type'] == "WOPAY") {
+
 				if($dataArray['rate'] != 0.00) {
 					$errorflag = true;
 					array_push($currentItemError, "IGST rate should be 0.00 instead of ".$dataArray['rate']." for Export Under Bond type of export invoice.");
@@ -2770,8 +2770,6 @@ class tally extends validation {
 			$this->setError('Sorry! Invoices are not found for selected month.');
 			return false;
 		}
-		
-		
 	}
 
 	final public function validateClientTallyInvoice($dataArr) {

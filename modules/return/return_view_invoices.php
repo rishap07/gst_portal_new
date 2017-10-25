@@ -202,9 +202,9 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                 if($type=='B2B')
                                 {
                                     $Data = $b2bData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'b2b');
-                                    //$Data = $b2bData = $obj_gstr1->getB2BInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all');
+                                    //$Data1 = $b2bData1 = $obj_gstr1->getB2BInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all');
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
-                                    $invoice_temp = '';
+                                    $invoice_temp = $invoice_temp_reference_number = '';
                                     $invoice_total_value_temp = '';
                                     $invCount =0;
                                     if (!empty($b2bData)) {
@@ -214,6 +214,10 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                             {
                                                 $invCount++;
                                                 $invoice_total_value +=$invoice_total_value_temp;
+                                                //$sumTotal +=$sumTotal_temp;
+                                            }
+                                            if($invoice_temp_reference_number!='' and $invoice_temp_reference_number!=$b2bDatavalue->reference_number)
+                                            {
                                                 $sumTotal +=$sumTotal_temp;
                                             }
                                             $invoice_total_value_temp = isset($b2bDatavalue->taxable_subtotal)?$b2bDatavalue->taxable_subtotal:0;
@@ -224,6 +228,7 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                             $cessTotal += $b2bDatavalue->cess_amount;
                                             $sumTotal_temp = isset($b2bDatavalue->invoice_total_value)?$b2bDatavalue->invoice_total_value:0;
                                             $invoice_temp=$b2bDatavalue->invoice_id;
+                                            $invoice_temp_reference_number=$b2bDatavalue->reference_number;
                                         }
                                         if($invoice_temp!='')
                                         {

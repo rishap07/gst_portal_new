@@ -143,19 +143,24 @@ else
                                             $b2b_total = $b2b_invoice_total_value = $b2b_sumTotal = 0;
                                             $b2bCount = $tempTotVal = $tempInvTot=  0;
                                             if (!empty($b2bData)) {
-                                                $tempInv = '';
+                                                $tempInv = $invoice_temp_reference_number ='';
                                                 foreach ($b2bData as $key => $b2bDatavalue) {
                                                     if($tempInv!='' && $tempInv!=$b2bDatavalue->invoice_id)
                                                     {
                                                         $b2bCount++;
-                                                        $b2b_sumTotal +=$tempTotVal;
+                                                        //$b2b_sumTotal +=$tempTotVal;
                                                         $b2b_invoice_total_value +=$tempInvTot;
+                                                    }
+                                                    if($invoice_temp_reference_number!='' and $invoice_temp_reference_number!=$b2bDatavalue->reference_number)
+                                                    {
+                                                        $b2b_sumTotal +=$tempTotVal;
                                                     }
                                                     $tempInvTot = isset($b2bDatavalue->taxable_subtotal)?$b2bDatavalue->taxable_subtotal:0;
                                                     $b2b_total += $b2bDatavalue->cgst_amount + $b2bDatavalue->sgst_amount + $b2bDatavalue->igst_amount + $b2bDatavalue->cess_amount;
                                                     $tempTotVal = isset($b2bDatavalue->invoice_total_value)?$b2bDatavalue->invoice_total_value:0;
                                                     
                                                     $tempInv=$b2bDatavalue->invoice_id;
+                                                    $invoice_temp_reference_number=$b2bDatavalue->reference_number;
                                                 }
                                                 if($tempInv!='')
                                                 {

@@ -2,7 +2,6 @@
 $obj_gstr2 = new gstr2();
 
 if(!$obj_gstr2->can_read('returnfile_list')) {
-
     $obj_gstr2->setError($obj_gstr2->getValMsg('can_read'));
     $obj_gstr2->redirect(PROJECT_URL."/?page=dashboard");
     exit();
@@ -40,11 +39,15 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 			<div class="pull-right">
 				<form method='post' name='gstr2PurchaseSummaryForm' id="gstr2PurchaseSummaryForm">
 					Month Of Return
-					<?php $invoiceMonthYear = $obj_gstr2->getInvoiceMonthList($obj_gstr2->getTableName('client_purchase_invoice')); ?>
 					<select class="dateselectbox" id="returnmonth" name="returnmonth">
-						<option value="">Select</option>
-						<?php foreach($invoiceMonthYear as $monthYear) { ?>
-							<option <?php if($returnmonth == $monthYear->invoiceDate) { echo 'selected="selected"'; } ?> value="<?php echo $monthYear->invoiceDate; ?>"><?php echo date("M-y", strtotime($monthYear->invoiceDate)); ?></option>
+						<?php for($year = 2017; $year <= date('Y'); $year++) { ?>
+							<?php for($month = 1; $month <= 12; $month++) { ?>
+
+								<?php if($year >= 2017 && $month >= 7) { ?>
+									<option <?php if($returnmonth == date( "Y-m", strtotime($year."-".$month) )) { echo 'selected="selected"'; } ?> value="<?php echo date( "Y-m", strtotime($year."-".$month) ); ?>"><?php echo date( "M-Y", strtotime($year."-".$month) ); ?></option>
+								<?php } ?>
+
+							<?php } ?>
 						<?php } ?>
 					</select>
 				</form>
@@ -81,7 +84,7 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 				$responseTableB2B = $responseTableCDN = '';
 
 				if(!empty($responseB2B)) {
-					
+
 					$responseTableB2B .= '<div class="table-responsive">';
 						$responseTableB2B .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">';
 							$responseTableB2B .= '<thead>';
@@ -108,7 +111,7 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 							$i1=1;
 							$i=1;
 							$temp = '';
-							
+
 							foreach ($responseB2B as $key3 => $value) {
 								
 								if($temp!='' && $temp!=$value->reference_number) {
@@ -154,7 +157,7 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 								$responseTableCDN .= '<tr>';
 									$responseTableCDN .= '<th>Sr.No</th>';
 									$responseTableCDN .= '<th style="text-align:center">Credit/Debit Note Number</th>';
-									$responseTableCDN .= '<th style="text-align:center">Credit/Debit Note  Date</th>';
+									$responseTableCDN .= '<th style="text-align:center">Credit/Debit Note Date</th>';
 									$responseTableCDN .= '<th style="text-align:center">Ctin </th>';
 									$responseTableCDN .= '<th style="text-align:center">Invoice Number</th>';
 									$responseTableCDN .= '<th style="text-align:center">Invoice Date</th>';
@@ -176,23 +179,23 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 							$j=1;
 							$temp='';
 							$i=1;
-							
+
 							foreach ($responseCDN as $key3 => $value) {
 								
 								if($temp!='' && $temp=!$value->reference_number) {
 									$i=1;
 								}
-								
+
 								$idt = isset($value->invoice_date) ? date('d-m-Y', strtotime($value->invoice_date)) : '';
 								$nt_dt = isset($value->nt_dt) ? date('d-m-Y', strtotime($value->nt_dt)) : '';
-								
+
 								$responseTableCDN .= '<tr>';
 									$responseTableCDN .= '<td align="center">'.$j++.'</td>';
-									$responseTableCDN .= '<td align="center">'.$value->nt_num.'</td>';
-									$responseTableCDN .= '<td align="center">'.$value->company_gstin_number.'</td>';
-									$responseTableCDN .= '<td align="center">'.$nt_dt.'</td>';
 									$responseTableCDN .= '<td align="center">'.$value->reference_number.'</td>';
 									$responseTableCDN .= '<td align="center">'.$idt.'</td>';
+									$responseTableCDN .= '<td align="center">'.$value->company_gstin_number.'</td>';
+									$responseTableCDN .= '<td align="center">'.$value->nt_num.'</td>';
+									$responseTableCDN .= '<td align="center">'.$nt_dt.'</td>';
 									$responseTableCDN .= '<td align="center">'.$i++.'</td>';
 									$responseTableCDN .= '<td align="center">'.$value->p_gst.'</td>';
 									$responseTableCDN .= '<td align="center">'.$value->total_taxable_subtotal.'</td>';
@@ -205,7 +208,7 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 									$responseTableCDN .= '<td align="center">'.$value->rsn.'</td>';
 									$responseTableCDN .= '<td align="center">'.$value->ntty.'</td>';
 								$responseTableCDN .= '</tr>';
-								
+
 								$temp = $value->reference_number;
 							}
 							
