@@ -160,31 +160,20 @@ $finalReconcileData = $obj_json->getGst2ReconcileFinalQuery($returnmonth, $invoi
 				$counter = 1;
 				if(count($finalReconcileData) > 0) {
 
-					foreach($finalReconcileData as $finaReconcile) {
-
-						$cgst_amount = explode('|||',$finaReconcile['total_cgst_amount']);
-						$sgst_amount = explode('|||',$finaReconcile['total_sgst_amount']);
-						$igst_amount = explode('|||',$finaReconcile['total_igst_amount']);
-						$cess_amount = explode('|||',$finaReconcile['total_cess_amount']);
-						$place_of_supply = explode('|||',$finaReconcile['pos']);
-						$invoice_date = explode('|||',$finaReconcile['invoice_date']);
-						$total_taxable_subtotal = explode('|||',$finaReconcile['total_taxable_subtotal']);
-						$invoice_total_value = explode('|||',$finaReconcile['invoice_total_value']);
-						$invoice_reverse_charge = explode('|||',$finaReconcile['reverse_charge']);
-					?>
+					foreach($finalReconcileData as $finaReconcile) { ?>
 						<tr data-row-id="<?php echo $finaReconcile['id']; ?>" class="text-center">
 							<td><?php echo $counter++; ?></td>
 							<td><?php echo $finaReconcile['company_gstin_number']; ?></td>
-							<td><?php echo $place_of_supply[0] . '<hr class="reconcile-separator">' . $place_of_supply[1]; ?></td>
+							<td><?php echo $finaReconcile['pos']; ?></td>
 							<td><?php echo $finaReconcile['reference_number']; ?></td>
-							<td><?php echo $invoice_date[0] . '<hr class="reconcile-separator">' . $invoice_date[1]; ?></td>
-							<td><?php echo $total_taxable_subtotal[0] . '<hr class="reconcile-separator">' . $total_taxable_subtotal[1]; ?></td>
-							<td><?php echo $cgst_amount[0] . '<hr class="reconcile-separator">' . $cgst_amount[1]; ?></td>
-							<td><?php echo $sgst_amount[0] . '<hr class="reconcile-separator">' . $sgst_amount[1]; ?></td>
-							<td><?php echo $igst_amount[0] . '<hr class="reconcile-separator">' . $igst_amount[1]; ?></td>
-							<td><?php echo $cess_amount[0] . '<hr class="reconcile-separator">' . $cess_amount[1]; ?></td>
-							<td><?php echo $invoice_total_value[0] . '<hr class="reconcile-separator">' . $invoice_total_value[1]; ?></td>
-							<td><?php echo $invoice_reverse_charge[0] . '<hr class="reconcile-separator">' . $invoice_reverse_charge[1]; ?></td>
+							<td><?php echo $finaReconcile['invoice_date']; ?></td>
+							<td><?php echo $finaReconcile['total_taxable_subtotal']; ?></td>
+							<td><?php echo $finaReconcile['total_cgst_amount']; ?></td>
+							<td><?php echo $finaReconcile['total_sgst_amount']; ?></td>
+							<td><?php echo $finaReconcile['total_igst_amount']; ?></td>
+							<td><?php echo $finaReconcile['total_cess_amount']; ?></td>
+							<td><?php echo $finaReconcile['invoice_total_value']; ?></td>
+							<td><?php echo $finaReconcile['reverse_charge']; ?></td>
 							<td>
 								<select name="reconcileStatus" class="reconcileStatus btn btn-default">
 									<option value="accept" <?php if($finaReconcile['reconciliation_status'] == 'accept'){ echo 'selected="selected"'; } ?>>Accept</option>

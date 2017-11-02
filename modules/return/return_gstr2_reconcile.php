@@ -17,202 +17,234 @@ if(isset($_GET['returnmonth']) && !empty($_GET['returnmonth'])) {
 
 if (isset($_POST['reconcileData']) && $_POST['reconcileData'] == 'Auto Populate Data') {
 
-	$finalInsertArray = array();
+	$dataArray = array();
+	$reconcileDataArray = array();
 
-	/* missing data */
-	$missingDataResult = $obj_json->getGSTR2ADownlodedMissingData($_SESSION['user_detail']['user_id'], $returnmonth, false);
-	foreach($missingDataResult as $missingResult) {
-
-		$missingArray['reference_number'] = $missingResult['reference_number'];
-		$missingArray['invoice_date'] = $missingResult['invoice_date'];
-		$missingArray['invoice_total_value'] = $missingResult['invoice_total_value'];
-		$missingArray['total_taxable_subtotal'] = $missingResult['total_taxable_subtotal'];
-		$missingArray['invoice_status'] = 'missing';
-		$missingArray['reconciliation_status'] = 'pending';
-		$missingArray['company_gstin_number'] = $missingResult['company_gstin_number'];
-		$missingArray['total_cgst_amount'] = $missingResult['total_cgst_amount'];
-		$missingArray['total_sgst_amount'] = $missingResult['total_sgst_amount'];
-		$missingArray['total_igst_amount'] = $missingResult['total_igst_amount'];
-		$missingArray['total_cess_amount'] = $missingResult['total_cess_amount'];
-		$missingArray['pos'] = $missingResult['pos'];
-		$missingArray['nt_num'] = $missingResult['nt_num'];
-		$missingArray['rate'] = $missingResult['rate'];
-		$missingArray['added_by'] = $_SESSION['user_detail']['user_id'];
-		$missingArray['added_date'] = date('Y-m-d H:i:s');
-		$missingArray['reverse_charge'] = $missingResult['reverse_charge'];
-		$missingArray['financial_month'] = $missingResult['financial_month'];
-
-		array_push($finalInsertArray, $missingArray);
-	}
-
-	/* additional data */
-	$additionalDataResult = $obj_json->getGSTR2ADownlodedAdditionalData($_SESSION['user_detail']['user_id'], $returnmonth, false);
-	foreach($additionalDataResult as $additionalResult) {
-
-		$additionalArray['reference_number'] = $additionalResult['reference_number'];
-		$additionalArray['invoice_date'] = $additionalResult['invoice_date'];
-		$additionalArray['invoice_total_value'] = $additionalResult['invoice_total_value'];
-		$additionalArray['total_taxable_subtotal'] = $additionalResult['total_taxable_subtotal'];
-		$additionalArray['invoice_status'] = 'additional';
-		$additionalArray['reconciliation_status'] = 'pending';
-		$additionalArray['company_gstin_number'] = $additionalResult['company_gstin_number'];
-		$additionalArray['total_cgst_amount'] = $additionalResult['total_cgst_amount'];
-		$additionalArray['total_sgst_amount'] = $additionalResult['total_sgst_amount'];
-		$additionalArray['total_igst_amount'] = $additionalResult['total_igst_amount'];
-		$additionalArray['total_cess_amount'] = $additionalResult['total_cess_amount'];
-		$additionalArray['pos'] = $additionalResult['pos'];
-		$additionalArray['nt_num'] = $additionalResult['nt_num'];
-		$additionalArray['rate'] = $additionalResult['rate'];
-		$additionalArray['added_by'] = $_SESSION['user_detail']['user_id'];
-		$additionalArray['added_date'] = date('Y-m-d H:i:s',time());
-		$additionalArray['reverse_charge'] = $additionalResult['reverse_charge'];
-		$additionalArray['financial_month'] = $additionalResult['financial_month'];
-
-		array_push($finalInsertArray, $additionalArray);
-	}
-
-	/* matchmis data */
-	$MatchMisData = $obj_json->getGSTR2ADownlodedMatchMisData($_SESSION['user_detail']['user_id'], $returnmonth, false);
+	/* purchase invoice data */
+	$resultTempPurchase = $resultPurchase = $obj_json->getGSTR2APurchaseInvoiceData($_SESSION['user_detail']['user_id'], $returnmonth, false);
 	
-	$obj_json->pr($MatchMisData);
-	die;
+	/* downloaded invoice data */
+	$resultTempDownloadPurchase = $resultDownloadPurchase = $obj_json->getGSTR2ADownlodedInvoiceData($_SESSION['user_detail']['user_id'], $returnmonth, false);
 
-	foreach($MatchMisData as $mmdata) {
+	foreach($resultTempPurchase as $key => $purchaseInvoice) {
 
-		/* consolidate data from purchase invoice */
-		$queryPurchase ='Select 
-							pi.reference_number, 
-							(
-								CASE 
-									WHEN pi.is_tax_payable = "1" THEN "Y" 
-									ELSE "N" 
-								END
-							) AS reverse_charge, 
-							pi.invoice_date,
-							pi.invoice_total_value,
-							sum(pii.taxable_subtotal) as total_taxable_subtotal,
-							pi.supplier_billing_gstin_number as company_gstin_number,
-							sum(pii.cgst_amount) as total_cgst_amount,
-							sum(pii.sgst_amount) as total_sgst_amount,
-							sum(pii.igst_amount) as total_igst_amount,
-							sum(pii.cess_amount) as total_cess_amount,
-							(
-								CASE
-									WHEN pi.corresponding_document_number = "0" THEN pi.corresponding_document_number 
-									ELSE (SELECT reference_number FROM '.$obj_json->getTableName('client_purchase_invoice').' WHERE purchase_invoice_id = pi.corresponding_document_number)
-								END
-							) AS nt_num, 
-							pi.corresponding_document_date as nt_dt,
-							GROUP_CONCAT(DISTINCT CONVERT(pii.consolidate_rate USING utf8) ORDER BY CONVERT(pii.consolidate_rate USING utf8) ASC SEPARATOR ",") as rate,
-							(SELECT state_tin FROM '.$obj_json->getTableName('state').' WHERE state_id = pi.supply_place) as pos,
-							DATE_FORMAT(pi.invoice_date,"%Y-%m") as financial_month 
-							from '.$obj_json->getTableName('client_purchase_invoice').' as pi 
-							INNER JOIN '.$obj_json->getTableName('client_purchase_invoice_item').' as pii 
-							ON pi.purchase_invoice_id = pii.purchase_invoice_id 
-							where 1=1 
-							and pi.added_by = '.$_SESSION['user_detail']['user_id'].' 
-							and pii.added_by = '.$_SESSION['user_detail']['user_id'].' 
-							and pi.purchase_invoice_id = '.$mmdata['purchase_invoice_id'].' 
-							and pi.reference_number = "'.$mmdata['pi_reference_number'].'" 
-							and pi.supplier_billing_gstin_number = "'.$mmdata['pi_ctin'].'" 
-							and DATE_FORMAT(pi.invoice_date,"%Y-%m") = "'.$returnmonth.'"';
+		$flag = 0;
+		foreach($resultTempDownloadPurchase as $dkey => $gstr2DownlodedInvoice) {
 
-		$resultPurchase = $obj_json->get_results($queryPurchase, false);
+			if($purchaseInvoice['reference_number'] == $gstr2DownlodedInvoice['reference_number'] && $purchaseInvoice['company_gstin_number'] == $gstr2DownlodedInvoice['company_gstin_number']) {
 
-		/* consolidate data from downloaded GSTR-2 invoice */
-		$queryDownPurchase = 'Select 
-								di.reference_number,
-								di.invoice_date,
-								di.invoice_total_value,
-								sum(di.total_taxable_subtotal) as total_taxable_subtotal,
-								di.company_gstin_number,
-								sum(di.total_cgst_amount) as total_cgst_amount,
-								sum(di.total_sgst_amount) as total_sgst_amount,
-								sum(di.total_igst_amount) as total_igst_amount,
-								sum(di.total_cess_amount) as total_cess_amount,
-								di.nt_num,
-								di.nt_dt, 
-								GROUP_CONCAT(DISTINCT CAST(di.rate USING utf8) ORDER BY CAST(di.rate USING utf8) ASC SEPARATOR ",") as rate, 
-								di.pos, 
-								(
-									CASE 
-										WHEN di.rchrg = "Y" THEN "Y" 
-										ELSE "N" 
-									END
-								) AS reverse_charge, 
-								di.financial_month 
-								from '.$obj_json->getTableName('client_reconcile_purchase_invoice1').' as di 
-								where 1=1 
-								and di.added_by = '.$_SESSION['user_detail']['user_id'].' 
-								and di.reference_number = "'.$mmdata['reference_number'].'" 
-								and di.company_gstin_number = "'.$mmdata['ctin'].'" 
-								and DATE_FORMAT(di.invoice_date,"%Y-%m") = "'.$returnmonth.'"';
+				if(
+					$purchaseInvoice['invoice_total_value'] == $gstr2DownlodedInvoice['invoice_total_value'] && 
+					$purchaseInvoice['total_taxable_subtotal'] == $gstr2DownlodedInvoice['total_taxable_subtotal'] && 
+					$purchaseInvoice['total_cgst_amount'] == $gstr2DownlodedInvoice['total_cgst_amount'] && 
+					$purchaseInvoice['total_sgst_amount'] == $gstr2DownlodedInvoice['total_sgst_amount'] && 
+					$purchaseInvoice['total_igst_amount'] == $gstr2DownlodedInvoice['total_igst_amount'] && 
+					$purchaseInvoice['total_cess_amount'] == $gstr2DownlodedInvoice['total_cess_amount'] && 
+					$purchaseInvoice['pos'] == $gstr2DownlodedInvoice['pos'] && 
+					$purchaseInvoice['invoice_date'] == $gstr2DownlodedInvoice['invoice_date'] && 
+					$purchaseInvoice['rate'] == $gstr2DownlodedInvoice['rate']
+				){
+					//match
+					if($gstr2DownlodedInvoice['type'] == "CDN" && $gstr2DownlodedInvoice['ntty'] == "C") {
+						$dataArray['invoice_type'] = "creditnote";
+					} else if($gstr2DownlodedInvoice['type'] == "CDN" && $gstr2DownlodedInvoice['ntty'] == "D") {
+						$dataArray['invoice_type'] = "debitnote";
+					} else {
+						$dataArray['invoice_type'] = "taxinvoice";
+					}
 
-		$resultDownPurchase = $obj_json->get_results($queryDownPurchase, false);
+					$dataArray['reference_number'] = $gstr2DownlodedInvoice['reference_number'];
+					$dataArray['invoice_date'] = $gstr2DownlodedInvoice['invoice_date'];
+					$dataArray['invoice_total_value'] = $gstr2DownlodedInvoice['invoice_total_value'];
+					$dataArray['total_taxable_subtotal'] = $gstr2DownlodedInvoice['total_taxable_subtotal'];
+					$dataArray['company_gstin_number'] = $gstr2DownlodedInvoice['company_gstin_number'];
+					$dataArray['total_cgst_amount'] = $gstr2DownlodedInvoice['total_cgst_amount'];
+					$dataArray['total_sgst_amount'] = $gstr2DownlodedInvoice['total_sgst_amount'];
+					$dataArray['total_igst_amount'] = $gstr2DownlodedInvoice['total_igst_amount'];
+					$dataArray['total_cess_amount'] = $gstr2DownlodedInvoice['total_cess_amount'];
+					$dataArray['nt_num'] = $gstr2DownlodedInvoice['nt_num'];
+					$dataArray['nt_dt'] = $gstr2DownlodedInvoice['nt_dt'];
+					$dataArray['p_gst'] = $gstr2DownlodedInvoice['p_gst'];
+					$dataArray['rate'] = $gstr2DownlodedInvoice['rate'];
+					$dataArray['pos'] = $gstr2DownlodedInvoice['pos'];
+					$dataArray['advance_adjustment'] = 0;
+					$dataArray['receipt_voucher_number'] = 0;
+					$dataArray['advance_amount'] = 0.00;
+					$dataArray['inv_typ'] = $gstr2DownlodedInvoice['inv_typ'];
+					$dataArray['import_supply_meant'] = "withpayment";
+					$dataArray['import_bill_number'] = "";
+					$dataArray['import_bill_date'] = "";
+					$dataArray['import_bill_port_code'] = "";
+					$dataArray['ntty'] = $gstr2DownlodedInvoice['ntty'];
+					$dataArray['rsn'] = $gstr2DownlodedInvoice['rsn'];
+					$dataArray['reverse_charge'] = $gstr2DownlodedInvoice['reverse_charge'];
+					$dataArray['reconciliation_status'] = "accept";
+					$dataArray['invoice_status'] = 'match';
+					$dataArray['financial_month'] = $gstr2DownlodedInvoice['financial_month'];
+					$dataArray['status'] = '1';
+					$dataArray['added_by'] = $_SESSION['user_detail']['user_id'];
+					$dataArray['added_date'] = date('Y-m-d H:i:s');
+				} else {
+					//mismatch
+					if($gstr2DownlodedInvoice['type'] == "CDN" && $gstr2DownlodedInvoice['ntty'] == "C") {
+						$dataArray['invoice_type'] = "creditnote";
+					} else if($gstr2DownlodedInvoice['type'] == "CDN" && $gstr2DownlodedInvoice['ntty'] == "D") {
+						$dataArray['invoice_type'] = "debitnote";
+					} else {
+						$dataArray['invoice_type'] = "taxinvoice";
+					}
 
-		if(
-			$resultPurchase[0]['invoice_total_value'] == $resultDownPurchase[0]['invoice_total_value'] && 
-			$resultPurchase[0]['total_taxable_subtotal'] == $resultDownPurchase[0]['total_taxable_subtotal'] && 
-			$resultPurchase[0]['total_cgst_amount'] == $resultDownPurchase[0]['total_cgst_amount'] && 
-			$resultPurchase[0]['total_sgst_amount'] == $resultDownPurchase[0]['total_sgst_amount'] && 
-			$resultPurchase[0]['total_igst_amount'] == $resultDownPurchase[0]['total_igst_amount'] && 
-			$resultPurchase[0]['total_cess_amount'] == $resultDownPurchase[0]['total_cess_amount'] && 
-			$resultPurchase[0]['pos'] == $resultDownPurchase[0]['pos'] && 
-			$resultPurchase[0]['invoice_date'] == $resultDownPurchase[0]['invoice_date']
-		){
+					$dataArray['reference_number'] = $gstr2DownlodedInvoice['reference_number'];
+					$dataArray['invoice_date'] = $gstr2DownlodedInvoice['invoice_date'];
+					$dataArray['invoice_total_value'] = $gstr2DownlodedInvoice['invoice_total_value'];
+					$dataArray['total_taxable_subtotal'] = $gstr2DownlodedInvoice['total_taxable_subtotal'];
+					$dataArray['company_gstin_number'] = $gstr2DownlodedInvoice['company_gstin_number'];
+					$dataArray['total_cgst_amount'] = $gstr2DownlodedInvoice['total_cgst_amount'];
+					$dataArray['total_sgst_amount'] = $gstr2DownlodedInvoice['total_sgst_amount'];
+					$dataArray['total_igst_amount'] = $gstr2DownlodedInvoice['total_igst_amount'];
+					$dataArray['total_cess_amount'] = $gstr2DownlodedInvoice['total_cess_amount'];
+					$dataArray['nt_num'] = $gstr2DownlodedInvoice['nt_num'];
+					$dataArray['nt_dt'] = $gstr2DownlodedInvoice['nt_dt'];
+					$dataArray['p_gst'] = $gstr2DownlodedInvoice['p_gst'];
+					$dataArray['rate'] = $gstr2DownlodedInvoice['rate'];
+					$dataArray['pos'] = $gstr2DownlodedInvoice['pos'];
+					$dataArray['advance_adjustment'] = 0;
+					$dataArray['receipt_voucher_number'] = 0;
+					$dataArray['advance_amount'] = 0.00;
+					$dataArray['inv_typ'] = $gstr2DownlodedInvoice['inv_typ'];
+					$dataArray['import_supply_meant'] = "withpayment";
+					$dataArray['import_bill_number'] = "";
+					$dataArray['import_bill_date'] = "";
+					$dataArray['import_bill_port_code'] = "";
+					$dataArray['ntty'] = $gstr2DownlodedInvoice['ntty'];
+					$dataArray['rsn'] = $gstr2DownlodedInvoice['rsn'];
+					$dataArray['reverse_charge'] = $gstr2DownlodedInvoice['reverse_charge'];
+					$dataArray['reconciliation_status'] = "pending";
+					$dataArray['invoice_status'] = 'mismatch';
+					$dataArray['financial_month'] = $gstr2DownlodedInvoice['financial_month'];
+					$dataArray['status'] = '1';
+					$dataArray['added_by'] = $_SESSION['user_detail']['user_id'];
+					$dataArray['added_date'] = date('Y-m-d H:i:s');
+				}
 
-			//match
-			$matchtArray['reference_number'] = $resultPurchase[0]['reference_number'];
-			$matchtArray['invoice_date'] = $resultPurchase[0]['invoice_date'];
-			$matchtArray['invoice_total_value'] = $resultPurchase[0]['invoice_total_value'];
-			$matchtArray['total_taxable_subtotal'] = $resultPurchase[0]['total_taxable_subtotal'];
-			$matchtArray['invoice_status'] = 'match';
-			$matchtArray['reconciliation_status'] = 'accept';
-			$matchtArray['company_gstin_number'] = $resultPurchase[0]['company_gstin_number'];
-			$matchtArray['total_cgst_amount'] = $resultPurchase[0]['total_cgst_amount'];
-			$matchtArray['total_sgst_amount'] = $resultPurchase[0]['total_sgst_amount'];
-			$matchtArray['total_igst_amount'] = $resultPurchase[0]['total_igst_amount'];
-			$matchtArray['total_cess_amount'] = $resultPurchase[0]['total_cess_amount'];
-			$matchtArray['pos'] = $resultPurchase[0]['pos'];
-			$matchtArray['nt_num'] = $resultPurchase[0]['nt_num'];
-			$matchtArray['rate'] = $resultPurchase[0]['rate'];
-			$matchtArray['added_by'] = $_SESSION['user_detail']['user_id'];
-			$matchtArray['added_date'] = date('Y-m-d H:i:s',time());
-			$matchtArray['reverse_charge'] = $resultPurchase[0]['reverse_charge'];
-			$matchtArray['financial_month'] = $resultPurchase[0]['financial_month'];
+				array_push($reconcileDataArray, $dataArray);
+				$flag = 1;
+				unset($resultTempDownloadPurchase[$dkey]);
+			}
+		}
 
-			array_push($finalInsertArray, $matchtArray);
-			
-		} else {
+		if($flag == 0) {
+			//missing
+			$dataArray['invoice_type'] = $purchaseInvoice['invoice_type'];
+			$dataArray['reference_number'] = $purchaseInvoice['reference_number'];
+			$dataArray['invoice_date'] = $purchaseInvoice['invoice_date'];
+			$dataArray['invoice_total_value'] = $purchaseInvoice['invoice_total_value'];
+			$dataArray['total_taxable_subtotal'] = $purchaseInvoice['total_taxable_subtotal'];
+			$dataArray['company_gstin_number'] = $purchaseInvoice['company_gstin_number'];
+			$dataArray['total_cgst_amount'] = $purchaseInvoice['total_cgst_amount'];
+			$dataArray['total_sgst_amount'] = $purchaseInvoice['total_sgst_amount'];
+			$dataArray['total_igst_amount'] = $purchaseInvoice['total_igst_amount'];
+			$dataArray['total_cess_amount'] = $purchaseInvoice['total_cess_amount'];
+			$dataArray['nt_num'] = $purchaseInvoice['nt_num'];
+			$dataArray['nt_dt'] = $purchaseInvoice['nt_dt'];
+			$dataArray['p_gst'] = 'N';
+			$dataArray['rate'] = $purchaseInvoice['rate'];
+			$dataArray['pos'] = $purchaseInvoice['pos'];
+			$dataArray['advance_adjustment'] = $purchaseInvoice['advance_adjustment'];
+			$dataArray['receipt_voucher_number'] = $purchaseInvoice['receipt_voucher_number'];
+			$dataArray['advance_amount'] = $purchaseInvoice['advance_amount'];
 
-			//mimatch
-			$mimatchtArray['reference_number'] = $resultPurchase[0]['reference_number'];
-			$mimatchtArray['invoice_date'] = $resultPurchase[0]['invoice_date'].'|||'.$resultDownPurchase[0]['invoice_date'];
-			$mimatchtArray['invoice_total_value'] = $resultPurchase[0]['invoice_total_value'].'|||'.$resultDownPurchase[0]['invoice_total_value'];
-			$mimatchtArray['total_taxable_subtotal'] = $resultPurchase[0]['total_taxable_subtotal'].'|||'.$resultDownPurchase[0]['total_taxable_subtotal'];
-			$mimatchtArray['invoice_status'] = 'mismatch';
-			$mimatchtArray['reconciliation_status'] = 'pending';
-			$mimatchtArray['company_gstin_number'] = $resultPurchase[0]['company_gstin_number'];
-			$mimatchtArray['total_cgst_amount'] = $resultPurchase[0]['total_cgst_amount'].'|||'.$resultDownPurchase[0]['total_cgst_amount'];
-			$mimatchtArray['total_sgst_amount'] = $resultPurchase[0]['total_sgst_amount'].'|||'.$resultDownPurchase[0]['total_sgst_amount'];
-			$mimatchtArray['total_igst_amount'] = $resultPurchase[0]['total_igst_amount'].'|||'.$resultDownPurchase[0]['total_igst_amount'];
-			$mimatchtArray['total_cess_amount'] = $resultPurchase[0]['total_cess_amount'].'|||'.$resultDownPurchase[0]['total_cess_amount'];
-			$mimatchtArray['pos'] = $resultPurchase[0]['pos'].'|||'.$resultDownPurchase[0]['pos'];
-			$mimatchtArray['nt_num'] = $resultPurchase[0]['nt_num'];
-			$mimatchtArray['rate'] = $resultPurchase[0]['rate'].'|||'.$resultDownPurchase[0]['rate'];
-			$mimatchtArray['added_by'] = $_SESSION['user_detail']['user_id'];
-			$mimatchtArray['added_date'] = date('Y-m-d H:i:s',time());
-			$mimatchtArray['reverse_charge'] = $resultPurchase[0]['reverse_charge'].'|||'.$resultDownPurchase[0]['reverse_charge'];
-			$mimatchtArray['financial_month'] = $resultPurchase[0]['financial_month'];
+			if($purchaseInvoice['invoice_type'] == "taxinvoice" && !empty($purchaseInvoice['company_gstin_number'])) {
+				$dataArray['inv_typ'] = "R";
+			} else if($purchaseInvoice['invoice_type'] == "sezunitinvoice" && $purchaseInvoice['import_supply_meant'] == "withpayment") {
+				$dataArray['inv_typ'] = 'SEWP';
+			} else if($purchaseInvoice['invoice_type'] == "sezunitinvoice" && $purchaseInvoice['import_supply_meant'] == "withoutpayment") {
+				$dataArray['inv_typ'] = 'SEWOP';
+			} else if($purchaseInvoice['invoice_type'] == "deemedimportinvoice") {
+				$dataArray['inv_typ'] = 'DE';
+			} else if($purchaseInvoice['invoice_type'] == "importinvoice") {
+				$dataArray['inv_typ'] = 'IMP';
+			} else {
+				$dataArray['inv_typ'] = '';
+			}
 
-			array_push($finalInsertArray, $mimatchtArray);
+			$dataArray['import_supply_meant'] = $purchaseInvoice['import_supply_meant'];
+			$dataArray['import_bill_number'] = $purchaseInvoice['import_bill_number'];
+			$dataArray['import_bill_date'] = $purchaseInvoice['import_bill_date'];
+			$dataArray['import_bill_port_code'] = $purchaseInvoice['import_bill_port_code'];
+
+			if($purchaseInvoice['invoice_type'] == "creditnote") {
+				$dataArray['ntty'] = 'C';
+			} else if($purchaseInvoice['invoice_type'] == "debitnote") {
+				$dataArray['ntty'] = 'D';
+			} else if($purchaseInvoice['invoice_type'] == "refundvoucherinvoice") {
+				$dataArray['ntty'] = 'R';
+			} else {
+				$dataArray['ntty'] = '';
+			}
+
+			$dataArray['rsn'] = $purchaseInvoice['reason_issuing_document'];
+			$dataArray['reverse_charge'] = $purchaseInvoice['reverse_charge'];
+			$dataArray['reconciliation_status'] = "pending";
+			$dataArray['invoice_status'] = 'missing';
+			$dataArray['financial_month'] = $purchaseInvoice['financial_month'];
+			$dataArray['status'] = '1';
+			$dataArray['added_by'] = $_SESSION['user_detail']['user_id'];
+			$dataArray['added_date'] = date('Y-m-d H:i:s');
+			array_push($reconcileDataArray, $dataArray);
 		}
 	}
 
-    $dataConditionArray['added_by'] = $_SESSION['user_detail']['user_id'];;
+	foreach($resultTempDownloadPurchase as $dtkey => $gstr2TempDownlodedInvoice) {
+
+		//additional
+		if($gstr2TempDownlodedInvoice['type'] == "CDN" && $gstr2TempDownlodedInvoice['ntty'] == "C") {
+			$dataArray['invoice_type'] = "creditnote";
+		} else if($gstr2TempDownlodedInvoice['type'] == "CDN" && $gstr2TempDownlodedInvoice['ntty'] == "D") {
+			$dataArray['invoice_type'] = "debitnote";
+		} else {
+			$dataArray['invoice_type'] = "taxinvoice";
+		}
+
+		$dataArray['reference_number'] = $gstr2TempDownlodedInvoice['reference_number'];
+		$dataArray['invoice_date'] = $gstr2TempDownlodedInvoice['invoice_date'];
+		$dataArray['invoice_total_value'] = $gstr2TempDownlodedInvoice['invoice_total_value'];
+		$dataArray['total_taxable_subtotal'] = $gstr2TempDownlodedInvoice['total_taxable_subtotal'];
+		$dataArray['company_gstin_number'] = $gstr2TempDownlodedInvoice['company_gstin_number'];
+		$dataArray['total_cgst_amount'] = $gstr2TempDownlodedInvoice['total_cgst_amount'];
+		$dataArray['total_sgst_amount'] = $gstr2TempDownlodedInvoice['total_sgst_amount'];
+		$dataArray['total_igst_amount'] = $gstr2TempDownlodedInvoice['total_igst_amount'];
+		$dataArray['total_cess_amount'] = $gstr2TempDownlodedInvoice['total_cess_amount'];
+		$dataArray['nt_num'] = $gstr2TempDownlodedInvoice['nt_num'];
+		$dataArray['nt_dt'] = $gstr2TempDownlodedInvoice['nt_dt'];
+		$dataArray['p_gst'] = $gstr2TempDownlodedInvoice['p_gst'];
+		$dataArray['pos'] = $gstr2TempDownlodedInvoice['pos'];
+		$dataArray['rate'] = $gstr2TempDownlodedInvoice['rate'];
+		$dataArray['advance_adjustment'] = 0;
+		$dataArray['receipt_voucher_number'] = 0;
+		$dataArray['advance_amount'] = 0.00;
+		$dataArray['inv_typ'] = $gstr2TempDownlodedInvoice['inv_typ'];
+		$dataArray['import_supply_meant'] = "withpayment";
+		$dataArray['import_bill_number'] = "";
+		$dataArray['import_bill_date'] = "";
+		$dataArray['import_bill_port_code'] = "";
+		$dataArray['ntty'] = $gstr2TempDownlodedInvoice['ntty'];
+		$dataArray['rsn'] = $gstr2TempDownlodedInvoice['rsn'];
+		$dataArray['reverse_charge'] = $gstr2TempDownlodedInvoice['reverse_charge'];
+		$dataArray['reconciliation_status'] = "pending";
+		$dataArray['invoice_status'] = 'additional';
+		$dataArray['financial_month'] = $gstr2TempDownlodedInvoice['financial_month'];
+		$dataArray['status'] = '1';
+		$dataArray['added_by'] = $_SESSION['user_detail']['user_id'];
+		$dataArray['added_date'] = date('Y-m-d H:i:s');
+		array_push($reconcileDataArray, $dataArray);
+		unset($resultTempDownloadPurchase[$dtkey]);
+	}
+
+    $dataConditionArray['added_by'] = $_SESSION['user_detail']['user_id'];
 	$dataConditionArray['financial_month'] = $returnmonth;
 	$obj_json->deletData($obj_json->getTableName('gstr2_reconcile_final'), $dataConditionArray);
-  	$obj_json->insertMultiple($obj_json->getTableName('gstr2_reconcile_final'), $finalInsertArray);
+  	$obj_json->insertMultiple($obj_json->getTableName('gstr2_reconcile_final'), $reconcileDataArray);
 	$obj_json->query("UPDATE ".$obj_json->getTableName('client_purchase_invoice')." SET update_status = '0' WHERE 1=1 AND added_by = " . $_SESSION['user_detail']['user_id'] . " AND DATE_FORMAT(invoice_date,'%Y-%m') = '" . $returnmonth . "'");
 }
 

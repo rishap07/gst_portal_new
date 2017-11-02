@@ -47,6 +47,7 @@ foreach($yearArray as $financialMonth) {
 			
 	
 }
+$cancelPurchaseSalesInv=$obj_graph->testDemoQuery('2017-07');
 //$obj_graph->pr($cancelpurchaseSalesInvoice,true);
 ?>
 
@@ -107,8 +108,7 @@ foreach($yearArray as $financialMonth) {
           <label>Financial Year</label>
           <form method='post' name='getOverview' id="getOverview">
             <select class="form-control" id="financialyear" name="financialyear">
-              <?php 
-							for($z=2017; $z<=$financialYear; $z++){ ?>
+              <?php  for($z=2017; $z<=$financialYear; $z++){ ?>
               <option value="<?php echo $financialYear ?>" <?php if($financialYearDD==$financialYear ){echo 'selected=selected';} ?>><?php echo $financialYear ?></option>
               <?php }?>
             </select>
@@ -116,100 +116,100 @@ foreach($yearArray as $financialMonth) {
         </div>
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <div class="col-md-12 panel panel-default">
-          <div id="curve_chart" style=" height: 300px;"></div>
-          <script>
-			google.charts.load('current', {'packages':['corechart']});
-			google.charts.setOnLoadCallback(drawVisualization);
-
-			function drawVisualization() {
-				// Some raw data (not necessarily accurate)
-				var data = google.visualization.arrayToDataTable([
+           	<div id="curve_chart" style=" height: 300px;"></div>
+			<script>
+                google.charts.load('current', {'packages':['corechart']});
+                google.charts.setOnLoadCallback(drawVisualization);
+                
+                function drawVisualization() {
+                // Some raw data (not necessarily accurate)
+                var data = google.visualization.arrayToDataTable([
 					['Month', 'Sales', 'Pruchase'],
 					<?php foreach($purchaseSalesAmt as $purchaseSales): ?>
 					['<?php echo date('M',strtotime($purchaseSales['month']));?>',
 					<?php echo isset($purchaseSales['sales'])?$purchaseSales['sales']:'0'?>,
 					<?php echo isset($purchaseSales['purchase'])?$purchaseSales['purchase']:'0'?>,],
 					<?php endforeach;?>
-				]);
-				
-				var options = {
+                ]);
+                
+                var options = {
 					title : 'Cashflow',
 					vAxis: {title: 'Amount in Rs'},
 					hAxis: {title: 'Month'},
 					seriesType: 'bars',
 					series: {5: {type: 'line'}}
-					
-				};
-				
-				var chart = new google.visualization.ComboChart(document.getElementById('curve_chart'));
-				chart.draw(data, options);
-			}
-                            </script> 
+                };
+                
+                var chart = new google.visualization.ComboChart(document.getElementById('curve_chart'));
+                chart.draw(data, options);
+                }
+                </script> 
         </div>
         <div class="col-md-12 panel panel-default">
-          <div id="chart_div2"  style=" height: 300px;"></div>
-          <script>
-                                google.charts.load('current', {'packages':['corechart']});
-                                google.charts.setOnLoadCallback(drawVisualization);
-
-                                function drawVisualization() {
-                                    // Some raw data (not necessarily accurate)
-                                    var data = google.visualization.arrayToDataTable([
-                                        ['Month', 'Sales', 'Pruchase'],
-                                        <?php foreach($purchaseSalesInvoice as $invoices): ?>
-                                        ['<?php echo date('M',strtotime($invoices['month']));?>',
-										<?php echo isset($invoices['sales'])?$invoices['sales']:'0'?>, 
-										<?php echo isset($invoices['purchase'])?$invoices['purchase']:'0'?>],
-                                        <?php endforeach;?>
-										 
-                                    ]);
-                                    
-                                    var options = {
-                                        title : 'Invoices',
-                                        vAxis: {title: 'No of Invoices'},
-                                        hAxis: {title: 'Month'},
-                                        seriesType: 'bars',
-                                        series: {5: {type: 'line'}}
-										
-										
-                                    };
-                                    
-								var chart = new google.visualization.ComboChart(document.getElementById('chart_div2'));
-                                    chart.draw(data, options);
-                                }
-							</script> 
+      		<div id="chart_div2"  style=" height: 300px;"></div>
+			<script>
+                google.charts.load('current', {'packages':['corechart']});
+                google.charts.setOnLoadCallback(drawVisualization);
+                
+                function drawVisualization() {
+                // Some raw data (not necessarily accurate)
+                var data = google.visualization.arrayToDataTable([
+                    ['Month', 'Sales', 'Pruchase'],
+                    <?php foreach($purchaseSalesInvoice as $invoices): ?>
+                    ['<?php echo date('M',strtotime($invoices['month']));?>',
+                    <?php echo isset($invoices['sales'])?$invoices['sales']:'0'?>, 
+                    <?php echo isset($invoices['purchase'])?$invoices['purchase']:'0'?>],
+                    <?php endforeach;?>
+                    ]);
+                
+                var options = {
+                    title : 'Invoices',
+                    vAxis: {title: 'No of Invoices'},
+                    hAxis: {title: 'Month'},
+                    seriesType: 'bars',
+                    series: {5: {type: 'line'}}
+                    };
+                
+                var chart = new google.visualization.ComboChart(document.getElementById('chart_div2'));
+                    chart.draw(data, options);
+                }
+            </script> 
         </div>
         <div class="col-md-12 panel panel-default">
-          <div id="chart_div3"  style=" height: 300px;"></div>
-          <script>
-				google.charts.load('current', {'packages':['corechart']});
-				google.charts.setOnLoadCallback(drawVisualization);
+       		<div id="chart_div3"  style=" height: 300px;"></div>
+        	<script>
+					google.charts.load('current', {'packages':['corechart']});
+					google.charts.setOnLoadCallback(drawVisualization);
 
-				function drawVisualization() {
-					// Some raw data (not necessarily accurate)
-					var data = google.visualization.arrayToDataTable([
-						['Month', 'Sales', 'Pruchase'],
-						<?php foreach($cancelpurchaseSalesInvoice as $cancelInvoices): ?>
-						['<?php echo date('M',strtotime($cancelInvoices['month']));?>',
-						<?php echo isset($cancelInvoices['sales'])?$cancelInvoices['sales']:'0'?>, 
-						<?php echo isset($cancelInvoices['purchase'])?$cancelInvoices['purchase']:'0'?>],
-						<?php endforeach;?>
-					]);
-					
-					var options = {
-						title : 'Cancel Invoices',
-						vAxis: {title: 'No of Invoices'},
-						hAxis: {title: 'Month'},
-						seriesType: 'bars',
-						series: {5: {type: 'line'}}
+					function drawVisualization() {
+						// Some raw data (not necessarily accurate)
+						var data = google.visualization.arrayToDataTable([
+							['Month', 'Sales', 'Pruchase'],
+							<?php foreach($cancelpurchaseSalesInvoice as $cancelInvoices): ?>
+							['<?php echo date('M',strtotime($cancelInvoices['month']));?>',
+							<?php echo isset($cancelInvoices['sales'])?$cancelInvoices['sales']:'0'?>, 
+							<?php echo isset($cancelInvoices['purchase'])?$cancelInvoices['purchase']:'0'?>],
+							<?php endforeach;?>
+						]);
 						
-					};
-					
-				var chart = new google.visualization.ComboChart(document.getElementById('chart_div3'));
-					chart.draw(data, options);
-				}
-							</script> 
-        </div>
+						var options = {
+							title : 'Cancel Invoices',
+							vAxis: {title: 'No of Invoices'},
+							hAxis: {title: 'Month'},
+							seriesType: 'bars',
+							series: {5: {type: 'line'}}
+						};
+						
+						var chart = new google.visualization.ComboChart(document.getElementById('chart_div3'));
+						chart.draw(data, options);
+						
+						var selectHandler = function(e) {
+							window.location = data.getValue(chart.getSelection()[0]['row'], 1 );
+						}
+						google.visualization.events.addListener(chart, 'select', selectHandler);
+					}
+			</script> 
+		</div>
         <div class="clear height30"></div>
       </div>
     </div>

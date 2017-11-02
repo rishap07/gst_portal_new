@@ -1491,7 +1491,7 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
         }
         return $dataArr;
     }
-	
+
 	public function generateGSTR2ClaimITCData($returnMonth, $array_type = true) {
 		
 		$gstr2_claim_itc_query = 'Select * from ' . $this->tableNames['gstr2_reconcile_final'] . ' where 1=1 AND added_by = ' . $this->sanitize($_SESSION['user_detail']['user_id']) . ' AND financial_month = "' . $returnMonth . '" AND reconciliation_status != "pending" AND status = "1"';

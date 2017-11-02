@@ -32,7 +32,6 @@ if (isset($_POST['generateGSTR2Summary']) && $_POST['generateGSTR2Summary'] == '
 	$obj_gstr2->pr($GSTR2ClaimITCData);
 }
 
-//$claim_data = $obj_gstr2->generateGSTR2ClaimITC();
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
 	<div class="col-md-12 col-sm-12 col-xs-12">
@@ -91,94 +90,24 @@ if (isset($_POST['generateGSTR2Summary']) && $_POST['generateGSTR2Summary'] == '
 			</div>
 			<div class="clear"></div>
 
-
-
-
-
 			<form method="post">
-				<div>
 				<table width="100%" border="0" cellspacing="0" cellpadding="4" class="table table-striped  tablecontent" >
-				<thead>
-
-                <tr>
-                    <th class="active">Date</th>
-                    <th class="active">Invoice Id</th>
-                    <th class="active">Vendor</th>
-                    <th class="active">GSTIN</td>
-                    <th class="active">Total Tax</td>
-                    <th class="active">Category</td>
-                    <th class="active">Rate(%)</td>
-                    <th class="active">Available</td>
-                </tr>
-            </thead>
-            <tbody>
-                <?php 
-                if(!empty($claim_data))
-                {
-                foreach ($claim_data as $data) {?>
- 
-	   <tr>
-    <td><?php echo $data->invoice_date ?></td>
-    <td><?php echo $data->reference_number ?></td>
-    <td><?php echo $data->company_name ?></td>
-    <td><?php echo $data->gstin_number ?></td>
-    <td><?php echo $data->taxable_subtotal ?></td> 
-     <td>
-     <select class="categorey_claim" name="category[]" >
-      <option value='inp' <?php if (!empty($data->category) && $data->category == 'inp')  echo 'selected = "selected"'; ?> id="categorey_claim"  data-id=<?php echo $data->id ?>>Input</option>
-      <option value="cg" <?php if (!empty($data->category) && $data->category == 'cg')  echo 'selected = "selected"'; ?> id="categorey_claim"   data-id=<?php echo $data->id ?>>Capital Good</option>
-      <option value="is" <?php if (!empty($data->category) && $data->category == 'is')  echo 'selected = "selected"'; ?> id="categorey_claim"   data-id=<?php echo $data->id ?>>Input Services</option>
-      <option value="ine" <?php if (!empty($data->category) && $data->category == 'ine')  echo 'selected = "selected"'; ?> id="categorey_claim" data-id=<?php echo $data->id ?>>Ineligble</option>
-    </select>
-     </td>
-    <td><input type="number" name="claim_rate[]" id="claim_rate" data-bind=<?php echo $data->taxable_subtotal ?> class="claim_rate" value=<?php echo $data->claim_rate ?> min="0" max="100" step="0.01"></td> 
-    <td><div name="claim_value[]" id="claim_value" class="claim_value"></div></td>
-    <input type="hidden" name=id[] value=<?php echo $data->reference_number ?>>      
-     </tr>
-               <?php
-                }
-                }
-               ?>
-            </tbody>
-        </table>
-</div>
-
-<div id="txtPopup" style="display:none">
-<table width="100%" border="0" cellspacing="0" cellpadding="4" class="table table-striped  tablecontent" >
-
-            <tbody>
-                
- 			<thead>
-                <tr>
-
-                    <th class="active">Category</td>
-                    <th class="active">Rate(%)</td>
-               
-                </tr>
-            </thead>
-	   <tr>
-
-     <td>
-     <select class="categorey_claim_all" name="category[]" >
-      <option value='inp' id="categorey_claim">Input</option>
-      <option value="cg"  class="categorey_claim"  data-id=<?php echo $data->id ?>>Capital Good</option>
-      <option value="is" id="categorey_claim"  data-id=<?php echo $data->id ?>>Input Services</option>
-      <option value="ine"  id="categorey_claim"   data-id=<?php echo $data->id ?>>Ineligble</option>
-    </select>
-     </td>
-    <td><input type="number" name="claim_rate[]" id="claim_rate_all" class="claim_rate_all"  min="0" max="100" step="0.01"></td> 
-     </tr>
-            </tbody>
-        </table>
-</div>
-<input type="submit" name="sub"  value="Save ITC Values" class="btn btn-primary">
-</form>
-
-
-
-
-		
-		
+					<thead>
+						<tr>
+							<th class="active">Date</th>
+							<th class="active">Invoice Id</th>
+							<th class="active">Vendor</th>
+							<th class="active">GSTIN</td>
+							<th class="active">Total Tax</td>
+							<th class="active">Category</td>
+							<th class="active">Rate(%)</td>
+							<th class="active">Available</td>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</form>
 		</div>
 		<div class="clear height40"></div>
 	</div>

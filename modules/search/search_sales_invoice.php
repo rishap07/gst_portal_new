@@ -150,7 +150,7 @@ if(!$db_obj->can_read('client_invoice')) {
 <!--========================sidemenu over=========================-->
 <script>
     $(document).ready(function () {
-	
+
 		//export data start
 		$("#export").click(function(){
 			$.ajax({
@@ -159,9 +159,7 @@ if(!$db_obj->can_read('client_invoice')) {
 				dataType: "json",
 				cache: false,
 				data: { salesExportData : $( "#search-sales-invoice" ).serialize()},
-				success: function(data)
-				{
-					//console.log(data.salesExcelUrl);
+				success: function(data) {
 					window.location.href = data.salesExcelUrl;
 			  	}
 			});
