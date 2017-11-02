@@ -113,6 +113,7 @@ if(!$db_obj->can_read('client_invoice')) {
 					<div class="adminformbxsubmit" style="width:100%;">
 						<div class="tc">
 							<input type='submit' class="btn btn-success" name='submit' value='Search Invoice' id='submit'>
+							<input type='button' class="btn btn-success" name='export' value='Export Invoice' id='export'>
 						</div>
 					</div>
 
@@ -146,6 +147,22 @@ if(!$db_obj->can_read('client_invoice')) {
 <!--========================sidemenu over=========================-->
 <script>
     $(document).ready(function () {
+		
+		//export data start
+		$("#export").click(function(){
+			$.ajax({
+				url: "<?php echo PROJECT_URL; ?>/?ajax=search_export_purchase_invoice",
+				method: "POST",
+				dataType: "json",
+				cache: false,
+				data:{ purchaseExportData : $("#search-purchase-invoice").serialize()},
+				success: function(data)
+				{
+					//console.log(data.excelPurchaselUrl);
+					window.location.href = data.excelPurchaselUrl;
+				}
+			});
+		});
 
 		/* from date */
         $("#from_date").datepicker({

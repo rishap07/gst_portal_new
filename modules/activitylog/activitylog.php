@@ -29,13 +29,12 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
                 
                 <thead>
                     <tr>
-                        <th align='left'>#</th>
-                    
-                        <th align='left'>Module</th>
-                        <th align='left' width="200px">Message</th>
-						  <th align='left' width="200px">Username</th>
-					   <th align='left' width="200px">FromIP</th>
-					  <th align='left' width="200px">DateOfLog</th>
+                    <th align='left'>#</th>
+                                  
+                    <th align='left' width="200px">Message</th>
+					<th align='left' width="200px">Username</th>
+					<th align='left' width="200px">FromIP</th>
+					<th align='left' width="200px">DateOfLog</th>
                         
                     </tr>
                 </thead>
@@ -64,7 +63,7 @@ if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['use
                 $.extend($.fn.dataTable.defaults, {'sServerMethod': 'POST'});
                 $('#mainTable').dataTable({
                     "aoColumns": [
-                        {"bSortable": false},
+                       
                         {"bSortable": false},
 						 {"bSortable": false},
 						  {"bSortable": false},

@@ -762,7 +762,7 @@ final class gstr extends validation {
     {
         $action = 'RETSAVE';
         $deleteData = json_encode($deleteData);
-        //echo $deleteData;
+        echo $deleteData;
         $encodejson=base64_encode(openssl_encrypt(base64_encode($deleteData),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA));
 
         $hmac = $this->hmac($_SESSION['decrypt_sess_key'],$deleteData);
@@ -910,7 +910,7 @@ final class gstr extends validation {
                 $dataGST1where['gst_key'] = $key;
                 $this->update($this->getTableName('user_api_summary'),  $dataGST1, $dataGST1where);
             } else {
-				
+
 				$dataGST1['gst_key'] =  $key;
                 $dataGST1['json'] = $data['json'];
                 $dataGST1['added_date'] = date('Y-m-d H:i:s');
@@ -920,6 +920,13 @@ final class gstr extends validation {
             }
 		}
 	}
+
+    public function delete_user_summary($key,$returnmonth) {
+        $dataConditionArray['fmonth'] = $returnmonth;
+        $dataConditionArray['user_id'] = $this->sanitize($_SESSION['user_detail']['user_id']);
+        $dataConditionArray['gst_key'] = $key;
+        $this->deletData($this->getTableName('user_api_summary'), $dataConditionArray);
+    }
 
     public function get_user_summary($key,$returnmonth) {
         $json = '';
@@ -1199,7 +1206,7 @@ final class gstr extends validation {
                 <div class="modal-content">
                     <div class="modal-body">
                         <label>Enter OTP </label>
-                        <input id="otp_code" type="textbox" name="otp" class="form-control" data-bind="numeric" autocomplete="off">
+                        <input id="otp_code" type="textbox" name="otp" class="form-control otp_text" data-bind="numeric" autocomplete="off">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -1210,8 +1217,9 @@ final class gstr extends validation {
         </div>
         <script type="text/javascript">
             $( "#otpModalBoxSubmit" ).click(function( event ) {
-                var otp = $('#otp_code').val();
+                var otp = $('.otp_text').val();
                 //event.preventDefault();
+                alert('otp:'+otp);
                 if(otp != " ") {
                     $.ajax({
                         url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_otp_request",
@@ -1339,7 +1347,7 @@ final class gstr extends validation {
                            document.form4.submit();
                         }
                         else {
-                           location.reload();
+                           //location.reload();
                            return false;
                         }
                     },

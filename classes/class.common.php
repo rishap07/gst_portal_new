@@ -1363,7 +1363,7 @@ class common extends db {
 			if ($purchase_invoice_id && $purchase_invoice_id != '') {
 				$referenceQuery .= " AND purchase_invoice_id != '" . $purchase_invoice_id . "'";
 			}
-			
+
 			$checkReferenceNumber = $this->get_row($referenceQuery);
 			if(count($checkReferenceNumber) > 0) {
 				return true;
@@ -1654,5 +1654,11 @@ class common extends db {
 
         return $dataArr;
     }
+	
+	public function getPurchaseUpdateStatus($financialMonth) {
+
+		$updatedStatus = $this->get_row('Select count(purchase_invoice_id) as updated_status from ' . $this->tableNames['client_purchase_invoice'] . ' where 1=1 AND added_by = ' . $_SESSION['user_detail']['user_id'] . ' AND DATE_FORMAT(invoice_date,"%Y-%m") = "' . $financialMonth . '" AND update_status = "1"');
+		return $updatedStatus->updated_status;
+	}
 }
 ?>

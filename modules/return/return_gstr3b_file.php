@@ -726,8 +726,7 @@ composition taxable persons and UIN holders</div>
                             
                             <div class="tableresponsive" id="unregistered">
                             <table  class="table  tablecontent tablecontent2 bordernone" id="table1">
-                                <thead>
-                                
+                                <thead>                                
                                 <tr>
                                 <th></th>
                                 <th>Place of Supply (State/UT)</th>
@@ -2924,11 +2923,9 @@ composition taxable persons and UIN holders</div>
                             <input type="button" value="<?php echo ucfirst('Edit'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_gstr3b_file_submit&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-success" class="redbtn marlef10"/>
 							 <input type='submit' class="btn btn-danger" name='cleardata' value='clear data' id='cleardata'>
 							<input type='submit' class="btn btn-success uploadBtn" name='finalsubmit' value='Upload to GSTN' id='gstr1_summary_download'>
-							<?php
-							/*
 							<input type='submit' class="btn btn-primary" name='retsubmit' value='final submit' id='retsubmit'>
-							*/
-							?>
+						  
+							
 						
 							<input type='hidden' name="returnid" id="returnid" value="<?php echo $returndata[0]->return_id; ?>" />
 							<input type='hidden' name="final_returnid" id="final_returnid" value="<?php echo $returndata[0]->return_id; ?>" />

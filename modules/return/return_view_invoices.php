@@ -73,6 +73,7 @@ if((isset($_POST['submit_up']) && $_POST['submit_up']=='Upload TO GSTN') || isse
 if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To GSTN')|| (isset($_POST['btn_type']) && $_POST['btn_type'] == 'final_submit' ))
 {
     //echo "submit";
+    //de
     $obj_gstr1->gstr1FinalSubmit();
     
 }
@@ -419,6 +420,9 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                     $group_by = " a.reference_number ,b.consolidate_rate ";
                                     $order_by = 'a.reference_number';
                                     $Data = $atData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'atadj');
+                                    //$obj_gstr1->pr($atData);
+                                    //$Data1  = $obj_gstr1->getTXPDInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
+                                    //$obj_gstr1->pr($Data1);
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
                                     $sumTotal_temp = '';
                                     $invoice_temp = '';
@@ -452,8 +456,8 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                 }
                                 if($type=='EXP')
                                 {
-                                    $group_by = " a.reference_number";
-                                    $order_by = 'a.reference_number';
+                                    $group_by = " a.export_supply_meant,a.reference_number,b.consolidate_rate";
+                                    $order_by = 'a.export_supply_meant,a.reference_number';
                                     $Data = $expData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'exp');
                                    // $Data = $expData = $obj_gstr1->getEXPInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
                                     $total = $invoice_total_value = $sumTotal = $igstTotal = $sgstTotal = $cgstTotal = $cessTotal = 0;
@@ -625,7 +629,14 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                         <thead>
                                             <tr>
                                                 <th align='left'>Total Transactions</th>
+                                                <?php if($type=='TXPD'  ) { ?>
+                                                    <th align='left'>Advance  Adjusted Amount </th>
+                                                <?php } 
+
+                                                else { ?>
                                                 <th align='left'>Taxable Amount </th>
+                                                <?php  } ?>
+                                                
                                                 <th align='left'>Total IGST</th>
                                                 <th align='left'>Total SGST</th>
                                                 <th align='left'>Total CGST</th>
@@ -715,8 +726,15 @@ if((isset($_POST['submit_freeze']) && $_POST['submit_freeze']=='Final Submit To 
                                                         <?php
                                                         }
                                                         ?>
-                                                        
+                                                        <?php if($type=='TXPD'  ) { ?>
+                                                           <th style='text-align:right'>Advance Adjusted AMT </th>
+                                                        <?php } 
+
+                                                        else { ?>
                                                         <th style='text-align:right'>Taxable AMT</th>
+                                                        <?php  } ?>
+                                                
+                                                        
                                                         <th align='left'>Rate</th>
                                                         <th style='text-align:right'>Total Tax</th>
                                                          <?php if($type!='B2CS' && $type != 'AT' &&  $type!='TXPD') { ?>

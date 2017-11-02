@@ -160,7 +160,7 @@ final class gstr1 extends validation {
                 if ($response['error'] == 0) {
                     $flag = 1;
                     if($invoice_type != 'HSN' && $invoice_type != 'NIL' && $invoice_type != 'DOCISSUE') {
-                        if (!empty($dataRes)) {
+                        //if (!empty($dataRes)) {
                             if (!empty($data_ids)) {
 
                                 /********** Start Code for Update Invoice is upload ************* */
@@ -201,10 +201,10 @@ final class gstr1 extends validation {
                                 $flag = 2;
                                 $this->setError('file not updated');
                             }
-                        }
+                        /*}
                         else {
                             $flag = 0;
-                        }
+                        }*/
                     }
                     elseif($invoice_type == 'HSN') {
                         //echo $flag;
@@ -223,7 +223,7 @@ final class gstr1 extends validation {
                     $flag = 2;
                     $this->setError($response['message']);
                 }
-                //echo $flag.$invoice_type;
+               //echo $flag.$invoice_type;
                 if ($flag == 1) {
                     
                     $this->setSuccess(" Congratulations! GSTR1 Data Uploaded.");
@@ -232,10 +232,10 @@ final class gstr1 extends validation {
                 elseif ($flag == 2) {
                     return false;
                 }
-                elseif ($flag == 0) {
+                /*elseif ($flag == 0) {
                     $this->setError('No new data to upload');
                     return false;
-                }
+                }*/
                 return false;
             /*} else {
                 $this->setError('Sorry! Please update your gross turnover');
@@ -577,50 +577,44 @@ final class gstr1 extends validation {
             //if (!empty($is_gross_turnover_check) && !empty($cur_gt)) {
 
                 $deletePayload = $this->gstDeletePayload($user_id, $returnmonth,$type,$data,$all);
-
+                 /*$obj_gst->pr($deletePayload);
+                 die;*/
                 if(!empty($deletePayload)) {
                     $deletePayloadArr = $deletePayload['data_arr'];
                     $data_ids = $deletePayload['data_ids'];
                     $dataArr = array_merge($dataArr, $deletePayloadArr);
                     $response = $obj_gst->returnDeleteItems($dataArr,$returnmonth,'gstr1');
                     
+                   // $obj_gst->pr($dataArr);
+                    //$obj_gst->pr($response);
+                    
                     $flag = 0;
                     $inum = isset($data['inum'])?$data['inum']:'';
-                    //$this->pr($deletePayload);
+                    
                     if ($response['error'] == 0) {
-                        
                         $flag =1;
-                        if($type != 'HSN' && $type != 'NIL' && $type != 'DOCISSUE') {
+                        if($type != 'HSN' && $type != 'NIL' && $type != 'DOC_ISSUE') {
                             if (!empty($data_ids)) {
                                 foreach ($data_ids as $key => $data_id) {
                                     $this->query("UPDATE ".$this->getTableName('gstr1_return_summary')." SET is_uploaded='0' WHERE id = ".$data_id."");  
+                                    $this->logMsg("GSTR1 Invoice id : " . $data_id . " upload status has been changed to not uploaded for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1");
                                 }
 
-                                $callReturnSummary = $obj_gst->returnSummary($returnmonth);
-                                /***** End GSTR1 API Call *****/
-
-                                if($callReturnSummary != false && $callReturnSummary != '') {
-                                    /***** Start Code Insert/update to summary *****/
-                                    $savedata['json'] = base64_encode(serialize($callReturnSummary));
-                                    $obj_gst->save_user_summary($savedata,'gstr1',$returnmonth);
-                                    /***** End Code Insert/update to summary *****/
-                                }
-                            } 
-                            else {
-                                $this->setError('file not deleted from database.');
-                                return false; 
                             }
                         }
-                        elseif($invoice_type == 'HSN') {
-                            $this->query("DELETE FROM ".$this->getTableName('return_upload_summary')."  WHERE added_by = '".$_SESSION['user_detail']['user_id']."' and financial_month = '".$returnmonth."' and type = 'gstr1hsn' ");
-                        }
-                        elseif($invoice_type == 'NIL') {
-                            $this->query("DELETE FROM ".$this->getTableName('return_upload_summary')."  WHERE added_by = '".$_SESSION['user_detail']['user_id']."' and financial_month = '".$returnmonth."' and type = 'gstr1nil' ");
-                        }
-                        elseif($invoice_type == 'DOCISSUE') {
-                            $this->query("DELETE FROM ".$this->getTableName('return_upload_summary')."  WHERE added_by = '".$_SESSION['user_detail']['user_id']."' and financial_month = '".$returnmonth."' and type = 'gstr1document' ");
-                        }
 
+                        elseif($type == 'HSN') {
+                            $this->query("DELETE FROM ".$this->getTableName('return_upload_summary')."  WHERE added_by = '".$_SESSION['user_detail']['user_id']."' and financial_month = '".$returnmonth."' and type = 'gstr1hsn' ");
+                            $this->logMsg("HSN Invoices deleted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1hsn");
+                        }
+                        elseif($type == 'NIL') {
+                            $this->query("DELETE FROM ".$this->getTableName('return_upload_summary')."  WHERE added_by = '".$_SESSION['user_detail']['user_id']."' and financial_month = '".$returnmonth."' and type = 'gstr1nil' ");
+                            $this->logMsg("NIL Invoices deleted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1nil");
+                        }
+                        elseif($type == 'DOC_ISSUE') {
+                            $this->query("DELETE FROM ".$this->getTableName('return_upload_summary')."  WHERE added_by = '".$_SESSION['user_detail']['user_id']."' and financial_month = '".$returnmonth."' and type = 'gstr1document' ");
+                            $this->logMsg("DOC_ISSUE Invoices deleted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1document");
+                        }
                          
                     }
                     if($flag == 1) {
@@ -656,18 +650,14 @@ final class gstr1 extends validation {
     public function gstDeletePayload($user_id, $returnmonth,$type,$data,$all) {
         $response = $data_ids = $dataArr = array();
         if(!empty($data)) {
-            /*echo $all;
-            die;*/
             if($type == 'B2B') {
                 $ctin = isset($data['ctin'])?$data['ctin']:'';
                 $inum = isset($data['inum'])?$data['inum']:'';
                 $idt = isset($data['idt'])?$data['idt']:'';
                 $json = isset($data['json'])?$data['json']:'';
                 if($all == 'all') {
-                    $b2b_data = $this->gstB2BPayload($user_id, $returnmonth,'D','','1');
-                    //$this->pr($b2b_data);
+                    $b2b_data = $this->gstB2BPayload($user_id, $returnmonth,'D');
                     if (!empty($b2b_data)) {
-                        $dataArr = $b2b_data['b2b_arr'];
                         $data_ids = $b2b_data['b2b_ids'];
                     }
                     $jstr1_array = json_decode($json,true);
@@ -699,7 +689,16 @@ final class gstr1 extends validation {
                     $dataArr['b2b'][0]['inv'][0]['flag'] = 'D';
                     $dataArr['b2b'][0]['inv'][0]['inum'] = $inum;
                     $dataArr['b2b'][0]['inv'][0]['idt'] = $idt;
-                    $data_ids = $this->gstB2BDeleteQuery($user_id,$returnmonth, $ctin,$inum,$idt,$all);
+
+                    $data_arr = array();
+                    $data_arr['user_id'] = $user_id;
+                    $data_arr['returnmonth'] = $returnmonth;
+                    $data_arr['invoice_nature'] = 'b2b';
+                    $data_arr['ctin'] = $ctin;
+                    $data_arr['inum'] = $inum;
+                    $data_arr['idt'] = $idt;
+
+                    $data_ids = $this->gstGetInvoiceIdForSingleDelete($data_arr);
 
                 }
             }
@@ -709,9 +708,8 @@ final class gstr1 extends validation {
                 $idt = isset($data['idt'])?$data['idt']:'';
                 $json = isset($data['json'])?$data['json']:'';
                 if($all == 'all') {
-                    $b2cl_data = $this->gstB2CLPayload($user_id, $returnmonth,'D','','1');
+                    $b2cl_data = $this->gstB2CLPayload($user_id, $returnmonth,'D');
                     if (!empty($b2cl_data)) {
-                        $dataArr = $b2cl_data['b2cl_arr'];
                         $data_ids = $b2cl_data['b2cl_ids'];
                     }
                     $jstr1_array = json_decode($json,true);
@@ -742,7 +740,16 @@ final class gstr1 extends validation {
                     $dataArr['b2cl'][0]['inv'][0]['flag'] = 'D';
                     $dataArr['b2cl'][0]['inv'][0]['inum'] = $inum;
                     $dataArr['b2cl'][0]['inv'][0]['idt'] = $idt;
-                    $data_ids = $this->gstB2CLDeleteQuery($user_id, $returnmonth,$returnmonth,$pos,$inum,$idt,$all);
+
+                    $data_arr = array();
+                    $data_arr['user_id'] = $user_id;
+                    $data_arr['returnmonth'] = $returnmonth;
+                    $data_arr['invoice_nature'] = 'b2cl';
+                    $data_arr['pos'] = $pos;
+                    $data_arr['inum'] = $inum;
+                    $data_arr['idt'] = $idt;
+
+                    $data_ids = $this->gstGetInvoiceIdForSingleDelete($data_arr);
                 }
                 
             }
@@ -754,9 +761,8 @@ final class gstr1 extends validation {
                 $nt_dt = isset($data['nt_dt'])?$data['nt_dt']:'';
                 $json = isset($data['json'])?$data['json']:'';
                 if($all == 'all') {
-                    $cdnr_data = $this->gstCDNRPayload($user_id, $returnmonth,'D','','1');
+                    $cdnr_data = $this->gstCDNRPayload($user_id, $returnmonth,'D');
                     if (!empty($cdnr_data)) {
-                        $dataArr = $cdnr_data['cdnr_arr'];
                         $data_ids = $cdnr_data['cdnr_ids'];
                     }
                     $jstr1_array = json_decode($json,true);
@@ -799,7 +805,17 @@ final class gstr1 extends validation {
                     $dataArr['cdnr'][0]['nt'][0]['nt_dt'] = $nt_dt;
                     $dataArr['cdnr'][0]['nt'][0]['inum'] = $inum;
                     $dataArr['cdnr'][0]['nt'][0]['idt'] = $idt;
-                    $data_ids = $this->gstCDNRDeleteQuery($user_id, $returnmonth,$ctin,$inum,$idt,$nt_num,$nt_dt,$all);
+
+                    $data_arr = array();
+                    $data_arr['user_id'] = $user_id;
+                    $data_arr['returnmonth'] = $returnmonth;
+                    $data_arr['invoice_nature'] = 'cdnr';
+                    $data_arr['nt_num'] = $nt_num;
+                    $data_arr['nt_dt'] = $nt_dt;
+                    $data_arr['inum'] = $inum;
+                    $data_arr['idt'] = $idt;
+
+                    $data_ids = $this->gstGetInvoiceIdForSingleDelete($data_arr);
                 }
                 
             }
@@ -811,9 +827,8 @@ final class gstr1 extends validation {
                 $typ = isset($data['typ'])?$data['typ']:'';
                 $json = isset($data['json'])?$data['json']:'';
                 if($all == 'all') {
-                    $cdnur_data = $this->gstCDNURPayload($user_id, $returnmonth,'D','','1');
+                    $cdnur_data = $this->gstCDNURPayload($user_id, $returnmonth,'D');
                     if (!empty($cdnur_data)) {
-                        $dataArr = $cdnur_data['cdnur_arr'];
                         $data_ids = $cdnur_data['cdnur_ids'];
                     }
                     $jstr1_array = json_decode($json,true);
@@ -848,20 +863,28 @@ final class gstr1 extends validation {
                     $dataArr['cdnur'][0]['nt_dt'] = $nt_dt;
                     $dataArr['cdnur'][0]['inum'] = $inum;
                     $dataArr['cdnur'][0]['idt'] = $idt;
-                    $data_ids = $this->gstCDNURDeleteQuery($user_id, $returnmonth,$inum,$idt,$nt_num,$nt_dt,$all);
+
+                    $data_arr = array();
+                    $data_arr['user_id'] = $user_id;
+                    $data_arr['returnmonth'] = $returnmonth;
+                    $data_arr['invoice_nature'] = 'cdnur';
+                    $data_arr['nt_num'] = $nt_num;
+                    $data_arr['nt_dt'] = $nt_dt;
+                    $data_arr['inum'] = $inum;
+                    $data_arr['idt'] = $idt;
+
+                    $data_ids = $this->gstGetInvoiceIdForSingleDelete($data_arr);
                 }
                 
             }
             if($type == 'EXP') {
-                
                 $inum = isset($data['inum'])?$data['inum']:'';
                 $idt = isset($data['idt'])?$data['idt']:'';
                 $exp_typ = isset($data['exp_typ'])?$data['exp_typ']:'';
                 $json = isset($data['json'])?$data['json']:'';
                 if($all == 'all') {
-                    $exp_data = $this->gstEXPPayload($user_id, $returnmonth,'D','','1');
+                    $exp_data = $this->getEXPPayload($user_id, $returnmonth,'D');
                     if (!empty($exp_data)) {
-                        $dataArr = $exp_data['exp_arr'];
                         $data_ids = $exp_data['exp_ids'];
                     }
                     $jstr1_array = json_decode($json,true);
@@ -894,48 +917,24 @@ final class gstr1 extends validation {
                     $dataArr['exp'][0]['inv'][0]['inum'] = $inum;
                     $dataArr['exp'][0]['inv'][0]['idt'] = $idt;
                     $data_ids = $this->gstEXPDeleteQuery($user_id,$returnmonth,$inum,$idt,$exp_typ,$all);
-                }
-                
-            }
-            if($type == 'HSN') {
-                $hsn_sc = isset($data['hsn_sc'])?$data['hsn_sc']:'';
-                $chksum = isset($data['chksum'])?$data['chksum']:'';
-                
-                $json = isset($data['json'])?$data['json']:'';
-                if($all == 'all') {
-                    $hsn_data = $this->gstHSNPayload($user_id, $returnmonth,'D','','1');
-                    if (!empty($hsn_data)) {
-                        $dataArr = $hsn_data['hsn_arr'];
-                        //$data_ids = $hsn_data['hsn_ids'];
-                    }
-                    $jstr1_array = json_decode($json,true);
-                    //$this->pr($jstr1_array);
-                    if(isset($jstr1_array['hsn']['data'])) {
-                        $hsn = $jstr1_array['hsn']['data'];
-                        $chksum = $jstr1_array['hsn']['chksum'];
-                        $i=0;
-                        foreach ($hsn as $key1 => $jstr1_value) {
-                            $hsn_sc = isset($jstr1_value['hsn_sc'])?$jstr1_value['hsn_sc']:'';
 
-                            $dataArr['hsn']['flag'] = 'D';
-                            $dataArr['hsn']['data'][$i]['hsn_sc'] = $hsn_sc;
-                            $dataArr['hsn']['chksum'] = $chksum;
-                            $i++;
-                        }   
-                    }
-                    
+                    $data_arr = array();
+                    $data_arr['user_id'] = $user_id;
+                    $data_arr['returnmonth'] = $returnmonth;
+                    $data_arr['invoice_nature'] = 'exp';
+                    $data_arr['exp_typ'] = $exp_typ;
+                    $data_arr['inum'] = $inum;
+                    $data_arr['idt'] = $idt;
+
+                    $data_ids = $this->gstGetInvoiceIdForSingleDelete($data_arr);
                 }
-                else {
-                    $dataArr['hsn']['flag'] = 'D';
-                    $dataArr['hsn']['data'][0]['hsn_sc'] = $hsn_sc;
-                    $dataArr['hsn']['chksum'] = $chksum;
-                }
+                
             }
+            
             if($all == 'all') {
                 if($type == 'B2CS') {
                     $b2cs_data = $this->gstB2CSPayload($user_id, $returnmonth,'D');
                     if (!empty($b2cs_data)) {
-                        $dataArr = $b2cs_data['b2cs_arr'];
                         $data_ids = $b2cs_data['b2cs_ids'];
                     }
                     $json = isset($data['json'])?$data['json']:'';
@@ -948,7 +947,6 @@ final class gstr1 extends validation {
                             $typ = isset($jstr1_value['typ'])?$jstr1_value['typ']:0;
                             $sply_ty = isset($jstr1_value['sply_ty'])?$jstr1_value['sply_ty']:0;
                             $chksum = isset($jstr1_value['chksum'])?$jstr1_value['chksum']:'';
-
                             $dataArr['b2cs'][$i]['flag'] = 'D';
                             $dataArr['b2cs'][$i]['rt'] = $rt;
                             $dataArr['b2cs'][$i]['sply_ty'] = $sply_ty;
@@ -958,13 +956,11 @@ final class gstr1 extends validation {
                             $i++;
                         }   
                     }
-                    //$data_ids = $this->gstB2CSDeleteQuery($user_id, $returnmonth);
                 }
                 
                 if($type == 'AT') {
-                    $at_data = $this->gstATPayload($user_id, $returnmonth,'D','','1');
+                    $at_data = $this->gstATPayload($user_id, $returnmonth,'D');
                     if (!empty($at_data)) {
-                        $dataArr = $at_data['at_arr'];
                         $data_ids = $at_data['at_ids'];
                     }
                     $json = isset($data['json'])?$data['json']:'';
@@ -974,8 +970,7 @@ final class gstr1 extends validation {
                         foreach ($jstr1_array['at'] as $key1 => $jstr1_value) {
                             $pos = isset($jstr1_value['pos'])?$jstr1_value['pos']:0;
                             $chksum = isset($jstr1_value['chksum'])?$jstr1_value['chksum']:'';
-                            $sply_ty = isset($jstr1_value['sply_ty'])?$jstr1_value['sply_ty']:'';
-                            
+                            $sply_ty = isset($jstr1_value['sply_ty'])?$jstr1_value['sply_ty']:'';  
                             $dataArr['at'][$i]['sply_ty'] = $sply_ty;
                             $dataArr['at'][$i]['pos'] = $pos;
                             $dataArr['at'][$i]['flag'] = 'D';
@@ -983,9 +978,12 @@ final class gstr1 extends validation {
                             $i++;
                         }   
                     }
-                    //$data_ids = $this->gstAtDeleteQuery($user_id, $returnmonth);
                 }
                 if($type == 'TXPD') {
+                    $txpd_data = $this->getTXPDPayload($user_id, $returnmonth,'D');
+                    if (!empty($txpd_data)) {
+                        $data_ids = $txpd_data['txpd_ids'];
+                    }
                     $json = isset($data['json'])?$data['json']:'';
                     $jstr1_array = json_decode($json,true);
                     if(isset($jstr1_array['txpd'])) {
@@ -994,14 +992,46 @@ final class gstr1 extends validation {
                             $pos = isset($jstr1_value['pos'])?$jstr1_value['pos']:0;
                             $sply_ty = isset($jstr1_value['sply_ty'])?$jstr1_value['sply_ty']:'';
                             $chksum = isset($jstr1_value['chksum'])?$jstr1_value['chksum']:'';
-
                             $dataArr['txpd'][$i]['flag'] = 'D';
                             $dataArr['txpd'][$i]['pos'] = $pos;
                             $dataArr['txpd'][$i]['sply_ty'] = $sply_ty;
                             $dataArr['txpd'][$i]['chksum'] = $chksum;
-
                             $i++;
                         }   
+                    }
+                }
+                if($type == 'HSN') {
+                    $json = isset($data['json'])?$data['json']:'';
+                    $jstr1_array = json_decode($json,true);
+                    if(isset($jstr1_array['hsn']['data'])) {
+                        $hsn = $jstr1_array['hsn']['data'];
+                        $chksum = $jstr1_array['hsn']['chksum'];
+                        $i=0;
+                        foreach ($hsn as $key1 => $jstr1_value) {
+                            $hsn_sc = isset($jstr1_value['hsn_sc'])?$jstr1_value['hsn_sc']:'';
+                            $dataArr['hsn']['flag'] = 'D';
+                            $dataArr['hsn']['data'][$i]['hsn_sc'] = $hsn_sc;
+                            $dataArr['hsn']['chksum'] = $chksum;
+                            $i++;
+                        }   
+                    }
+                } 
+                if($type == 'NIL') {
+                    $json = isset($data['json'])?$data['json']:'';
+                    $jstr1_array = json_decode($json,true);
+                    if(isset($jstr1_array['nil'])) {
+                        $dataArr["nill"][0]["inv"] = $jstr1_array['inv'];
+                        $dataArr["nill"][0]["flag"] = 'D';
+                    }
+                } 
+                if($type == 'DOC_ISSUE') {
+                    $json = isset($data['json'])?$data['json']:'';
+                    $jstr1_array = json_decode($json,true);
+                    if(isset($jstr1_array['doc_issue'])) {
+                        $i=0;
+                        $dataArr['doc_issue']['chksum'] = $jstr1_array['doc_issue']['chksum'];
+                        $dataArr['doc_issue']['flag'] = 'D';
+                        $dataArr['doc_issue']['doc_det'] = $jstr1_array['doc_issue']['doc_det'];   
                     }
                 } 
             }
@@ -1014,127 +1044,51 @@ final class gstr1 extends validation {
         return $response;
     }
 
-    public function gstB2BDeleteQuery($user_id,$returnmonth,$ctin='',$inum='',$idt='',$all='') {
-        if(!empty($all)) {
-            $datas = $this->getB2BInvoices($user_id, $returnmonth,'1');
-        }
-        else {
-            $idt=  date('Y-m-d', strtotime($idt));
-            $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a  where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$user_id."'  and a.invoice_date like '%".$idt."%'  and a.billing_gstin_number!='' and a.invoice_type='taxinvoice' and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' and a.reference_number ='".$inum."' and a.billing_gstin_number='".$ctin."'  ";
-            $datas = $this->get_results($query);
-        }
-        $ids =  array();
-        if(!empty($datas)) {
-            foreach ($datas as $key => $data) {
-                $ids[] = $data->invoice_id;
-            }
-            
-        }
-        return $ids; 
-    }
+    public function gstGetInvoiceIdForSingleDelete($fields = array())
+    {
+        $user_id = isset($fields['user_id'])?$fields['user_id']:'';
+        $returnmonth = isset($fields['returnmonth'])?$fields['returnmonth']:'';
 
-    public function gstB2CLDeleteQuery($user_id, $returnmonth,$pos='',$inum='',$idt='',$all='') {
-        if(!empty($all)) {
-            $datas = $this->getB2CLInvoices($user_id, $returnmonth,'1');
-        }
-        else {
-            $idt=  date('Y-m-d', strtotime($idt));
-            $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id  where  a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$idt."%' and a.billing_gstin_number='' and a.invoice_total_value>'250000' and a.supply_place!=a.company_state and a.invoice_type='taxinvoice' and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' and a.reference_number ='".$inum."' and a.supply_place='".$pos."'  group by a.reference_number, b.consolidate_rate order by a.supply_place";
-            $datas = $this->get_results($query);
-        }
-        //$this->pr($data);
-        $ids =  array();
-        if(!empty($datas)) {
-            foreach ($datas as $key => $data) {
-                $ids[] = $data->invoice_id;
-            }
-            
-        }
-        return $ids; 
-    }
+        $invoice_nature = isset($fields['invoice_nature'])?$fields['invoice_nature']:'';
+        $inum = isset($fields['inum'])?$fields['inum']:'';
+        $idt = isset($fields['idt'])?date('Y-m-d', strtotime($fields['idt'])):'';
+        $ctin = isset($fields['ctin'])?$fields['ctin']:'';
+        $pos = isset($fields['pos'])?$fields['pos']:'';
+        $nt_num = isset($fields['nt_num'])?$fields['nt_num']:'';
+        $nt_dt = isset($fields['nt_dt'])?date('Y-m-d', strtotime($fields['nt_dt'])):'';
+        $exp_typ = isset($fields['exp_typ'])?$fields['exp_typ']:'';
 
-    public function gstCDNRDeleteQuery($user_id,$returnmonth,$ctin='',$inum='',$idt='',$nt_num='',$nt_dt='',$all='') {
-        if(!empty($all)) {
-            $datas = $this->getCDNRInvoices($user_id, $returnmonth,'1');
-        }
-        else {
-            $idt=  date('Y-m-d', strtotime($idt));
-            $nt_dt=  date('Y-m-d', strtotime($nt_dt));
-            $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('client_invoice')." c  on a.corresponding_document_number=c.invoice_id where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$user_id."'  and a.corresponding_document_date like '%".$idt."%'  and a.billing_gstin_number!='' and (a.invoice_type='creditnote' or a.invoice_type='debitnote' or a.invoice_type='refundvoucherinvoice') and a.is_canceled='0' and a.is_deleted='0' and c.reference_number ='".$inum."' and a.billing_gstin_number='".$ctin."' and a.reference_number ='".$nt_num."' and a.invoice_date like '%".$nt_dt."%'  ";
-            $datas = $this->get_results($query);
-        }
-        $ids =  array();
-        if(!empty($datas)) {
-            foreach ($datas as $key => $data) {
-                $ids[] = $data->invoice_id;
-            }
-            
-        }
-        return $ids;
-    }
-    
-    public function gstCDNURDeleteQuery($user_id, $returnmonth,$inum='',$idt='',$nt_num='',$nt_dt='',$all='') {
-        if(!empty($all)) {
-            $datas = $this->getCDNURInvoices($user_id, $returnmonth,'1');
-        }
-        else {
-            $idt=  date('Y-m-d', strtotime($idt));
-            $nt_dt=  date('Y-m-d', strtotime($nt_dt));
-            $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('client_invoice')." c on a.corresponding_document_number=c.invoice_id where a.status='1' and a.added_by='".$user_id."' and a.is_gstr1_uploaded='1' and a.invoice_date like '%".$idt."%' and a.supply_place!=a.company_state and a.invoice_corresponding_type='taxinvoice' and a.billing_gstin_number='' and a.invoice_total_value >'250000'  and (a.invoice_type='creditnote' or a.invoice_type='debitnote' or a.invoice_type='refundvoucherinvoice' ) and (c.invoice_type='exportinvoice' or c.invoice_type='sezunitinvoice' or c.invoice_type='deemedexportinvoice' or c.invoice_type='taxinvoice') and a.is_canceled='0' and a.is_deleted='0' and c.reference_number ='".$inum."' and a.reference_number ='".$nt_num."' and a.invoice_date like '%".$nt_dt."%' group by a.reference_number, b.consolidate_rate order by a.supply_place";
-            $datas = $this->get_results($query);
-        }
-        $ids =  array();
-        if(!empty($datas)) {
-            foreach ($datas as $key => $data) {
-                $ids[] = $data->invoice_id;
-            }
-            
-        }
-        return $ids;
-    }
+        $query =  "select a.id as invoice_id from ".$this->getTableName('gstr1_return_summary')." a  where a.is_uploaded='1' and a.status='1' and a.added_by = '".$user_id."'  and a.return_period like '%".$returnmonth."%'  ";
 
-    public function gstEXPDeleteQuery($user_id,$returnmonth,$inum='',$idt='',$exp_typ='',$all='') {
-        if(!empty($all)) {
-            $datas = $this->getEXPInvoices($user_id, $returnmonth,'1');
+        if(!empty($invoice_nature)) {
+            $query .= " and a.invoice_nature  = '".$invoice_nature."' ";
         }
-        else {
-           $idt=  date('Y-m-d', strtotime($idt));
-            if($exp_typ == 'WPAY') {
-                $exp_typ = 'withpayment';
-            }
-            else {
-                $exp_typ = 'withoutpayment';
-            }
-            $query =  "select a.invoice_id from ".$this->getTableName('client_invoice')." a where a.is_gstr1_uploaded='1' and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$idt."%' and (a.invoice_type='exportinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice') and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0' and a.export_bill_number !='' and a.export_bill_date != '' and a.export_bill_port_code != '' and a.reference_number ='".$inum."' and a.export_supply_meant ='".$exp_typ."'";
-            $datas = $this->get_results($query); 
+        if(!empty($inum)) {
+            $query .= " and a.invoice_number  = '".$inum."' ";
         }
-        $ids =  array();
-        if(!empty($datas)) {
-            foreach ($datas as $key => $data) {
-                $ids[] = $data->invoice_id;
-            }
-            
+        if(!empty($idt)) {
+            $query .= " and a.invoice_date like '%".$idt."%' ";
         }
-        return $ids;
-    }
+        if(!empty($ctin)) {
+            $query .= " and a.recipient_gstin like '%".$ctin."%' ";
+        }
+        if(!empty($pos)) {
+            $query .= " and a.place_of_supply = '".$pos."' ";
+        }
+        if(!empty($nt_num)) {
+            $query .= " and a.original_invoice_number = '".$nt_num."' ";
+        }
+        if(!empty($nt_dt)) {
+            $query .= " and a.original_invoice_date like '%".$nt_dt."%' ";
+        }
+        if(!empty($exp_typ)) {
+            $query .= " and a.invoice_type = '".$exp_typ."' ";
+        }
 
-    public function gstAtDeleteQuery($user_id,$returnmonth) {
-        $datas = $this->getATInvoices($user_id, $returnmonth,'1');
+        
+        $datas = $this->get_results($query);
+        
         $ids =  array();
-       
-        if(!empty($datas)) {
-            foreach ($datas as $key => $data) {
-                $ids[] = $data->invoice_id;
-            }
-            
-        }
-        return $ids; 
-    }
-
-    public function gstB2CSDeleteQuery($user_id,$returnmonth) {
-        $datas = $this->getB2CSInvoices($user_id, $returnmonth,'1');
-        $ids =  array();
-       
         if(!empty($datas)) {
             foreach ($datas as $key => $data) {
                 $ids[] = $data->invoice_id;
@@ -1255,12 +1209,16 @@ final class gstr1 extends validation {
                 if ($temp_number != '' && $temp_number != $dataIn->reference_number) {
                     $z = 0;
                     $y++;
+                    $a=1;
                 }
                 if ($ctin != '' && $ctin != $dataIn->supply_place) {
                     $x++;
                     $y = 0;
                 }
                 $dataArr['b2cl'][$x]['pos'] = strlen($dataIn->supply_place) == '1' ? '0' . $dataIn->supply_place : $dataIn->supply_place;
+                if(!empty($flag)) {
+                   $dataArr['b2cl'][$x]['inv'][$y]['flag'] = $flag; 
+                }
                 $dataArr['b2cl'][$x]['inv'][$y]['inum'] = $dataIn->reference_number;
                 $dataArr['b2cl'][$x]['inv'][$y]['idt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
                 $dataArr['b2cl'][$x]['inv'][$y]['val'] = (float) $dataIn->invoice_total_value;
@@ -1320,7 +1278,9 @@ final class gstr1 extends validation {
                     $z = 0;
                     $y++;
                 }
-
+                if(!empty($flag)) {
+                   $dataArr['b2cs'][$x]['flag'] = $flag; 
+                }
                 $dataArr['b2cs'][$x]['sply_ty'] = $dataIn->supply_type;
                 $dataArr['b2cs'][$x]['rt'] = (float) $dataIn->rate;
 
@@ -1384,8 +1344,11 @@ final class gstr1 extends validation {
                     $y=0;
                     $x++;
                 }
+
                 $dataArr['cdnr'][$x]['ctin'] = $dataIn->billing_gstin_number;
-               
+                if(!empty($flag)) {
+                   $dataArr['cdnr'][$x]['nt'][$y]['flag'] = $flag; 
+                }
                 $dataArr['cdnr'][$x]['nt'][$y]['ntty'] = $dataIn->document_type;
                 $dataArr['cdnr'][$x]['nt'][$y]['nt_num'] =$dataIn->original_invoice_number;
                 $dataArr['cdnr'][$x]['nt'][$y]['nt_dt'] = $dataIn->original_invoice_date;
@@ -1447,9 +1410,12 @@ final class gstr1 extends validation {
                 }
 
                 $dataArr['cdnur'][$x]['typ'] = $dataIn->ur_type;
-                $dataArr['cdnr'][$x]['nt'][$y]['ntty'] = $dataIn->document_type;
-                $dataArr['cdnr'][$x]['nt'][$y]['nt_num'] =$dataIn->original_invoice_number;
-                $dataArr['cdnr'][$x]['nt'][$y]['nt_dt'] = $dataIn->pre_gst;
+                if(!empty($flag)) {
+                   $dataArr['cdnur'][$x]['flag'] = $flag; 
+                }
+                $dataArr['cdnur'][$x]['ntty'] = $dataIn->document_type;
+                $dataArr['cdnur'][$x]['nt_num'] =$dataIn->original_invoice_number;
+                $dataArr['cdnur'][$x]['nt_dt'] = $dataIn->pre_gst;
                 $dataArr['cdnur'][$x]['p_gst'] = $dataIn->pre_gst;
                 $dataArr['cdnur'][$x]['rsn'] = $dataIn->reason_issuing_document;//"02-Post Sale Discount";
                 $dataArr['cdnur'][$x]['inum'] = $dataIn->reference_number;
@@ -1486,7 +1452,9 @@ final class gstr1 extends validation {
             if(!empty($json)) {
                 $dataInvHsn = json_decode(base64_decode($json));
                 foreach ($dataInvHsn as $dataIn) {
-
+                    if(!empty($flag)) {
+                       $dataArr['hsn']['flag'] = $flag; 
+                    }
                     $dataArr['hsn']['data'][$y]['num'] = (int) $a;
                     $dataArr['hsn']['data'][$y]['hsn_sc'] = $dataIn->hsn;
                     $dataArr['hsn']['data'][$y]['desc'] = substr($dataIn->description,0,30);
@@ -1531,7 +1499,9 @@ final class gstr1 extends validation {
                     $y++;
                     $z = 0;
                 }
-
+                if(!empty($flag)) {
+                   $dataArr['at'][$y]['flag'] = $flag; 
+                }
                 $dataArr['at'][$y]['pos'] = (strlen($dataIn->supply_place) == '1') ? '0' . $dataIn->supply_place : $dataIn->supply_place;
                 $dataArr['at'][$y]['sply_ty'] = $dataIn->supply_type;
 
@@ -1581,7 +1551,9 @@ final class gstr1 extends validation {
                     $y++;
                     $z = 0;
                 }
-
+                if(!empty($flag)) {
+                   $dataArr['txpd'][$y]['flag'] = $flag; 
+                }
                 $dataArr['txpd'][$y]['pos'] = (strlen($dataIn->supply_place) == '1') ? '0' . $dataIn->supply_place : $dataIn->supply_place;
                 $dataArr['txpd'][$y]['sply_ty'] = $dataIn->supply_type;
 
@@ -1607,12 +1579,6 @@ final class gstr1 extends validation {
                 $txpd_ids = array_unique(array_column($txpd_array, 'invoice_id'));
             }
         }
-        /*$dataArr['txpd'][0]['pos'] = '05';
-        $dataArr['txpd'][0]['sply_ty'] = 'INTER';
-        $dataArr['txpd'][0]['itms'][0]['rt'] = (float) 5;
-        $dataArr['txpd'][0]['itms'][0]['ad_amt'] = (float) 100;
-        $dataArr['txpd'][0]['itms'][0]['iamt'] = (float) 9400;
-        $dataArr['txpd'][0]['itms'][0]['csamt'] = (float) 500;*/
         $response['txpd_ids'] = $txpd_ids;
         $response['txpd_arr'] = $dataArr;
         return $response;
@@ -1646,6 +1612,9 @@ final class gstr1 extends validation {
                     $i++;
                 }
                 $dataArr["nill"][0]["inv"] = $nill_inv_array_b2b;
+                if(!empty($flag)) {
+                   $dataArr['nill'][0]['flag'] = $flag; 
+                }
                 
             }
         }
@@ -1677,6 +1646,9 @@ final class gstr1 extends validation {
                     $y++;
                 }
                 $dataArr2['exp_typ'] = $dataIn->invoice_type;
+                if(!empty($flag)) {
+                   $dataArr2['inv'][$y]['flag'] = $flag; 
+                }
                 $dataArr2['inv'][$y]['inum'] = $dataIn->reference_number;
                 $dataArr2['inv'][$y]['idt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
                 $dataArr2['inv'][$y]['val'] = (float) $dataIn->invoice_total_value;
@@ -1737,10 +1709,10 @@ final class gstr1 extends validation {
                     $j=0;
                     $num = 1;
                     $a = substr($doc, 7,(strlen($doc)-1));
-                    $flag=0;
+                    $counterflag=0;
                     foreach ($arr_value as $key => $Item) {
                         if(!empty($Item->from) && !empty($Item->to)) {
-                            $flag=1;
+                            $counterflag=1;
                             $dataS[$i]['doc_num'] = (int)$a;
                             $dataS[$i]['docs'][$j]['num'] = (int)$num;
                             $dataS[$i]['docs'][$j]['from'] = $Item->from;
@@ -1751,13 +1723,16 @@ final class gstr1 extends validation {
                             $j++;
                         }
                     }
-                    if($flag==1)
+                    if($counterflag==1)
                     {
                         $i++;
                     }
                 }
                 if(!empty($dataS)) {
                     $dataInvDoc['doc_issue']['doc_det']  = $dataS;
+                    if(!empty($flag)) {
+                       $dataInvDoc['doc_issue']['flag'] = $flag; 
+                    }
                 }
             }
             
@@ -1769,262 +1744,6 @@ final class gstr1 extends validation {
 
         return $response;
     }
-    // public function getDOCISSUEPayloadOLD($user_id, $returnmonth,$flag='',$ids='',$type='')
-    // {
-    //     $dataArr = $response = $doc_ids = $doc_array = array();
-    //     //Start Code For Doc
-    //     $dataInvDoc = array();
-
-    //     $final_array = $dataRevise = $dataRevised = $dataDebit = $dataCredit = $dataReceipt = $dataRefund = $dataDeliveryJobWork =  $dataDeliverySUAP = $dataDeliverySULGAS = $dataDeliverySupplyOther = array();
-
-    //     /*********** Start code For Doc Sales *************/
-    //     $docSales = $this->getDOCSalesInvoices($user_id, $returnmonth,$type,$ids);
-
-    //     $dataInvSales =  $docSales[0];
-    //     $dataInvCancelSales = $docSales[1];
-    //     if(isset($dataInvSales) && !empty($dataInvSales))
-    //     {
-    //       $doc_num = 1;
-    //       $z=0;
-    //       $a = 1;
-    //       $totnum= count($dataInvSales);
-    //       $cancel = count($dataInvCancelSales);
-    //       $net_issue = $totnum - $cancel;
-    //       $dataSales['doc_num'] = (int)$doc_num;
-    //       $dataSales['docs'][$z]['num'] = (int)$a;
-    //       $dataSales['docs'][$z]['from'] = $dataInvSales[0]->reference_number;
-    //       $dataSales['docs'][$z]['to'] = $dataInvSales[$totnum-1]->reference_number;
-    //       $dataSales['docs'][$z]['totnum'] = (int)$totnum;
-    //       $dataSales['docs'][$z]['cancel'] = (int)$cancel;
-    //       $dataSales['docs'][$z]['net_issue'] = (int)$net_issue;
-    //       $final_array[] = $dataSales;
-          
-    //     }
-    //     /*********** End code For Doc Sales *************/
-
-    //     /*********** Start code For Doc Revised *************/
-    //     $docRevised = $this->getDOCRevisedInvoices($user_id, $returnmonth,$type,$ids);
-    //     $dataInvSales =  $docRevised[0];
-    //     $dataInvCancelSales = $docRevised[1];
-    //     if(isset($dataInvRevised) && !empty($dataInvRevised))
-    //     {
-    //       $doc_num = 2;
-    //       $z=0;
-    //       $a = 1;
-    //       $totnum= count($dataInvRevised);
-    //       $cancel = count($dataInvCancleRevised);
-    //       $net_issue = $totnum - $cancel;
-    //       $dataRevised['doc_num'] = (int)$doc_num;
-    //       $dataRevised['docs'][$z]['num'] = (int)$a;
-    //       $dataRevised['docs'][$z]['from'] = $dataInvRevised[0]->reference_number;
-    //       $dataRevised['docs'][$z]['to'] = $dataInvRevised[$totnum-1]->reference_number;
-    //       $dataRevised['docs'][$z]['totnum'] = (int)$totnum;
-    //       $dataRevised['docs'][$z]['cancel'] = (int)$cancel;
-    //       $dataRevised['docs'][$z]['net_issue'] = (int)$net_issue;
-    //       $final_array[] = $dataRevised;
-    //     }
-    //     /*********** End code For Doc Revised *************/
-
-    //     /*********** Start code For Debit  *************/
-    //     $docDebit = $this->getDOCDebitInvoices($user_id, $returnmonth,$type,$ids);
-    //     $dataInvDebit = $docDebit[0];
-    //     $dataInvCancleDebit = $docDebit[1];
-    //     if(isset($dataInvDebit) && !empty($dataInvDebit))
-    //     {
-    //       $doc_num = 3;
-    //       $z=0;
-    //       $a = 1;
-    //       $totnum= count($dataInvDebit);
-    //       $cancel = count($dataInvCancleDebit);
-    //       $net_issue = $totnum - $cancel;
-    //       $dataDebit['doc_num'] = (int)$doc_num;
-    //       $dataDebit['docs'][$z]['num'] = (int)$a;
-    //       $dataDebit['docs'][$z]['from'] = $dataInvDebit[0]->reference_number;
-    //       $dataDebit['docs'][$z]['to'] = $dataInvDebit[$totnum-1]->reference_number;
-    //       $dataDebit['docs'][$z]['totnum'] = (int)$totnum;
-    //       $dataDebit['docs'][$z]['cancel'] = (int)$cancel;
-    //       $dataDebit['docs'][$z]['net_issue'] = (int)$net_issue;
-    //       $final_array[] = $dataDebit;
-    //     }
-    //     /*********** End code For Debit  *************/
-
-    //     /*********** Start code For Credit  *************/
-    //     $docCredit = $this->getDOCCreditInvoices($user_id, $returnmonth,$type,$ids);
-    //     $dataInvCredit = $docCredit[0];
-    //     $dataInvCancleCredit = $docCredit[1];
-    //     if(isset($dataInvCredit) && !empty($dataInvCredit))
-    //     {
-    //       $doc_num = 4;
-    //       $z=0;
-    //       $a = 1;
-    //       $totnum= count($dataInvCredit);
-    //       $cancel = count($dataInvCancleCredit);
-    //       $net_issue = $totnum - $cancel;
-    //       $dataCredit['doc_num'] = (int)$doc_num;
-    //       $dataCredit['docs'][$z]['num'] = (int)$a;
-    //       $dataCredit['docs'][$z]['from'] = $dataInvCredit[0]->reference_number;
-    //       $dataCredit['docs'][$z]['to'] = $dataInvCredit[$totnum-1]->reference_number;
-    //       $dataCredit['docs'][$z]['totnum'] = (int)$totnum;
-    //       $dataCredit['docs'][$z]['cancel'] = (int)$cancel;
-    //       $dataCredit['docs'][$z]['net_issue'] = (int)$net_issue;
-    //       $final_array[] = $dataCredit;
-    //     }
-    //     /*********** End code For Credit  *************/
-
-    //     /*********** Start code For Receipt   *************/
-    //     $docReceipt = $this->getDOCReceiptInvoices($user_id, $returnmonth,$type,$ids);
-    //     $dataInvReceipt =  $docReceipt[0];
-    //     $dataInvCancleReceipt =  $docReceipt[1];
-    //     if(isset($dataInvReceipt) && !empty($dataInvReceipt))
-    //     {
-    //       $doc_num = 5;
-    //       $z=0;
-    //       $a = 1;
-    //       $totnum= count($dataInvReceipt);
-    //       $cancel = count($dataInvCancleReceipt);
-    //       $net_issue = $totnum - $cancel;
-    //       $dataReceipt['doc_num'] = (int)$doc_num;
-    //       $dataReceipt['docs'][$z]['num'] = (int)$a;
-    //       $dataReceipt['docs'][$z]['from'] = $dataInvReceipt[0]->reference_number;
-    //       $dataReceipt['docs'][$z]['to'] = $dataInvReceipt[$totnum-1]->reference_number;
-    //       $dataReceipt['docs'][$z]['totnum'] = (int)$totnum;
-    //       $dataReceipt['docs'][$z]['cancel'] = (int)$cancel;
-    //       $dataReceipt['docs'][$z]['net_issue'] = (int)$net_issue;
-    //       $final_array[] = $dataReceipt;
-    //     }
-    //     /*********** End code For Receipt   *************/
-
-    //     /*********** Start code For Refund   *************/
-    //     $docRefund = $this->getDOCRefundInvoices($user_id, $returnmonth,$type,$ids);
-    //     $dataInvRefund = $docRefund[0];
-    //     $dataInvCancleRefund = $docRefund[1];
-    //     if(isset($dataInvRefund) && !empty($dataInvRefund))
-    //     {
-    //       $doc_num = 6;
-    //       $z=0;
-    //       $a = 1;
-    //       $totnum= count($dataInvRefund);
-    //       $cancel = count($dataInvCancleRefund);
-    //       $net_issue = $totnum - $cancel;
-    //       $dataRefund['doc_num'] = (int)$doc_num;
-    //       $dataRefund['docs'][$z]['num'] = (int)$a;
-    //       $dataRefund['docs'][$z]['from'] = $dataInvRefund[0]->reference_number;
-    //       $dataRefund['docs'][$z]['to'] = $dataInvRefund[$totnum-1]->reference_number;
-    //       $dataRefund['docs'][$z]['totnum'] = (int)$totnum;
-    //       $dataRefund['docs'][$z]['cancel'] = (int)$cancel;
-    //       $dataRefund['docs'][$z]['net_issue'] = (int)$net_issue;
-    //       $final_array[] = $dataRefund;
-    //     }
-    //     /*********** End code For Refund   *************/
-
-    //     /*********** Start code Delivery Challan for job work  *************/
-    //     $docDeliveryJobWork = $this->getDOCDeliveryChallanJobWorkInvoices($user_id, $returnmonth,$type,$ids);
-    //     $dataInvDeliveryJobWork = $docDeliveryJobWork[0];
-    //     $dataInvCancleDeliveryJobWork = $docDeliveryJobWork[1];
-
-    //     if(isset($dataInvDeliveryJobWork) && !empty($dataInvDeliveryJobWork))
-    //     {
-    //       $doc_num = 7;
-    //       $z=0;
-    //       $a = 1;
-    //       $totnum= count($dataInvRefund);
-    //       $cancel = count($dataInvCancleDeliveryJobWork);
-    //       $net_issue = $totnum - $cancel;
-    //       $dataDeliveryJobWork['doc_num'] = (int)$doc_num;
-    //       $dataDeliveryJobWork['docs'][$z]['num'] = (int)$a;
-    //       $dataDeliveryJobWork['docs'][$z]['from'] = $dataInvDeliveryJobWork[0]->reference_number;
-    //       $dataDeliveryJobWork['docs'][$z]['to'] = $dataInvDeliveryJobWork[$totnum-1]->reference_number;
-    //       $dataDeliveryJobWork['docs'][$z]['totnum'] = (int)$totnum;
-    //       $dataDeliveryJobWork['docs'][$z]['cancel'] = (int)$cancel;
-    //       $dataDeliveryJobWork['docs'][$z]['net_issue'] = (int)$net_issue;
-    //       $final_array[] = $dataDeliveryJobWork;
-    //     }
-    //     /*********** End code Delivery Challan for job work *************/
-
-    //     /*********** Start code Delivery Challan for supply on approval  *************/
-    //     $docDeliverySUAP = $this->getDOCDeliveryChallanSupplyOnApprovalInvoices($user_id, $returnmonth,$type,$ids);
-    //     $dataInvDeliverySUAP = $docDeliverySUAP[0];
-    //     $dataInvCancleDeliverySUAP = $docDeliverySUAP[1];
-
-    //     if(isset($dataInvDeliverySUAP) && !empty($dataInvDeliverySUAP) && !empty($dataInvDeliveryJobWork))
-    //     {
-    //       $doc_num = 8;
-    //       $z=0;
-    //       $a = 1;
-    //       $totnum= count($dataInvDeliverySUAP);
-    //       $cancel = count($dataInvCancleDeliverySUAP);
-    //       $net_issue = $totnum - $cancel;
-    //       $dataDeliverySUAP['doc_num'] = (int)$doc_num;
-    //       $dataDeliverySUAP['docs'][$z]['num'] = (int)$a;
-    //       $dataDeliverySUAP['docs'][$z]['from'] = $dataInvDeliverySUAP[0]->reference_number;
-    //       $dataDeliverySUAP['docs'][$z]['to'] = $dataInvDeliverySUAP[$totnum-1]->reference_number;
-    //       $dataDeliverySUAP['docs'][$z]['totnum'] = (int)$totnum;
-    //       $dataDeliverySUAP['docs'][$z]['cancel'] = (int)$cancel;
-    //       $dataDeliverySUAP['docs'][$z]['net_issue'] = (int)$net_issue;
-    //       $final_array[] = $dataDeliverySUAP;
-    //     }
-    //     /*********** End code Delivery Challan for supply on approval *************/
-
-    //     /*********** Start code Delivery Challan in case of liquid gas  *************/
-    //     $docDeliverySULGAS = $this->getDOCDeliveryChallanInCaseLiquidGasInvoices($user_id, $returnmonth,$type,$ids);
-    //     $dataInvDeliverySULGAS = $docDeliverySULGAS[0];
-    //     $dataInvCancleDeliverySULGAS = $docDeliverySULGAS[1];
-
-    //     if(isset($dataInvDeliverySULGAS) && !empty($dataInvDeliverySULGAS))
-    //     {
-    //       $doc_num = 9;
-    //       $z=0;
-    //       $a = 1;
-    //       $totnum= count($dataInvDeliverySULGAS);
-    //       $cancel = count($dataInvCancleDeliverySULGAS);
-    //       $net_issue = $totnum - $cancel;
-    //       $dataDeliverySULGAS['doc_num'] = (int)$doc_num;
-    //       $dataDeliverySULGAS['docs'][$z]['num'] = (int)$a;
-    //       $dataDeliverySULGAS['docs'][$z]['from'] = $dataInvDeliverySULGAS[0]->reference_number;
-    //       $dataDeliverySULGAS['docs'][$z]['to'] = $dataInvDeliverySULGAS[$totnum-1]->reference_number;
-    //       $dataDeliverySULGAS['docs'][$z]['totnum'] = (int)$totnum;
-    //       $dataDeliverySULGAS['docs'][$z]['cancel'] = (int)$cancel;
-    //       $dataDeliverySULGAS['docs'][$z]['net_issue'] = (int)$net_issue;
-    //       $final_array[] = $dataDeliverySULGAS;
-    //     }
-    //     /*********** End code Delivery Challan in case of liquid gas *************/
-
-    //     /*********** Start code Delivery Challan in cases other than by way of supply  *************/
-    //     $docDeliveryOther = $this->getDOCDeliveryChallanInCaseOtherInvoices($user_id, $returnmonth,$type,$ids);
-    //     $dataInvDeliverySupplyOther = $docDeliveryOther[0];
-    //     $dataInvCancleDeliverySupplyOther= $docDeliveryOther[1];
-
-    //     if(isset($dataInvDeliverySupplyOther) && !empty($dataInvDeliverySupplyOther))
-    //     {
-    //       $doc_num = 10;
-    //       $z=0;
-    //       $a = 1;
-    //       $totnum= count($dataInvDeliverySupplyOther);
-    //       $cancel = count($dataInvCancleDeliverySupplyOther);
-    //       $net_issue = $totnum - $cancel;
-    //       $dataDeliverySupplyOther['doc_num'] = (int)$doc_num;
-    //       $dataDeliverySupplyOther['docs'][$z]['num'] = (int)$a;
-    //       $dataDeliverySupplyOther['docs'][$z]['from'] = $dataInvDeliverySupplyOther[0]->reference_number;
-    //       $dataDeliverySupplyOther['docs'][$z]['to'] = $dataInvDeliverySupplyOther[$totnum-1]->reference_number;
-    //       $dataDeliverySupplyOther['docs'][$z]['totnum'] = (int)$totnum;
-    //       $dataDeliverySupplyOther['docs'][$z]['cancel'] = (int)$cancel;
-    //       $dataDeliverySupplyOther['docs'][$z]['net_issue'] = (int)$net_issue;
-    //       $final_array[] = $dataDeliverySupplyOther;
-    //     }
-    //     /*********** End code Delivery Challan in cases other than by way of supply  *************/
-
-    //     if(!empty($final_array)) {
-    //         $dataInvDoc['doc_issue']['doc_det']  = $final_array;
-    //     }
-        
-    //     $response['doc_ids'] = $doc_ids;
-    //     $response['doc_arr'] = $dataInvDoc;
-
-    //     return $response;
-    // }
-
-
-    
 
     public function getNilFinalArray($user_id, $returnmonth) {
         $dataArr = $response = $nil_array = $nil_ids = array();

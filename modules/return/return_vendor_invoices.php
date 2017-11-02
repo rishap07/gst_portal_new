@@ -39,7 +39,7 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 			<div class="pull-right">
 				<form method='post' name='gstr2PurchaseSummaryForm' id="gstr2PurchaseSummaryForm">
 					Month Of Return
-					<select class="dateselectbox" id="returnmonth" name="returnmonth">
+					<select class="monthselectbox" id="returnmonth" name="returnmonth">
 						<?php for($year = 2017; $year <= date('Y'); $year++) { ?>
 							<?php for($month = 1; $month <= 12; $month++) { ?>
 
@@ -52,17 +52,20 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 					</select>
 				</form>
 			</div>
-
-			<div class="col-md-12 col-sm-12 col-xs-12 heading">
-				<div class="tab col-md-12 col-sm-12 col-xs-12">
-					<?php include(PROJECT_ROOT."/modules/return/include/tab.php"); ?>
-				</div>
-			</div>
+			
 			<div class="clear"></div>
-
+			<hr>
+			<div class="clear"></div>
+			
 			<?php $obj_gstr2->showErrorMessage(); ?>
 			<?php $obj_gstr2->showSuccessMessge(); ?>
 			<?php $obj_gstr2->unsetMessage(); ?>
+
+			<div class="row heading">
+				<div class="tab">
+					<?php include(PROJECT_ROOT."/modules/return/include/tab.php"); ?>
+				</div>
+			</div>
 			<div class="clear"></div>
 
 			<div class="text-right">
@@ -181,7 +184,7 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 							$i=1;
 
 							foreach ($responseCDN as $key3 => $value) {
-								
+								//$obj_gstr2->pr($value->itms);
 								if($temp!='' && $temp=!$value->reference_number) {
 									$i=1;
 								}
@@ -196,7 +199,7 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 									$responseTableCDN .= '<td align="center">'.$value->company_gstin_number.'</td>';
 									$responseTableCDN .= '<td align="center">'.$value->nt_num.'</td>';
 									$responseTableCDN .= '<td align="center">'.$nt_dt.'</td>';
-									$responseTableCDN .= '<td align="center">'.$i++.'</td>';
+									$responseTableCDN .= '<td align="center">'.$value->itms.'</td>';
 									$responseTableCDN .= '<td align="center">'.$value->p_gst.'</td>';
 									$responseTableCDN .= '<td align="center">'.$value->total_taxable_subtotal.'</td>';
 									$responseTableCDN .= '<td align="center">'.$value->rate.'</td>';
@@ -227,8 +230,8 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 <?php $obj_gstr1 = new gstr(); ?>
 <?php $obj_gstr1->Gstr2DownloadOtpPopupJs(); ?>
 <script>
-	$(document).ready(function () {
-		$('#returnmonth').on('change', function () {
+	$(document).ready(function() {
+		$('#returnmonth').on('change', function() {
 			window.location.href = "<?php echo PROJECT_URL; ?>/?page=return_vendor_invoices&returnmonth=" + $(this).val();
 		});
 	});

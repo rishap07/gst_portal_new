@@ -19,12 +19,12 @@ if(isset($_POST['itemId']) && isset($_POST['action']) && $_POST['action'] == "ge
 		foreach($clientMasterItems as $clientMasterItem) {
 
 			$result['item_id'] = $clientMasterItem->item_id;
-			$result['item_name'] = $clientMasterItem->item_name;
-			$result['item_description'] = $clientMasterItem->item_description;
+			$result['item_name'] = html_entity_decode($clientMasterItem->item_name);
+			$result['item_description'] = html_entity_decode($clientMasterItem->item_description);
 			$result['unit_price'] = $clientMasterItem->unit_price;
 			$result['unit_purchase_price'] = $clientMasterItem->unit_purchase_price;
 			$result['category_id'] = $clientMasterItem->category_id;
-			$result['category_name'] = $clientMasterItem->category_name;
+			$result['category_name'] = html_entity_decode($clientMasterItem->category_name);
 			$result['hsn_code'] = $clientMasterItem->hsn_code;
 
 			if($clientMasterItem->client_cgst_tax_rate == NULL) {

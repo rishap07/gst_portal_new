@@ -188,7 +188,7 @@ foreach($rResult as $aRow) {
       
   
     $row[] = $temp_x;
-    $row[] = utf8_decode($aRow->module_name);
+  //  $row[] = utf8_decode($aRow->module_name);
     $row[] = utf8_decode($aRow->msg);
 	if(!empty($dataUserArr))
 	{

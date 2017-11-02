@@ -41,19 +41,21 @@ if(isset($_POST['summary_type']) && $_POST['summary_type']=='Download GSTR1 Summ
     else 
     {
         //$obj_gstr1->pr($_POST);
-        /***** Start GSTR1 API Call *****/
-        $callReturnSummary = $obj_api->returnSummary($returnmonth);
-        /***** End GSTR1 API Call *****/
-
-        if($callReturnSummary != false) {
-            /***** Start Code Insert/update to summary *****/
-            $savedata['json'] = base64_encode(serialize($callReturnSummary));
-            $obj_api->save_user_summary($savedata,'gstr1',$returnmonth);
-            /***** End Code Insert/update to summary *****/
-        }
         
 
     }
+}
+$callReturnSummary = $obj_api->returnSummary($returnmonth);
+/***** End GSTR1 API Call *****/
+
+if($callReturnSummary != false) {
+    /***** Start Code Insert/update to summary *****/
+    $savedata['json'] = base64_encode(serialize($callReturnSummary));
+    $obj_api->save_user_summary($savedata,'gstr1',$returnmonth);
+    /***** End Code Insert/update to summary *****/
+}
+else {
+   $obj_api->delete_user_summary('gstr1',$returnmonth);
 }
 /***** Start Get Summray from DB of gstr1 *****/
 $response = $obj_api->get_user_summary('gstr1',$returnmonth);
@@ -170,6 +172,7 @@ $obj_api->DownloadSummaryOtpPopupJs();
         });
 
         $('body').delegate('.gstr1ViewDeleteBtn','click', function () {
+            var type = $(this).attr('type');
             $.ajax({
                 url: "<?php echo PROJECT_URL; ?>/?ajax=return_gstr1_details_check",
                 type: "json",
@@ -180,7 +183,8 @@ $obj_api->DownloadSummaryOtpPopupJs();
                         return false;
                     }
                     else if(response == 0) {
-                       common_function_part();
+                        common_function_part(type);
+
                     }
                     else {
                        location.reload();
@@ -195,6 +199,7 @@ $obj_api->DownloadSummaryOtpPopupJs();
         });
         $( "#DeleteotpModalBoxSubmit" ).click(function( event ) {
             var otp = $('#all_sum_otp_code').val();
+            var type = $('.gstr1ViewDeleteBtn').attr('type');
             //alert(otp);
             //event.preventDefault();
             if(otp != " ") {
@@ -206,8 +211,9 @@ $obj_api->DownloadSummaryOtpPopupJs();
                         //alert(response);
                         var arr = $.parseJSON(response);
                         if(arr.error_code == 0) {
-                            $("#DeleteotpModalBox").modal("hide");
-                            common_function_part();
+                            //$("#DeleteotpModalBox").modal("hide");
+                            //common_function_part(type);
+                            location.reload();
                         }
                         else {
                             location.reload();
@@ -229,15 +235,16 @@ $obj_api->DownloadSummaryOtpPopupJs();
         });
     });
 
-    function common_function_part(){
-        if(!confirm("Are you sure you want to delete?"))
+    function common_function_part(type){
+        if(!confirm("Are you sure you want to delete all "+type+" invoices ? "))
         {
             return false;
         }
         $("#loading").show();
-        var type = $('.gstr1ViewDeleteBtn').attr('type');
         var returnmonth = "<?php echo $returnmonth;?>";
-        delete_item_invoice(type,returnmonth); 
+        delete_item_invoice(type,returnmonth);
+
+         
     }
 
     /******* To get Summary of GSTR1 ********/
@@ -250,6 +257,7 @@ $obj_api->DownloadSummaryOtpPopupJs();
             data: {json: json,returnmonth:returnmonth},
             success: function (response) {
                $('#display_json').html(response);
+               
             },
             error: function() {
             }
@@ -267,13 +275,14 @@ $obj_api->DownloadSummaryOtpPopupJs();
                 success: function (response) {
                     $("#loading").hide();
                     location.reload();
+                    
                 },
                 error: function() {
                 }
             });
         }
         else {
-            alert(type+ ' Invoice empty');
+            alert(' Invoice not found');
         }
     }
     /******* To delele invoice of GSTR1 ********/

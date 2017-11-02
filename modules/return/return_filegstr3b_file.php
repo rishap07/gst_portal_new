@@ -11,7 +11,7 @@ if(!$obj_return->can_read('returnfile_list'))
 if(isset($_POST['returnmonth']))
 {
     $returnmonth = $_POST['returnmonth'];
-	$obj_return->redirect(PROJECT_URL."/?page=return_gstr3b_file&returnmonth=".$returnmonth);
+	$obj_return->redirect(PROJECT_URL."/?page=return_filegstr3b_file&returnmonth=".$returnmonth);
 	exit();
 }
 $returnmonth= date('Y-m');
@@ -94,3 +94,11 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 </div>
                     
         <div class="clear"></div>  	
+<script>
+    $(document).ready(function () {
+        $('#returnmonth').on('change', function () {
+            document.form2.action = '<?php echo PROJECT_URL; ?>/?page=return_filegstr3b_file&returnmonth=<?php echo $returnmonth; ?>';
+                        document.form2.submit();
+                    });
+                });
+</script>

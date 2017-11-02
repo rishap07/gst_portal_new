@@ -131,7 +131,7 @@ else
                                         <tr>
                                             <th>Type Of Invoice</th>
                                             <th style="text-align:right">No. Invoices</th>
-                                            <th style="text-align:right">Taxable Amount ( <i class="fa fa-inr"></i> )</th>
+                                            <th style="text-align:right">Taxable / Advance adjusted Amount ( <i class="fa fa-inr"></i> )</th>
                                             <th style="text-align:right">Tax Amt ( <i class="fa fa-inr"></i> )</th>
                                             <th style="text-align:right">TotalAmount ( <i class="fa fa-inr"></i> )</th>
                                         </tr>
@@ -303,8 +303,8 @@ else
                                         </tr>
                                         <tr>
                                             <?php
-                                            $group_by = "a.reference_number";
-                                            $order_by = 'a.reference_number';
+                                           $group_by = " a.export_supply_meant,a.reference_number,b.consolidate_rate";
+                                            $order_by = 'a.export_supply_meant,a.reference_number';
                                             $expData =  $obj_gstr1->getAllInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'exp');
                                             //$expData = $obj_gstr1->getEXPInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'all','',$group_by,$order_by);
 											

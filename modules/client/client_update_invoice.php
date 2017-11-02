@@ -1790,6 +1790,7 @@
 
 				$("#invoice_tr_"+rowid+"_igstrate").val(0.00);
 				$("#invoice_tr_"+rowid+"_igstamount").val(0.00);
+				$("#invoice_tr_"+rowid+"_igstamount").attr("data-invoice-tr-"+rowid+"-igstamount", 0.00);
 
 				$("#invoice_tr_"+rowid+"_cgstrate").prop("readonly", false);
 				$("#invoice_tr_"+rowid+"_sgstrate").prop("readonly", false);
@@ -1815,7 +1816,9 @@
 				$("#invoice_tr_"+rowid+"_cgstrate").val(0.00);
 				$("#invoice_tr_"+rowid+"_sgstrate").val(0.00);
 				$("#invoice_tr_"+rowid+"_cgstamount").val(0.00);
+				$("#invoice_tr_"+rowid+"_cgstamount").attr("data-invoice-tr-"+rowid+"-cgstamount", 0.00);
 				$("#invoice_tr_"+rowid+"_sgstamount").val(0.00);
+				$("#invoice_tr_"+rowid+"_sgstamount").attr("data-invoice-tr-"+rowid+"-sgstamount", 0.00);
 
 				$("#invoice_tr_"+rowid+"_cgstrate").prop("readonly", true);
 				$("#invoice_tr_"+rowid+"_sgstrate").prop("readonly", true);

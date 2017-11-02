@@ -29,6 +29,10 @@ if ($_REQUEST['returnmonth'] != '') {
 }
 
 $response = '';
+$callReturnSummary = $obj_api->returnSummary($returnmonth,$_REQUEST['type']);
+/***** End GSTR1 API Call *****/
+
+
 if(isset($_POST['summary_type']) && $_POST['summary_type']=='Download GSTR1 Summary')
 {
     if (!isset($_SERVER['HTTP_REFERER']) || empty($_SERVER['HTTP_REFERER'])) 
@@ -38,21 +42,22 @@ if(isset($_POST['summary_type']) && $_POST['summary_type']=='Download GSTR1 Summ
     else 
     {
         //$obj_gstr1->pr($_POST);
-        /***** Start GSTR1 API Call *****/
-        $callReturnSummary = $obj_api->returnSummary($returnmonth,$_REQUEST['type']);
-        /***** End GSTR1 API Call *****/
-
-        if($callReturnSummary != false) {
-            /***** Start Code Insert/update to summary *****/
-            $savedata['json'] = base64_encode(serialize($callReturnSummary));
-            //$obj_api->pr($savedata);
-            $obj_api->save_user_summary($savedata,'gstr1'.$type,$returnmonth);
-            /***** End Code Insert/update to summary *****/
-        }
         
 
     }
 }
+if($callReturnSummary != false && $callReturnSummary != '') {
+   // echo "s";
+    /***** Start Code Insert/update to summary *****/
+    $savedata['json'] = base64_encode(serialize($callReturnSummary));
+    //$obj_api->pr($savedata);
+    $obj_api->save_user_summary($savedata,'gstr1'.$type,$returnmonth);
+    /***** End Code Insert/update to summary *****/
+}
+else {
+   $obj_api->delete_user_summary('gstr1'.$type,$returnmonth);
+} 
+
 /***** Start Get Summray from DB of gstr1 Type *****/
 $response = $obj_api->get_user_summary('gstr1'.$type,$returnmonth);
 /***** End Get Summray from DB of gstr1 Type *****/

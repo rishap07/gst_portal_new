@@ -63,7 +63,7 @@ if(!empty($jstr1_array)) {
                                
                                 $response .= '</td><td align="right">';
                                 if($invoice_number>0) {
-                                    //$response .= '<a href="javascript:;" class="gstr1ViewDeleteBtn" type="'.$jstr1_value['sec_nm'].'" deleteall="all"><i class="fa fa-trash"></i></a>';
+                                   $response .= '<a href="javascript:;" class="gstr1ViewDeleteBtn" type="'.$jstr1_value['sec_nm'].'" deleteall="all"><i class="fa fa-trash"></i></a>';
                                 }
                                
                                 $response .= '</td>

@@ -38,6 +38,10 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	
 	$supply_place = isset($params['place_of_supply']) ? $params['place_of_supply'] : '';
 	$supply_state_data = $obj_purchase->getStateDetailByStateId($supply_place);
+	
+	if($dataArr['supply_type'] == "reversecharge") {
+		$dataArr['is_tax_payable'] = "1";
+	}
 
 	if($supply_state_data['status'] === "success") {
 		$dataArr['supply_place'] = $supply_state_data['data']->state_id;
@@ -246,6 +250,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 
 	$dataArr['invoice_total_value'] = number_format($invoiceTotalAmount, 2, '.', '');
 	$dataArr['status'] = 1;
+	$dataArr['update_status'] = 1;
 	$dataArr['updated_by'] = $obj_purchase->sanitize($_SESSION['user_detail']['user_id']);
 	$dataArr['updated_date'] = date('Y-m-d H:i:s');
 	$dataConditionArray['purchase_invoice_id'] = $obj_purchase->sanitize(base64_decode($params['purchase_invoice_id']));

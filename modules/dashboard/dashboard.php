@@ -33,6 +33,10 @@ if(isset($_SESSION['user_detail']['user_group']) && $_SESSION['user_detail']['us
 		{
 			include(PROJECT_ROOT."/modules/dashboard/view/gstr3client.php");
 		}
+		else if(isset($_REQUEST["overview"]) && ($_REQUEST["overview"]=="view"))
+		{
+			include(PROJECT_ROOT."/modules/dashboard/view/overview.php");
+		}
 		
 		
 		else

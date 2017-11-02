@@ -1,5 +1,7 @@
 <?php
 $obj_client = new client();
+$obj_common= new common();
+$financialYear=$obj_common->generateFinancialYear();
 $dataTotalYears;
 $dataTotalMonths;
 $dataTotalsDue;
@@ -157,6 +159,8 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'Filter') {
 				  <a href="<?php echo PROJECT_URL . '/?page=dashboard&gstr3=view' ?>" class="active" >
                     GSTR3
                 </a>
+                <a href="<?php echo PROJECT_URL . '/?page=dashboard&overview=view&financialyear='.$financialYear ?>"> OVERVIEW </a>
+           
               
             </div></div><div class="clear height10"> </div>
                 <div class="listcontent">

@@ -105,6 +105,48 @@ final class gstr3b extends validation {
 			
 		}
    }
+   public function offsetReturn3bNotification($returnmonth)
+   {
+	
+	   $sql = "SELECT * FROM " . $this->getTableName('user') . " as u WHERE user_id='" . $_SESSION["user_detail"]["user_id"] . "'";
+  	    $userdata = $this->get_results($sql);
+		if(!empty($userdata))
+		{
+			 $added_by= $userdata[0]->added_by;
+			 $username = $userdata[0]->username;
+			 $sql = "SELECT * FROM " . $this->getTableName('user') . " as u WHERE user_id='" . $added_by . "'";
+			$subdata = $this->get_results($sql);
+			if(!empty($subdata))
+			{
+			 $user_group = $subdata[0]->user_group;
+			
+			 if($user_group==5)
+			 {
+			$added_by = $subdata[0]->added_by;
+			 $title='GSTR-3B return offset liablity done by'.' '.$username;
+			 $message='GSTR-3B return offset liablity done by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
+			 $parentid = $added_by;
+			 $userid= $_SESSION["user_detail"]["user_id"];
+			 $returntype='gstr3b';
+			 $return_step='gstr3boffset';
+			 $returnmonth =$_REQUEST['returnmonth'];	
+			 $this->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
+			
+				 
+			 }
+			}
+			 $title='GSTR-3B return offset liablity done by'.' '.$username;
+			 $message='GSTR-3B return offset liablity done by'.' '.$username." "."financial_month".' '.$_REQUEST['returnmonth'];
+			 $parentid = $added_by;
+			  
+			 $userid= $_SESSION["user_detail"]["user_id"];
+			 $returntype='gstr3b';
+			 $return_step='gstr3boffset';
+			 $returnmonth =$_REQUEST['returnmonth'];	
+			 $this->insertReturnNotification($title,$message,$parentid,$userid,$returntype,$returnmonth,$return_step);
+			
+		}
+   }
    public function submitReturn3bNotification($returnmonth)
    {
 	   $sql = "SELECT * FROM " . $this->getTableName('user') . " as u WHERE user_id='" . $_SESSION["user_detail"]["user_id"] . "'";
@@ -958,8 +1000,15 @@ final class gstr3b extends validation {
 		$interestpaidcess_cess=isset($_POST['interestpaidcess_cess']) ? $_POST['interestpaidcess_cess'] : '0.00';
 		$latefee_cash=isset($_POST['latefee_cash']) ? $_POST['latefee_cash'] : '0.00';
 		$latefee_sgst=isset($_POST['latefee_sgst']) ? $_POST['latefee_sgst'] : '0.00';
-
-		 /***** Start Code For total taxpayable otherthan reverse charge ********** */
+   /***** Start Code For reverse charge paidcash value ********** */
+   $taxpaidcess_igst=isset($_POST['taxpaidcess_igst']) ? $_POST['taxpaidcess_igst'] : '0.00';
+   $taxpaidcess_cgst=isset($_POST['taxpaidcess_cgst']) ? $_POST['taxpaidcess_cgst'] : '0.00';
+   $taxpaidcess_sgst=isset($_POST['taxpaidcess_sgst']) ? $_POST['taxpaidcess_sgst'] : '0.00';
+   $taxpaidcess_cess=isset($_POST['taxpaidcess_cess']) ? $_POST['taxpaidcess_cess'] : '0.00';
+   
+   
+   	/***** end Code For total taxpayable otherthan reverse charge ********** */
+	/***** Start Code For total taxpayable otherthan reverse charge ********** */
 	$totaligst_amount_other=isset($_POST['taxpayable_igst_other']) ? $_POST['taxpayable_igst_other'] : '0.00';
 	$totalcgst_amount_other=isset($_POST['taxpayable_cgst_other']) ? $_POST['taxpayable_cgst_other'] : '0.00';
 	$totalsgst_amount_other=isset($_POST['taxpayable_sgst_other']) ? $_POST['taxpayable_sgst_other'] : '0.00';
@@ -983,7 +1032,7 @@ final class gstr3b extends validation {
 	
 	   if(($paiditcigst_igst+$paiditcigst_cgst+$paiditcigst_sgst+$taxpaidigst_igst)!=$totaligst_amount_other)
 		{
-		$this->setError('Please check offset value for integrated tax values are not equal');
+		//$this->setError('Please check offset value for integrated tax values are not equal');
 		}
 	/***** end Code For total taxpayable through ITC Integrated Tax ********** */
 	/***** Start Code For total taxpayable through ITC central Tax ********** */	
@@ -993,7 +1042,7 @@ final class gstr3b extends validation {
 	
 	if(($paiditccgst_igst+$paiditccgst_cgst+$taxpaidcgst_igst)!=$totalcgst_amount_other)
 		{
-		$this->setError('Please check offset value for central tax values are not equal');
+		//$this->setError('Please check offset value for central tax values are not equal');
 		}
    /***** end Code For total taxpayable through ITC central Tax ********** */
    /***** Start Code For total taxpayable through ITC state Tax ********** */
@@ -1005,7 +1054,7 @@ final class gstr3b extends validation {
 	$taxpaidsgst_sgst=isset($_POST['taxpaidsgst_sgst']) ? $_POST['taxpaidsgst_sgst'] : '0.00';
 	if(($paiditccgst_igst+$paiditccgst_cgst+$taxpaidsgst_sgst)!=$totalsgst_amount_other)
 		{
-		$this->setError('Please check offset value for state tax values are not equal');
+		//$this->setError('Please check offset value for state tax values are not equal');
 		}
    /***** end Code For total taxpayable through ITC state Tax ********** */
     /***** Start Code For total taxpayable through ITC cess Tax ********** */	
@@ -1013,7 +1062,7 @@ final class gstr3b extends validation {
 	$taxpaidcess_cess=isset($_POST['taxpaidcess_cess']) ? $_POST['taxpaidcess_cess'] : '0.00';
 	if(($paiditccess_cess+$taxpaidcess_cess)!=$totalcess_amount_other)
 		{
-		$this->setError('Please check offset value for state tax values are not equal');
+		//$this->setError('Please check offset value for state tax values are not equal');
 		}
    /***** end Code For total taxpayable through ITC cess Tax ********** */
    /* start code for check toal available IGST value */
@@ -1024,40 +1073,41 @@ final class gstr3b extends validation {
 	
 	if(($paiditcigst_igst+$paiditccgst_igst+$paiditcsgst_igst)!=$total_igst_available)
 	{
-	$this->setError('Please check integrated tax value it can not be greater than total available IGST');
+	//$this->setError('Please check integrated tax value it can not be greater than total available IGST');
 
 	}
 	 /* end code for check toal available IGST value */
 	 /* start code for check toal available central tax value */
 	if($paiditcigst_cgst+$paiditccgst_cgst!=$total_cgst_available)
 	{
-	$this->setError('Please check central tax value it can not be greater than total available CGST');
+	//$this->setError('Please check central tax value it can not be greater than total available CGST');
 
 	}
 	 /* end code for check toal available central tax value */
 	  /* start code for check toal available state tax value */
 	if($paiditcigst_sgst+$paiditcsgst_sgst!=$total_sgst_available)
 	{
-	$this->setError('Please check state tax value it can not be greater than total available SGST');
+	//$this->setError('Please check state tax value it can not be greater than total available SGST');
 
 	}
 	 /* end code for check toal available state tax value */
 	   /* start code for check toal available cess tax value */
 	if($paiditccess_cess!=$total_cess_available)
 	{
-	$this->setError('Please check cess tax value it can not be greater than total available CESS value');
+	//$this->setError('Please check cess tax value it can not be greater than total available CESS value');
 
 	}
 	
 		$obj_gstr = new gstr();
 		$dataoffset=array();
 		if(isset($paidcash_liab_ldg_id1) && $paidcash_liab_ldg_id1!='' && isset($paidcash_trans_type1) && $paidcash_trans_type1!='')
-		{			
+		{
+	
 		$data1[0]['liab_ldg_id'] = $paidcash_liab_ldg_id1;		
         $data1[0]['trans_typ'] = $paidcash_trans_type1;
-        $data1[0]['ipd'] = (float)$taxpaidigst_igst;
-        $data1[0]['cpd'] = (float)$taxpaidcgst_igst;
-        $data1[0]['spd'] = (float)$taxpaidsgst_sgst;
+        $data1[0]['ipd'] = (float)$taxpaidcess_igst;
+        $data1[0]['cpd'] = (float)$taxpaidcess_cgst;
+        $data1[0]['spd'] = (float)$taxpaidcess_sgst;
         $data1[0]['cspd'] = (float)$taxpaidcess_cess;
 		$data1[0]['i_intrpd'] = (float)$interestpaidigst_igst;
 		$data1[0]['c_intrpd'] = (float)$interestpaidcgst_igst;
@@ -1091,7 +1141,7 @@ final class gstr3b extends validation {
 		 //$this->pr($data=array("doc_num1"=>$data1,"doc_num2"=>$data2,"doc_num3"=>$data3,"doc_num4"=>$data4,"doc_num5"=>$data5,"doc_num6"=>$data6,"doc_num7"=>$data7,"doc_num8"=>$data8,"doc_num9"=>$data9,"doc_num10"=>$data10,"doc_num11"=>$data11,"doc_num12"=>$data12));
 	    $dataoffset=array("pdcash"=>$data1,"pditc"=>$data3);
         $returnSummary= json_encode($dataoffset);
-		echo $returnSummary; die;
+		echo $returnSummary;
          $error =1;
         $msg = '';
         $api_return_period = $obj_gstr->getRetrunPeriodFormat($returnmonth);
@@ -1107,11 +1157,11 @@ final class gstr3b extends validation {
        // $returnSummary= $obj_gstr->returnSummary($returnmonth,'',$jstr);
 
         if(!empty($returnSummary)) {
-			echo $returnSummary;
+			//echo $returnSummary;
             $hmac = $obj_gstr->hmac($_SESSION['decrypt_sess_key'],$returnSummary); 
             $encodejson = base64_encode($obj_gstr->encrypt($_SESSION['decrypt_sess_key'],$returnSummary));
             $sdata1 = array("action" => 'RETOFFSET',"data" => $encodejson,"hmac"=>$hmac);
-           
+         
             $data_string = json_encode($sdata1);
             //$this->pr($sdata1);
             //Start code for create header
@@ -1125,13 +1175,14 @@ final class gstr3b extends validation {
                 'action:RETOFFSET'
             );
             $header3 = $obj_gstr->header($header_array);
-            $this->pr($header3);
+           // $this->pr($header3);
             //End code for create header
 			$jstr='gstr3b';
-           echo $getSubmitUrl = API_RETURN_URL.'/'.$jstr;
+			$getSubmitUrl = API_RETURN_URL.'/'.$jstr;
             $submit_data1 = $obj_gstr->hitPulUrl($getSubmitUrl, $data_string, $header3);
             $retDta1 = json_decode($submit_data1);
-            $this->pr($retDta1);die;
+			
+            //$this->pr($retDta1);
             if(isset($retDta1->status_cd) && $retDta1->status_cd=='1'  && $msg == '')
             {
                 $retRek=$retDta1->rek;
@@ -1162,9 +1213,10 @@ final class gstr3b extends validation {
                 $url2 = API_RETURN_URL.'?action=RETSTATUS&gstin='.$gstin. '&ret_period='.$api_return_period.'&ref_id=f0a28c53-e132-4b92-b6f0-8cb36f23ed13';
               
                 $result_data1 = $obj_gstr->hitGetUrl($url2, '', $header2);
-                
+               
                 $retDta = json_decode($result_data1);
-                //$this->pr($retDta);
+               //$this->pr($retDta);die;
+				
                 
                 if(isset($retDta->status_cd) && $retDta->status_cd=='1' && $msg == '')
                 {
@@ -1206,12 +1258,17 @@ final class gstr3b extends validation {
             }
             else {
                $msg = $retDta1->error->message;
+			   
             }
             
         }
         $response['message'] = $msg;
         $response['error'] = $error;
-        return $response;
+		if(isset($response['error']) && $response['error']==1)
+		{
+			$this->setError('System error occur,please check your json payload');
+		}
+		return $response;
         
     
 		
@@ -1326,7 +1383,7 @@ final class gstr3b extends validation {
     {
 			$dataArr =array();
 			//$dataArr = $this->getnotificationData();
-			$sql="select count(notification_id) as numcount from ".TAB_PREFIX."notification WHERE parentid=".$parentid." AND userid=".$userid." and return_type='".$returntype."' AND return_step='".$return_step."' AND return_month='".$returnmonth."'";
+			 $sql="select count(notification_id) as numcount from ".TAB_PREFIX."notification WHERE parentid=".$parentid." AND userid=".$userid." and return_type='".$returntype."' AND return_step='".$return_step."' AND return_month='".$returnmonth."'";
 			$dataCurrentArr = $this->get_results($sql);
 			
 			if($dataCurrentArr[0]->numcount > 0)
@@ -1336,7 +1393,7 @@ final class gstr3b extends validation {
 				$dataConditionArray['return_type'] = $returntype;
 				$dataArr['updated_date'] = date('Y-m-d H:i:s');
 				$dataArr['updated_by'] = $_SESSION["user_detail"]["user_id"];
-				
+				/*
 				if ($this->update(TAB_PREFIX.'notification', $dataArr, $dataConditionArray)) {
 
 					//$this->setSuccess("Your Notification information updated successfully");
@@ -1347,6 +1404,7 @@ final class gstr3b extends validation {
 					$this->setError($this->validationMessage['failed']);
 					return false;
 				}
+				*/
 				
   			}
 			else
@@ -1361,16 +1419,16 @@ final class gstr3b extends validation {
 				$dataArr['return_step'] = $return_step;	
 				$dataArr['added_date'] = date('Y-m-d H:i:s');
 						
-			  
+			   
 				if ($this->insert(TAB_PREFIX.'notification', $dataArr)) {
 						//$this->setSuccess('Notification Saved Successfully');
-						$this->logMsg("User ID Notification added : " . $_SESSION['user_detail']['user_id'],"notification");
+						$this->logMsg("User ID return notification added : " . $_SESSION['user_detail']['user_id'],"notification");
 								
 						return true;
 					}
 					else
 					{
-						$this->setError('Failed to save Notification data');
+						$this->setError('Failed to save return notification data');
 					   return false;    	   
 				   }	
 				
@@ -1386,10 +1444,8 @@ final class gstr3b extends validation {
 		# create a random IV to use with CBC encoding
 		$iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
 		$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
-
 		$ciphertext = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key,
 									$inputToken, MCRYPT_MODE_ECB, $iv);
-
 		$hexcode= bin2hex($ciphertext);
          $filepath=PROJECT_URL . "/documents/".'GSTN_private.pem';
 		$pem_private_key = file_get_contents($filepath);

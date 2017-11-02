@@ -378,7 +378,7 @@ class validation extends upload {
         }
 
         $query .= "and a.status='1' and a.added_by='".$user_id."'  and a.return_period like '".$returnmonth."%'  ";
-        //echo $query;
+       // echo $query;
         return $this->get_results($query);
     }
 
@@ -732,7 +732,7 @@ class validation extends upload {
        a.invoice_date,
        (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
        (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal1,
-       sum(taxable_subtotal)  as taxable_subtotal,
+       sum(b.advance_amount)  as taxable_subtotal,
        b.item_name,
        sum(b.igst_amount) as igst_amount, 
        sum(b.cgst_amount) as cgst_amount,
@@ -763,7 +763,8 @@ class validation extends upload {
 
          $queryAt .= " and 
                 inv.invoice_date < a.invoice_date and 
-                DATE_FORMAT(inv.invoice_date, '%Y-%m') < '".$returnmonth."'   and a.status='1'  and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.invoice_type='taxinvoice' and a.is_canceled='0' and a.is_deleted='0' group by  ";
+                DATE_FORMAT(inv.invoice_date, '%Y-%m') < '".$returnmonth."'   and a.status='1'  and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' 
+                and (a.invoice_type='taxinvoice' or a.invoice_type='sezunitinvoice' or a.invoice_type='deemedexportinvoice' or a.invoice_type='exportinvoice' ) and a.is_canceled='0' and a.is_deleted='0' group by  ";
         if($group_by=='')
         {
             $queryAt .= " a.supply_place ,b.consolidate_rate ";
@@ -782,8 +783,11 @@ class validation extends upload {
         {
             $queryAt .= $order_by;
         }
-        //echo '<br>TXPD====='.$queryAt.'<br/>';
-        //die;
+        /*echo '<br>TXPD====='.$queryAt.'<br/>';
+        die;*/
+        /*if($_SESSION['user_detail']['user_id'] ==  '1269') {
+            echo '<br>TXPD====='.$queryAt.'<br/>';
+        }*/
         return $this->get_results($queryAt);
     }
 
@@ -821,7 +825,7 @@ class validation extends upload {
        $queryExp .= " and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and ((a.invoice_type='exportinvoice' and a.export_bill_number !='' and a.export_bill_date != '' and a.export_bill_port_code != '')) and a.invoice_nature='salesinvoice' and a.is_canceled='0' and a.is_deleted='0'  group by ";
        if($group_by=='')
         {
-            $queryExp .= " a.supply_place ,b.consolidate_rate ";
+            $queryExp .= " a.export_supply_meant,a.reference_number,b.consolidate_rate ";
             
         }
         else
@@ -831,13 +835,16 @@ class validation extends upload {
         $queryExp .= "  order by ";
         if($order_by=='')
         {
-            $queryExp .=" a.export_supply_meant ";
+            $queryExp .=" a.export_supply_meant,a.reference_number ";
         }
         else
         {
             $queryExp .= $order_by;
         }
-        //echo 'Exp=>>>>>>'.$queryExp.'<br/>';
+
+        /*if($_SESSION['user_detail']['user_id'] ==  '1269') {
+            echo $queryExp;
+        }*/
         return $this->get_results($queryExp); 
     }
 

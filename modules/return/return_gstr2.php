@@ -35,7 +35,7 @@ if(isset($_GET['returnmonth']) && !empty($_GET['returnmonth'])) {
 				<form method='post' name='gstr2PurchaseSummaryForm' id="gstr2PurchaseSummaryForm">
 					Month Of Return
 					<?php $invoiceMonthYear = $obj_gstr2->getInvoiceMonthList($obj_gstr2->getTableName('client_purchase_invoice')); ?>
-					<select class="dateselectbox" id="returnmonth" name="returnmonth">
+					<select class="monthselectbox" id="returnmonth" name="returnmonth">
 						<option value="">Select</option>
 						<?php foreach($invoiceMonthYear as $monthYear) { ?>
 							<option <?php if($returnmonth == $monthYear->invoiceDate) { echo 'selected="selected"'; } ?> value="<?php echo $monthYear->invoiceDate; ?>"><?php echo date("M-y", strtotime($monthYear->invoiceDate)); ?></option>
@@ -43,17 +43,21 @@ if(isset($_GET['returnmonth']) && !empty($_GET['returnmonth'])) {
 					</select>
 				</form>
 			</div>
+
+			<div class="clear"></div>
+			<hr>
 			<div class="clear"></div>
 
 			<?php $obj_gstr2->showErrorMessage(); ?>
 			<?php $obj_gstr2->showSuccessMessge(); ?>
 			<?php $obj_gstr2->unsetMessage(); ?>
 
-			<div class="col-md-12 col-sm-12 col-xs-12 heading">
-				<div class="tab col-md-12 col-sm-12 col-xs-12">
+			<div class="row heading">
+				<div class="tab">
 					<?php include(PROJECT_ROOT."/modules/return/include/tab.php"); ?>
 				</div>
 			</div>
+			<div class="clear"></div>
 
 			<div class="tableresponsive">
 				<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable">
@@ -80,7 +84,6 @@ if(isset($_GET['returnmonth']) && !empty($_GET['returnmonth'])) {
 </div>
 
 <script>
-
 	$(document).ready(function () {
 
 		$('#returnmonth').on('change', function () {

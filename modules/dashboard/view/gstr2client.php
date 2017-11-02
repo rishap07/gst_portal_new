@@ -1,5 +1,7 @@
 <?php
 $obj_client = new client();
+$obj_common= new common();
+$financialYear=$obj_common->generateFinancialYear();
 $dataTotalYears;
 $dataTotalMonths;
 $dataTotalsDue;
@@ -180,6 +182,8 @@ $data_month_sale = json_encode($data_month_sale);
                 <a href="<?php echo PROJECT_URL . '/?page=dashboard&gstr3=view' ?>">
                     GSTR3
                 </a>
+                <a href="<?php echo PROJECT_URL . '/?page=dashboard&overview=view&financialyear='.$financialYear ?>" > OVERVIEW </a>
+           
             </div></div><div class="clear height10"> </div>
                 <div class="listcontent">
 

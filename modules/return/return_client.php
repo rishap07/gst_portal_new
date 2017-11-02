@@ -269,7 +269,7 @@ if(!empty($dataInvPurchase))
 		{
 			$vendor_id1 = $flag;
 		}	
-    $sql="SELECT c.returnfile_type,c.returntofile_vendor_id as vendorid,c.return_url as return_url,c.return_name,c.id as cat_id,c.return_subheading as return_heading,subcat.id as subcat_id,subcat.subcat_name FROM gst_return_categories as c INNER join gst_return_subcategories as subcat on subcat.cat_id = c.id INNER join gst_vendor_type as v on v.vendor_id = c.returntofile_vendor_id where c.status='1' and c.is_deleted='0' GROUP by c.id order by c.order_value asc";
+    $sql="SELECT c.returntofile_vendor_id, c.returnfile_type,c.returntofile_vendor_id as vendorid,c.return_url as return_url,c.return_name,c.id as cat_id,c.return_subheading as return_heading,subcat.id as subcat_id,subcat.subcat_name FROM gst_return_categories as c INNER join gst_return_subcategories as subcat on subcat.cat_id = c.id left join gst_vendor_type as v on v.vendor_id = c.returntofile_vendor_id where c.status='1' and c.is_deleted='0' GROUP by c.id order by c.order_value asc";
 	$dataGstr1 = $db_obj->get_results($sql);
     
 	 if(!empty($dataGstr1))
@@ -277,7 +277,7 @@ if(!empty($dataInvPurchase))
 		 foreach($dataGstr1 as $data)
 		 {	
             $returnurl = $data->return_url; 		 
-			 if($data->vendorid==$dataArr['data']->kyc->vendor_type)
+			 if($data->vendorid==$dataArr['data']->kyc->vendor_type || $data->returntofile_vendor_id==0)
 			 {
       	 ?>
         <div class="col-md-12 col-sm-12 col-xs-12 whitebg gstr-box">

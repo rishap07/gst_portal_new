@@ -23,13 +23,13 @@ if(isset($_GET['ajax']) && $_GET['ajax'] == "purchase_get_item" && isset($_GET['
 		foreach($clientMasterItems as $clientMasterItem) {
 
 			$item[$counter]['item_id'] = $clientMasterItem->item_id;
-			$item[$counter]['label'] = $clientMasterItem->item_name;
-			$item[$counter]['value'] = $clientMasterItem->item_name;
-			$item[$counter]['item_description'] = $clientMasterItem->item_description;
+			$item[$counter]['label'] = html_entity_decode($clientMasterItem->item_name);
+			$item[$counter]['value'] = html_entity_decode($clientMasterItem->item_name);
+			$item[$counter]['item_description'] = html_entity_decode($clientMasterItem->item_description);
 			$item[$counter]['unit_price'] = $clientMasterItem->unit_price;
 			$item[$counter]['unit_purchase_price'] = $clientMasterItem->unit_purchase_price;
 			$item[$counter]['category_id'] = $clientMasterItem->category_id;
-			$item[$counter]['category_name'] = $clientMasterItem->category_name;
+			$item[$counter]['category_name'] = html_entity_decode($clientMasterItem->category_name);
 			$item[$counter]['hsn_code'] = $clientMasterItem->hsn_code;
 
 			if($clientMasterItem->client_cgst_tax_rate == NULL) {

@@ -59,6 +59,7 @@ class processpayment extends validation
             //Insert data in payment log
             $this->insert(TAB_PREFIX . 'payment_log', array(
                 'process_payment_id' => $ref_id,
+				'ref_id' => $ref_id,
                 'datetime' => $cur_date,
                 'status' => '0'
             ));

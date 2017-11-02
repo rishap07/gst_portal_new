@@ -2475,7 +2475,7 @@ class tally extends validation {
 					$arrayCounter++;
 				}
 				$this->insertMultiple($this->tableNames['gstr1_return_summary'], $itemArray);
-				$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_b2b_inserted");
+				$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_b2cl_inserted");
 				
 			}
 
@@ -2520,7 +2520,7 @@ class tally extends validation {
 					$arrayCounter++;
 				}
 				$this->insertMultiple($this->tableNames['gstr1_return_summary'], $itemArray);
-				$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_b2b_inserted");
+				$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_b2cs_inserted");
 				
 			}
 			$dataInvCDNR = $obj_gstr1->getCDNRInvoices($user_id, $returnmonth,'all'); 
@@ -2575,7 +2575,7 @@ class tally extends validation {
 					$arrayCounter++;
 				}
 				$this->insertMultiple($this->tableNames['gstr1_return_summary'], $itemArray);
-				$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_b2b_inserted");
+				$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_cdnr_inserted");
 				
 			}
 			$dataInvCDNUR = $obj_gstr1->getCDNURInvoices($user_id, $returnmonth,'all'); 
@@ -2642,7 +2642,7 @@ class tally extends validation {
 					$arrayCounter++;
 				}
 				$this->insertMultiple($this->tableNames['gstr1_return_summary'], $itemArray);
-				$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_b2b_inserted");
+				$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_cdnur_inserted");
 
 			}
 			
@@ -2680,10 +2680,14 @@ class tally extends validation {
 					$arrayCounter++;
 				}
 				$this->insertMultiple($this->tableNames['gstr1_return_summary'], $itemArray);
-				$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_b2b_inserted");
+				$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_at_inserted");
 				
 			}
 			$dataInvTXPD = $obj_gstr1->getTXPDInvoices($user_id, $returnmonth,'all'); 
+			/*if($_SESSION['user_detail']['user_id'] ==  '1269') {
+				$this->pr($dataInvTXPD);
+				die;
+			}*/
 			if(isset($dataInvTXPD) && !empty($dataInvTXPD)) {
 				$itemArray = array();
 				$arrayCounter = 0;
@@ -2717,11 +2721,14 @@ class tally extends validation {
 					$arrayCounter++;
 				}
 				$this->insertMultiple($this->tableNames['gstr1_return_summary'], $itemArray);
-				$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_b2b_inserted");
+				$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_txpd_inserted");
 				
 			}
 			$dataInvExp = $obj_gstr1->getEXPInvoices($user_id, $returnmonth,'all'); 
-			
+			/*if($_SESSION['user_detail']['user_id'] ==  '1269') {
+				$this->pr($dataInvExp);
+				die;
+			}*/
 			if(isset($dataInvExp) && !empty($dataInvExp)) {
 				$itemArray = array();
 				$arrayCounter = 0;
@@ -2760,7 +2767,7 @@ class tally extends validation {
 				}
 
 				$this->insertMultiple($this->tableNames['gstr1_return_summary'], $itemArray);
-				$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_b2b_inserted");
+				$this->logMsg("Manual Invoices inserted for return period : " . $returnmonth . " by User ID : " . $user_id . ".","gstr1_exp_inserted");
 
 				
 			}

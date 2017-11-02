@@ -57,7 +57,7 @@ if (isset($_POST['iSortCol_0'])) {
  * word by word on any field. It's possible to do here, but concerned about efficiency
  * on very large tables, and MySQL's regex functionality is very limited
  */
- $spWhere = "where is_deleted='0'";
+ $spWhere = "where is_deleted='0' AND userid=0";
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
     
     $spWhere .= 'AND (';
