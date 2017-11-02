@@ -432,3 +432,16 @@ form#search-purchase-invoice {
     background: #e44a16;
     color: #fff;
 }
+.reconcile-separator {
+	margin:2px 0px;
+	border-color:#000000;
+}
+.monthselectbox {
+    width: 150px;
+    font-size: 13px;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 3px;
+    border-radius: 3px;
+    margin-top: 0px;
+}

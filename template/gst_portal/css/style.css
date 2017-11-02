@@ -380,13 +380,21 @@ width: 18.9%;
 .txtnumber span {  font-size:12px; text-transform:capitalize; font-family: opensans_light; color:#000;}
 .txtnumber { font-size:22px; font-family: opensans_bold; line-height:24px; }
 .bordergreen { border:1px solid #3c763d;}
-.bordergreen:hover { background:#3c763d; color:#FFF;}
+.bordergreen a { color:#3c763d;}
+.bordergreen:hover { background:#3c763d;}
+.bordergreen:hover a, .bordergreen a:hover {color:#FFF; text-decoration:none;}
 .borderblue { border:1px solid #31708f;}
-.borderblue:hover { background:#31708f; color:#FFF;}
+.borderblue a { color:#31708f;}
+.borderblue:hover { background:#31708f;}
+.borderblue:hover a, .borderblue a:hover {color:#FFF; text-decoration:none;}
 .borderbrown { border:1px solid #8a6d5b;}
-.borderbrown:hover { background:#8a6d5b; color:#FFF;}
+.borderbrown a { color:#8a6d5b;}
+.borderbrown:hover { background:#8a6d5b;}
+.borderbrown:hover a, .borderbrown a:hover {color:#FFF; text-decoration:none;}
 .borderred { border:1px solid #a94442;}
-.borderred:hover { background:#a94442; color:#FFF;}
+.borderred a { color:#a94442;}
+.borderred:hover { background:#a94442;}
+.borderred:hover a, .borderred a:hover {color:#FFF; text-decoration:none;}
 .col-text .btn { float:left; margin-top:0px; font-size:11px; font-family: opensans_bold; text-transform:none; padding:5px 10px;}
 .reconciliation .col-md-3 { padding-left:7px; padding-right:7px;}
 .redtxt {color:#a94442;}
@@ -672,5 +680,4 @@ font-family: opensans_bold;
 	overflow-y:scroll; 
 	height:150px; 
 	width:100%;
-	
 }
