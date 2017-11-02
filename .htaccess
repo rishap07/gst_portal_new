@@ -58,4 +58,3 @@ RewriteRule ^(.*)/inner.php(.*)$ inner.php?depName=$1&module=$2
     Header unset ETag
     FileETag None
 </FilesMatch>
-
