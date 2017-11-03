@@ -142,65 +142,7 @@ class graph extends validation {
 		return $cancelInvoiceArray;
 	}
 
-    public function testDemoQuery($financial_month)
-	{
-		echo $query='SELECT
-		(CASE
-			WHEN invoice_type="importinvoice" THEN 
-			(
-				SELECT inv.invoice_type,
-				inv.reference_number,
-				inv.company_name,
-				inv.company_address,
-				inv.company_email,
-				st.state_name as company_state,
-				inv.company_gstin_number,
-				inv.invoice_date,
-				st.state_name as supply_place,
-				inv.supplier_billing_name,
-				iit.item_name,
-				it.consolidate_rate as rate,
-					CASE
-						WHEN iit.item_type ="0" THEN "Goods"
-						WHEN iit.item_type ="1" THEN "Services"
-						ELSE ""
-					END as item_type
-				FROM '.$this->tableNames['client_purchase_invoice']. ' inv
-				inner join '.$this->tableNames['client_purchase_invoice_item'].' it on inv.purchase_invoice_id = it.purchase_invoice_id
-				inner join '.$this->tableNames['state'].' st on (st.state_tin  = inv.company_state && st.state_tin  = inv.supply_place)
-				inner join '.$this->tableNames['item'].' iit on iit.hsn_code  = it.item_hsncode 
-				where DATE_FORMAT(invoice_date,"%Y-%m") = "'.$financial_month.'"
-				and invoice_type="importinvoice
-			)
-			ELSE (
-				SELECT inv.invoice_type,
-				inv.reference_number,
-				inv.company_name,
-				inv.company_address,
-				inv.company_email,
-				st.state_name as company_state,
-				inv.company_gstin_number,
-				inv.invoice_date,
-				st.state_name as supply_place,
-				inv.supplier_billing_name,
-				iit.item_name,
-				it.consolidate_rate as rate,
-					CASE
-						WHEN iit.item_type ="0" THEN "Goods"
-						WHEN iit.item_type ="1" THEN "Services"
-						ELSE ""
-					END as item_type
-				FROM '.$this->tableNames['client_purchase_invoice']. ' inv
-				inner join '.$this->tableNames['client_purchase_invoice_item'].' it on inv.purchase_invoice_id = it.purchase_invoice_id
-				inner join '.$this->tableNames['state'].' st on (st.state_tin  = inv.company_state && st.state_tin  = inv.supply_place)
-				inner join '.$this->tableNames['item'].' iit on iit.hsn_code  = it.item_hsncode 
-				where DATE_FORMAT(invoice_date,"%Y-%m") = "'.$financial_month.'"
-				and invoice_type="importinvoice )
-		END as invoice) FROM '.$this->tableNames['client_purchase_invoice']. '
-			';
-		$this->get_results($query,true);
-		return $query;
-	}
+    
 
 }
 ?>

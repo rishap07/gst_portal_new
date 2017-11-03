@@ -47,7 +47,7 @@ foreach($yearArray as $financialMonth) {
 			
 	
 }
-$cancelPurchaseSalesInv=$obj_graph->testDemoQuery('2017-07');
+
 //$obj_graph->pr($cancelpurchaseSalesInvoice,true);
 ?>
 
@@ -203,10 +203,10 @@ $cancelPurchaseSalesInv=$obj_graph->testDemoQuery('2017-07');
 						var chart = new google.visualization.ComboChart(document.getElementById('chart_div3'));
 						chart.draw(data, options);
 						
-						var selectHandler = function(e) {
+						/*var selectHandler = function(e) {
 							window.location = data.getValue(chart.getSelection()[0]['row'], 1 );
 						}
-						google.visualization.events.addListener(chart, 'select', selectHandler);
+						google.visualization.events.addListener(chart, 'select', selectHandler);*/
 					}
 			</script> 
 		</div>

@@ -116,11 +116,6 @@ if(isset($params['billing_gstin_number']) && !empty($params['billing_gstin_numbe
 $uWhere .= " order by ci.invoice_date ASC";
 $salesExportArray = $db_obj->get_results($uWhere, false);
 
-echo "<pre>";
-print_r($salesExportArray);
-echo "</pre>";
-die;
-
 $range = range('A','Z');
 $objPHPExcel = new PHPExcel();
 $headerStyle1 = new PHPExcel_Style();

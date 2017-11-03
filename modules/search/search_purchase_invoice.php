@@ -156,9 +156,7 @@ if(!$db_obj->can_read('client_invoice')) {
 				dataType: "json",
 				cache: false,
 				data:{ purchaseExportData : $("#search-purchase-invoice").serialize()},
-				success: function(data)
-				{
-					//console.log(data.excelPurchaselUrl);
+				success: function(data){
 					window.location.href = data.excelPurchaselUrl;
 				}
 			});
