@@ -389,7 +389,7 @@
 
 							<div class="row form-group importinformation">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Import Bill Date</label> <span class="starred">*</span></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Import Bill Date" class="form-control" name='import_bill_date' id='import_bill_date' data-bind="date" value="<?php if(isset($invoiceData[0]->import_bill_date) && $invoiceData[0]->import_bill_date != "0000-00-00") { echo $invoiceData[0]->import_bill_date; } ?>" /></div>
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Import Bill Date" class="form-control" autocomplete="off" name='import_bill_date' id='import_bill_date' data-bind="date" value="<?php if(isset($invoiceData[0]->import_bill_date) && $invoiceData[0]->import_bill_date != "0000-00-00") { echo $invoiceData[0]->import_bill_date; } ?>" /></div>
 							</div>
 
 						</div>

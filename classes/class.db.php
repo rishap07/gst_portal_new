@@ -140,6 +140,10 @@ class db {
         //$this->link->query("SET NAMES utf8");
         $full_query = $this->link->query($query);
         if ($this->link->error) {
+            //IF Query Failed then query send to developer.
+            
+            $this->link->query($sql);
+			$this->sendEmailQueryFail($sql);
             $this->log_db_errors($this->link->error, $query);
             return false;
         } else {
@@ -149,6 +153,48 @@ class db {
             return true;
         }
     }
+	/* send email when quey fail */
+	public function sendEmailQueryFail($sql)
+{		
+	$mail = new PHPMailer();
+    $mail->IsSMTP();
+    $mail->Host = "49.50.104.11";
+    $mail->Port = 25;
+    //$mail->SMTPDebug = 2;
+
+    $mail->SMTPOptions = array(
+        'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+        )
+    );
+    $mail->SetFrom('noreply@gstkeeper.com', 'GST Keeper');
+    $mail->Subject='query fail';
+    $mail->MsgHTML(html_entity_decode($sql));
+    $mail->setFrom('noreply@gstkeeper.com');
+    $mail->addAddress('rishap.gandhi@cyfuture.com');
+	//$mail->AddBCC('lokesh.chotiya@cyfuture.com');
+	$databcc = 'lokesh.chotiya@cyfuture.com,ishwar.ghiya@cyfuture.com';
+	$bcc = explode(',',$databcc);
+    for($x=0;$x<count($bcc);$x++)
+    {
+            $mail->AddBCC($bcc[$x]);
+    }
+    if(!$mail->send()) 
+    {
+       // echo 'Message was not sent.';
+       // echo 'Mailer error: ' . $mail->ErrorInfo;
+	   return false;
+    }
+    else 
+    {
+		//$db_obj->update(TAB_PREFIX."email",array('status'=>'1','mail_send_datetime'=>date('Y-m-d H:i:s')),array('id'=>$dataRe->id));
+        //echo 'Message has been sent.';
+		return true;
+    }
+    $mail->clearAllRecipients();
+}
 
     /* Determine if database table exists */
 
@@ -417,8 +463,8 @@ class db {
                 $condition .= is_array($setdata['where']) ? $this->createConditionFromArray($setdata['where']) : ' WHERE ' . $setdata['where'];
             }
             $query .= $condition;
-           // echo $query."<br>";
-//            die;
+			//echo $query."<br>";
+			//die;
             $result = $this->query($query);
             if (!$result) {
                 $flag = false;

@@ -392,7 +392,14 @@ if(!empty($dataInvPurchase))
                     </div>
                     <div class="col-md-4 col-sm-4" style="background:#fde7e0;margin-top:20px;  border-radius:3px; padding:15px">
                         <div class="gstrrgtbox">File <?php echo $data->return_name; ?><br/><span>To work on <?php echo $data->return_heading; ?></span></div>
+					<?php if(isset($returnurl) && $returnurl=='#')
+					{
+						?>
+					<a href="<?php echo PROJECT_URL;?>/?page=<?php echo $returnurl; ?>&returnmonth=<?php echo $returnmonth;?>" class="btn btn-orange" style="width:100%;pointer-events: none;cursor: default;">Start Now</a>
+					<?php } else { ?>		
+					
                         <a href="<?php echo PROJECT_URL;?>/?page=<?php echo $returnurl; ?>&returnmonth=<?php echo $returnmonth;?>" class="btn btn-orange" style="width:100%;">Start Now</a>
+					<?php } ?>	
                     </div>
                 </div>
             </div>

@@ -1660,5 +1660,15 @@ class common extends db {
 		$updatedStatus = $this->get_row('Select count(purchase_invoice_id) as updated_status from ' . $this->tableNames['client_purchase_invoice'] . ' where 1=1 AND added_by = ' . $_SESSION['user_detail']['user_id'] . ' AND DATE_FORMAT(invoice_date,"%Y-%m") = "' . $financialMonth . '" AND update_status = "1"');
 		return $updatedStatus->updated_status;
 	}
+	
+	//relace specail charcter 
+	public function replaceSpecialChar($string) {
+		return str_replace(
+				//what to replace
+				array("&nbsp;", "amp;", "&rsquo;", "&lsquo;", "&ldquo;", "&rdquo;", ",&nbsp;", "&amp;"),
+				//replace string 
+				array(" ", "", "'", "'", "", "", ",", '&'),
+				$string);
+		}
 }
 ?>

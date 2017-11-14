@@ -222,6 +222,7 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	$dataArr['invoice_total_value'] = number_format($invoiceTotalAmount, 2, '.', '');
 	$dataArr['financial_year'] = $obj_purchase->generateFinancialYear();
 	$dataArr['status'] = 1;
+	$dataArr['update_status'] = 1;
 	$dataArr['added_by'] = $obj_purchase->sanitize($_SESSION['user_detail']['user_id']);
 	$dataArr['added_date'] = date('Y-m-d H:i:s');
 

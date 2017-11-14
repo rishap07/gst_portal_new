@@ -5,14 +5,14 @@ if(!$db_obj->can_read('client_invoice')) {
     $db_obj->redirect(PROJECT_URL."/?page=dashboard");
     exit();
 }
-?>
+     
+   ?>
+
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
 		<div class="col-md-12 col-sm-12 col-xs-12 heading"><h1>Purchase Invoice</h1></div>
-
-		<div class="whitebg formboxcontainer">
-
+			<div class="whitebg formboxcontainer">
 			<?php $db_obj->showErrorMessage(); ?>
 			<?php $db_obj->showSuccessMessge(); ?>
 			<?php $db_obj->unsetMessage(); ?>
@@ -107,7 +107,10 @@ if(!$db_obj->can_read('client_invoice')) {
 						<label>Supplier GSTIN/UIN</label>
 						<input type="text" placeholder="GSTIN/UIN" class="form-control" data-bind="content" name="supplier_billing_gstin_number" id="supplier_billing_gstin_number" value="<?php if(isset($_POST['supplier_billing_gstin_number'])) { echo $_POST['supplier_billing_gstin_number']; } ?>">
 					</div>
-
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>Is Cancel</label>
+						<input type="checkbox" class="checkbox" name="is_canceled" id="is_canceled" value="1" <?php if(isset($_REQUEST['is_canceled']) && $_REQUEST['is_canceled'] === "true"){ echo 'checked=checked'; }?>>
+					</div>
 					<div class="clear"></div>
 
 					<div class="adminformbxsubmit" style="width:100%;">
@@ -145,10 +148,9 @@ if(!$db_obj->can_read('client_invoice')) {
 	</div>
 </div>
 <!--========================sidemenu over=========================-->
+
 <script>
-    $(document).ready(function () {
-		
-		//export data start
+//export data start
 		$("#export").click(function(){
 			$.ajax({
 				url: "<?php echo PROJECT_URL; ?>/?ajax=search_export_purchase_invoice",
@@ -161,7 +163,21 @@ if(!$db_obj->can_read('client_invoice')) {
 				}
 			});
 		});
-
+    
+	$(document).ready(function () {
+	 <?php if((isset($_REQUEST['from_date']) && $_REQUEST['from_date']!='')	 &&	 (isset($_REQUEST['to_date']) && $_REQUEST['to_date']!='')){?>
+		/* get  invoice data as per url start*/
+		$('#from_date').val('<?php echo $_REQUEST['from_date']; ?>');
+		$('#to_date').val('<?php echo $_REQUEST['to_date']; ?>');
+		<?php  if(isset($_GET['is_canceled']) && $_GET['is_canceled']!=''){ ?>
+		$('#is_canceled').prop('checked', true);
+		<?php }?>
+		event.preventDefault();
+		TableManaged.init('','<?php echo isset($_GET['is_canceled'])?$_GET['is_canceled']:''; ?>','<?php echo isset($_GET['from_date'])?$_GET['from_date']:''; ?>','<?php echo isset($_GET['to_date'])?$_GET['to_date']:''; ?>');
+		/* get invoice data as per url end*/
+		<?php }?>
+		
+		
 		/* from date */
         $("#from_date").datepicker({
             changeMonth: true,
@@ -201,19 +217,19 @@ if(!$db_obj->can_read('client_invoice')) {
 		/* submit search form */
         $("#search-purchase-invoice").submit(function(event){
 			event.preventDefault();
-			TableManaged.init($("#search-purchase-invoice").serialize());
+			TableManaged.init($("#search-purchase-invoice").serialize(),'','','');
         });
 		/* end of submit search form */
     });
 	
 	var TableManaged = function () {
         return {
-            init: function (purchaseSearchData) {
+            init: function (purchaseSearchData,is_canceled,from_date,to_date) {
                 if (!jQuery().dataTable) {
                     return;
                 }
                 var sgHREF = window.location.pathname;
-                $.ajaxSetup({'type': 'POST', 'data' : {'purchaseSearchData':purchaseSearchData}, 'url': sgHREF, 'dataType': 'json'});
+                $.ajaxSetup({'type': 'POST', 'data' : {'purchaseSearchData':purchaseSearchData,'is_canceled':is_canceled,'from_date':from_date,'to_date':to_date}, 'url': sgHREF, 'dataType': 'json'});
                 $.extend($.fn.dataTable.defaults, {'sServerMethod': 'POST'});
                 $('#mainTable').dataTable({
                     "aoColumns": [

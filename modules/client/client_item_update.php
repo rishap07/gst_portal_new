@@ -58,7 +58,7 @@ if(isset($_GET['id']) && $obj_client->validateId($_GET['id']) && isset($_GET['ac
 		$obj_client->setError("No item found.");
         $obj_client->redirect(PROJECT_URL."?page=client_item_list");
 	}
-	
+
 	$dataArr = $obj_client->get_results("select cm.item_id, cm.item_name, cm.item_category, cm.unit_price, cm.unit_purchase_price, cm.cgst_tax_rate, cm.sgst_tax_rate, cm.igst_tax_rate, cm.cess_tax_rate, cm.is_applicable, cm.item_description, cm.item_unit, cm.status, CONCAT(UCASE(LEFT(m.item_name,1)),LCASE(SUBSTRING(m.item_name,2))) as category_name, m.hsn_code, u.unit_name, u.unit_code from ".$obj_client->getTableName('client_master_item')." as cm, ".$obj_client->getTableName('item')." as m, ".$obj_client->getTableName('unit')." as u WHERE cm.item_category = m.item_id AND cm.item_unit = u.unit_id AND cm.is_deleted='0' and cm.item_id = '".$obj_client->sanitize($_GET['id'])."'");
 }
 ?>

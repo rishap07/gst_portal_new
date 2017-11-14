@@ -4,8 +4,6 @@ $obj_gstr2 = new gstr2();
 $returnmonth = date('Y-m');
 $data= new json();
 
-//$obj_login->sendMobileMessage
-
 
 if (isset($_POST['returnmonth'])) {
     $returnmonth = $_POST['returnmonth'];
@@ -266,13 +264,13 @@ if (!empty($dataRes)) {
 								$total_inv+=$temp_total;
 								$inv_count++;
 							}
-							$taxable_amount+=$dataArr['taxable_subtotal'];
+							$taxable_amount+=$dataArr['taxable_total'];
 							$tax+=$dataArr['cgst']+$dataArr['sgst']+$dataArr['igst']+$dataArr['cess'];
 							if($dataArr['supply_type']=='reversecharge')
 							{
 								$itc+=$dataArr['cgst']+$dataArr['sgst']+$dataArr['igst']+$dataArr['cess'];
 							}
-							$temp_total= $dataArr['invoice_total_value'];
+							$temp_total= $dataArr['invoice_total'];
 							$temp=$dataArr['reference_number'];
 						}
 						if($temp!='')

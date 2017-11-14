@@ -25,6 +25,29 @@ $returnmonth = date('Y-m');
 if ($_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
 }
+$resultdata = $obj_return->getGstr3bDetails($returnmonth);
+
+if($resultdata[1]==0)
+{
+	
+}
+else
+{
+	//$obj_return->pr($resultdata[0]);
+	//$obj_return->pr($resultdata[0]->intr_ltfee);
+	$ltfee_details=$resultdata[0]->intr_ltfee;
+	if(isset($ltfee_details->ltfee_details))
+	{
+	$latefee_details= $ltfee_details->ltfee_details;
+    $latefees_igst= $latefee_details->iamt;
+	$latefees_cgst = $latefee_details->camt;
+	$latefees_sgst =$latefee_details->samt;
+	$latefees_cess=$latefee_details->csamt;
+	}
+		
+	
+}
+//$obj_return->pr($resultdata);die;
 if(isset($_POST['submit']) && $_POST['submit']=='submit') {
     //$flag = $obj_return->checkVerifyUser();
     //if($flag=='verify')
@@ -218,7 +241,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
 		{
 			$vendor_id2 = $flag;
 		}			
-    $supply_unregistered="SELECT i.billing_state as state, COUNT(i.invoice_id) as numcount,sum(igst_amount) as igst_amount,sum(item.taxable_subtotal) as totaltaxable_value FROM gst_client_invoice as i inner join gst_client_invoice_item as item on item.invoice_id = i.invoice_id inner join gst_vendor_type as v on v.vendor_id = i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0' and billing_gstin_number='' and (v.vendor_id<>'".$vendor_id1."' and v.vendor_id<>'".$vendor_id2."') and i.status='1' and i.invoice_date like '%" . $returnmonth . "%' AND i.company_state <> i.supply_place GROUP by i.billing_state";
+    $supply_unregistered="SELECT i.billing_state as state, COUNT(i.invoice_id) as numcount,sum(igst_amount) as igst_amount,sum(item.taxable_subtotal) as totaltaxable_value FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id inner join gst_vendor_type as v on v.vendor_id = i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0' and billing_gstin_number='' and (v.vendor_id<>'".$vendor_id1."' and v.vendor_id<>'".$vendor_id2."') and i.status='1' and i.invoice_date like '%" . $returnmonth . "%' AND i.company_state <> i.supply_place GROUP by i.billing_state";
 	 $supply_unregistered_data = $obj_return->get_results($supply_unregistered);
         $total = 0;
         if (!empty($supply_unregistered_data)) {
@@ -231,7 +254,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
 			$vendor_id = $flag;
 		}
 	
-     $supply_composition="SELECT i.billing_state as state, COUNT(i.invoice_id) as numcount,sum(igst_amount) as igst_amount,sum(item.taxable_subtotal) as totaltaxable_value FROM gst_client_invoice as i inner join gst_client_invoice_item as item on item.invoice_id = i.invoice_id inner join gst_vendor_type as v on v.vendor_id = i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0' and v.vendor_id='".$vendor_id."' and i.status='1' and i.invoice_date like '%" . $returnmonth . "%' AND i.company_state <> i.supply_place GROUP by i.billing_state";
+     $supply_composition="SELECT i.billing_state as state, COUNT(i.invoice_id) as numcount,sum(igst_amount) as igst_amount,sum(item.taxable_subtotal) as totaltaxable_value FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id inner join gst_vendor_type as v on v.vendor_id = i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0' and v.vendor_id='".$vendor_id."' and i.status='1' and i.invoice_date like '%" . $returnmonth . "%' AND i.company_state <> i.supply_place GROUP by i.billing_state";
 	 $supply_composition_data = $obj_return->get_results($supply_composition);
         $total = 0;
         if (!empty($supply_composition_data)) {
@@ -243,7 +266,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['
 		{
 			$vendor_id = $flag;
 		}	 
-	 $supply_uin_holder="SELECT i.billing_state as state, COUNT(i.invoice_id) as numcount,sum(igst_amount) as igst_amount,sum(item.taxable_subtotal) as totaltaxable_value FROM gst_client_invoice as i inner join gst_client_invoice_item as item on item.invoice_id = i.invoice_id inner join gst_vendor_type as v on v.vendor_id = i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0' and v.vendor_id='".$vendor_id."' and i.status='1' and i.invoice_date like '%" . $returnmonth . "%' AND i.company_state <> i.supply_place GROUP by i.billing_state";
+	 $supply_uin_holder="SELECT i.billing_state as state, COUNT(i.invoice_id) as numcount,sum(igst_amount) as igst_amount,sum(item.taxable_subtotal) as totaltaxable_value FROM " . $db_obj->getTableName('client_invoice') . " as i inner join " . $db_obj->getTableName('client_invoice_item') . " as item on item.invoice_id = i.invoice_id inner join gst_vendor_type as v on v.vendor_id = i.billing_vendor_type WHERE i.invoice_nature='salesinvoice' and (i.invoice_type <> 'deliverychallaninvoice' and i.invoice_type<>'creditnote' and i.invoice_type<>'refundvoucherinvoice') and i.added_by='" . $_SESSION["user_detail"]["user_id"] . "' and i.is_canceled='0' and i.is_deleted='0' and v.vendor_id='".$vendor_id."' and i.status='1' and i.invoice_date like '%" . $returnmonth . "%' AND i.company_state <> i.supply_place GROUP by i.billing_state";
 	 $supply_uin_holder_data = $obj_return->get_results($supply_uin_holder);
         $total = 0;
         if (!empty($supply_uin_holder_data)) {
@@ -2245,7 +2268,7 @@ composition taxable persons and UIN holders</div>
 								 {
 									 ?>
 								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_integrated_tax"
- class="form-control"  placeholder="" /> 
+ class="form-control" value="<?php  echo (isset($latefees_igst)) ? $latefees_igst : '0.00' ?>"   placeholder="" /> 
 								 <?php } ?>
                                  </td> 	
                               <td> 
@@ -2258,7 +2281,7 @@ composition taxable persons and UIN holders</div>
 								 {
 									 ?>
 								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_central_tax" 
- class="form-control"  placeholder="" /> 
+ class="form-control" value="<?php  echo (isset($latefees_cgst)) ? $latefees_cgst : '0.00' ?>"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 	 
                                <td> 
@@ -2271,7 +2294,7 @@ composition taxable persons and UIN holders</div>
 								 {
 									 ?>
 								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_state_tax" 
- class="form-control"  placeholder="" /> 
+ class="form-control" value="<?php  echo (isset($latefees_sgst)) ? $latefees_sgst : '0.00' ?>"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 	 
 <td> 
@@ -2284,7 +2307,7 @@ composition taxable persons and UIN holders</div>
 								 {
 									 ?>
 								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_cess_tax" 
- class="form-control"  placeholder="" /> 
+ class="form-control" value="<?php  echo (isset($latefees_cess)) ? $latefees_cess : '0.00' ?>"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 	 								 
                                     

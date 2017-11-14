@@ -8,8 +8,6 @@
 */
 header('Content-type: application/json');
 $obj_client = new client();
-$supplier = array();
-$counter = 0;
 if(isset($_GET['ajax']) && $_GET['ajax'] == "client_invoice_cancel" && $_POST['action'] == "cancelSalesInvoice") {
 
 	$dataConditionArray['invoice_id'] = $_POST['salesInvoiceId'];

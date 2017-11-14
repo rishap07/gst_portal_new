@@ -27,7 +27,7 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
 	<div class="col-md-12 col-sm-12 col-xs-12">
-	
+
 		<div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>GSTR-2 Filing</h1></div>
 		<div class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav">
 			<a href="#">Home</a> <i class="fa fa-angle-right" aria-hidden="true"></i>
@@ -56,7 +56,7 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 			<div class="clear"></div>
 			<hr>
 			<div class="clear"></div>
-			
+
 			<?php $obj_gstr2->showErrorMessage(); ?>
 			<?php $obj_gstr2->showSuccessMessge(); ?>
 			<?php $obj_gstr2->unsetMessage(); ?>
@@ -107,6 +107,7 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 									$responseTableB2B .= '<th style="text-align:center">Csamt ( <i class="fa fa-inr"></i> )</th>';
 									$responseTableB2B .= '<th style="text-align:center">Value ( <i class="fa fa-inr"></i> )</th>';
 									$responseTableB2B .= '<th style="text-align:center">Rchrg</th>';
+									$responseTableB2B .= '<th style="text-align:center">Filing Status</th>';
 								$responseTableB2B .= '</tr>';
 							$responseTableB2B .= '</thead>';
 							$responseTableB2B .= '<tbody>';
@@ -139,6 +140,7 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 									$responseTableB2B .= '<td align="center">'.$value->total_cess_amount.'</td>';
 									$responseTableB2B .= '<td align="right">'.$value->invoice_total_value.'</td>';
 									$responseTableB2B .= '<td align="center">'.$value->rchrg.'</td>';
+									$responseTableB2B .= '<td align="center">'.$value->cfs.'</td>';
 								$responseTableB2B .= '</tr>';
 
 								$temp = $value->reference_number;
@@ -175,6 +177,7 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 									$responseTableCDN .= '<th style="text-align:center">Val ( <i class="fa fa-inr"></i> )</th>';
 									$responseTableCDN .= '<th style="text-align:center">Rsn </th>';
 									$responseTableCDN .= '<th style="text-align:center">Ntty</th>';
+									$responseTableCDN .= '<th style="text-align:center">Filing Status</th>';
 								$responseTableCDN .= '</tr>';
 							$responseTableCDN .= '</thead>';
 							$responseTableCDN .= '<tbody>';
@@ -210,6 +213,7 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 									$responseTableCDN .= '<td align="right">'.$value->invoice_total_value.'</td>';
 									$responseTableCDN .= '<td align="center">'.$value->rsn.'</td>';
 									$responseTableCDN .= '<td align="center">'.$value->ntty.'</td>';
+									$responseTableCDN .= '<td align="center">'.$value->cfs.'</td>';
 								$responseTableCDN .= '</tr>';
 
 								$temp = $value->reference_number;

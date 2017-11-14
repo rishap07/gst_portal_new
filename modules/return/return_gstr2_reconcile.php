@@ -20,9 +20,55 @@ if (isset($_POST['reconcileData']) && $_POST['reconcileData'] == 'Auto Populate 
 	$dataArray = array();
 	$reconcileDataArray = array();
 
+	/* purchase import invoice data */
+	$resultTempImportPurchase = $resultImportPurchase = $obj_json->getGSTR2APurchaseImportInvoiceData($_SESSION['user_detail']['user_id'], $returnmonth, false);
+	foreach($resultTempImportPurchase as $ikey => $purchaseImportInvoice) {
+
+		//missing
+		$dataArray['invoice_type'] = $purchaseImportInvoice['invoice_type'];
+		$dataArray['reference_number'] = $purchaseImportInvoice['reference_number'];
+		$dataArray['invoice_date'] = $purchaseImportInvoice['invoice_date'];
+		$dataArray['invoice_total_value'] = $purchaseImportInvoice['invoice_total_value'];
+		$dataArray['total_taxable_subtotal'] = $purchaseImportInvoice['total_taxable_subtotal'];
+		$dataArray['company_gstin_number'] = $purchaseImportInvoice['company_gstin_number'];
+		$dataArray['total_cgst_amount'] = $purchaseImportInvoice['total_cgst_amount'];
+		$dataArray['total_sgst_amount'] = $purchaseImportInvoice['total_sgst_amount'];
+		$dataArray['total_igst_amount'] = $purchaseImportInvoice['total_igst_amount'];
+		$dataArray['total_cess_amount'] = $purchaseImportInvoice['total_cess_amount'];
+		$dataArray['nt_num'] = $purchaseImportInvoice['nt_num'];
+		$dataArray['nt_dt'] = $purchaseImportInvoice['nt_dt'];
+		$dataArray['p_gst'] = 'N';
+		$dataArray['rate'] = $purchaseImportInvoice['rate'];
+		$dataArray['pos'] = $purchaseImportInvoice['pos'];
+		$dataArray['advance_adjustment'] = $purchaseImportInvoice['advance_adjustment'];
+		$dataArray['receipt_voucher_number'] = $purchaseImportInvoice['receipt_voucher_number'];
+		$dataArray['advance_amount'] = $purchaseImportInvoice['advance_amount'];
+
+		if($purchaseImportInvoice['item_type'] == 1) {
+			$dataArray['inv_typ'] = 'IMPS';
+		} else {
+			$dataArray['inv_typ'] = 'IMPG';
+		}
+
+		$dataArray['import_supply_meant'] = $purchaseImportInvoice['import_supply_meant'];
+		$dataArray['import_bill_number'] = $purchaseImportInvoice['import_bill_number'];
+		$dataArray['import_bill_date'] = $purchaseImportInvoice['import_bill_date'];
+		$dataArray['import_bill_port_code'] = $purchaseImportInvoice['import_bill_port_code'];
+		$dataArray['ntty'] = '';
+		$dataArray['rsn'] = $purchaseImportInvoice['reason_issuing_document'];
+		$dataArray['reverse_charge'] = $purchaseImportInvoice['reverse_charge'];
+		$dataArray['reconciliation_status'] = "pending";
+		$dataArray['invoice_status'] = 'missing';
+		$dataArray['financial_month'] = $purchaseImportInvoice['financial_month'];
+		$dataArray['status'] = '1';
+		$dataArray['added_by'] = $_SESSION['user_detail']['user_id'];
+		$dataArray['added_date'] = date('Y-m-d H:i:s');
+		array_push($reconcileDataArray, $dataArray);
+	}
+
 	/* purchase invoice data */
 	$resultTempPurchase = $resultPurchase = $obj_json->getGSTR2APurchaseInvoiceData($_SESSION['user_detail']['user_id'], $returnmonth, false);
-	
+
 	/* downloaded invoice data */
 	$resultTempDownloadPurchase = $resultDownloadPurchase = $obj_json->getGSTR2ADownlodedInvoiceData($_SESSION['user_detail']['user_id'], $returnmonth, false);
 

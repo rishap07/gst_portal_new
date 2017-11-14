@@ -15,8 +15,8 @@ $obj_notification = new notification();
 extract($_POST);
 
 //Columns to fetch from database
-$aColumns = array('n.notification_id', 'n.notification_name', 'n.notification_message');
-$aSearchColumns = array('n.notification_id', 'n.notification_name');
+$aColumns = array('n.notification_id', 'n.notification_name','DATE_FORMAT(n.added_date, "%e %M %Y %r") as added_date', 'n.notification_message');
+$aSearchColumns = array('n.notification_id', 'n.notification_name','n.added_date');
 $sIndexColumn = "n.notification_id";
  // $sql="select * from " . $db_obj->getTableName('notification') . " as n INNER join " . $db_obj->getTableName('user_notification') . " as u on u.notification_id=n.notification_id  where n.status='1' and  u.user_id='".$_SESSION["user_detail"]["user_id"]."' order by u.notification_id desc";
 				
@@ -44,7 +44,7 @@ if (isset($_POST['iSortCol_0'])) {
         }
     }
     if ($spOrder == "ORDER BY ") {
-        $spOrder = "ORDER BY n.notification_id ASC";
+        $spOrder = "ORDER BY n.notification_id DESC";
     }
 }
 
@@ -131,7 +131,7 @@ foreach($rResult as $aRow) {
     $message=$obj_notification->strip_tags_content(html_entity_decode($aRow->notification_message));
 	$readmore='&nbsp<a href="'.PROJECT_URL.'/?page=notification_view&id='.$aRow->notification_id.'" class="iconedit hint--bottom" data-hint="Edit" >Read more</a>';
     $row[] = utf8_decode(html_entity_decode(implode(' ', array_slice(str_word_count($message, 2), 0,20)).$readmore));
-  
+    $row[] = $aRow->added_date;
     $output['aaData'][] = $row;
     $temp_x++;
 }

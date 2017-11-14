@@ -10,7 +10,7 @@
 
 extract($_POST);
 parse_str($_POST['salesSearchData'], $params);
-
+//print_r($_POST);
 //Columns to fetch from database
 $aColumns = array('ci.invoice_id', 'ci.invoice_type', 'ci.invoice_nature', 'ci.serial_number', 'ci.reference_number', 'ci.supply_type', 'ci.export_supply_meant', 'ci.invoice_date', 'ci.supply_place', 'ci.billing_name', 'ci.billing_state', 'ci.billing_state_name', 'ci.billing_gstin_number', 'ci.is_canceled', 'ci.invoice_total_value', 'ci.financial_year');
 
@@ -57,12 +57,14 @@ if (isset($_POST['iSortCol_0'])) {
 
 $uWhere = " where 1=1 AND ci.is_deleted='0' AND ci.added_by='".$db_obj->sanitize($_SESSION['user_detail']['user_id'])."' ";
 
-if(isset($params['from_date']) && !empty($params['from_date'])) {
-	$uWhere .= " AND ci.invoice_date >= '" . $params['from_date'] ."'";
+if((isset($params['from_date']) && !empty($params['from_date'])) || (isset($_POST['from_date']) && !empty($_POST['from_date']))) {
+	$from_date = (isset($params['from_date']) && $params['from_date'])?$params['from_date']:(isset($_POST['from_date']) &&$_POST['from_date']?$_POST['from_date']:'');
+	$uWhere .= " AND ci.invoice_date >= '" . $from_date ."'";
 }
 
-if(isset($params['to_date']) && !empty($params['to_date'])) {
-	$uWhere .= " AND ci.invoice_date <= '" . $params['to_date'] ."'";
+if((isset($params['to_date']) && !empty($params['to_date'])) || (isset($_POST['to_date']) && !empty($_POST['to_date']))) {
+	$to_date = (isset($params['to_date']) && $params['to_date'])?$params['to_date']:(isset($_POST['to_date']) && $_POST['to_date']?$_POST['to_date']:'');
+	$uWhere .= " AND ci.invoice_date <= '" . $to_date ."'";
 }
 
 if(isset($params['invoice_type']) && !empty($params['invoice_type'])) {
@@ -88,6 +90,11 @@ if(isset($params['billing_state']) && !empty($params['billing_state'])) {
 if(isset($params['billing_gstin_number']) && !empty($params['billing_gstin_number'])) {
 	$uWhere .= " AND ci.billing_gstin_number LIKE '%" . $params['billing_gstin_number'] ."%'";
 }
+
+if(isset($params['is_canceled']) && !empty($params['is_canceled']) || isset($_POST['is_canceled']) && !empty($_POST['is_canceled'])) {
+	$uWhere .= " AND ci.is_canceled = '1'";
+}
+
 
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
 

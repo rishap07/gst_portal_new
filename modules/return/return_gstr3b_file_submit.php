@@ -23,6 +23,28 @@ $returnmonth = date('Y-m');
 if ($_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
 }
+$resultdata = $obj_return->getGstr3bDetails($returnmonth);
+
+if($resultdata[1]==0)
+{
+	
+}
+else
+{
+	//$obj_return->pr($resultdata[0]);
+	//$obj_return->pr($resultdata[0]->intr_ltfee);
+	$ltfee_details=$resultdata[0]->intr_ltfee;
+	if(isset($ltfee_details->ltfee_details))
+	{
+	$latefee_details= $ltfee_details->ltfee_details;
+    $latefees_igst= $latefee_details->iamt;
+	$latefees_cgst = $latefee_details->camt;
+	$latefees_sgst =$latefee_details->samt;
+	$latefees_cess=$latefee_details->csamt;
+	}
+		
+	
+}
 if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 
    
@@ -1716,8 +1738,8 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_integrated_tax" value="<?php echo $returndata[0]->interest_latefees_integrated_tax; ?>"
- class="form-control"  placeholder="" /> 
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_integrated_tax" value="<?php if(isset($returndata[0]->interest_latefees_integrated_tax)) { echo $returndata[0]->interest_latefees_integrated_tax; } else {  if(isset($latefees_igst)) { echo $latefees_igst; } else { echo '0.00'; }} ?>"
+ class="form-control"   placeholder="" /> 
 								 <?php } ?>
                                  </td> 	
                               <td> 
@@ -1729,7 +1751,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_central_tax" value="<?php echo $returndata[0]->interest_latefees_central_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_central_tax" value="<?php if(isset($returndata[0]->interest_latefees_central_tax)) { echo $returndata[0]->interest_latefees_central_tax; } else {  if(isset($latefees_cgst)) { echo $latefees_cgst; } else { echo '0.00'; }} ?>" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 	 
@@ -1742,7 +1764,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_state_tax" value="<?php echo $returndata[0]->interest_latefees_state_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_state_tax" value="<?php if(isset($returndata[0]->interest_latefees_state_tax)) { echo $returndata[0]->interest_latefees_state_tax; } else {  if(isset($latefees_sgst)) { echo $latefees_sgst; } else { echo '0.00'; }} ?>" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 	
@@ -1755,7 +1777,7 @@ composition taxable persons and UIN holders</div>
 								 <?php } else
 								 {
 									 ?>
-								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_cess_tax" value="<?php echo $returndata[0]->interest_latefees_cess_tax; ?>"
+								 <input type="text" maxlength="15" onKeyPress="return  isNumberKey(event,this);" name="interest_latefees_cess_tax" value="<?php if(isset($returndata[0]->interest_latefees_cess_tax)) { echo $returndata[0]->interest_latefees_cess_tax; } else {  if(isset($latefees_cess)) { echo $latefees_cess; } else { echo '0.00'; }} ?>" 
  class="form-control"  placeholder="" /> 
 								 <?php } ?>
                                  </td> 	 								 

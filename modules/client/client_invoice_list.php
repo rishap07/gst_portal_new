@@ -71,8 +71,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'emailInvoice' && isset($_GET['
 
 if (isset($_GET['action']) && $_GET['action'] == 'printInvoice' && isset($_GET['id']) && $obj_client->validateId($_GET['id'])) {
 
-    $htmlResponse = $obj_client->generateInvoiceHtml($_GET['id']);
-
+    $htmlResponse = $obj_client->replaceSpecialChar($obj_client->generateInvoiceHtml($_GET['id']));
+	
     if ($htmlResponse === false) {
 
         $obj_client->setError("No invoice found.");

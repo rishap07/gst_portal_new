@@ -8,8 +8,6 @@
 */
 header('Content-type: application/json');
 $obj_purchase = new purchase();
-$supplier = array();
-$counter = 0;
 if(isset($_GET['ajax']) && $_GET['ajax'] == "purchase_invoice_cancel" && $_POST['action'] == "cancelPurchaseInvoice") {
 
 	$dataConditionArray['purchase_invoice_id'] = $_POST['purchaseInvoiceId'];

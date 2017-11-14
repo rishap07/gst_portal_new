@@ -27,21 +27,27 @@ $finalReconcileData = $obj_json->getGst2ReconcileFinalQuery($returnmonth, $invoi
       <h1>Reconciliation</h1>
     </div>
     <div class="whitebg formboxcontainer">
+	
+		<div class="pull-left">
+		  <?php if(strtoupper($invoice_status) == "MATCH") { ?>
+			<h3 style="margin-top:0px;margin-bottom:10px;">Matched Invoice</h3>
+		  <?php } elseif(strtoupper($invoice_status) == "ADDITIONAL") { ?>
+			<h3 style="margin-top:0px;margin-bottom:10px;">Additional Invoice</h3>
+		  <?php } elseif(strtoupper($invoice_status) == "MISSING") { ?>
+			<h3 style="margin-top:0px;margin-bottom:10px;">Missing Invoice</h3>
+		  <?php } elseif(strtoupper($invoice_status) == "MISMATCH") { ?>
+			<h3 style="margin-top:0px;margin-bottom:10px;">Mismatch Invoice</h3>
+		  <?php } ?>
+		</div>
 
-	  <?php if(strtoupper($invoice_status) == "MATCH") { ?>
-		<h3 style="margin-top:0px;margin-bottom:10px;">Matched Invoice</h3>
-      <?php } elseif(strtoupper($invoice_status) == "ADDITIONAL") { ?>
-		<h3 style="margin-top:0px;margin-bottom:10px;">Additional Invoice</h3>
-      <?php } elseif(strtoupper($invoice_status) == "MISSING") { ?>
-		<h3 style="margin-top:0px;margin-bottom:10px;">Missing Invoice</h3>
-      <?php } elseif(strtoupper($invoice_status) == "MISMATCH") { ?>
-		<h3 style="margin-top:0px;margin-bottom:10px;">Mismatch Invoice</h3>
-      <?php } ?>
-	  
+		<div class="pull-right">
+			<a href="<?php echo PROJECT_URL; ?>/?page=return_gstr2_reconcile&returnmonth=<?php echo $returnmonth; ?>" role="button" class="btn btn-success">Back</a>
+		</div>
+
 	  <div class="clear"></div>
 	  <hr>
 	  <div class="clear"></div>
-	  
+
 	  <?php $obj_json->showErrorMessage(); ?>
 	  <?php $obj_json->showSuccessMessge(); ?>
 	  <?php $obj_json->unsetMessage(); ?>

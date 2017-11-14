@@ -142,7 +142,7 @@ class graph extends validation {
 		return $cancelInvoiceArray;
 	}
 
-    
+     
 
 }
 ?>

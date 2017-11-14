@@ -1000,12 +1000,12 @@ final class gstr3b extends validation {
 		$interestpaidcess_cess=isset($_POST['interestpaidcess_cess']) ? $_POST['interestpaidcess_cess'] : '0.00';
 		$latefee_cash=isset($_POST['latefee_cash']) ? $_POST['latefee_cash'] : '0.00';
 		$latefee_sgst=isset($_POST['latefee_sgst']) ? $_POST['latefee_sgst'] : '0.00';
-   /***** Start Code For reverse charge paidcash value ********** */
-   $taxpaidcess_igst=isset($_POST['taxpaidcess_igst']) ? $_POST['taxpaidcess_igst'] : '0.00';
-   $taxpaidcess_cgst=isset($_POST['taxpaidcess_cgst']) ? $_POST['taxpaidcess_cgst'] : '0.00';
-   $taxpaidcess_sgst=isset($_POST['taxpaidcess_sgst']) ? $_POST['taxpaidcess_sgst'] : '0.00';
-   $taxpaidcess_cess=isset($_POST['taxpaidcess_cess']) ? $_POST['taxpaidcess_cess'] : '0.00';
-   
+		   /***** Start Code For reverse charge paidcash value ********** */
+		   $taxpaidcess_igst=isset($_POST['taxpaidcess_igst']) ? $_POST['taxpaidcess_igst'] : '0.00';
+		   $taxpaidcess_cgst=isset($_POST['taxpaidcess_cgst']) ? $_POST['taxpaidcess_cgst'] : '0.00';
+		   $taxpaidcess_sgst=isset($_POST['taxpaidcess_sgst']) ? $_POST['taxpaidcess_sgst'] : '0.00';
+		   $taxpaidcess_cess=isset($_POST['taxpaidcess_cess']) ? $_POST['taxpaidcess_cess'] : '0.00';
+		   
    
    	/***** end Code For total taxpayable otherthan reverse charge ********** */
 	/***** Start Code For total taxpayable otherthan reverse charge ********** */
@@ -1102,21 +1102,23 @@ final class gstr3b extends validation {
 		$dataoffset=array();
 		if(isset($paidcash_liab_ldg_id1) && $paidcash_liab_ldg_id1!='' && isset($paidcash_trans_type1) && $paidcash_trans_type1!='')
 		{
-	
-		$data1[0]['liab_ldg_id'] = $paidcash_liab_ldg_id1;		
-        $data1[0]['trans_typ'] = $paidcash_trans_type1;
-        $data1[0]['ipd'] = (float)$taxpaidcess_igst;
-        $data1[0]['cpd'] = (float)$taxpaidcess_cgst;
-        $data1[0]['spd'] = (float)$taxpaidcess_sgst;
-        $data1[0]['cspd'] = (float)$taxpaidcess_cess;
-		$data1[0]['i_intrpd'] = (float)$interestpaidigst_igst;
-		$data1[0]['c_intrpd'] = (float)$interestpaidcgst_igst;
-		$data1[0]['s_intrpd'] = (float)$interestpaidsgst_sgst;
-		$data1[0]['cs_intrpd'] = (float)$interestpaidcess_cess;
-		$data1[0]['c_lfeepd'] = (float)$latefee_cash;
-		$data1[0]['s_lfeepd'] = (float)$latefee_sgst;
+		
+		$data1['liab_ldg_id'] = $paidcash_liab_ldg_id1;		
+        $data1['trans_typ'] = $paidcash_trans_type1;
+        $data1['ipd'] = (float)$taxpaidcess_igst;
+        $data1['cpd'] = (float)$taxpaidcess_cgst;
+        $data1['spd'] = (float)$taxpaidcess_sgst;
+        $data1['cspd'] = (float)$taxpaidcess_cess;
+		$data1['i_intrpd'] = (float)$interestpaidigst_igst;
+		$data1['c_intrpd'] = (float)$interestpaidcgst_igst;
+		$data1['s_intrpd'] = (float)$interestpaidsgst_sgst;
+		$data1['cs_intrpd'] = (float)$interestpaidcess_cess;
+		$data1['c_lfeepd'] = (float)$latefee_cash;
+		$data1['s_lfeepd'] = (float)$latefee_sgst;
+		
+		//$data1='[]';
 		}else{
-			$data1='{}';
+			$data1='[]';
 		}
 		//data2
 		/*
@@ -1128,20 +1130,25 @@ final class gstr3b extends validation {
         $data1[1]['cspd'] = (float)'0.00';
 		*/
 		//data3
-		$data3[0]['liab_ldg_id'] = $paidcash_liab_ldg_id2;		
-        $data3[0]['trans_typ'] = $paidcash_trans_type2;
-        $data3[0]['i_pdi'] = (float)$paiditcigst_igst;
-        $data3[0]['i_pdc'] = (float)$paiditcigst_cgst;
-        $data3[0]['i_pds'] = (float)$paiditcigst_sgst;
-        $data3[0]['c_pdi'] = (float)$paiditccgst_igst;
-		$data3[0]['c_pdc'] = (float)$paiditccgst_cgst;
-		$data3[0]['s_pdi'] = (float)$paiditcsgst_igst;
-		$data3[0]['s_pds'] = (float)$paiditcsgst_sgst;
-		$data3[0]['cs_pdcs'] = (float)$paiditccess_cess;
-		 //$this->pr($data=array("doc_num1"=>$data1,"doc_num2"=>$data2,"doc_num3"=>$data3,"doc_num4"=>$data4,"doc_num5"=>$data5,"doc_num6"=>$data6,"doc_num7"=>$data7,"doc_num8"=>$data8,"doc_num9"=>$data9,"doc_num10"=>$data10,"doc_num11"=>$data11,"doc_num12"=>$data12));
+		$data3['liab_ldg_id'] = $paidcash_liab_ldg_id2;		
+        $data3['trans_typ'] = $paidcash_trans_type2;
+        $data3['i_pdi'] = (float)$paiditcigst_igst;
+        $data3['i_pdc'] = (float)$paiditcigst_cgst;
+        $data3['i_pds'] = (float)$paiditcigst_sgst;
+        $data3['c_pdi'] = (float)$paiditccgst_igst;
+		$data3['c_pdc'] = (float)$paiditccgst_cgst;
+		$data3['s_pdi'] = (float)$paiditcsgst_igst;
+		$data3['s_pds'] = (float)$paiditcsgst_sgst;
+		$data3['cs_pdcs'] = (float)$paiditccess_cess;
+		//$this->pr($data=array("doc_num1"=>$data1,"doc_num2"=>$data2,"doc_num3"=>$data3,"doc_num4"=>$data4,"doc_num5"=>$data5,"doc_num6"=>$data6,"doc_num7"=>$data7,"doc_num8"=>$data8,"doc_num9"=>$data9,"doc_num10"=>$data10,"doc_num11"=>$data11,"doc_num12"=>$data12));
+		 if(!empty($data1))
+		 {
 	    $dataoffset=array("pdcash"=>$data1,"pditc"=>$data3);
-        $returnSummary= json_encode($dataoffset);
-		echo $returnSummary;
+		 }else{
+			 $dataoffset=array("pditc"=>$data3);
+		 }
+		$returnSummary= json_encode($dataoffset);
+		//echo $returnSummary;
          $error =1;
         $msg = '';
         $api_return_period = $obj_gstr->getRetrunPeriodFormat($returnmonth);
@@ -1186,18 +1193,25 @@ final class gstr3b extends validation {
             if(isset($retDta1->status_cd) && $retDta1->status_cd=='1'  && $msg == '')
             {
                 $retRek=$retDta1->rek;
+				//$this->pr($retDta1);
                 $retData1=$retDta1->data;
-                $apiEk1 = $this->decrypt($_SESSION['decrypt_sess_key'],$retRek);
+                $apiEk1 = $obj_gstr->decrypt($_SESSION['decrypt_sess_key'],$retRek);
                 //$apiEk1=openssl_decrypt(base64_decode($retRek),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
-                $decodejson1 =  base64_decode($this->decrypt($_SESSION['decrypt_sess_key'],$retData1));
-                //$decodejson1= base64_decode(openssl_decrypt(base64_decode($retData1),"aes-256-ecb",$apiEk1, OPENSSL_RAW_DATA));
-
-                $ref = json_decode($decodejson1);
-
-                $refId = $ref->reference_id;
-                sleep(5);
+                //$decodejson1 =  base64_decode($obj_gstr->decrypt($_SESSION['decrypt_sess_key'],$retData1));
+                $decodejson1= base64_decode(openssl_decrypt(base64_decode($retData1),"aes-256-ecb",$apiEk1, OPENSSL_RAW_DATA));
+				
+				if(!empty($decodejson1))
+				{
+					$pos = strpos($decodejson1,"Payment of tax successfully done");
+					if($pos==true)
+					{
+					$this->setSuccess("Payment of tax successfully done");
+					return true;
+					}
+				}
                 
                 //Start code for create header
+				/*
                 $header2_array = array(
                     'auth-token:' . $_SESSION['auth_token'] . '',
                     'gstin:' . $gstin . '',
@@ -1214,47 +1228,12 @@ final class gstr3b extends validation {
               
                 $result_data1 = $obj_gstr->hitGetUrl($url2, '', $header2);
                
-                $retDta = json_decode($result_data1);
+                $retDta1 = json_decode($result_data1);
+				*/
                //$this->pr($retDta);die;
 				
                 
-                if(isset($retDta->status_cd) && $retDta->status_cd=='1' && $msg == '')
-                {
-                    $retReksStatus=$retDta->rek;
-                    $retData1Status=$retDta->data;
-                    $apiEk1Status = $obj_gstr->decrypt($_SESSION['decrypt_sess_key'],$retReksStatus);
-                    //$apiEk1Status=openssl_decrypt(base64_decode($retReksStatus),"aes-256-ecb",$_SESSION['decrypt_sess_key'], OPENSSL_RAW_DATA);
-                    $decodejson1Status =  base64_decode($this->decrypt($_SESSION['decrypt_sess_key'],$retData1Status));
-                    //$decodejson1Status= base64_decode(openssl_decrypt(base64_decode($retData1Status),"aes-256-ecb",$apiEk1Status, OPENSSL_RAW_DATA));
-                    ;
-                    if(!empty($decodejson1Status) && $msg == '') {
-                        $jstr1_status = json_decode($decodejson1Status,true);
-                        //$this->pr($jstr1_status);
-                        
-                        if(isset($jstr1_status['status_cd']) && $jstr1_status['status_cd']=='P' && $msg == '') {
-
-                            $error = 0;
-                        }
-                        elseif(isset($jstr1_status['status_cd']) && $jstr1_status['status_cd']=='IP' && $msg == ''){
-                            $msg = "Invoices are under procces, kindly wait for some time.";
-                            $error = 2;
-                        }
-                        else {
-                            $obj_gstr->array_key_search('error_msg', $jstr1_status);
-                            $msg = $obj_gstr->error_msg;
-                            if(!$msg) {
-                                $msg = "Sorry! Something went wrong, please try again.";
-                            }
-                            //$this->pr($msg);
-                        }
-                    }
-                    else {
-                       $msg = "Sorry! Invalid proccess";
-                    }
-                }
-                else {
-                    $msg = "Sorry! Invalid proccess";
-                }
+                
             }
             else {
                $msg = $retDta1->error->message;
@@ -1266,7 +1245,7 @@ final class gstr3b extends validation {
         $response['error'] = $error;
 		if(isset($response['error']) && $response['error']==1)
 		{
-			$this->setError('System error occur,please check your json payload');
+			$this->setError($response['message']);
 		}
 		return $response;
         
@@ -1721,6 +1700,146 @@ final class gstr3b extends validation {
 
 		
 	}
+	public function getGstr3bDetails($returnmonth)
+	{
+		$inputToken = $this->RandomToken(16);
+		$keyhash = $this->RandomKey(32);
+		$key = pack('H*',$keyhash);
+		# create a random IV to use with CBC encoding
+		$iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
+		$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+		$ciphertext = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key,
+									$inputToken, MCRYPT_MODE_ECB, $iv);
+
+		$hexcode= bin2hex($ciphertext);
+		$filepath=PROJECT_URL . "/documents/".'GSTN_private.pem';
+		$pem_private_key = file_get_contents($filepath);
+		$private_key = openssl_pkey_get_private($pem_private_key);
+		$pem_public_key = openssl_pkey_get_details($private_key)['key'];
+		$public_key = openssl_pkey_get_public($pem_public_key);
+
+		$encrypted="";
+		openssl_public_encrypt($ciphertext , $encrypted, $public_key);
+
+		$app_key=base64_encode($encrypted);   //encrypted string
+		$key = pack('H*', $hexcode);
+		$otp_code = '575757';
+		$otp_encode =utf8_encode($otp_code);
+		$iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
+		$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+		$ciphertext_enc= $this->aes256_ecb_encrypt($key,$otp_encode,$iv);
+		$otp = base64_encode($ciphertext_enc);
+		 if(API_TYPE == 'Demo') {
+           $username = API_USERNAME;
+           $gstin = API_GSTIN;
+        }
+        else {
+            $username = $this->username();
+            $gstin = $this->gstin();
+
+        }
+		
+		$obj_gstr = new gstr();
+		$api_return_period = $obj_gstr->getRetrunPeriodFormat($returnmonth);
+		$header = $obj_gstr->header();
+		$client_secret_arr =explode(":",$header[0]);
+		$client_id_arr =explode(":",$header[1]);
+		$content_type_arr =explode(":",$header[2]);
+		$ip_user_arr =explode(":",$header[3]);
+		$state_cd_arr =explode(":",$header[4]);
+		$txn_arr =explode(":",$header[5]);
+		$karvyclientid_arr = explode(":",$header[6]);
+		$karvyclient_secret_arr = explode(":",$header[7]);
+
+
+			$client_secret = $client_secret_arr[1];
+			$clientid = $client_id_arr[1];
+			$ip_usr = $ip_user_arr[1];
+			$state_cd=$state_cd_arr[1];
+			$txn=$txn_arr[1];
+			$kclient_secret = $karvyclientid_arr[1];
+			$kclientid = $karvyclient_secret_arr[1];
+			//$action='OTPREQUEST';
+			$username=$username;
+			$action='AUTHTOKEN';
+			$gstin  = $gstin;
+			$data = array("username" => $username, "action" => $action, "app_key" => $app_key, "otp" =>$otp);
+			$data_string = json_encode($data);
+			$header= array(
+			  'client-secret: '.$client_secret.'',
+			  'Content-Length: ' . strlen($data_string),
+			  'clientid: '.$clientid.'',
+			  'Content-Type: application/json',
+			  'ip-usr: '.$ip_usr.'',
+			  'state-cd: '.$state_cd.'',
+			  'txn: '.$txn.'',
+			  'karvyclientid: '.$clientid.'',
+			  'karvyclient-secret: '.$client_secret.''
+			 );
+
+
+//$url=  'http://devapi.gstsystem.co.in/taxpayerapi/v0.2/authenticate';
+			$url='http://gsp.karvygst.com/v0.3/authenticate';
+
+
+			$result_data= $this->hitUrl($url,$data_string,$header);
+			$data=json_decode($result_data);
+			//echo $result_data;
+			//"Your auth_token  <br>" .$data->auth_token."<br><br>";
+			$session_key=$data->sek;
+
+			//echo "Your session_key  <br>" .$session_key."<br><br>";
+# --- DECRYPTION ---
+			$decrypt_sess_key=openssl_decrypt(base64_decode($session_key),"aes-256-ecb",$key, OPENSSL_RAW_DATA);
+			$header2 = array(
+			  'accept:application/json',
+			   'auth-token:' . $data->auth_token . '',
+			  'client-secret:' . $client_secret . '',
+			  'clientid:' . $clientid . '',
+			  'Content-Type: application/json',
+			  'gstin:' . $gstin . '',
+			  'ip-usr:' . $ip_usr . '',
+			  'ret_prd:'.$api_return_period.'',
+			  'state-cd:' . $state_cd . '',
+			  'txn:' . $txn . '',
+			  'username:' . $username . '',
+			  'karvyclientid:' . $clientid . '',
+			  'action:' . 'RETSUM' . '',
+			  'karvyclient-secret:' . $client_secret . ''
+			  
+			  
+			  
+			);
+		$data = array("username" => $username, "action" => 'RETSUM', "app_key" => $app_key);
+		$data_string = json_encode($data);
+		$getReturnUrl='http://gsp.karvygst.com/v0.3/returns/gstr3b?gstin='.$gstin.'&ret_period='.$api_return_period.'&action=RETSUM';
+		$result_data1 = $this->hitUrl2($getReturnUrl,$data_string, $header2);
+		$retDta = json_decode($result_data1);
+		//print_r($retDta);
+		if(isset($retDta->error))
+		{
+			$errordata = $retDta->error;
+			$error_cd = $errordata->error_cd;
+			$message = $errordata->message;
+			//$this->setError($message);
+			return array('returntype','0');
+		}
+		else
+		{
+			
+			$retRek=$retDta->rek;
+			$retData1=$retDta->data;
+			$apiEk1=openssl_decrypt(base64_decode($retRek),"aes-256-ecb",$decrypt_sess_key, OPENSSL_RAW_DATA);
+			$decodejson1= base64_decode(openssl_decrypt(base64_decode($retData1),"aes-256-ecb",$apiEk1, OPENSSL_RAW_DATA));
+			$retDta = json_decode($decodejson1);
+			//echo '<pre>';print_r($retDta)."<br><br>";
+			$data = $retDta;
+			//$cash_bal = $data->cash_bal;
+			return array($data, '1');
+			//print_r($sgst_arr = $cash_bal->sgst);
+
+		}
+	}
     public function finalSaveGstr3b()
     {
 		$return_id =   isset($_POST['returnid']) ? $_POST['returnid'] : '';
@@ -1789,10 +1908,7 @@ final class gstr3b extends validation {
         $response['data_arr'] = $dataArr;
         return $response;
     }
-    public function gstr3bOffsetPayload($user_id,$returnmonth)
-    {
-		
-	}		
+    	
     public function gstGSTR3BPayload($user_id, $returnmonth) {
     	$dataArr = $data_ids = array();
         $query =  "select * from ".$this->getTableName('client_return_gstr3b')." a where  a.status='1' and a.added_by='".$user_id."'  and a.financial_month like '%".$returnmonth."%'  and a.final_submit = '0' ";

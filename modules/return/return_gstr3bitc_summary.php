@@ -41,7 +41,7 @@ $paidcash_trans_type1='';
 $paidcash_liab_ldg_id2='';
 $paidcash_trans_type2='';
 $resultdata = $obj_gstr3b->getCashItcDetails($returnmonth); 
-//$obj_gstr3b->pr($resultdata);
+//$obj_gstr3b->pr($resultdata);die;
 $data = 
 $cash_bal = $resultdata->cash_bal;
 $itc_balance = $resultdata->itc_bal;
@@ -251,10 +251,50 @@ if (!empty($dataRes)) {
                         <?php }
                         ?>
                 </form>
-            </div>
+            </div><div class="clear"></div>
+			<div class="dasboardbox">
+                            <div class="lightgreen dashtopcol">
+                                <div class="dashcoltxt">
+                                    <span class="boxpricetxt"><i class="fa fa-inr" aria-hidden="true"></i>
+
+<?php echo $total_net_cgst; ?>
+                                    </span><br /><div class="txtyear">ITC Balance-CGST</div>
+                                </div>
+                            </div>
+                        </div>
+						 <div class="dasboardbox">
+                            <div class="lightyellowbg dashtopcol">
+                                <div class="dashcoltxt">
+                                    <span class="boxpricetxt"><i class="fa fa-inr" aria-hidden="true"></i>
+
+<?php echo $total_net_sgst; ?>
+                                    </span><br /><div class="txtyear">ITC Balance-SGST</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dasboardbox">
+                            <div class="pinkbg dashtopcol">
+                                <div class="dashcoltxt">
+                                    <span class="boxpricetxt"><i class="fa fa-inr" aria-hidden="true"></i>
+
+<?php echo $total_net_igst; ?>
+                                    </span><br /><div class="txtyear">ITC Balance-IGST</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dasboardbox last">
+                            <div class="perpalbg dashtopcol">
+                                <div class="dashcoltxt">
+                                    <span class="boxpricetxt"><i class="fa fa-inr" aria-hidden="true"></i>
+
+<?php echo $total_net_cess; ?>
+                                    </span><br /><div class="txtyear">ITC Balance-CESS</div>
+                                </div>
+                            </div>
+                        </div>
                    
               <form method="post" enctype="multipart/form-data" id='form' name="form4">
-      
+				 
                 <div class="greyheading">1.ITC Available</div>
                 <div class="tableresponsive">
                        <table border="1" bordercolor="#ccc" cellpadding="5" cellspacing="0"  class="table  tablecontent tablecontent2 bordernone" id='table1a'>
@@ -350,7 +390,7 @@ if (!empty($dataRes)) {
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_igst_reverse' value="<?php  echo $total_igst_reverse;  ?>" /></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' disabled name='' value="<?php  echo (isset($paiditccess_igst)) ? $paiditccess_igst : '' ?>"/></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' disabled name='' value="<?php  echo (isset($paiditccess_cgst)) ? $paiditccess_cgst : '' ?>"/></td>
-			    <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="<?php  echo (isset($paiditcsgst_sgst)) ? $paiditcsgst_sgst : '' ?>" class="form-control" placeholder=""></td>
+			    <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name=''  class="form-control" placeholder=""></td>
 			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="" class="form-control" placeholder=""></td>
 			 
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='taxpaidcess_igst' value="<?php  echo $total_igst_reverse;  ?>" /></td>
@@ -363,7 +403,7 @@ if (!empty($dataRes)) {
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_cgst_reverse' value="<?php  echo $total_cgst_reverse;  ?>" /></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' disabled name='' value="<?php  echo (isset($paiditccess_igst)) ? $paiditccess_igst : '' ?>"/></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' disabled name='' value="<?php  echo (isset($paiditccess_cgst)) ? $paiditccess_cgst : '' ?>"/></td>
-			    <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="<?php  echo (isset($paiditcsgst_sgst)) ? $paiditcsgst_sgst : '' ?>" class="form-control" placeholder=""></td>
+			    <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name=''  class="form-control" placeholder=""></td>
 			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="" class="form-control" placeholder=""></td>
 			 
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='taxpaidcess_cgst' value="<?php  echo $total_cgst_reverse;  ?>" /></td>
@@ -376,7 +416,7 @@ if (!empty($dataRes)) {
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_sgst_reverse' value="<?php  echo $total_sgst_reverse;  ?>"  /></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' disabled name='' value="<?php  echo (isset($paiditccess_igst)) ? $paiditccess_igst : '' ?>"/></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' disabled name='' value="<?php  echo (isset($paiditccess_cgst)) ? $paiditccess_cgst : '' ?>"/></td>
-			    <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="<?php  echo (isset($paiditcsgst_sgst)) ? $paiditcsgst_sgst : '' ?>" class="form-control" placeholder=""></td>
+			    <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name=''  class="form-control" placeholder=""></td>
 			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="" class="form-control" placeholder=""></td>
 			 
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='taxpaidcess_sgst' value="<?php  echo $total_sgst_reverse;  ?>" /></td>
@@ -389,7 +429,7 @@ if (!empty($dataRes)) {
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' readonly="true" name='taxpayable_cess_reverse' value="<?php  echo $total_cess_reverse;  ?>" /></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' disabled name='' value="<?php  echo (isset($paiditccess_igst)) ? $paiditccess_igst : '' ?>"/></td>
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' disabled name='' value="<?php  echo (isset($paiditccess_cgst)) ? $paiditccess_cgst : '' ?>"/></td>
-			    <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="<?php  echo (isset($paiditcsgst_sgst)) ? $paiditcsgst_sgst : '' ?>" class="form-control" placeholder=""></td>
+			    <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name=''  class="form-control" placeholder=""></td>
 			  <td><input type="text" maxlength="15"  onkeypress="return  isNumberKey(event,this);" disabled name='' value="" class="form-control" placeholder=""></td>
 			 
 			   <td><input type='text' class='required form-control' onKeyPress='return  isNumberKey(event,this);' name='taxpaidcess_cess' value="<?php  echo $total_cess_reverse;  ?>" /></td>
@@ -402,7 +442,7 @@ if (!empty($dataRes)) {
        <div class="tableresponsive">
         <div class="adminformbxsubmit" style="width:100%;"> 
          <div class="tc" style="float:right;">
-		 <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_gstr2_mydata&returnmonth=" . $_REQUEST["returnmonth"]; ?>';" class="btn btn-danger" class="redbtn marlef10"/>
+		 <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_gstr3b_file&returnmonth=" . $_REQUEST["returnmonth"]; ?>';" class="btn btn-danger" class="redbtn marlef10"/>
      	 <input type='submit' class="btn btn-success" name='offset' value='offset liability' id='gstr1_summary_download'>
 		 <input type='hidden' name="btn_type" id="btn_type" readonly value="upload" />
 		 <input type='hidden' name="offset_id" id="offset_id" readonly value="1" />

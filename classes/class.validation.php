@@ -392,8 +392,8 @@ class validation extends upload {
         a.reference_number,
         a.invoice_date,
         a.is_gstr1_uploaded,
-        (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
-        (Select sum(taxable_subtotal) from gst_client_invoice_item c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal,
+        (Select invoice_total_value from ".$this->getTableName('client_invoice')." c where c.invoice_id=a.invoice_id)  as invoice_total_value,
+        (Select sum(taxable_subtotal) from ".$this->getTableName('client_invoice_item')." c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal,
         s.state_tin as company_state,ps.state_tin as supply_place,
         a.invoice_type,a.supply_type,
         a.ecommerce_gstin_number,
@@ -412,7 +412,6 @@ class validation extends upload {
             if($type != 'all') {
                 $queryB2B .=  " and a.is_gstr1_uploaded='".$type."'  ";            
             }
-            
         }
         else if($type == '') {
             $queryB2B .=  " and a.is_gstr1_uploaded='0' ";
@@ -438,8 +437,8 @@ class validation extends upload {
         a.reference_number,
         a.billing_name,
         a.is_gstr1_uploaded,
-        (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
-        (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal,
+        (Select invoice_total_value from ".$this->getTableName('client_invoice')." c where c.invoice_id=a.invoice_id)  as invoice_total_value,
+        (Select sum(taxable_subtotal)  from ".$this->getTableName('client_invoice_item')." c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal,
         s.state_tin as company_state,
         ps.state_tin as supply_place,
         a.invoice_type,
@@ -499,13 +498,13 @@ class validation extends upload {
         a.is_gstr1_uploaded,";
         if($group_by!='')
         {
-            $queryB2CS .=  "(Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,";
+            $queryB2CS .=  "(Select invoice_total_value from ".$this->getTableName('client_invoice')." c where c.invoice_id=a.invoice_id)  as invoice_total_value,";
         }
         else{
-            $queryB2CS .=  "(Select sum(invoice_total_value) from gst_client_invoice c where  c.status='1' and c.added_by='".$user_id."' and c.invoice_date like '%".$returnmonth."%' and c.billing_gstin_number='' and (c.supply_place=c.company_state  or (c.supply_place!=a.company_state and c.invoice_total_value<='250000')) and (c.invoice_type='taxinvoice' or c.invoice_type='sezunitinvoice' or c.invoice_type='deemedexportinvoice') and c.invoice_nature='salesinvoice' and c.is_canceled='0' and c.is_deleted='0' and a.supply_place=c.supply_place) as invoice_total_value,";
+            $queryB2CS .=  "(Select sum(invoice_total_value) from ".$this->getTableName('client_invoice')." c where  c.status='1' and c.added_by='".$user_id."' and c.invoice_date like '%".$returnmonth."%' and c.billing_gstin_number='' and (c.supply_place=c.company_state  or (c.supply_place!=a.company_state and c.invoice_total_value<='250000')) and (c.invoice_type='taxinvoice' or c.invoice_type='sezunitinvoice' or c.invoice_type='deemedexportinvoice') and c.invoice_nature='salesinvoice' and c.is_canceled='0' and c.is_deleted='0' and a.supply_place=c.supply_place) as invoice_total_value,";
         }
         $queryB2CS .=  " sum(distinct(invoice_total_value)) as  invoice_total_value_2,
-        (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal1,
+        (Select sum(taxable_subtotal)  from ".$this->getTableName('client_invoice_item')." c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal1,
         sum(taxable_subtotal)  as taxable_subtotal,
         s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_type,a.supply_type,a.ecommerce_gstin_number,b.igst_rate,b.cgst_rate,b.sgst_rate,b.consolidate_rate, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1";
 
@@ -557,8 +556,8 @@ class validation extends upload {
         c.invoice_date as corresponding_document_date, 
         a.invoice_id,a.billing_gstin_number,
         a.reference_number,a.invoice_date,
-       (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
-        (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal, 
+       (Select invoice_total_value from ".$this->getTableName('client_invoice')." c where c.invoice_id=a.invoice_id)  as invoice_total_value,
+        (Select sum(taxable_subtotal)  from ".$this->getTableName('client_invoice_item')." c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal, 
         s.state_tin as company_state,ps.state_tin as supply_place,b.igst_rate,b.cgst_rate,b.sgst_rate, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('client_invoice')." c  on (((a.invoice_type='creditnote' or a.invoice_type='debitnote') and a.corresponding_document_number=c.invoice_id)or (  a.invoice_type='refundvoucherinvoice' and a.refund_voucher_receipt=c.invoice_id)) inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
 
         if($type != '') {
@@ -594,8 +593,8 @@ class validation extends upload {
         a.is_gstr1_uploaded,
         a.reason_issuing_document,
         a.invoice_date,
-        (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
-        (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal,
+        (Select invoice_total_value from ".$this->getTableName('client_invoice')." c where c.invoice_id=a.invoice_id)  as invoice_total_value,
+        (Select sum(taxable_subtotal)  from ".$this->getTableName('client_invoice_item')." c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal,
         s.state_tin as company_state,
         ps.state_tin as supply_place,
         b.igst_rate,b.cgst_rate,
@@ -647,7 +646,7 @@ class validation extends upload {
 
     public function getATInvoices($user_id,$returnmonth,$type='',$ids='',$group_by='',$order_by=''){
 
-        $queryAt =  "select a.invoice_id,
+        $queryAt = "select a.invoice_id,
         a.billing_name,
         a.invoice_type,
         a.financial_year,
@@ -658,8 +657,8 @@ class validation extends upload {
         s.state_tin as company_state,
         ps.state_tin as supply_place,
         a.invoice_date,
-        (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
-        (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal1,
+        (Select invoice_total_value from ".$this->getTableName('client_invoice')." c where c.invoice_id=a.invoice_id)  as invoice_total_value,
+        (Select sum(taxable_subtotal)  from ".$this->getTableName('client_invoice_item')." c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal1,
         sum(taxable_subtotal)  as taxable_subtotal,
         b.item_name,
         sum(b.igst_amount) as igst_amount,
@@ -676,12 +675,10 @@ class validation extends upload {
         inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  
         inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
 
-
         if($type != '') {
             if($type != 'all') {
                 $queryAt .=  " and a.is_gstr1_uploaded='".$type."'  ";            
             }
-            
         }
         else if($type == '') {
             $queryAt .=  "and a.is_gstr1_uploaded='0'";
@@ -693,11 +690,10 @@ class validation extends upload {
         $queryAt .= " and ((
                 inv.invoice_date > a.invoice_date and 
                 (DATE_FORMAT(inv.invoice_date, '%Y-%m') > '".$returnmonth."' ) and 
-                (inv.invoice_id is not NULL)) or (inv.invoice_id is  NULL)) and a.status='1'  and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.invoice_type='receiptvoucherinvoice' and a.is_canceled='0' and a.is_deleted='0' group by  ";
+                (inv.invoice_id is not NULL)) or (inv.invoice_id is NULL)) and a.status='1' and a.added_by='".$user_id."' and a.invoice_date like '%".$returnmonth."%' and a.invoice_type='receiptvoucherinvoice' and a.is_canceled='0' and a.is_deleted='0' group by  ";
         if($group_by=='')
         {
-            $queryAt .= " a.supply_place ,b.consolidate_rate ";
-            
+            $queryAt .= " a.supply_place, b.consolidate_rate ";
         }
         else
         {
@@ -730,8 +726,8 @@ class validation extends upload {
        s.state_tin as company_state,
        ps.state_tin as supply_place,
        a.invoice_date,
-       (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
-       (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal1,
+       (Select invoice_total_value from ".$this->getTableName('client_invoice')." c where c.invoice_id=a.invoice_id)  as invoice_total_value,
+       (Select sum(taxable_subtotal)  from ".$this->getTableName('client_invoice_item')." c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal1,
        sum(b.advance_amount)  as taxable_subtotal,
        b.item_name,
        sum(b.igst_amount) as igst_amount, 
@@ -747,12 +743,10 @@ class validation extends upload {
        inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  
        inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
 
-
         if($type != '') {
             if($type != 'all') {
-                $queryAt .=  " and a.is_gstr1_uploaded='".$type."'  ";            
+				$queryAt .=  " and a.is_gstr1_uploaded='".$type."'  ";            
             }
-            
         }
         else if($type == '') {
             $queryAt .=  "and a.is_gstr1_uploaded='0'";
@@ -768,7 +762,6 @@ class validation extends upload {
         if($group_by=='')
         {
             $queryAt .= " a.supply_place ,b.consolidate_rate ";
-            
         }
         else
         {
@@ -804,8 +797,8 @@ class validation extends upload {
        a.billing_gstin_number,
        a.reference_number,
        a.invoice_date,
-       (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
-        (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal,
+       (Select invoice_total_value from ".$this->getTableName('client_invoice')." c where c.invoice_id=a.invoice_id)  as invoice_total_value,
+        (Select sum(taxable_subtotal)  from ".$this->getTableName('client_invoice_item')." c where c.invoice_id=a.invoice_id and b.consolidate_rate=c.consolidate_rate)  as taxable_subtotal,
        s.state_tin as company_state,ps.state_tin as supply_place,a.invoice_type,
        b.igst_rate,b.cgst_rate,b.sgst_rate,b.consolidate_rate, sum(b.igst_amount) as igst_amount, sum(b.cgst_amount) as cgst_amount, sum(b.sgst_amount) as sgst_amount,sum(b.cess_amount) as cess_amount from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
 
@@ -861,8 +854,8 @@ class validation extends upload {
         b.item_hsncode,
         sum(b.item_quantity) as item_quantity,
         b.item_unit,
-        (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value1,sum(a.invoice_total_value) as invoice_total_value,
-        (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id)  as taxable_subtotal1, sum(taxable_subtotal)  as taxable_subtotal,
+        (Select invoice_total_value from ".$this->getTableName('client_invoice')." c where c.invoice_id=a.invoice_id)  as invoice_total_value1,sum(a.invoice_total_value) as invoice_total_value,
+        (Select sum(taxable_subtotal)  from ".$this->getTableName('client_invoice_item')." c where c.invoice_id=a.invoice_id)  as taxable_subtotal1, sum(taxable_subtotal)  as taxable_subtotal,
         sum(b.igst_amount) as igst_amount, 
         sum(b.cgst_amount) as cgst_amount, 
         sum(b.sgst_amount) as sgst_amount,
@@ -904,8 +897,8 @@ class validation extends upload {
         sum(b.cgst_amount) as cgst_amount, 
         sum(b.sgst_amount) as sgst_amount,
         sum(b.cess_amount) as cess_amount,
-        (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
-        (Select sum(taxable_subtotal) from gst_client_invoice_item c where c.invoice_id=a.invoice_id )  as taxable_subtotal
+        (Select invoice_total_value from ".$this->getTableName('client_invoice')." c where c.invoice_id=a.invoice_id)  as invoice_total_value,
+        (Select sum(taxable_subtotal) from ".$this->getTableName('client_invoice_item')." c where c.invoice_id=a.invoice_id )  as taxable_subtotal
         from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
 
         if($type != '') {
@@ -936,8 +929,8 @@ class validation extends upload {
        sum(b.cgst_amount) as cgst_amount, 
        sum(b.sgst_amount) as sgst_amount,
        sum(b.cess_amount) as cess_amount,
-       (Select invoice_total_value from gst_client_invoice c where c.invoice_id=a.invoice_id)  as invoice_total_value,
-        (Select sum(taxable_subtotal)  from gst_client_invoice_item c where c.invoice_id=a.invoice_id)  as taxable_subtotal
+       (Select invoice_total_value from ".$this->getTableName('client_invoice')." c where c.invoice_id=a.invoice_id)  as invoice_total_value,
+        (Select sum(taxable_subtotal)  from ".$this->getTableName('client_invoice_item')." c where c.invoice_id=a.invoice_id)  as taxable_subtotal
         from ".$this->getTableName('client_invoice')." a inner join ".$this->getTableName('client_invoice_item')." b on a.invoice_id=b.invoice_id inner join ".$this->getTableName('state')." s on s.state_id=a.company_state  inner join ".$this->getTableName('state')." ps on a.supply_place=ps.state_id where 1 ";
 
         if($type != '') {

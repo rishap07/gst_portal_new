@@ -1099,14 +1099,15 @@ final class gstr1 extends validation {
     }
 
     public function gstB2BPayload($user_id, $returnmonth,$flag='',$ids='',$type='') {
-        $dataArr = $response = $b2b_array = $b2b_ids = array();
-        if(!empty($flag)) {
-           $dataInvB2B = $this->getAllInvoices($user_id, $returnmonth,'b2b','1'); 
+
+		$dataArr = $response = $b2b_array = $b2b_ids = array();
+
+		if(!empty($flag)) {
+			$dataInvB2B = $this->getAllInvoices($user_id, $returnmonth,'b2b','1'); 
+        } else {
+			$dataInvB2B = $this->getAllInvoices($user_id, $returnmonth,'b2b','',$ids); 
         }
-        else {
-           $dataInvB2B = $this->getAllInvoices($user_id, $returnmonth,'b2b','',$ids); 
-        }
-        
+
         if (isset($dataInvB2B) && !empty($dataInvB2B)) {
 
             $x = 0;
@@ -1115,23 +1116,25 @@ final class gstr1 extends validation {
             $a = 1;
             $temp_number = '';
             $ctin = '';
-            foreach ($dataInvB2B as $dataIn) {
-                if ($temp_number != '' && $temp_number != $dataIn->reference_number) {
+            foreach($dataInvB2B as $dataIn) {
+
+				if ($temp_number != '' && $temp_number != $dataIn->reference_number) {
                     $z = 0;
                     $y++;
-                    $a=1;
+                    $a = 1;
                 }
+
                 if ($ctin != '' && $ctin != $dataIn->billing_gstin_number) {
                     $z = 0;
-                    $y=0;
+                    $y = 0;
                     $x++;
                 }
-                
+
                 $dataArr['b2b'][$x]['ctin'] = $dataIn->billing_gstin_number;
                 $dataArr['b2b'][$x]['inv'][$y]['inum'] = $dataIn->reference_number;
                 $dataArr['b2b'][$x]['inv'][$y]['idt'] = date('d-m-Y', strtotime($dataIn->invoice_date));
                 if(!empty($flag)) {
-                   $dataArr['b2b'][$x]['inv'][$y]['flag'] = $flag; 
+                   $dataArr['b2b'][$x]['inv'][$y]['flag'] = $flag;
                 }
                 $dataArr['b2b'][$x]['inv'][$y]['val'] = (float) $dataIn->invoice_total_value;
                 $dataArr['b2b'][$x]['inv'][$y]['pos'] = strlen($dataIn->supply_place) == '1' ? '0' . $dataIn->supply_place : $dataIn->supply_place;
@@ -1143,11 +1146,10 @@ final class gstr1 extends validation {
                         $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['samt'] = (float) $dataIn->sgst_amount;
                         $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['camt'] = (float) $dataIn->cgst_amount;
                     }
-                } 
+                }
                 else if ($dataIn->invoice_type == 'sezunitinvoice') {
-                    
-                    $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['iamt'] = (float) $dataIn->igst_amount;
 
+                    $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['iamt'] = (float) $dataIn->igst_amount;
                 } else if ($dataIn->invoice_type == 'deemedexportinvoice') {
 
                     $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['iamt'] = (float) $dataIn->igst_amount;
@@ -1163,8 +1165,7 @@ final class gstr1 extends validation {
                 //echo $dataIn->supply_type;
                 if ($dataIn->supply_type == 'INTER') {
                     $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['iamt'] = (float) $dataIn->igst_amount;
-                } 
-                else {
+                } else {
                     $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['samt'] = (float) $dataIn->sgst_amount;
                     $dataArr['b2b'][$x]['inv'][$y]['itms'][$z]['itm_det']['camt'] = (float) $dataIn->cgst_amount;
                 }
@@ -1182,7 +1183,8 @@ final class gstr1 extends validation {
         }
         $response['b2b_ids'] = $b2b_ids;
         $response['b2b_arr'] = $dataArr;
-        //$this->pr($dataArr);die;
+        //$this->pr($dataArr);
+		//die;
         return $response;
     }
 

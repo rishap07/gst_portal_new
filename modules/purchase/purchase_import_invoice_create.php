@@ -292,7 +292,7 @@
 
 							<div class="row form-group importinformation">
 								<div class="col-md-4 col-sm-3 col-xs-12 padleftnone"><label>Import Bill Date</label> <span class="starred">*</span></div>
-								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Import Bill Date" class="form-control" name='import_bill_date' id='import_bill_date' data-bind="date" /></div>
+								<div class="col-md-8 col-sm-3 col-xs-12"><input type="text" placeholder="Import Bill Date" class="form-control" name='import_bill_date' id='import_bill_date' autocomplete="off" data-bind="date" /></div>
 							</div>
 
 						</div>

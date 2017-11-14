@@ -57,12 +57,24 @@ if (isset($_POST['iSortCol_0'])) {
 
 $uWhere = " where 1=1 AND ci.is_deleted='0' AND ci.added_by='".$db_obj->sanitize($_SESSION['user_detail']['user_id'])."' ";
 
-if(isset($params['from_date']) && !empty($params['from_date'])) {
+
+
+/*if(isset($params['from_date']) && !empty($params['from_date'])) {
 	$uWhere .= " AND ci.invoice_date >= '" . $params['from_date'] ."'";
 }
 
 if(isset($params['to_date']) && !empty($params['to_date'])) {
 	$uWhere .= " AND ci.invoice_date <= '" . $params['to_date'] ."'";
+}*/
+
+if((isset($params['from_date']) && !empty($params['from_date'])) || (isset($_POST['from_date']) && !empty($_POST['from_date']))) {
+	$from_date = (isset($params['from_date']) && $params['from_date'])?$params['from_date']:(isset($_POST['from_date']) &&$_POST['from_date']?$_POST['from_date']:'');
+	$uWhere .= " AND ci.invoice_date >= '" . $from_date ."'";
+}
+
+if((isset($params['to_date']) && !empty($params['to_date'])) || (isset($_POST['to_date']) && !empty($_POST['to_date']))) {
+	$to_date = (isset($params['to_date']) && $params['to_date'])?$params['to_date']:(isset($_POST['to_date']) && $_POST['to_date']?$_POST['to_date']:'');
+	$uWhere .= " AND ci.invoice_date <= '" . $to_date ."'";
 }
 
 if(isset($params['invoice_type']) && !empty($params['invoice_type'])) {
@@ -87,6 +99,10 @@ if(isset($params['supplier_billing_state']) && !empty($params['supplier_billing_
 
 if(isset($params['supplier_billing_gstin_number']) && !empty($params['supplier_billing_gstin_number'])) {
 	$uWhere .= " AND ci.supplier_billing_gstin_number LIKE '%" . $params['supplier_billing_gstin_number'] ."%'";
+}
+
+if(isset($params['is_canceled']) && !empty($params['is_canceled'])) {
+	$uWhere .= " AND ci.is_canceled = ". $params['is_canceled'];
 }
 
 if (isset($_POST['sSearch']) && $_POST['sSearch'] != "") {
@@ -122,7 +138,7 @@ $uQuery = " SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ",
             $uOrder
             $uLimit
 	";
-//echo $uQuery; die;
+
 $rResult = $db_obj->get_results($uQuery);
 
 /* Data set length after filtering */
@@ -136,7 +152,7 @@ if(isset($params['invoice_type']) && !empty($params['invoice_type'])) {
 } else {
 	$uQuery = "SELECT COUNT(" . $sIndexColumn . ") as count FROM $ciTable where is_deleted='0' AND added_by='".$db_obj->sanitize($_SESSION['user_detail']['user_id'])."'";
 }
-//echo $sQuery;
+
 $iTotal = $db_obj->get_row($uQuery);
 $iTotal = $iTotal->count;
 

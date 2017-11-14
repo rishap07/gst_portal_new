@@ -77,6 +77,7 @@ $obj_notification->updateuserNotificationDetail();
                     
                         <th align='left' width="200px">Title</th>
                         <th align='left'>Message</th>
+						<th align='left'>PostedDate</th>
                         
                     </tr>
                 </thead>
@@ -107,7 +108,8 @@ $obj_notification->updateuserNotificationDetail();
                     "aoColumns": [
                         {"bSortable": false},
                         {"bSortable": false},
-						 {"bSortable": false}
+						{"bSortable": false},
+						{"bSortable": false}
                      
                     ],
                     "sDom": "lfrtip",

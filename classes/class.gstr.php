@@ -751,6 +751,116 @@ final class gstr extends validation {
     }
 
 
+    public function commonApiAuthenticationWithTpSearch($gstin='') {
+        $decodeText = '';
+        $inputToken = $this->RandomToken(16);
+        $keyhash = $this->RandomKey(32);
+        $key = pack('H*',$keyhash);
+
+        # create a random IV to use with CBC encoding
+        $iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
+        $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+
+        $ciphertext = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key,
+                                    $inputToken, MCRYPT_MODE_ECB, $iv);
+
+        $hexcode= bin2hex($ciphertext);
+
+        $pem_private_key = file_get_contents(PROJECT_ROOT.'/modules/api/GSTN_Public_Key/GSTN_private.pem');
+        $private_key = openssl_pkey_get_private($pem_private_key);
+        $pem_public_key = openssl_pkey_get_details($private_key)['key'];
+        $public_key = openssl_pkey_get_public($pem_public_key);
+
+        $encrypted="";
+        openssl_public_encrypt($ciphertext , $encrypted, $public_key);
+
+        $app_key=base64_encode($encrypted);   //encrypted string
+
+        $key = pack('H*', $hexcode);
+        $otp_code = '575757';
+        $otp_encode =utf8_encode($otp_code);
+
+
+        $iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
+        $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+        $ciphertext_enc= $this->aes256_ecb_encrypt($key,$otp_encode,$iv);
+
+
+        $otp = base64_encode($ciphertext_enc);
+
+        $client_secret = '16efc7f6dbfb45ab98ad16ce3150d6f6';
+        $clientid = 'l7xx79883770253549b79e96de84fb92fb0c';
+        $ip_usr = '203.197.205.110';
+        $state_cd='27';
+        $txn='TXN789123456789';
+        $username='commonapiuser';
+        $action='ACCESSTOKEN';
+        $password = 'api@common';
+        $gstin = $gstin;//'07GDEPS8617C3ZA';
+        $kclient_secret = 'fa6f03446473400fa21240241affe2a5';
+        $kclientid = 'l7xx2909cd95daee418b8118e070b6b24dd6';
+
+        /*
+        openssl_public_encrypt($ciphertext , $password, $public_key);
+        echo $encodepassword =  base64_encode($password);*/
+
+        $encodepassword = 'TvMxWHmm2XzRwcboXbxZfwMw9S1iyHcoAZ6hUxfK4ahW9CehKb/MQBGReLnWAW4RNIYX5VDCCgsWvwzsp/QCWk4uNOhrPrdtUImCbwA2bDRR4qbigqZ3VvUl46a5aC5osOq+sFqEozzaW8H+UsFlZTOUHgRx/PqSCzIu+p1t7kPZOdIS3x2fJenX+gZGkVe7gSFBbjDhaTxCvEJWzroZsBaovrPjdtKcC8qdERLqgwD2io/6kLp54Wn7MY6aLqN/w4/gfLtV2SMpAHdHRqYs8BkE1y7Ufy3VRPrVCFnRTG/5eu5g2qKdBIWbFvqq/6cxjZ7M1HqXEirX86/296NNDg==';
+
+
+        $data = array("username" => $username, "action" => $action, "app_key" => $app_key,'password' => $encodepassword);
+
+        $data_string = json_encode($data);
+        $header= array(
+            'client-secret: '.$client_secret.'',
+            'Content-Length: ' . strlen($data_string),
+            'clientid: '.$clientid.'',
+            'Content-Type: application/json',
+            'ip-usr: '.$ip_usr.'',
+            'state-cd: '.$state_cd.'',
+            'txn: '.$txn.'',
+            'karvyclientid: '.$kclientid.'',
+            'karvyclient-secret: '.$kclient_secret.''
+        );
+
+        $url=  'http://gsp.karvygst.com/commonapi/v0.2/authenticate';
+        $result_data= $this->hitUrl($url,$data_string,$header);
+        $data=json_decode($result_data);
+        if(isset($data->status_cd) && $data->status_cd=='1')         
+        {
+            $session_key=$data->sek;
+            $auth_token=$data->auth_token;
+
+            $decrypt_sess_key=openssl_decrypt(base64_decode($session_key),"aes-256-ecb",$key, OPENSSL_RAW_DATA);
+
+            $header2 = array(
+                'accept:application/json',
+                'auth-token:' . $auth_token . '',
+                'client-secret:' . $client_secret . '',
+                'clientid:' . $clientid . '',
+                'Content-Type:application/json',
+                'username:' . $username . '',
+                'ip-usr:' . $ip_usr . '',
+                'ret_period:072017',
+                'state-cd:' . $state_cd . '',
+                'txn:' . $txn . '',
+                'karvyclientid: '.$kclientid.'',
+                'karvyclient-secret: '.$kclient_secret.''
+            );
+
+            $url2 = 'http://gsp.karvygst.com/commonapi/v0.2/search?gstin='.$gstin.'&action=TP';
+
+            $result_data1 = $this->hitGetUrl($url2, '', $header2);
+            $retDta = json_decode($result_data1);
+            if(isset($retDta->status_cd) && $retDta->status_cd=='1')         
+            {
+                $retData1=$retDta->data;
+                $decodeText = base64_decode($retData1);
+            }
+        }
+        return $decodeText;
+    }
+
+
     public function gstr1UploadSummary($returnmonth,$jstr='gstr1',$encodeJson,$rek) {
         //echo 'json: '.$encodeJson;
         $rek = 'orvyvoONhUC8fVeze8iabN44V0wyd5x1y+0YzhRQqjY=';

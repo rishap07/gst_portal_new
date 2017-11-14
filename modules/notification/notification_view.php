@@ -92,7 +92,7 @@ if((isset($_GET["id"])) && (!empty($_GET["id"])))
 		if($flag==1)
 		{
 			
-	    $query ="select * from " . $db_obj->getTableName('notification') . " as n where notification_id='".$_GET["id"]."' and status='1'";
+		$query ="select *,DATE_FORMAT(added_date, '%e %M %Y %r') as posted_date from " . $db_obj->getTableName('notification') . " as n where notification_id='".$_GET["id"]."' and status='1'";
 		$rResult = $db_obj->get_results($query);
 		$dataConditionArray=array();
 		$dataArr=array();
@@ -141,7 +141,9 @@ if((isset($_GET["id"])) && (!empty($_GET["id"])))
 
     <tr>
         
-        <td style="font-size:12px;" colspan="2" align="left"><h2><?php echo $rResult[0]->notification_name ?></h2></td>
+        <td style="font-size:12px;"  align="left"><h3><?php echo $rResult[0]->notification_name ?></h3></td>
+		<td style="font-size:12px;"  align="right"><h3><?php echo $rResult[0]->posted_date ?></h3></td>
+		
     </tr>
      <tr>
         
