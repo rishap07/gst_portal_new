@@ -349,6 +349,12 @@
 						</ul>
 					</li>
 				 <?php } ?>
+				 <?php if ($db_obj->can_read('client_invoice')) { ?>
+					<li>
+						<a href="<?php echo PROJECT_URL . '/?page=return_taxpayer_search'; ?>"><i class="fa fa-user" aria-hidden="true"></i> Search TaxPayer</a>
+						
+					</li>
+				 <?php } ?>
 
 				<?php if ($db_obj->can_read('client_invoice')) { ?>
 					<li><a href="<?php echo PROJECT_URL . '/?page=return_client'; ?>"><i class="fa fa-refresh"></i> <span class="collapse in hidden-xs">Return</span></a></li>

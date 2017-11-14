@@ -198,7 +198,8 @@
 			if( $.browser.msie && parseInt($.browser.version) <= 6 ) top = top + $(window).scrollTop();
 			
 			$("#popup_container").css({
-				top: top + 'px',
+				//top: top + 'px',
+				top: '25%',
 				left: left + 'px'
 			});
 			$("#popup_overlay").height( $(document).height() );
