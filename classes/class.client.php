@@ -105,7 +105,8 @@ final class client extends validation {
 		$dataArr['business_area'] = isset($_POST['business_area']) ? $_POST['business_area'] : '';
 		$dataArr['business_type'] = isset($_POST['business_type']) ? $_POST['business_type'] : '';
         $dataArr['vendor_type'] = isset($_POST['vendor_type']) ? $_POST['vendor_type'] : '';
-        $dataArr['registered_address'] = isset($_POST['registered_address']) ? $_POST['registered_address'] : '';
+		$dataArr['composite_type'] = isset($_POST['composite_type']) ? $_POST['composite_type'] : '';
+		$dataArr['registered_address'] = isset($_POST['registered_address']) ? $_POST['registered_address'] : '';
         $dataArr['state_id'] = isset($_POST['state']) ? $_POST['state'] : '';
 		$dataArr['city'] = isset($_POST['city']) ? $_POST['city'] : '';
 		$dataArr['zipcode'] = isset($_POST['zipcode']) ? $_POST['zipcode'] : '';
@@ -155,7 +156,7 @@ final class client extends validation {
 				$path = $_FILES['certificate']['tmp_name'];
 				$certfilesize = $_FILES['certificate']['size'];
 				if($certfilesize  > 0) {
-					
+
 					$cert_content = file_get_contents($path);
 					if(!empty($cert_content)){
 
@@ -318,6 +319,7 @@ final class client extends validation {
 		$dataArr['business_area'] = isset($_POST['business_area']) ? $_POST['business_area'] : '';
 		$dataArr['business_type'] = isset($_POST['business_type']) ? $_POST['business_type'] : '';
         $dataArr['vendor_type'] = isset($_POST['vendor_type']) ? $_POST['vendor_type'] : '';
+		$dataArr['composite_type'] = isset($_POST['composite_type']) ? $_POST['composite_type'] : '';
         $dataArr['registered_address'] = isset($_POST['registered_address']) ? $_POST['registered_address'] : '';
         $dataArr['state_id'] = isset($_POST['state']) ? $_POST['state'] : '';
 		$dataArr['city'] = isset($_POST['city']) ? $_POST['city'] : '';
@@ -4710,7 +4712,15 @@ final class client extends validation {
 			if(!empty($invoiceData[0]->description)) {
 				$mpdfHtml .= '<tr class="description">';
 					$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
-						$mpdfHtml .= '<p><b>Additional Notes:</b> '. $invoiceData[0]->description .'</p>';
+						$mpdfHtml .= '<p><b>Additional Notes:</b><br/> '. nl2br($invoiceData[0]->description) .'</p>';
+					$mpdfHtml .= '</td>';
+				$mpdfHtml .= '</tr>';
+			}
+
+			if(isset($dataThemeSettingArr['data']->show_terms_conditions) && $dataThemeSettingArr['data']->show_terms_conditions == '1' && isset($dataThemeSettingArr['data']->terms_conditions) && $dataThemeSettingArr['data']->terms_conditions != "") {
+				$mpdfHtml .= '<tr class="description">';
+					$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
+						$mpdfHtml .= '<p><b>Terms & Conditions:</b><br/> '. nl2br($dataThemeSettingArr['data']->terms_conditions) .'</p>';
 					$mpdfHtml .= '</td>';
 				$mpdfHtml .= '</tr>';
 			}
@@ -4891,6 +4901,8 @@ final class client extends validation {
         $mpdfHtml .= '</table>';
         $mpdfHtml .= '</td>';
         $mpdfHtml .= '</tr>';
+		
+		$supply_place_data = $this->getStateDetailByStateId($invoiceData[0]->supply_place);
 
         $mpdfHtml .= '<tr>';
 			$mpdfHtml .= '<td colspan="2" style="vertical-align:top;">';
@@ -4907,7 +4919,17 @@ final class client extends validation {
 				$mpdfHtml .= '</td>';
 
 				$mpdfHtml .= '<td style="vertical-align:top;text-align:right;padding-bottom:20px;width:48%;padding-left:2%;">';
-				if ($invoiceData[0]->is_canceled == 1) { $mpdfHtml .= '<b>Canceled Invoice:</b> Canceled <br>'; }
+
+					if (isset($invoiceData[0]->supply_place) && $invoiceData[0]->supply_place > 0) {
+						if($supply_place_data['data']->state_tin == 97) {
+							$mpdfHtml .= '<b>Place Of Supply:</b> ' . $supply_place_data['data']->state_name . '<br>';
+						} else {
+							$mpdfHtml .= '<b>Place Of Supply:</b> ' . $supply_place_data['data']->state_name . '(' . $supply_place_data['data']->state_tin . ')' . '<br>';
+						}
+					}
+
+					if ($invoiceData[0]->is_canceled == 1) { $mpdfHtml .= '<b>Canceled Invoice:</b> Canceled <br>'; }
+
 				$mpdfHtml .= '</td>';
 				$mpdfHtml .= '</tr>';
 				$mpdfHtml .= '</table>';
@@ -5039,7 +5061,15 @@ final class client extends validation {
 			if(!empty($invoiceData[0]->description)) {
 				$mpdfHtml .= '<tr class="description">';
 					$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
-						$mpdfHtml .= '<p><b>Additional Notes:</b> '. $invoiceData[0]->description .'</p>';
+						$mpdfHtml .= '<p><b>Additional Notes:</b><br/> '. nl2br($invoiceData[0]->description) .'</p>';
+					$mpdfHtml .= '</td>';
+				$mpdfHtml .= '</tr>';
+			}
+			
+			if(isset($dataThemeSettingArr['data']->show_terms_conditions) && $dataThemeSettingArr['data']->show_terms_conditions == '1' && isset($dataThemeSettingArr['data']->terms_conditions) && $dataThemeSettingArr['data']->terms_conditions != "") {
+				$mpdfHtml .= '<tr class="description">';
+					$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
+						$mpdfHtml .= '<p><b>Terms & Conditions:</b><br/> '. nl2br($dataThemeSettingArr['data']->terms_conditions) .'</p>';
 					$mpdfHtml .= '</td>';
 				$mpdfHtml .= '</tr>';
 			}
@@ -5466,7 +5496,15 @@ final class client extends validation {
 			if(!empty($invoiceData[0]->description)) {
 				$mpdfHtml .= '<tr class="description">';
 					$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
-						$mpdfHtml .= '<p><b>Additional Notes:</b> '. $invoiceData[0]->description .'</p>';
+						$mpdfHtml .= '<p><b>Additional Notes:</b><br/> '. nl2br($invoiceData[0]->description) .'</p>';
+					$mpdfHtml .= '</td>';
+				$mpdfHtml .= '</tr>';
+			}
+			
+			if(isset($dataThemeSettingArr['data']->show_terms_conditions) && $dataThemeSettingArr['data']->show_terms_conditions == '1' && isset($dataThemeSettingArr['data']->terms_conditions) && $dataThemeSettingArr['data']->terms_conditions != "") {
+				$mpdfHtml .= '<tr class="description">';
+					$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
+						$mpdfHtml .= '<p><b>Terms & Conditions:</b><br/> '. nl2br($dataThemeSettingArr['data']->terms_conditions) .'</p>';
 					$mpdfHtml .= '</td>';
 				$mpdfHtml .= '</tr>';
 			}
@@ -5896,7 +5934,15 @@ final class client extends validation {
 			if(!empty($invoiceData[0]->description)) {
 				$mpdfHtml .= '<tr class="description">';
 					$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
-						$mpdfHtml .= '<p><b>Additional Notes:</b> '. $invoiceData[0]->description .'</p>';
+						$mpdfHtml .= '<p><b>Additional Notes:</b><br/> '. nl2br($invoiceData[0]->description) .'</p>';
+					$mpdfHtml .= '</td>';
+				$mpdfHtml .= '</tr>';
+			}
+
+			if(isset($dataThemeSettingArr['data']->show_terms_conditions) && $dataThemeSettingArr['data']->show_terms_conditions == '1' && isset($dataThemeSettingArr['data']->terms_conditions) && $dataThemeSettingArr['data']->terms_conditions != "") {
+				$mpdfHtml .= '<tr class="description">';
+					$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
+						$mpdfHtml .= '<p><b>Terms & Conditions:</b><br/> '. nl2br($dataThemeSettingArr['data']->terms_conditions) .'</p>';
 					$mpdfHtml .= '</td>';
 				$mpdfHtml .= '</tr>';
 			}
@@ -6330,7 +6376,15 @@ final class client extends validation {
 			if(!empty($invoiceData[0]->description)) {
 				$mpdfHtml .= '<tr class="description">';
 					$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
-						$mpdfHtml .= '<p><b>Additional Notes:</b> '. $invoiceData[0]->description .'</p>';
+						$mpdfHtml .= '<p><b>Additional Notes:</b><br/> '. nl2br($invoiceData[0]->description) .'</p>';
+					$mpdfHtml .= '</td>';
+				$mpdfHtml .= '</tr>';
+			}
+
+			if(isset($dataThemeSettingArr['data']->show_terms_conditions) && $dataThemeSettingArr['data']->show_terms_conditions == '1' && isset($dataThemeSettingArr['data']->terms_conditions) && $dataThemeSettingArr['data']->terms_conditions != "") {
+				$mpdfHtml .= '<tr class="description">';
+					$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
+						$mpdfHtml .= '<p><b>Terms & Conditions:</b><br/> '. nl2br($dataThemeSettingArr['data']->terms_conditions) .'</p>';
 					$mpdfHtml .= '</td>';
 				$mpdfHtml .= '</tr>';
 			}
@@ -6739,7 +6793,15 @@ final class client extends validation {
 			if(!empty($invoiceData[0]->description)) {
 				$mpdfHtml .= '<tr class="description">';
 					$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
-						$mpdfHtml .= '<p><b>Additional Notes:</b> '. $invoiceData[0]->description .'</p>';
+						$mpdfHtml .= '<p><b>Additional Notes:</b><br/> '. nl2br($invoiceData[0]->description) .'</p>';
+					$mpdfHtml .= '</td>';
+				$mpdfHtml .= '</tr>';
+			}
+
+			if(isset($dataThemeSettingArr['data']->show_terms_conditions) && $dataThemeSettingArr['data']->show_terms_conditions == '1' && isset($dataThemeSettingArr['data']->terms_conditions) && $dataThemeSettingArr['data']->terms_conditions != "") {
+				$mpdfHtml .= '<tr class="description">';
+					$mpdfHtml .= '<td colspan="2" style="padding-top:20px;vertical-align:top;">';
+						$mpdfHtml .= '<p><b>Terms & Conditions:</b><br/> '. nl2br($dataThemeSettingArr['data']->terms_conditions) .'</p>';
 					$mpdfHtml .= '</td>';
 				$mpdfHtml .= '</tr>';
 			}

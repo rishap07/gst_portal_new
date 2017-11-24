@@ -16,29 +16,38 @@ if(isset($_GET['returnmonth']) && !empty($_GET['returnmonth'])) {
     exit();
 }
 
-$GSTR2B2BSummaryData = $obj_gstr2->generateGSTR2B2BPayloadData($_SESSION['user_detail']['user_id'], $returnmonth, false);
+if (isset($_POST['generateGSTR2Summary']) && $_POST['generateGSTR2Summary'] == 'Generate GSTR2 Summary') {
+	
+	//$obj_gstr2->generateGSTR2B2BSummaryData($_SESSION['user_detail']['user_id'], $returnmonth, false);
+	//$obj_gstr2->generateGSTR2B2BURSummaryData($_SESSION['user_detail']['user_id'], $returnmonth, false);
+	//$obj_gstr2->generateGSTR2IMPSSummaryData($_SESSION['user_detail']['user_id'], $returnmonth, false);
+	//$obj_gstr2->generateGSTR2IMPGSummaryData($_SESSION['user_detail']['user_id'], $returnmonth, false);
+	$obj_gstr2->generateGSTR2IMPGSummaryData($_SESSION['user_detail']['user_id'], $returnmonth, false);
+}
+
+//$GSTR2B2BSummaryData = $obj_gstr2->generateGSTR2B2BPayloadData($_SESSION['user_detail']['user_id'], $returnmonth, false);
 //$obj_gstr2->pr($GSTR2B2BSummaryData);
 
-$GSTR2B2BURSummaryData = $obj_gstr2->generateGSTR2B2BURPayloadData($_SESSION['user_detail']['user_id'], $returnmonth, false);
+//$GSTR2B2BURSummaryData = $obj_gstr2->generateGSTR2B2BURPayloadData($_SESSION['user_detail']['user_id'], $returnmonth, false);
 //$obj_gstr2->pr($GSTR2B2BURSummaryData);
 
-$GSTR2IMPSSummaryData = $obj_gstr2->generateGSTR2IMPSPayloadData($_SESSION['user_detail']['user_id'], $returnmonth, false);
+//$GSTR2IMPSSummaryData = $obj_gstr2->generateGSTR2IMPSPayloadData($_SESSION['user_detail']['user_id'], $returnmonth, false);
 //$obj_gstr2->pr($GSTR2IMPSSummaryData);
 
-$GSTR2IMPGSummaryData = $obj_gstr2->generateGSTR2IMPGPayloadData($_SESSION['user_detail']['user_id'], $returnmonth, false);
+//$GSTR2IMPGSummaryData = $obj_gstr2->generateGSTR2IMPGPayloadData($_SESSION['user_detail']['user_id'], $returnmonth, false);
 //$obj_gstr2->pr($GSTR2IMPGSummaryData);
 
-$GSTR2CDNRSummaryData = $obj_gstr2->generateGSTR2CDNRPayloadData($_SESSION['user_detail']['user_id'], $returnmonth, false);
+//$GSTR2CDNRSummaryData = $obj_gstr2->generateGSTR2CDNRPayloadData($_SESSION['user_detail']['user_id'], $returnmonth, false);
 //$obj_gstr2->pr($GSTR2CDNRSummaryData);
 
-$GSTR2CDNURSummaryData = $obj_gstr2->generateGSTR2CDNURPayloadData($_SESSION['user_detail']['user_id'], $returnmonth, false);
+//$GSTR2CDNURSummaryData = $obj_gstr2->generateGSTR2CDNURPayloadData($_SESSION['user_detail']['user_id'], $returnmonth, false);
 //$obj_gstr2->pr($GSTR2CDNURSummaryData);
 
-$GSTR2ATSummaryData = $obj_gstr2->generateGSTR2ATPayloadData($_SESSION['user_detail']['user_id'], $returnmonth, false);
+//$GSTR2ATSummaryData = $obj_gstr2->generateGSTR2ATPayloadData($_SESSION['user_detail']['user_id'], $returnmonth, false);
 //$obj_gstr2->pr($GSTR2ATSummaryData);
 
-$GSTR2ATADJSummaryData = $obj_gstr2->generateGSTR2ATADJPayloadData($_SESSION['user_detail']['user_id'], $returnmonth, false);
-$obj_gstr2->pr($GSTR2ATADJSummaryData);
+//$GSTR2ATADJSummaryData = $obj_gstr2->generateGSTR2ATADJPayloadData($_SESSION['user_detail']['user_id'], $returnmonth, false);
+//$obj_gstr2->pr($GSTR2ATADJSummaryData);
 ?>
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
   <div class="col-md-12 col-sm-12 col-xs-12">
@@ -53,6 +62,7 @@ $obj_gstr2->pr($GSTR2ATADJSummaryData);
 			<input type="submit" name="generateGSTR2Summary" id="generateGSTR2Summary" class="btn btn-success" value="Generate GSTR2 Summary">
 		</form>
 	  </div>
+
       <div class="pull-right">
         <form method='post' name='gstr2ReconcileForm' id="gstr2ReconcileForm">
           Month Of Return
@@ -60,13 +70,22 @@ $obj_gstr2->pr($GSTR2ATADJSummaryData);
             <?php for($year = 2017; $year <= date('Y'); $year++) { ?>
 				<?php for($month = 1; $month <= 12; $month++) { ?>
 					<?php if($year >= 2017 && $month >= 6) { ?>
-						<option <?php if($returnmonth == date( "Y-m", strtotime($year."-".$month) )) { echo 'selected="selected"'; } ?> value="<?php echo date( "Y-m", strtotime($year."-".$month) ); ?>"><?php echo date( "F Y", strtotime($year."-".$month) ); ?></option>
+						<option <?php if($returnmonth == date("Y-m", strtotime($year."-".$month))) { echo 'selected="selected"'; } ?> value="<?php echo date( "Y-m", strtotime($year."-".$month) ); ?>"><?php echo date( "F Y", strtotime($year."-".$month) ); ?></option>
 					<?php } ?>
 				<?php } ?>
             <?php } ?>
           </select>
         </form>
       </div>
+
+	  <div class="clear"></div>
+	  <hr>
+	  <div class="clear"></div>
+
+	  <div class="pull-left">
+		<a href="<?php echo PROJECT_URL."/?page=return_gstr2_nil_summary&returnmonth=" . $returnmonth; ?>" class="btn btn-success">Update Nil Summary</a>
+		<a href="<?php echo PROJECT_URL."/?page=return_gstr2_hsnwise_summary&returnmonth=" . $returnmonth; ?>" class="btn btn-success">Update HSN Summary</a>
+	  </div>
 
 	  <div class="clear"></div>
 	  <hr>
@@ -82,9 +101,7 @@ $obj_gstr2->pr($GSTR2ATADJSummaryData);
 		</div>
 	  </div>
 	  <div class="clear"></div>
-      
-	  
-	  
+
     </div>
   </div>
 </div>

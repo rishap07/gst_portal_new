@@ -305,6 +305,13 @@ final class users extends validation {
 			$dataArr['show_logo'] = '0';
 		}
 
+		$dataArr['terms_conditions'] = isset($_POST['terms_conditions']) ? $_POST['terms_conditions'] : '';
+		if(isset($_POST['show_terms_conditions']) && $_POST['show_terms_conditions'] == '1') {
+			$dataArr['show_terms_conditions'] = '1';
+		} else {
+			$dataArr['show_terms_conditions'] = '0';
+		}
+
 		if(isset($_POST['show_signature']) && $_POST['show_signature'] == '1') {
 			$dataArr['show_signature'] = '1';
 		} else {
@@ -352,6 +359,9 @@ final class users extends validation {
 		$dataInsertArray['theme_style'] = $dataArr['theme_style'];
 		$dataInsertArray['show_logo'] = $dataArr['show_logo'];
 		$dataInsertArray['show_signature'] = $dataArr['show_signature'];
+		$dataInsertArray['terms_conditions'] = $dataArr['terms_conditions'];
+		$dataInsertArray['show_terms_conditions'] = $dataArr['show_terms_conditions'];
+
 		if( array_key_exists("theme_logo",$dataArr) ) {
 			$dataInsertArray['theme_logo'] = $dataArr['theme_logo'];
 		}
@@ -938,6 +948,23 @@ final class users extends validation {
         return true;
     }
 
+
+
+	/*public function getSubscriberInvoiceData()
+	{
+		echo $query="SELECT u.user_id, 
+		u.first_name,
+		u.last_name,
+        sp.name as plan_name,
+		u.no_of_client
+        from gst_user u
+		inner join ".TAB_PREFIX . 'subscriber_plan'." sp on u.plan_id=sp.id 
+		and u.payment_status='1' 
+		and u.user_group='3'
+		and u.no_of_client!='0'
+		";
+	}*/
+	
     /*
      * 
      * End of User Group Module

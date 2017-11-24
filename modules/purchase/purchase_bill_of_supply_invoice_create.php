@@ -34,7 +34,7 @@
 					<?php $obj_purchase->showSuccessMessge(); ?>
 					<?php $obj_purchase->unsetMessage(); ?>
 				</div>
-				
+
 				<div class="row">
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
 						<label>Invoice Serial Number <span class="starred">*</span></label>
@@ -602,7 +602,7 @@
 			maxDate: '0'
         });
 
-				/* select2 js for billing state */
+		/* select2 js for billing state */
         $("#supplier_billing_state").select2();
 		
 		/* select2 js for billing country */
@@ -694,11 +694,6 @@
                 $("#recipient_shipping_state").select2();
 				$("#recipient_shipping_country").select2();
 				$("#recipient_shipping_vendor_type").select2();
-
-				if($("#place_of_supply").val() == '') {
-					$("#place_of_supply").val($("#company_state").attr("data-state-id"));
-					$("#place_of_supply").select2();
-				}
             } else {
 
                 $("#recipient_shipping_name").prop("readonly", false);
@@ -762,13 +757,7 @@
             if(typeof(statecode) === "undefined") {
 				$("#recipient_shipping_state_code").val("");
             } else {
-
 				$("#recipient_shipping_state_code").val(statecode);
-
-				if($("#place_of_supply").val() == '') {
-					$("#place_of_supply").val(stateid);
-					$("#place_of_supply").select2();
-				}
             }
             /* end of update state code */
 

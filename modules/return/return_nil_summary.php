@@ -1,8 +1,5 @@
 <?php
-$obj_transition = new transition();
 $obj_gstr2 = new gstr2();
-
-//$obj_login->sendMobileMessage
 $returnmonth = date('Y-m');
 if(!$obj_gstr2->can_read('returnfile_list'))
 {
@@ -12,23 +9,19 @@ if(!$obj_gstr2->can_read('returnfile_list'))
 }
 if (isset($_POST['returnmonth'])) {
     $returnmonth = $_POST['returnmonth'];
-    $obj_transition->redirect(PROJECT_URL . "/?page=return_nil_summary&returnmonth=" . $returnmonth);
+    $obj_gstr2->redirect(PROJECT_URL . "/?page=return_nil_summary&returnmonth=" . $returnmonth);
     exit();
 }
-$returnmonth = date('Y-m');
 if (isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
 }
-$returnmonth = date('Y-m');
-if ($_REQUEST['returnmonth'] != '') {
-    $returnmonth = $_REQUEST['returnmonth'];
-}
+
 if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
 	$obj_gstr2->saveGstr1nilexemptSummary();
 	/*
-    $flag = $obj_transition->checkVerifyUser();
+    $flag = $obj_gstr2->checkVerifyUser();
     if ($flag == 'notverify') {
-      $obj_transition->setError("To save nil summary first verify your email and mobile number");
+      $obj_gstr2->setError("To save nil summary first verify your email and mobile number");
 			
     } else {
         if ($obj_gstr2->saveGstr1nilexemptSummary()) {
@@ -38,41 +31,39 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
 	*/
 }
 
-    $autoflag = 0;
-    $intra_reg_nil_amt1='';
-	$intra_unreg_nil_amt2='';
-	$inter_reg_nil_amt3='';
-	$inter_unreg_nil_amt4='';
-	$intra_reg_expt_amt1='';
-	$intra_unreg_expt_amt2='';
-	$inter_reg_expt_amt3='';
-	$inter_unreg_expt_amt4='';
-	$intra_reg_ngsup_amt1='';
-	$intra_unreg_ngsup_amt2='';
-	$inter_reg_ngsup_amt3='';
-	$inter_unreg_ngsup_amt4='';
-if (isset($_POST['autoname']) && $_POST['autoname'] == 1) {
-   $obj_gstr1 = new gstr1();
+$autoflag = 0;
+$intra_reg_nil_amt1 = '';
+$intra_unreg_nil_amt2 = '';
+$inter_reg_nil_amt3 = '';
+$inter_unreg_nil_amt4 = '';
+$intra_reg_expt_amt1 = '';
+$intra_unreg_expt_amt2 = '';
+$inter_reg_expt_amt3 = '';
+$inter_unreg_expt_amt4 = '';
+$intra_reg_ngsup_amt1 = '';
+$intra_unreg_ngsup_amt2 = '';
+$inter_reg_ngsup_amt3 = '';
+$inter_unreg_ngsup_amt4 = '';
+if(isset($_POST['autoname']) && $_POST['autoname'] == 1) {
+
+	$obj_gstr1 = new gstr1();
 	$nil_data = $obj_gstr1->getNilFinalArray($_SESSION["user_detail"]["user_id"],$returnmonth);
 	//$obj_gstr1->pr($nil_data);
-	
+
     $autoflag=1;
-	for($i=0;$i<sizeof($nil_data);$i++)
+	for($i=0; $i < sizeof($nil_data); $i++)
 	{
 		if(isset($nil_data[$i]['sply_ty']) && $i==0 && ($nil_data[$i]['sply_ty']=='INTERB2B'))
 		{
-			
-		$inter_reg_nil_amt1 =!empty($nil_data[$i]['nil_amt'])?$nil_data[$i]['nil_amt']:'';
-		$inter_reg_ngsup_amt1 =!empty($nil_data[$i]['ngsup_amt'])?$nil_data[$i]['ngsup_amt']:'';
-		$inter_reg_expt_amt1 =!empty($nil_data[$i]['expt_amt'])?$nil_data[$i]['expt_amt']:'';
-		
+			$inter_reg_nil_amt1 =!empty($nil_data[$i]['nil_amt'])?$nil_data[$i]['nil_amt']:'';
+			$inter_reg_ngsup_amt1 =!empty($nil_data[$i]['ngsup_amt'])?$nil_data[$i]['ngsup_amt']:'';
+			$inter_reg_expt_amt1 =!empty($nil_data[$i]['expt_amt'])?$nil_data[$i]['expt_amt']:'';
 		}
 		if(isset($nil_data[$i]['sply_ty']) && $i==1 && $nil_data[$i]['sply_ty']=='INTRAB2B')
 		{
 		$intra_reg_nil_amt2 =!empty($nil_data[$i]['nil_amt'])?$nil_data[$i]['nil_amt']:'';
 		$intra_reg_ngsup_amt2 =!empty($nil_data[$i]['ngsup_amt'])?$nil_data[$i]['ngsup_amt']:'';
 		$intra_reg_expt_amt2 =!empty($nil_data[$i]['expt_amt'])?$nil_data[$i]['expt_amt']:'';
-		
 		
 		}
 		if(isset($nil_data[$i]['sply_ty']) && $i==2 && $nil_data[$i]['sply_ty']=='INTERB2C')
@@ -85,22 +76,20 @@ if (isset($_POST['autoname']) && $_POST['autoname'] == 1) {
 		}
 		if(isset($nil_data[$i]['sply_ty']) && $i==3 && $nil_data[$i]['sply_ty']=='INTRAB2C')
 		{
-		$intra_unreg_nil_amt4 =!empty($nil_data[$i]['nil_amt'])?$nil_data[$i]['nil_amt']:'';
-		$intra_unreg_ngsup_amt4 =!empty($nil_data[$i]['ngsup_amt'])?$nil_data[$i]['ngsup_amt']:'';
-		$intra_unreg_expt_amt4 =!empty($nil_data[$i]['expt_amt'])?$nil_data[$i]['expt_amt']:'';
-		
+			$intra_unreg_nil_amt4 =!empty($nil_data[$i]['nil_amt'])?$nil_data[$i]['nil_amt']:'';
+			$intra_unreg_ngsup_amt4 =!empty($nil_data[$i]['ngsup_amt'])?$nil_data[$i]['ngsup_amt']:'';
+			$intra_unreg_expt_amt4 =!empty($nil_data[$i]['expt_amt'])?$nil_data[$i]['expt_amt']:'';
 		}
-		
 	}
 }
 else {
     $sql = "select  *,count(id) as totalinvoice from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0' and type='gstr1nil'  order by id desc limit 0,1";
-    $returndata1 = $obj_transition->get_results($sql);
+    $returndata1 = $obj_gstr2->get_results($sql);
 	$arr = $returndata1[0]->return_data;
     $arr1= base64_decode($arr);
 	
 	$nil_data = json_decode($arr1);
-	//$obj_transition->pr($nil_data);
+	//$obj_gstr2->pr($nil_data);
 	
 	for($i=0;$i<sizeof($nil_data);$i++)
 	{
@@ -140,7 +129,6 @@ else {
 		
 	}
 }
-
 ?>
 
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
@@ -148,33 +136,27 @@ else {
 
         <div class="col-md-6 col-sm-6 col-xs-12 heading"><h1>Nil summary details</h1></div>
         <div class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav"><a href="#">Home</a>
-            <i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GSTR1-nil summary</span> </div>
+         <i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GSTR1-nil summary</span> </div>
         <div class="whitebg formboxcontainer">
-<?php $obj_transition->showErrorMessage(); ?>
-<?php
-if (isset($_POST['finalsubmit']) && $_POST['finalsubmit'] == 'final submit') {
-    echo "<div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>GST_Transition form month of " . $returnmonth . " successfully submitted </div>";
-} else {
-    $obj_transition->showSuccessMessge();
-}
-?>
-<?php $obj_transition->unsetMessage(); ?>
-
-           
-            <form method="post" id="auto" name="auto">
+		<?php $obj_gstr2->showErrorMessage(); ?>
+		<?php $obj_gstr2->showSuccessMessge();?>
+		<?php $obj_gstr2->unsetMessage(); ?>
+		<form method="post" id="auto" name="auto">
                 <button  type="button"  class="btn btn-success" id="btnConfirm">autopopulate</button>
                 <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_summary&returnmonth=" . $_REQUEST["returnmonth"]; ?>';" class="btn btn-danger" class="redbtn marlef10"/>
 
                 <input type="hidden" name="autoname" id="autoname" value="1" />
                 <input style="display:none;" type='submit' class="btn btn-success" name='autopopulate' value='autopopulate'>
-            </form>	   			
+        </form>
+           
+            	   			
             <div class="pull-right rgtdatetxt">
 
                 <form method='post' name='form2'>
                     Month Of Return
 <?php
 $dataQuery = "SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS niceDate FROM " . $db_obj->getTableName('client_invoice') . " group by nicedate";
-$dataRes = $obj_transition->get_results($dataQuery);
+$dataRes = $obj_gstr2->get_results($dataQuery);
 if (!empty($dataRes)) {
     ?>
                         <select class="dateselectbox" id="returnmonth" name="returnmonth">
@@ -202,7 +184,7 @@ if (!empty($dataRes)) {
             <form method="post" enctype="multipart/form-data" id='form'> 
                 <div class="greyheading">1.Nil rated, exempted and Non-GST supplies</div>
                 <div class="tableresponsive">
-                    <form method="post" enctype="multipart/form-data" id='form'>
+                 
                         <table  class="table  tablecontent tablecontent2 bordernone" id='table1a'>
                             <thead>
                                 <tr>
@@ -314,7 +296,7 @@ if (!empty($dataRes)) {
             }
             var data1 = '<select class="required form-control" id="unit"  name="unit[]">';
             var data = '';
-            data +=<?php $dataSupplyStateArrs = $obj_transition->get_results("select * from " . $obj_transition->getTableName('unit') . " where status='1' and is_deleted='0' order by unit_name asc"); ?>
+            data +=<?php $dataSupplyStateArrs = $obj_gstr2->get_results("select * from " . $obj_gstr2->getTableName('unit') . " where status='1' and is_deleted='0' order by unit_name asc"); ?>
 <?php if (!empty($dataSupplyStateArrs)) { ?>
                 data += '<option value="">Select Unit</option>';
     <?php foreach ($dataSupplyStateArrs as $dataSupplyStateArr) { ?>

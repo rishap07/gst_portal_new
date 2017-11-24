@@ -25,8 +25,8 @@ $returnmonth = date('Y-m');
 if ($_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
 }
-$resultdata = $obj_return->getGstr3bDetails($returnmonth);
-
+//$resultdata = $obj_return->getGstr3bDetails($returnmonth);
+/*
 if($resultdata[1]==0)
 {
 	
@@ -47,6 +47,7 @@ else
 		
 	
 }
+*/
 //$obj_return->pr($resultdata);die;
 if(isset($_POST['submit']) && $_POST['submit']=='submit') {
     //$flag = $obj_return->checkVerifyUser();

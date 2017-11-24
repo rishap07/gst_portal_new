@@ -2559,8 +2559,6 @@ class tally extends validation {
 	                $itemArray[$arrayCounter]['original_invoice_date'] = date('d-m-Y', strtotime($dataIn->invoice_date));
 	                $itemArray[$arrayCounter]['original_invoice_number'] = $dataIn->reference_number;
 
-					
-
 					$rt = ($dataIn->company_state == $dataIn->supply_place) ? ($dataIn->sgst_rate + $dataIn->cgst_rate) : $dataIn->igst_rate;
 					$itemArray[$arrayCounter]['rate'] = isset($rt)?$rt:'0';
 					$itemArray[$arrayCounter]['taxable_value'] = isset($dataIn->taxable_subtotal)?$dataIn->taxable_subtotal:'0';
@@ -2650,7 +2648,7 @@ class tally extends validation {
 			if(isset($dataInvAt) && !empty($dataInvAt)) {
 				$itemArray = array();
 				$arrayCounter = 0;
-				foreach ($dataInvAt as $key => $dataIn) {	
+				foreach ($dataInvAt as $key => $dataIn) {
 					$itemArray[$arrayCounter]['invoice_nature'] = 'at';
 					$itemArray[$arrayCounter]['recipient_gstin'] = $dataIn->billing_gstin_number;
 					$itemArray[$arrayCounter]['invoice_number'] = $dataIn->reference_number;

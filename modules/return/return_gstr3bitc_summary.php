@@ -115,7 +115,10 @@ if(!empty($resultdata1))
 	$itc_reverse = $itc_eligible->itc_rev;
 	$itc_net = $itc_eligible->itc_net;
 	$tax_pmt = $resultdata1->tx_pmt;
+	if(isset($tax_pmt->tx_py))
+	{
 	$tx_py = $tax_pmt->tx_py;
+	}
 	//$obj_gstr3b->pr($tx_py);
 	if(!empty($tx_py))
 	{

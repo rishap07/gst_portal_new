@@ -1116,9 +1116,9 @@ final class gstr3b extends validation {
 		$data1['c_lfeepd'] = (float)$latefee_cash;
 		$data1['s_lfeepd'] = (float)$latefee_sgst;
 		
-		//$data1='[]';
+		$data1='[]';
 		}else{
-			$data1='[]';
+		$data1='[]';
 		}
 		//data2
 		/*
@@ -1141,14 +1141,16 @@ final class gstr3b extends validation {
 		$data3['s_pds'] = (float)$paiditcsgst_sgst;
 		$data3['cs_pdcs'] = (float)$paiditccess_cess;
 		//$this->pr($data=array("doc_num1"=>$data1,"doc_num2"=>$data2,"doc_num3"=>$data3,"doc_num4"=>$data4,"doc_num5"=>$data5,"doc_num6"=>$data6,"doc_num7"=>$data7,"doc_num8"=>$data8,"doc_num9"=>$data9,"doc_num10"=>$data10,"doc_num11"=>$data11,"doc_num12"=>$data12));
-		 if(!empty($data1))
+		 if(empty($data1))
 		 {
+			 
 	    $dataoffset=array("pdcash"=>$data1,"pditc"=>$data3);
 		 }else{
 			 $dataoffset=array("pditc"=>$data3);
 		 }
 		$returnSummary= json_encode($dataoffset);
-		//echo $returnSummary;
+		echo $returnSummary;
+		
          $error =1;
         $msg = '';
         $api_return_period = $obj_gstr->getRetrunPeriodFormat($returnmonth);
@@ -1161,6 +1163,7 @@ final class gstr3b extends validation {
             $gstin = $obj_gstr->gstin();
 
         }
+		
        // $returnSummary= $obj_gstr->returnSummary($returnmonth,'',$jstr);
 
         if(!empty($returnSummary)) {

@@ -12,7 +12,7 @@
         $db_obj->unsetMessage();
         $is_deleted = 0;
         
-        $from_date = isset($_POST['from_date']) ? $_POST['from_date'] : date('Y-m')."-01";
+		$from_date = isset($_POST['from_date']) ? $_POST['from_date'] : date('Y-m')."-01";
         $to_date = isset($_POST['to_date']) ? $_POST['to_date'] :  date('Y-m-d');
         
     

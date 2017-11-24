@@ -134,7 +134,7 @@ final class notification extends validation {
 								 }
 								
 								// $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_message)). "</a></li>";
-								$message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name)). "</a></li>";
+								$message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.')'.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name)). "</a></li>";
 								
 								 $count = $count+1;
 							  }
@@ -146,7 +146,7 @@ final class notification extends validation {
 								 }
 						
 							   // $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_message)). "</a></li>";
-							 $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name)). "</a></li>";
+							 $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.')'.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name)). "</a></li>";
 							 $count = $count+1;
 									
 							   }
@@ -155,7 +155,7 @@ final class notification extends validation {
 						  {
 							 
 							 $this->checkReturnNotificationDetail($dataItem->notification_id,$dataItem->parentid);
-							 $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name)). "</a></li>";
+							 $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.')'.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name)). "</a></li>";
 							 $count = $count+1;
 						  }
 						  else{
@@ -351,7 +351,7 @@ final class notification extends validation {
 								 
 								 // $message= $message.$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name));
 								  //$message = $message."<br>";
-								  $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name)). "</a></li>";
+								  $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.')'.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name)). "</a></li>";
 								
 								  $count = $count+1;
 							  }
@@ -365,7 +365,7 @@ final class notification extends validation {
 							
 								   //$message= $message.$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name));
 									//$message = $message."<br>";
-									$message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name)). "</a></li>";
+									$message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.')'.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name)). "</a></li>";
 								 $count = $count+1;
 									
 							   }
@@ -373,7 +373,7 @@ final class notification extends validation {
 						  {
 							 
 							 $this->checkReturnNotificationDetail($dataItem->notification_id,$dataItem->parentid);
-							 $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name)). "</a></li>";
+							 $message .="<li><a href='".PROJECT_URL. "?page=notification_view&id=".$dataItem->notification_id."'>".$count.')'.' '.$this->strip_tags_content(html_entity_decode($dataItem->notification_name)). "</a></li>";
 							 $count = $count+1;
 						  }
 						  else{

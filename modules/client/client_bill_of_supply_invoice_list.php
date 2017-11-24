@@ -263,7 +263,7 @@ $dataInvoiceSettingArr = $obj_client->getUserInvoiceSetting( $obj_client->saniti
                                                     </td>
 
                                                     <td style="text-align:right;vertical-align:top;width:48%;padding-left:2%;">
-                                                        <?php if ($invoiceData[0]->is_canceled == 1) { ?> <b>Canceled Invoice:</b> <?php echo "Canceled"; ?> <?php } ?>
+														<?php if ($invoiceData[0]->is_canceled == 1) { ?> <b>Canceled Invoice:</b> <?php echo "Canceled"; ?> <?php } ?>
                                                     </td>
                                                 </tr>
                                             </table>

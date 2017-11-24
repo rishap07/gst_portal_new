@@ -1,6 +1,4 @@
 <?php						 
-					 
-$obj_transition = new transition();
 $obj_gstr2 = new gstr2();
 $obj_gstr1 = new gstr1();
 $returnmonth = date('Y-m');
@@ -13,7 +11,7 @@ if(!$obj_gstr2->can_read('returnfile_list'))
 if(isset($_POST['returnmonth']))
 {
     $returnmonth = $_POST['returnmonth'];
-	$obj_transition->redirect(PROJECT_URL."/?page=return_document_summary&returnmonth=".$returnmonth);
+	$obj_gstr2->redirect(PROJECT_URL."/?page=return_document_summary&returnmonth=".$returnmonth);
 	exit();
 }
 $returnmonth= date('Y-m');
@@ -21,16 +19,12 @@ if(isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '')
 {
     $returnmonth= $_REQUEST['returnmonth'];
 }
-$returnmonth = date('Y-m');
-if ($_REQUEST['returnmonth'] != '') {
-    $returnmonth = $_REQUEST['returnmonth'];
-}
 if(isset($_POST['submit']) && $_POST['submit']=='submit') {
   if($obj_gstr2->saveGstr1DocumentSummary()){
         //$obj_master->redirect(PROJECT_URL."/?page=master_receiver");
     }
   /*	
-  $flag = $obj_transition->checkVerifyUser();
+  $flag = $obj_gstr2->checkVerifyUser();
   if($flag=='notverify')
   {
 	  
@@ -48,14 +42,14 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
 
        
 	   $sql = "select  *,count(id) as totalinvoice from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0' and type='gstr1document'  order by id desc limit 0,1";
-       $returndata1 = $obj_transition->get_results($sql);
+       $returndata1 = $obj_gstr2->get_results($sql);
 	 
 		if($returndata1[0]->totalinvoice > 0)
 		{
 		$arr = $returndata1[0]->return_data;
 		$arr1= base64_decode($arr);
 		$summary_arr = json_decode($arr1);
-        //$obj_transition->pr($summary_arr);
+        //$obj_gstr2->pr($summary_arr);
         $doc_num1=array(); 
 		
         $doc_num1=!empty($summary_arr->doc_num1)?$summary_arr->doc_num1:'';
@@ -93,9 +87,9 @@ if(isset($_POST['submit']) && $_POST['submit']=='submit') {
                     <div class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav"><a href="#">Home</a>
 					<i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GSTR-1 document summary</span> </div>
                 <div class="whitebg formboxcontainer">
-				<?php $obj_transition->showErrorMessage(); ?>
-				<?php $obj_transition->showSuccessMessge(); ?>
-				<?php $obj_transition->unsetMessage(); ?>
+				<?php $obj_gstr2->showErrorMessage(); ?>
+				<?php $obj_gstr2->showSuccessMessge(); ?>
+				<?php $obj_gstr2->unsetMessage(); ?>
 			   <input type="button" value="<?php echo ucfirst('Back'); ?>" onclick="javascript:window.location.href = '<?php echo PROJECT_URL . "/?page=return_summary&returnmonth=".$_REQUEST["returnmonth"]; ?>';" class="btn btn-danger" class="redbtn marlef10"/>
 			
 			  <div class="pull-right rgtdatetxt">

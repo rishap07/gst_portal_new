@@ -84,7 +84,8 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 			<?php
 				$responseCDN = $obj_gstr2->checkUserInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'CDN');
 				$responseB2B = $obj_gstr2->checkUserInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'B2B');
-				$responseTableB2B = $responseTableCDN = '';
+				$responseISD = $obj_gstr2->checkUserInvoices($_SESSION['user_detail']['user_id'], $returnmonth,'ISD');
+				$responseTableB2B = $responseTableCDN = $responseTableISD = '';
 
 				if(!empty($responseB2B)) {
 
@@ -148,7 +149,7 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 
 							$responseTableB2B .= '</tbody>';
 						$responseTableB2B .= '</table>';
-					$responseTableCDN .= '</div>';
+					$responseTableB2B .= '</div>';
 
 					echo $responseTableB2B;
 				}
@@ -224,6 +225,65 @@ if(isset($_POST['gstr2ReturnMonth']) && isset($_POST['flag']) && strtoupper($_PO
 					$responseTableCDN .= '</div>';
 					
 					echo $responseTableCDN;
+				}
+
+				if(!empty($responseISD)) {
+
+					$responseTableISD .= '<div class="table-responsive">';
+						$responseTableISD .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable1">';
+							$responseTableISD .= '<thead>';
+								$responseTableISD .= '<tr>';
+									$responseTableISD .= '<th>Sr.No</th>';
+									$responseTableISD .= '<th style="text-align:center">Document Number</th>';
+									$responseTableISD .= '<th style="text-align:center">Ctin</th>';
+									$responseTableISD .= '<th style="text-align:center">Document Date </th>';
+									$responseTableISD .= '<th style="text-align:center">Document Type </th>';
+									$responseTableISD .= '<th style="text-align:center">ITC eligible</th>';
+									$responseTableISD .= '<th style="text-align:center">Iamt ( <i class="fa fa-inr"></i> )</th>';
+									$responseTableISD .= '<th style="text-align:center">Samt ( <i class="fa fa-inr"></i> )</th>';
+									$responseTableISD .= '<th style="text-align:center">Camt ( <i class="fa fa-inr"></i> )</th>';
+									$responseTableISD .= '<th style="text-align:center">Csamt ( <i class="fa fa-inr"></i> )</th>';
+									$responseTableISD .= '<th style="text-align:center">Filing Status</th>';
+								$responseTableISD .= '</tr>';
+							$responseTableISD .= '</thead>';
+							$responseTableISD .= '<tbody>';
+							
+							$i1=1;
+							$i=1;
+							$temp = '';
+
+							foreach ($responseISD as $key3 => $value) {
+								
+								if($temp!='' && $temp!=$value->reference_number) {
+									$i=1;
+								}
+								
+								$idt = isset($value->invoice_date) ? date('d-m-Y', strtotime($value->invoice_date)) : '';
+								
+								$responseTableISD .= '<tr>';
+									$responseTableISD .= '<td align="center">'.$i1++.'</td>';
+									$responseTableISD .= '<td align="center">'.$value->reference_number.'</td>';
+									$responseTableISD .= '<td align="center">'.$value->company_gstin_number.'</td>';
+									$responseTableISD .= '<td align="center">'.$idt.'</td>';
+									$responseTableISD .= '<td align="center">'.$value->isd_docty.'</td>';
+									$responseTableISD .= '<td align="center">'.$value->itc_elg.'</td>';
+									
+									
+									$responseTableISD .= '<td align="center">'.$value->total_igst_amount.'</td>';
+									$responseTableISD .= '<td align="center">'.$value->total_sgst_amount.'</td>';
+									$responseTableISD .= '<td align="center">'.$value->total_cgst_amount.'</td>';
+									$responseTableISD .= '<td align="center">'.$value->total_cess_amount.'</td>';
+									$responseTableISD .= '<td align="center">'.$value->cfs.'</td>';
+								$responseTableISD .= '</tr>';
+
+								$temp = $value->reference_number;
+							}
+
+							$responseTableISD .= '</tbody>';
+						$responseTableISD .= '</table>';
+					$responseTableISD .= '</div>';
+
+					echo $responseTableISD;
 				}
 			?>
 		</div>

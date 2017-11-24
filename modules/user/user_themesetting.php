@@ -31,6 +31,7 @@ if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
         }
     }
 }
+
 $dataThemeSettingArr = array();
 $dataThemeSettingArr = $obj_user->getUserThemeSetting($obj_user->sanitize($_SESSION['user_detail']['user_id']));
 $dataCurrentUserArr = $obj_user->getUserDetailsById( $obj_user->sanitize($_SESSION['user_detail']['user_id']) );
@@ -152,6 +153,26 @@ $dataCurrentUserArr = $obj_user->getUserDetailsById( $obj_user->sanitize($_SESSI
 						<input type="text" name="ifsc_code" class="form-control" id="ifsc_code" placeholder="Enter IFSC Code" data-bind="content" value="<?php if(isset($_POST['ifsc_code'])) { echo $_POST['ifsc_code']; } else if(isset($dataCurrentUserArr['data']->kyc->ifsc_code)) { echo $dataCurrentUserArr['data']->kyc->ifsc_code; } ?>" />
 					</div>
 					<div class="clear"></div>
+					
+					<h2 class="greyheading">Terms & Conditions</h2>
+					<div class="clear"></div>
+
+					<div class="col-md-8 col-sm-8 col-xs-12 form-group">
+						<label>Terms & Conditions</label>
+						<textarea name="terms_conditions" id="terms_conditions" placeholder="Enter Terms & Conditions" class="form-control" style="height:200px;"><?php if(isset($_POST['terms_conditions'])) { echo $_POST['terms_conditions']; } else if(isset($dataThemeSettingArr['data']->terms_conditions)) { echo $dataThemeSettingArr['data']->terms_conditions; } ?></textarea>
+					</div>
+
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
+						<label>Show Terms & Conditions</label>
+						<div class="onoffswitch">
+							<input type="checkbox" value="1" name="show_terms_conditions" id="show_terms_conditions" class="onoffswitch-checkbox" <?php if(isset($dataThemeSettingArr['data']->show_terms_conditions) && $dataThemeSettingArr['data']->show_terms_conditions == '1') { echo 'checked="checked"'; } ?>>
+							<label class="onoffswitch-label" for="show_terms_conditions">
+								<span class="onoffswitch-inner"></span>
+								<span class="onoffswitch-switch"></span>
+							</label>
+						</div>
+					</div>
+					<div class="clear height10"></div>
 
                     <div class="adminformbxsubmit" style="width:100%;">
                         <div class="tc">

@@ -1748,7 +1748,8 @@ final class gstr1 extends validation {
     }
 
     public function getNilFinalArray($user_id, $returnmonth) {
-        $dataArr = $response = $nil_array = $nil_ids = array();
+		
+		$dataArr = $response = $nil_array = $nil_ids = array();
         $dataInvNil = $this->getNilInvoices($user_id, $returnmonth);
         //$this->pr($dataInvNil);
         if (!empty($dataInvNil)) {

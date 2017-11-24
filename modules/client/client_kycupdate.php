@@ -198,6 +198,17 @@
 					</div>
 					<div class="clear"></div>
 
+					<div class="col-md-4 col-sm-4 col-xs-12 form-group composite_type_container" <?php if(isset($dataArr['data']->kyc->vendor_type) && $dataArr['data']->kyc->vendor_type == 2) { echo "style='display:block;'"; } else { echo "style='display:none;'"; } ?>>
+						<label>Composite Type<span class="starred">*</span></label>
+						<select name='composite_type' id='composite_type' class='form-control'>
+							<option value=''>Select Composite Type</option>
+							<option value='manufacture' <?php if(isset($_POST['composite_type']) && $_POST['composite_type'] == "manufacture") { echo 'selected="selected"'; } else if(isset($dataArr['data']->kyc->composite_type) && $dataArr['data']->kyc->composite_type == "manufacture") { echo "selected='selected'"; } ?>>Manufacture</option>
+							<option value='traders' <?php if(isset($_POST['composite_type']) && $_POST['composite_type'] == "traders") { echo 'selected="selected"'; } else if(isset($dataArr['data']->kyc->composite_type) && $dataArr['data']->kyc->composite_type == "traders") { echo "selected='selected'"; } ?>>Traders(Goods)</option>
+							<option value='supplier' <?php if(isset($_POST['composite_type']) && $_POST['composite_type'] == "supplier") { echo 'selected="selected"'; } else if(isset($dataArr['data']->kyc->composite_type) && $dataArr['data']->kyc->composite_type == "supplier") { echo "selected='selected'"; } ?>>Supplier of food or drinks for human consumption(without alcohol)</option>
+						</select>
+					</div>
+					<div class="clear"></div>
+
 					<h2 class="greyheading">Identity Details</h2>
 
 					<div class="col-md-4 col-sm-4 col-xs-12 form-group">
@@ -342,13 +353,30 @@
 
 		/* select2 js for business type */
 		$("#business_type").select2();
+
 		/* select2 js for business area */
 		$("#business_area").select2();
+
 		/* select2 js for business area */
 		$("#vendor_type").select2();
 
+		/* select2 js for composite type */
+		$("#composite_type").select2();
+
 		/* select2 js for state */
 		$("#state").select2();
+
+		$("#vendor_type").change(function() {
+
+			if($(this).val() == 2) {
+				$(".composite_type_container").show();
+				$("#composite_type").addClass("required");
+				$("#composite_type").select2();
+			} else {
+				$(".composite_type_container").hide();
+				$("#composite_type").removeClass("required");
+			}
+		});
 
 		$('#submit').click(function () {
 			var mesg = {};

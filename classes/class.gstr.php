@@ -469,6 +469,9 @@ final class gstr extends validation {
             if($type=='CDN') {
                 $getReturnUrl=API_RETURN_URL.'/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=CDN';
             }
+            if($type=='ISD') {
+                $getReturnUrl=API_RETURN_URL.'/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=ISD';
+            }
             if($type=='DOC_ISSUE') {
                 $getReturnUrl=API_RETURN_URL.'/'.$jstr.'?gstin='.$gstin. '&ret_period='.$api_return_period.'&action=DOCISS';
             }
@@ -508,7 +511,7 @@ final class gstr extends validation {
                         'accept:application/json',
                         'action:' . 'FILEDET' . ''
                     );
-                        
+
                     $header3 = $this->header($header3_array);
                     if(!$this->gst_is_expired($_SESSION['auth_date']) == false) {
                         $dataGST1['token'] =  $_SESSION['token'];

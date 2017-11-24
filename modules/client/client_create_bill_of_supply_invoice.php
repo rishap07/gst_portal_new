@@ -750,7 +750,6 @@
 				$("#shipping_state").select2();
 				$("#shipping_country").select2();
 				$("#shipping_vendor_type").select2();
-
             } else {
 
                 $("#shipping_name").prop("readonly", false);
@@ -808,7 +807,6 @@
             if(typeof(statecode) === "undefined") {
 				$("#shipping_state_code").val("");
             } else {
-
 				$("#shipping_state_code").val(statecode);
             }
             /* end of update state code */

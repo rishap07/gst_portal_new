@@ -1974,7 +1974,7 @@ final class purchase extends validation {
             }
         }
     }
-	
+
 	/* upload client purchase receipt voucher invoice */
     public function uploadPurchaseClientRVInvoice() {
 
@@ -2449,7 +2449,7 @@ final class purchase extends validation {
             }
         }
     }
-	
+
 	/* upload client purchase payment voucher invoice */
     public function uploadPurchaseClientPVInvoice() {
 
@@ -2780,9 +2780,9 @@ final class purchase extends validation {
 					$consolidateRate = 0.00;
 
 					foreach ($invoiceRow['items'] as $invoiceInnerRow) {
-						
+
 						$invoiceItemTaxableAmount = (float) $invoiceInnerRow['advance_amount'];
-						
+
 						if($invoiceRow['supplier_billing_state'] === $invoiceRow['supply_place']) {
 
 							$itemCSGTTax = (float)$invoiceInnerRow['cgst_rate'];
@@ -2796,7 +2796,7 @@ final class purchase extends validation {
 							$invoiceItemIGSTTaxAmount = 0.00;
 							$invoiceItemCESSTaxAmount = ($itemCESSTax/100) * $invoiceItemTaxableAmount;
 						} else {
-							
+
 							$itemCSGTTax = 0.00;
 							$itemSGSTTax = 0.00;
 							$itemIGSTTax = (float)$invoiceInnerRow['igst_rate'];
@@ -3503,9 +3503,9 @@ final class purchase extends validation {
 
 								if($invoiceData[0]->invoice_type == "importinvoice") { $invoiceType = "Import Invoice"; } 
 								else if($invoiceData[0]->invoice_type == "sezunitinvoic") { $invoiceType = "SEZ Unit Invoice"; } 
-								else if($invoiceData[0]->invoice_type == "deemedimportinvoice") { $invoiceType = "Deemed Import Invoice"; } 
+								else if($invoiceData[0]->invoice_type == "deemedimportinvoice") { $invoiceType = "Deemed Import Invoice"; }
 								else { $invoiceType = "Tax Invoice"; }
-								
+
 								if(isset($dataInvoiceSettingArr['data']->invoice_label) && !empty($dataInvoiceSettingArr['data']->invoice_label)) { $invoice_label = $dataInvoiceSettingArr['data']->invoice_label; } else { $invoice_label = "Invoice #"; }
 								if(isset($dataInvoiceSettingArr['data']->reference_label) && !empty($dataInvoiceSettingArr['data']->reference_label)) { $reference_label = $dataInvoiceSettingArr['data']->reference_label; } else { $reference_label = "Reference #"; }
 								if(isset($dataInvoiceSettingArr['data']->type_label) && !empty($dataInvoiceSettingArr['data']->type_label)) { $type_label = $dataInvoiceSettingArr['data']->type_label; } else { $type_label = "Type"; }
@@ -3544,7 +3544,7 @@ final class purchase extends validation {
 								$mpdfHtml .= '<td style="vertical-align:top;text-align:right;padding-bottom:20px;width:48%;padding-left:2%;">';
 
 									if($invoiceData[0]->invoice_type === "importinvoice") {
-			
+
 										if($invoiceData[0]->import_supply_meant == "withpayment") { $importSupplyMeant = "Payment of Integrated Tax"; } 
 										else { $importSupplyMeant = "Without Payment of Integrated Tax"; }
 

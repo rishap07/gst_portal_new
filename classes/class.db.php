@@ -142,8 +142,7 @@ class db {
         if ($this->link->error) {
             //IF Query Failed then query send to developer.
             
-            $this->link->query($sql);
-			$this->sendEmailQueryFail($sql);
+            $this->sendEmailQueryFail($query);
             $this->log_db_errors($this->link->error, $query);
             return false;
         } else {
@@ -175,7 +174,7 @@ class db {
     $mail->setFrom('noreply@gstkeeper.com');
     $mail->addAddress('rishap.gandhi@cyfuture.com');
 	//$mail->AddBCC('lokesh.chotiya@cyfuture.com');
-	$databcc = 'lokesh.chotiya@cyfuture.com,ishwar.ghiya@cyfuture.com';
+	$databcc = 'lokesh.chotiya@cyfuture.com,ishwar.ghiya@cyfuture.com,monika.deswal@cyfuture.com,pradeep.relwani@cyfuture.com';
 	$bcc = explode(',',$databcc);
     for($x=0;$x<count($bcc);$x++)
     {
@@ -1076,4 +1075,6 @@ class db {
         $qry = "insert into ".TAB_PREFIX."data_log set `action_by` = '". (isset($_SESSION['user_detail']['user_id']) ? $_SESSION['user_detail']['user_id'] : '0') ."', `action_table` = '" . $action_table . "', `action_type` = '" . $action_type . "', `description` = '" . $this->escape($description) . "', `date_time` = now()";
 		$this->query($qry);
     }
+	
+	
 }

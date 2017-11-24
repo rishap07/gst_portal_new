@@ -22,7 +22,7 @@ if(isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '')
 else
 {
 	
-	$dataQuery = "SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS niceDate FROM gst_client_invoice group by nicedate ORDER by invoice_date desc LIMIT 0,1";
+	$dataQuery = "SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS niceDate FROM " . $db_obj->getTableName('client_invoice') . " group by nicedate ORDER by invoice_date desc LIMIT 0,1";
 	$dataRes = $obj_client->get_results($dataQuery);
 	if(!empty($dataRes))
 	{
@@ -168,7 +168,7 @@ if(!empty($dataInvPurchase))
                 <form method='post' name='form2'>
 				Month Of Return
 				<?php
-				$dataQuery = "SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS niceDate FROM gst_client_invoice group by nicedate";
+				$dataQuery = "SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS niceDate FROM " . $db_obj->getTableName('client_invoice') . " group by nicedate";
 				$dataRes = $obj_client->get_results($dataQuery);
 				if(!empty($dataRes))
 				{
@@ -302,9 +302,10 @@ if(!empty($dataInvPurchase))
 			}
 			else if($data->returnfile_type=='1')
 			{
-			 $month = getReturn($month);	
+			// $month = getReturn($month);	
+			//$month = date('m');
 			}			
-		   $sql="SELECT DATE_FORMAT(returnfile_date, '%M') as month,DATE_FORMAT(returnfile_date, '%d') as day FROM " . $db_obj->getTableName("returnfile_dates") . " where cat_id='".$data->cat_id."' and subcat_id='".$data->subcat_id."' and  is_deleted='0' and status='1' and return_month='".$month."'";
+		    $sql="SELECT DATE_FORMAT(returnfile_date, '%M') as month,DATE_FORMAT(returnfile_date, '%d') as day FROM " . $db_obj->getTableName("returnfile_dates") . " where cat_id='".$data->cat_id."' and subcat_id='".$data->subcat_id."' and  is_deleted='0' and status='1' and return_month='".$month."'";
 		   }
 		   else
 		   {

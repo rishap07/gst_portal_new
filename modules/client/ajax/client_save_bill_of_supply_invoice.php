@@ -40,6 +40,14 @@ if(isset($_POST['invoiceData']) && isset($_POST['action']) && $_POST['action'] =
 	$dataArr['gstin_number'] = $dataCurrentUserArr['data']->kyc->gstin_number;
 	$dataArr['description'] = isset($params['description']) ? trim($params['description']) : '';
 
+	$supply_place = isset($params['place_of_supply']) ? $params['place_of_supply'] : '';
+	$supply_state_data = $obj_client->getStateDetailByStateId($supply_place);
+	if($supply_state_data['status'] === "success") {
+		$dataArr['supply_place'] = $supply_state_data['data']->state_id;
+	} else {
+		$dataArr['supply_place'] = '';
+	}
+
 	$dataArr['billing_name'] = isset($params['billing_name']) ? $params['billing_name'] : '';
 	$dataArr['billing_company_name'] = isset($params['billing_company_name']) ? $params['billing_company_name'] : '';
 	$dataArr['billing_address'] = isset($params['billing_address']) ? $params['billing_address'] : '';

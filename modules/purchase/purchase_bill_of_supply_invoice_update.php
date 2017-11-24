@@ -114,7 +114,7 @@
 						<input type="text" placeholder="BYRAJ14N3KKT" name="company_gstin_number" data-bind="gstin" readonly="true" class="form-control required" id="company_gstin_number" value="<?php echo $invoiceData[0]->company_gstin_number; ?>" />
 					</div>
 				 </div>
-				 
+
 				 <div class="row">
 
 					<div class="col-md-6">
@@ -726,18 +726,18 @@
 			maxDate: '0'
         });
 
-				/* select2 js for billing state */
+		/* select2 js for billing state */
         $("#supplier_billing_state").select2();
-		
+
 		/* select2 js for billing country */
         $("#supplier_billing_country").select2();
-		
+
 		/* select2 js for billing vendor type */
         $("#supplier_billing_vendor_type").select2();
 
 		/* select2 js for shipping state */
         $("#recipient_shipping_state").select2();
-		
+
 		/* select2 js for shipping country */
         $("#recipient_shipping_country").select2();
 
@@ -818,11 +818,6 @@
                 $("#recipient_shipping_state").select2();
 				$("#recipient_shipping_country").select2();
 				$("#recipient_shipping_vendor_type").select2();
-
-				if($("#place_of_supply").val() == '') {
-					$("#place_of_supply").val($("#company_state").attr("data-state-id"));
-					$("#place_of_supply").select2();
-				}
             } else {
 
                 $("#recipient_shipping_name").prop("readonly", false);
@@ -888,11 +883,6 @@
             } else {
 
 				$("#recipient_shipping_state_code").val(statecode);
-
-				if($("#place_of_supply").val() == '') {
-					$("#place_of_supply").val(stateid);
-					$("#place_of_supply").select2();
-				}
             }
             /* end of update state code */
 

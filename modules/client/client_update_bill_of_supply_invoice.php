@@ -927,7 +927,6 @@
             if(typeof(statecode) === "undefined") {
 				$("#shipping_state_code").val("");
             } else {
-
 				$("#shipping_state_code").val(statecode);
             }
             /* end of update state code */

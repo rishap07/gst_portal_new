@@ -60,6 +60,23 @@ final class gstr2 extends validation {
             }
         }
 
+        $response_isd = $obj_api->returnSummary($gstr2ReturnMonth, 'ISD', 'gstr2a');
+        if ($response_isd == true) {
+            
+            $flag = 1;
+            /***** Start Code Insert/update to summary *****/
+            $savedata['json'] = base64_encode(serialize($response_isd));
+            $obj_api->save_user_summary($savedata,'gstr2aISD',$gstr2ReturnMonth);
+            /***** End Code Insert/update to summary *****/
+
+        }
+        else {
+            if(isset($_SESSION['error']) && !empty($_SESSION['error'])) {
+                unset($_SESSION['error']);
+                $msg[] = 'ISD Invoices are not found for the provided Inputs ';
+            }
+        }
+
         if(isset($msg) && !empty($msg)) {
             $this->setError($msg);
         }
@@ -68,10 +85,11 @@ final class gstr2 extends validation {
             return false;
         }
 
-		if(!empty($response_b2b) || !empty($response_cdn)) {
+		if(!empty($response_b2b) || !empty($response_cdn) || !empty($response_isd)) {
 			
 			$jstrb2b_array = json_decode($response_b2b, true);
             $jstrcdn_array = json_decode($response_cdn, true);
+            $jstrisd_array = json_decode($response_isd, true);
 			//$this->pr($jstrb2b_array);
 			//$this->pr($jstrcdn_array);
 			//die;
@@ -238,6 +256,59 @@ final class gstr2 extends validation {
                 }
                 $dataUpdate = array_merge($dataUpdate, $dataUpdate1);
             }
+
+            if (!empty($jstrisd_array) && isset($jstrisd_array)) {
+                
+                $x = 0;
+                foreach ($jstrisd_array['isd'] as $key1 => $inv_value) {
+
+                    $cfs = isset($inv_value['cfs']) ? $inv_value['cfs'] : '';
+                    $doclist = isset($inv_value['doclist']) ? $inv_value['doclist'] : array();
+                    $ctin = isset($inv_value['ctin']) ? $inv_value['ctin'] : '';
+
+                    if (isset($doclist) && !empty($doclist)) {
+                        
+                        $y = 0;
+                        foreach ($doclist as $key2 => $jstr1_value) {
+
+                            $chksum = isset($jstr1_value['chksum']) ? $jstr1_value['chksum'] : '';
+                            $isd_docty = isset($jstr1_value['isd_docty']) ? $jstr1_value['isd_docty'] : '';
+                            $docnum = isset($jstr1_value['docnum']) ? $jstr1_value['docnum'] : '';
+                            $docdt = isset($jstr1_value['docdt']) ? $jstr1_value['docdt'] : '';
+
+                            $itc_elg = isset($jstr1_value['itc_elg']) ? $jstr1_value['itc_elg'] : '';
+                            $iamt = isset($jstr1_value['iamt']) ? $jstr1_value['iamt'] : 0;
+                            $samt = isset($jstr1_value['samt']) ? $jstr1_value['samt'] : 0;
+                            $camt = isset($jstr1_value['camt']) ? $jstr1_value['camt'] : 0;
+                            $csamt = isset($jstr1_value['csamt']) ? $jstr1_value['csamt'] : 0;
+
+                            $dataUpdate1[$y]['type'] = 'ISD';
+                            $dataUpdate1[$y]['reference_number'] = $docnum;
+                            $dataUpdate1[$y]['company_gstin_number'] = $ctin;
+                            $dataUpdate1[$y]['invoice_date'] = isset($docdt) > 0 ? date('Y-m-d', strtotime($docdt)) : '';
+                            $dataUpdate1[$y]['itc_elg'] = $itc_elg;
+                            $dataUpdate1[$y]['isd_docty'] = $isd_docty;
+                            
+                            $dataUpdate1[$y]['total_cgst_amount'] = $camt;
+                            $dataUpdate1[$y]['total_sgst_amount'] = $samt;
+
+                            $dataUpdate1[$y]['total_igst_amount'] = $iamt;
+                            $dataUpdate1[$y]['total_cess_amount'] = $csamt;
+
+                            $dataUpdate1[$y]['chksum'] = $chksum;
+                            $dataUpdate1[$y]['cfs'] = $cfs;
+
+                            $dataUpdate1[$y]['financial_month'] = $gstr2ReturnMonth;
+                            $dataUpdate1[$y]['added_by'] = $_SESSION['user_detail']['user_id'];
+                            $dataUpdate1[$y]['added_date'] = date('Y-m-d h:i:s');
+                            $y++;
+                        }
+                    }
+                    $x++;
+                }
+                $dataUpdate = array_merge($dataUpdate, $dataUpdate1);
+            }
+
 
             $data = $data1 = array();
             $y = 0;
@@ -1099,7 +1170,8 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
         return $dataArr;
     }
 	public function getGstr2HsnSummaryData() {
-        $dataArr = array();
+
+		$dataArr = array();
         $data = array();
         $data[0]['hsn'] = '';
         $data[0]['description'] = '';
@@ -1113,8 +1185,10 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
         $data[0]['cess'] = '';
 
         if (!empty($_POST['hsn'])) {
-            for ($x = 0; $x < count($_POST['hsn']); $x++) {
-                $data[$x]['hsn'] = isset($_POST['hsn'][$x]) ? $_POST['hsn'][$x] : '';
+            
+			for ($x = 0; $x < count($_POST['hsn']); $x++) {
+                
+				$data[$x]['hsn'] = isset($_POST['hsn'][$x]) ? $_POST['hsn'][$x] : '';
                 $data[$x]['description'] = isset($_POST['description'][$x]) ? $_POST['description'][$x] : '';
                 $data[$x]['unit'] = isset($_POST['unit'][$x]) ? $_POST['unit'][$x] : '';
                 $data[$x]['qty'] = isset($_POST['qty'][$x]) ? $_POST['qty'][$x] : '';
@@ -1126,11 +1200,12 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
                 $data[$x]['cess'] = isset($_POST['cess'][$x]) ? $_POST['cess'][$x] : '';
             }
         }
-        //$this->pr($data);
+
         $dataArr['return_data'] = base64_encode(json_encode($data));
 
         return $dataArr;
     }
+
 	public function gstNilExemptSummaryData() {
         $dataArr = array();
         $data = array();
@@ -1180,26 +1255,26 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
            
         return $dataArr;
     }
+	
 	public function gstr2NilExemptSummaryData() {
-        $dataArr = array();
-        $data1 = array();
-		$data2 = array();
-        $data1[0]['cpddr'] = isset($_POST['inter_valueofsupply_compound']) ? $_POST['inter_valueofsupply_compound'] : 0.00;
-	    $data1[0]['exptdsply'] = isset($_POST['inter_valueofexempt']) ? $_POST['inter_valueofexempt'] : 0.00;
-	    $data1[0]['ngsply'] = isset($_POST['inter_totalnongst']) ? $_POST['inter_totalnongst'] : 0.00;
-		$data1[0]['nilsply'] = isset($_POST['inter_nilrated']) ? $_POST['inter_nilrated'] : 0.00;
-	    $data2[0]['cpddr'] = isset($_POST['intra_valueofsupply_compound']) ? $_POST['intra_valueofsupply_compound'] : 0.00;
-        $data2[0]['exptdsply'] = isset($_POST['intra_valueofexempt']) ? $_POST['intra_valueofexempt'] : 0.00;
-        $data2[0]['ngsply'] = isset($_POST['intra_totalnongst']) ? $_POST['intra_totalnongst'] : 0.00;
-        $data2[0]['nilsply'] = isset($_POST['intra_nilrated']) ? $_POST['intra_nilrated'] : 0.00;
-	    //$this->pr($data);die;
-	    $data=array("inter"=>$data1,"intra"=>$data2);    
-		//$this->pr($data);
-		//die;
-		$dataArr['return_data'] = base64_encode(json_encode($data));
 
-        return $dataArr;
-    }
+		$dataArr = array();
+        $interData = array();
+		$intraData = array();
+        $interData[0]['cpddr'] = isset($_POST['inter_cpddr']) ? $_POST['inter_cpddr'] : 0.00;
+	    $interData[0]['exptdsply'] = isset($_POST['inter_exptdsply']) ? $_POST['inter_exptdsply'] : 0.00;
+	    $interData[0]['ngsply'] = isset($_POST['inter_ngsply']) ? $_POST['inter_ngsply'] : 0.00;
+		$interData[0]['nilsply'] = isset($_POST['inter_nilsply']) ? $_POST['inter_nilsply'] : 0.00;
+	    $intraData[0]['cpddr'] = isset($_POST['intra_cpddr']) ? $_POST['intra_cpddr'] : 0.00;
+        $intraData[0]['exptdsply'] = isset($_POST['intra_exptdsply']) ? $_POST['intra_exptdsply'] : 0.00;
+        $intraData[0]['ngsply'] = isset($_POST['intra_ngsply']) ? $_POST['intra_ngsply'] : 0.00;
+        $intraData[0]['nilsply'] = isset($_POST['intra_nilsply']) ? $_POST['intra_nilsply'] : 0.00;
+
+	    $data = array("inter" => $interData, "intra" => $intraData);
+		$dataArr['return_data'] = base64_encode(json_encode($data));
+		return $dataArr;
+	}
+
 	public function gstr2ItcReversalData() {
            $dataArr = array();
         $data1 = array();
@@ -1279,39 +1354,42 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
             }
         }
     }
+
 	public function saveGstr2nilexemptSummary() {
-        $data = $this->get_results("select * from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month='" . $this->sanitize($_GET['returnmonth']) . "' and type='gstr2nil'");
-        $dataArr = $this->gstr2NilExemptSummaryData();
-        $returnmonth = $this->sanitize($_GET['returnmonth']);
-        if (empty($data)) {
-            $dataArr['financial_month'] = $this->sanitize($_GET['returnmonth']);
+
+		$data = $this->get_results("select * from " . $this->getTableName('return_upload_summary') . " where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month='" . $this->sanitize($_GET['returnmonth']) . "' and type='gstr2nil'");
+		$dataArr = $this->gstr2NilExemptSummaryData();
+		$returnmonth = $this->sanitize($_GET['returnmonth']);
+
+		if (empty($data)) {
+
+			$dataArr['financial_month'] = $returnmonth;
             $dataArr['added_by'] = $this->sanitize($_SESSION["user_detail"]["user_id"]);
             $dataArr['type'] = 'gstr2nil';
-			$dataArr['added_date']=  date('Y-m-d h:i:s');
+			$dataArr['added_date'] = date('Y-m-d h:i:s');
 
-            if ($this->insert('gst_return_upload_summary', $dataArr)) {
-                $this->setSuccess('GSTR2 nilexempt summary form Saved Successfully');
-                $this->logMsg("GSTR2 nilexempt summary Inserted financial month : " . $returnmonth, "gstr1");
+            if ($this->insert($this->getTableName('return_upload_summary'), $dataArr)) {
+                $this->setSuccess('GSTR2 nilexempt summary form Saved Successfully.');
+                $this->logMsg("GSTR2 nilexempt summary Inserted financial month : " . $returnmonth, "gstr2");
                 return true;
             } else {
                 $this->setError('Failed to save GSTR2 nil summary data');
                 return false;
             }
         } else {
-            $dataArr['updated_date']=  date('Y-m-d h:i:s');
+            $dataArr['updated_date'] = date('Y-m-d h:i:s');
 			$dataArr['updated_by'] = $this->sanitize($_SESSION["user_detail"]["user_id"]);
-          
-            if ($this->update('gst_return_upload_summary', $dataArr, array('added_by' => $_SESSION['user_detail']['user_id'],'type' => 'gstr2nil','financial_month' => $this->sanitize($_GET['returnmonth'])))) {
-
-                $this->setSuccess('GSTR2 nilexempt summary month of ' . $returnmonth . "updated Successfully");
-                //$this->logMsg("GSTR3B updated financial month : " . $returnmonth,"gstr_3b");
+			
+			if ($this->update($this->getTableName('return_upload_summary'), $dataArr, array('added_by' => $_SESSION['user_detail']['user_id'], 'type' => 'gstr2nil', 'financial_month' => $returnmonth))) {
+				$this->setSuccess('GSTR2 nilexempt summary month of ' . $returnmonth . "updated Successfully");
                 return true;
             } else {
-                $this->setError('Failed to save nilexempt data');
+				$this->setError('Failed to save nilexempt data');
                 return false;
             }
         }
     }
+	
 	public function saveGstr2itcreversalSummary() {
         $data = $this->get_results("select * from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month='" . $this->sanitize($_GET['returnmonth']) . "' and type='gstr2itcreversal'");
         $dataArr = $this->gstr2ItcReversalData();
@@ -1380,15 +1458,17 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 	}
 
 	 public function saveGstr2HsnSummary() {
-        $data = $this->get_results("select * from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month='" . $this->sanitize($_GET['returnmonth']) . "' and type='gstr2hsn'");
-        $dataArr = $this->getGstr2HsnSummaryData();
-        $returnmonth = $this->sanitize($_GET['returnmonth']);
-        if (empty($data)) {
+		 
+		 $data = $this->get_results("select * from ". $this->getTableName('return_upload_summary') ." where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month='" . $this->sanitize($_GET['returnmonth']) . "' and type='gstr2hsn'");
+		 $dataArr = $this->getGstr2HsnSummaryData();
+		 $returnmonth = $this->sanitize($_GET['returnmonth']);
+
+		 if (empty($data)) {
             $dataArr['financial_month'] = $this->sanitize($_GET['returnmonth']);
             $dataArr['added_by'] = $this->sanitize($_SESSION["user_detail"]["user_id"]);
             $dataArr['type'] = 'gstr2hsn';
 			$dataArr['added_date']=  date('Y-m-d h:i:s');
-            if ($this->insert('gst_return_upload_summary', $dataArr)) {
+            if ($this->insert($this->getTableName('return_upload_summary'), $dataArr)) {
                 $this->setSuccess('GSTR2 hsn summary data Saved Successfully');
                 $this->logMsg("GSTR2 hsn summary Inserted financial month : " . $returnmonth, "gstr1");
                 return true;
@@ -1397,14 +1477,12 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
                 return false;
             }
         } else {
-            $dataArr['updated_date']=  date('Y-m-d h:i:s');
+			$dataArr['updated_date']=  date('Y-m-d h:i:s');
 			$dataArr['updated_by'] = $this->sanitize($_SESSION["user_detail"]["user_id"]);
           
-            if ($this->update('gst_return_upload_summary', $dataArr, array('added_by' => $_SESSION['user_detail']['user_id'],'type' => 'gstr2hsn', 'financial_month' => $this->sanitize($_GET['returnmonth'])))) {
-
-                $this->setSuccess('GSTR2 hsn summary month of ' . $returnmonth . "updated Successfully");
-                //$this->logMsg("GSTR3B updated financial month : " . $returnmonth,"gstr_3b");
-                return true;
+            if ($this->update($this->getTableName('return_upload_summary'), $dataArr, array('added_by' => $_SESSION['user_detail']['user_id'], 'type' => 'gstr2hsn', 'financial_month' => $this->sanitize($_GET['returnmonth'])))) {
+				$this->setSuccess('GSTR2 hsn summary month of ' . $returnmonth . "updated Successfully");
+				return true;
             } else {
                 $this->setError('Failed to save GSTR2 hsn data');
                 return false;
@@ -1503,7 +1581,9 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
     }
 
 	public function generateGSTR2B2BSummaryData($user_id, $returnMonth, $array_type = true) {
-
+		
+		$dataB2BArray = array();
+		$dataArray = array();
 		$generate_gstr2_b2b_summary_query = 'Select 
 										id, 
 										invoice_type, 
@@ -1550,9 +1630,527 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 										total_itc_cess_amount 
 										from ' . $this->tableNames['gstr2_reconcile_final'] . ' where 1=1 AND added_by = ' . $this->sanitize($user_id) . ' AND financial_month = "' . $returnMonth . '" AND status = "1" AND company_gstin_number != "" AND invoice_type IN("taxinvoice","sezunitinvoice","deemedimportinvoice") ORDER BY company_gstin_number, reference_number';
 		$generate_gstr2_b2b_summary_result = $this->get_results($generate_gstr2_b2b_summary_query, $array_type);
-		return $generate_gstr2_b2b_summary_result;
+
+		$dataCurrentUserData = $this->getUserDetailsById($_SESSION['user_detail']['user_id']);
+		$companyState = $dataCurrentUserData['data']->kyc->state_tin;
+
+		foreach($generate_gstr2_b2b_summary_result as $B2BSummaryData) {
+			
+			$dataArray['invoice_nature'] = "b2b";
+			$dataArray['invoice_type'] = $B2BSummaryData['inv_typ'];
+			$dataArray['supplier_gstin'] = $B2BSummaryData['company_gstin_number'];
+			$dataArray['invoice_number'] = $B2BSummaryData['reference_number'];
+			$dataArray['invoice_date'] = date('d-m-Y', strtotime($B2BSummaryData['invoice_date']));
+			$dataArray['invoice_value'] = (float) $B2BSummaryData['invoice_total_value'];
+			$dataArray['place_of_supply'] = $B2BSummaryData['pos'];
+
+			if($companyState == $B2BSummaryData['pos']) {
+				$dataArray['supply_type'] = "INTRA";
+			} else {
+				$dataArray['supply_type'] = "INTER";
+			}
+			$dataArray['reverse_charge'] = $B2BSummaryData['reverse_charge'];
+
+			/* item data */
+			$dataArray['rate'] = (float) $B2BSummaryData['rate'];
+			$dataArray['taxable_value'] = (float) $B2BSummaryData['total_taxable_subtotal'];
+			$dataArray['sgst_amount'] = (float) $B2BSummaryData['total_sgst_amount'];
+			$dataArray['cgst_amount'] = (float) $B2BSummaryData['total_cgst_amount'];
+			$dataArray['igst_amount'] = (float) $B2BSummaryData['total_igst_amount'];
+			$dataArray['cess_amount'] = (float) $B2BSummaryData['total_cess_amount'];
+
+			/* itc data */
+			$dataArray['eligibility'] = $B2BSummaryData['eligibility'];
+			$dataArray['total_itc_sgst_amount'] = (float) $B2BSummaryData['total_itc_sgst_amount'];
+			$dataArray['total_itc_cgst_amount'] = (float) $B2BSummaryData['total_itc_cgst_amount'];
+			$dataArray['total_itc_igst_amount'] = (float) $B2BSummaryData['total_itc_igst_amount'];
+			$dataArray['total_itc_cess_amount'] = (float) $B2BSummaryData['total_itc_cess_amount'];
+
+			$dataArray['return_period'] = $returnMonth;
+			$dataArray['financial_year'] = $this->generateFinancialYear();
+			$dataArray['created_from'] = "M";
+			$dataArray['status'] = 1;
+			$dataArray['added_by'] = $_SESSION['user_detail']['user_id'];
+			$dataArray['added_date'] = date('Y-m-d H:i:s');
+
+			array_push($dataB2BArray, $dataArray);
+		}
+
+		if(!empty($dataB2BArray) && count($dataB2BArray) > 0) {
+			
+			$dataConditionArray['invoice_nature'] = "b2b";
+			$dataConditionArray['return_period'] = $returnMonth;
+			$dataConditionArray['added_by'] = $_SESSION['user_detail']['user_id'];
+			$this->deletData($this->tableNames['gstr2_return_summary'], $dataConditionArray);
+			$this->logMsg("GSTR2 summary invoices deleted for return period : " . $returnMonth . " by User ID : " . $_SESSION['user_detail']['user_id'] . ".","gstr2_b2b_deleted");
+
+			if ($this->insertMultiple($this->getTableName('gstr2_return_summary'), $dataB2BArray)) {
+				$iteminsertid = $this->getInsertID();
+				$this->logMsg("GSTR2 summary for B2B Invoices Added. ID : " . $iteminsertid . ".","gstr2_b2b_added");
+			}
+		}
+	}
+
+	public function generateGSTR2B2BURSummaryData($user_id, $returnMonth, $array_type = true) {
+
+		$dataB2BURArray = array();
+		$dataArray = array();
+		$generate_gstr2_b2bur_summary_query = 'Select 
+										id, 
+										invoice_type, 
+										reference_number, 
+										invoice_date, 
+										invoice_total_value, 
+										total_taxable_subtotal, 
+										company_gstin_number, 
+										total_cgst_amount, 
+										total_sgst_amount, 
+										total_igst_amount, 
+										total_cess_amount, 
+										nt_num, 
+										nt_dt, 
+										p_gst, 
+										rate, 
+										pos, 
+										advance_adjustment, 
+										receipt_voucher_number, 
+										advance_amount, 
+										inv_typ, 
+										import_supply_meant, 
+										import_bill_number, 
+										import_bill_date, 
+										import_bill_port_code, 
+										ntty, 
+										rsn, 
+										reverse_charge, 
+										reconciliation_status, 
+										invoice_status, 
+										financial_month, 
+										status, 
+										(
+											CASE 
+												WHEN eligibility = "ip" THEN "ip" 
+												WHEN eligibility = "cp" THEN "cp" 
+												WHEN eligibility = "is" THEN "is" 
+												ELSE "no" 
+											END
+										) AS eligibility, 
+										total_itc_cgst_amount, 
+										total_itc_sgst_amount, 
+										total_itc_igst_amount, 
+										total_itc_cess_amount 
+										from ' . $this->tableNames['gstr2_reconcile_final'] . ' where 1=1 AND added_by = ' . $this->sanitize($user_id) . ' AND financial_month = "' . $returnMonth . '" AND status = "1" AND company_gstin_number = "" AND invoice_type IN("taxinvoice","sezunitinvoice","deemedimportinvoice") ORDER BY reference_number';
+
+		$generate_gstr2_b2bur_summary_result = $this->get_results($generate_gstr2_b2bur_summary_query, $array_type);
+
+		$dataCurrentUserData = $this->getUserDetailsById($_SESSION['user_detail']['user_id']);
+		$companyState = $dataCurrentUserData['data']->kyc->state_tin;
+
+		foreach($generate_gstr2_b2bur_summary_result as $B2BURSummaryData) {
+
+			$dataArray['invoice_nature'] = "b2bur";
+			$dataArray['invoice_number'] = $B2BURSummaryData['reference_number'];
+			$dataArray['invoice_date'] = date('d-m-Y', strtotime($B2BURSummaryData['invoice_date']));
+			$dataArray['invoice_value'] = (float) $B2BURSummaryData['invoice_total_value'];
+			$dataArray['place_of_supply'] = $B2BURSummaryData['pos'];
+
+			if($companyState == $B2BURSummaryData['pos']) {
+				$dataArray['supply_type'] = "INTRA";
+			} else {
+				$dataArray['supply_type'] = "INTER";
+			}
+
+			/* item data */
+			$dataArray['rate'] = (float) $B2BURSummaryData['rate'];
+			$dataArray['taxable_value'] = (float) $B2BURSummaryData['total_taxable_subtotal'];
+			$dataArray['sgst_amount'] = (float) $B2BURSummaryData['total_sgst_amount'];
+			$dataArray['cgst_amount'] = (float) $B2BURSummaryData['total_cgst_amount'];
+			$dataArray['igst_amount'] = (float) $B2BURSummaryData['total_igst_amount'];
+			$dataArray['cess_amount'] = (float) $B2BURSummaryData['total_cess_amount'];
+
+			/* itc data */
+			$dataArray['eligibility'] = $B2BURSummaryData['eligibility'];
+			$dataArray['total_itc_sgst_amount'] = (float) $B2BURSummaryData['total_itc_sgst_amount'];
+			$dataArray['total_itc_cgst_amount'] = (float) $B2BURSummaryData['total_itc_cgst_amount'];
+			$dataArray['total_itc_igst_amount'] = (float) $B2BURSummaryData['total_itc_igst_amount'];
+			$dataArray['total_itc_cess_amount'] = (float) $B2BURSummaryData['total_itc_cess_amount'];
+
+			$dataArray['return_period'] = $returnMonth;
+			$dataArray['financial_year'] = $this->generateFinancialYear();
+			$dataArray['created_from'] = "M";
+			$dataArray['status'] = 1;
+			$dataArray['added_by'] = $_SESSION['user_detail']['user_id'];
+			$dataArray['added_date'] = date('Y-m-d H:i:s');
+
+			array_push($dataB2BURArray, $dataArray);
+		}
+
+		if(!empty($dataB2BURArray) && count($dataB2BURArray) > 0) {
+
+			$dataConditionArray['invoice_nature'] = "b2bur";
+			$dataConditionArray['return_period'] = $returnMonth;
+			$dataConditionArray['added_by'] = $_SESSION['user_detail']['user_id'];
+			$this->deletData($this->tableNames['gstr2_return_summary'], $dataConditionArray);
+			$this->logMsg("GSTR2 summary invoices deleted for return period : " . $returnMonth . " by User ID : " . $_SESSION['user_detail']['user_id'] . ".","gstr2_b2bur_deleted");
+
+			if ($this->insertMultiple($this->getTableName('gstr2_return_summary'), $dataB2BURArray)) {
+				$iteminsertid = $this->getInsertID();
+				$this->logMsg("GSTR2 summary for B2BUR Invoices Added. ID : " . $iteminsertid . ".","gstr2_b2bur_added");
+			}
+		}
+	}
+
+	public function generateGSTR2IMPSSummaryData($user_id, $returnMonth, $array_type = true) {
+		
+		$dataIMPSArray = array();
+		$dataArray = array();
+		$generate_gstr2_imps_summary_query = 'Select 
+										id, 
+										invoice_type, 
+										reference_number, 
+										invoice_date, 
+										invoice_total_value, 
+										total_taxable_subtotal, 
+										company_gstin_number, 
+										total_cgst_amount, 
+										total_sgst_amount, 
+										total_igst_amount, 
+										total_cess_amount, 
+										nt_num, 
+										nt_dt, 
+										p_gst, 
+										rate, 
+										pos, 
+										advance_adjustment, 
+										receipt_voucher_number, 
+										advance_amount, 
+										inv_typ, 
+										import_supply_meant, 
+										import_bill_number, 
+										import_bill_date, 
+										import_bill_port_code, 
+										ntty, 
+										rsn, 
+										reverse_charge, 
+										reconciliation_status, 
+										invoice_status, 
+										financial_month, 
+										status, 
+										(
+											CASE 
+												WHEN eligibility = "ip" THEN "ip" 
+												WHEN eligibility = "cp" THEN "cp" 
+												WHEN eligibility = "is" THEN "is" 
+												ELSE "no" 
+											END
+										) AS eligibility, 
+										total_itc_cgst_amount, 
+										total_itc_sgst_amount, 
+										total_itc_igst_amount, 
+										total_itc_cess_amount 
+										from ' . $this->tableNames['gstr2_reconcile_final'] . ' where 1=1 AND added_by = ' . $this->sanitize($user_id) . ' AND financial_month = "' . $returnMonth . '" AND status = "1" AND invoice_type = "importinvoice" AND inv_typ = "IMPS" ORDER BY reference_number';
+		$generate_gstr2_imps_summary_result = $this->get_results($generate_gstr2_imps_summary_query, $array_type);
+
+		foreach($generate_gstr2_imps_summary_result as $IMPSSummaryData) {
+
+			$dataArray['invoice_nature'] = "imps";
+			$dataArray['invoice_number'] = $IMPSSummaryData['reference_number'];
+			$dataArray['invoice_date'] = date('d-m-Y', strtotime($IMPSSummaryData['invoice_date']));
+			$dataArray['invoice_value'] = (float) $IMPSSummaryData['invoice_total_value'];
+			$dataArray['place_of_supply'] = $IMPSSummaryData['pos'];
+
+			/* item data */
+			$dataArray['rate'] = (float) $IMPSSummaryData['rate'];
+			$dataArray['taxable_value'] = (float) $IMPSSummaryData['total_taxable_subtotal'];
+			$dataArray['igst_amount'] = (float) $IMPSSummaryData['total_igst_amount'];
+			$dataArray['cess_amount'] = (float) $IMPSSummaryData['total_cess_amount'];
+
+			/* itc data */
+			$dataArray['eligibility'] = $IMPSSummaryData['eligibility'];
+			$dataArray['total_itc_igst_amount'] = (float) $IMPSSummaryData['total_itc_igst_amount'];
+			$dataArray['total_itc_cess_amount'] = (float) $IMPSSummaryData['total_itc_cess_amount'];
+
+			$dataArray['return_period'] = $returnMonth;
+			$dataArray['financial_year'] = $this->generateFinancialYear();
+			$dataArray['created_from'] = "M";
+			$dataArray['status'] = 1;
+			$dataArray['added_by'] = $_SESSION['user_detail']['user_id'];
+			$dataArray['added_date'] = date('Y-m-d H:i:s');
+
+			array_push($dataIMPSArray, $dataArray);
+		}
+
+		if(!empty($dataIMPSArray) && count($dataIMPSArray) > 0) {
+			
+			$dataConditionArray['invoice_nature'] = "imps";
+			$dataConditionArray['return_period'] = $returnMonth;
+			$dataConditionArray['added_by'] = $_SESSION['user_detail']['user_id'];
+			$this->deletData($this->tableNames['gstr2_return_summary'], $dataConditionArray);
+			$this->logMsg("GSTR2 summary imps invoices deleted for return period : " . $returnMonth . " by User ID : " . $_SESSION['user_detail']['user_id'] . ".","gstr2_imps_deleted");
+
+			if ($this->insertMultiple($this->getTableName('gstr2_return_summary'), $dataIMPSArray)) {
+				$iteminsertid = $this->getInsertID();
+				$this->logMsg("GSTR2 summary for IMPS Invoices Added. ID : " . $iteminsertid . ".","gstr2_imps_added");
+			}
+		}
 	}
 	
+	public function generateGSTR2IMPGSummaryData($user_id, $returnMonth, $array_type = true) {
+		
+		$dataIMPGArray = array();
+		$dataArray = array();
+		$generate_gstr2_impg_summary_query = 'Select 
+										id, 
+										invoice_type, 
+										reference_number, 
+										invoice_date, 
+										invoice_total_value, 
+										total_taxable_subtotal, 
+										company_gstin_number, 
+										total_cgst_amount, 
+										total_sgst_amount, 
+										total_igst_amount, 
+										total_cess_amount, 
+										nt_num, 
+										nt_dt, 
+										p_gst, 
+										rate, 
+										pos, 
+										advance_adjustment, 
+										receipt_voucher_number, 
+										advance_amount, 
+										inv_typ, 
+										import_supply_meant, 
+										import_bill_number, 
+										import_bill_date, 
+										import_bill_port_code, 
+										ntty, 
+										rsn, 
+										reverse_charge, 
+										reconciliation_status, 
+										invoice_status, 
+										financial_month, 
+										status, 
+										(
+											CASE 
+												WHEN eligibility = "ip" THEN "ip" 
+												WHEN eligibility = "cp" THEN "cp" 
+												WHEN eligibility = "is" THEN "is" 
+												ELSE "no" 
+											END
+										) AS eligibility, 
+										total_itc_cgst_amount, 
+										total_itc_sgst_amount, 
+										total_itc_igst_amount, 
+										total_itc_cess_amount 
+										from ' . $this->tableNames['gstr2_reconcile_final'] . ' where 1=1 AND added_by = ' . $this->sanitize($user_id) . ' AND financial_month = "' . $returnMonth . '" AND status = "1" AND invoice_type = "importinvoice" AND inv_typ = "IMPG" ORDER BY reference_number';
+		$generate_gstr2_impg_summary_result = $this->get_results($generate_gstr2_impg_summary_query, $array_type);
+		
+		foreach($generate_gstr2_impg_summary_result as $IMPGSummaryData) {
+
+			$dataArray['invoice_nature'] = "impg";
+			$dataArray['port_code'] = $IMPGSummaryData['import_bill_port_code'];
+			$dataArray['bill_number'] = $IMPGSummaryData['import_bill_number'];
+			$dataArray['bill_date'] = $IMPGSummaryData['import_bill_date'];
+			$dataArray['invoice_value'] = (float) $IMPGSummaryData['invoice_total_value'];
+			$dataArray['is_sez'] = "N";
+
+			/* item data */
+			$dataArray['rate'] = (float) $IMPGSummaryData['rate'];
+			$dataArray['taxable_value'] = (float) $IMPGSummaryData['total_taxable_subtotal'];
+			$dataArray['igst_amount'] = (float) $IMPGSummaryData['total_igst_amount'];
+			$dataArray['cess_amount'] = (float) $IMPGSummaryData['total_cess_amount'];
+
+			/* itc data */
+			$dataArray['eligibility'] = $IMPGSummaryData['eligibility'];
+			$dataArray['total_itc_igst_amount'] = (float) $IMPGSummaryData['total_itc_igst_amount'];
+			$dataArray['total_itc_cess_amount'] = (float) $IMPGSummaryData['total_itc_cess_amount'];
+
+			$dataArray['return_period'] = $returnMonth;
+			$dataArray['financial_year'] = $this->generateFinancialYear();
+			$dataArray['created_from'] = "M";
+			$dataArray['status'] = 1;
+			$dataArray['added_by'] = $_SESSION['user_detail']['user_id'];
+			$dataArray['added_date'] = date('Y-m-d H:i:s');
+
+			array_push($dataIMPGArray, $dataArray);
+		}
+
+		if(!empty($dataIMPGArray) && count($dataIMPGArray) > 0) {
+			
+			$dataConditionArray['invoice_nature'] = "impg";
+			$dataConditionArray['return_period'] = $returnMonth;
+			$dataConditionArray['added_by'] = $_SESSION['user_detail']['user_id'];
+			$this->deletData($this->tableNames['gstr2_return_summary'], $dataConditionArray);
+			$this->logMsg("GSTR2 summary impg invoices deleted for return period : " . $returnMonth . " by User ID : " . $_SESSION['user_detail']['user_id'] . ".","gstr2_impg_deleted");
+
+			if ($this->insertMultiple($this->getTableName('gstr2_return_summary'), $dataIMPGArray)) {
+				$iteminsertid = $this->getInsertID();
+				$this->logMsg("GSTR2 summary for IMPG Invoices Added. ID : " . $iteminsertid . ".","gstr2_impg_added");
+			}
+		}
+	}
+	
+	public function generateGSTR2CDNRSummaryData($user_id, $returnMonth, $array_type = true) {
+
+		$generate_gstr2_cdnr_summary_query = 'Select 
+										id, 
+										invoice_type, 
+										reference_number, 
+										invoice_date, 
+										invoice_total_value, 
+										total_taxable_subtotal, 
+										company_gstin_number, 
+										total_cgst_amount, 
+										total_sgst_amount, 
+										total_igst_amount, 
+										total_cess_amount, 
+										nt_num, 
+										nt_dt, 
+										p_gst, 
+										rate, 
+										pos, 
+										advance_adjustment, 
+										receipt_voucher_number, 
+										advance_amount, 
+										inv_typ, 
+										import_supply_meant, 
+										import_bill_number, 
+										import_bill_date, 
+										import_bill_port_code, 
+										ntty, 
+										rsn, 
+										reverse_charge, 
+										reconciliation_status, 
+										invoice_status, 
+										financial_month, 
+										status, 
+										(
+											CASE 
+												WHEN eligibility = "ip" THEN "ip" 
+												WHEN eligibility = "cp" THEN "cp" 
+												WHEN eligibility = "is" THEN "is" 
+												ELSE "no" 
+											END
+										) AS eligibility, 
+										total_itc_cgst_amount, 
+										total_itc_sgst_amount, 
+										total_itc_igst_amount, 
+										total_itc_cess_amount 
+										from ' . $this->tableNames['gstr2_reconcile_final'] . ' where 1=1 AND added_by = ' . $this->sanitize($user_id) . ' AND financial_month = "' . $returnMonth . '" AND status = "1" AND company_gstin_number != "" AND invoice_type IN("creditnote","debitnote","refundvoucherinvoice") ORDER BY company_gstin_number, reference_number';
+		$generate_gstr2_cdnr_summary_result = $this->get_results($generate_gstr2_cdnr_summary_query, $array_type);
+		
+		$dataCurrentUserData = $this->getUserDetailsById($_SESSION['user_detail']['user_id']);
+		$companyState = $dataCurrentUserData['data']->kyc->state_tin;
+
+		foreach($generate_gstr2_cdnr_summary_result as $CDNRSummaryData) {
+			
+			$dataArray['invoice_nature'] = "cdnr";
+			$dataArray['invoice_type'] = $CDNRSummaryData['inv_typ'];
+			$dataArray['supplier_gstin'] = $CDNRSummaryData['company_gstin_number'];
+			$dataArray['invoice_number'] = $CDNRSummaryData['reference_number'];
+			$dataArray['invoice_date'] = date('d-m-Y', strtotime($CDNRSummaryData['invoice_date']));
+			$dataArray['invoice_value'] = (float) $CDNRSummaryData['invoice_total_value'];
+			$dataArray['place_of_supply'] = $CDNRSummaryData['pos'];
+
+			if($companyState == $CDNRSummaryData['pos']) {
+				$dataArray['supply_type'] = "INTRA";
+			} else {
+				$dataArray['supply_type'] = "INTER";
+			}
+			$dataArray['reverse_charge'] = $CDNRSummaryData['reverse_charge'];
+
+			/* item data */
+			$dataArray['rate'] = (float) $CDNRSummaryData['rate'];
+			$dataArray['taxable_value'] = (float) $CDNRSummaryData['total_taxable_subtotal'];
+			$dataArray['sgst_amount'] = (float) $CDNRSummaryData['total_sgst_amount'];
+			$dataArray['cgst_amount'] = (float) $CDNRSummaryData['total_cgst_amount'];
+			$dataArray['igst_amount'] = (float) $CDNRSummaryData['total_igst_amount'];
+			$dataArray['cess_amount'] = (float) $CDNRSummaryData['total_cess_amount'];
+
+			/* itc data */
+			$dataArray['eligibility'] = $CDNRSummaryData['eligibility'];
+			$dataArray['total_itc_sgst_amount'] = (float) $CDNRSummaryData['total_itc_sgst_amount'];
+			$dataArray['total_itc_cgst_amount'] = (float) $CDNRSummaryData['total_itc_cgst_amount'];
+			$dataArray['total_itc_igst_amount'] = (float) $CDNRSummaryData['total_itc_igst_amount'];
+			$dataArray['total_itc_cess_amount'] = (float) $CDNRSummaryData['total_itc_cess_amount'];
+
+			$dataArray['return_period'] = $returnMonth;
+			$dataArray['financial_year'] = $this->generateFinancialYear();
+			$dataArray['created_from'] = "M";
+			$dataArray['status'] = 1;
+			$dataArray['added_by'] = $_SESSION['user_detail']['user_id'];
+			$dataArray['added_date'] = date('Y-m-d H:i:s');
+
+			array_push($dataB2BArray, $dataArray);
+		}
+
+		if(!empty($dataB2BArray) && count($dataB2BArray) > 0) {
+			
+			$dataConditionArray['invoice_nature'] = "b2b";
+			$dataConditionArray['return_period'] = $returnMonth;
+			$dataConditionArray['added_by'] = $_SESSION['user_detail']['user_id'];
+			$this->deletData($this->tableNames['gstr2_return_summary'], $dataConditionArray);
+			$this->logMsg("GSTR2 summary invoices deleted for return period : " . $returnMonth . " by User ID : " . $_SESSION['user_detail']['user_id'] . ".","gstr2_b2b_deleted");
+
+			if ($this->insertMultiple($this->getTableName('gstr2_return_summary'), $dataB2BArray)) {
+				$iteminsertid = $this->getInsertID();
+				$this->logMsg("GSTR2 summary for B2B Invoices Added. ID : " . $iteminsertid . ".","gstr2_b2b_added");
+			}
+		}
+	}
+	
+	public function generateGSTR2CDNURSummaryData($user_id, $returnMonth, $array_type = true) {
+
+		$generate_gstr2_cdnur_summary_query = 'Select 
+										id, 
+										invoice_type, 
+										reference_number, 
+										invoice_date, 
+										invoice_total_value, 
+										total_taxable_subtotal, 
+										company_gstin_number, 
+										total_cgst_amount, 
+										total_sgst_amount, 
+										total_igst_amount, 
+										total_cess_amount, 
+										nt_num, 
+										nt_dt, 
+										p_gst, 
+										rate, 
+										pos, 
+										advance_adjustment, 
+										receipt_voucher_number, 
+										advance_amount, 
+										inv_typ, 
+										import_supply_meant, 
+										import_bill_number, 
+										import_bill_date, 
+										import_bill_port_code, 
+										ntty, 
+										rsn, 
+										reverse_charge, 
+										reconciliation_status, 
+										invoice_status, 
+										financial_month, 
+										status, 
+										(
+											CASE 
+												WHEN eligibility = "ip" THEN "ip" 
+												WHEN eligibility = "cp" THEN "cp" 
+												WHEN eligibility = "is" THEN "is" 
+												ELSE "no" 
+											END
+										) AS eligibility, 
+										total_itc_cgst_amount, 
+										total_itc_sgst_amount, 
+										total_itc_igst_amount, 
+										total_itc_cess_amount 
+										from ' . $this->tableNames['gstr2_reconcile_final'] . ' where 1=1 AND added_by = ' . $this->sanitize($user_id) . ' AND financial_month = "' . $returnMonth . '" AND status = "1" AND company_gstin_number = "" AND invoice_type IN("creditnote","debitnote","refundvoucherinvoice") ORDER BY reference_number';
+		$generate_gstr2_cdnur_summary_result = $this->get_results($generate_gstr2_cdnur_summary_query, $array_type);
+		return $generate_gstr2_cdnur_summary_result;
+	}
+
 	public function generateGSTR2B2BPayloadData($user_id, $returnMonth, $array_type = true) {
 
 		$dataArray = array();
@@ -1570,7 +2168,7 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
             $reference_number_array = array();
 
 			foreach($GSTR2B2BSummaryData as $B2BSummaryData) {
-				
+
 				if(!empty($reference_number_array) && !in_array($B2BSummaryData['reference_number'], $reference_number_array)) {
 					$z = 0;
 					$y++;
@@ -1620,57 +2218,6 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 		}
 
 		return $dataArray;
-	}
-
-	public function generateGSTR2B2BURSummaryData($user_id, $returnMonth, $array_type = true) {
-
-		$generate_gstr2_b2bur_summary_query = 'Select 
-										id, 
-										invoice_type, 
-										reference_number, 
-										invoice_date, 
-										invoice_total_value, 
-										total_taxable_subtotal, 
-										company_gstin_number, 
-										total_cgst_amount, 
-										total_sgst_amount, 
-										total_igst_amount, 
-										total_cess_amount, 
-										nt_num, 
-										nt_dt, 
-										p_gst, 
-										rate, 
-										pos, 
-										advance_adjustment, 
-										receipt_voucher_number, 
-										advance_amount, 
-										inv_typ, 
-										import_supply_meant, 
-										import_bill_number, 
-										import_bill_date, 
-										import_bill_port_code, 
-										ntty, 
-										rsn, 
-										reverse_charge, 
-										reconciliation_status, 
-										invoice_status, 
-										financial_month, 
-										status, 
-										(
-											CASE 
-												WHEN eligibility = "ip" THEN "ip" 
-												WHEN eligibility = "cp" THEN "cp" 
-												WHEN eligibility = "is" THEN "is" 
-												ELSE "no" 
-											END
-										) AS eligibility, 
-										total_itc_cgst_amount, 
-										total_itc_sgst_amount, 
-										total_itc_igst_amount, 
-										total_itc_cess_amount 
-										from ' . $this->tableNames['gstr2_reconcile_final'] . ' where 1=1 AND added_by = ' . $this->sanitize($user_id) . ' AND financial_month = "' . $returnMonth . '" AND status = "1" AND company_gstin_number = "" AND invoice_type IN("taxinvoice","sezunitinvoice","deemedimportinvoice") ORDER BY reference_number';
-		$generate_gstr2_b2bur_summary_result = $this->get_results($generate_gstr2_b2bur_summary_query, $array_type);
-		return $generate_gstr2_b2bur_summary_result;
 	}
 
 	public function generateGSTR2B2BURPayloadData($user_id, $returnMonth, $array_type = true) {
@@ -1733,57 +2280,6 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 
 		return $dataArray;
 	}
-
-	public function generateGSTR2IMPSSummaryData($user_id, $returnMonth, $array_type = true) {
-
-		$generate_gstr2_imps_summary_query = 'Select 
-										id, 
-										invoice_type, 
-										reference_number, 
-										invoice_date, 
-										invoice_total_value, 
-										total_taxable_subtotal, 
-										company_gstin_number, 
-										total_cgst_amount, 
-										total_sgst_amount, 
-										total_igst_amount, 
-										total_cess_amount, 
-										nt_num, 
-										nt_dt, 
-										p_gst, 
-										rate, 
-										pos, 
-										advance_adjustment, 
-										receipt_voucher_number, 
-										advance_amount, 
-										inv_typ, 
-										import_supply_meant, 
-										import_bill_number, 
-										import_bill_date, 
-										import_bill_port_code, 
-										ntty, 
-										rsn, 
-										reverse_charge, 
-										reconciliation_status, 
-										invoice_status, 
-										financial_month, 
-										status, 
-										(
-											CASE 
-												WHEN eligibility = "ip" THEN "ip" 
-												WHEN eligibility = "cp" THEN "cp" 
-												WHEN eligibility = "is" THEN "is" 
-												ELSE "no" 
-											END
-										) AS eligibility, 
-										total_itc_cgst_amount, 
-										total_itc_sgst_amount, 
-										total_itc_igst_amount, 
-										total_itc_cess_amount 
-										from ' . $this->tableNames['gstr2_reconcile_final'] . ' where 1=1 AND added_by = ' . $this->sanitize($user_id) . ' AND financial_month = "' . $returnMonth . '" AND status = "1" AND invoice_type = "importinvoice" AND inv_typ = "IMPS" ORDER BY reference_number';
-		$generate_gstr2_imps_summary_result = $this->get_results($generate_gstr2_imps_summary_query, $array_type);
-		return $generate_gstr2_imps_summary_result;
-	}
 	
 	public function generateGSTR2IMPSPayloadData($user_id, $returnMonth, $array_type = true) {
 
@@ -1833,57 +2329,6 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 		return $dataArray;
 	}
 
-	public function generateGSTR2IMPGSummaryData($user_id, $returnMonth, $array_type = true) {
-
-		$generate_gstr2_impg_summary_query = 'Select 
-										id, 
-										invoice_type, 
-										reference_number, 
-										invoice_date, 
-										invoice_total_value, 
-										total_taxable_subtotal, 
-										company_gstin_number, 
-										total_cgst_amount, 
-										total_sgst_amount, 
-										total_igst_amount, 
-										total_cess_amount, 
-										nt_num, 
-										nt_dt, 
-										p_gst, 
-										rate, 
-										pos, 
-										advance_adjustment, 
-										receipt_voucher_number, 
-										advance_amount, 
-										inv_typ, 
-										import_supply_meant, 
-										import_bill_number, 
-										import_bill_date, 
-										import_bill_port_code, 
-										ntty, 
-										rsn, 
-										reverse_charge, 
-										reconciliation_status, 
-										invoice_status, 
-										financial_month, 
-										status, 
-										(
-											CASE 
-												WHEN eligibility = "ip" THEN "ip" 
-												WHEN eligibility = "cp" THEN "cp" 
-												WHEN eligibility = "is" THEN "is" 
-												ELSE "no" 
-											END
-										) AS eligibility, 
-										total_itc_cgst_amount, 
-										total_itc_sgst_amount, 
-										total_itc_igst_amount, 
-										total_itc_cess_amount 
-										from ' . $this->tableNames['gstr2_reconcile_final'] . ' where 1=1 AND added_by = ' . $this->sanitize($user_id) . ' AND financial_month = "' . $returnMonth . '" AND status = "1" AND invoice_type = "importinvoice" AND inv_typ = "IMPG" ORDER BY reference_number';
-		$generate_gstr2_impg_summary_result = $this->get_results($generate_gstr2_impg_summary_query, $array_type);
-		return $generate_gstr2_impg_summary_result;
-	}
-
 	public function generateGSTR2IMPGPayloadData($user_id, $returnMonth, $array_type = true) {
 
 		$dataArray = array();
@@ -1930,57 +2375,6 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 		}
 
 		return $dataArray;
-	}
-
-	public function generateGSTR2CDNRSummaryData($user_id, $returnMonth, $array_type = true) {
-
-		$generate_gstr2_cdnr_summary_query = 'Select 
-										id, 
-										invoice_type, 
-										reference_number, 
-										invoice_date, 
-										invoice_total_value, 
-										total_taxable_subtotal, 
-										company_gstin_number, 
-										total_cgst_amount, 
-										total_sgst_amount, 
-										total_igst_amount, 
-										total_cess_amount, 
-										nt_num, 
-										nt_dt, 
-										p_gst, 
-										rate, 
-										pos, 
-										advance_adjustment, 
-										receipt_voucher_number, 
-										advance_amount, 
-										inv_typ, 
-										import_supply_meant, 
-										import_bill_number, 
-										import_bill_date, 
-										import_bill_port_code, 
-										ntty, 
-										rsn, 
-										reverse_charge, 
-										reconciliation_status, 
-										invoice_status, 
-										financial_month, 
-										status, 
-										(
-											CASE 
-												WHEN eligibility = "ip" THEN "ip" 
-												WHEN eligibility = "cp" THEN "cp" 
-												WHEN eligibility = "is" THEN "is" 
-												ELSE "no" 
-											END
-										) AS eligibility, 
-										total_itc_cgst_amount, 
-										total_itc_sgst_amount, 
-										total_itc_igst_amount, 
-										total_itc_cess_amount 
-										from ' . $this->tableNames['gstr2_reconcile_final'] . ' where 1=1 AND added_by = ' . $this->sanitize($user_id) . ' AND financial_month = "' . $returnMonth . '" AND status = "1" AND company_gstin_number != "" AND invoice_type IN("creditnote","debitnote","refundvoucherinvoice") ORDER BY company_gstin_number, reference_number';
-		$generate_gstr2_cdnr_summary_result = $this->get_results($generate_gstr2_cdnr_summary_query, $array_type);
-		return $generate_gstr2_cdnr_summary_result;
 	}
 	
 	public function generateGSTR2CDNRPayloadData($user_id, $returnMonth, $array_type = true) {
@@ -2052,57 +2446,6 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 		}
 
 		return $dataArray;
-	}
-
-	public function generateGSTR2CDNURSummaryData($user_id, $returnMonth, $array_type = true) {
-
-		$generate_gstr2_cdnur_summary_query = 'Select 
-										id, 
-										invoice_type, 
-										reference_number, 
-										invoice_date, 
-										invoice_total_value, 
-										total_taxable_subtotal, 
-										company_gstin_number, 
-										total_cgst_amount, 
-										total_sgst_amount, 
-										total_igst_amount, 
-										total_cess_amount, 
-										nt_num, 
-										nt_dt, 
-										p_gst, 
-										rate, 
-										pos, 
-										advance_adjustment, 
-										receipt_voucher_number, 
-										advance_amount, 
-										inv_typ, 
-										import_supply_meant, 
-										import_bill_number, 
-										import_bill_date, 
-										import_bill_port_code, 
-										ntty, 
-										rsn, 
-										reverse_charge, 
-										reconciliation_status, 
-										invoice_status, 
-										financial_month, 
-										status, 
-										(
-											CASE 
-												WHEN eligibility = "ip" THEN "ip" 
-												WHEN eligibility = "cp" THEN "cp" 
-												WHEN eligibility = "is" THEN "is" 
-												ELSE "no" 
-											END
-										) AS eligibility, 
-										total_itc_cgst_amount, 
-										total_itc_sgst_amount, 
-										total_itc_igst_amount, 
-										total_itc_cess_amount 
-										from ' . $this->tableNames['gstr2_reconcile_final'] . ' where 1=1 AND added_by = ' . $this->sanitize($user_id) . ' AND financial_month = "' . $returnMonth . '" AND status = "1" AND company_gstin_number = "" AND invoice_type IN("creditnote","debitnote","refundvoucherinvoice") ORDER BY reference_number';
-		$generate_gstr2_cdnur_summary_result = $this->get_results($generate_gstr2_cdnur_summary_query, $array_type);
-		return $generate_gstr2_cdnur_summary_result;
 	}
 
 	public function generateGSTR2CDNURPayloadData($user_id, $returnMonth, $array_type = true) {
@@ -2179,7 +2522,7 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 												p.supplier_billing_gstin_number, 
 												cs.state_tin as company_state, 
 												ps.state_tin as supply_place, 
-												sum(taxable_subtotal) as taxable_subtotal, 
+												sum(pi.taxable_subtotal) as taxable_subtotal, 
 												sum(pi.cgst_amount) as cgst_amount, 
 												sum(pi.sgst_amount) as sgst_amount, 
 												sum(pi.igst_amount) as igst_amount, 
@@ -2259,7 +2602,7 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 
 	public function generateGSTR2ATADJSummaryData($user_id, $returnMonth, $array_type = true) {
 
-		$generate_gstr2_at_summary_query = "select 
+		$generate_gstr2_atadj_summary_query = "select 
 												p.purchase_invoice_id, 
 												p.invoice_type, 
 												p.supplier_billing_name, 
@@ -2269,23 +2612,20 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 												p.supplier_billing_gstin_number, 
 												cs.state_tin as company_state, 
 												ps.state_tin as supply_place, 
-												sum(taxable_subtotal) as taxable_subtotal, 
+												sum(pi.taxable_subtotal) as taxable_subtotal, 
 												sum(pi.cgst_amount) as cgst_amount, 
 												sum(pi.sgst_amount) as sgst_amount, 
 												sum(pi.igst_amount) as igst_amount, 
 												sum(pi.cess_amount) as cess_amount, 
 												pi.consolidate_rate 
 												from ".$this->getTableName('client_purchase_invoice')." p 
-												left join ".$this->getTableName('client_purchase_invoice')." as inv on p.purchase_invoice_id = inv.receipt_voucher_number 
-												AND (
-													(inv.invoice_date > p.invoice_date AND (DATE_FORMAT(inv.invoice_date, '%Y-%m') = '".$returnMonth."' ) AND (inv.purchase_invoice_id is not NULL)) or 
-													(inv.purchase_invoice_id is NULL)
-												  ) 
+												inner join ".$this->getTableName('client_purchase_invoice')." as inv on p.receipt_voucher_number = inv.purchase_invoice_id 
 												inner join ".$this->getTableName('client_purchase_invoice_item')." pi on p.purchase_invoice_id = pi.purchase_invoice_id 
-												inner join ".$this->getTableName('state')." cs on cs.state_id = p.company_state  
+												inner join ".$this->getTableName('state')." cs on cs.state_id = p.company_state 
 												inner join ".$this->getTableName('state')." ps on p.supply_place = ps.state_id where 1=1 ";
 
-		$generate_gstr2_at_summary_query .= " AND 
+		$generate_gstr2_atadj_summary_query .= "AND p.invoice_date > inv.invoice_date AND DATE_FORMAT(inv.invoice_date, '%Y-%m') < '".$returnMonth."'";
+		$generate_gstr2_atadj_summary_query .= " AND 
 											  p.status='1' AND 
 											  p.added_by='".$user_id."' AND 
 											  DATE_FORMAT(p.invoice_date,'%Y-%m') = '".$returnMonth."' AND 
@@ -2294,33 +2634,33 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 											  p.is_deleted='0' 
 											  group by p.supply_place, pi.consolidate_rate ORDER BY p.supply_place";
 
-		$generate_gstr2_at_summary_result = $this->get_results($generate_gstr2_at_summary_query, $array_type);
-		return $generate_gstr2_at_summary_result;
+		$generate_gstr2_atadj_summary_result = $this->get_results($generate_gstr2_atadj_summary_query, $array_type);
+		return $generate_gstr2_atadj_summary_result;
 	}
 
 	public function generateGSTR2ATADJPayloadData($user_id, $returnMonth, $array_type = true) {
 
 		$dataArray = array();
-		$GSTR2ATSummaryData = $this->generateGSTR2ATADJSummaryData($user_id, $returnMonth, $array_type);
+		$GSTR2ATADJSummaryData = $this->generateGSTR2ATADJSummaryData($user_id, $returnMonth, $array_type);
 
-		if (isset($GSTR2ATSummaryData) && !empty($GSTR2ATSummaryData)) {
+		if (isset($GSTR2ATADJSummaryData) && !empty($GSTR2ATADJSummaryData)) {
 
 			$x = 0;
             $y = 0;
 			$num = 1;
 			$reference_number_array = array();
 
-			foreach($GSTR2ATSummaryData as $ATSummaryData) {
+			foreach($GSTR2ATADJSummaryData as $ATADJSummaryData) {
 
-				if(!empty($reference_number_array) && !in_array($ATSummaryData['reference_number'], $reference_number_array)) {
+				if(!empty($reference_number_array) && !in_array($ATADJSummaryData['reference_number'], $reference_number_array)) {
 					$y = 0;
 					$x++;
 					$num = 1;
 				}
 
-				$dataArray['txi'][$x]['pos'] = $ATSummaryData['supply_place'];
+				$dataArray['txi'][$x]['pos'] = $ATADJSummaryData['supply_place'];
 
-				if($ATSummaryData['company_state'] == $ATSummaryData['supply_place']) {
+				if($ATADJSummaryData['company_state'] == $ATADJSummaryData['supply_place']) {
 					$dataArray['txi'][$x]['sply_ty'] = "INTRA";
 				} else {
 					$dataArray['txi'][$x]['sply_ty'] = "INTER";
@@ -2329,14 +2669,14 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 				$dataArray['txi'][$x]['itms'][$y]['num'] = (int) $num;
 
 				/* item data */
-				$dataArray['txi'][$x]['itms'][$y]['rt'] = (float) $ATSummaryData['consolidate_rate'];
-                $dataArray['txi'][$x]['itms'][$y]['adamt'] = (float) $ATSummaryData['taxable_subtotal'];
-				$dataArray['txi'][$x]['itms'][$y]['samt'] = (float) $ATSummaryData['sgst_amount'];
-				$dataArray['txi'][$x]['itms'][$y]['camt'] = (float) $ATSummaryData['cgst_amount'];
-				$dataArray['txi'][$x]['itms'][$y]['iamt'] = (float) $ATSummaryData['igst_amount'];
-				$dataArray['txi'][$x]['itms'][$y]['csamt'] = (float) $ATSummaryData['cess_amount'];
+				$dataArray['txi'][$x]['itms'][$y]['rt'] = (float) $ATADJSummaryData['consolidate_rate'];
+                $dataArray['txi'][$x]['itms'][$y]['adamt'] = (float) $ATADJSummaryData['taxable_subtotal'];
+				$dataArray['txi'][$x]['itms'][$y]['samt'] = (float) $ATADJSummaryData['sgst_amount'];
+				$dataArray['txi'][$x]['itms'][$y]['camt'] = (float) $ATADJSummaryData['cgst_amount'];
+				$dataArray['txi'][$x]['itms'][$y]['iamt'] = (float) $ATADJSummaryData['igst_amount'];
+				$dataArray['txi'][$x]['itms'][$y]['csamt'] = (float) $ATADJSummaryData['cess_amount'];
 
-				array_push($reference_number_array, $ATSummaryData['reference_number']);
+				array_push($reference_number_array, $ATADJSummaryData['reference_number']);
 				$reference_number_array = array_unique($reference_number_array);
 
 				$num++;
@@ -2345,5 +2685,160 @@ i.supplier_billing_gstin_number!='' and (i.invoice_type='debitnote' or i.invoice
 		}
 
 		return $dataArray;
+	}
+
+	public function generateGSTR2CPDDRNILSummaryData($user_id, $returnMonth, $type, $array_type = true) {
+
+		$generate_gstr2_cpddr_nil_summary_query = "select 
+												p.purchase_invoice_id,
+												p.invoice_type,
+												p.reference_number,
+												p.invoice_date,
+												sum(pi.taxable_subtotal) as taxable_subtotal, 
+												p.financial_year,
+												p.company_state,
+												p.supply_place,
+												(
+													CASE 
+														WHEN p.company_state = p.supply_place THEN 'INTRA' 
+														ELSE 'INTER' 
+													END
+												) AS supply_type 
+												FROM ".$this->getTableName('client_purchase_invoice')." p 
+												inner join ".$this->getTableName('client_purchase_invoice_item')." pi on p.purchase_invoice_id = pi.purchase_invoice_id 
+												where 1=1 
+												AND p.status='1' 
+												AND p.added_by='".$user_id."' 
+												AND DATE_FORMAT(p.invoice_date,'%Y-%m') = '".$returnMonth."' 
+												AND p.invoice_type IN('taxinvoice', 'sezunitinvoice', 'deemedexportinvoice', 'exportinvoice') 
+												AND p.is_canceled='0' 
+												AND p.supplier_billing_vendor_type = 2 
+												AND p.is_deleted='0'";
+
+		if(strtoupper($type) == "INTER") {
+			$generate_gstr2_cpddr_nil_summary_query .= " AND p.company_state != p.supply_place";
+		} else {
+			$generate_gstr2_cpddr_nil_summary_query .= " AND p.company_state = p.supply_place";
+		}
+
+		$generate_gstr2_cpddr_nil_summary_result = $this->get_results($generate_gstr2_cpddr_nil_summary_query, $array_type);
+		return $generate_gstr2_cpddr_nil_summary_result;
+	}
+
+	public function generateGSTR2NILRATEDSummaryData($user_id, $returnMonth, $type, $array_type = true) {
+
+		$generate_gstr2_nil_rated_summary_query = "select 
+												p.purchase_invoice_id,
+												p.invoice_type,
+												p.reference_number,
+												p.invoice_date,
+												sum(pi.taxable_subtotal) as taxable_subtotal, 
+												p.financial_year,
+												p.company_state,
+												p.supply_place,
+												(
+													CASE 
+														WHEN p.company_state = p.supply_place THEN 'INTRA' 
+														ELSE 'INTER' 
+													END
+												) AS supply_type 
+												FROM ".$this->getTableName('client_purchase_invoice')." p 
+												inner join ".$this->getTableName('client_purchase_invoice_item')." pi on p.purchase_invoice_id = pi.purchase_invoice_id 
+												where 1=1 
+												AND pi.is_applicable = '0' 
+												AND pi.igst_rate = '0.000' 
+												AND pi.cgst_rate = '0.000' 
+												AND pi.sgst_rate = '0.000' 
+												AND p.status='1' 
+												AND p.added_by='".$user_id."' 
+												AND DATE_FORMAT(p.invoice_date,'%Y-%m') = '".$returnMonth."' 
+												AND p.invoice_type IN('taxinvoice', 'sezunitinvoice', 'deemedexportinvoice', 'exportinvoice') 
+												AND p.is_canceled='0' 
+												AND p.is_deleted='0'";
+
+		if(strtoupper($type) == "INTER") {
+			$generate_gstr2_nil_rated_summary_query .= " AND p.company_state != p.supply_place";
+		} else {
+			$generate_gstr2_nil_rated_summary_query .= " AND p.company_state = p.supply_place";
+		}
+
+		$generate_gstr2_nil_rated_summary_result = $this->get_results($generate_gstr2_nil_rated_summary_query, $array_type);
+		return $generate_gstr2_nil_rated_summary_result;
+	}
+	
+	public function generateGSTR2NILNONGSTSummaryData($user_id, $returnMonth, $type, $array_type = true) {
+
+		$generate_gstr2_nil_nongst_summary_query = "select 
+												p.purchase_invoice_id,
+												p.invoice_type,
+												p.reference_number,
+												p.invoice_date,
+												sum(pi.taxable_subtotal) as taxable_subtotal, 
+												p.financial_year,
+												p.company_state,
+												p.supply_place,
+												(
+													CASE 
+														WHEN p.company_state = p.supply_place THEN 'INTRA' 
+														ELSE 'INTER' 
+													END
+												) AS supply_type 
+												FROM ".$this->getTableName('client_purchase_invoice')." p 
+												inner join ".$this->getTableName('client_purchase_invoice_item')." pi on p.purchase_invoice_id = pi.purchase_invoice_id 
+												where 1=1 
+												AND pi.is_applicable = '1' 
+												AND p.status='1' 
+												AND p.added_by='".$user_id."' 
+												AND DATE_FORMAT(p.invoice_date,'%Y-%m') = '".$returnMonth."' 
+												AND p.invoice_type IN('taxinvoice', 'sezunitinvoice', 'deemedexportinvoice', 'exportinvoice') 
+												AND p.is_canceled='0' 
+												AND p.is_deleted='0'";
+
+		if(strtoupper($type) == "INTER") {
+			$generate_gstr2_nil_nongst_summary_query .= " AND p.company_state != p.supply_place";
+		} else {
+			$generate_gstr2_nil_nongst_summary_query .= " AND p.company_state = p.supply_place";
+		}
+
+		$generate_gstr2_nil_nongst_summary_result = $this->get_results($generate_gstr2_nil_nongst_summary_query, $array_type);
+		return $generate_gstr2_nil_nongst_summary_result;
+	}
+
+	public function generateGSTR2NILEXESummaryData($user_id, $returnMonth, $type, $array_type = true) {
+
+		$generate_gstr2_nil_exe_summary_query = "select 
+												p.purchase_invoice_id,
+												p.invoice_type,
+												p.reference_number,
+												p.invoice_date,
+												sum(pi.taxable_subtotal) as taxable_subtotal, 
+												p.financial_year,
+												p.company_state,
+												p.supply_place,
+												(
+													CASE 
+														WHEN p.company_state = p.supply_place THEN 'INTRA' 
+														ELSE 'INTER' 
+													END
+												) AS supply_type 
+												FROM ".$this->getTableName('client_purchase_invoice')." p 
+												inner join ".$this->getTableName('client_purchase_invoice_item')." pi on p.purchase_invoice_id = pi.purchase_invoice_id 
+												where 1=1 
+												AND pi.is_applicable = '2' 
+												AND p.status='1' 
+												AND p.added_by='".$user_id."' 
+												AND DATE_FORMAT(p.invoice_date,'%Y-%m') = '".$returnMonth."' 
+												AND p.invoice_type IN('taxinvoice', 'sezunitinvoice', 'deemedexportinvoice', 'exportinvoice') 
+												AND p.is_canceled='0' 
+												AND p.is_deleted='0'";
+
+		if(strtoupper($type) == "INTER") {
+			$generate_gstr2_nil_exe_summary_query .= " AND p.company_state != p.supply_place";
+		} else {
+			$generate_gstr2_nil_exe_summary_query .= " AND p.company_state = p.supply_place";
+		}
+
+		$generate_gstr2_nil_exe_summary_result = $this->get_results($generate_gstr2_nil_exe_summary_query, $array_type);
+		return $generate_gstr2_nil_exe_summary_result;
 	}
 }

@@ -1,69 +1,74 @@
 <?php
-$obj_user = new users();
+$obj_faq = new faq();
+
 if( !isset($_SESSION['user_detail']['user_id']) || $_SESSION['user_detail']['user_id'] == '' ) {
-    $obj_user->redirect(PROJECT_URL);
+    $obj_faq->redirect(PROJECT_URL);
     exit();
 }
 
-if(!$obj_user->can_read('admin_list')) {
+/*if(!$obj_faq->can_read('faq_list')) {
 
-    $obj_user->setError($obj_user->getValMsg('can_read'));
-    $obj_user->redirect(PROJECT_URL."/?page=dashboard");
+    $obj_faq->setError($obj_faq->getValMsg('can_read'));
+    $obj_faq->redirect(PROJECT_URL."/?page=dashboard");
     exit();
 }
 
-if( isset($_GET['action']) && $_GET['action'] == 'deleteAdmin' && isset($_GET['id']) && $obj_user->validateId($_GET['id'])) {
+if(isset($_GET['id']) && $_GET['id']!='') {
+    
+	if(!$obj_faq->can_delete('faq_list')) {
 
-    $userDetail = $obj_user->getUserDetailsById( $obj_user->sanitize($_GET['id']) );
-    if( $userDetail['status'] == "success" ) {
+		$obj_faq->setError($obj_faq->getValMsg('can_delete'));
+		$obj_faq->redirect(PROJECT_URL."/?page=faq_list");
+		exit();
+	}
+	
+    $planid = $_GET['id'];
+    $planDetail = $obj_faq->getPlanDetails($planid);
 
-        if($obj_user->deleteUser($userDetail['data']->user_id)){
-            $obj_user->redirect(PROJECT_URL."?page=user_adminlist");
+       
+    if( $planDetail['status'] == "success" ) {
+        
+        if($obj_faq->deletePlan($planDetail['data']->id)){
+            $obj_faq->redirect(PROJECT_URL."?page=faq_list");
         }
-
+        
     } else {
-        $obj_user->setError($obj_user->validationMessage['usernotexist']);
-        $obj_user->redirect(PROJECT_URL."?page=user_adminlist");
+        $obj_faq->setError($obj_faq->validationMessage['noplanexist']);
+        $obj_faq->redirect(PROJECT_URL."?page=faq_list");
     }
-}
+}*/
+/* get current user data */
 
-
- $obj_user->getSubscriberInvoiceData();
 ?>
 
 <!--========================sidemenu over=========================-->
 <div class="col-md-12 col-sm-12 col-xs-12 padrgtnone mobpadlr formcontainer">
     <div class="col-md-12 col-sm-12 col-xs-12">
 
-        <h1>Admin User</h1>
+       <h1>FAQ List</h1>
         <div class="whitebg formboxcontainer">
         <div>
-            <a class='btn btn-default btn-success btnwidth addnew' href='<?php echo PROJECT_URL;?>/?page=user_adminupdate'>Add New</a>
+            <a class='btn btn-default btn-success btnwidth addnew' href='<?php echo PROJECT_URL;?>/?page=faq_update'>Add New</a>
         </div>
-    <div class="clear height10"></div>
-      
-        <?php $obj_user->showErrorMessage(); ?>
-        <?php $obj_user->showSuccessMessge(); ?>
-        <?php $obj_user->unsetMessage(); ?>
-        <h2 class="greyheading">Admin User Listing</h2>
+         <div class="clear height10"></div>
+       
+		<?php $obj_faq->showErrorMessage(); ?>
+        <?php $obj_faq->showSuccessMessge(); ?>
+        <?php $obj_faq->unsetMessage(); ?>
+        <h2 class="greyheading">FAQ Listing</h2>
         
         <div class="adminformbx">
-         
+          
         
             <table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice-itemtable" id="mainTable">
                 
                 <thead>
                     <tr>
                         <th align='left'>#</th>
-                        <th align='left'>Name</th>
-                        <th align='left'>Username</th>
-                        <th align='left'>Email</th>
-                        <th align='left'>Phone Number</th>
-                        <th align='left'>Company Name</th>
-                        <th align='left'>Company Code</th>
-                        <th align='left'>No Of Client</th>                        
+                    
+                        <th align='left'>Question</th>
+                        <th align='left' width="200px">Answer</th>
                         <th align='left'>Status</th>
-                        <th align='left'>Payment Status</th>
                         <th align='left'>Action</th>
                     </tr>
                 </thead>
@@ -73,8 +78,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteAdmin' && isset($_GET['i
 <!--========================adminformbox over=========================-->    
     </div>
 <!--========================admincontainer over=========================-->
-</div>
-</div>
+    </div></div>
 <div class="clear height80">
 </div>
 <script>
@@ -96,13 +100,8 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteAdmin' && isset($_GET['i
                         {"bSortable": false},
                         {"bSortable": false},
                         {"bSortable": false},
-                        {"bSortable": false},
-                        {"bSortable": false},
-                        {"bSortable": false},
-                        {"bSortable": false},
-                        {"bSortable": false},
-                        {"bSortable": false},
-                        {"bSortable": false},
+						{"bSortable": false},
+						
                         {"bSortable": false}
                     ],
                     "sDom": "lfrtip",
@@ -114,7 +113,7 @@ if( isset($_GET['action']) && $_GET['action'] == 'deleteAdmin' && isset($_GET['i
                     "bServerSide": true,
                     "bStateSave": false,
                     "bDestroy": true,
-                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=user_adminlist",
+                    "sAjaxSource": "<?php echo PROJECT_URL; ?>/?ajax=faq_list",
                     "fnServerParams": function (aoData) {
                     },
                     "iDisplayLength": 50

@@ -1,4 +1,5 @@
-<?php if ($db_obj->can_read('plan_category_list') || $db_obj->can_read('plan_list')) { ?>
+<?php
+if ($db_obj->can_read('plan_category_list') || $db_obj->can_read('plan_list')) { ?>
     <a href="#" class="rgtmenu"><img src="<?php echo PROJECT_URL;?>/image/icon-add-plan.png" alt="#"><br/>Add Plan</a>
 
     <a href="#" class="rgtmenu"><img src="<?php echo PROJECT_URL;?>/image/icon-add-plan.png" alt="#"><br/>Payments Module</a>

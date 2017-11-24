@@ -1,5 +1,4 @@
 <?php
-$obj_transition = new transition();
 $obj_gstr2 = new gstr2();
 
 //$obj_login->sendMobileMessage
@@ -12,23 +11,20 @@ if(!$obj_gstr2->can_read('returnfile_list'))
 }
 if (isset($_POST['returnmonth'])) {
     $returnmonth = $_POST['returnmonth'];
-    $obj_transition->redirect(PROJECT_URL . "/?page=return_hsnwise_summary&returnmonth=" . $returnmonth);
+    $obj_gstr2->redirect(PROJECT_URL . "/?page=return_hsnwise_summary&returnmonth=" . $returnmonth);
     exit();
 }
 $returnmonth = date('Y-m');
 if (isset($_REQUEST['returnmonth']) && $_REQUEST['returnmonth'] != '') {
     $returnmonth = $_REQUEST['returnmonth'];
 }
-$returnmonth = date('Y-m');
-if ($_REQUEST['returnmonth'] != '') {
-    $returnmonth = $_REQUEST['returnmonth'];
-}
+
 if (isset($_POST['submit']) && $_POST['submit'] == 'submit') {
 	$obj_gstr2->saveGstr1HsnSummary();
 	/*
-    $flag = $obj_transition->checkVerifyUser();
+    $flag = $obj_gstr2->checkVerifyUser();
     if ($flag == 'notverify') {
-         $obj_transition->setError("To save hsn summary first verify your email and mobile number");
+         $obj_gstr2->setError("To save hsn summary first verify your email and mobile number");
 		
     } else {
         if ($obj_gstr2->saveGstr1HsnSummary()) {
@@ -57,7 +53,7 @@ if (isset($_POST['autoname']) && $_POST['autoname'] == 1) {
 }
 else {
     $sql = "select  * from gst_return_upload_summary where added_by='" . $_SESSION['user_detail']['user_id'] . "' and financial_month like '%" . $returnmonth . "%' and is_deleted='0' and type='gstr1hsn' order by id desc limit 0,1";
-    $returndata1 = $obj_transition->get_results($sql);
+    $returndata1 = $obj_gstr2->get_results($sql);
 }
 
 ?>
@@ -69,15 +65,15 @@ else {
         <div class="col-md-6 col-sm-6 col-xs-12 text-right breadcrumb-nav"><a href="#">Home</a>
             <i class="fa fa-angle-right" aria-hidden="true"></i>  <a href="#">File Return</a> <i class="fa fa-angle-right" aria-hidden="true"></i> <span class="active">GSTR1-hsnwise summary</span> </div>
         <div class="whitebg formboxcontainer">
-<?php $obj_transition->showErrorMessage(); ?>
-<?php
-if (isset($_POST['finalsubmit']) && $_POST['finalsubmit'] == 'final submit') {
-    echo "<div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>GST_Transition form month of " . $returnmonth . " successfully submitted </div>";
-} else {
-    $obj_transition->showSuccessMessge();
-}
-?>
-<?php $obj_transition->unsetMessage(); ?>
+		<?php $obj_gstr2->showErrorMessage(); ?>
+		<?php
+		if (isset($_POST['finalsubmit']) && $_POST['finalsubmit'] == 'final submit') {
+			echo "<div id='sucmsg' style='background-color:#DBEDDF;border-radius:4px;padding:8px 35px 8px 14px;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);margin-bottom:18px;border-color:#D1E8DA;color:#39A25F;'><i class='fa fa-check'></i> <b>GST_Transition form month of " . $returnmonth . " successfully submitted </div>";
+		} else {
+			$obj_gstr2->showSuccessMessge();
+		}
+		?>
+		<?php $obj_gstr2->unsetMessage(); ?>
 
            
             <form method="post" id="auto" name="auto">
@@ -93,7 +89,7 @@ if (isset($_POST['finalsubmit']) && $_POST['finalsubmit'] == 'final submit') {
                     Month Of Return
 <?php
 $dataQuery = "SELECT DATE_FORMAT(invoice_date,'%Y-%m') AS niceDate FROM " . $db_obj->getTableName('client_invoice') . " group by nicedate";
-$dataRes = $obj_transition->get_results($dataQuery);
+$dataRes = $obj_gstr2->get_results($dataQuery);
 if (!empty($dataRes)) {
     ?>
                         <select class="dateselectbox" id="returnmonth" name="returnmonth">
@@ -121,8 +117,7 @@ if (!empty($dataRes)) {
             <form method="post" enctype="multipart/form-data" id='form'> 
                 <div class="greyheading">1.HSN-wise summary of outward supplies</div>
                 <div class="tableresponsive">
-                    <form method="post" enctype="multipart/form-data" id='form'>
-                        <table  class="table  tablecontent tablecontent2 bordernone" id='table1a'>
+               <table  class="table  tablecontent tablecontent2 bordernone" id='table1a'>
                             <thead>
                                 <tr>
                                     <th>HSN</th>
@@ -147,7 +142,7 @@ if (!empty($returndata1)) {
 	$arr = $returndata1[0]->return_data;
     $arr1= base64_decode($arr);
 	$summary_arr = json_decode($arr1);	
-	//$obj_transition->pr($summary_arr);
+	//$obj_gstr2->pr($summary_arr);
     foreach ($summary_arr as $data) {
 		
         ?>
@@ -160,7 +155,7 @@ if (!empty($returndata1)) {
                                             <td>
                                                 <input type='text' class='required form-control'  name='description[]' value="<?php  echo (isset($data->description)) ? $data->description : '' ?>"/></td>
                                             <td><select  name="unit[]"   id='unit' class="required form-control">
-							<?php $dataSupplyStateArrs = $obj_transition->get_results("select * from ".$obj_transition->getTableName('unit')." where status='1' and is_deleted='0' order by unit_name asc"); ?>
+							<?php $dataSupplyStateArrs = $obj_gstr2->get_results("select * from ".$obj_gstr2->getTableName('unit')." where status='1' and is_deleted='0' order by unit_name asc"); ?>
 							<?php if(!empty($dataSupplyStateArrs)) { ?>
 								<option value=''>Select unit</option>
 								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
@@ -220,7 +215,7 @@ if (!empty($returndata1)) {
                                             <td>
                                                 <input type='text' class='required form-control'  name='description[]' value="<?php  echo (isset($data->item_hsncode)) ? $data->item_hsncode.'_'.$data->item_unit : '' ?>"/></td>
                                             <td><select  name="unit[]"   id='unit' class="required form-control">
-							<?php $dataSupplyStateArrs = $obj_transition->get_results("select * from ".$obj_transition->getTableName('unit')." where status='1' and is_deleted='0' order by unit_name asc"); ?>
+							<?php $dataSupplyStateArrs = $obj_gstr2->get_results("select * from ".$obj_gstr2->getTableName('unit')." where status='1' and is_deleted='0' order by unit_name asc"); ?>
 							<?php if(!empty($dataSupplyStateArrs)) { ?>
 								<option value=''>Select unit</option>
 								<?php foreach($dataSupplyStateArrs as $dataSupplyStateArr) { ?>
@@ -309,7 +304,7 @@ if (!empty($returndata1)) {
             }
             var data1 = '<select class="required form-control" id="unit"  name="unit[]">';
             var data = '';
-            data +=<?php $dataSupplyStateArrs = $obj_transition->get_results("select * from " . $obj_transition->getTableName('unit') . " where status='1' and is_deleted='0' order by unit_name asc"); ?>
+            data +=<?php $dataSupplyStateArrs = $obj_gstr2->get_results("select * from " . $obj_gstr2->getTableName('unit') . " where status='1' and is_deleted='0' order by unit_name asc"); ?>
 <?php if (!empty($dataSupplyStateArrs)) { ?>
                 data += '<option value="">Select Unit</option>';
     <?php foreach ($dataSupplyStateArrs as $dataSupplyStateArr) { ?>

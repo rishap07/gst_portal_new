@@ -193,4 +193,24 @@ final class subscriber extends validation {
 	
    }
     
+	public function subscriberSummary()
+	{
+		$query="SELECT us.user_id,
+		us.username,
+		concat(us.first_name,' ',us.last_name) as fullname,
+		pl.id,concat(plcat.name,' ',pl.name) as plan,
+		us.plan_start_date,
+		us.plan_due_date,
+		us.no_of_client,
+		(select count(user_id) as clients from gst_user where added_by=us.user_id ) as clients,
+		(select count(invoice_id) from gst_client_invoice where added_by in (select (user_id) from gst_user where added_by=us.user_id )) as total_sales_invoices,
+		(select count(purchase_invoice_id) from gst_client_purchase_invoice where added_by in (select (user_id) from gst_user where added_by=us.user_id )) as total_purchase_invoices 
+		FROM `gst_user` us 
+		inner join gst_user_subscribed_plan usp on us.user_id=usp.added_by and usp.payment_status='1'
+		inner join gst_subscriber_plan pl on pl.id=us.plan_id 
+		inner join gst_subscriber_plan_category plcat on plcat.id=pl.plan_category 
+		where us.user_group='3'
+		group by usp.added_by";
+		return $query;
+	}
 }

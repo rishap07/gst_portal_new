@@ -209,7 +209,8 @@ class processpayment extends validation
 			$dataInvoice['taxes'] = ($plan_price * $dataInvoice['tax_percentage']) / 100;
 			$dataInvoice['total'] = $plan_price + $dataInvoice['taxes'];
 			$dataInvoice['payment_status'] = 1;
-			$dataInvoice['plan_subscription_id'] = $dataPl[0]->id;
+			$dataInvoice['plan_subscription_id'] = $dataUsPl[0]->id;
+			//$dataInvoice['plan_subscription_id'] = $dataPl[0]->id;
 			$dataInvoice['invoice_date'] = date('Y-m-d H:i:s');
 			$dataInvoice['invoice_paid_date'] = date('Y-m-d H:i:s');
 			$this->insert(TAB_PREFIX.'invoices',$dataInvoice);
